@@ -1,0 +1,1164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r727 - in trunk/096/pkg/mobiles: . timers timers/commands timers/commands/gm timers/config timers/include timers/subScripts timers/subScripts/odors timers/subScripts/paralysis timers/subScripts/poison
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r727%20-%20in%20trunk/096/pkg/mobiles%3A%20.%20timers%20timers/commands%20timers/commands/gm%20timers/config%20timers/include%20timers/subScripts%20timers/subScripts/odors%20timers/subScripts/paralysis%20timers/subScripts/poison&In-Reply-To=%3C200510301555.j9UFtOC1007517%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000699.html">
+   <LINK REL="Next"  HREF="000701.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r727 - in trunk/096/pkg/mobiles: . timers timers/commands timers/commands/gm timers/config timers/include timers/subScripts timers/subScripts/odors timers/subScripts/paralysis timers/subScripts/poison</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r727%20-%20in%20trunk/096/pkg/mobiles%3A%20.%20timers%20timers/commands%20timers/commands/gm%20timers/config%20timers/include%20timers/subScripts%20timers/subScripts/odors%20timers/subScripts/paralysis%20timers/subScripts/poison&In-Reply-To=%3C200510301555.j9UFtOC1007517%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r727 - in trunk/096/pkg/mobiles: . timers timers/commands timers/commands/gm timers/config timers/include timers/subScripts timers/subScripts/odors timers/subScripts/paralysis timers/subScripts/poison">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct 30 16:55:24 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000699.html">[Poldistro-svn] r726 - in trunk/096/pkg/items: blood/blood blood/config vomit/vomit
+</A></li>
+        <LI>Next message: <A HREF="000701.html">[Poldistro-svn] r728 - trunk/096/pkg/systems
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#700">[ date ]</a>
+              <a href="thread.html#700">[ thread ]</a>
+              <a href="subject.html#700">[ subject ]</a>
+              <a href="author.html#700">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-30 16:55:23 +0100 (Sun, 30 Oct 2005)
+New Revision: 727
+
+Added:
+   trunk/096/pkg/mobiles/timers/
+   trunk/096/pkg/mobiles/timers/commands/
+   trunk/096/pkg/mobiles/timers/commands/gm/
+   trunk/096/pkg/mobiles/timers/commands/gm/addTimer.src
+   trunk/096/pkg/mobiles/timers/commands/gm/cureTimers.src
+   trunk/096/pkg/mobiles/timers/commands/gm/listTimers.src
+   trunk/096/pkg/mobiles/timers/commands/gm/listTimersByType.src
+   trunk/096/pkg/mobiles/timers/commands/gm/lowerTimer.src
+   trunk/096/pkg/mobiles/timers/config/
+   trunk/096/pkg/mobiles/timers/config/icp.cfg
+   trunk/096/pkg/mobiles/timers/config/timedScripts.cfg
+   trunk/096/pkg/mobiles/timers/include/
+   trunk/096/pkg/mobiles/timers/include/timers.inc
+   trunk/096/pkg/mobiles/timers/logon.src
+   trunk/096/pkg/mobiles/timers/pkg.cfg
+   trunk/096/pkg/mobiles/timers/reconnect.src
+   trunk/096/pkg/mobiles/timers/subScripts/
+   trunk/096/pkg/mobiles/timers/subScripts/odors/
+   trunk/096/pkg/mobiles/timers/subScripts/odors/poostink.src
+   trunk/096/pkg/mobiles/timers/subScripts/paralysis/
+   trunk/096/pkg/mobiles/timers/subScripts/paralysis/endParalysis.src
+   trunk/096/pkg/mobiles/timers/subScripts/paralysis/paralysis.src
+   trunk/096/pkg/mobiles/timers/subScripts/poison/
+   trunk/096/pkg/mobiles/timers/subScripts/poison/defaultPoison.src
+   trunk/096/pkg/mobiles/timers/timerControl.src
+Log:
+File names are setup. timers.cfg has been edited to move away from 'Poisons'
+Edited ICP.cfg to note that it was once called PoisonWatcher.
+
+Need to edit the commands and timers.inc to also move away from poisons and into 'Timers'
+
+.. vomit was more fun to make, let me tell you!
+
+Added: trunk/096/pkg/mobiles/timers/commands/gm/addTimer.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/commands/gm/addTimer.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/commands/gm/addTimer.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,30 @@
++use uo;
++
++include &quot;:poisonwatcher:poisons&quot;;
++
++
++program cmd_AddPoison(who, text)
++	text := SplitWords(text);
++	
++	var p_name := text[1];
++	var amount := CInt(text[2]);
++	var level := CInt(text[3]);
++
++	if (!level)
++		level := 1;
++	endif
++	
++	if (!p_name || !amount)
++		SendSysMessage(who, &quot;Syntax: .givepoison &lt;poison name&gt; &lt;amount&gt; (&lt;level&gt;)&quot;);
++		return;
++	endif
++	
++	SendSysMessage(who, &quot;Who do you want to infect?&quot;);
++	var targ := target(who);
++	
++	if (targ.IsA(POLCLASS_MOBILE))
++		AddPoison(targ, p_name, amount, who, level);
++	endif
++
++	return;
++endprogram
+
+Added: trunk/096/pkg/mobiles/timers/commands/gm/cureTimers.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/commands/gm/cureTimers.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/commands/gm/cureTimers.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,29 @@
++use uo;
++
++include &quot;:poisonwatcher:poisons&quot;;
++
++
++program cmd_CurePoison(who, text)
++	text := splitwords(text);
++	var pname := text[1];
++	var amount := CInt(text[2]);
++	var level := Cint(text[3]);
++
++	if (!amount)
++		Sendsysmessage(who, &quot;Usage: .curepoison poison_name amount [level]&quot;);
++	endif
++
++	if (!level)
++		level := 1;
++	endif
++
++	SendSysMessage(who, &quot;Who do you want to cure?&quot;);
++	var targ := target(who);
++	
++	if (targ)
++		CurePoison(targ, amount, pname, level);
++	endif
++
++	return;
++endprogram
++
+
+Added: trunk/096/pkg/mobiles/timers/commands/gm/listTimers.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/commands/gm/listTimers.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/commands/gm/listTimers.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,24 @@
++use uo;
++use os;
++
++include &quot;:poisonwatcher:poisons&quot;;
++
++
++program Lister(who, type)
++	if (!type)
++		type := &quot;P&quot;;
++	endif
++	
++	SendSysMessage(who, &quot;Select the mobile to list poisons on.&quot;);
++	var targ := target(who);
++	
++	if (!targ.IsA(POLCLASS_MOBILE))
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return;
++	endif
++	
++	foreach poison_name in GetAllPoisons(targ);
++		SendSysMessage(who, &quot;-&gt;&quot;+poison_name);
++		sleepms(2);
++	endforeach
++endprogram
+
+Added: trunk/096/pkg/mobiles/timers/commands/gm/listTimersByType.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/commands/gm/listTimersByType.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/commands/gm/listTimersByType.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,27 @@
++use uo;
++use os;
++
++include &quot;:poisonwatcher:poisons&quot;;
++
++
++program Lister(who, type)
++	if (!type)
++		type := &quot;P&quot;;
++	endif
++	
++	SendSysMessage(who, &quot;Select the mobile to list poisons on.&quot;);
++	var targ := target(who);
++	
++	if (!targ)
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return;
++	endif
++	
++	foreach poison_name in ListPoisonsByType(targ, type)
++		SendSysMessage(who, poison_name);
++		sleepms(2);
++	endforeach
++
++	return;
++endprogram
++
+
+Added: trunk/096/pkg/mobiles/timers/commands/gm/lowerTimer.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/commands/gm/lowerTimer.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/commands/gm/lowerTimer.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,27 @@
++use uo;
++
++include &quot;:poisonwatcher:poisons&quot;;
++
++program cmd_CureSpecific(who, text)
++	text := SplitWords(text);
++	
++	var p_name := text[1];
++	var amount := CInt(text[2]);
++	var level := CInt(text[3]);
++	
++	if (!p_name || !amount)
++		SendSysMessage(who, &quot;Syntax: .curespecific &lt;poison name&gt; &lt;amount&gt;&quot;);
++		return;
++	endif
++
++	if (!level)
++		level := 1;
++	endif
++	
++	SendSysMessage(who, &quot;Who do you want to cure?&quot;);
++	var targ := target(who);
++	
++	if (targ.IsA(POLCLASS_MOBILE))
++		CureSpecific(targ, p_name, amount, level);
++	endif
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/timers/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/timers/config/icp.cfg	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/config/icp.cfg	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,22 @@
++# $Id: icp.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++ICP Register
++{
++	Name		Timers
++	Version		1.0
++	Description	Formerly called &quot;Poison Watcher&quot; [P] 
++	Description	Controls how long scripts run on an player or NPC. [P]
++	Description	Examples: Poison script, poo stench for 60 seconds
++	Description	x seconds of being drink, etc.
++
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	#Script	cmdlevel path
++
++	#TextCmd	cmdlevel path
++}
+
+Added: trunk/096/pkg/mobiles/timers/config/timedScripts.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/timers/config/timedScripts.cfg	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/config/timedScripts.cfg	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,106 @@
++# $Id$
++#
++#
++###########################################
++# timedScripts.cfg
++#
++# Config file to determine timedScript characteristic
++#
++#Entries:
++#	Name: The Name of the script.
++#
++#	Script: The path to the script that is run.
++#
++#	EndScript: The script that will run when the timer has expired.
++#
++#	LogOutScript: Script that is run if the player logs out.
++#
++#	Virulence: How much curing is nullified by the poison. Cint(curing/virulence)
++#		A virulence of 4 means that 3 points of cure are lost and 1 point cures.
++#		-Default is 1
++#
++#	ResistSkill: Skill number (or attribute Name when .94 is released) to check.
++#		     The virulence is lowered 1 each successful check when the person cures.
++#		     Leave out of the poison setting, if you do not want it resisted.
++#
++#	NoCure:	0 - Default
++#		1 - if the timed script can't be cured by normal means.
++#
++#	NoEnd:	0 - Default
++#		1 - If the script won't time out normally.
++#		This means the duration (timer) never lowers on its own.
++#
++#	CureOnEnd: 0 -Default
++#		1 - When script terminates its self or something stops it,
++#		the script will be removed from the mobile's timer list.
++#
++#	IndicatePoison: 0 - Default
++#		1 - This causes the mobile's health bar to turn green while the script runs.
++#
++#	ContinueOnDeath: 0 - Default
++#		1 - Will make the script continue to run even while the mobile is dead.
++#
++#	Cumulative: 0 - Default 
++#		1 - If getting more time added will add to an existing timer's duration.
++#                   If the timer (e.g. poison) has levels, lower durations will add a fraction
++#                   of their duration to the higher level.
++#
++#	AllorNothingCure: 0 - Default. 
++#		0 - Means a cure reduces the timers's duration at least a little.
++#		1 - Means a cure either works or it doesn't. (e.g. must be &gt;= duration)
++#
++#	MaxDuration: The maximum duration that a timer can reach. Required setting.
++#
++#	EndMessage: An optional string the player sees when the script ends.
++#                    Removes the need for an EndScript that's just a SendSysMessage().	
++#
++#	Type &quot;P&quot; for poison, &quot;C&quot; for curse, &quot;B&quot; for blessing, &quot;V&quot; for virus, etc.
++#	- There is no default. Type is used for getting an array of specific timer types.
++#
++#Notes:
++#	NoCure + NoEnd = Never ending until CureSpecific() is used
++#	Setting IndicatePoison to 0, NoCure to 1, and NoEnd to 1 and you have a curse.
++#	Set the Type to C to make it findable when you use ListPoisons(mobile, &quot;C&quot;)
++#
++###########################################
++
++#--=[ Poisons ]=------------------------------
++
++TimerElem defaultPoison
++{
++	Name			DefaultPoison
++	Script			subScripts/defaultPoison
++	IndicatePoison		1
++	EndMessage		You have been cured of poison.
++	Type			defaultPoison
++	Cumulative		0
++	AllorNothingCure	1
++	MaxDuration		120	// 2 minutes
++}
++
++#--=[ Paralysis ]=------------------------
++
++TimerElem paralysis
++{
++	Name			Paralysis
++	Script			subScripts/paralysis/paralysis
++	CureScript		subScripts/paralysis/endParalysis
++	IndicatePoison		0
++	EndMessage		You are able to move again.
++	Type			C
++	NoCure			1
++	Cumulative		1
++	MaxDuration		600	// 10 minutes
++}
++
++#--=[ Odors ]=------------------------------------
++
++TimerElem poostink
++{
++	Name			Poo Stink
++	Script			subScripts/odors/poostink
++	NoCure			1
++	CureOnDeath		0
++	EndMessage		The horrid stench of poo fades away.
++	MaxDuration		300	// 5 minutes
++}
+
+Added: trunk/096/pkg/mobiles/timers/include/timers.inc
+===================================================================
+--- trunk/096/pkg/mobiles/timers/include/timers.inc	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/include/timers.inc	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,165 @@
++use os;
++use cfgfile;
++use uo;
++
++const EVENT_ADD_POISON			:= 0x1;
++const EVENT_CURE_POISON			:= 0x2;
++const EVENT_CURE_SPECIFIC_POISON	:= 0x3;
++const EVENT_DEAD			:= 0x4;
++
++
++//
++// ListPoisonsByType(mobile, type)
++// Returns an array of strings listing poisons names
++// running on the targetted mobile that are of the type
++// passed.
++//
++function ListPoisonsByType(mobile, the_type)
++	var p_list := array;
++	var temp_list := GetObjProperty(mobile, &quot;Poisons&quot;);
++	foreach poison_name in (temp_list.keys())
++		if (Lower(PW_CfgInfo(poison_name).Type) == Lower(the_type))
++			p_list.append(poison_name);
++		endif
++		sleepms(2);
++	endforeach
++
++	return p_list;
++endfunction
++
++
++//
++// GetAllPoisons(mobile)
++// Returns an array of strings listing the poison names
++// running on the mobile passed.
++//
++function GetAllPoisons(mobile)
++	var p_list := array;
++	var temp_list := GetObjProperty(mobile, &quot;Poisons&quot;);
++	
++	foreach poison_name in (temp_list.keys())
++		p_list.append(poison_name);
++		sleepms(2);
++	endforeach
++
++	return p_list;
++endfunction
++
++
++//
++// AddPoison(mobile, poison_name, amount, attacker, level)
++// Adds a poison to the mobile for 'amount' seconds.
++// Attacker is usually set to be the drinker or eater if the poison is
++// from food or a potion.
++// Level applies if the poison comes in levels, as the default poison does.
++//
++function AddPoison(mobile, poison_name, amount, attacker, level := 1)
++	var event := struct;
++	event.+ type;
++	event.+ name;
++	event.+ amount;
++	event.+ level;
++	event.+ attacker;
++
++	event.type := EVENT_ADD_POISON;
++	event.name := poison_name;
++	event.amount := amount;
++	event.attacker := attacker;
++	event.level := level;
++
++	PW_GetScript(mobile).SendEvent(event);
++
++	return;
++endfunction
++
++
++//
++// CurePoison(mobile, amount)
++// Cures 'amount' of seconds of poison from
++// the mobile. This will only cure poisons that
++// are NOT set to 'NoCure 1'.
++// Poisontype is for if we group poisons into families that have seperate
++// scripts and as such CureSpecific is not appropriate.
++// Level is for the level of the cure. A level 2 cure will be twice
++// as effective against a level 1 poison and half as effective against
++// a level 4 poison.
++//
++function CurePoison(mobile, amount, poisontype := &quot;&quot;, level := 1)
++	var event := struct;
++	event.+ type;
++	event.+ name;
++	event.+ amount;
++	event.+ poisontype;
++	event.+ level;
++
++	event.type := EVENT_CURE_POISON;
++	event.amount := amount;
++	event.poisontype := poisontype;
++	event.level := level;
++
++	PW_GetScript(mobile).SendEvent(event);
++
++	return;
++endfunction
++
++
++//
++// CureSpecific(mobile, poison_name, amount)
++// Cures 'amount' seconds of a specific poison.
++// Ignores the 'NoCure' setting.
++//
++function CureSpecific(mobile, poison_name, amount, level := 1)
++	var event := struct;
++	event.+ type;
++	event.+ name;
++	event.+ amount;
++	event.+ level;
++
++	event.type := EVENT_CURE_SPECIFIC_POISON;
++	event.name := poison_name;
++	event.amount := amount;
++	event.level := level;
++
++	PW_GetScript(mobile).SendEvent(event);
++
++	return;
++endfunction
++
++
++//
++// PW_GetScript(mobile)
++// Returns the process of the poison watcher.
++// If the poison watcher is not running, it will
++// start it up on the mobile unless no_start is set to
++// a non-zero value.
++//
++function PW_GetScript(mobile, no_start := 0)
++	var poison_pid := CInt(GetObjProperty(mobile, &quot;#PoisonPID&quot;));
++	var poison_watcher := GetProcess(poison_pid);
++
++	if (!poison_watcher &amp;&amp; !no_start)
++		//How to start it on an npc!
++		poison_watcher := start_script(&quot;:poisonwatcher:poisonwatcher&quot;, {mobile});
++
++		if ( poison_watcher.errortext )
++			PrintTextAbove(mobile, &quot;Poison Watcher PW_GetScript() &quot; + poison_watcher.errortext);
++		endif
++	endif
++
++	return poison_watcher;
++endfunction
++
++
++//
++// PW_CfgInfo(poison_name)
++// Returns config information about the poison name passed.
++//
++function PW_CfgInfo(poison_name)
++	var cfg_file := ReadConfigFile(&quot;:poisonwatcher:config/poisons&quot;);
++	if ( cfg_file.errortext )
++		SysLog(&quot;Error::PW_CfgInfo() - Unable to open poisons.cfg -&gt; &quot;+cfg_file.errortext);
++		return 0;
++	endif
++
++	return cfg_file[poison_name];
++endfunction
+
+Added: trunk/096/pkg/mobiles/timers/logon.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/logon.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/logon.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,13 @@
++use uo;
++use os;
++
++include &quot;:poisonwatcher:poisons&quot;;
++
++program Logon(who)
++	if ( !PW_GetScript(who) )
++		return start_script(&quot;poisonwatcher&quot;, {who});
++	endif
++
++	return 0;
++endprogram
++
+
+Added: trunk/096/pkg/mobiles/timers/pkg.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/timers/pkg.cfg	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/pkg.cfg	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,19 @@
++# $Id$
++#
++#
++
++Enabled		1
++Name		timers
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires none
++#conflicts	none
+
+Added: trunk/096/pkg/mobiles/timers/reconnect.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/reconnect.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/reconnect.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,14 @@
++use uo;
++use os;
++
++include &quot;:poisonwatcher:poisons&quot;;
++
++
++program reconnect(who)
++	if ( !PW_GetScript(who) )
++		return start_script(&quot;poisonwatcher&quot;, {who});
++	endif
++
++	return 0;
++endprogram
++
+
+Added: trunk/096/pkg/mobiles/timers/subScripts/odors/poostink.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/subScripts/odors/poostink.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/subScripts/odors/poostink.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,11 @@
++use uo;
++use os;
++
++program PooStink(params)
++	var who := params[1];
++	
++	while(1)
++		PrintTextAbove(who, &quot;*&quot; + who.name + &quot; smells like poo!*&quot;);
++		sleep(6);
++	endwhile
++endprogram
+
+Added: trunk/096/pkg/mobiles/timers/subScripts/paralysis/endParalysis.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/subScripts/paralysis/endParalysis.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/subScripts/paralysis/endParalysis.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,12 @@
++use uo;
++use os;
++
++include &quot;include/attributes&quot;;
++include &quot;:poisonwatcher:poisons&quot;;
++
++program poisonScript(params)
++	var who := params[1];
++	
++	who.paralyzed := 0;
++endprogram
++
+
+Added: trunk/096/pkg/mobiles/timers/subScripts/paralysis/paralysis.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/subScripts/paralysis/paralysis.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/subScripts/paralysis/paralysis.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,19 @@
++use uo;
++use os;
++
++include &quot;include/attributes&quot;;
++include &quot;:poisonwatcher:poisons&quot;;
++
++program poisonScript(params)
++	var who := params[1];
++	
++	PlaySoundEffect(who, 0x205);
++	SendSysMessage(who, &quot;You are unable to move.&quot;);
++	while ( who )
++		who.paralyzed := 1;
++		sleepms(250);
++	endwhile
++	
++	return 1;
++endprogram
++
+
+Added: trunk/096/pkg/mobiles/timers/subScripts/poison/defaultPoison.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/subScripts/poison/defaultPoison.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/subScripts/poison/defaultPoison.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,93 @@
++use uo;
++use os;
++
++include &quot;include/attributes&quot;;
++include &quot;:poisonwatcher:poisons&quot;;
++
++
++program default_poison(params)
++	var who := params[1];
++	var attacker := params[2];
++	var level := CInt(params[3]);
++
++	if (!level)
++		level := 1;
++	endif
++
++	if (attacker)
++		SetScriptController(attacker);
++	endif
++
++	var dmg := 0;
++	var stam := 0;
++	var poisonedmsg := &quot;&quot;;
++	var viewermsg := &quot;&quot;;
++	var time := 15;
++	case (level)
++		default:
++		1: dmg := Cint(GetMaxHp(who) / 40);
++		   if (dmg &lt; 3)
++			dmg := 3;
++		   endif
++		   poisonedmsg := &quot;You feel a bit nauseous.&quot;;
++		   viewermsg := &quot;* - &quot; + who.name + &quot; looks ill. - *&quot;;
++		2: dmg := Cint(GetMaxHp(who) / 32);
++		   if(dmg &lt; 5)
++			dmg := 5;
++  		   endif
++		   poisonedmsg := &quot;You feel disoriented and nauseous.&quot;;
++		   viewermsg := &quot;* - &quot; + who.name + &quot; looks extremely ill. - *&quot;;
++		   time := 12;
++		3: dmg := Cint(GetMaxHp(who) / 16);
++		   if(dmg &lt; 7)
++			dmg := 7;
++		   endif
++		   stam := Cint(GetMaxStamina(who) / 30);
++		   poisonedmsg := &quot;You begin to feel pain throughout your body.&quot;;
++		   viewermsg := &quot;* - &quot; + who.name + &quot; stumbles around in confusion and pain. - *&quot;;
++		   time := 10;
++		4: dmg := Cint(GetMaxHp(who) / 8);
++		   if(dmg &lt; 6)
++			dmg := 6;
++		   endif
++		   stam := Cint(GetMaxStamina(who) / 20);
++		   poisonedmsg := &quot;You feel extremely weak and are in severe pain!&quot;;
++		   viewermsg := &quot;* - &quot; + who.name + &quot; is wracked with extreme pain! - *&quot;;
++		   time := 5;
++		5: dmg := Cint(GetMaxHp(who) / 4);
++		   if(dmg &lt; 12)
++			dmg := 12;
++		   endif
++		   stam := Cint(GetMaxStamina(who) / 10);
++		   poisonedmsg := &quot;You are in extreme pain, and require immediate aid!&quot;;
++		   viewermsg := &quot;* - &quot; + who.name + &quot; begins to spasm uncontrollably! - *&quot;;
++		   time := 5;
++	endcase
++
++	while(1)
++		PrintTextAbovePrivate(who, poisonedmsg, who);
++		foreach mob in ListMobilesInLineOfSight(who, 8)
++			if((mob.ip) and (mob != who))
++				PrintTextAbovePrivate(who, viewermsg, mob);
++			endif
++		endforeach		
++
++		var lasthitparms := {attacker.name, attacker.serial, &quot;poison&quot;};
++		SetObjProperty(who, &quot;LastHit&quot;, lasthitparms );
++		ApplyRawDamage(who, dmg);
++
++		Set_Critical(1);
++			var curr := CInt(GetStamina(who));
++			if (curr &gt;= stam)
++				SetStamina(who, (curr-stam));
++			else
++				SetStamina(who, 0);
++			endif
++		Set_Critical(0);
++		RecalcVitals(who);
++		sleep(time);
++	endwhile
++
++	return;
++endprogram
++
+
+Added: trunk/096/pkg/mobiles/timers/timerControl.src
+===================================================================
+--- trunk/096/pkg/mobiles/timers/timerControl.src	2005-10-30 15:20:04 UTC (rev 726)
++++ trunk/096/pkg/mobiles/timers/timerControl.src	2005-10-30 15:55:23 UTC (rev 727)
+@@ -0,0 +1,357 @@
++use uo;
++use os;
++use util;
++use cfgfile;
++
++include &quot;:poisonwatcher:poisons&quot;;
++
++set_priority(5);
++
++
++program poisonWatcher(who)
++	//You can start this script with 
++	//start_script(&quot;poisonwatcher&quot;, who);
++	//or
++	//start_script(&quot;poisonwatcher&quot;, {who});
++	//
++	if ( !who.IsA(POLCLASS_MOBILE) )
++		who := who[1];
++	endif
++	
++	SetObjProperty(who, &quot;#PoisonPID&quot;, getpid()); // Keep making sure the mobile has this!
++
++	var num_poisons := 0;
++	var poisons := dictionary;
++
++	StartUp(who, poisons, num_poisons);
++
++	while ( 1 )
++		SetObjProperty(who, &quot;#PoisonPID&quot;, getpid()); // Keep making sure the mobile has this!
++		SetObjProperty(who, &quot;Poisons&quot;, poisons); // Update Poisons
++
++		var event := wait_for_event(1);
++		//Event will contain type, name, amount, and optionally level.
++
++		who.SetPoisoned(num_poisons);
++
++		if( event.type == EVENT_ADD_POISON )
++			Add_Poison(who, event, poisons, num_poisons);
++		elseif( event.type == EVENT_CURE_POISON )
++			Cure_Poison(who, event, poisons, num_poisons);
++		elseif( event.type == EVENT_CURE_SPECIFIC_POISON )
++			Cure_Specific(who, event, poisons, num_poisons, 1);
++		elseif( event.type == EVENT_DEAD || who.dead )
++			Cure_Death(who, poisons, num_poisons);
++		endif
++
++		CheckPids(who, poisons, num_poisons);
++		WearDown(who, poisons, num_poisons);
++
++		Set_Critical(1);
++		if( !ShouldRun(who, poisons.keys()) )
++			who.SetPoisoned(0);
++			LogOff(who, poisons);
++			exit;
++		endif
++		Set_Critical(0);
++	endwhile
++endprogram
++
++function StartUp(who, byref poisons, byref num_poisons)
++	//This thing just started. Take in any poisons in the dictionary and start the scripts.
++	var templist := GetObjProperty(who, &quot;Poisons&quot;);
++	EraseObjProperty(who, &quot;Poisons&quot;);
++
++	if( !templist )
++		templist := dictionary;
++		SetObjProperty(who, &quot;Poisons&quot;, templist);
++	endif
++
++	foreach poison_name in (templist.keys())
++		var event := struct;
++		event.+name := poison_name;
++		event.+amount := templist[poison_name].duration;
++		event.+level := templist[poison_name].level;
++
++		Add_Poison(who, event, poisons, num_poisons);
++		sleepms(2);
++	endforeach
++endfunction
++
++function LogOff(who, byref poisons)
++	//On Logout, we want to save the status of poisons. Then stop the scripts.
++	Set_Critical(1);
++	SetObjProperty(who, &quot;Poisons&quot;, poisons);
++
++	foreach poison_name in ( poisons.keys() )
++		KillPoison(poisons[poison_name].pid, poisons, poison_name);
++
++		if( PW_CfgInfo(poison_name).LogOutScript )
++			who := SystemFindObjectBySerial(who.serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
++			var LogOutScript := start_script(PW_CfgInfo(poison_name).LogOutScript, {who});
++			if( LogOutScript.errortext )
++				Print(&quot;PoisonWatcher LogoffScript: (&quot; +  who.name + &quot;) &quot; + LogOutScript.errortext);
++			endif
++		endif
++		sleepms(2);
++	endforeach
++	EraseObjProperty(who, &quot;#PoisonPID&quot;);
++	Set_Critical(0);
++endfunction
++
++function Cure_Death(who, byref poisons, byref num_poisons)
++	//Cure poisons on death that dont continue afterwards.
++	Set_Critical(1);
++	foreach poison_name in ( poisons.keys() )
++		if( !PW_CfgInfo(poison_name).ContinueOnDeath )
++			var event := struct;
++			event.+name := poison_name;
++			event.+amount := -1;
++
++			Cure_Specific(who, event, poisons, num_poisons, 0);
++		endif
++		sleepms(2);
++	endforeach
++	Set_Critical(0);
++endfunction
++
++function CheckPids(who, byref poisons, byref num_poisons)
++	//Remove poisons from the person's dictionary that are no longer running
++	//if they are set to be considered cured when the script finishes.
++
++	foreach poison_name in ( poisons.keys() )
++		if( PW_CfgInfo(poison_name).CureOnEnd )
++			//Does it cure when the sub script stops?
++			var script := GetProcess(poisons[poison_name].pid);
++			if( !script )
++				// Yeah its finished, lets clear it out!
++				var event := struct;
++				event.+name := poison_name;
++				event.+amount := -1;
++
++				Cure_Specific(who, event, poisons, num_poisons, 0);
++			endif
++		endif
++		sleepms(2);
++	endforeach
++endfunction
++
++function WearDown(who, byref poisons, byref num_poisons)
++	//Run through each poison that is not set to NoEnd and wear it down 1 second.);
++	foreach poison_name in ( poisons.keys() )
++		if( !PW_CfgInfo(poison_name).NoEnd ) //It does wear off
++			if (poisons[poison_name].duration &lt;= 1)
++				KillPoison(poisons[poison_name].pid, poisons, poison_name);
++				CleanupPoison(who, poison_name, num_poisons);
++			else
++				poisons[poison_name].duration := poisons[poison_name].duration-1;
++			endif
++		endif
++		sleepms(2);
++	endforeach
++endfunction
++
++function Add_Poison(who, byref event, byref poisons, byref num_poisons)
++	//Check if a poison exists. If it does, increase its duration.
++	//If it does not exist, add it to the list on the mobile. Start
++	//the necessary script and store the name, duration and sub-script pid.
++	if( !PW_CfgInfo(event.name) )
++		SendSysMessage(who, &quot;Debug: You were infected with a poison not in poisons.cfg Poison Name -&gt; [&quot; + event.name + &quot;] please page and report this.&quot;);
++		return;
++	endif
++
++	var cumulative := PW_CfgInfo(event.name).Cumulative;
++	if( !poisons.Exists(event.name) )
++		var script := PW_CfgInfo(event.name).Script;
++		script := start_script(script, {who, event.attacker, event.level});
++
++		if( script.errortext )
++			SendSysMessage(who, &quot;Debug - Poison Script Add_Poison(): &quot; + script.errortext);
++			return;
++		endif
++
++		poisons[event.name] := struct;
++		poisons[event.name].+duration := event.amount;
++		poisons[event.name].+pid := script.pid;
++		poisons[event.name].+level := event.level;
++		
++		var maxdur := CInt(PW_CfgInfo(event.name).MaxDuration);
++		if ( maxdur &lt; poisons[event.name].duration )
++			poisons[event.name].duration := maxdur;
++		endif
++
++		if( PW_CfgInfo(event.name).IndicatePoison )
++			num_poisons := num_poisons+1;
++		endif
++	else
++		var lvl := poisons[event.name].level;
++		var amt := CInt(event.amount);
++		if (cumulative)
++			if ((event.level) &amp;&amp; lvl)
++				amt := amt * ((event.level*1.0) / poisons[event.name].level);
++				if (lvl &gt;= event.level)
++					poisons[event.name].duration := poisons[event.name].duration + amt;
++				else
++					KillPoison(poisons[event.name].pid, poisons, event.name);
++					event.amt := amt;
++					Add_Poison(who, event, poisons, num_poisons);
++				endif
++			else
++				poisons[event.name].duration := poisons[event.name].duration + amt;
++			endif
++		else
++			if ((event.level) &amp;&amp; lvl)
++				if ((lvl == event.level) &amp;&amp; (amt &gt; poisons[event.name].duration))
++					poisons[event.name].duration := amt;
++				elseif (event.level &gt; lvl)
++					KillPoison(poisons[event.name].pid, poisons, event.name);
++					event.amt := amt;
++					Add_Poison(who, event, poisons, num_poisons);
++				endif					
++			else
++				if (amt &gt; poisons[event.name].duration)
++					poisons[event.name].duration := amt;
++				endif
++			endif
++		endif
++		var maxdur := PW_CfgInfo(event.name).MaxDuration;
++		if (maxdur &lt; poisons[event.name].duration)
++			poisons[event.name].duration := maxdur;
++		endif
++	endif
++endfunction
++
++function Cure_Poison(who, byref event, byref poisons, byref num_poisons)
++	//Run through all curable poisons, and keep curing until were out
++	//of curing power.
++
++	foreach poison_name in ( poisons.keys() )
++		var poisoncfg := PW_CfgInfo(poison_name);
++		if (!event.poisontype || (lower(event.poisontype) == lower(poisoncfg.Type)))
++			if( !PW_CfgInfo(poison_name).NoCure ) //Its curable
++				event.name := poison_name;
++				Cure_Specific(who, event, poisons, num_poisons, 1);
++			endif
++
++			if( event.amount &lt;= 0 ) // All out of cure power
++				break;
++			endif
++			sleepms(2);
++		endif
++	endforeach
++endfunction
++
++function Cure_Specific(who, byref event, byref poisons, byref num_poisons, check_virulence:=0)
++	//Cures a specific poison by event.amount.
++	//If -1 is sent for amount, it completely cures the poison.
++
++	if( !PW_CfgInfo(event.name) )
++		SendSysMessage(who, &quot;Debug: Something tried to cure a poison not in poisons.cfg Poison Name -&gt; [&quot; + event.name + &quot;] please page and report this.&quot;);
++		return;
++	endif
++
++	var cure_amount := event.amount;
++	var level := event.level;
++	if( poisons.Exists(event.name) )
++		if( cure_amount == -1 )
++			check_virulence:=0;
++			cure_amount := poisons[event.name].duration + 1;
++			level := 1;
++		elseif( check_virulence )
++			var virulence := PW_CfgInfo(event.name).Virulence;
++			if( !virulence )
++				virulence := 1;
++			endif
++			
++			/*
++			var resist_skill := PW_CfgInfo(event.name).ResistSkill;
++			if( resist_skill )
++				var i := virulence;
++				for( i; i &gt; 0; i:=i-1 )
++					if( CheckSkill(who, resist_skill, -1, 100) &gt; 0 )
++						virulence := virulence - 1;
++					endif
++					sleepms(2);
++				endfor
++			endif
++			*/
++
++			cure_amount := CInt(event.amount / PW_CfgInfo(event.name).Virulence);
++		endif
++
++		var allornothing := PW_CfgInfo(event.name).AllOrNothingCure;
++		if (allornothing)
++			var chance := 0;
++			if (level &gt;= poisons[event.name].level)
++				chance := 100;
++			elseif ((poisons[event.name].level - level) == 1)
++				chance := 50;
++			elseif ((poisons[event.name].level - level) == 2)
++				chance := 20;
++			endif
++
++			// If cure level is more than two levels lower than the poison level,
++			// no chance to cure.
++
++			if ((RandomInt(100)+1) &lt;= chance)
++				KillPoison(poisons[event.name].pid, poisons, event.name);
++				CleanupPoison(who, event.name, num_poisons);
++			endif
++
++		else
++			var multiply := (level*1.0)/(poisons[event.name].level);
++			if (!multiply)
++				multiply := 1;
++			endif
++			if( (multiply*cure_amount) &gt;= poisons[event.name].duration )
++				event.amount := event.amount - (poisons[event.name].duration / multiply);
++
++				KillPoison(poisons[event.name].pid, poisons, event.name);
++
++				CleanupPoison(who, event.name, num_poisons);
++			else
++				poisons[event.name].duration := poisons[event.name].duration - cure_amount*multiply;
++				event.amount := 0;
++			endif
++		endif
++	endif
++endfunction
++
++function ShouldRun( who, byref poison_keys )
++	if ( Events_Waiting() &gt;= 1 )
++		return 1;
++	elseif ( who.IsA(POLCLASS_NPC) )
++		if ( poison_keys.size() &gt; 0 )
++			return 1;
++		endif
++	elseif( who.connected )
++		if( poison_keys.size() &gt; 0 )
++			return 1;
++		endif
++	endif
++
++	return 0;
++endfunction
++
++function KillPoison(pid, byref poisons, event_name)
++	var script := GetProcess(pid);
++	script.kill();
++	poisons.erase(event_name);
++endfunction
++
++function CleanupPoison(who, poison_name, byref num_poisons)
++	if( PW_CfgInfo(poison_name).IndicatePoison )
++		num_poisons := num_poisons-1;
++	endif
++
++	if( PW_CfgInfo(poison_name).CureMessage )
++		SendSysMessage(who, PW_CfgInfo(poison_name).CureMessage);
++	endif
++
++	if( PW_CfgInfo(poison_name).CureScript )
++		var script := start_script(PW_CfgInfo(poison_name).CureScript, {who});
++		if( script.errortext )
++			SendSysMessage(who, &quot;Debug - Cure Script CureSpecific(): &quot; + script.errortext);
++		endif
++	endif
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000699.html">[Poldistro-svn] r726 - in trunk/096/pkg/items: blood/blood blood/config vomit/vomit
+</A></li>
+	<LI>Next message: <A HREF="000701.html">[Poldistro-svn] r728 - trunk/096/pkg/systems
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#700">[ date ]</a>
+              <a href="thread.html#700">[ thread ]</a>
+              <a href="subject.html#700">[ subject ]</a>
+              <a href="author.html#700">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

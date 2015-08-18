@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1105 - trunk/096/batchfiles
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1105%20-%20trunk/096/batchfiles&In-Reply-To=%3C200601071541.k07FfroP029677%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001075.html">
+   <LINK REL="Next"  HREF="001077.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1105 - trunk/096/batchfiles</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1105%20-%20trunk/096/batchfiles&In-Reply-To=%3C200601071541.k07FfroP029677%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1105 - trunk/096/batchfiles">austin at berlios.de
+       </A><BR>
+    <I>Sat Jan  7 16:41:53 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001075.html">[Poldistro-svn] r1104 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+        <LI>Next message: <A HREF="001077.html">[Poldistro-svn] r1106 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1076">[ date ]</a>
+              <a href="thread.html#1076">[ thread ]</a>
+              <a href="subject.html#1076">[ subject ]</a>
+              <a href="author.html#1076">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-07 16:41:53 +0100 (Sat, 07 Jan 2006)
+New Revision: 1105
+
+Modified:
+   trunk/096/batchfiles/ecompile.bat
+Log:
+Finally got around to adding Tiko's compile directory addition.
+
+Modified: trunk/096/batchfiles/ecompile.bat
+===================================================================
+--- trunk/096/batchfiles/ecompile.bat	2006-01-07 15:41:25 UTC (rev 1104)
++++ trunk/096/batchfiles/ecompile.bat	2006-01-07 15:41:53 UTC (rev 1105)
+@@ -14,16 +14,18 @@
+ ECHO ========================
+ ECHO Command        Purpose
+ ECHO  [ a ] - Compile a specific script.
+-ECHO  [ b ] - Compile all .src scripts.
+-ECHO  [ c ] - Compile all scripts and output to POL\ecompile.log
++ECHO  [ b ] - Compile a directory.
++ECHO  [ c ] - Compile all .src scripts.
++ECHO  [ d ] - Compile all scripts and output to POL\ecompile.log
+ ECHO.
+ ECHO  [ x ] - Back
+ 
+ SET /p CMD=Command:
+ 
+ IF /i &quot;%CMD%&quot; == &quot;a&quot; GOTO :COMPILE_SCRIPT()
+-IF /i &quot;%CMD%&quot; == &quot;b&quot; GOTO :COMPILE_ALL_SCRIPTS()
+-IF /i &quot;%CMD%&quot; == &quot;c&quot; GOTO :COMPILE_ALL_SCRIPTS_OPTXT()
++IF /i &quot;%CMD%&quot; == &quot;b&quot; GOTO :COMPILE_DIRECTORY()
++IF /i &quot;%CMD%&quot; == &quot;c&quot; GOTO :COMPILE_ALL_SCRIPTS()
++IF /i &quot;%CMD%&quot; == &quot;d&quot; GOTO :COMPILE_ALL_SCRIPTS_OPTXT()
+ IF /i &quot;%CMD%&quot; == &quot;x&quot; GOTO :QUIT()
+ 
+ ECHO.
+@@ -41,6 +43,12 @@
+ %ECOMPILE_PATH% %CMD%
+ GOTO RETURN_TO_MENU()
+ 
++REM -- COMPILE_DIRECTORY() FUNCTION
++:COMPILE_DIRECTORY()
++SET /p CMD=&quot;Path to DIRECTORY:&quot;
++%ECOMPILE_PATH% -b -r %CMD%
++GOTO RETURN_TO_MENU()
++
+ REM -- COMPILE_ALL_SCRIPTS() FUNCTION
+ :COMPILE_ALL_SCRIPTS()
+ %ECOMPILE_PATH% -b -r
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001075.html">[Poldistro-svn] r1104 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+	<LI>Next message: <A HREF="001077.html">[Poldistro-svn] r1106 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1076">[ date ]</a>
+              <a href="thread.html#1076">[ thread ]</a>
+              <a href="subject.html#1076">[ subject ]</a>
+              <a href="author.html#1076">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

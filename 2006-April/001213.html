@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1241 - trunk/uomul
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1241%20-%20trunk/uomul&In-Reply-To=%3C200604201223.k3KCNMRE004733%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001212.html">
+   <LINK REL="Next"  HREF="001214.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1241 - trunk/uomul</H1>
+    <B>panosl at berlios.de</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1241%20-%20trunk/uomul&In-Reply-To=%3C200604201223.k3KCNMRE004733%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1241 - trunk/uomul">panosl at berlios.de
+       </A><BR>
+    <I>Thu Apr 20 14:23:22 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001212.html">[Poldistro-svn] r1240 - trunk/uomul
+</A></li>
+        <LI>Next message: <A HREF="001214.html">[Poldistro-svn] r1242 - trunk/uomul
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1213">[ date ]</a>
+              <a href="thread.html#1213">[ thread ]</a>
+              <a href="subject.html#1213">[ subject ]</a>
+              <a href="author.html#1213">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2006-04-20 14:23:15 +0200 (Thu, 20 Apr 2006)
+New Revision: 1241
+
+Modified:
+   trunk/uomul/skills.py
+Log:
+Various improvements to skills.py, predetermine the length of skills.
+
+Modified: trunk/uomul/skills.py
+===================================================================
+--- trunk/uomul/skills.py	2006-04-19 13:17:01 UTC (rev 1240)
++++ trunk/uomul/skills.py	2006-04-20 12:23:15 UTC (rev 1241)
+@@ -13,11 +13,18 @@
+ 	def __init__(self, file='skills.mul', indexfile='Skills.idx'):
+ 		Index.__init__(self, indexfile)
+ 		self.data = getData(file)
+-		self.count = len(self.entries)
++		self.max = self.__getMax()
++
++	def __getMax(self):
++		'''Determine the max number of skills'''
++		valid = [entry for entry in self.entries if entry[0] &gt; -1]
++		return len(valid)
+ 	
+ 	def getSkill(self, id):
+ 		'''Get skill name, and if active or not
+ 		returns dict'''
++		if id &gt; self.max-1:
++			return
+ 		sidx = self.entries[id]
+ 		skillt = unpack('b'+str(sidx[1]-1)+'s', self.data[sidx[0]:sidx[0]+sidx[1]])
+ 		skill = {}
+@@ -25,10 +32,11 @@
+ 		skill['name'] = skillt[1][:-1]
+ 		return skill
+ 	
++	def setSkill(self, id, name, action):
++		'''Replace an already existing skill, with a new one.'''
++
+ 	def getSkills(self):
+-		#TODO: Calculate the _actual_ range of the index, 'cause index
+-		# seems to have alot of empty stuff.
+-		skills = [self.getSkill(skill) for skill in range(0, 15)]
++		skills = [self.getSkill(skill) for skill in range(0, self.max)]
+ 		return skills
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001212.html">[Poldistro-svn] r1240 - trunk/uomul
+</A></li>
+	<LI>Next message: <A HREF="001214.html">[Poldistro-svn] r1242 - trunk/uomul
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1213">[ date ]</a>
+              <a href="thread.html#1213">[ thread ]</a>
+              <a href="subject.html#1213">[ subject ]</a>
+              <a href="author.html#1213">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

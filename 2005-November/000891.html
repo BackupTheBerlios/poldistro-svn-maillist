@@ -1,0 +1,545 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r917 - in trunk/096: pkg/commands/coun pkg/items/guildstone pkg/items/runebook pkg/mobiles/npcutils pkg/skills/fishing pkg/skills/lockpicking pkg/skills/mining pkg/skills/tinkering pkg/systems/daynight pkg/systems/merchantnodes pkg/systems/nature scripts/console scripts/items scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r917%20-%20in%20trunk/096%3A%20pkg/commands/coun%20pkg/items/guildstone%20pkg/items/runebook%20pkg/mobiles/npcutils%20pkg/skills/fishing%20pkg/skills/lockpicking%20pkg/skills/mining%20pkg/skills/tinkering%20pkg/systems/daynight%20pkg/systems/merchantnodes%20pkg/systems/nature%20scripts/console%20scripts/items%20scripts/misc&In-Reply-To=%3C200511052351.jA5NpE4H003056%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000890.html">
+   <LINK REL="Next"  HREF="000892.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r917 - in trunk/096: pkg/commands/coun pkg/items/guildstone pkg/items/runebook pkg/mobiles/npcutils pkg/skills/fishing pkg/skills/lockpicking pkg/skills/mining pkg/skills/tinkering pkg/systems/daynight pkg/systems/merchantnodes pkg/systems/nature scripts/console scripts/items scripts/misc</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r917%20-%20in%20trunk/096%3A%20pkg/commands/coun%20pkg/items/guildstone%20pkg/items/runebook%20pkg/mobiles/npcutils%20pkg/skills/fishing%20pkg/skills/lockpicking%20pkg/skills/mining%20pkg/skills/tinkering%20pkg/systems/daynight%20pkg/systems/merchantnodes%20pkg/systems/nature%20scripts/console%20scripts/items%20scripts/misc&In-Reply-To=%3C200511052351.jA5NpE4H003056%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r917 - in trunk/096: pkg/commands/coun pkg/items/guildstone pkg/items/runebook pkg/mobiles/npcutils pkg/skills/fishing pkg/skills/lockpicking pkg/skills/mining pkg/skills/tinkering pkg/systems/daynight pkg/systems/merchantnodes pkg/systems/nature scripts/console scripts/items scripts/misc">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov  6 00:51:14 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000890.html">[Poldistro-svn] r916 - in trunk/096: pkg/commands/coun pkg/commands/gm pkg/items/doors pkg/items/runebook pkg/items/traps pkg/items/wands pkg/mobiles/death pkg/mobiles/oldAI/main pkg/skills/alchemy pkg/skills/detecthidden pkg/skills/forensicevaluation pkg/skills/inscription pkg/skills/lockpicking pkg/skills/poisoning pkg/skills/removetrap pkg/skills/spiritspeak pkg/skills/tailoring pkg/skills/tinkering pkg/skills/tracking pkg/systems/boat pkg/systems/combat/old pkg/systems/combat/useScripts pkg/systems/crafting/include pkg/systems/housing scripts/include/OLD scripts/items scripts/misc
+</A></li>
+        <LI>Next message: <A HREF="000892.html">[Poldistro-svn] r918 - in trunk/096/pkg/mobiles: death/commands/seer timedScripts/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#891">[ date ]</a>
+              <a href="thread.html#891">[ thread ]</a>
+              <a href="subject.html#891">[ subject ]</a>
+              <a href="author.html#891">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-06 00:51:11 +0100 (Sun, 06 Nov 2005)
+New Revision: 917
+
+Modified:
+   trunk/096/pkg/commands/coun/time.src
+   trunk/096/pkg/items/guildstone/guildStone.src
+   trunk/096/pkg/items/runebook/runebook.src
+   trunk/096/pkg/mobiles/npcutils/NPCKeeper.src
+   trunk/096/pkg/skills/fishing/SOSMessage.src
+   trunk/096/pkg/skills/fishing/fishing.src
+   trunk/096/pkg/skills/fishing/fishingFunctions.inc
+   trunk/096/pkg/skills/lockpicking/lockpicking.src
+   trunk/096/pkg/skills/mining/mining.src
+   trunk/096/pkg/skills/tinkering/time.src
+   trunk/096/pkg/systems/daynight/dayNight.src
+   trunk/096/pkg/systems/merchantnodes/guardNode.src
+   trunk/096/pkg/systems/merchantnodes/merchantNode.src
+   trunk/096/pkg/systems/nature/dayNight.src
+   trunk/096/pkg/systems/nature/moons.src
+   trunk/096/scripts/console/about.src
+   trunk/096/scripts/console/shutdown.src
+   trunk/096/scripts/console/time.src
+   trunk/096/scripts/items/coords.src
+   trunk/096/scripts/misc/oncreate.src
+   trunk/096/scripts/misc/ondelete.src
+Log:
+Include path updates.
+
+Modified: trunk/096/pkg/commands/coun/time.src
+===================================================================
+--- trunk/096/pkg/commands/coun/time.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/commands/coun/time.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -1,6 +1,6 @@
+ use uo;
+ 
+-include &quot;include/clock&quot;;
++include &quot;include/OLD/clock&quot;;
+ 
+ 
+ program command_time(who)
+
+Modified: trunk/096/pkg/items/guildstone/guildStone.src
+===================================================================
+--- trunk/096/pkg/items/guildstone/guildStone.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/items/guildstone/guildStone.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -5,7 +5,7 @@
+ include &quot;:itemutils:canAccess&quot;;
+ include &quot;guildData&quot;;
+ include &quot;:gumps:include/old/old-gumps&quot;;
+-include &quot;include/webPage&quot;;
++include &quot;include/OLD/webPage&quot;;
+ 
+ var guildstone;
+ var gm, guild, guild_id;
+
+Modified: trunk/096/pkg/items/runebook/runebook.src
+===================================================================
+--- trunk/096/pkg/items/runebook/runebook.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/items/runebook/runebook.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -5,7 +5,7 @@
+ include &quot;customSpells&quot;;
+ include &quot;include/math&quot;;
+ include &quot;include/client&quot;;
+-include &quot;include/coords&quot;;
++include &quot;include/OLD/coords&quot;;
+ include &quot;:itemutils:canAccess&quot;;
+ 
+ const OBJTYPE_RUNE := 0x1f14;
+
+Modified: trunk/096/pkg/mobiles/npcutils/NPCKeeper.src
+===================================================================
+--- trunk/096/pkg/mobiles/npcutils/NPCKeeper.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/mobiles/npcutils/NPCKeeper.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -3,7 +3,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;include/startEqp&quot;;
++include &quot;include/OLD/startEqp&quot;;
+ include &quot;:attributes:attributes&quot;;
+ include &quot;:npcutils:vetement&quot;;
+ include &quot;:npcutils:names&quot;;
+
+Modified: trunk/096/pkg/skills/fishing/SOSMessage.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/SOSMessage.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/skills/fishing/SOSMessage.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -5,7 +5,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;include/coords&quot;;
++include &quot;include/OLD/coords&quot;;
+ include &quot;:itemutils:canAccess&quot;;
+ include &quot;:gumps:include/gumps&quot;;
+ 
+
+Modified: trunk/096/pkg/skills/fishing/fishing.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishing.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/skills/fishing/fishing.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -12,7 +12,7 @@
+ include &quot;:attributes:include/attributes&quot;;
+ include &quot;:crafting:toolWear&quot;;
+ include &quot;:itemutils:objtype&quot;;
+-include &quot;include/startEqp&quot;;
++include &quot;include/OLD/startEqp&quot;;
+ include &quot;include/sysEvent&quot;;
+ 
+ program use_FishingPole(who, fishingpole)
+@@ -86,7 +86,7 @@
+ 				SendSysMessage(who, &quot;There doesn't seem to be any fish here.&quot;);
+ 				return 0;
+ 			endif
+-			if( SkillCheck(who, ATTRIBUTE_FISHING, difficulty) &gt; 0)
++			if( SkillCheck(who, FISHING, difficulty) &gt; 0)
+ 				var fishreturned := HarvestResource(&quot;fish&quot;, targetsquare.x, targetsquare.y, 1, 1, who.realm);
+ 				if( !fishreturned )
+ 					SendSysMessage(who, &quot;Oops, you let that one get away!&quot;);
+@@ -111,7 +111,7 @@
+ function GetTheCatch(who, targetsquare, fishingpole)
+ 
+ 	var fishtype;
+-	var currentskill := AP_GetSkill(who, ATTRIBUTE_FISHING);
++	var currentskill := AP_GetSkill(who, FISHING);
+ 	var thisone := RandomInt(100)+ 1;
+ 	if(thisone &lt;= 94)
+ 		fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
+@@ -161,7 +161,7 @@
+ 		endif
+ 	else
+ 		if( CreateItemInContainer(who.backpack, fishtype, 1) )
+-			CheckToolWear (who, fishingpole, ATTRIBUTE_FISHING);
++			CheckToolWear (who, fishingpole, FISHING);
+ 		endif
+         endif
+ 
+
+Modified: trunk/096/pkg/skills/fishing/fishingFunctions.inc
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishingFunctions.inc	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/skills/fishing/fishingFunctions.inc	2005-11-05 23:51:11 UTC (rev 917)
+@@ -188,7 +188,7 @@
+ function GetSOSTreasure(who, targetsquare, sosmsg)
+ 
+ 	targetsquare := targetsquare;
+-	if( SkillCheck(who, ATTRIBUTE_FISHING, 80, 200) &gt; 0 )
++	if( SkillCheck(who, FISHING, 80, 200) &gt; 0 )
+ 		var itemcfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+ 		var it, oldname;
+ 		if( RandomInt(100) &lt; 75 )
+
+Modified: trunk/096/pkg/skills/lockpicking/lockpicking.src
+===================================================================
+--- trunk/096/pkg/skills/lockpicking/lockpicking.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/skills/lockpicking/lockpicking.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -5,7 +5,7 @@
+ 
+ include &quot;:itemutils:objtype&quot;;
+ include &quot;include/OLD/sound&quot;;
+-include &quot;include/startEqp&quot;;
++include &quot;include/OLD/startEqp&quot;;
+ include &quot;util/key&quot;;
+ include &quot;:itemutils:canAccess&quot;;
+ 
+
+Modified: trunk/096/pkg/skills/mining/mining.src
+===================================================================
+--- trunk/096/pkg/skills/mining/mining.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/skills/mining/mining.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -5,7 +5,7 @@
+ include &quot;include/client&quot;;
+ include &quot;:attributes:attributes&quot;;
+ include &quot;:itemutils:objtype&quot;;
+-include &quot;include/startEqp&quot;;
++include &quot;include/OLD/startEqp&quot;;
+ include &quot;util/key&quot;;
+ include &quot;:itemutils:utility&quot;;;
+ include &quot;:itemutils:canAccess&quot;;
+
+Modified: trunk/096/pkg/skills/tinkering/time.src
+===================================================================
+--- trunk/096/pkg/skills/tinkering/time.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/skills/tinkering/time.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -1,6 +1,6 @@
+ use uo;
+ 
+-include &quot;include/clock&quot;;
++include &quot;include/OLD/clock&quot;;
+ 
+ program time(character)
+   SendSysMessage(character, (&quot;Time of Day: &quot; + GetTimeofDay()));
+
+Modified: trunk/096/pkg/systems/daynight/dayNight.src
+===================================================================
+--- trunk/096/pkg/systems/daynight/dayNight.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/systems/daynight/dayNight.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -3,7 +3,7 @@
+ 
+ set_critical( 1);
+ 
+-include &quot;include/clock&quot;;
++include &quot;include/OLD/clock&quot;;
+ include &quot;:daynight:moonlight&quot;;
+ 
+ const NIGHT_NUMERATOR := 1.0;
+
+Modified: trunk/096/pkg/systems/merchantnodes/guardNode.src
+===================================================================
+--- trunk/096/pkg/systems/merchantnodes/guardNode.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/systems/merchantnodes/guardNode.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -31,9 +31,9 @@
+     amt := 1;
+     SetObjProperty(item, &quot;Amount&quot;, 1);
+   endif
+-  OldGFTextLine( 20,  50, COLOR_GREEN, &quot;Guard Set Type:&quot;);
+-  OldGFTextLine( 20,  80, COLOR_GREEN, &quot;Guard Set Amount:&quot;);
+-  OldGFTextLine(255,  80, COLOR_GREEN, &quot;Current:&quot;);
++  OldGFTextLine( 20,  50, 0, &quot;Guard Set Type:&quot;);
++  OldGFTextLine( 20,  80, 0, &quot;Guard Set Amount:&quot;);
++  OldGFTextLine(255,  80, 0, &quot;Current:&quot;);
+   var npclist := GetObjProperty(item, &quot;NpcList&quot;);
+   var current := 0;
+   var holder := array;
+@@ -45,16 +45,16 @@
+   endforeach
+   SetObjProperty(item, &quot;NpcList&quot;, holder);
+   if(current == amt)
+-    OldGFTextLine(350,  80, COLOR_BLUE,   current+&quot;/&quot;+amt);
++    OldGFTextLine(350,  80, 0,   current+&quot;/&quot;+amt);
+   elseif(current == 0)
+-    OldGFTextLine(350,  80, COLOR_RED,    current+&quot;/&quot;+amt);
++    OldGFTextLine(350,  80, 0,    current+&quot;/&quot;+amt);
+   else
+     OldGFTextLine(350,  80, 0x35, current+&quot;/&quot;+amt);
+   endif
+   OldGFGumpPic(171, 50, 2440);
+   OldGFGumpPic(171, 80, 2444);
+-  newtype     := OldGFTextEntry(178,  50, 200,  30, COLOR_GREEN, type);
+-  newamt      := OldGFTextEntry(178,  80, 200,  30, COLOR_GREEN, amt);
++  newtype     := OldGFTextEntry(178,  50, 200,  30, 0, type);
++  newamt      := OldGFTextEntry(178,  80, 200,  30, 0, amt);
+   apply   := OldGFButtonID( 20, 270, 2124, 2123, 1);
+   cancel  := OldGFButtonID(100, 270, 2121, 2120, 1);
+   GetStatus(item, respawn);
+@@ -70,15 +70,15 @@
+   var status := GetObjProperty(item, &quot;Status&quot;);
+   var color, txt;
+     case(status)
+-      &quot;on&quot;:      color := COLOR_GREEN; txt := &quot;Guard Node Enabled&quot;;
++      &quot;on&quot;:      color := 0; txt := &quot;Guard Node Enabled&quot;;
+                  OldGFSetRadioGroup(1);
+                  OldGFRadioButton(20, 150, 210, 211, 1, 200);
+                  OldGFRadioButton(20, 175, 210, 211, 0, 201);
+-      &quot;off&quot;:     color := COLOR_RED; txt := &quot;Guard Node Disabled&quot;;
++      &quot;off&quot;:     color := 0; txt := &quot;Guard Node Disabled&quot;;
+                  OldGFSetRadioGroup(1);
+                  OldGFRadioButton(20, 150, 210, 211, 0, 200);
+                  OldGFRadioButton(20, 175, 210, 211, 1, 201);
+-      default:   color := COLOR_GREEN; txt := &quot;Guard Node Enabled&quot;;
++      default:   color := 0; txt := &quot;Guard Node Enabled&quot;;
+                  SetObjProperty(item, &quot;Status&quot;, &quot;on&quot;);
+                  OldGFSetRadioGroup(1);
+                  OldGFRadioButton(20, 150, 210, 211, 1, 200);
+@@ -93,11 +93,11 @@
+     txt := &quot;Guard Nodes Are Disabled Globally&quot;;
+   elseif(status != &quot;off&quot;)
+     respawn := OldGFCheckBox(  20, 120, 208, 209, 0, 300);
+-    OldGFTextLine( 50, 120, COLOR_GREEN, &quot;Respawn Guards&quot;);
++    OldGFTextLine( 50, 120, 0, &quot;Respawn Guards&quot;);
+   endif
+   OldGFTextMid(150, 270, 300, color, txt);
+-  OldGFTextLine(60, 150, COLOR_GREEN, &quot;Enable Node&quot;);
+-  OldGFTextLine(60, 175, COLOR_GREEN, &quot;Disable Node&quot;);
++  OldGFTextLine(60, 150, 0, &quot;Enable Node&quot;);
++  OldGFTextLine(60, 175, 0, &quot;Disable Node&quot;);
+ endfunction
+ 
+ function ResetGuardNode(item, ret)
+
+Modified: trunk/096/pkg/systems/merchantnodes/merchantNode.src
+===================================================================
+--- trunk/096/pkg/systems/merchantnodes/merchantNode.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/systems/merchantnodes/merchantNode.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -40,19 +40,19 @@
+     SetObjProperty(item, &quot;Type&quot;, type);
+   endif
+   var amt := len(type);
+-  OldGFTextLine( 20, 40, COLOR_BLUE, &quot;Type&quot;);
+-  OldGFTextLine(150, 40, COLOR_BLUE, &quot;X&quot;);
+-  OldGFTextLine(210, 40, COLOR_BLUE, &quot;Y&quot;);
+-  OldGFTextLine(270, 40, COLOR_BLUE, &quot;Z&quot;);
+-  OldGFTextLine(310, 40, COLOR_BLUE, &quot;Enable&quot;);
+-  OldGFTextLine(360, 40, COLOR_BLUE, &quot;Delete&quot;);
+-  OldGFTextLine(420, 40, COLOR_BLUE, &quot;Rebuild Stock&quot;);
++  OldGFTextLine( 20, 40, 0, &quot;Type&quot;);
++  OldGFTextLine(150, 40, 0, &quot;X&quot;);
++  OldGFTextLine(210, 40, 0, &quot;Y&quot;);
++  OldGFTextLine(270, 40, 0, &quot;Z&quot;);
++  OldGFTextLine(310, 40, 0, &quot;Enable&quot;);
++  OldGFTextLine(360, 40, 0, &quot;Delete&quot;);
++  OldGFTextLine(420, 40, 0, &quot;Rebuild Stock&quot;);
+   FillInPageData();
+   if(len(type) &lt; 10)
+     OldGFTextLine(40, sy, 0x35, &quot;Create a new merchant here?   (negates all other choices)&quot;);
+     OldGFButtonID(20, sy, 210, 211, 1, sy);
+   endif
+-  OldGFTextLine( 20, 20, COLOR_GREEN, &quot;Current:&quot;);
++  OldGFTextLine( 20, 20, 0, &quot;Current:&quot;);
+   var npclist := GetObjProperty(item, &quot;NpcList&quot;);
+   var current := 0;
+   var holder := array;
+@@ -64,9 +64,9 @@
+   endforeach
+   SetObjProperty(item, &quot;NpcList&quot;, holder);
+   if(current == amt)
+-    OldGFTextLine(90, 20, COLOR_BLUE,   current+&quot;/&quot;+amt);
++    OldGFTextLine(90, 20, 0,   current+&quot;/&quot;+amt);
+   elseif(current == 0)
+-    OldGFTextLine(90, 20, COLOR_RED,    current+&quot;/&quot;+amt);
++    OldGFTextLine(90, 20, 0,    current+&quot;/&quot;+amt);
+   else
+     OldGFTextLine(90, 20, 0x35, current+&quot;/&quot;+amt);
+   endif
+@@ -133,9 +133,9 @@
+     var y        := current[2][2];
+     var z        := current[2][3];
+     var status   := current[3];
+-    var color    := COLOR_GREEN;
++    var color    := 0;
+     if(!status)
+-      color := COLOR_RED;
++      color := 0;
+     endif
+     OldGFTextLine( 20, sy, color, template);
+     OldGFTextLine(150, sy, color, x);
+@@ -153,15 +153,15 @@
+   var status := GetObjProperty(item, &quot;Status&quot;);
+   var color, txt;
+     case(status)
+-      &quot;on&quot;:      color := COLOR_GREEN; txt := &quot;Merchant Node Enabled&quot;;
++      &quot;on&quot;:      color := 0; txt := &quot;Merchant Node Enabled&quot;;
+                  OldGFSetRadioGroup(1);
+                  OldGFRadioButton(20, 320, 208, 209, 1, 200);
+                  OldGFRadioButton(20, 340, 208, 209, 0, 201);
+-      &quot;off&quot;:     color := COLOR_RED; txt := &quot;Merchant Node Disabled&quot;;
++      &quot;off&quot;:     color := 0; txt := &quot;Merchant Node Disabled&quot;;
+                  OldGFSetRadioGroup(1);
+                  OldGFRadioButton(20, 320, 208, 209, 0, 200);
+                  OldGFRadioButton(20, 340, 208, 209, 1, 201);
+-      default:   color := COLOR_GREEN; txt := &quot;Merchant Node Enabled&quot;;
++      default:   color := 0; txt := &quot;Merchant Node Enabled&quot;;
+                  SetObjProperty(item, &quot;Status&quot;, &quot;on&quot;);
+                  OldGFSetRadioGroup(1);
+                  OldGFRadioButton(20, 320, 208, 209, 1, 200);
+@@ -177,12 +177,12 @@
+   elseif(status != &quot;off&quot;)
+     restock := OldGFCheckBox(340, 320, 208, 209, 0, 400);
+     respawn := OldGFCheckBox(340, 340, 208, 209, 0, 300);
+-    OldGFTextLine(370, 320, COLOR_GREEN, &quot;Restock Merchants&quot;);
+-    OldGFTextLine(370, 340, COLOR_GREEN, &quot;Respawn Merchants&quot;);
++    OldGFTextLine(370, 320, 0, &quot;Restock Merchants&quot;);
++    OldGFTextLine(370, 340, 0, &quot;Respawn Merchants&quot;);
+   endif
+   OldGFTextMid(150, 370, 300, color, txt);
+-  OldGFTextLine(50, 320, COLOR_GREEN, &quot;Enable Node&quot;);
+-  OldGFTextLine(50, 340, COLOR_GREEN, &quot;Disable Node&quot;);
++  OldGFTextLine(50, 320, 0, &quot;Enable Node&quot;);
++  OldGFTextLine(50, 340, 0, &quot;Disable Node&quot;);
+ endfunction
+ 
+ function ResetMerchantNode(who, ret)
+
+Modified: trunk/096/pkg/systems/nature/dayNight.src
+===================================================================
+--- trunk/096/pkg/systems/nature/dayNight.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/systems/nature/dayNight.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -3,7 +3,7 @@
+ use os;
+ use cfgfile;
+ 
+-include &quot;include/clock&quot;;
++include &quot;include/OLD/clock&quot;;
+ include &quot;include/arrays&quot;;
+ include &quot;nature&quot;;
+ include &quot;include/std&quot;;
+
+Modified: trunk/096/pkg/systems/nature/moons.src
+===================================================================
+--- trunk/096/pkg/systems/nature/moons.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/pkg/systems/nature/moons.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -3,7 +3,7 @@
+ use os;
+ use cfgfile;
+ 
+-include &quot;include/clock&quot;;
++include &quot;include/OLD/clock&quot;;
+ include &quot;nature&quot;;
+ 
+ var TLength := 60;
+
+Modified: trunk/096/scripts/console/about.src
+===================================================================
+--- trunk/096/scripts/console/about.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/scripts/console/about.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -3,7 +3,7 @@
+  */
+ use uo;
+ 
+-include &quot;include/clock&quot;;
++include &quot;include/OLD/clock&quot;;
+ 
+ program console_about(cmd)
+ 
+
+Modified: trunk/096/scripts/console/shutdown.src
+===================================================================
+--- trunk/096/scripts/console/shutdown.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/scripts/console/shutdown.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -5,7 +5,7 @@
+ use os;
+ use util;
+ 
+-include &quot;include/clock&quot;;
++include &quot;include/OLD/clock&quot;;
+ 
+ program cmd_shutdown( cmd )
+ 
+
+Modified: trunk/096/scripts/console/time.src
+===================================================================
+--- trunk/096/scripts/console/time.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/scripts/console/time.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -3,7 +3,7 @@
+  */
+ use uo;
+ 
+-include &quot;include/clock&quot;;
++include &quot;include/OLD/clock&quot;;
+ 
+ 
+ program time(cmd)
+
+Modified: trunk/096/scripts/items/coords.src
+===================================================================
+--- trunk/096/scripts/items/coords.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/scripts/items/coords.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -1,5 +1,5 @@
+ use uo;
+-include &quot;include/coords&quot;;
++include &quot;include/OLD/coords&quot;;
+ include &quot;:itemutils:canAccess&quot;;
+ 
+ program get_coords(who, item)
+
+Modified: trunk/096/scripts/misc/oncreate.src
+===================================================================
+--- trunk/096/scripts/misc/oncreate.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/scripts/misc/oncreate.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -7,7 +7,7 @@
+  */
+ use uo;
+ 
+-include &quot;include/startEqp&quot;;
++include &quot;include/OLD/startEqp&quot;;
+ 
+ 
+ program core_onCreate(who, skillids)
+
+Modified: trunk/096/scripts/misc/ondelete.src
+===================================================================
+--- trunk/096/scripts/misc/ondelete.src	2005-11-05 23:44:32 UTC (rev 916)
++++ trunk/096/scripts/misc/ondelete.src	2005-11-05 23:51:11 UTC (rev 917)
+@@ -6,7 +6,7 @@
+  */
+ use uo;
+ 
+-include &quot;include/startEqp&quot;;
++include &quot;include/OLD/startEqp&quot;;
+ 
+ 
+ program core_onDelete(who)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000890.html">[Poldistro-svn] r916 - in trunk/096: pkg/commands/coun pkg/commands/gm pkg/items/doors pkg/items/runebook pkg/items/traps pkg/items/wands pkg/mobiles/death pkg/mobiles/oldAI/main pkg/skills/alchemy pkg/skills/detecthidden pkg/skills/forensicevaluation pkg/skills/inscription pkg/skills/lockpicking pkg/skills/poisoning pkg/skills/removetrap pkg/skills/spiritspeak pkg/skills/tailoring pkg/skills/tinkering pkg/skills/tracking pkg/systems/boat pkg/systems/combat/old pkg/systems/combat/useScripts pkg/systems/crafting/include pkg/systems/housing scripts/include/OLD scripts/items scripts/misc
+</A></li>
+	<LI>Next message: <A HREF="000892.html">[Poldistro-svn] r918 - in trunk/096/pkg/mobiles: death/commands/seer timedScripts/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#891">[ date ]</a>
+              <a href="thread.html#891">[ thread ]</a>
+              <a href="subject.html#891">[ subject ]</a>
+              <a href="author.html#891">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

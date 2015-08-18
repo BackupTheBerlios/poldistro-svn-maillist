@@ -1,0 +1,5616 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r815 - in trunk/096/pkg/systems/combat: . old
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r815%20-%20in%20trunk/096/pkg/systems/combat%3A%20.%20old&In-Reply-To=%3C200511020337.jA23bsAJ005934%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000788.html">
+   <LINK REL="Next"  HREF="000790.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r815 - in trunk/096/pkg/systems/combat: . old</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r815%20-%20in%20trunk/096/pkg/systems/combat%3A%20.%20old&In-Reply-To=%3C200511020337.jA23bsAJ005934%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r815 - in trunk/096/pkg/systems/combat: . old">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 04:37:54 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000788.html">[Poldistro-svn] r814 - in trunk/096/pkg/mobiles/oldAI: . combat main
+</A></li>
+        <LI>Next message: <A HREF="000790.html">[Poldistro-svn] r816 - trunk/096/pkg/systems/combat/old
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#789">[ date ]</a>
+              <a href="thread.html#789">[ thread ]</a>
+              <a href="subject.html#789">[ subject ]</a>
+              <a href="author.html#789">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 04:37:45 +0100 (Wed, 02 Nov 2005)
+New Revision: 815
+
+Added:
+   trunk/096/pkg/systems/combat/old/
+   trunk/096/pkg/systems/combat/old/bewitchedHit.src
+   trunk/096/pkg/systems/combat/old/bladeSpiritHit.src
+   trunk/096/pkg/systems/combat/old/bladed.src
+   trunk/096/pkg/systems/combat/old/chargeUpkeep.src
+   trunk/096/pkg/systems/combat/old/deathrobe.src
+   trunk/096/pkg/systems/combat/old/destroy.src
+   trunk/096/pkg/systems/combat/old/earthElemental.src
+   trunk/096/pkg/systems/combat/old/equip.inc
+   trunk/096/pkg/systems/combat/old/equip.src
+   trunk/096/pkg/systems/combat/old/hitScriptInc.inc
+   trunk/096/pkg/systems/combat/old/itemControl.src
+   trunk/096/pkg/systems/combat/old/itemdesc.cfg
+   trunk/096/pkg/systems/combat/old/maceHit.src
+   trunk/096/pkg/systems/combat/old/magicarmor.cfg
+   trunk/096/pkg/systems/combat/old/magiccloth.cfg
+   trunk/096/pkg/systems/combat/old/magicweaps.cfg
+   trunk/096/pkg/systems/combat/old/mainHitScript.src
+   trunk/096/pkg/systems/combat/old/mobPoisonHit.src
+   trunk/096/pkg/systems/combat/old/pkg.cfg
+   trunk/096/pkg/systems/combat/old/poisonHit.src
+   trunk/096/pkg/systems/combat/old/reactiveArmorHit.src
+   trunk/096/pkg/systems/combat/old/setWeaponHit.src
+   trunk/096/pkg/systems/combat/old/silverHit.src
+   trunk/096/pkg/systems/combat/old/unequip.src
+   trunk/096/pkg/systems/combat/old/vortexHit.src
+   trunk/096/pkg/systems/combat/old/wrestleControl.src
+   trunk/096/pkg/systems/combat/old/wrestlingHitScript.src
+Removed:
+   trunk/096/pkg/systems/combat/bewitchedHit.src
+   trunk/096/pkg/systems/combat/bladeSpiritHit.src
+   trunk/096/pkg/systems/combat/bladed.src
+   trunk/096/pkg/systems/combat/chargeUpkeep.src
+   trunk/096/pkg/systems/combat/deathrobe.src
+   trunk/096/pkg/systems/combat/destroy.src
+   trunk/096/pkg/systems/combat/earthElemental.src
+   trunk/096/pkg/systems/combat/equip.inc
+   trunk/096/pkg/systems/combat/equip.src
+   trunk/096/pkg/systems/combat/hitScriptInc.inc
+   trunk/096/pkg/systems/combat/itemControl.src
+   trunk/096/pkg/systems/combat/maceHit.src
+   trunk/096/pkg/systems/combat/magicarmor.cfg
+   trunk/096/pkg/systems/combat/magiccloth.cfg
+   trunk/096/pkg/systems/combat/magicweaps.cfg
+   trunk/096/pkg/systems/combat/mainHitScript.src
+   trunk/096/pkg/systems/combat/mobPoisonHit.src
+   trunk/096/pkg/systems/combat/poisonHit.src
+   trunk/096/pkg/systems/combat/reactiveArmorHit.src
+   trunk/096/pkg/systems/combat/setWeaponHit.src
+   trunk/096/pkg/systems/combat/silverHit.src
+   trunk/096/pkg/systems/combat/unequip.src
+   trunk/096/pkg/systems/combat/vortexHit.src
+   trunk/096/pkg/systems/combat/wrestleControl.src
+   trunk/096/pkg/systems/combat/wrestlingHitScript.src
+Log:
+
+
+Deleted: trunk/096/pkg/systems/combat/bewitchedHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/bewitchedHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/bewitchedHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,21 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-
+-program macehit(param)
+-	var attacker := param[1];
+-	var defender := param[2];
+-	var rawdamage := param[6];
+-
+-	if ((attacker.dead) || (defender.dead))
+-		return;
+-	endif
+-	if (!defender.acctname)
+-		rawdamage := (rawdamage / 2);
+-	endif
+-	SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-
+-	return;
+-endprogram
+-
+-   
+
+Deleted: trunk/096/pkg/systems/combat/bladeSpiritHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/bladeSpiritHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/bladeSpiritHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,35 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-
+-
+-program macehit(param)
+-  var attacker   := param[1];
+-  var defender   := param[2];
+-  var armor      := param[4];
+-  var rawdamage  := param[6];
+-  if((attacker.dead) || (defender.dead))
+-    return;
+-  endif
+-  var rint := RandomInt(10);
+-  if(rint &gt;= 9)
+-    var newplevel := RandomInt(2)+1;
+-    PrintTextAbove(defender, defender.name + &quot; has been poisoned!&quot;);
+-    SendSysMessage(defender, &quot;You have been poisoned by &quot; + attacker.name +&quot;!&quot;);
+-    Detach();
+-    var passparms := { defender, attacker, &quot;bladespirit&quot;, newplevel };
+-    start_script(&quot;:spells:poisonDamage&quot;, passparms);
+-    SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, &quot;poisoned weapon&quot;});
+-  endif
+-  if(armor.hp &gt; 1)
+-    armor.hp := armor.hp - 1;
+-  else
+-    DestroyItem(armor);
+-  endif
+-  if(armor.hp &gt; armor.maxhp)
+-    armor.hp := armor.maxhp;
+-  endif
+-  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-endprogram
+-
+-   
+
+Deleted: trunk/096/pkg/systems/combat/bladed.src
+===================================================================
+--- trunk/096/pkg/systems/combat/bladed.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/bladed.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,93 +0,0 @@
+-// //$Id$
+-
+-
+-use cfgfile;
+-use uo;
+-use os;
+-use util;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/sound&quot;;
+-include &quot;:attributes:attributes&quot;;
+-include &quot;include/string&quot;;
+-include &quot;include/objtype&quot;;
+-include &quot;include/canAccess&quot;;
+-include &quot;include/dist&quot;;
+-include &quot;include/toolWear&quot;;
+-include &quot;include/noto&quot;;
+-include &quot;:tailoring:tailoringFunctions&quot;;
+-include &quot;:fishing:fishingFunctions&quot;;
+-include &quot;:containers:corpse/corpseFunctions&quot;;
+-
+-var bowcraftconfigfile := ReadConfigFile(&quot;:bowcraft:bowcraft&quot;);
+-
+-
+-program use_blade(who, blade)
+-
+-	EraseObjProperty(who, &quot;IsMeditating&quot;);
+-	EraseObjProperty(who, &quot;HealTimer&quot;);
+-
+-	if(!can_access(who, blade))
+-		return;
+-	endif
+-	if(!ReserveItem(blade))
+-		return;
+-	endif
+-
+-	SendSysMessage(who, &quot;What would you like to use that on?&quot;);
+-	var use_on := TargetCoordinates(who);
+-	if(!use_on)
+-		return;
+-	endif
+-	if(use_on.item)
+-		if(!can_access(who, use_on.item, &quot;unmovable&quot;))
+-			return;
+-		endif
+-	endif
+-	var checkme := use_on.item.objtype;
+-	if(use_on.mobile.npctemplate == &quot;sheep&quot;)
+-		process_wool(who, blade, use_on.mobile);
+-	elseif(use_on.item.objtype == UOBJ_CORPSE)
+-		ReleaseItem(blade);
+-		Carve_Corpse(who, use_on.item);
+-	elseif(is_fish(checkme))
+-		CarveFish(who, blade, use_on.item);
+-	elseif (is_tree(use_on.objtype ))
+-		CarveTree(who, blade, use_on.item);
+-	else
+-		SendSysMessage(who, &quot;I don't know how to use those items together.&quot;);
+-	endif
+-
+-endprogram
+-
+-
+-function is_tree(theobj)
+-
+-	if((theobj == 0x0c9e) || (theobj == 0x0ca8) || (theobj == 0x0caa))
+-		return 1;
+-	elseif (theobj == 0x0cab)
+-		return 1;
+-	elseif ((theobj &gt;= 0x0c99) &amp;&amp; (theobj &lt;= 0x0cea))
+-		return 1;
+-	elseif ((theobj &gt;= 0x0cf3) &amp;&amp; (theobj &lt;= 0x0d03))
+-		return 1;
+-	elseif ((theobj &gt;= 0x0d41) &amp;&amp; (theobj &lt;= 0x0dab))
+-		return 1;
+-	else
+-		return 0;
+-	endif
+-
+-endfunction
+-
+-
+-function CarveTree(who, blade, use_on)
+-
+-	if(dist(who, use_on) &gt; 2)
+-		SendSysMessage(who, &quot;You cannot use that&quot;);
+-		return;
+-	endif
+-	CreateItemInBackpack(who, UOBJ_KINDLING, 1);
+-	DestroyItem(use_on);
+-	SendSysMessage(who, &quot;You chip off some kindling and put it in your backpack.&quot;);
+-
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/systems/combat/chargeUpkeep.src
+===================================================================
+--- trunk/096/pkg/systems/combat/chargeUpkeep.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/chargeUpkeep.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,134 +0,0 @@
+-use uo;
+-use os;
+-use util;
+-
+-include &quot;include/client&quot;;
+-include &quot;:attributes:attributes&quot;;
+-
+-const EVID_UNEQUIP   := 0x123456;
+-const EVID_DISCHARGE := 0x123457;
+-
+-program chargeUpkeep(parms)
+-  var who := parms[1];
+-  var item := parms[2];
+-  var pid := GetPid();
+-  SetObjProperty(item, &quot;Pid&quot;, pid);
+-  var charges := GetObjProperty(item, &quot;charges&quot;);
+-  if(!charges)
+-    SendSysMessage(who, &quot;That item is out of charges.&quot;);
+-    return;
+-  endif
+-  var mods := ProcessMods(who, item);
+-  var ret  := upkeepServer(who, item, mods[1]);
+-  if(ret == 1)
+-    SendSysMessage(who, item.name + &quot; is out of charges.&quot;);
+-  endif
+-  ProcessUnmods(who, item, mods);
+-endprogram
+-
+-function ProcessMods(who, item);
+-  if(Cint(GetObjProperty(item, &quot;HoldMods&quot;)))
+-    repeat
+-      sleep(1);
+-    until(!Cint(GetObjProperty(item, &quot;HoldMods&quot;)));
+-  endif
+-  Set_Critical(1);
+-  SetObjProperty(item, &quot;HoldMods&quot;, 1);
+-  var holder;
+-  var type   := GetObjProperty(item, &quot;type&quot;);
+-  var gain   := GetObjProperty(item, &quot;gain&quot;);
+-  if(!gain)
+-    return;
+-  endif
+-  case(type)
+-    &quot;strength&quot;:     ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH, gain);
+-    &quot;invisibility&quot;: who.hidden := 1;
+-    &quot;sight&quot;:        who.setlightlevel(0, 70);
+-    &quot;protection&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY, gain);
+-    &quot;reflect&quot;:      SetObjProperty(who, &quot;mr&quot;, 2);
+-    &quot;bless&quot;:        ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH,     gain);
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_INTELLIGENCE, gain);
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_DEXTERITY,    gain);
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY,        (gain *3 ));
+-  endcase
+-  RecalcVitals(who);
+-  EraseObjProperty(item, &quot;HoldMods&quot;);
+-  holder := {};
+-  holder.append(type);
+-  holder.append(gain);
+-  holder.append(item.serial);
+-  Set_Critical(0);
+-  return holder;
+-endfunction
+-
+-function upkeepServer(who, item, type)
+-  var charges;
+-  var charge := ReadGameClock() + 60;
+-  var depleted := 0;
+-  var ev;
+-  var brk;
+-  while(1)
+-	ev := wait_for_event(1);
+-	case(ev.type)
+-	  EVID_UNEQUIP:   depleted := 0;
+-	                  brk := 1;
+-	endcase
+-    if(brk == 1)
+-      break;
+-    endif
+-    if(!who.ip)
+-      break;
+-    endif
+-    if(type == &quot;vis&quot;)
+-      who.setlightlevel(0, 70);
+-    endif
+-	if(charge &lt;= ReadGameClock())
+-      charge := ReadGameClock() + 60;
+-      charges := GetObjProperty(item, &quot;charges&quot;);
+-      if(!charges)
+-        depleted := 1;
+-        break;
+-      endif
+-	  SetObjProperty(item, &quot;charges&quot;, Cint(charges - 1));
+-	else
+-      charge := ReadGameClock() + 5;
+-      charges := GetObjProperty(item, &quot;charges&quot;);
+-      if(!charges)
+-        depleted := 1;
+-        break;
+-      endif
+-	  SetObjProperty(item, &quot;charges&quot;, Cint(charges - 1));
+-	endif
+-  endwhile
+-  return depleted;
+-endfunction
+-
+-function ProcessUnmods(who, item, mods)
+-  if(Cint(GetObjProperty(item, &quot;HoldMods&quot;)))
+-    repeat
+-      sleep(1);
+-    until(!Cint(GetObjProperty(item, &quot;HoldMods&quot;)));
+-  endif
+-  Set_Critical(1);
+-  SetObjProperty(item, &quot;HoldMods&quot;, 1);
+-  var type := mods[1];
+-  var gain := Cint(mods[2]);
+-  if(!who.ip)
+-    who := SystemFindObjectBySerial(who.serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+-  endif
+-  case(type)
+-    &quot;strength&quot;:     ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH, (0 - gain));
+-    &quot;invisibility&quot;: who.hidden := 0;
+-    &quot;sight&quot;:        who.setlightlevel(0, 1);
+-    &quot;protection&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY, (0 - gain));
+-    &quot;reflect&quot;:      EraseObjProperty(who, &quot;mr&quot;);
+-    &quot;bless&quot;:        ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH,     (0 - gain));
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_INTELLIGENCE, (0 - gain));
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_DEXTERITY,    (0 - gain));
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY,        (0 - (gain *3)));
+-  endcase
+-  RecalcVitals(who);
+-  EraseObjProperty(item, &quot;HoldMods&quot;);
+-  Set_Critical(0);
+-  return;
+-endfunction
+
+Deleted: trunk/096/pkg/systems/combat/deathrobe.src
+===================================================================
+--- trunk/096/pkg/systems/combat/deathrobe.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/deathrobe.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,16 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-
+-program deathrobe_decay(item)
+-  while(item)
+-    if((item.movable == 1) &amp;&amp; (!item.container) &amp;&amp; !((item.x == 0) &amp;&amp; (item.y == 0) &amp;&amp; (item.z == 0)))
+-      sleep(10);
+-      if((item.movable == 1) &amp;&amp; (!item.container) &amp;&amp; !((item.x == 0) &amp;&amp; (item.y == 0) &amp;&amp; (item.z == 0)))
+-        DestroyItem(item);
+-        break;
+-      endif
+-    endif
+-    sleep(30);
+-  endwhile
+-endprogram
+
+Deleted: trunk/096/pkg/systems/combat/destroy.src
+===================================================================
+--- trunk/096/pkg/systems/combat/destroy.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/destroy.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,106 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-
+-include &quot;include/client&quot;;
+-include &quot;:attributes:attributes&quot;;
+-
+-const EVID_UNEQUIP   := 0x123456;
+-const EVID_DISCHARGE := 0x123457;
+-
+-program destroy(item)
+-  set_critical(1);
+-  var ser := GetObjProperty(item, &quot;#equipped&quot;);
+-  var who := SystemFindObjectBySerial(cint(ser), SYSFIND_SEARCH_OFFLINE_MOBILES);
+-  var itemdesc := ReadConfigFile(&quot;itemdesc&quot;);
+-  var penalty := CInt(itemdesc[item.objtype].DexPenalty);
+-  if(penalty)
+-    EraseObjProperty(item, &quot;#equipped&quot;);
+-    SetDexterityMod(who, GetDexterityMod(who) + penalty);
+-  endif
+-  var type := GetObjProperty(item,&quot;type&quot;);
+-  var val := 0;
+-  case(type)
+-    &quot;accuracy&quot;:     val := accuracy(who,item);
+-    &quot;cursed&quot;:       val := cursed(who,item);
+-    &quot;sight&quot;:        val := sight(who,item);
+-    &quot;reflect&quot;:      val := reflect(who,item);
+-    &quot;protection&quot;:   val := protection(who,item);
+-    &quot;wizzohat&quot;:     val := wizzohat(who,item);
+-    &quot;strength&quot;:     val := strength(who,item);
+-    &quot;invisibility&quot;: val := invisibility(who, item);
+-    default:        val := 1;
+-  endcase
+-  return val;
+-  set_critical(0);
+-endprogram
+-
+-function strength(who,item)
+-  who := who;
+-  item := item;
+-  return 1;
+-endfunction
+-
+-function wizzohat(who,item)
+-  SetIntelligenceMod(who, GetIntelligenceMod(who) - 10);
+-  SetStrengthMod(who, GetStrengthMod(who) + 5);
+-  SetDexterityMod(who, GetDexterityMod(who) + 5);
+-  EraseObjProperty(item, &quot;#equipped&quot;);
+-  return 1;
+-endfunction
+-
+-function cursed(who,item)
+-  who := who;
+-  item := item;
+-  return 0;
+-endfunction
+-
+-function invisibility(who,item)
+-  RemoveMods(who, item);
+-  return 1;
+-endfunction
+-
+-function sight(who,item)
+-  RemoveMods(who, item);
+-  return 1;
+-endfunction
+-
+-function reflect(who,item)
+-  RemoveMods(who, item);
+-  return 1;
+-endfunction
+-
+-function accuracy(who,item)
+-  var amt := CInt(GetObjProperty(item,&quot;gain&quot;));
+-  amt := (0 - amt);
+-  if((!amt) || (amt == 0))
+-    amt := (0 - 5);
+-  endif
+-  var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-  var attrib := cfg[item.objtype].Attribute;
+-  case(attrib)
+-    &quot;Wrestling&quot;: ModifyAttributeTemporaryMod(who, ATTRIBUTEID_WRESTLING,     amt);
+-    &quot;Fencing&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_FENCING,       amt);
+-    &quot;Archery&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_ARCHERY,       amt);
+-    &quot;Swords&quot;:    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_SWORDSMANSHIP, amt);
+-    &quot;Mace&quot;:      ModifyAttributeTemporaryMod(who, ATTRIBUTEID_MACEFIGHTING,  amt);
+-  endcase
+-  EraseObjProperty(item, &quot;#equipped&quot;);
+-  return 1;
+-endfunction
+-
+-function protection(who,item)
+-  RemoveMods(who, item);
+-  return 1;
+-endfunction
+-
+-function RemoveMods(who, item)
+-  who := who;
+-  var proc := GetProcess(Cint(GetObjProperty(item, &quot;Pid&quot;)));
+-  if(proc)
+-    var ev := {};
+-    ev.+type := EVID_UNEQUIP;
+-    proc.sendevent(ev);
+-  endif
+-  EraseObjProperty(item, &quot;#equipped&quot;);
+-endfunction
+
+Deleted: trunk/096/pkg/systems/combat/earthElemental.src
+===================================================================
+--- trunk/096/pkg/systems/combat/earthElemental.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/earthElemental.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,33 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-include &quot;:attributes:attributes&quot;;
+-
+-program macehit(param)
+-  var attacker := param[1];
+-  var defender := param[2];
+-  var armor := param[4];
+-  var rawdamage := param[6];
+-  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-  if((attacker.dead) || (defender.dead))
+-    return;
+-  endif
+-  if(armor)
+-    if(RandomInt(50) &gt; 35)
+-      var admg := RandomInt(2) + 1;
+-      if(armor.hp &gt;admg)
+-        armor.hp := armor.hp - admg;
+-      else
+-        DestroyItem(armor);
+-      endif
+-    endif
+-  endif
+-  var sdr := RandomInt(3) + 3;
+-  if(GetStamina(defender) &gt;= sdr)
+-    SetStamina(defender, GetStamina(defender) - sdr);
+-  else
+-    SetStamina(defender, 0);
+-  endif
+-endprogram
+-
+-   
+
+Deleted: trunk/096/pkg/systems/combat/equip.inc
+===================================================================
+--- trunk/096/pkg/systems/combat/equip.inc	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/equip.inc	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,130 +0,0 @@
+-
+-
+-
+-function HandleMods(who, item)
+-  set_critical(1);
+-  var itemdesc := ReadConfigFile(&quot;itemdesc&quot;);
+-  var penalty  := CInt(itemdesc[item.objtype].DexPenalty);
+-  var restrict := Cint(itemdesc[item.objtype].GenderSpecific);
+-  if((restrict == 1) and (who.graphic == 400))
+-    SendSysMessage(who, &quot;Only females may wear that.&quot;);
+-    return 0;
+-  endif
+-  if(penalty)
+-    SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+-    SetDexterityMod(who, GetDexterityMod(who) - penalty);
+-  endif
+-  var type := GetObjProperty(item, &quot;type&quot;);
+-  if(!type)
+-    return 1;
+-  endif
+-  var val := 0;
+-  if(!who.ip)
+-    return 1;
+-  endif
+-  case(type)
+-    &quot;accuracy&quot;:     val := accuracy(who,item);
+-    &quot;cursed&quot;:       val := cursed(who,item);
+-    &quot;sight&quot;:        val := sight(who,item);
+-    &quot;reflect&quot;:      val := reflect(who,item);
+-    &quot;protection&quot;:   val := protection(who,item);
+-    &quot;wizzohat&quot;:     val := wizzohat(who,item);
+-    &quot;strength&quot;:     val := strength(who,item);
+-    &quot;invisibility&quot;: val := invisibility(who,item);
+-    default:        val := 1;
+-  endcase
+-  return val;
+-  set_critical(0);
+-endfunction
+-
+-function strength(who,item)
+-  var gain := GetObjProperty(item, &quot;gain&quot;);
+-  if(!gain)
+-    gain := 5;
+-  endif
+-  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+-  var parms := {who, item};
+-  start_script(&quot;chargeUpkeep&quot;, parms);
+-  return 1;
+-endfunction
+-
+-function wizzohat(who,item)
+-  SetIntelligenceMod(who, GetIntelligenceMod(who) + 10);
+-  SetStrengthMod(who, GetStrengthMod(who) - 5);
+-  SetDexterityMod(who, GetDexterityMod(who) - 5);
+-  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+-  return 1;
+-endfunction
+-
+-function accuracy(who,item)
+-  var amt := CInt(GetObjProperty(item,&quot;gain&quot;));
+-  if((!amt) || (amt == 0))
+-    amt := 5;
+-  endif
+-  var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-  var attrib := cfg[item.objtype].Attribute;
+-  case(attrib)
+-    &quot;Wrestling&quot;: ModifyAttributeTemporaryMod(who, ATTRIBUTEID_WRESTLING,     amt);
+-    &quot;Fencing&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_FENCING,       amt);
+-    &quot;Archery&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_ARCHERY,       amt);
+-    &quot;Swords&quot;:    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_SWORDSMANSHIP, amt);
+-    &quot;Mace&quot;:      ModifyAttributeTemporaryMod(who, ATTRIBUTEID_MACEFIGHTING,  amt);
+-  endcase
+-  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+-  return 1;
+-endfunction
+-
+-function cursed(who,item)
+-  PlaySoundEffect(who, 0x246);
+-  if(!GetObjProperty(item,&quot;named&quot;))
+-    item.name := item.name + &quot; [Cursed]&quot;;
+-    SetObjProperty(item,&quot;named&quot;, 1);
+-  endif
+-  PrintTextAbovePrivate(who,&quot;You have been cursed!&quot;, who);
+-  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+-  return 1;
+-endfunction
+-
+-function invisibility(who,item)
+-  var gain := GetObjProperty(item, &quot;gain&quot;);
+-  if(!gain)
+-    gain := 5;
+-  endif
+-  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+-  var parms := {who, item};
+-  start_script(&quot;chargeUpkeep&quot;, parms);
+-  return 1;
+-endfunction
+-
+-function sight(who,item)
+-  var gain := GetObjProperty(item, &quot;gain&quot;);
+-  if(!gain)
+-    gain := 5;
+-  endif
+-  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+-  var parms := {who, item};
+-  start_script(&quot;chargeUpkeep&quot;, parms);
+-  return 1;
+-endfunction
+-
+-function protection(who,item)
+-  var gain := GetObjProperty(item, &quot;gain&quot;);
+-  if(!gain)
+-    gain := 5;
+-  endif
+-  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+-  var parms := {who, item};
+-  start_script(&quot;chargeUpkeep&quot;, parms);
+-  return 1;
+-endfunction
+-
+-function reflect(who,item)
+-  var gain := GetObjProperty(item, &quot;gain&quot;);
+-  if(!gain)
+-    gain := 5;
+-  endif
+-  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+-  var parms := {who, item};
+-  start_script(&quot;chargeUpkeep&quot;, parms);
+-  return 1;
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/systems/combat/equip.src
+===================================================================
+--- trunk/096/pkg/systems/combat/equip.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/equip.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,12 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-
+-include &quot;include/client&quot;;
+-include &quot;:attributes:attributes&quot;;
+-include &quot;equip&quot;;
+-
+-program equipweapon(who, item)
+-  var val := HandleMods(who, item);
+-  return val;
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/systems/combat/hitScriptInc.inc
+===================================================================
+--- trunk/096/pkg/systems/combat/hitScriptInc.inc	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/hitScriptInc.inc	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,9 +0,0 @@
+-use uo;
+-use util;
+-use math;
+-include &quot;:attributes:attributes&quot;;
+-
+-function DealDamage(defender, attacker, rawdamage)
+-  rawdamage := rawdamage + RandomInt( (GetEffectiveSkill(attacker, 1) ) / 20);
+-  ApplyRawDamage(defender, rawdamage);
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/systems/combat/itemControl.src
+===================================================================
+--- trunk/096/pkg/systems/combat/itemControl.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/itemControl.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,11 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-
+-program itemcontrol(item)
+-  var cfgfile  := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-  var dmg      := cfgfile[item.objtype].damage;
+-  if(dmg)
+-    item.hitscript := &quot;mainHitScript&quot;;
+-  endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/systems/combat/maceHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/maceHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/maceHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,31 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-include &quot;:attributes:attributes&quot;;
+-
+-program macehit(param)
+-  var attacker := param[1];
+-  var defender := param[2];
+-  var armor := param[4];
+-  var rawdamage := param[6];
+-  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-  if((attacker.dead) || (defender.dead))
+-    return;
+-  endif
+-  if(armor)
+-    var admg := RandomInt(4) + 1;
+-    if(armor.hp &gt;admg)
+-      armor.hp := armor.hp - admg;
+-    else
+-      DestroyItem(armor);
+-    endif
+-  endif
+-  var sdr := RandomInt(3) + 3;
+-  if(GetStamina(defender) &gt;= sdr)
+-    SetStamina(defender, GetStamina(defender) - sdr);
+-  else
+-    SetStamina(defender, 0);
+-  endif
+-endprogram
+-
+-   
+
+Deleted: trunk/096/pkg/systems/combat/magicarmor.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/magicarmor.cfg	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/magicarmor.cfg	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,50 +0,0 @@
+-# $Id$
+-#
+-#
+-#item spawned for loot must be in this file to have the possibility to be magic
+-
+-Group 1
+-{
+-    LeatherGorget		    1
+-    LeatherSleeves		    1
+-    LeatherGloves		    1
+-    LeatherCap			    1
+-    LeatherLeggings		    1
+-    LeatherTunic		    1
+-    LeatherTunic2		    1
+-    StuddedGorget		    1
+-    StuddedGloves		    1
+-    StuddedSleeves		    1
+-    StuddedLeggings		    1
+-    StuddedTunic		    1
+-    FemaleStudded		    1
+-    FemaleLeather		    1
+-    LeatherSkirt		    1
+-    LeatherBustier		    1
+-    StuddedBustier		    1
+-    LeatherShorts		    1
+-    ChainmailCoif		    1
+-    ChainmailLeggings	    1
+-    ChainmailTunic		    1
+-    CloseHelm			    1
+-    Helmet			        1
+-    Bascinet			    1
+-    NoseHelm			    1
+-    PlateHelm			    1
+-    BronzeShield		    1
+-    Buckler			        1
+-    KiteShield			    1
+-    HeaterShield		    1
+-    KiteShieldB1		    1
+-    WoodenShield		    1
+-    MetalShield			    1
+-    RingmailTunic		    1
+-    RingmailSleeves		    1
+-    RingmailLeggings	    1
+-    RingmailGloves		    1
+-    PlatemailBreastplate    1
+-    PlatemailArms		    1
+-    PlatemailLegs		    1
+-    PlatemailGorget		    1
+-    PlatemailGloves         1
+-}
+
+Deleted: trunk/096/pkg/systems/combat/magiccloth.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/magiccloth.cfg	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/magiccloth.cfg	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,14 +0,0 @@
+-items 1
+-{
+-    Robe			    1
+-    LeatherBoots		1
+-    ThighBoots			1
+-    silvernecklace      1
+-    bracelet            1
+-    earings             1
+-    roundnecklace       1
+-    longnecklace        1
+-    ring                1
+-    Cloak               1
+-}
+-
+
+Deleted: trunk/096/pkg/systems/combat/magicweaps.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/magicweaps.cfg	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/magicweaps.cfg	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,49 +0,0 @@
+-# $Id$
+-#
+-#
+-#item spawned for loot must be in this file to have the possibility to be magic
+-
+-items 1
+-{
+-    Longsword		1
+-    WarAxe		    1
+-    Bow			    1
+-    Crossbow		1
+-    HeavyCrossbow	1
+-    Axe			    1
+-    BattleAxe		1
+-    DoubleAxe		1
+-    ExecutionersAxe	1
+-    LargeBattleAxe	1
+-    TwoHandedAxe	1
+-    HammerPick		1
+-    Mace		    1
+-    Maul		    1
+-    WarHammer		1
+-    WarMace		    1
+-    Bardiche		1
+-    Halberd		    1
+-    ShortSpear		1
+-    Spear		    1
+-    WarFork		    1
+-    BroadSword		1
+-    Cutlass		    1
+-    Dagger		    1
+-    Katana		    1
+-    Kryss		    1
+-    Scimitar		1
+-    VikingSword		1
+-    Hatchet		    1
+-    PickAxe		    1
+-    ButcherKnife	1
+-    Cleaver		    1
+-    SkinningKnife	1
+-    Club		    1
+-    SmithyHammer	1
+-    PitchFork		1
+-    BlackStaff		1
+-    GnarledStaff	1
+-    QuarterStaff	1
+-    ShepherdsCrook	1
+-}
+-
+
+Deleted: trunk/096/pkg/systems/combat/mainHitScript.src
+===================================================================
+--- trunk/096/pkg/systems/combat/mainHitScript.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/mainHitScript.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,120 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-include &quot;hitScriptInc&quot;;
+-
+-var npccfgfile := ReadConfigFile(&quot;::npcdesc&quot;);
+-
+-program MainHitScript(attacker, defender, weapon, armor, basedamage, rawdamage)
+-  if(defender == attacker)
+-    SendSysMessage(attacker, &quot;No cheating!&quot;);
+-    ApplyRawDamage(attacker, 1000);
+-    return;
+-  endif
+-  if((defender.npctemplate == &quot;townguard&quot;) or (defender.npctemplate == &quot;playervendor&quot;))
+-    ApplyRawDamage(attacker, 1000);
+-    return;
+-  endif
+-  if((attacker.npctemplate == &quot;townguard&quot;) or (attacker.npctemplate == &quot;playervendor&quot;))
+-    ApplyRawDamage(defender, 1000);
+-    return;
+-  endif
+-  if(defender.isA(POLCLASS_NPC))
+-    var damagedsound := CInt(npccfgfile[defender.npctemplate].damagedsound);
+-    if(damagedsound)
+-      PlaySoundEffect(defender, damagedsound);
+-    endif
+-    PerformAction(defender, 0xa);
+-    basedamage := basedamage * 2;
+-    rawdamage := rawdamage * 2;
+-  else
+-    if(attacker.acctname &amp;&amp; defender.acctname)
+-      basedamage := basedamage / 2;
+-      rawdamage := rawdamage / 2;
+-    endif
+-  endif
+-  if(attacker.npctemplate == &quot;employee&quot;)
+-    basedamage := basedamage / 2;
+-    rawdamage := rawdamage / 2;
+-  endif
+-  SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon.name });
+-  var shield := GetEquipmentByLayer(defender, 2);
+-  if(shield)
+-    var bd;
+-    if(basedamage &gt; 100)
+-      bd := 100;
+-    else
+-      bd := basedamage;
+-    endif
+-    if(RandomInt(Cint(GetEffectiveSkill(defender, SKILLID_PARRY) / 2)) &gt;= bd)
+-      armor := shield;
+-    endif
+-  endif
+-  var weaponhit := GetObjProperty(weapon, &quot;OnHit&quot;);
+-  if(weapon.hp &gt; weapon.maxhp)
+-    DestroyItem(weapon);
+-    rawdamage := 0;
+-  endif
+-  var armorhit;
+-  if(armor == 0)
+-    armorhit := GetObjProperty(defender, &quot;ArmorHit&quot;);
+-  else
+-    armorhit := GetObjProperty(armor, &quot;ArmorHit&quot;);
+-  endif
+-  if(!weaponhit)
+-    if(!armorhit)
+-      run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-      if(GetObjProperty(weapon, &quot;SilverHit&quot;))
+-        run_script_to_completion(&quot;silverHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-        rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-      endif
+-      rawdamage := Cint(rawdamage + Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20));
+-      if(rawdamage &lt; 1)
+-        rawdamage := 1;
+-      endif
+-      DealDamage(defender, attacker, rawdamage);
+-      return;
+-    else
+-      SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-      foreach x in armorhit
+-        Detach();
+-        run_script_to_completion(x, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-        rawdamage := CInt(GetObjProperty(defender, &quot;TempDamage&quot;) );
+-      endforeach
+-      run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-      EraseObjProperty(defender, &quot;TempDamage&quot;);
+-      if(GetObjProperty(weapon, &quot;SilverHit&quot;))
+-        run_script_to_completion(&quot;silverHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-        rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-      endif
+-      rawdamage := Cint(rawdamage + Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20));
+-      if(rawdamage &lt; 1)
+-        rawdamage := 1;
+-      endif
+-      DealDamage(defender, attacker, rawdamage);
+-      return;
+-    endif
+-  else
+-    SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-    foreach x in weaponhit
+-      Detach();
+-      run_script_to_completion(CStr(x), { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-    endforeach
+-    EraseObjProperty(defender, &quot;TempDamage&quot;);
+-    run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-    rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-    if(GetObjProperty(weapon, &quot;SilverHit&quot;))
+-      run_script_to_completion(&quot;silverHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-    endif
+-    rawdamage := Cint(rawdamage + Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20));
+-    if(rawdamage &lt; 1)
+-      rawdamage := 1;
+-    endif
+-    DealDamage(defender, attacker, rawdamage);
+-    return;
+-  endif
+-endprogram
+
+Deleted: trunk/096/pkg/systems/combat/mobPoisonHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/mobPoisonHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/mobPoisonHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,31 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-use cfgfile;
+-
+-include &quot;include/client&quot;;
+-
+-
+-program poisonhit(param)
+-  var attacker := param[1];
+-  var defender := param[2];
+-  var rawdamage := param[6];
+-  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-  if((RandomInt(4)+1) == 1)
+-    return;
+-  endif
+-  var level := GetObjProperty(attacker, &quot;poison_strength&quot;);
+-  if (!level)
+-    level := 1;
+-  endif
+-  Detach();
+-  foreach mobile in ListMobilesInLineOfSight(defender, 8)
+-    if(mobile != defender)
+-      PrintTextAbovePrivate(defender, defender.name + &quot; has been poisoned!&quot;, mobile);
+-    endif
+-  endforeach
+-  PrintTextAbovePrivate(defender, &quot;You have been poisoned by &quot; + attacker.name +&quot;!&quot;, defender);
+-  var passparms := { defender, attacker, &quot;poisoned weapon&quot;, level};
+-  SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, &quot;poisoned weapon&quot; });
+-  start_script(&quot;:spells:poisonDamage&quot;, passparms);
+-endprogram
+
+Added: trunk/096/pkg/systems/combat/old/bewitchedHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/bewitchedHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/bewitchedHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,21 @@
++use uo;
++use util;
++use os;
++
++program macehit(param)
++	var attacker := param[1];
++	var defender := param[2];
++	var rawdamage := param[6];
++
++	if ((attacker.dead) || (defender.dead))
++		return;
++	endif
++	if (!defender.acctname)
++		rawdamage := (rawdamage / 2);
++	endif
++	SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++
++	return;
++endprogram
++
++   
+
+Added: trunk/096/pkg/systems/combat/old/bladeSpiritHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/bladeSpiritHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/bladeSpiritHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,35 @@
++use uo;
++use util;
++use os;
++
++
++program macehit(param)
++  var attacker   := param[1];
++  var defender   := param[2];
++  var armor      := param[4];
++  var rawdamage  := param[6];
++  if((attacker.dead) || (defender.dead))
++    return;
++  endif
++  var rint := RandomInt(10);
++  if(rint &gt;= 9)
++    var newplevel := RandomInt(2)+1;
++    PrintTextAbove(defender, defender.name + &quot; has been poisoned!&quot;);
++    SendSysMessage(defender, &quot;You have been poisoned by &quot; + attacker.name +&quot;!&quot;);
++    Detach();
++    var passparms := { defender, attacker, &quot;bladespirit&quot;, newplevel };
++    start_script(&quot;:spells:poisonDamage&quot;, passparms);
++    SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, &quot;poisoned weapon&quot;});
++  endif
++  if(armor.hp &gt; 1)
++    armor.hp := armor.hp - 1;
++  else
++    DestroyItem(armor);
++  endif
++  if(armor.hp &gt; armor.maxhp)
++    armor.hp := armor.maxhp;
++  endif
++  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++endprogram
++
++   
+
+Added: trunk/096/pkg/systems/combat/old/bladed.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/bladed.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/bladed.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,93 @@
++// //$Id: bladed.src 806 2005-11-01 21:56:02Z austin $
++
++
++use cfgfile;
++use uo;
++use os;
++use util;
++
++include &quot;include/client&quot;;
++include &quot;include/sound&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;include/string&quot;;
++include &quot;include/objtype&quot;;
++include &quot;include/canAccess&quot;;
++include &quot;include/dist&quot;;
++include &quot;include/toolWear&quot;;
++include &quot;include/noto&quot;;
++include &quot;:tailoring:tailoringFunctions&quot;;
++include &quot;:fishing:fishingFunctions&quot;;
++include &quot;:containers:corpse/corpseFunctions&quot;;
++
++var bowcraftconfigfile := ReadConfigFile(&quot;:bowcraft:bowcraft&quot;);
++
++
++program use_blade(who, blade)
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	if(!can_access(who, blade))
++		return;
++	endif
++	if(!ReserveItem(blade))
++		return;
++	endif
++
++	SendSysMessage(who, &quot;What would you like to use that on?&quot;);
++	var use_on := TargetCoordinates(who);
++	if(!use_on)
++		return;
++	endif
++	if(use_on.item)
++		if(!can_access(who, use_on.item, &quot;unmovable&quot;))
++			return;
++		endif
++	endif
++	var checkme := use_on.item.objtype;
++	if(use_on.mobile.npctemplate == &quot;sheep&quot;)
++		process_wool(who, blade, use_on.mobile);
++	elseif(use_on.item.objtype == UOBJ_CORPSE)
++		ReleaseItem(blade);
++		Carve_Corpse(who, use_on.item);
++	elseif(is_fish(checkme))
++		CarveFish(who, blade, use_on.item);
++	elseif (is_tree(use_on.objtype ))
++		CarveTree(who, blade, use_on.item);
++	else
++		SendSysMessage(who, &quot;I don't know how to use those items together.&quot;);
++	endif
++
++endprogram
++
++
++function is_tree(theobj)
++
++	if((theobj == 0x0c9e) || (theobj == 0x0ca8) || (theobj == 0x0caa))
++		return 1;
++	elseif (theobj == 0x0cab)
++		return 1;
++	elseif ((theobj &gt;= 0x0c99) &amp;&amp; (theobj &lt;= 0x0cea))
++		return 1;
++	elseif ((theobj &gt;= 0x0cf3) &amp;&amp; (theobj &lt;= 0x0d03))
++		return 1;
++	elseif ((theobj &gt;= 0x0d41) &amp;&amp; (theobj &lt;= 0x0dab))
++		return 1;
++	else
++		return 0;
++	endif
++
++endfunction
++
++
++function CarveTree(who, blade, use_on)
++
++	if(dist(who, use_on) &gt; 2)
++		SendSysMessage(who, &quot;You cannot use that&quot;);
++		return;
++	endif
++	CreateItemInBackpack(who, UOBJ_KINDLING, 1);
++	DestroyItem(use_on);
++	SendSysMessage(who, &quot;You chip off some kindling and put it in your backpack.&quot;);
++
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/combat/old/chargeUpkeep.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/chargeUpkeep.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/chargeUpkeep.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,134 @@
++use uo;
++use os;
++use util;
++
++include &quot;include/client&quot;;
++include &quot;:attributes:attributes&quot;;
++
++const EVID_UNEQUIP   := 0x123456;
++const EVID_DISCHARGE := 0x123457;
++
++program chargeUpkeep(parms)
++  var who := parms[1];
++  var item := parms[2];
++  var pid := GetPid();
++  SetObjProperty(item, &quot;Pid&quot;, pid);
++  var charges := GetObjProperty(item, &quot;charges&quot;);
++  if(!charges)
++    SendSysMessage(who, &quot;That item is out of charges.&quot;);
++    return;
++  endif
++  var mods := ProcessMods(who, item);
++  var ret  := upkeepServer(who, item, mods[1]);
++  if(ret == 1)
++    SendSysMessage(who, item.name + &quot; is out of charges.&quot;);
++  endif
++  ProcessUnmods(who, item, mods);
++endprogram
++
++function ProcessMods(who, item);
++  if(Cint(GetObjProperty(item, &quot;HoldMods&quot;)))
++    repeat
++      sleep(1);
++    until(!Cint(GetObjProperty(item, &quot;HoldMods&quot;)));
++  endif
++  Set_Critical(1);
++  SetObjProperty(item, &quot;HoldMods&quot;, 1);
++  var holder;
++  var type   := GetObjProperty(item, &quot;type&quot;);
++  var gain   := GetObjProperty(item, &quot;gain&quot;);
++  if(!gain)
++    return;
++  endif
++  case(type)
++    &quot;strength&quot;:     ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH, gain);
++    &quot;invisibility&quot;: who.hidden := 1;
++    &quot;sight&quot;:        who.setlightlevel(0, 70);
++    &quot;protection&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY, gain);
++    &quot;reflect&quot;:      SetObjProperty(who, &quot;mr&quot;, 2);
++    &quot;bless&quot;:        ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH,     gain);
++                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_INTELLIGENCE, gain);
++                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_DEXTERITY,    gain);
++                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY,        (gain *3 ));
++  endcase
++  RecalcVitals(who);
++  EraseObjProperty(item, &quot;HoldMods&quot;);
++  holder := {};
++  holder.append(type);
++  holder.append(gain);
++  holder.append(item.serial);
++  Set_Critical(0);
++  return holder;
++endfunction
++
++function upkeepServer(who, item, type)
++  var charges;
++  var charge := ReadGameClock() + 60;
++  var depleted := 0;
++  var ev;
++  var brk;
++  while(1)
++	ev := wait_for_event(1);
++	case(ev.type)
++	  EVID_UNEQUIP:   depleted := 0;
++	                  brk := 1;
++	endcase
++    if(brk == 1)
++      break;
++    endif
++    if(!who.ip)
++      break;
++    endif
++    if(type == &quot;vis&quot;)
++      who.setlightlevel(0, 70);
++    endif
++	if(charge &lt;= ReadGameClock())
++      charge := ReadGameClock() + 60;
++      charges := GetObjProperty(item, &quot;charges&quot;);
++      if(!charges)
++        depleted := 1;
++        break;
++      endif
++	  SetObjProperty(item, &quot;charges&quot;, Cint(charges - 1));
++	else
++      charge := ReadGameClock() + 5;
++      charges := GetObjProperty(item, &quot;charges&quot;);
++      if(!charges)
++        depleted := 1;
++        break;
++      endif
++	  SetObjProperty(item, &quot;charges&quot;, Cint(charges - 1));
++	endif
++  endwhile
++  return depleted;
++endfunction
++
++function ProcessUnmods(who, item, mods)
++  if(Cint(GetObjProperty(item, &quot;HoldMods&quot;)))
++    repeat
++      sleep(1);
++    until(!Cint(GetObjProperty(item, &quot;HoldMods&quot;)));
++  endif
++  Set_Critical(1);
++  SetObjProperty(item, &quot;HoldMods&quot;, 1);
++  var type := mods[1];
++  var gain := Cint(mods[2]);
++  if(!who.ip)
++    who := SystemFindObjectBySerial(who.serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
++  endif
++  case(type)
++    &quot;strength&quot;:     ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH, (0 - gain));
++    &quot;invisibility&quot;: who.hidden := 0;
++    &quot;sight&quot;:        who.setlightlevel(0, 1);
++    &quot;protection&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY, (0 - gain));
++    &quot;reflect&quot;:      EraseObjProperty(who, &quot;mr&quot;);
++    &quot;bless&quot;:        ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH,     (0 - gain));
++                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_INTELLIGENCE, (0 - gain));
++                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_DEXTERITY,    (0 - gain));
++                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY,        (0 - (gain *3)));
++  endcase
++  RecalcVitals(who);
++  EraseObjProperty(item, &quot;HoldMods&quot;);
++  Set_Critical(0);
++  return;
++endfunction
+
+Added: trunk/096/pkg/systems/combat/old/deathrobe.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/deathrobe.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/deathrobe.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,16 @@
++use uo;
++use os;
++use cfgfile;
++
++program deathrobe_decay(item)
++  while(item)
++    if((item.movable == 1) &amp;&amp; (!item.container) &amp;&amp; !((item.x == 0) &amp;&amp; (item.y == 0) &amp;&amp; (item.z == 0)))
++      sleep(10);
++      if((item.movable == 1) &amp;&amp; (!item.container) &amp;&amp; !((item.x == 0) &amp;&amp; (item.y == 0) &amp;&amp; (item.z == 0)))
++        DestroyItem(item);
++        break;
++      endif
++    endif
++    sleep(30);
++  endwhile
++endprogram
+
+Added: trunk/096/pkg/systems/combat/old/destroy.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/destroy.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/destroy.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,106 @@
++use uo;
++use os;
++use cfgfile;
++
++include &quot;include/client&quot;;
++include &quot;:attributes:attributes&quot;;
++
++const EVID_UNEQUIP   := 0x123456;
++const EVID_DISCHARGE := 0x123457;
++
++program destroy(item)
++  set_critical(1);
++  var ser := GetObjProperty(item, &quot;#equipped&quot;);
++  var who := SystemFindObjectBySerial(cint(ser), SYSFIND_SEARCH_OFFLINE_MOBILES);
++  var itemdesc := ReadConfigFile(&quot;itemdesc&quot;);
++  var penalty := CInt(itemdesc[item.objtype].DexPenalty);
++  if(penalty)
++    EraseObjProperty(item, &quot;#equipped&quot;);
++    SetDexterityMod(who, GetDexterityMod(who) + penalty);
++  endif
++  var type := GetObjProperty(item,&quot;type&quot;);
++  var val := 0;
++  case(type)
++    &quot;accuracy&quot;:     val := accuracy(who,item);
++    &quot;cursed&quot;:       val := cursed(who,item);
++    &quot;sight&quot;:        val := sight(who,item);
++    &quot;reflect&quot;:      val := reflect(who,item);
++    &quot;protection&quot;:   val := protection(who,item);
++    &quot;wizzohat&quot;:     val := wizzohat(who,item);
++    &quot;strength&quot;:     val := strength(who,item);
++    &quot;invisibility&quot;: val := invisibility(who, item);
++    default:        val := 1;
++  endcase
++  return val;
++  set_critical(0);
++endprogram
++
++function strength(who,item)
++  who := who;
++  item := item;
++  return 1;
++endfunction
++
++function wizzohat(who,item)
++  SetIntelligenceMod(who, GetIntelligenceMod(who) - 10);
++  SetStrengthMod(who, GetStrengthMod(who) + 5);
++  SetDexterityMod(who, GetDexterityMod(who) + 5);
++  EraseObjProperty(item, &quot;#equipped&quot;);
++  return 1;
++endfunction
++
++function cursed(who,item)
++  who := who;
++  item := item;
++  return 0;
++endfunction
++
++function invisibility(who,item)
++  RemoveMods(who, item);
++  return 1;
++endfunction
++
++function sight(who,item)
++  RemoveMods(who, item);
++  return 1;
++endfunction
++
++function reflect(who,item)
++  RemoveMods(who, item);
++  return 1;
++endfunction
++
++function accuracy(who,item)
++  var amt := CInt(GetObjProperty(item,&quot;gain&quot;));
++  amt := (0 - amt);
++  if((!amt) || (amt == 0))
++    amt := (0 - 5);
++  endif
++  var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
++  var attrib := cfg[item.objtype].Attribute;
++  case(attrib)
++    &quot;Wrestling&quot;: ModifyAttributeTemporaryMod(who, ATTRIBUTEID_WRESTLING,     amt);
++    &quot;Fencing&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_FENCING,       amt);
++    &quot;Archery&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_ARCHERY,       amt);
++    &quot;Swords&quot;:    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_SWORDSMANSHIP, amt);
++    &quot;Mace&quot;:      ModifyAttributeTemporaryMod(who, ATTRIBUTEID_MACEFIGHTING,  amt);
++  endcase
++  EraseObjProperty(item, &quot;#equipped&quot;);
++  return 1;
++endfunction
++
++function protection(who,item)
++  RemoveMods(who, item);
++  return 1;
++endfunction
++
++function RemoveMods(who, item)
++  who := who;
++  var proc := GetProcess(Cint(GetObjProperty(item, &quot;Pid&quot;)));
++  if(proc)
++    var ev := {};
++    ev.+type := EVID_UNEQUIP;
++    proc.sendevent(ev);
++  endif
++  EraseObjProperty(item, &quot;#equipped&quot;);
++endfunction
+
+Added: trunk/096/pkg/systems/combat/old/earthElemental.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/earthElemental.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/earthElemental.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,33 @@
++use uo;
++use util;
++use os;
++include &quot;:attributes:attributes&quot;;
++
++program macehit(param)
++  var attacker := param[1];
++  var defender := param[2];
++  var armor := param[4];
++  var rawdamage := param[6];
++  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++  if((attacker.dead) || (defender.dead))
++    return;
++  endif
++  if(armor)
++    if(RandomInt(50) &gt; 35)
++      var admg := RandomInt(2) + 1;
++      if(armor.hp &gt;admg)
++        armor.hp := armor.hp - admg;
++      else
++        DestroyItem(armor);
++      endif
++    endif
++  endif
++  var sdr := RandomInt(3) + 3;
++  if(GetStamina(defender) &gt;= sdr)
++    SetStamina(defender, GetStamina(defender) - sdr);
++  else
++    SetStamina(defender, 0);
++  endif
++endprogram
++
++   
+
+Added: trunk/096/pkg/systems/combat/old/equip.inc
+===================================================================
+--- trunk/096/pkg/systems/combat/old/equip.inc	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/equip.inc	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,130 @@
++
++
++
++function HandleMods(who, item)
++  set_critical(1);
++  var itemdesc := ReadConfigFile(&quot;itemdesc&quot;);
++  var penalty  := CInt(itemdesc[item.objtype].DexPenalty);
++  var restrict := Cint(itemdesc[item.objtype].GenderSpecific);
++  if((restrict == 1) and (who.graphic == 400))
++    SendSysMessage(who, &quot;Only females may wear that.&quot;);
++    return 0;
++  endif
++  if(penalty)
++    SetObjProperty(item, &quot;#equipped&quot;, who.serial);
++    SetDexterityMod(who, GetDexterityMod(who) - penalty);
++  endif
++  var type := GetObjProperty(item, &quot;type&quot;);
++  if(!type)
++    return 1;
++  endif
++  var val := 0;
++  if(!who.ip)
++    return 1;
++  endif
++  case(type)
++    &quot;accuracy&quot;:     val := accuracy(who,item);
++    &quot;cursed&quot;:       val := cursed(who,item);
++    &quot;sight&quot;:        val := sight(who,item);
++    &quot;reflect&quot;:      val := reflect(who,item);
++    &quot;protection&quot;:   val := protection(who,item);
++    &quot;wizzohat&quot;:     val := wizzohat(who,item);
++    &quot;strength&quot;:     val := strength(who,item);
++    &quot;invisibility&quot;: val := invisibility(who,item);
++    default:        val := 1;
++  endcase
++  return val;
++  set_critical(0);
++endfunction
++
++function strength(who,item)
++  var gain := GetObjProperty(item, &quot;gain&quot;);
++  if(!gain)
++    gain := 5;
++  endif
++  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
++  var parms := {who, item};
++  start_script(&quot;chargeUpkeep&quot;, parms);
++  return 1;
++endfunction
++
++function wizzohat(who,item)
++  SetIntelligenceMod(who, GetIntelligenceMod(who) + 10);
++  SetStrengthMod(who, GetStrengthMod(who) - 5);
++  SetDexterityMod(who, GetDexterityMod(who) - 5);
++  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
++  return 1;
++endfunction
++
++function accuracy(who,item)
++  var amt := CInt(GetObjProperty(item,&quot;gain&quot;));
++  if((!amt) || (amt == 0))
++    amt := 5;
++  endif
++  var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
++  var attrib := cfg[item.objtype].Attribute;
++  case(attrib)
++    &quot;Wrestling&quot;: ModifyAttributeTemporaryMod(who, ATTRIBUTEID_WRESTLING,     amt);
++    &quot;Fencing&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_FENCING,       amt);
++    &quot;Archery&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_ARCHERY,       amt);
++    &quot;Swords&quot;:    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_SWORDSMANSHIP, amt);
++    &quot;Mace&quot;:      ModifyAttributeTemporaryMod(who, ATTRIBUTEID_MACEFIGHTING,  amt);
++  endcase
++  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
++  return 1;
++endfunction
++
++function cursed(who,item)
++  PlaySoundEffect(who, 0x246);
++  if(!GetObjProperty(item,&quot;named&quot;))
++    item.name := item.name + &quot; [Cursed]&quot;;
++    SetObjProperty(item,&quot;named&quot;, 1);
++  endif
++  PrintTextAbovePrivate(who,&quot;You have been cursed!&quot;, who);
++  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
++  return 1;
++endfunction
++
++function invisibility(who,item)
++  var gain := GetObjProperty(item, &quot;gain&quot;);
++  if(!gain)
++    gain := 5;
++  endif
++  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
++  var parms := {who, item};
++  start_script(&quot;chargeUpkeep&quot;, parms);
++  return 1;
++endfunction
++
++function sight(who,item)
++  var gain := GetObjProperty(item, &quot;gain&quot;);
++  if(!gain)
++    gain := 5;
++  endif
++  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
++  var parms := {who, item};
++  start_script(&quot;chargeUpkeep&quot;, parms);
++  return 1;
++endfunction
++
++function protection(who,item)
++  var gain := GetObjProperty(item, &quot;gain&quot;);
++  if(!gain)
++    gain := 5;
++  endif
++  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
++  var parms := {who, item};
++  start_script(&quot;chargeUpkeep&quot;, parms);
++  return 1;
++endfunction
++
++function reflect(who,item)
++  var gain := GetObjProperty(item, &quot;gain&quot;);
++  if(!gain)
++    gain := 5;
++  endif
++  SetObjProperty(item, &quot;#equipped&quot;, who.serial);
++  var parms := {who, item};
++  start_script(&quot;chargeUpkeep&quot;, parms);
++  return 1;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/combat/old/equip.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/equip.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/equip.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,12 @@
++use uo;
++use os;
++use cfgfile;
++
++include &quot;include/client&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;equip&quot;;
++
++program equipweapon(who, item)
++  var val := HandleMods(who, item);
++  return val;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/combat/old/hitScriptInc.inc
+===================================================================
+--- trunk/096/pkg/systems/combat/old/hitScriptInc.inc	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/hitScriptInc.inc	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,9 @@
++use uo;
++use util;
++use math;
++include &quot;:attributes:attributes&quot;;
++
++function DealDamage(defender, attacker, rawdamage)
++  rawdamage := rawdamage + RandomInt( (GetEffectiveSkill(attacker, 1) ) / 20);
++  ApplyRawDamage(defender, rawdamage);
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/combat/old/itemControl.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/itemControl.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/itemControl.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,11 @@
++use uo;
++use os;
++use cfgfile;
++
++program itemcontrol(item)
++  var cfgfile  := ReadConfigFile(&quot;:combat:itemdesc&quot;);
++  var dmg      := cfgfile[item.objtype].damage;
++  if(dmg)
++    item.hitscript := &quot;mainHitScript&quot;;
++  endif
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/combat/old/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/old/itemdesc.cfg	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/itemdesc.cfg	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,2627 @@
++# $Id: itemdesc.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++#####################################
++#
++# pkg/std/combat/itemdesc.cfg - Weapons and Armor
++#
++# see pol/config/armrdesc.cfg for descriptions of armor entry formats
++# see pol/config/wepndesc.cfg for descriptions of weapon entry formats
++#
++#####################################
++
++#################
++#	INTRINSIC WRESTLING WEAPON	#
++#################
++
++Weapon 0xF020
++{
++	Name		Intrinsic Weapon
++	Name		Wrestling
++	Name		Fist
++	Desc		Intrinsic Weapon
++	Speed		40
++	Damage		1d8
++	Attribute	Wrestling
++	Anim		0x9
++	Graphic		1
++	MissSound	0x234
++	HitSound	0x13E
++	MaxHP		1
++	Intrinsic	1
++	controlscript	wrestleControl
++	HitScript	wrestlingHitScript
++	SaveOnExit	0
++}
++
++#################
++#		ARMOR		#
++#################
++
++# LEATHER
++Armor 0x13C7
++{
++	Name		LeatherGorget
++	desc		leather gorget
++	AR		13
++	Coverage	Neck
++	VendorSellsFor	74
++	VendorBuysFor	37
++	MaxHP		35
++	strrequired	10
++	medloss		100
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13CD
++{
++	Name		LeatherSleeves
++	desc		leather sleeves
++	AR		13
++	VendorSellsFor	80
++	VendorBuysFor	40
++	MaxHP		35
++	strrequired	10
++	medloss		200
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13C6
++{
++	Name		LeatherGloves
++	desc		leather gloves
++	AR		13
++	Coverage	Hands
++	VendorSellsFor	60
++	VendorBuysFor	30
++	MaxHP		35
++	strrequired	10
++	medloss		100
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1DB9
++{
++	Name		LeatherCap
++	desc		leather cap
++	AR		13
++	Coverage	Head
++	VendorSellsFor	60
++	VendorBuysFor	30
++	MaxHP		35
++	strrequired	15
++	medloss		400
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13CB
++{
++	Name		LeatherLeggings
++	desc		leather leggings
++	AR		13
++	Coverage	Legs/feet
++	VendorSellsFor	80
++	VendorBuysFor	40
++	MaxHP		35
++	strrequired	10
++	medloss		200
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13CC
++{
++	Name		LeatherTunic
++	desc		leather tunic
++	AR		13
++	Coverage	Body
++	VendorSellsFor	101
++	VendorBuysFor	52
++	MaxHP		35
++	strrequired	15
++	medloss		300
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++Armor 0x13D3
++{
++	Name		LeatherTunic2
++	desc		leather tunic
++	AR		13
++	Coverage	Body
++	VendorSellsFor	101
++	VendorBuysFor	52
++	MaxHP		35
++	strrequired	15
++	medloss		300
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++# STUDDED LEATHER
++Armor 0x13D6
++{
++	Name		StuddedGorget
++	desc		studded leather gorget
++	AR		16
++	Coverage	Neck
++	VendorSellsFor	73
++	VendorBuysFor	36
++	MaxHP		40
++	strrequired	25
++	medloss		100
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++
++}
++
++Armor 0x13D5
++{
++	Name		StuddedGloves
++	desc		studded leather gloves
++	AR		16
++	Coverage	Hands
++	VendorSellsFor	79
++	VendorBuysFor	39
++	MaxHP		40
++	strrequired	25
++	medloss		100
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13D4
++{
++	Name		StuddedSleeves
++	desc		studded leather sleeves
++	AR		16
++	Coverage	Arms
++	VendorSellsFor	87
++	VendorBuysFor	43
++	MaxHP		40
++	strrequired	25
++	medloss		150
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13DA
++{
++	Name		StuddedLeggings
++	desc		studded leather leggings
++	AR		16
++	Coverage	Legs/feet
++	VendorSellsFor	103
++	VendorBuysFor	51
++	MaxHP		40
++	strrequired	35
++	medloss		400
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13DB
++{
++	Name		StuddedTunic
++	desc		studded leather tunic
++	AR		16
++	Coverage	Body
++	VendorSellsFor	128
++	VendorBuysFor	64
++	MaxHP		40
++	strrequired	35
++	medloss		500
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++
++}
++
++#####################
++#------------ Ranger Armor ------------#
++#####################
++Armor 0x8100
++{
++	Name		RangerGorget
++	desc		studded gorget, ranger armor
++	graphic		0x13D6
++	AR		20
++	Coverage	Neck
++	color		34202
++	VendorSellsFor	98
++	VendorBuysFor	49
++	MaxHP		60
++	strrequired	35
++	medloss		100
++	repairable	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	Cprop		type sranger
++}
++
++Armor 0x8101
++{
++	Name		RangerGloves
++	desc		studded gloves, ranger armor
++	graphic		0x13D5
++	color		34202
++	AR		20
++	Coverage	Hands
++	VendorSellsFor	98
++	VendorBuysFor	49
++	MaxHP		60
++	strrequired	35
++	medloss		100
++	repairable	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	Cprop		type sranger
++}
++
++Armor 0x8102
++{
++	Name		RangerSleeves
++	desc		studded sleeves, ranger armor
++	graphic		0x13D4
++	color		34202
++	AR		20
++	Coverage	Arms
++	VendorSellsFor	110
++	VendorBuysFor	55
++	MaxHP		60
++	strrequired	35
++	medloss		150
++	repairable	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	Cprop		type sranger
++}
++
++Armor 0x8103
++{
++	Name		RangerLeggings
++	desc		studded leggings, ranger armor
++	graphic		0x13DA
++	color		34202
++	AR		20
++	Coverage	Legs/feet
++	VendorSellsFor	150
++	VendorBuysFor	75
++	MaxHP		60
++	strrequired	35
++	medloss		400
++	repairable	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	Cprop		type sranger
++}
++
++Armor 0x8104
++{
++	Name		RangerTunic
++	desc		studded tunic, ranger armor
++	graphic		0x13DB
++	color		34202
++	AR		20
++	Coverage	Body
++	VendorSellsFor	260
++	VendorBuysFor	130
++	MaxHP		60
++	strrequired	45
++	medloss		500
++	repairable	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	Cprop		type sranger
++}
++#####################
++#---------- End Ranger Armor ----------#
++#####################
++Armor 0x1C02
++{
++	Name		FemaleStudded
++	desc		female studded armor
++	AR		16
++	Coverage	Body
++	VendorSellsFor	142
++	VendorBuysFor	71
++	MaxHP		109
++	strrequired	35
++	medloss		500
++	GenderSpecific	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1c04
++{
++	Name		FemalePlate
++	desc		female plate armor
++	AR		30
++	Coverage	body
++	VendorSellsFor	245
++	VendorBuysFor	123
++	MaxHP		60
++	strrequired	45
++	repairable	1
++	medloss		nomed
++	DexPenalty	5
++	GenderSpecific	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++
++Armor 0x1C06
++{
++	Name		FemaleLeather
++	desc		female leather armor
++	AR		13
++	Coverage	Body
++	VendorSellsFor	116
++	VendorBuysFor	58
++	MaxHP		35
++	strrequired	15
++	medloss		300
++	GenderSpecific	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1C08
++{
++	Name		LeatherSkirt
++	desc		leather skirt
++	AR		13
++	Coverage	Legs/feet
++	VendorSellsFor	87
++	VendorBuysFor	43
++	MaxHP		35
++	strrequired	10
++	medloss		200
++	GenderSpecific	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1C0A
++{
++	Name		LeatherBustier
++	desc		leather bustier
++	AR		13
++	Coverage	Body
++	VendorSellsFor	97
++	VendorBuysFor	48
++	MaxHP		35
++	strrequired	10
++	medloss		300
++	GenderSpecific	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++
++}
++
++Armor 0x1C0C
++{
++	Name		StuddedBustier
++	desc		studded bustier
++	AR		16
++	Coverage	Body
++	VendorSellsFor	120
++	VendorBuysFor	60
++	MaxHP		110
++	strrequired	25
++	medloss		400
++	GenderSpecific	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1C00
++{
++	Name		LeatherShorts
++	desc		leather shorts
++	AR		13
++	Coverage	Legs/feet
++	VendorSellsFor	86
++	VendorBuysFor	43
++	MaxHP		35
++	strrequired	10
++	medloss		200
++	GenderSpecific	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x170B
++{
++	Name		LeatherBoots
++	desc		boots
++	AR		1
++	Coverage	Legs/feet
++	VendorSellsFor	43
++	VendorBuysFor	21
++	MaxHP		50
++	dyeable		1
++	medloss		0
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1711
++{
++	Name		ThighBoots
++	desc		thigh boots
++	AR		1
++	Coverage	Legs/feet
++	VendorSellsFor	56
++	VendorBuysFor	28
++	MaxHP		50
++	dyeable		1
++	medloss		0
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++# CHAIN MAIL
++Armor 0x13BB
++{
++	Name		ChainmailCoif
++	desc		chainmail coif
++	AR		23
++	Coverage	Head
++	Coverage	Neck
++	VendorSellsFor	130
++	VendorBuysFor	65
++	MaxHP		40
++	strrequired	20
++	repairable	1
++	medloss		1000
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13C0
++{
++	Name		ChainmailCoif2
++	desc		chainmail coif
++	AR		23
++	Coverage	Head
++	Coverage	Neck
++	VendorSellsFor	130
++	VendorBuysFor	65
++	MaxHP		40
++	strrequired	20
++	repairable	1
++	medloss		1000
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13BE
++{
++	Name		ChainmailLeggings
++	desc		chainmail leggings
++	AR		23
++	Coverage	Legs/feet
++	VendorSellsFor	166
++	VendorBuysFor	83
++	MaxHP		55
++	strrequired	20
++	repairable	1
++	medloss		1000
++	DexPenalty	3
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13C3
++{
++	Name		ChainmailLeggings2
++	desc		chainmail leggings
++	AR		23
++	Coverage	Legs/feet
++	VendorSellsFor	166
++	VendorBuysFor	83
++	MaxHP		55
++	strrequired	20
++	repairable	1
++	medloss		1000
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13BF
++{
++	Name		ChainmailTunic
++	desc		chainmail tunic
++	AR		23
++	Coverage	Arms
++	Coverage	Body
++	VendorSellsFor	207
++	VendorBuysFor	103
++	MaxHP		53
++	strrequired	20
++	repairable	1
++	medloss		2000
++	DexPenalty	5
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13C4
++{
++	Name		ChainmailTunic2
++	desc		chainmail tunic
++	AR		23
++	Coverage	Arms
++	Coverage	Body
++	VendorSellsFor	207
++	VendorBuysFor	103
++	MaxHP		53
++	strrequired	20
++	repairable	1
++	medloss		2000
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++# Plate Helms
++Armor 0x1408
++{
++	Name		CloseHelm
++	desc		closed helm
++	AR		30
++	Coverage	Head
++	VendorSellsFor	145
++	VendorBuysFor	72
++	MaxHP		55
++	strrequired	40
++	repairable	1
++	medloss		1200
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1409
++{
++	Name		CloseHelm2
++	desc		closed helm
++	AR		30
++	Coverage	Head
++	VendorSellsFor	145
++	VendorBuysFor	72
++	MaxHP		55
++	strrequired	40
++	repairable	1
++	medloss		1200
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x140A
++{
++	Name		Helmet
++	desc		helmet
++	AR		30
++	Coverage	Head
++	VendorSellsFor	145
++	VendorBuysFor	72
++	MaxHP		55
++	strrequired	40
++	repairable	1
++	medloss		1200
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x140B
++{
++	Name		Helmet2
++	desc		helmet
++	AR		30
++	Coverage	Head
++	VendorSellsFor	145
++	VendorBuysFor	72
++	MaxHP		55
++	strrequired	40
++	repairable	1
++	medloss		1200
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x140C
++{
++	Name		Bascinet
++	desc		bascinet
++	AR		30
++	Coverage	Head
++	VendorSellsFor	127
++	VendorBuysFor	46
++	MaxHP		110
++	strrequired	10
++	repairable	1
++	medloss		1200
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++
++}
++Armor 0x140D
++{
++	Name		Bascinet2
++	desc		bascinet
++	AR		30
++	Coverage	Head
++	VendorSellsFor	127
++	VendorBuysFor	46
++	MaxHP		110
++	strrequired	10
++	repairable	1
++	medloss		1200
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x140E
++{
++	Name		NoseHelm
++	desc		nose helm
++	AR		30
++	Coverage	Head
++	VendorSellsFor	145
++	VendorBuysFor	53
++	MaxHP		55
++	strrequired	40
++	repairable	1
++	medloss		1200
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++Armor 0x140F
++{
++	Name		NoseHelm2
++	desc		nose helm
++	AR		30
++	Coverage	Head
++	VendorSellsFor	145
++	VendorBuysFor	53
++	MaxHP		55
++	strrequired	40
++	repairable	1
++	medloss		1200
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1412
++{
++	Name		PlateHelm
++	desc		platemail helm
++	AR		30
++	Coverage	Head
++	VendorSellsFor	170
++	VendorBuysFor	85
++	MaxHP		55
++	strrequired	40
++	repairable	1
++	DexPenalty	1
++	medloss		1500
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1419
++{
++	Name		PlateHelm2
++	desc		platemail helm
++	AR		30
++	Coverage	Head
++	VendorSellsFor	170
++	VendorBuysFor	85
++	MaxHP		55
++	strrequired	40
++	repairable	1
++	DexPenalty	1
++	medloss		1500
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++# SHIELDS
++Armor 0x1B72
++{
++	Name		BronzeShield
++	desc		round shield
++	AR		10
++	VendorSellsFor	91
++	VendorBuysFor	45
++	MaxHP		28
++	strrequired	20
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1B73
++{
++	Name		Buckler
++	desc		buckler
++	AR		7
++	VendorSellsFor	66
++	VendorBuysFor	33
++	MaxHP		46
++	strrequired	15
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++
++}
++
++Armor 0x1B74
++{
++	Name		KiteShield
++	desc		metal kite shield
++	AR		16
++	VendorSellsFor	135
++	VendorBuysFor	67
++	MaxHP		110
++	strrequired	30
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++Armor 0x1B75
++{
++	Name		KiteShield2
++	desc		metal kite shield
++	AR		16
++	VendorSellsFor	135
++	VendorBuysFor	67
++	MaxHP		110
++	strrequired	30
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1B76
++{
++	Name		HeaterShield
++	desc		heater shield
++	AR		23
++	VendorSellsFor	175
++	VendorBuysFor	87
++	MaxHP		35
++	strrequired	30
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++
++}
++Armor 0x1B77
++{
++	Name		HeaterShield2
++	desc		heater shield
++	AR		23
++	VendorSellsFor	175
++	VendorBuysFor	87
++	MaxHP		35
++	strrequired	30
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1B78
++{
++	Name		KiteShieldB1
++	desc		tear kite shield
++	AR		7
++	VendorSellsFor	121
++	VendorBuysFor	60
++	MaxHP		55
++	strrequired	15
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1B79
++{
++	Name		KiteShieldB2
++	desc		tear kite shield
++	AR		7
++	VendorSellsFor	121
++	VendorBuysFor	60
++	MaxHP		55
++	strrequired	15
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1B7A
++{
++	Name		WoodenShield
++	desc		wooden shield
++	AR		8
++	VendorSellsFor	64
++	VendorBuysFor	32
++	MaxHP		22
++	strrequired	5
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1B7B
++{
++	Name		MetalShield
++	desc		metal shield
++	AR		9
++	VendorSellsFor	98
++	VendorBuysFor	49
++	MaxHP		40
++	strrequired	10
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1bc4
++{
++	Name		Ordershield
++	desc		an order shield
++	AR		30
++	MaxHP		110
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1bc3
++{
++	Name		Chaosshield
++	desc		chaos shield
++	AR		32
++	MaxHP		110
++	repairable	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++#RINGMAIL
++Armor 0x13ec
++{
++	Name		RingmailTunic
++	desc		ringmail tunic
++	AR		20
++	Coverage	Body
++	VendorSellsFor	218
++	VendorBuysFor	109
++	MaxHP		45
++	strrequired	20
++	repairable	1
++	medloss		1000
++	DexPenalty	2
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13ed
++{
++	Name		RingmailTunic2
++	desc		ringmail tunic
++	AR		20
++	Coverage	Body
++	VendorSellsFor	218
++	VendorBuysFor	109
++	MaxHP		45
++	strrequired	20
++	repairable	1
++	medloss		1000
++	DexPenalty	2
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13ee
++{
++	Name		RingmailSleeves
++	desc		ringmail sleeves
++	AR		20
++	VendorSellsFor	127
++	VendorBuysFor	63
++	MaxHP		45
++	strrequired	20
++	repairable	1
++	medloss		500
++	DexPenalty	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++Armor 0x13ef
++{
++	Name		RingmailSleeves2
++	desc		ringmail sleeves
++	AR		20
++	VendorSellsFor	127
++	VendorBuysFor	63
++	MaxHP		45
++	strrequired	20
++	repairable	1
++	medloss		500
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13f0
++{
++	Name		RingmailLeggings
++	desc		ringmail leggings
++	AR		20
++	Coverage	Legs/Feet
++	VendorSellsFor	147
++	VendorBuysFor	73
++	MaxHP		45
++	strrequired	20
++	repairable	1
++	medloss		700
++	DexPenalty	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13f1
++{
++	Name		RingmailLeggings2
++	desc		ringmail leggings
++	AR		20
++	Coverage	Legs/Feet
++	VendorSellsFor	147
++	VendorBuysFor	73
++	MaxHP		45
++	strrequired	20
++	repairable	1
++	medloss		700
++	DexPenalty	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x13f2
++{
++	Name		RingmailGloves
++	desc		ringmail gloves
++	AR		20
++	Coverage	Hands
++	VendorSellsFor	79
++	VendorBuysFor	39
++	MaxHP		45
++	strrequired	20
++	repairable	1
++	medloss		250
++	DexPenalty	1
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++# PLATE
++Armor 0x1415
++{
++	Name		PlatemailBreastplate
++	desc		platemail breastplate
++	AR		30
++	Coverage	Body
++	VendorSellsFor	273
++	VendorBuysFor	136
++	MaxHP		60
++	strrequired	60
++	repairable	1
++	DexPenalty	8
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++Armor 0x1416
++{
++	Name		PlatemailBreastplate2
++	desc		platemail breastplate
++	AR		30
++	Coverage	Body
++	VendorSellsFor	273
++	VendorBuysFor	136
++	MaxHP		60
++	strrequired	60
++	repairable	1
++	DexPenalty	8
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1410
++{
++	Name		PlatemailArms
++	desc		platemail arms
++	AR		30
++	Coverage	Arms
++	VendorSellsFor	181
++	VendorBuysFor	90
++	MaxHP		60
++	strrequired	40
++	repairable	1
++	DexPenalty	2
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++Armor 0x1417
++{
++	Name		PlatemailArms2
++	desc		platemail arms
++	AR		30
++	Coverage	Arms
++	VendorSellsFor	181
++	VendorBuysFor	90
++	MaxHP		60
++	strrequired	40
++	repairable	1
++	DexPenalty	2
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1411
++{
++	Name		PlatemailLegs
++	desc		platemail leggings
++	AR		30
++	Coverage	Legs/Feet
++	VendorSellsFor	218
++	VendorBuysFor	109
++	MaxHP		60
++	strrequired	60
++	repairable	1
++	DexPenalty	6
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++Armor 0x141A
++{
++	Name		PlatemailLegs2
++	desc		platemail leggings
++	AR		30
++	Coverage	Legs/Feet
++	VendorSellsFor	218
++	VendorBuysFor	109
++	MaxHP		60
++	strrequired	60
++	repairable	1
++	DexPenalty	6
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1414
++{
++	Name		PlatemailGloves
++	desc		platemail gloves
++	AR		30
++	Coverage	Hands
++	VendorSellsFor	122
++	VendorBuysFor	61
++	MaxHP		60
++	strrequired	30
++	repairable	1
++	DexPenalty	2
++	medloss		nomed
++	DexPenalty	2
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++Armor 0x1418
++{
++	Name		PlatemailGloves2
++	desc		platemail gloves
++	AR		30
++	Coverage	Hands
++	VendorSellsFor	122
++	VendorBuysFor	61
++	MaxHP		60
++	strrequired	30
++	repairable	1
++	DexPenalty	2
++	medloss		nomed
++	DexPenalty	2
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1413
++{
++	Name		PlatemailGorget
++	desc		platemail gorget
++	AR		30
++	Coverage	Neck
++	VendorSellsFor	124
++	VendorBuysFor	70
++	MaxHP		60
++	strrequired	30
++	repairable	1
++	DexPenalty	1
++	medloss		nomed
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x144e
++{
++	Name		Bonearms
++	desc		bone arms
++	AR		30
++	Coverage	Arms
++	MaxHP		25
++	strrequired	40
++	medloss		700
++	DexPenalty	2
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x144f
++{
++	Name		Bonetunic
++	desc		bone tunic
++	AR		30
++	Coverage	Body
++	MaxHP		25
++	strrequired	40
++	medloss		2000
++	DexPenalty	6
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1450
++{
++	Name		Bonegloves
++	desc		bone gloves
++	AR		30
++	Coverage	Hands
++	MaxHP		25
++	strrequired	40
++	medloss		500
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1451
++{
++	Name		Bonehelm
++	desc		bone helm
++	AR		30
++	Coverage	Head
++	MaxHP		25
++	strrequired	40
++	medloss		750
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1452
++{
++	Name		Bonelegs
++	desc		bone leggings
++	AR		30
++	Coverage	Legs/feet
++	MaxHP		25
++	strrequired	40
++	medloss		1000
++	DexPenalty	4
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Armor 0x1f0b
++{
++	Name		Orchelm
++	desc		an orc helm
++	AR		20
++	Coverage	Head
++	MaxHP		55
++	medloss		500
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++#################
++#		WEAPONS		#
++#################
++
++Weapon 0x0F60
++{
++	Name		longsword
++	desc		longsword
++	Default		1
++	Speed		35
++	Damage		2d15+3
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		60
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	60
++	VendorBuysFor	30
++	strrequired	25
++	repairable	1
++	MinDam		5
++	MaxDam		33
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x13AF
++{
++	Name		WarAxe
++	desc		war axe
++	Speed		40
++	Damage		6d4+3
++	Attribute	Macefighting
++	Anim		0x000b
++	HitSound	0x23D
++	MissSound	0x233
++	MaxHP		55
++	Script		:lumberjacking:lumberjack
++	VendorSellsFor	38
++	VendorBuysFor	19
++	strrequired	45
++	repairable	1
++	MinDam		9
++	MaxDam		27
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x13B2
++{
++	Name		Bow
++	desc		bow
++	Speed		20
++	Damage		4d9+5
++	Attribute	Archery
++	Anim		0x12
++	Projectile	1
++	ProjectileType	0xf3f
++	ProjectileAnim	0xf42
++	ProjectileSound 0x235
++	MissSound	0x239
++	HitSound	0x235
++	MaxHP		45
++	VendorSellsFor	58
++	VendorBuysFor	29
++	TwoHanded	1
++	strrequired	20
++	MinDam		9
++	MaxDam		41
++	minrange		0
++	maxrange		20
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0f4f
++{
++	Name		Crossbow
++	desc		crossbow
++	Speed		18
++	Damage		5d8+3
++	Attribute	Archery
++	Anim		0x13
++	Projectile	1
++	ProjectileType	0x1bfb
++	ProjectileAnim	0x1bfe
++	ProjectileSound 0x235
++	HitSound	0x235
++	MissSound	0x239
++	MaxHP		45
++	VendorSellsFor	47
++	VendorBuysFor	23
++	TwoHanded	1
++	strrequired	30
++	MinDam		8
++	MaxDam		43
++	minrange		0
++	maxrange		20
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x13fd
++{
++	Name		HeavyCrossbow
++	desc		heavy crossbow
++	Speed		10
++	Damage		5d10+6
++	Attribute	Archery
++	Anim		0x13
++	Projectile	1
++	ProjectileType	0x1bfb
++	ProjectileAnim	0x1bfe
++	ProjectileSound 0x235
++	HitSound	0x235
++	MissSound	0x239
++	MaxHP		65
++	VendorSellsFor	56
++	VendorBuysFor	28
++	TwoHanded	1
++	strrequired	40
++	repairable	1
++	MinDam		11
++	MaxDam		56
++	minrange		0
++	maxrange		20
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0f49
++{
++	Name		Axe
++	desc		axe
++	Speed		37
++	Damage		3d10+3
++	Attribute	Swordsmanship
++	Anim		0x000d
++	MaxHP		65
++	Script		:lumberjacking:lumberjack
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	48
++	VendorBuysFor	24
++	TwoHanded	1
++	strrequired	3
++	repairable	1
++	MinDam		6
++	MaxDam		33
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0f47
++{
++	Name		BattleAxe
++	desc		battle axe
++	Speed		30
++	Damage		2d17+4
++	Attribute	Swordsmanship
++	Anim		0x000d
++	MaxHP		55
++	Script		:lumberjacking:lumberjack
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	38
++	VendorBuysFor	36
++	repairable	1
++	TwoHanded	1
++	strrequired	25
++	MinDam		6
++	MaxDam		38
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0f4b
++{
++	Name		DoubleAxe
++	desc		double axe
++	Speed		37
++	Damage		1d31+4
++	Attribute	Swordsmanship
++	Anim		0x000d
++	MaxHP		65
++	Script		:lumberjacking:lumberjack
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	32
++	VendorBuysFor	16
++	TwoHanded	1
++	strrequired	45
++	repairable	1
++	MinDam		5
++	MaxDam		35
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0f45
++{
++	Name		ExecutionersAxe
++	desc		executioner's axe
++	Speed		37
++	Damage		3d10+3
++	Attribute	Swordsmanship
++	Anim		0x000d
++	MaxHP		60
++	Script		:lumberjacking:lumberjack
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	38
++	VendorBuysFor	33
++	TwoHanded	1
++	strrequired	40
++	repairable	1
++	MinDam		6
++	MaxDam		33
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x13fa
++{
++	Name		LargeBattleAxe
++	desc		large battle axe
++	Speed		30
++	Damage		2d17+4
++	Attribute	Swordsmanship
++	Anim		0x000d
++	MaxHP		70
++	Script		:lumberjacking:lumberjack
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	32
++	VendorBuysFor	16
++	TwoHanded	1
++	strrequired	40
++	repairable	1
++	MinDam		6
++	MaxDam		38
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x1442
++{
++	Name		TwoHandedAxe
++	desc		two handed axe
++	Speed		30
++	Damage		2d18+3
++	Attribute	Swordsmanship
++	Anim		0x000d
++	MaxHP		50
++	Script		:lumberjacking:lumberjack
++	HitSound	0x23C
++	MissSound	0x23A
++	Anim		0xD
++	VendorSellsFor	42
++	VendorBuysFor	21
++	TwoHanded	1
++	strrequired	40
++	repairable	1
++	MinDam		5
++	MaxDam		39
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x143c
++{
++	Name		HammerPick
++	desc		hammer pick
++	Speed		30
++	Damage		3d10+3
++	Attribute	Macefighting
++	Anim		0x000b
++	MaxHP		50
++	Script		:mining:mining
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	31
++	VendorBuysFor	15
++	strrequired	35
++	repairable	1
++	MinDam		6
++	MaxDam		33
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x0f5c
++{
++	Name		Mace
++	desc		mace
++	Speed		30
++	Damage		6d5+2
++	Anim		0x000b
++	HitSound	0x13C
++	MissSound	0x234
++	MaxHP		50
++	VendorSellsFor	38
++	VendorBuysFor	30
++	strrequired	20
++	Attribute	Macefighting
++	repairable	1
++	MinDam		8
++	MaxDam		32
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x143a
++{
++	Name		Maul
++	desc		maul
++	Speed		30
++	Damage		5d5+5
++	Attribute	Macefighting
++	Anim		0x000b
++	HitSound	0x13C
++	MissSound	0x234
++	MaxHP		50
++	VendorSellsFor	31
++	VendorBuysFor	15
++	strrequired	20
++	repairable	1
++	MinDam		7
++	MaxDam		27
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x1438
++{
++	Name		WarHammer
++	desc		war hammer
++	Speed		31
++	Damage		7d5+1
++	Attribute	Macefighting
++	Anim		0x000d
++	HitSound	0x13C
++	MissSound	0x234
++	MaxHP		70
++	VendorSellsFor	27
++	VendorBuysFor	13
++	strrequired	30
++	TwoHanded	1
++	repairable	1
++	MinDam		8
++	MaxDam		36
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x1406
++{
++	Name		WarMace
++	desc		war mace
++	Speed		32
++	Damage		5d5+5
++	Attribute	Macefighting
++	Anim		0x000b
++	HitSound	0x13C
++	MissSound	0x234
++	MaxHP		70
++	VendorSellsFor	37
++	VendorBuysFor	18
++	strrequired	30
++	repairable	1
++	MinDam		10
++	MaxDam		30
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x0f4e
++{
++	Name		Bardiche
++	desc		bardiche
++	Speed		26
++	Damage		2d18+3
++	Attribute	Swordsmanship
++	Anim		0x000d
++	HitSound	0x237
++	MissSound	0x233
++	MaxHP		65
++	Script		:lumberjacking:lumberjack
++	VendorSellsFor	68
++	VendorBuysFor	34
++	TwoHanded	1
++	strrequired	40
++	repairable	1
++	MinDam		5
++	MaxDam		43
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x143e
++{
++	Name		Halberd
++	desc		halberd
++	Speed		25
++	Damage		8d5+3
++	Attribute	Swordsmanship
++	Anim		0xC
++	HitSound	0x238
++	MissSound	0x233
++	MaxHP		55
++	Script		:lumberjacking:lumberjack
++	VendorSellsFor	50
++	VendorBuysFor	25
++	TwoHanded	1
++	strrequired	45
++	Anim		0x000d
++	repairable	1
++	MinDam		5
++	MaxDam		49
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x1402
++{
++	Name		ShortSpear
++	desc		short spear
++	Speed		50
++	Damage		2d15+2
++	Attribute	Fencing
++	Anim		0x000e
++	MaxHP		55
++	HitSound	0x23D
++	MissSound	0x23B
++	VendorSellsFor	32
++	VendorBuysFor	16
++	TwoHanded	1
++	strrequired	15
++	repairable	1
++	MinDam		4
++	MaxDam		32
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0f63
++{
++	Name		Spear
++	desc		spear
++	Speed		46
++	Damage		2d18
++	Attribute	Fencing
++	Anim		0x000e
++	MaxHP		55
++	HitSound	0x23D
++	MissSound	0x23B
++	VendorSellsFor	38
++	VendorBuysFor	36
++	TwoHanded	1
++	strrequired	30
++	repairable	1
++	MinDam		2
++	MaxDam		36
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x1404
++{
++	Name		WarFork
++	desc		war fork
++	Speed		45
++	Damage		1d29+3
++	Attribute	Fencing
++	Anim		0x000a
++	MaxHP		70
++	HitSound	0x23D
++	MissSound	0x23B
++	VendorSellsFor	34
++	VendorBuysFor	17
++	strrequired	35
++	repairable	1
++	MinDam		4
++	MaxDam		32
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0f5e
++{
++	Name		BroadSword
++	desc		broadsword
++	Speed		45
++	Damage		2d13+3
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		65
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	44
++	VendorBuysFor	22
++	strrequired	25
++	repairable	1
++	MinDam		7
++	MaxDam		31
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x1440
++{
++	Name		Cutlass
++	desc		cutlass
++	Speed		45
++	Damage		2d12+4
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		55
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	32
++	VendorBuysFor	27
++	strrequired	10
++	repairable	1
++	MinDam		6
++	MaxDam		28
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0f51
++{
++	Name		Dagger
++	desc		dagger
++	Speed		55
++	Damage		2d4
++	Attribute	Fencing
++	Anim		0x000a
++	MaxHP		40
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	33
++	VendorBuysFor	21
++	strrequired	1
++	repairable	1
++	MinDam		3
++	MaxDam		15
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x13fe
++{
++	Name		Katana
++	desc		katana
++	Speed		58
++	Damage		3d8+2
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		60
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	42
++	VendorBuysFor	42
++	strrequired	10
++	repairable	1
++	MinDam		5
++	MaxDam		26
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x1401
++{
++	Name		Kryss
++	desc		kryss
++	Speed		53
++	Damage		1d26+2
++	Attribute	Fencing
++	Anim		0x000a
++	MaxHP		60
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	42
++	VendorBuysFor	21
++	strrequired	10
++	repairable	1
++	MinDam		3
++	MaxDam		28
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x13b5
++{
++	Name		Scimitar
++	desc		scimitar
++	Speed		43
++	Damage		2d14+2
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		50
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	43
++	VendorBuysFor	21
++	strrequired	10
++	repairable	1
++	MinDam		4
++	MaxDam		30
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x13b9
++{
++	Name		VikingSword
++	desc		viking sword
++	Speed		30
++	Damage		4d8+2
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		50
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	66
++	VendorBuysFor	33
++	TwoHanded	0
++	strrequired	40
++	repairable	1
++	MinDam		8
++	MaxDam		36
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0f43
++{
++	Name		Hatchet
++	desc		hatchet
++	Speed		40
++	Damage		2d8+1
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		55
++	Script		:lumberjacking:lumberjack
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	20
++	VendorBuysFor	10
++	strrequired	15
++	repairable	1
++	MinDam		2
++	MaxDam		17
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0e85
++{
++	Name		Pickaxe
++	desc		pickaxe
++	Speed		35
++	Damage		1d15
++	Attribute	Macefighting
++	Anim		0x000c
++	MaxHP		45
++	Script		:mining:mining
++	VendorSellsFor	32
++	VendorBuysFor	16
++	TwoHanded	1
++	strrequired	25
++	repairable	1
++	MinDam		1
++	MaxDam		15
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x13f6
++{
++	Name		ButcherKnife
++	desc		butcher's knife
++	Speed		40
++	Damage		2d2
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		35
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	21
++	VendorBuysFor	10
++	strrequired	5
++	repairable	1
++	MinDam		2
++	MaxDam		14
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0ec2
++{
++	Name		Cleaver
++	desc		cleaver
++	Speed		40
++	Damage		1d7
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		40
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	24
++	VendorBuysFor	12
++	strrequired	10
++	repairable	1
++	MinDam		2
++	MaxDam		13
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0ec4
++{
++	Name		SkinningKnife
++	desc		skinning knife
++	Speed		40
++	Damage		1d5
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		35
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	VendorSellsFor	26
++	VendorBuysFor	13
++	strrequired	5
++	repairable	1
++	MinDam		1
++	MaxDam		4
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x13b3
++{
++	Name		Club
++	desc		club
++	Speed		40
++	Damage		4d5+4
++	Attribute	Macefighting
++	Anim		0x000b
++	MaxHP		35
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	27
++	VendorBuysFor	13
++	strrequired	10
++	MinDam		8
++	MaxDam		24
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x0e87
++{
++	Name		Pitchfork
++	desc		pitchfork
++	Speed		45
++	Damage		4d4
++	Attribute	Fencing
++	Anim		0x000e
++	MaxHP		45
++	HitSound	0x23D
++	MissSound	0x23B
++	Anim		0xE
++	VendorSellsFor	25
++	VendorBuysFor	12
++	TwoHanded	1
++	strrequired	15
++	repairable	1
++	MinDam		4
++	MaxDam		16
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x0df0
++{
++	Name		BlackStaff
++	desc		black staff
++	Speed		35
++	Damage		5d6+3
++	Attribute	Macefighting
++	Anim		0xD
++	HitSound	0x13C
++	MissSound	0x234
++	Anim		0xC
++	MaxHP		50
++	VendorSellsFor	27
++	VendorBuysFor	24
++	TwoHanded	1
++	strrequired	35
++	Anim		0x000d
++	MinDam		8
++	MaxDam		33
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x13f9
++{
++	Name		GnarledStaff
++	desc		gnarled staff
++	Speed		33
++	Damage		5d5+5
++	Attribute	Macefighting
++	Anim		0xC
++	MaxHP		40
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	24
++	VendorBuysFor	12
++	strrequired	20
++	TwoHanded	1
++	Anim		0x000d
++	MinDam		10
++	MaxDam		30
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0e8a
++{
++	Name		Quarterstaff
++	desc		quarterstaff
++	Speed		48
++	Damage		5d5+3
++	Attribute	Macefighting
++	Anim		0xC
++	MaxHP		45
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	30
++	VendorBuysFor	15
++	strrequired	30
++	TwoHanded	1
++	Anim		0x000d
++	MinDam		8
++	MaxDam		43
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++
++Weapon 0x0e81
++{
++	Name		ShepherdsCrook
++	desc		shepherd's crook
++	script		:herding:herd
++	Speed		30
++	Damage		3d4
++	Attribute	Macefighting
++	Anim		0xC
++	MaxHP		30
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	33
++	VendorBuysFor	24
++	strrequired	10
++	TwoHanded	1
++	Anim		0x000d
++	MinDam		2
++	MaxDam		8
++	equipscript	equip
++	unequipscript	unequip
++	controlscript	itemControl
++	destroyscript	destroy
++}
++############################
++#-----------------Newbie Equipment-------------------#
++############################
++Armor 0x988d
++{
++	Name		practiceshield
++	desc		wooden shield
++	Graphic		0x1b7a
++	AR		2
++	Newbie		1
++	MaxHP		10
++	strrequired	5
++	medloss		nomed
++}
++
++Weapon 0x988c
++{
++	Name		practicelongsword
++	desc		practice longsword
++	graphic		0x0F60
++	Speed		35
++	Damage		2d4
++	Attribute	Swordsmanship
++	Anim		0x0009
++	MaxHP		60
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	newbie		1
++	Anim		0x0009
++	repairable	0
++	MinDam		1
++	MaxDam		4
++	controlscript	itemControl
++}
++
++Weapon 0x988b
++{
++	Name		practicemace
++	desc		practice mace
++	graphic		0x0f5c
++	Speed		30
++	Damage		2d4
++	Attribute	Macefighting
++	Anim		0x000b
++	HitSound	0x13C
++	MissSound	0x234
++	MaxHP		50
++	newbie		1
++	repairable	0
++	MinDam		1
++	MaxDam		4
++	controlscript	itemControl
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x988a
++{
++	Name		practicekryss
++	desc		practice kryss
++	graphic		0x1401
++	Speed		53
++	Damage		2d4
++	Attribute	Fencing
++	Anim		0x000a
++	MaxHP		60
++	Script		bladed
++	HitSound	0x23C
++	MissSound	0x23A
++	newbie		1
++	repairable	0
++	MinDam		1
++	MaxDam		4
++	controlscript	itemControl
++}
++
++Weapon 0x9889
++{
++	Name		practicebow
++	desc		practice bow
++	graphic		0x13B2
++	Speed		20
++	Damage		2d4
++	Attribute	Archery
++	Anim		0x12
++	Projectile	1
++	ProjectileType	0xf3f
++	ProjectileAnim	0xf42
++	ProjectileSound 0x235
++	MissSound	0x239
++	HitSound	0x235
++	MaxHP		45
++	newbie		1
++	TwoHanded	1
++	MinDam		1
++	MaxDam		4
++	controlscript	itemControl
++}
++
++Weapon 0x13e3
++{
++	Name		smithhammer
++	Default		1
++	Speed		30
++	Damage		6d3
++	Attribute	Macefighting
++	Anim		0x000b
++	MaxHP		60
++	Script		:blacksmithy:makeBlacksmithItems
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	24
++	VendorBuysFor	12
++	equipscript	:combat:equip
++	unequipscript	:combat:unequip
++	controlscript	:combat:itemControl
++	destroyscript	:combat:destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0x13e4
++{
++	Name		smithyhammer2
++	Default		1
++	Speed		30
++	Damage		6d3
++	Attribute	Macefighting
++	Anim		0x000b
++	MaxHP		60
++	Script		:blacksmithy:makeBlacksmithItems
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	24
++	VendorBuysFor	12
++	equipscript	:combat:equip
++	unequipscript	:combat:unequip
++	controlscript	:combat:itemControl
++	destroyscript	:combat:destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0xFB4
++{
++	Name		sledgehammer
++	Speed		25
++	Damage		4d6
++	Attribute	Macefighting
++	Anim		0x000b
++	MaxHP		80
++	Script		:blacksmithy:makeBlacksmithItems
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	36
++	VendorBuysFor	18
++	equipscript	:combat:equip
++	unequipscript	:combat:unequip
++	controlscript	:combat:itemControl
++	destroyscript	:combat:destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0xFB5
++{
++	Name		sledgehammer2
++	Speed		25
++	Damage		4d6
++	Attribute	Macefighting
++	Anim		0x000b
++	MaxHP		80
++	Script		:blacksmithy:makeBlacksmithItems
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	36
++	VendorBuysFor	18
++	equipscript	:combat:equip
++	unequipscript	:combat:unequip
++	controlscript	:combat:itemControl
++	destroyscript	:combat:destroy
++	CProp		OnHit a1:S15::combat:maceHit
++}
++
++Weapon 0xdf2
++{
++	Name		magicwand1
++	desc		wand
++	Weight		1
++	Speed		35
++	Damage		2d3
++	Attribute	Macefighting
++	Anim		0x000b
++	MaxHP		30
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	20
++	VendorBuysFor	8
++	controlscript	:combat:itemControl
++}
++
++Weapon 0xdf3
++{
++	Name		magicwand2
++	desc		wand
++	Weight		1
++	Speed		35
++	Damage		2d3
++	Attribute	Macefighting
++	Anim		0x000b
++	MaxHP		30
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	20
++	VendorBuysFor	8
++	controlscript	:combat:itemControl
++}
++
++Weapon 0xdf4
++{
++	Name		magicwand3
++	desc		wand
++	Weight		1
++	Speed		35
++	Damage		2d3
++	Attribute	Macefighting
++	Anim		0x000b
++	MaxHP		30
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	20
++	VendorBuysFor	8
++	controlscript	:combat:itemControl
++}
++
++Weapon 0xdf5
++{
++	Name		magicwand4
++	desc		wand
++	Weight		1
++	Speed		35
++	Damage		2d3
++	Attribute	Macefighting
++	Anim		0x000b
++	MaxHP		30
++	HitSound	0x13C
++	MissSound	0x234
++	VendorSellsFor	20
++	VendorBuysFor	8
++	controlscript	:combat:itemControl
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/combat/old/maceHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/maceHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/maceHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,31 @@
++use uo;
++use util;
++use os;
++include &quot;:attributes:attributes&quot;;
++
++program macehit(param)
++  var attacker := param[1];
++  var defender := param[2];
++  var armor := param[4];
++  var rawdamage := param[6];
++  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++  if((attacker.dead) || (defender.dead))
++    return;
++  endif
++  if(armor)
++    var admg := RandomInt(4) + 1;
++    if(armor.hp &gt;admg)
++      armor.hp := armor.hp - admg;
++    else
++      DestroyItem(armor);
++    endif
++  endif
++  var sdr := RandomInt(3) + 3;
++  if(GetStamina(defender) &gt;= sdr)
++    SetStamina(defender, GetStamina(defender) - sdr);
++  else
++    SetStamina(defender, 0);
++  endif
++endprogram
++
++   
+
+Added: trunk/096/pkg/systems/combat/old/magicarmor.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/old/magicarmor.cfg	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/magicarmor.cfg	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,50 @@
++# $Id: magicarmor.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++#item spawned for loot must be in this file to have the possibility to be magic
++
++Group 1
++{
++    LeatherGorget		    1
++    LeatherSleeves		    1
++    LeatherGloves		    1
++    LeatherCap			    1
++    LeatherLeggings		    1
++    LeatherTunic		    1
++    LeatherTunic2		    1
++    StuddedGorget		    1
++    StuddedGloves		    1
++    StuddedSleeves		    1
++    StuddedLeggings		    1
++    StuddedTunic		    1
++    FemaleStudded		    1
++    FemaleLeather		    1
++    LeatherSkirt		    1
++    LeatherBustier		    1
++    StuddedBustier		    1
++    LeatherShorts		    1
++    ChainmailCoif		    1
++    ChainmailLeggings	    1
++    ChainmailTunic		    1
++    CloseHelm			    1
++    Helmet			        1
++    Bascinet			    1
++    NoseHelm			    1
++    PlateHelm			    1
++    BronzeShield		    1
++    Buckler			        1
++    KiteShield			    1
++    HeaterShield		    1
++    KiteShieldB1		    1
++    WoodenShield		    1
++    MetalShield			    1
++    RingmailTunic		    1
++    RingmailSleeves		    1
++    RingmailLeggings	    1
++    RingmailGloves		    1
++    PlatemailBreastplate    1
++    PlatemailArms		    1
++    PlatemailLegs		    1
++    PlatemailGorget		    1
++    PlatemailGloves         1
++}
+
+Added: trunk/096/pkg/systems/combat/old/magiccloth.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/old/magiccloth.cfg	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/magiccloth.cfg	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,14 @@
++items 1
++{
++    Robe			    1
++    LeatherBoots		1
++    ThighBoots			1
++    silvernecklace      1
++    bracelet            1
++    earings             1
++    roundnecklace       1
++    longnecklace        1
++    ring                1
++    Cloak               1
++}
++
+
+Added: trunk/096/pkg/systems/combat/old/magicweaps.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/old/magicweaps.cfg	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/magicweaps.cfg	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,49 @@
++# $Id: magicweaps.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++#item spawned for loot must be in this file to have the possibility to be magic
++
++items 1
++{
++    Longsword		1
++    WarAxe		    1
++    Bow			    1
++    Crossbow		1
++    HeavyCrossbow	1
++    Axe			    1
++    BattleAxe		1
++    DoubleAxe		1
++    ExecutionersAxe	1
++    LargeBattleAxe	1
++    TwoHandedAxe	1
++    HammerPick		1
++    Mace		    1
++    Maul		    1
++    WarHammer		1
++    WarMace		    1
++    Bardiche		1
++    Halberd		    1
++    ShortSpear		1
++    Spear		    1
++    WarFork		    1
++    BroadSword		1
++    Cutlass		    1
++    Dagger		    1
++    Katana		    1
++    Kryss		    1
++    Scimitar		1
++    VikingSword		1
++    Hatchet		    1
++    PickAxe		    1
++    ButcherKnife	1
++    Cleaver		    1
++    SkinningKnife	1
++    Club		    1
++    SmithyHammer	1
++    PitchFork		1
++    BlackStaff		1
++    GnarledStaff	1
++    QuarterStaff	1
++    ShepherdsCrook	1
++}
++
+
+Added: trunk/096/pkg/systems/combat/old/mainHitScript.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/mainHitScript.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/mainHitScript.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,120 @@
++use uo;
++use os;
++use cfgfile;
++include &quot;hitScriptInc&quot;;
++
++var npccfgfile := ReadConfigFile(&quot;::npcdesc&quot;);
++
++program MainHitScript(attacker, defender, weapon, armor, basedamage, rawdamage)
++  if(defender == attacker)
++    SendSysMessage(attacker, &quot;No cheating!&quot;);
++    ApplyRawDamage(attacker, 1000);
++    return;
++  endif
++  if((defender.npctemplate == &quot;townguard&quot;) or (defender.npctemplate == &quot;playervendor&quot;))
++    ApplyRawDamage(attacker, 1000);
++    return;
++  endif
++  if((attacker.npctemplate == &quot;townguard&quot;) or (attacker.npctemplate == &quot;playervendor&quot;))
++    ApplyRawDamage(defender, 1000);
++    return;
++  endif
++  if(defender.isA(POLCLASS_NPC))
++    var damagedsound := CInt(npccfgfile[defender.npctemplate].damagedsound);
++    if(damagedsound)
++      PlaySoundEffect(defender, damagedsound);
++    endif
++    PerformAction(defender, 0xa);
++    basedamage := basedamage * 2;
++    rawdamage := rawdamage * 2;
++  else
++    if(attacker.acctname &amp;&amp; defender.acctname)
++      basedamage := basedamage / 2;
++      rawdamage := rawdamage / 2;
++    endif
++  endif
++  if(attacker.npctemplate == &quot;employee&quot;)
++    basedamage := basedamage / 2;
++    rawdamage := rawdamage / 2;
++  endif
++  SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon.name });
++  var shield := GetEquipmentByLayer(defender, 2);
++  if(shield)
++    var bd;
++    if(basedamage &gt; 100)
++      bd := 100;
++    else
++      bd := basedamage;
++    endif
++    if(RandomInt(Cint(GetEffectiveSkill(defender, SKILLID_PARRY) / 2)) &gt;= bd)
++      armor := shield;
++    endif
++  endif
++  var weaponhit := GetObjProperty(weapon, &quot;OnHit&quot;);
++  if(weapon.hp &gt; weapon.maxhp)
++    DestroyItem(weapon);
++    rawdamage := 0;
++  endif
++  var armorhit;
++  if(armor == 0)
++    armorhit := GetObjProperty(defender, &quot;ArmorHit&quot;);
++  else
++    armorhit := GetObjProperty(armor, &quot;ArmorHit&quot;);
++  endif
++  if(!weaponhit)
++    if(!armorhit)
++      run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++      if(GetObjProperty(weapon, &quot;SilverHit&quot;))
++        run_script_to_completion(&quot;silverHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++        rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++      endif
++      rawdamage := Cint(rawdamage + Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20));
++      if(rawdamage &lt; 1)
++        rawdamage := 1;
++      endif
++      DealDamage(defender, attacker, rawdamage);
++      return;
++    else
++      SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++      foreach x in armorhit
++        Detach();
++        run_script_to_completion(x, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++        rawdamage := CInt(GetObjProperty(defender, &quot;TempDamage&quot;) );
++      endforeach
++      run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++      EraseObjProperty(defender, &quot;TempDamage&quot;);
++      if(GetObjProperty(weapon, &quot;SilverHit&quot;))
++        run_script_to_completion(&quot;silverHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++        rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++      endif
++      rawdamage := Cint(rawdamage + Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20));
++      if(rawdamage &lt; 1)
++        rawdamage := 1;
++      endif
++      DealDamage(defender, attacker, rawdamage);
++      return;
++    endif
++  else
++    SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++    foreach x in weaponhit
++      Detach();
++      run_script_to_completion(CStr(x), { attacker, defender, weapon, armor, basedamage, rawdamage } );
++      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++    endforeach
++    EraseObjProperty(defender, &quot;TempDamage&quot;);
++    run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++    rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++    if(GetObjProperty(weapon, &quot;SilverHit&quot;))
++      run_script_to_completion(&quot;silverHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++    endif
++    rawdamage := Cint(rawdamage + Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20));
++    if(rawdamage &lt; 1)
++      rawdamage := 1;
++    endif
++    DealDamage(defender, attacker, rawdamage);
++    return;
++  endif
++endprogram
+
+Added: trunk/096/pkg/systems/combat/old/mobPoisonHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/mobPoisonHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/mobPoisonHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,31 @@
++use uo;
++use util;
++use os;
++use cfgfile;
++
++include &quot;include/client&quot;;
++
++
++program poisonhit(param)
++  var attacker := param[1];
++  var defender := param[2];
++  var rawdamage := param[6];
++  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++  if((RandomInt(4)+1) == 1)
++    return;
++  endif
++  var level := GetObjProperty(attacker, &quot;poison_strength&quot;);
++  if (!level)
++    level := 1;
++  endif
++  Detach();
++  foreach mobile in ListMobilesInLineOfSight(defender, 8)
++    if(mobile != defender)
++      PrintTextAbovePrivate(defender, defender.name + &quot; has been poisoned!&quot;, mobile);
++    endif
++  endforeach
++  PrintTextAbovePrivate(defender, &quot;You have been poisoned by &quot; + attacker.name +&quot;!&quot;, defender);
++  var passparms := { defender, attacker, &quot;poisoned weapon&quot;, level};
++  SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, &quot;poisoned weapon&quot; });
++  start_script(&quot;:spells:poisonDamage&quot;, passparms);
++endprogram
+
+Added: trunk/096/pkg/systems/combat/old/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/old/pkg.cfg	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/pkg.cfg	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,8 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled		1
++Name		combat
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/combat/old/poisonHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/poisonHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/poisonHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,50 @@
++use uo;
++use util;
++use os;
++use cfgfile;
++
++include &quot;include/client&quot;;
++include &quot;:attributes:attributes&quot;;
++
++program poisonhit(param)
++  var attacker := param[1];
++  var defender := param[2];
++  var weapon := param[3];
++  var rawdamage := param[6];
++  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++  var duration := CInt(GetObjProperty(weapon, &quot;d&quot;));
++  if((duration &lt; 1) || !duration)
++    var hitscript := GetObjProperty(weapon,&quot;OnHit&quot;);
++    var holder := array;
++    foreach thing in hitscript
++      if(thing != &quot;:combat:poisonHit&quot;)
++        holder.append(thing);
++      endif
++    endforeach
++    if(len(holder))
++      SetObjProperty(weapon,&quot;OnHit&quot;, holder);
++    else
++      EraseObjProperty(weapon, &quot;OnHit&quot;);
++    endif
++    EraseObjProperty(weapon,&quot;poison_level&quot;);
++    EraseObjProperty(weapon,&quot;d&quot;);
++    EraseObjProperty(weapon,&quot;ps&quot;);
++    SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon });
++    return;
++  else
++    duration := duration - 1;
++    SetObjProperty(weapon, &quot;d&quot;, duration);
++    var level := GetObjProperty(weapon, &quot;poison_level&quot;);
++    if(CheckSkill(attacker, SKILLID_POISONING, 20, 20))
++      foreach mobile in ListMobilesInLineOfSight(defender, 8)
++        if(mobile != defender)
++          PrintTextAbovePrivate(defender, defender.name + &quot; has been poisoned!&quot;, mobile);
++        endif
++      endforeach
++      PrintTextAbovePrivate(defender, &quot;You have been poisoned by &quot; + attacker.name +&quot;!&quot;, defender);
++      var passparms := { defender, attacker, &quot;poisoned weapon&quot;, level};
++      SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, &quot;poisoned weapon&quot; });
++      start_script(&quot;:spells:poisonDamage&quot;, passparms);
++    endif
++  endif
++endprogram
+
+Added: trunk/096/pkg/systems/combat/old/reactiveArmorHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/reactiveArmorHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/reactiveArmorHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,29 @@
++use uo;
++use util;
++use os;
++
++program reactivearmorhit(param)
++  var attacker := param[1];
++  var defender := param[2];
++  var rawdamage := param[6];
++  if((attacker.dead) || (defender.dead))
++    return;
++  endif
++  var charges := CInt(GetObjProperty(defender, &quot;ReactiveArmor&quot;) );
++  if(!charges)
++    SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++    return;
++  endif
++  charges := charges - 1;
++  if(charges == 0)
++    EraseObjProperty(defender, &quot;ReactiveArmor&quot;);
++  else
++    SetObjProperty(defender, &quot;ReactiveArmor&quot;, charges);
++  endif
++  PlayObjectCenteredEffect(attacker, 0x374a, 10,10);
++  PlaySoundEffect(attacker, 0x1f2);
++  rawdamage := CInt((rawdamage *3) / 4);
++  var newdamage := CInt(rawdamage / 4);
++  ApplyRawDamage(attacker, newdamage);
++  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++endprogram
+
+Added: trunk/096/pkg/systems/combat/old/setWeaponHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/setWeaponHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/setWeaponHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,5 @@
++program setweaponhit(wpn)
++
++    wpn.hitscript := &quot;mainHitScript&quot;;
++
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/combat/old/silverHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/silverHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/silverHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,25 @@
++use uo;
++use util;
++use os;
++use cfgfile;
++
++program macehit(param)
++  var attacker := param[1];
++  var defender := param[2];
++  var rawdamage := param[6];
++  if((attacker.dead) || (defender.dead))
++    return;
++  endif
++  if(!defender.isA(POLCLASS_NPC))
++    SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++    return;
++  endif
++  var cfg := ReadConfigFile(&quot;::npcdesc&quot;);
++  var undead := cfg[defender.npctemplate].elemental;
++  if(undead == &quot;undead&quot;)
++    rawdamage := rawdamage * 2;
++  endif
++  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++endprogram
++
++   
+
+Added: trunk/096/pkg/systems/combat/old/unequip.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/unequip.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/unequip.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,108 @@
++use uo;
++use os;
++use cfgfile;
++
++include &quot;include/client&quot;;
++include &quot;:attributes:attributes&quot;;
++
++const EVID_UNEQUIP   := 0x123456;
++const EVID_DISCHARGE := 0x123457;
++
++program unequipweapon(who, item)
++  set_critical(1);
++  var itemdesc := ReadConfigFile(&quot;itemdesc&quot;);
++  var penalty := CInt(itemdesc[item.objtype].DexPenalty);
++  if(penalty)
++    EraseObjProperty(item, &quot;#equipped&quot;);
++    SetDexterityMod(who, GetDexterityMod(who) + penalty);
++  endif
++  var type := GetObjProperty(item,&quot;type&quot;);
++  var val := 0;
++  case(type)
++    &quot;accuracy&quot;:     val := accuracy(who,item);
++    &quot;cursed&quot;:       val := cursed(who,item);
++    &quot;sight&quot;:        val := sight(who,item);
++    &quot;reflect&quot;:      val := reflect(who,item);
++    &quot;protection&quot;:   val := protection(who,item);
++    &quot;wizzohat&quot;:     val := wizzohat(who,item);
++    &quot;strength&quot;:     val := strength(who,item);
++    &quot;invisibility&quot;: val := invisibility(who, item);
++    default:        val := 1;
++  endcase
++  return val;
++  set_critical(0);
++endprogram
++
++function strength(who,item)
++  RemoveMods(who, item);
++  return 1;
++endfunction
++
++function wizzohat(who,item)
++  SetIntelligenceMod(who, GetIntelligenceMod(who) - 10);
++  SetStrengthMod(who, GetStrengthMod(who) + 5);
++  SetDexterityMod(who, GetDexterityMod(who) + 5);
++  EraseObjProperty(item, &quot;#equipped&quot;);
++  return 1;
++endfunction
++
++function cursed(who,item)
++  who := who;
++  item := item;
++  return 0;
++endfunction
++
++function invisibility(who,item)
++  RemoveMods(who, item);
++  return 1;
++endfunction
++
++function sight(who,item)
++  RemoveMods(who, item);
++  return 1;
++endfunction
++
++function reflect(who,item)
++  RemoveMods(who, item);
++  return 1;
++endfunction
++
++function accuracy(who,item)
++  if(GetObjProperty(item, &quot;#equipped&quot;) == who.serial)
++    var amt := CInt(GetObjProperty(item,&quot;gain&quot;));
++    amt := (0 - amt);
++    if((!amt) || (amt == 0))
++      amt := (0 - 5);
++    endif
++    var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
++    var attrib := cfg[item.objtype].Attribute;
++    case(attrib)
++      &quot;Wrestling&quot;: ModifyAttributeTemporaryMod(who, ATTRIBUTEID_WRESTLING,     amt);
++      &quot;Fencing&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_FENCING,       amt);
++      &quot;Archery&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_ARCHERY,       amt);
++      &quot;Swords&quot;:    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_SWORDSMANSHIP, amt);
++      &quot;Mace&quot;:      ModifyAttributeTemporaryMod(who, ATTRIBUTEID_MACEFIGHTING,  amt);
++    endcase
++    EraseObjProperty(item, &quot;#equipped&quot;);
++    return 1;
++  else
++    return 1;
++  endif
++
++endfunction
++
++function protection(who,item)
++  RemoveMods(who, item);
++  return 1;
++endfunction
++
++function RemoveMods(who, item)
++  who := who;
++  var proc := GetProcess(Cint(GetObjProperty(item, &quot;Pid&quot;)));
++  if(proc)
++    var ev := {};
++    ev.+type := EVID_UNEQUIP;
++    proc.sendevent(ev);
++  endif
++  EraseObjProperty(item, &quot;#equipped&quot;);
++endfunction
+
+Added: trunk/096/pkg/systems/combat/old/vortexHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/vortexHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/vortexHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,30 @@
++use uo;
++use util;
++use os;
++
++include &quot;:attributes:attributes&quot;;
++
++
++program vortexHit(param)
++	var attacker := param[1];
++	var defender := param[2];
++	//var basedamage := param[5];
++	var rawdamage := param[6];
++
++	if((attacker.dead) || (defender.dead))
++		return;
++	endif
++
++	var dmg := RandomInt(CInt(GetIntelligence(defender) / 10));
++	
++	if(dmg &gt; 40)
++		dmg := 12;
++	elseif(dmg &lt; 2)
++		dmg := 2;
++	endif
++	rawdamage := rawdamage + dmg;
++	SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++
++	return;
++endprogram
++
+
+Added: trunk/096/pkg/systems/combat/old/wrestleControl.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/wrestleControl.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/wrestleControl.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,15 @@
++use uo;
++use os;
++use cfgfile;
++
++
++program itemcontrol(item)
++	var cfgfile := ReadConfigFile(&quot;:combat:itemdesc&quot;);
++	var dmg := cfgfile[item.objtype].damage;
++
++	if(dmg)
++		item.hitscript := &quot;wrestlingHitScript&quot;;
++	endif
++
++	return;
++endprogram
+
+Added: trunk/096/pkg/systems/combat/old/wrestlingHitScript.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/wrestlingHitScript.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/old/wrestlingHitScript.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -0,0 +1,109 @@
++use cfgfile;
++use os;
++use uo;
++
++include &quot;hitScriptInc&quot;;
++
++var npccfgfile := ReadConfigFile(&quot;::npcdesc&quot;);
++
++
++program WrestlingHitScript(attacker, defender, weapon, armor, basedamage, rawdamage)
++  if(defender == attacker)
++    SendSysMessage(attacker, &quot;No cheating!&quot;);
++    ApplyRawDamage(attacker, 1000);
++    return;
++  endif
++  if((attacker.npctemplate == &quot;townguard&quot;) or (attacker.npctemplate == &quot;playervendor&quot;))
++    ApplyRawDamage(defender, 1000);
++    return;
++  endif
++  if(defender.isA(POLCLASS_NPC))
++    var damagedsound := CInt(npccfgfile[defender.npctemplate].damagedsound);
++    if(damagedsound)
++      PlaySoundEffect(defender, damagedsound);
++    endif
++    PerformAction(defender, 0xa);
++    basedamage := basedamage * 2;
++    rawdamage := rawdamage * 2;
++  else
++    if(attacker.acctname &amp;&amp; defender.acctname)
++      basedamage := basedamage / 2;
++      rawdamage := rawdamage / 2;
++    endif
++  endif
++  var shield := GetEquipmentByLayer(defender, 2);
++  if(shield)
++    var bd;
++    if(basedamage &gt; 100)
++      bd := 100;
++    else
++      bd := basedamage;
++    endif
++    if(RandomInt(Cint(GetEffectiveSkill(defender, SKILLID_PARRY) / 2)) &gt;= bd)
++      armor := shield;
++    endif
++  endif
++  var weaponhit := GetObjProperty(attacker, &quot;OnHit&quot;);
++  var armorhit;
++  if (armor == 0)
++    armorhit := GetObjProperty(defender, &quot;ArmorHit&quot;);
++  else
++    armorhit := GetObjProperty(armor, &quot;ArmorHit&quot;);
++  endif
++  var anat;
++  if (!weaponhit)
++    if (!armorhit)
++      run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++      if(rawdamage &lt; 1)
++        rawdamage := 1;
++      endif
++      anat := Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20);
++      rawdamage := Cint(rawdamage + anat);
++      DealDamage(defender, attacker, rawdamage);
++      SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon });
++      return;
++    else
++      SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++      foreach x in armorhit
++        Detach();
++        set_critical(0);
++        run_script_to_completion(x, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++        rawdamage := CInt(GetObjProperty(defender, &quot;TempDamage&quot;) );
++      endforeach
++      EraseObjProperty(defender, &quot;TempDamage&quot;);
++      run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++      if(rawdamage &lt; 1)
++        rawdamage := 1;
++      endif
++      anat := Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20);
++      rawdamage := Cint(rawdamage + anat);
++      DealDamage(defender, attacker, rawdamage);
++      SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon });
++      return;
++    endif
++  else
++    SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
++    foreach x in weaponhit
++      Detach();
++      set_critical(0);
++      run_script_to_completion(CStr(x), { attacker, defender, weapon, armor, basedamage, rawdamage } );
++      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++    endforeach
++    EraseObjProperty(defender, &quot;TempDamage&quot;);
++    if (rawdamage &lt; 1)
++      rawdamage := 1;
++    endif
++    run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
++    rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
++    if(rawdamage &lt; 1)
++      rawdamage := 1;
++    endif
++    anat := Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20);
++    rawdamage := Cint(rawdamage + anat);
++    DealDamage(defender, attacker, rawdamage);
++    SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon});
++    return;
++  endif
++endprogram
+
+Deleted: trunk/096/pkg/systems/combat/poisonHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/poisonHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/poisonHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,50 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-use cfgfile;
+-
+-include &quot;include/client&quot;;
+-include &quot;:attributes:attributes&quot;;
+-
+-program poisonhit(param)
+-  var attacker := param[1];
+-  var defender := param[2];
+-  var weapon := param[3];
+-  var rawdamage := param[6];
+-  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-  var duration := CInt(GetObjProperty(weapon, &quot;d&quot;));
+-  if((duration &lt; 1) || !duration)
+-    var hitscript := GetObjProperty(weapon,&quot;OnHit&quot;);
+-    var holder := array;
+-    foreach thing in hitscript
+-      if(thing != &quot;:combat:poisonHit&quot;)
+-        holder.append(thing);
+-      endif
+-    endforeach
+-    if(len(holder))
+-      SetObjProperty(weapon,&quot;OnHit&quot;, holder);
+-    else
+-      EraseObjProperty(weapon, &quot;OnHit&quot;);
+-    endif
+-    EraseObjProperty(weapon,&quot;poison_level&quot;);
+-    EraseObjProperty(weapon,&quot;d&quot;);
+-    EraseObjProperty(weapon,&quot;ps&quot;);
+-    SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon });
+-    return;
+-  else
+-    duration := duration - 1;
+-    SetObjProperty(weapon, &quot;d&quot;, duration);
+-    var level := GetObjProperty(weapon, &quot;poison_level&quot;);
+-    if(CheckSkill(attacker, SKILLID_POISONING, 20, 20))
+-      foreach mobile in ListMobilesInLineOfSight(defender, 8)
+-        if(mobile != defender)
+-          PrintTextAbovePrivate(defender, defender.name + &quot; has been poisoned!&quot;, mobile);
+-        endif
+-      endforeach
+-      PrintTextAbovePrivate(defender, &quot;You have been poisoned by &quot; + attacker.name +&quot;!&quot;, defender);
+-      var passparms := { defender, attacker, &quot;poisoned weapon&quot;, level};
+-      SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, &quot;poisoned weapon&quot; });
+-      start_script(&quot;:spells:poisonDamage&quot;, passparms);
+-    endif
+-  endif
+-endprogram
+
+Deleted: trunk/096/pkg/systems/combat/reactiveArmorHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/reactiveArmorHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/reactiveArmorHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,29 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-
+-program reactivearmorhit(param)
+-  var attacker := param[1];
+-  var defender := param[2];
+-  var rawdamage := param[6];
+-  if((attacker.dead) || (defender.dead))
+-    return;
+-  endif
+-  var charges := CInt(GetObjProperty(defender, &quot;ReactiveArmor&quot;) );
+-  if(!charges)
+-    SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-    return;
+-  endif
+-  charges := charges - 1;
+-  if(charges == 0)
+-    EraseObjProperty(defender, &quot;ReactiveArmor&quot;);
+-  else
+-    SetObjProperty(defender, &quot;ReactiveArmor&quot;, charges);
+-  endif
+-  PlayObjectCenteredEffect(attacker, 0x374a, 10,10);
+-  PlaySoundEffect(attacker, 0x1f2);
+-  rawdamage := CInt((rawdamage *3) / 4);
+-  var newdamage := CInt(rawdamage / 4);
+-  ApplyRawDamage(attacker, newdamage);
+-  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-endprogram
+
+Deleted: trunk/096/pkg/systems/combat/setWeaponHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/setWeaponHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/setWeaponHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,5 +0,0 @@
+-program setweaponhit(wpn)
+-
+-    wpn.hitscript := &quot;mainHitScript&quot;;
+-
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/systems/combat/silverHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/silverHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/silverHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,25 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-use cfgfile;
+-
+-program macehit(param)
+-  var attacker := param[1];
+-  var defender := param[2];
+-  var rawdamage := param[6];
+-  if((attacker.dead) || (defender.dead))
+-    return;
+-  endif
+-  if(!defender.isA(POLCLASS_NPC))
+-    SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-    return;
+-  endif
+-  var cfg := ReadConfigFile(&quot;::npcdesc&quot;);
+-  var undead := cfg[defender.npctemplate].elemental;
+-  if(undead == &quot;undead&quot;)
+-    rawdamage := rawdamage * 2;
+-  endif
+-  SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-endprogram
+-
+-   
+
+Deleted: trunk/096/pkg/systems/combat/unequip.src
+===================================================================
+--- trunk/096/pkg/systems/combat/unequip.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/unequip.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,108 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-
+-include &quot;include/client&quot;;
+-include &quot;:attributes:attributes&quot;;
+-
+-const EVID_UNEQUIP   := 0x123456;
+-const EVID_DISCHARGE := 0x123457;
+-
+-program unequipweapon(who, item)
+-  set_critical(1);
+-  var itemdesc := ReadConfigFile(&quot;itemdesc&quot;);
+-  var penalty := CInt(itemdesc[item.objtype].DexPenalty);
+-  if(penalty)
+-    EraseObjProperty(item, &quot;#equipped&quot;);
+-    SetDexterityMod(who, GetDexterityMod(who) + penalty);
+-  endif
+-  var type := GetObjProperty(item,&quot;type&quot;);
+-  var val := 0;
+-  case(type)
+-    &quot;accuracy&quot;:     val := accuracy(who,item);
+-    &quot;cursed&quot;:       val := cursed(who,item);
+-    &quot;sight&quot;:        val := sight(who,item);
+-    &quot;reflect&quot;:      val := reflect(who,item);
+-    &quot;protection&quot;:   val := protection(who,item);
+-    &quot;wizzohat&quot;:     val := wizzohat(who,item);
+-    &quot;strength&quot;:     val := strength(who,item);
+-    &quot;invisibility&quot;: val := invisibility(who, item);
+-    default:        val := 1;
+-  endcase
+-  return val;
+-  set_critical(0);
+-endprogram
+-
+-function strength(who,item)
+-  RemoveMods(who, item);
+-  return 1;
+-endfunction
+-
+-function wizzohat(who,item)
+-  SetIntelligenceMod(who, GetIntelligenceMod(who) - 10);
+-  SetStrengthMod(who, GetStrengthMod(who) + 5);
+-  SetDexterityMod(who, GetDexterityMod(who) + 5);
+-  EraseObjProperty(item, &quot;#equipped&quot;);
+-  return 1;
+-endfunction
+-
+-function cursed(who,item)
+-  who := who;
+-  item := item;
+-  return 0;
+-endfunction
+-
+-function invisibility(who,item)
+-  RemoveMods(who, item);
+-  return 1;
+-endfunction
+-
+-function sight(who,item)
+-  RemoveMods(who, item);
+-  return 1;
+-endfunction
+-
+-function reflect(who,item)
+-  RemoveMods(who, item);
+-  return 1;
+-endfunction
+-
+-function accuracy(who,item)
+-  if(GetObjProperty(item, &quot;#equipped&quot;) == who.serial)
+-    var amt := CInt(GetObjProperty(item,&quot;gain&quot;));
+-    amt := (0 - amt);
+-    if((!amt) || (amt == 0))
+-      amt := (0 - 5);
+-    endif
+-    var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-    var attrib := cfg[item.objtype].Attribute;
+-    case(attrib)
+-      &quot;Wrestling&quot;: ModifyAttributeTemporaryMod(who, ATTRIBUTEID_WRESTLING,     amt);
+-      &quot;Fencing&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_FENCING,       amt);
+-      &quot;Archery&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_ARCHERY,       amt);
+-      &quot;Swords&quot;:    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_SWORDSMANSHIP, amt);
+-      &quot;Mace&quot;:      ModifyAttributeTemporaryMod(who, ATTRIBUTEID_MACEFIGHTING,  amt);
+-    endcase
+-    EraseObjProperty(item, &quot;#equipped&quot;);
+-    return 1;
+-  else
+-    return 1;
+-  endif
+-
+-endfunction
+-
+-function protection(who,item)
+-  RemoveMods(who, item);
+-  return 1;
+-endfunction
+-
+-function RemoveMods(who, item)
+-  who := who;
+-  var proc := GetProcess(Cint(GetObjProperty(item, &quot;Pid&quot;)));
+-  if(proc)
+-    var ev := {};
+-    ev.+type := EVID_UNEQUIP;
+-    proc.sendevent(ev);
+-  endif
+-  EraseObjProperty(item, &quot;#equipped&quot;);
+-endfunction
+
+Deleted: trunk/096/pkg/systems/combat/vortexHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/vortexHit.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/vortexHit.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,30 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-
+-include &quot;:attributes:attributes&quot;;
+-
+-
+-program vortexHit(param)
+-	var attacker := param[1];
+-	var defender := param[2];
+-	//var basedamage := param[5];
+-	var rawdamage := param[6];
+-
+-	if((attacker.dead) || (defender.dead))
+-		return;
+-	endif
+-
+-	var dmg := RandomInt(CInt(GetIntelligence(defender) / 10));
+-	
+-	if(dmg &gt; 40)
+-		dmg := 12;
+-	elseif(dmg &lt; 2)
+-		dmg := 2;
+-	endif
+-	rawdamage := rawdamage + dmg;
+-	SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-
+-	return;
+-endprogram
+-
+
+Deleted: trunk/096/pkg/systems/combat/wrestleControl.src
+===================================================================
+--- trunk/096/pkg/systems/combat/wrestleControl.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/wrestleControl.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,15 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-
+-
+-program itemcontrol(item)
+-	var cfgfile := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-	var dmg := cfgfile[item.objtype].damage;
+-
+-	if(dmg)
+-		item.hitscript := &quot;wrestlingHitScript&quot;;
+-	endif
+-
+-	return;
+-endprogram
+
+Deleted: trunk/096/pkg/systems/combat/wrestlingHitScript.src
+===================================================================
+--- trunk/096/pkg/systems/combat/wrestlingHitScript.src	2005-11-01 22:50:10 UTC (rev 814)
++++ trunk/096/pkg/systems/combat/wrestlingHitScript.src	2005-11-02 03:37:45 UTC (rev 815)
+@@ -1,109 +0,0 @@
+-use cfgfile;
+-use os;
+-use uo;
+-
+-include &quot;hitScriptInc&quot;;
+-
+-var npccfgfile := ReadConfigFile(&quot;::npcdesc&quot;);
+-
+-
+-program WrestlingHitScript(attacker, defender, weapon, armor, basedamage, rawdamage)
+-  if(defender == attacker)
+-    SendSysMessage(attacker, &quot;No cheating!&quot;);
+-    ApplyRawDamage(attacker, 1000);
+-    return;
+-  endif
+-  if((attacker.npctemplate == &quot;townguard&quot;) or (attacker.npctemplate == &quot;playervendor&quot;))
+-    ApplyRawDamage(defender, 1000);
+-    return;
+-  endif
+-  if(defender.isA(POLCLASS_NPC))
+-    var damagedsound := CInt(npccfgfile[defender.npctemplate].damagedsound);
+-    if(damagedsound)
+-      PlaySoundEffect(defender, damagedsound);
+-    endif
+-    PerformAction(defender, 0xa);
+-    basedamage := basedamage * 2;
+-    rawdamage := rawdamage * 2;
+-  else
+-    if(attacker.acctname &amp;&amp; defender.acctname)
+-      basedamage := basedamage / 2;
+-      rawdamage := rawdamage / 2;
+-    endif
+-  endif
+-  var shield := GetEquipmentByLayer(defender, 2);
+-  if(shield)
+-    var bd;
+-    if(basedamage &gt; 100)
+-      bd := 100;
+-    else
+-      bd := basedamage;
+-    endif
+-    if(RandomInt(Cint(GetEffectiveSkill(defender, SKILLID_PARRY) / 2)) &gt;= bd)
+-      armor := shield;
+-    endif
+-  endif
+-  var weaponhit := GetObjProperty(attacker, &quot;OnHit&quot;);
+-  var armorhit;
+-  if (armor == 0)
+-    armorhit := GetObjProperty(defender, &quot;ArmorHit&quot;);
+-  else
+-    armorhit := GetObjProperty(armor, &quot;ArmorHit&quot;);
+-  endif
+-  var anat;
+-  if (!weaponhit)
+-    if (!armorhit)
+-      run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-      if(rawdamage &lt; 1)
+-        rawdamage := 1;
+-      endif
+-      anat := Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20);
+-      rawdamage := Cint(rawdamage + anat);
+-      DealDamage(defender, attacker, rawdamage);
+-      SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon });
+-      return;
+-    else
+-      SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-      foreach x in armorhit
+-        Detach();
+-        set_critical(0);
+-        run_script_to_completion(x, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-        rawdamage := CInt(GetObjProperty(defender, &quot;TempDamage&quot;) );
+-      endforeach
+-      EraseObjProperty(defender, &quot;TempDamage&quot;);
+-      run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-      if(rawdamage &lt; 1)
+-        rawdamage := 1;
+-      endif
+-      anat := Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20);
+-      rawdamage := Cint(rawdamage + anat);
+-      DealDamage(defender, attacker, rawdamage);
+-      SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon });
+-      return;
+-    endif
+-  else
+-    SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-    foreach x in weaponhit
+-      Detach();
+-      set_critical(0);
+-      run_script_to_completion(CStr(x), { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-    endforeach
+-    EraseObjProperty(defender, &quot;TempDamage&quot;);
+-    if (rawdamage &lt; 1)
+-      rawdamage := 1;
+-    endif
+-    run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-    rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-    if(rawdamage &lt; 1)
+-      rawdamage := 1;
+-    endif
+-    anat := Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20);
+-    rawdamage := Cint(rawdamage + anat);
+-    DealDamage(defender, attacker, rawdamage);
+-    SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon});
+-    return;
+-  endif
+-endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000788.html">[Poldistro-svn] r814 - in trunk/096/pkg/mobiles/oldAI: . combat main
+</A></li>
+	<LI>Next message: <A HREF="000790.html">[Poldistro-svn] r816 - trunk/096/pkg/systems/combat/old
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#789">[ date ]</a>
+              <a href="thread.html#789">[ thread ]</a>
+              <a href="subject.html#789">[ subject ]</a>
+              <a href="author.html#789">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

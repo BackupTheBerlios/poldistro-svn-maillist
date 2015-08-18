@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1134 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1134%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200601150117.k0F1HVRC010209%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001104.html">
+   <LINK REL="Next"  HREF="001106.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1134 - trunk/096/pkg/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1134%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200601150117.k0F1HVRC010209%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1134 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sun Jan 15 02:17:31 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001104.html">[Poldistro-svn] r1133 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001106.html">[Poldistro-svn] r1135 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1105">[ date ]</a>
+              <a href="thread.html#1105">[ thread ]</a>
+              <a href="subject.html#1105">[ subject ]</a>
+              <a href="author.html#1105">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-15 02:17:22 +0100 (Sun, 15 Jan 2006)
+New Revision: 1134
+
+Modified:
+   trunk/096/pkg/commands/gm/info.src
+Log:
+Begining to add support for the edit function parameter in info.cfg.
+
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2006-01-15 01:10:16 UTC (rev 1133)
++++ trunk/096/pkg/commands/gm/info.src	2006-01-15 01:17:22 UTC (rev 1134)
+@@ -193,7 +193,8 @@
+ 	var num_vitals := vitals.Size();
+ 	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, (num_vitals*20));
+ 	foreach vital_name in ( vitals )
+-		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
++		var btn_id := GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
++		RegisterButton(btn_id, vital_name, &quot;vitalEdit&quot;);
+ 		GFTextLine(gump, 175, y_pos, 2100, vital_name);
+ 		var value := AP_GetVital(targ, vital_name);
+ 		var max_value := AP_GetVitalMaximumValue(targ, vital_name);
+@@ -244,7 +245,9 @@
+ 		endif
+ 
+ 		foreach attrib_name in ( group )
+-			GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
++			var btn_id := GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
++			RegisterButton(btn_id, attrib_name, &quot;attribEdit&quot;);
++			
+ 			GFTextLine(gump, 175, y_pos, 2100, attrib_name);
+ 			var value := AP_GetTrueSkill(targ, attrib_name);
+ 			var mod_value := AP_GetSkillMod(targ, attrib_name);
+@@ -272,7 +275,9 @@
+ 	var num_privs := privs.Size();
+ 	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, (num_privs*20));
+ 	foreach priv_name in ( privs )
+-		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
++		var btn_id := GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
++		RegisterButton(btn_id, priv_name, &quot;privEdit&quot;);
++		
+ 		GFTextLine(gump, 175, y_pos, 2100, priv_name);
+ 
+ 		var status := &quot;Disabled&quot;;
+@@ -297,7 +302,8 @@
+ 	foreach area_name in ( storage_areas )
+ 		var container := CP_GetStorageContainerForMobile(targ, area_name, CP_NOCREATE);
+ 		if ( container )
+-			GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
++			var btn_id := GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
++			RegisterButton(btn_id, area_name, &quot;openStorage&quot;);
+ 		endif
+ 		GFTextLine(gump, 175, y_pos, 2100, area_name);
+ 		y_pos := y_pos+20;
+@@ -447,7 +453,7 @@
+ 		&quot;PropEdit&quot;:
+ 			PropEdit(who, targ, input_info);
+ 		default:
+-			GumpPrompt(who, &quot;Dont know what to do with type '&quot;+input_info.type+&quot;'&quot;);
++			GumpPrompt(who, &quot;Dont know what to do with edit function type '&quot;+input_info.editFunc+&quot;'&quot;);
+ 	endcase
+ 	return 0;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001104.html">[Poldistro-svn] r1133 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001106.html">[Poldistro-svn] r1135 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1105">[ date ]</a>
+              <a href="thread.html#1105">[ thread ]</a>
+              <a href="subject.html#1105">[ subject ]</a>
+              <a href="author.html#1105">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

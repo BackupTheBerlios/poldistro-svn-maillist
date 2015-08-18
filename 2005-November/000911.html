@@ -1,0 +1,682 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r937 - in trunk/096: pkg/commands/seer pkg/items/bountyboard pkg/mobiles/death pkg/mobiles/oldAI pkg/skills/magery pkg/systems/boat pkg/systems/stafflist scripts scripts/include/OLD scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r937%20-%20in%20trunk/096%3A%20pkg/commands/seer%20pkg/items/bountyboard%20pkg/mobiles/death%20pkg/mobiles/oldAI%20pkg/skills/magery%20pkg/systems/boat%20pkg/systems/stafflist%20scripts%20scripts/include/OLD%20scripts/misc&In-Reply-To=%3C200511070120.jA71KSON025199%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000910.html">
+   <LINK REL="Next"  HREF="000912.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r937 - in trunk/096: pkg/commands/seer pkg/items/bountyboard pkg/mobiles/death pkg/mobiles/oldAI pkg/skills/magery pkg/systems/boat pkg/systems/stafflist scripts scripts/include/OLD scripts/misc</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r937%20-%20in%20trunk/096%3A%20pkg/commands/seer%20pkg/items/bountyboard%20pkg/mobiles/death%20pkg/mobiles/oldAI%20pkg/skills/magery%20pkg/systems/boat%20pkg/systems/stafflist%20scripts%20scripts/include/OLD%20scripts/misc&In-Reply-To=%3C200511070120.jA71KSON025199%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r937 - in trunk/096: pkg/commands/seer pkg/items/bountyboard pkg/mobiles/death pkg/mobiles/oldAI pkg/skills/magery pkg/systems/boat pkg/systems/stafflist scripts scripts/include/OLD scripts/misc">austin at berlios.de
+       </A><BR>
+    <I>Mon Nov  7 02:20:28 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000910.html">[Poldistro-svn] r936 - in trunk/096: pkg/mobiles/brainAI/scripts/combat pkg/mobiles/oldAI pkg/mobiles/oldAI/combat pkg/systems/combat pkg/systems/combat/config scripts/items
+</A></li>
+        <LI>Next message: <A HREF="000912.html">[Poldistro-svn] r938 - in trunk/096/pkg: items/bountyboard items/food/config items/food/include items/guildstone items/moongates items/moongates/config items/walkOn/energyField items/walkOn/fireField items/walkOn/paraField items/walkOn/poisonField items/walkOn/spiderWeb mobiles/brainAI/complete/blackEye mobiles/brainAI/scripts/combat skills/magery/delay skills/magery/spellScripts/circle1 systems/loot/configs/OLD systems/spawnSystem/config/OLD
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#911">[ date ]</a>
+              <a href="thread.html#911">[ thread ]</a>
+              <a href="subject.html#911">[ subject ]</a>
+              <a href="author.html#911">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-07 02:20:20 +0100 (Mon, 07 Nov 2005)
+New Revision: 937
+
+Modified:
+   trunk/096/pkg/commands/seer/go.src
+   trunk/096/pkg/items/bountyboard/bountyboard.src
+   trunk/096/pkg/mobiles/death/plyrdeath.src
+   trunk/096/pkg/mobiles/oldAI/poisonElemental.src
+   trunk/096/pkg/mobiles/oldAI/tamed.src
+   trunk/096/pkg/skills/magery/spellStarter.src
+   trunk/096/pkg/systems/boat/boat.src
+   trunk/096/pkg/systems/stafflist/staffList.src
+   trunk/096/scripts/include/OLD/spellRestrictions.inc
+   trunk/096/scripts/misc/help.src
+   trunk/096/scripts/misc/logoff.src
+   trunk/096/scripts/misc/logofftest.src
+   trunk/096/scripts/misc/logon.src
+   trunk/096/scripts/start.src
+Log:
+Updated include paths (mostly removed calls to math.inc)
+Cleaned logon.src out big time! Most the stuff will be done in packages or has been removed and was still referenced in there.
+
+Commented out most of help.src, set it to just do a start_script() to the help package (when its put in??)
+
+
+
+Modified: trunk/096/pkg/commands/seer/go.src
+===================================================================
+--- trunk/096/pkg/commands/seer/go.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/pkg/commands/seer/go.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -35,7 +35,6 @@
+ use datafile;
+ 
+ include &quot;:datafile:datafile&quot;;
+-include &quot;include/math&quot;;
+ include &quot;:gumps:include/gumps&quot;;
+ include &quot;:gumps:include/gumpprompt&quot;;
+ include &quot;:gumps:include/gumps_ex&quot;;
+
+Modified: trunk/096/pkg/items/bountyboard/bountyboard.src
+===================================================================
+--- trunk/096/pkg/items/bountyboard/bountyboard.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/pkg/items/bountyboard/bountyboard.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -3,7 +3,7 @@
+ use datafile;
+ 
+ include &quot;:datafile:datafile&quot;;
+-include &quot;include/sorting&quot;;
++include &quot;include/OLD/sorting&quot;;
+ include &quot;include/client&quot;;
+ include &quot;:bountyboard:bounty&quot;;
+ include &quot;:gumps:include/old/old-gumps&quot;;
+
+Modified: trunk/096/pkg/mobiles/death/plyrdeath.src
+===================================================================
+--- trunk/096/pkg/mobiles/death/plyrdeath.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/pkg/mobiles/death/plyrdeath.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -11,7 +11,6 @@
+ use util;
+ 
+ include &quot;include/OLD/noto&quot;;
+-include &quot;include/reportMurder&quot;;
+ include &quot;:attributes:attributes&quot;;
+ include &quot;:timedscripts:timedScripts&quot;;
+ include &quot;:death:death&quot;;
+@@ -31,7 +30,7 @@
+ 	CheckForAutoRes(ghost, corpse);
+ 	
+ 	if ( (ghost.reportables).Size() &gt; 0)
+-		SendReportGump(ghost);
++		//SendReportGump(ghost);
+ 	endif
+ 	
+ 	return 1;
+@@ -51,7 +50,8 @@
+ endfunction
+ 
+ function CheckForAutoRes(who, corpse)
+-	if( CInt(GetObjProperty(corpse, &quot;AutoRes&quot;)) &gt;= 1 )
++	var auto_res := CInt(GetObjProperty(who, &quot;AutoRes&quot;));
++	if ( auto_res )
+ 		Resurrect(who);
+ 		AP_RefreshVitals(who);	
+ 		
+@@ -67,6 +67,10 @@
+ 			endif
+ 		endforeach
+ 		
++		if ( auto_res != -1 ) // -1 means infinite uses
++			auto_res := auto_res-1;
++			SetObjProperty(who, &quot;AutoRes&quot;, auto_res);
++		endif
+ 		return 1;
+ 	endif
+ 	return 0;
+
+Modified: trunk/096/pkg/mobiles/oldAI/poisonElemental.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/poisonElemental.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/pkg/mobiles/oldAI/poisonElemental.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -12,7 +12,7 @@
+ include &quot;:itemutils:objtype&quot;;
+ include &quot;:npcutils:NPCCast&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;include/spellRestrictions&quot;;
++include &quot;include/OLD/spellRestrictions&quot;;
+ include &quot;:oldAI:main/killPCsLoop&quot;;
+ include &quot;:oldAI:combat/fight&quot;;
+ include &quot;:oldAI:setup/spellSetup&quot;;
+
+Modified: trunk/096/pkg/mobiles/oldAI/tamed.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/tamed.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/pkg/mobiles/oldAI/tamed.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -9,7 +9,7 @@
+ include &quot;:npcutils:NPCBackpacks&quot;;
+ include &quot;:npcutils:NPCCast&quot;;
+ include &quot;:npcutils:names&quot;;
+-include &quot;include/snooping&quot;;
++include &quot;include/OLD/snooping&quot;;
+ include &quot;include/tileEffects&quot;;
+ 
+ set_priority(5);
+
+Modified: trunk/096/pkg/skills/magery/spellStarter.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellStarter.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/pkg/skills/magery/spellStarter.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -12,6 +12,7 @@
+ include &quot;:containers:containers&quot;;
+ include &quot;:itemutils:itemdesc&quot;;
+ include &quot;include/client&quot;;
++include &quot;include/sounds&quot;;
+ 
+ program SpellStarter(params)
+ 	var who		:= params[1]; // Caster.
+
+Modified: trunk/096/pkg/systems/boat/boat.src
+===================================================================
+--- trunk/096/pkg/systems/boat/boat.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/pkg/systems/boat/boat.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -20,7 +20,6 @@
+ include &quot;include/client&quot;;
+ include &quot;include/OLD/sound&quot;;
+ include &quot;:gumps:yesno&quot;;
+-include &quot;include/math&quot;;
+ include &quot;util/key&quot;;
+ include &quot;plankUtil&quot;;
+ 
+
+Modified: trunk/096/pkg/systems/stafflist/staffList.src
+===================================================================
+--- trunk/096/pkg/systems/stafflist/staffList.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/pkg/systems/stafflist/staffList.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -3,7 +3,7 @@
+ use util;
+ use math;
+ 
+-include &quot;include/math&quot;;
++include &quot;include/OLD/math&quot;;
+ include &quot;include/OLD/eventID&quot;;
+ var stff := {};
+ var players := {};
+
+Modified: trunk/096/scripts/include/OLD/spellRestrictions.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/spellRestrictions.inc	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/scripts/include/OLD/spellRestrictions.inc	2005-11-07 01:20:20 UTC (rev 937)
+@@ -9,8 +9,8 @@
+ include &quot;include/OLD/sound&quot;;
+ include &quot;:itemutils:objtype&quot;;
+ include &quot;include/OLD/statMod&quot;;
+-include &quot;include/firewall&quot;;
+-include &quot;include/spellAttack&quot;;
++include &quot;include/OLD/firewall&quot;;
++include &quot;include/OLD/spellAttack&quot;;
+ 
+ var caster;
+ var npccfg := ReadConfigFile(&quot;::npcdesc&quot;);
+
+Modified: trunk/096/scripts/misc/help.src
+===================================================================
+--- trunk/096/scripts/misc/help.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/scripts/misc/help.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -1,6 +1,23 @@
++/*
++ * $Id$
++ *
++ */
++
+ use uo;
+ use os;
+ 
++program Help(who)
++	var script := Start_Script(&quot;:help:help&quot;, who);
++	if ( script.errortext )
++		SendSysMessage(who, &quot;Error starting help system -&gt;&quot;+script.errortext);
++		return 0;
++	endif
++	
++	return 1;
++endprogram
++
++
++/*
+ include &quot;include/help&quot;;
+ include &quot;include/OLD/eventID&quot;;
+ var layout := {
+@@ -254,3 +271,4 @@
+   endforeach
+   return newarray;
+ endfunction
++*/
+\ No newline at end of file
+
+Modified: trunk/096/scripts/misc/logoff.src
+===================================================================
+--- trunk/096/scripts/misc/logoff.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/scripts/misc/logoff.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -10,7 +10,6 @@
+ use math;
+ use os;
+ 
+-include &quot;include/math&quot;;
+ include &quot;include/OLD/eventID&quot;;
+ include &quot;:attributes:attributes&quot;;
+ 
+
+Modified: trunk/096/scripts/misc/logofftest.src
+===================================================================
+--- trunk/096/scripts/misc/logofftest.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/scripts/misc/logofftest.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -8,7 +8,7 @@
+ use uo;
+ 
+ include &quot;include/OLD/eventID&quot;;
+-include &quot;include/innCheck&quot;;
++include &quot;include/OLD/innCheck&quot;;
+ 
+ include &quot;:timedscripts:timedScripts&quot;;
+ 
+
+Modified: trunk/096/scripts/misc/logon.src
+===================================================================
+--- trunk/096/scripts/misc/logon.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/scripts/misc/logon.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -1,332 +1,13 @@
+-/* $Id$
++/*
++ * $Id$
+  *
+- * Purpose
+- * This script allows code to run when the player logs in. Can be used for welcome messages, etc.
+- * This script runs critical, so be careful how much code you run!
+- *
+  */
++ 
+ use uo;
+-use os;
+-use util;
+-use math;
+-use cfgfile;
++ 
++program Logon(who)
+ 
+-include &quot;include/OLD/eventID&quot;;
+-include &quot;:itemutils:myUtil&quot;;
+-include &quot;:attributes:attributes&quot;;
+-include &quot;:combat:equip&quot;;
+-include &quot;include/OLD/noto&quot;;
+-
+-
+-program core_logon(who)
+-	TrackIP(who);
+-	RestoreMods(who);
+-	SetObjProperty(who,&quot;logontime&quot;,ReadGameClock());
+-	EraseObjProperty(who, &quot;IsMeditating&quot;);
+-	SetObjProperty(who,&quot;LoggedIn&quot;, 1);
+-	start_script(&quot;:meditation:medCheck&quot;, who);
+-	start_script(&quot;:hooks:attributeCore&quot;, who);
+-	if (who.cmdlevel &lt; 2)
+-		RevokePrivilege(who, &quot;hearghosts&quot;);
+-	else
+-		var oldpack := who.backpack;
+-		if (oldpack.objtype != 0x966c)
+-			MoveItemToLocation(oldpack, 1, 1, 0, MOVEITEM_FORCELOCATION);
+-			var newpack := CreateItemAtLocation(1, 1, 0, 0x966c, 1, who.realm);
+-			EquipItem(who, newpack);
+-			foreach thing in ListRootItemsInContainer(oldpack)
+-				MoveItemToContainer(thing, newpack);
+-			endforeach
+-		endif
+-	endif
+-	var mount := GetEquipmentByLayer(who, 25 );
+-	if (mount)
+-		var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
+-		if (animal)
+-			EraseObjProperty(animal,&quot;onhold&quot;);
+-		else
+-			DestroyItem(mount);
+-		endif
+-	endif
+-	var rm := GetObjProperty(who, &quot;ReportMenu&quot;);
+-	if (rm)
+-		var defender;
+-		var rept := {};
+-		foreach serial in rm
+-			foreach chr in EnumerateOnlineCharacters()
+-				if(chr.serial == serial)
+-					defender := chr;
+-					break;
+-				endif
+-			endforeach
+-			if (!defender)
+-				defender := SystemFindObjectBySerial(serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+-			endif
+-			rept.append(defender);
+-			defender := 0;
+-		endforeach
+-		SendReportGump(who, rept);
+-		EraseObjProperty(who, &quot;LoginNotify&quot;);
+-		EraseObjProperty(who, &quot;ReportMenu&quot;);
+-	endif
+-	var lr := GetObjProperty(who, &quot;LoginReport&quot;);
+-	if (lr)
+-		var reportdata := {};
+-		var jerk;
+-		foreach serial in lr
+-			jerk := SystemFindObjectBySerial(serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+-			if (jerk)
+-				reportdata.append(jerk);
+-			endif
+-		endforeach
+-		EraseObjProperty(who, &quot;LoginReport&quot;);
+-	endif
+-	var nkarma := CStr(GetObjProperty(who, &quot;ModKarma&quot;));
+-	var nfame := CStr(GetObjProperty(who, &quot;ModFame&quot;));
+-	if (nfame)
+-		var ofame := GetObjProperty(who, &quot;Fame&quot;);
+-		SendGainMessage(who, &quot;Fame&quot;, CInt(nfame));
+-		SetObjProperty(who, &quot;Fame&quot;, CInt(ofame) + CInt(nfame));
+-		EraseObjProperty(who, &quot;ModFame&quot;);
+-		var karma   := CInt(GetObjProperty(who, &quot;Karma&quot;));
+-		var fame    := CInt(GetObjProperty(who, &quot;Fame&quot;));
+-		SetNotoTitle(who, karma, fame);
+-	endif
+-	if (nkarma)
+-		var okarma := GetObjProperty(who, &quot;Karma&quot;);
+-		SendGainMessage(who, &quot;Karma&quot;, CInt(nkarma));
+-		SetObjProperty(who, &quot;Karma&quot;, CInt(okarma) + CInt(nkarma));
+-		EraseObjProperty(who, &quot;ModKarma&quot;);
+-		var karma := CInt(GetObjProperty(who, &quot;Karma&quot;));
+-		var fame := CInt(GetObjProperty(who, &quot;Fame&quot;));
+-		SetNotoTitle(who, karma, fame);
+-	endif
+-	var whopack := who.backpack;
+-	if (!GetObjProperty(whopack, &quot;Owner&quot;))
+-		SetObjProperty(whopack, &quot;Owner&quot;, who.serial);
+-	endif
+-	SetObjProperty(who, &quot;LastLog&quot;, ReadGameClock() );
+-	if (GetObjProperty(who,&quot;poly&quot;))
+-		Detach();
+-		sleep(15);
+-		who.graphic := who.objtype;
+-		who.color := who.truecolor;
+-		EraseObjProperty(who, &quot;poly&quot;);
+-	endif
+-	var mailkeeper := GetObjProperty(who,&quot;mailkeeper&quot;);
+-	if (!mailkeeper)
+-		start_script(&quot;:gmtools:mailkeeper&quot;, who);
+-		mailkeeper := 1;
+-		SetObjProperty(who, &quot;mailkeeper&quot;, 1);
+-	endif
+-	if (mailkeeper &gt;= 60)
+-		mailkeeper := 1;
+-		SetObjProperty(who, &quot;mailkeeper&quot;, mailkeeper);
+-		Detach();
+-		start_script(&quot;:gmtools:mailkeeper&quot;, who);
+-	else
+-		mailkeeper := mailkeeper + 1;
+-		SetObjProperty(who,&quot;mailkeeper&quot;, mailkeeper);
+-	endif
+-	foreach thing in ListEquippedItems(who)
+-		if (Cint(GetObjProperty(thing, &quot;#equipped&quot;)) != who.serial)
+-			HandleMods(who, thing);
+-		endif
+-	endforeach
+-	staffnotify(who);
+-endprogram
+-
+-
+-function TrackIP(who)
+-	var acct := who.acct;
+-	var ipstring := acct.getprop(&quot;LastIP&quot;);
+-	if (!ipstring)
+-		ipstring := {};
+-	endif
+-	var holder := {};
+-	var amt := len(ipstring);
+-	foreach thing in ipstring
+-		if ((thing[1] != who.ip) &amp;&amp; (amt &lt; 20));
+-			holder.append(thing);
+-		else
+-			amt := amt - 1;
+-		endif
+-	endforeach
+-	ipstring := holder;
+-	var newarray := {};
+-	newarray.append(who.ip);
+-	newarray.append(who.name);
+-	ipstring.append(newarray);
+-	acct.setprop(&quot;LastIP&quot;, ipstring);
+-	acct.setprop(&quot;LastLogin&quot;, ReadGameClock());
+-endfunction
+-
+-
+-function staffnotify(who)
+-	var pid := GetGlobalProperty(&quot;#stafflist&quot;);;
+-	if (!pid)
+-		syslog( &quot;Stafflist not initialized!&quot; );
+-		return;
+-	endif
+-	var process := getprocess(pid);
+-	if (!process)
+-		syslog( &quot;Can't find process for stafflist, pid=&quot; + pid );
+-		return;
+-	endif
+-	var k := struct;
+-	if (who.cmdlevel &lt; 2)
+-		k.+player := who;
+-		k.+type  := EVID_PLAYER_LOGIN;
+-		process.sendevent(k);
+-	else
+-		k.+player := who;
+-		k.+type   := EVID_STAFF_LOGIN;
+-		process.sendevent(k);
+-	endif
+-endfunction
+-
+-
+-const LONG_COUNT_DECAY_TIME := 144000; //40 hours
+-const SHORT_COUNT_DECAY_TIME := 28800; //8 hours
+-
+-
+-var layout := {
+-&quot;page 0&quot;,
+-&quot;nodispose&quot;,
+-&quot;noclose&quot;,
+-&quot;gumppic 0 0 206&quot;,
+-&quot;gumppic 43 0 201&quot;,
+-&quot;gumppic 460 0 207&quot;,
+-&quot;gumppic 0 43 202&quot;,
+-&quot;gumppic 43 43 200&quot;,
+-&quot;gumppic 170 43 200&quot;,
+-&quot;gumppic 295 43 200&quot;,
+-&quot;gumppic 335 43 200&quot;,
+-&quot;gumppic 43 170 200&quot;,
+-&quot;gumppic 170 170 200&quot;,
+-&quot;gumppic 295 170 200&quot;,
+-&quot;gumppic 335 170 200&quot;,
+-&quot;gumppic 43 220 200&quot;,
+-&quot;gumppic 170 220 200&quot;,
+-&quot;gumppic 295 220 200&quot;,
+-&quot;gumppic 335 220 200&quot;,
+-&quot;gumppic 460 43 203&quot;,
+-&quot;gumppic 0 340 204&quot;,
+-&quot;gumppic 43 340 233&quot;,
+-&quot;gumppic 460 340 205&quot;,
+-&quot;button 380 345 249 248 1 0 99&quot;,
+-&quot;text 50 20 40 0&quot;,
+-&quot;text 50 50 40 1&quot;,
+-&quot;text 50 70 40 2&quot;
+-};
+-
+-var data := {
+-&quot;Now is the time for retribution!&quot;,
+-&quot;Check zero or more players to report for your murder&quot;,
+-&quot;and press OKAY.&quot;
+-};
+-
+-
+-function SendReportGump(who, reportables)
+-	FillInArrays(reportables);
+-	var ret := SendDialogGump(who,layout,data);
+-	if (!ret)
+-		var reportdata := {};
+-		foreach reportable in(reportables)
+-			reportdata.append(reportable.serial);
+-		endforeach
+-		SetObjProperty(who, &quot;LoginReport&quot;, reportdata);
+-		return;
+-	endif
+-	foreach id in (ret.keys)
+-		if (id &gt;= 10)
+-			id := id-9;
+-			var mob := reportables[id];
+-			if (!(mob in EnumerateOnlineCharacters()))
+-				SetObjProperty(mob, &quot;LoginNotify&quot;, who.serial);
+-			else
+-				AdjustNoto(mob, who);
+-			endif
+-			AdjustMurderCounts(mob);
+-		endif
+-	endforeach
+-	foreach reportable in(who.reportables)
+-		who.removeReportable(reportable.serial, reportable.gameclock);
+-	endforeach
+-endfunction
+-
+-
+-function FillInArrays(reportables)
+-	var prev_y := 80;
+-	var prev_x := 40;
+-	var buttonret := 10;
+-	layout.append(&quot;page 1&quot;);
+-	foreach reportable in reportables
+-		if (!reportable.cmdlevel)
+-			if (buttonret == 21)
+-				prev_x := 300;
+-				prev_y := 80;
+-			endif
+-			layout.append(&quot;checkbox &quot; + CStr(prev_x) + &quot; &quot; + CStr(prev_y+20) + &quot; 210 211 0 &quot; + buttonret);
+-			data.append(reportable.name);
+-			layout.append(&quot;text &quot; + CStr(prev_x+20) + &quot; &quot; + CStr(prev_y+20) + &quot; 40 &quot; + CStr(len(data)-1));
+-			prev_y := prev_y+20;
+-			buttonret := buttonret+1;
+-		endif
+-	endforeach
+-endfunction
+-
+-
+-function AdjustMurderCounts(killer)
+-	var onlinetime := GetObjProperty(killer,&quot;onlinetimer&quot;);
+-	var longcount := GetObjProperty(killer,&quot;longmurders&quot;);
+-	if (!longcount)
+-		longcount := 0;
+-	endif
+-	longcount := longcount + 1;
+-	if (longcount &gt; 4)
+-		killer.setMurderer(1);
+-		SendSysMessage(killer,&quot;You are now known as a murderer!&quot;);
+-	endif
+-	var shortcount := GetObjProperty(killer, &quot;shortmurders&quot;);
+-	if (!shortcount)
+-		shortcount := 0;
+-	endif
+-	shortcount := shortcount + 1;
+-	SetObjProperty(killer, &quot;longmurders&quot;, longcount);
+-	SetObjProperty(killer, &quot;shortmurders&quot;, shortcount);
+-	SetObjProperty(killer, &quot;decaylongcountat&quot;, onlinetime + LONG_COUNT_DECAY_TIME);
+-	SetObjProperty(killer, &quot;decayshortcountat&quot;, onlinetime + SHORT_COUNT_DECAY_TIME);
+-endfunction
+-
+-
+-function RestoreMods(who)
+-	foreach thing in ListEquippedItems(who)
+-		if (GetObjProperty(thing, &quot;Pid&quot;))
+-			var holder := {};
+-			var gain := GetObjProperty(thing, &quot;gain&quot;);
+-			if (!gain)
+-				gain := 5;
+-			endif
+-			var type := GetObjProperty(thing, &quot;type&quot;);
+-			var tpe;
+-			case (type)
+-				&quot;strength&quot;:     tpe := &quot;str&quot;;
+-				&quot;invisibility&quot;: tpe := &quot;inv&quot;;
+-				&quot;sight&quot;:        tpe := &quot;vis&quot;;
+-				&quot;protection&quot;:   tpe := &quot;pro&quot;;
+-				&quot;reflect&quot;:      tpe := &quot;ref&quot;;
+-				&quot;bless&quot;:        tpe := &quot;bls&quot;;
+-			endcase
+-			holder.append(thing.serial);
+-			holder.append(tpe);
+-			holder.append(gain);
+-			SetObjProperty(thing, &quot;equipped&quot;, who.serial);
+-			var parms := {who, thing};
+-			start_script(&quot;:combat:chargeUpkeep&quot;, parms);
+-			print(&quot;upkeep started&quot;);
+-		endif
+-	endforeach
+-
+-	return;
+-endfunction
++	SetObjProperty(who, &quot;ConnectTime&quot;, polcore().systime);
++	
++	return 1;
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/start.src
+===================================================================
+--- trunk/096/scripts/start.src	2005-11-07 00:43:25 UTC (rev 936)
++++ trunk/096/scripts/start.src	2005-11-07 01:20:20 UTC (rev 937)
+@@ -14,21 +14,12 @@
+ 
+ include &quot;:logger:exception&quot;;
+ include &quot;:logger:log&quot;;
+-include &quot;:itemutils:utility&quot;;;
+-include &quot;include/teleporters&quot;;
+ 
+-
+ program StartServer()
+ 	Log(LOG_MAIN, &quot;Server started.&quot;);
+-	if (!start_script(&quot;:scheduler:scheduler&quot;))
++	if ( !start_script(&quot;:scheduler:scheduler&quot;) )
+ 		Exception(&quot;::start:StartServer(): Couldn't start the script scheduler&quot;);
+ 	endif
+-	print(&quot;Initializing merchant storage&quot;);
+-	find_or_create_storage(&quot;Merchant Storage&quot;);
+-	print(&quot;Wiping merchant storage&quot;);
+-	start_script(&quot;storageWipe&quot;);
+-	print(&quot;Initializing teleporters&quot;);
+-	CreateTeleporters();
+-
+-	return;
++	
++	return 1;
+ endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000910.html">[Poldistro-svn] r936 - in trunk/096: pkg/mobiles/brainAI/scripts/combat pkg/mobiles/oldAI pkg/mobiles/oldAI/combat pkg/systems/combat pkg/systems/combat/config scripts/items
+</A></li>
+	<LI>Next message: <A HREF="000912.html">[Poldistro-svn] r938 - in trunk/096/pkg: items/bountyboard items/food/config items/food/include items/guildstone items/moongates items/moongates/config items/walkOn/energyField items/walkOn/fireField items/walkOn/paraField items/walkOn/poisonField items/walkOn/spiderWeb mobiles/brainAI/complete/blackEye mobiles/brainAI/scripts/combat skills/magery/delay skills/magery/spellScripts/circle1 systems/loot/configs/OLD systems/spawnSystem/config/OLD
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#911">[ date ]</a>
+              <a href="thread.html#911">[ thread ]</a>
+              <a href="subject.html#911">[ subject ]</a>
+              <a href="author.html#911">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

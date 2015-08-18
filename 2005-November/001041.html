@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1070 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1070%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200511271146.jARBkrtZ029248%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001040.html">
+   <LINK REL="Next"  HREF="001042.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1070 - trunk/096/pkg/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1070%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200511271146.jARBkrtZ029248%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1070 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 27 12:46:53 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001040.html">[Poldistro-svn] r1067 - trunk/096/pkg/utils/gumps/include
+</A></li>
+        <LI>Next message: <A HREF="001042.html">[Poldistro-svn] r1071 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1041">[ date ]</a>
+              <a href="thread.html#1041">[ thread ]</a>
+              <a href="subject.html#1041">[ subject ]</a>
+              <a href="author.html#1041">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-27 12:46:49 +0100 (Sun, 27 Nov 2005)
+New Revision: 1070
+
+Modified:
+   trunk/096/pkg/commands/gm/info.src
+Log:
+More attribute listing updates
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-11-27 11:33:58 UTC (rev 1069)
++++ trunk/096/pkg/commands/gm/info.src	2005-11-27 11:46:49 UTC (rev 1070)
+@@ -182,31 +182,33 @@
+ 	var type := entry[2];
+ 	var attributes := AP_ListAttributesByType(type);
+ 	attributes := BreakArray(attributes, 20);
+-	
++
+ 	foreach group in ( attributes )
+ 		var num_attribs := group.Size();
+-		var y_needed := (num_attribs * 20)+10;
++		var y_needed := (num_attribs * 20);
+ 		var y_space := (END_Y-y_pos)+START_Y;
+-		
++
+ 		GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, y_needed);
++		if ( _group_iter &gt; 1 )
++			GFAddButton(gump, 460, START_Y+5, 2650, 2651, GF_PAGE_BTN, gump.cur_page-1);
++		endif
+ 		
+ 		foreach attrib_name in ( group )
+ 			GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+ 			GFTextLine(gump, 175, y_pos, 2100, attrib_name);
+ 			var value := AP_GetTrueSkill(targ, attrib_name);
+ 			var mod_value := AP_GetSkillMod(targ, attrib_name);
+-			GFTextRight(gump, 480, y_pos, 2100, value+&quot; (+&quot;+mod_value+&quot;)&quot;);
++			GFTextRight(gump, 455, y_pos, 2100, value+&quot; (+&quot;+mod_value+&quot;)&quot;);
+ 			y_pos := y_pos+20;
+ 			sleepms(2);
+ 		endforeach
+-		
++
+ 		if ( _group_iter &lt; attributes.Size() )
+-			GFAddButton(gump, 460, 400, 2648, 2649, GF_PAGE_BTN, gump.cur_page+1);
++			GFAddButton(gump, 460, 440, 2648, 2649, GF_PAGE_BTN, gump.cur_page+1);
+ 			GFPage(gump, gump.cur_page+1);
+-			GFAddButton(gump, 460, START_Y, 2650, 1651, GF_PAGE_BTN, gump.cur_page-1);
+ 			y_pos := START_Y;
+ 		endif
+-		
++
+ 		sleepms(2);
+ 	endforeach
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001040.html">[Poldistro-svn] r1067 - trunk/096/pkg/utils/gumps/include
+</A></li>
+	<LI>Next message: <A HREF="001042.html">[Poldistro-svn] r1071 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1041">[ date ]</a>
+              <a href="thread.html#1041">[ thread ]</a>
+              <a href="subject.html#1041">[ subject ]</a>
+              <a href="author.html#1041">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

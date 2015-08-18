@@ -1,0 +1,360 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1057 - in trunk/096/pkg/commands: config gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1057%20-%20in%20trunk/096/pkg/commands%3A%20config%20gm&In-Reply-To=%3C200511241142.jAOBgVt5026307%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001029.html">
+   <LINK REL="Next"  HREF="001031.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1057 - in trunk/096/pkg/commands: config gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1057%20-%20in%20trunk/096/pkg/commands%3A%20config%20gm&In-Reply-To=%3C200511241142.jAOBgVt5026307%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1057 - in trunk/096/pkg/commands: config gm">austin at berlios.de
+       </A><BR>
+    <I>Thu Nov 24 12:42:31 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001029.html">[Poldistro-svn] r1056 - trunk/096/config
+</A></li>
+        <LI>Next message: <A HREF="001031.html">[Poldistro-svn] r1058 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1030">[ date ]</a>
+              <a href="thread.html#1030">[ thread ]</a>
+              <a href="subject.html#1030">[ subject ]</a>
+              <a href="author.html#1030">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-24 12:42:29 +0100 (Thu, 24 Nov 2005)
+New Revision: 1057
+
+Modified:
+   trunk/096/pkg/commands/config/info.cfg
+   trunk/096/pkg/commands/gm/info.src
+Log:
+Updated info.cfg to give examples and to give an idea of what im planning to do in the script.
+
+
+Modified: trunk/096/pkg/commands/config/info.cfg
+===================================================================
+--- trunk/096/pkg/commands/config/info.cfg	2005-11-24 09:38:08 UTC (rev 1056)
++++ trunk/096/pkg/commands/config/info.cfg	2005-11-24 11:42:29 UTC (rev 1057)
+@@ -1,3 +1,40 @@
++####################################
++# $Id$
++#
++# Elem	Index
++# {
++#	Index	IndexName
++# }
++#
++# Elem	Index-IndexName
++# {
++#	Group	GroupName
++# }
++#
++# Group	GroupName
++# {
++#	// Stanard member (.whatever) entry
++#	Entry	member	Display_Name	PropertyNames	ValueParser	Editable	EditFunction
++#	Entry	member	Weapon_Name	weapon.desc	0	1	0
++#
++#	// Display Vitals
++#	Entry	vitals
++#
++#	// Display attributes in a category
++#	Entry	Attributes	CategoryName
++#	Entry	Attributes	Stat
++#
++#	// Display specific attribute
++#	Entry	Attribute	AttributeName
++#	Entry	Attribute	Swordsmanship
++#
++#	// Custom parameter (must edit BuildEntries() and write a function to support this param type)
++#	Entry	Custom	EntryName (data)
++#	Entry	Custom	Reportables	
++# }
++#
++####################################
++
+ Elem	Index
+ {
+ 	Index	General
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-11-24 09:38:08 UTC (rev 1056)
++++ trunk/096/pkg/commands/gm/info.src	2005-11-24 11:42:29 UTC (rev 1057)
+@@ -56,6 +56,7 @@
+ 		//return 0;
+ 		targ := who;
+ 	endif
++	
+ 	template := GumpTemplate(targ);
+ 	var cur_gump := 1;
+ 	
+@@ -123,9 +124,12 @@
+ 	if ( CInt(entry[4]) )
+ 		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+ 	endif
++	
+ 	GFTextLine(gump, 175, y_pos, 2100, ParseEntryName(entry[2]));
+-	GFTextRight(gump, 480, y_pos, 2100, ParseMembers(targ, entry[3]));
+ 	
++	var value := ParseMembers(targ, entry[3]);
++	GFTextRight(gump, 480, y_pos, 2100, value);
++	
+ 	y_pos := y_pos+20;
+ 	return 1;
+ endfunction
+@@ -152,8 +156,9 @@
+ 	var attributes := AP_ListAttributesByType(&quot;Stat&quot;);
+ 	var num_attribs := attributes.Size();
+ 	
++	var y_needed := num_attribs * 20;	
+ 	var y_space := (END_Y-y_pos)+START_Y;
+-	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, y_space);
++	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, y_needed);
+ 	
+ 	foreach attrib_name in ( attributes )
+ 		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+@@ -184,7 +189,7 @@
+ 		if ( temp != error ) 
+ 			result := temp;
+ 		else
+-			result := &quot;error&quot;;
++			result := &quot;None&quot;;
+ 			break;
+ 		endif
+ 		
+@@ -224,188 +229,6 @@
+ 	return gump;
+ endfunction
+ 
+-/*
+-function LocationGump(who, targ)
+-	var gump := GumpTemplate(targ);
+-	// Used to fix unused var report by ecompile: who;
+-	who := who;
+-	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 95);
+-	GFTextLine(gump, 185, 60, 2100, &quot;X&quot;);
+-	GFTextRight(gump, 475, 60, 2100, targ.x);
+-	GFTextLine(gump, 185, 80, 2100, &quot;Y&quot;);
+-	GFTextRight(gump, 475, 80, 2100, targ.y);
+-	GFTextLine(gump, 185, 100, 2100, &quot;Z&quot;);
+-	GFTextRight(gump, 475, 100, 2100, targ.z);
+-	GFTextLine(gump, 185, 120, 2100, &quot;Realm&quot;);
+-	GFTextRight(gump, 475, 120, 2100, targ.realm);
+-
+-	return gump;
+-endfunction
+-
+-
+-
+-
+-function GeneralGump(who, targ)
+-	var gump := GumpTemplate(targ);
+-
+-	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 95);
+-
+-	GFAddButton(gump, 165, 63, 2117, 2118, GF_DUMMY_BTN);
+-	GFTextLine(gump, 185, 60, 2100, &quot;Title Prefix&quot;);
+-	GFTextRight(gump, 475, 60, 2100, targ.title_prefix);
+-
+-	GFAddButton(gump, 165, 83, 2117, 2118, GF_DUMMY_BTN);
+-	GFTextLine(gump, 185, 80, 2100, &quot;Name&quot;);
+-	GFTextRight(gump, 475, 80, 2100, targ.name);
+-
+-	GFAddButton(gump, 165, 103, 2117, 2118, GF_DUMMY_BTN);
+-	GFTextLine(gump, 185, 100, 2100, &quot;Title Suffix&quot;);
+-	GFTextRight(gump, 475, 100, 2100, targ.title_suffix);
+-
+-	GFAddButton(gump, 165, 123, 2117, 2118, GF_DUMMY_BTN);
+-	GFTextLine(gump, 185, 120, 2100, &quot;Tile Race&quot;);
+-	GFTextRight(gump, 475, 120, 2100, targ.title_race);
+-
+-	return gump;
+-endfunction
+-
+-function ClientGump(who, targ)
+-	var gump := GumpTemplate(targ);
+-
+-	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 75);
+-	GFTextLine(gump, 185, 60, 2100, &quot;Connected&quot;);
+-	GFTextRight(gump, 475, 60, 2100, targ.connected);
+-	GFTextLine(gump, 185, 80, 2100, &quot;IP Address&quot;);
+-	GFTextRight(gump, 475, 80, 2100, targ.ip);
+-	GFTextLine(gump, 185, 100, 2100, &quot;Client Version&quot;);
+-	GFTextRight(gump, 475, 100, 2100, targ.clientversion);
+-
+-	GFResizePic(gump, 160, 135, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 75);
+-	GFTextLine(gump, 185, 140, 2100, &quot;Account Name&quot;);
+-	GFTextRight(gump, 475, 140, 2100, targ.acctname);
+-	GFTextLine(gump, 185, 160, 2100, &quot;Account Enabled&quot;);
+-	GFTextRight(gump, 475, 160, 2100, (targ.acct).enabled);
+-	GFTextLine(gump, 185, 180, 2100, &quot;Account Banned&quot;);
+-	GFTextRight(gump, 475, 180, 2100, (targ.acct).banned);
+-
+-	GFResizePic(gump, 163, 215, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 315, 245);
+-	var client_info := targ.clientinfo;
+-	var info_string := &quot;&lt;U&gt;Client Info&lt;/U&gt;&lt;BR&gt;&quot;;
+-	foreach key in ( (client_info).keys() )
+-		info_string := info_string + key +&quot; &lt;B&gt;:&lt;/B&gt; &quot;+client_info[key]+&quot;&lt;BR&gt;&quot;;
+-		sleepms(2);
+-	endforeach
+-
+-	GFHTMLArea(gump, 170, 222, 303, 231, info_string, 0, 1);
+-
+-	return gump;
+-endfunction
+-
+-function CombatGump(who, targ)
+-	var gump := GumpTemplate(targ);
+-
+-	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 95);
+-	GFAddButton(gump, 165, 63, 2117, 2118, GF_DUMMY_BTN);
+-	GFTextLine(gump, 185, 60, 2100, &quot;Warmode&quot;);
+-	GFTextRight(gump, 475, 60, 2100, targ.warmode);
+-
+-	GFTextLine(gump, 185, 80, 2100, &quot;Armor Rating (AR)&quot;);
+-	GFTextRight(gump, 475, 80, 2100, targ.ar);
+-
+-	GFAddButton(gump, 165, 103, 2117, 2118, GF_DUMMY_BTN);
+-	GFTextLine(gump, 185, 100, 2100, &quot;AR Mod&quot;);
+-	GFTextRight(gump, 475, 100, 2100, targ.ar_mod);
+-
+-	GFAddButton(gump, 165, 123, 2117, 2118, GF_DUMMY_BTN);
+-	GFTextLine(gump, 185, 120, 2100, &quot;Attack Speed Mod&quot;);
+-	GFTextRight(gump, 475, 120, 2100, targ.delay_mod);
+-
+-	GFResizePic(gump, 160, 155, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 195);
+-	GFTextLine(gump, 170, 160, 2100, &quot;Weapon Information&quot;);
+-
+-	var weapon := targ.weapon;
+-	var wpn_name, wpn_speed, wpn_dice;
+-	if ( targ.IsA(POLCLASS_NPC) &amp;&amp; ((targ.weapon).objtype == 0xF020) )
+-		var cfg := NPC_GetNPCConfig(targ.npctemplate);
+-		cfg := cfg[targ.npctemplate];
+-		wpn_name := &quot;NPC intrinsic weapon&quot;;
+-		wpn_speed := cfg.AttackSpeed;
+-		wpn_dice := cfg.AttackDamage;
+-	elseif ( targ.weapon )
+-		var cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-		cfg := cfg[(targ.weapon).objtype];
+-		wpn_name := (targ.weapon).desc;
+-		wpn_speed := cfg.Speed;
+-		wpn_dice := cfg.Damage;
+-	endif
+-
+-	var average := CS_GetAverageDamage(weapon);
+-
+-	GFTextLine(gump, 185, 180, 2100, &quot;Weapon Name&quot;);
+-	GFTextRight(gump, 475, 180, 2100, wpn_name);
+-	GFTextLine(gump, 185, 200, 2100, &quot;Weapon Serial&quot;);
+-	GFTextRight(gump, 475, 200, 2100, Hex(weapon.serial));
+-	GFTextLine(gump, 185, 220, 2100, &quot;Weapon Objtype&quot;);
+-	GFTextRight(gump, 475, 220, 2100, Hex(weapon.objtype));
+-
+-	GFTextLine(gump, 185, 260, 2100, &quot;Weapon Speed&quot;);
+-	GFTextRight(gump, 475, 260, 2100, CInt(wpn_speed));
+-	GFTextLine(gump, 185, 280, 2100, &quot;Damage Modifier&quot;);
+-	GFTextRight(gump, 475, 280, 2100, weapon.dmg_mod);
+-	GFTextLine(gump, 185, 300, 2100, &quot;Damage Dice&quot;);
+-	GFTextRight(gump, 475, 300, 2100, wpn_dice);
+-	GFTextLine(gump, 185, 320, 2100, &quot;Average Damage&quot;);
+-	GFTextRight(gump, 475, 320, 2100, average);
+-
+-	return gump;
+-endfunction
+-
+-function ScriptGump(who, targ)
+-	var gump := GumpTemplate(targ);
+-
+-	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 55);
+-	GFTextLine(gump, 175, 60, 2100, &quot;Attached Script&quot;);
+-	GFTextRight(gump, 475, 60, 2100, GetScriptName((targ.attached).name));
+-	GFTextLine(gump, 175, 80, 2100, &quot;Attached PID&quot;);
+-	GFTextRight(gump, 475, 80, 2100, CInt((targ.attached).pid));
+-
+-	GFResizePic(gump, 160, 115, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 95);
+-	GFTextLine(gump, 175, 120, 2100, &quot;AI Script&quot;);
+-	GFTextRight(gump, 475, 120, 2100, GetScriptName(targ.script));
+-	GFTextLine(gump, 175, 140, 2100, &quot;AI PID&quot;);
+-	GFTextRight(gump, 475, 140, 2100, CInt((targ.process).pid));
+-	GFTextLine(gump, 175, 160, 2100, &quot;Event Mask&quot;);
+-	GFTextRight(gump, 475, 160, 2100, Hex(CInt(targ.eventmask)));
+-	GFTextLine(gump, 175, 180, 2100, &quot;Master Serial&quot;);
+-	GFTextRight(gump, 475, 180, 2100, Hex(CInt((targ.master).serial)));
+-
+-	return gump;
+-endfunction
+-
+-function RepSysGump(who, targ)
+-	var gump := GumpTemplate(targ);
+-
+-	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 55);
+-	GFAddButton(gump, 165, 63, 2117, 2118, GF_DUMMY_BTN);
+-	GFTextLine(gump, 185, 60, 2100, &quot;Criminal&quot;);
+-	GFTextRight(gump, 475, 60, 2100, targ.criminal);
+-	GFAddButton(gump, 165, 83, 2117, 2118, GF_DUMMY_BTN);
+-	GFTextLine(gump, 185, 80, 2100, &quot;Murderer&quot;);
+-	GFTextRight(gump, 475, 80, 2100, targ.murderer);
+-
+-	GFResizePic(gump, 163, 115, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 315, 245);
+-	var client_info := targ.clientinfo;
+-	var info_string := &quot;&lt;U&gt;Reportables&lt;/U&gt;&lt;BR&gt;&quot;;
+-	foreach entry in ( targ.reportables )
+-		info_string := info_string + &quot;&lt;B&gt;o&lt;/B&gt; &quot;+ entry + &quot;&lt;BR&gt;&quot;;
+-		sleepms(2);
+-	endforeach
+-
+-	GFHTMLArea(gump, 170, 122, 303, 231, info_string, 0, 1);
+-
+-	return gump;
+-endfunction
+-
+ function GetScriptName(path)
+ 	if ( !path )
+ 		return &quot;None&quot;;
+@@ -420,4 +243,3 @@
+ 
+ 	return path;
+ endfunction
+-*/
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001029.html">[Poldistro-svn] r1056 - trunk/096/config
+</A></li>
+	<LI>Next message: <A HREF="001031.html">[Poldistro-svn] r1058 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1030">[ date ]</a>
+              <a href="thread.html#1030">[ thread ]</a>
+              <a href="subject.html#1030">[ subject ]</a>
+              <a href="author.html#1030">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

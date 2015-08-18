@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r594 - trunk/096/pkg/systems/spawnSystem/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r594%20-%20trunk/096/pkg/systems/spawnSystem/include&In-Reply-To=%3C200510130424.j9D4O1u2026354%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000563.html">
+   <LINK REL="Next"  HREF="000565.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r594 - trunk/096/pkg/systems/spawnSystem/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r594%20-%20trunk/096/pkg/systems/spawnSystem/include&In-Reply-To=%3C200510130424.j9D4O1u2026354%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r594 - trunk/096/pkg/systems/spawnSystem/include">austin at berlios.de
+       </A><BR>
+    <I>Thu Oct 13 06:24:01 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000563.html">[Poldistro-svn] r593 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+        <LI>Next message: <A HREF="000565.html">[Poldistro-svn] r595 - in trunk/096/pkg/systems/spawnSystem: . initializer www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#564">[ date ]</a>
+              <a href="thread.html#564">[ thread ]</a>
+              <a href="subject.html#564">[ subject ]</a>
+              <a href="author.html#564">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-13 06:23:58 +0200 (Thu, 13 Oct 2005)
+New Revision: 594
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/include/commonTasks.inc
+   trunk/096/pkg/systems/spawnSystem/include/engines.inc
+   trunk/096/pkg/systems/spawnSystem/include/groups.inc
+   trunk/096/pkg/systems/spawnSystem/include/realms.inc
+   trunk/096/pkg/systems/spawnSystem/include/regions.inc
+   trunk/096/pkg/systems/spawnSystem/include/spawnerUtil.inc
+Log:
+Updated include paths from :spawnsystem:include/xxx to omit the include/
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/commonTasks.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/commonTasks.inc	2005-10-13 04:17:43 UTC (rev 593)
++++ trunk/096/pkg/systems/spawnSystem/include/commonTasks.inc	2005-10-13 04:23:58 UTC (rev 594)
+@@ -1,9 +1,9 @@
+ use uo;
+ use os;
+ 
+-include &quot;:spawnsystem:include/groups&quot;;
+-include &quot;:spawnsystem:include/realms&quot;;
+-include &quot;:spawnsystem:include/regions&quot;;
++include &quot;:spawnsystem:groups&quot;;
++include &quot;:spawnsystem:realms&quot;;
++include &quot;:spawnsystem:regions&quot;;
+ 
+ /*
+  * SS_MoveRegionToNewRealm(region_name, realm_name)
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/engines.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/engines.inc	2005-10-13 04:17:43 UTC (rev 593)
++++ trunk/096/pkg/systems/spawnSystem/include/engines.inc	2005-10-13 04:23:58 UTC (rev 594)
+@@ -2,8 +2,8 @@
+ use os;
+ use cfgfile;
+ 
+-include &quot;:datafile:include/datafile&quot;;
+-include &quot;:spawnsystem:include/settings&quot;;
++include &quot;:datafile:datafile&quot;;
++include &quot;:spawnsystem:settings&quot;;
+ 
+ /*
+  * SS_GetEnginesList()
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/groups.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/groups.inc	2005-10-13 04:17:43 UTC (rev 593)
++++ trunk/096/pkg/systems/spawnSystem/include/groups.inc	2005-10-13 04:23:58 UTC (rev 594)
+@@ -1,7 +1,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;:datafile:include/datafile&quot;;
++include &quot;:datafile:datafile&quot;;
+ 
+ /*
+  * SS_GetGroupDataFile()
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/realms.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/realms.inc	2005-10-13 04:17:43 UTC (rev 593)
++++ trunk/096/pkg/systems/spawnSystem/include/realms.inc	2005-10-13 04:23:58 UTC (rev 594)
+@@ -56,7 +56,7 @@
+  */
+ function SS_AddRealm(realm_name)
+ 	var core_realms := Realms();
+-	if ( !core_realms[realm_name] )
++	if ( !core_realms.Exists(realm_name) )
+ 		return error{&quot;errortext&quot;:=&quot;'&quot;+realm_name+&quot;' is not a valid realm name.&quot;};
+ 	endif
+ 	
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/regions.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/regions.inc	2005-10-13 04:17:43 UTC (rev 593)
++++ trunk/096/pkg/systems/spawnSystem/include/regions.inc	2005-10-13 04:23:58 UTC (rev 594)
+@@ -1,7 +1,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;:datafile:include/datafile&quot;;
++include &quot;:datafile:datafile&quot;;
+ 
+ /*
+  * SS_GetRegionDataFile()
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/spawnerUtil.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/spawnerUtil.inc	2005-10-13 04:17:43 UTC (rev 593)
++++ trunk/096/pkg/systems/spawnSystem/include/spawnerUtil.inc	2005-10-13 04:23:58 UTC (rev 594)
+@@ -2,7 +2,7 @@
+ use os;
+ use util;
+ 
+-include &quot;:datafile:include/datafile&quot;;
++include &quot;:datafile:datafile&quot;;
+ 
+ /*
+  * SS_SelectCoordsInArea(x1, y1, x2, y2)
+@@ -30,4 +30,5 @@
+ endfunction
+ 
+ /*
+- * SS_
+\ No newline at end of file
++ * SS_
++ */
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000563.html">[Poldistro-svn] r593 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+	<LI>Next message: <A HREF="000565.html">[Poldistro-svn] r595 - in trunk/096/pkg/systems/spawnSystem: . initializer www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#564">[ date ]</a>
+              <a href="thread.html#564">[ thread ]</a>
+              <a href="subject.html#564">[ subject ]</a>
+              <a href="author.html#564">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

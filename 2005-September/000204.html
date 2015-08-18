@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r222 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r222%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509242225.j8OMPJVS009882%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000203.html">
+   <LINK REL="Next"  HREF="000205.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r222 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r222%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509242225.j8OMPJVS009882%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r222 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep 25 00:25:19 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000203.html">[Poldistro-svn] r221 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000205.html">[Poldistro-svn] r223 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#204">[ date ]</a>
+              <a href="thread.html#204">[ thread ]</a>
+              <a href="subject.html#204">[ subject ]</a>
+              <a href="author.html#204">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-25 00:25:19 +0200 (Sun, 25 Sep 2005)
+New Revision: 222
+
+Added:
+   trunk/096/pkg/systems/attributes/include/skillCheck.inc
+Log:
+
+
+Added: trunk/096/pkg/systems/attributes/include/skillCheck.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skillCheck.inc	2005-09-24 17:12:56 UTC (rev 221)
++++ trunk/096/pkg/systems/attributes/include/skillCheck.inc	2005-09-24 22:25:19 UTC (rev 222)
+@@ -0,0 +1,44 @@
++/*===============================================================
++* Current Version
++* SKILLCHECK.INC - v1.0
++* Updated 9/24/2005 12:34AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++use util;
++use cfgfile;
++
++include &quot;:attributes:include/attributes&quot;;
++
++const ADV_SKILL		:= 1;
++const ADV_STATS		:= 2;
++const ADV_ALL		:= ADV_SKILL+ADV_STATS; // 3
++//Set to 4 because if it was 0, it would default to ADV_ALL.
++const ADV_DISABLE	:= 4;
++
++var g_skill_debug	:= 0;
++
++function SkillCheck(mobile, attrib_name, difficulty, award_points:=0, advance_flags:=ADV_ALL)
++	if ( mobile.dead )
++		SendSysMessageEX(mobile, &quot;You can't use skills while dead.&quot;);
++		return -100;
++	elseif ( GetObjProperty(mobile, &quot;DisableSkills&quot;) )
++		SendSysMessageEX(mobile, &quot;Your skills are disabled.&quot;);
++		return -100;
++	elseif ( GetObjProperty(mobile, &quot;NoGains&quot;) )
++		advance := ADV_DISABLE;
++	endif
++	
++	var advance_skill := advance &amp; ADV_SKILL;
++	var advance_stats := advance &amp; ADV_STATS;
++	
++	// Global skill-debug ( for SkillDbgMsg() )
++	g_debug := (GetObjProperty(mobile,&quot;SkillDebug&quot;) != error);
++	
++endfunction
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000203.html">[Poldistro-svn] r221 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000205.html">[Poldistro-svn] r223 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#204">[ date ]</a>
+              <a href="thread.html#204">[ thread ]</a>
+              <a href="subject.html#204">[ subject ]</a>
+              <a href="author.html#204">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

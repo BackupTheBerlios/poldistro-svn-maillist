@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1071 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1071%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200511271229.jARCTwn8009096%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001041.html">
+   <LINK REL="Next"  HREF="001043.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1071 - trunk/096/pkg/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1071%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200511271229.jARCTwn8009096%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1071 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 27 13:29:58 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001041.html">[Poldistro-svn] r1070 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001043.html">[Poldistro-svn] r1072 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1042">[ date ]</a>
+              <a href="thread.html#1042">[ thread ]</a>
+              <a href="subject.html#1042">[ subject ]</a>
+              <a href="author.html#1042">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-27 13:29:33 +0100 (Sun, 27 Nov 2005)
+New Revision: 1071
+
+Modified:
+   trunk/096/pkg/commands/gm/info.src
+Log:
+Okay it can fully dynamically display attributes now.. O_o
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-11-27 11:46:49 UTC (rev 1070)
++++ trunk/096/pkg/commands/gm/info.src	2005-11-27 12:29:33 UTC (rev 1071)
+@@ -99,7 +99,7 @@
+ 		entry := SplitWords(entry, &quot; &quot;);
+ 		case ( Lower(entry[1]) )
+ 			&quot;member&quot;:
+-				AddMemberEntry(targ, gump, entry, y_pos);
++				DisplayMember(targ, gump, entry, y_pos);
+ 				break;
+ 			&quot;vitals&quot;:
+ 				DisplayVitals(targ, gump, y_pos);
+@@ -136,8 +136,8 @@
+ 	return 1;
+ endfunction
+ 
+-function AddMemberEntry(targ, byref gump, byref entry, byref y_pos)
+-	if ( CInt(entry[4]) )
++function DisplayMember(targ, byref gump, byref entry, byref y_pos)
++	if ( entry[5] )
+ 		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+ 	endif
+ 
+@@ -181,14 +181,30 @@
+ function DisplayAttributes(targ, byref gump, byref entry, byref y_pos)
+ 	var type := entry[2];
+ 	var attributes := AP_ListAttributesByType(type);
+-	attributes := BreakArray(attributes, 20);
+-
++	//
++	// Notes about the first page of showing attributes:
++	// 1. The Y position they start showing on is dynamic.
++	// 2. They may all fit on the first page.
++	// 3. The remaining attributes on other pages start on START_Y
++	// With this in mind, the array must be broken once for the first page.
++	// Then broken again for the remaining pages. Not the most 'efficient' way I suppose.
++	//
++	
++	var y_space := (END_Y-y_pos)+START_Y;
++	var available_lines := CInt(y_space / 20);
++	var num_attribs := attributes.Size();
++	if ( available_lines &gt; num_attribs )
++		attributes := array{attributes};
++	else
++		var page_1 := GetArrayRange(attributes, 1, available_lines);
++		var rest := GetArrayRange(attributes, available_lines+1, num_attribs);
++		attributes := BreakArray(rest, 20);
++		attributes.Insert(1, page_1);
++	endif
++		
+ 	foreach group in ( attributes )
+-		var num_attribs := group.Size();
+-		var y_needed := (num_attribs * 20);
+-		var y_space := (END_Y-y_pos)+START_Y;
+-
+-		GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, y_needed);
++		num_attribs := group.Size();
++		GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, num_attribs * 20);
+ 		if ( _group_iter &gt; 1 )
+ 			GFAddButton(gump, 460, START_Y+5, 2650, 2651, GF_PAGE_BTN, gump.cur_page-1);
+ 		endif
+@@ -204,7 +220,7 @@
+ 		endforeach
+ 
+ 		if ( _group_iter &lt; attributes.Size() )
+-			GFAddButton(gump, 460, 440, 2648, 2649, GF_PAGE_BTN, gump.cur_page+1);
++			GFAddButton(gump, 460, 430, 2648, 2649, GF_PAGE_BTN, gump.cur_page+1);
+ 			GFPage(gump, gump.cur_page+1);
+ 			y_pos := START_Y;
+ 		endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001041.html">[Poldistro-svn] r1070 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001043.html">[Poldistro-svn] r1072 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1042">[ date ]</a>
+              <a href="thread.html#1042">[ thread ]</a>
+              <a href="subject.html#1042">[ subject ]</a>
+              <a href="author.html#1042">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

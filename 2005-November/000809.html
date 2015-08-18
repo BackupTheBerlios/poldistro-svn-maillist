@@ -1,0 +1,794 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r834 - in trunk/096/pkg: skills/anatomy skills/animallore skills/armslore skills/begging skills/bowcraft skills/camping skills/carpentry skills/cartography skills/detecthidden skills/evalint skills/fishing skills/hiding skills/itemid skills/musicianship skills/musicianship/include skills/spiritspeak skills/stealth systems/attributes/include systems/crafting/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r834%20-%20in%20trunk/096/pkg%3A%20skills/anatomy%20skills/animallore%20skills/armslore%20skills/begging%20skills/bowcraft%20skills/camping%20skills/carpentry%20skills/cartography%20skills/detecthidden%20skills/evalint%20skills/fishing%20skills/hiding%20skills/itemid%20skills/musicianship%20skills/musicianship/include%20skills/spiritspeak%20skills/stealth%20systems/attributes/include%20systems/crafting/include&In-Reply-To=%3C200511021409.jA2E9x4x027416%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000808.html">
+   <LINK REL="Next"  HREF="000807.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r834 - in trunk/096/pkg: skills/anatomy skills/animallore skills/armslore skills/begging skills/bowcraft skills/camping skills/carpentry skills/cartography skills/detecthidden skills/evalint skills/fishing skills/hiding skills/itemid skills/musicianship skills/musicianship/include skills/spiritspeak skills/stealth systems/attributes/include systems/crafting/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r834%20-%20in%20trunk/096/pkg%3A%20skills/anatomy%20skills/animallore%20skills/armslore%20skills/begging%20skills/bowcraft%20skills/camping%20skills/carpentry%20skills/cartography%20skills/detecthidden%20skills/evalint%20skills/fishing%20skills/hiding%20skills/itemid%20skills/musicianship%20skills/musicianship/include%20skills/spiritspeak%20skills/stealth%20systems/attributes/include%20systems/crafting/include&In-Reply-To=%3C200511021409.jA2E9x4x027416%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r834 - in trunk/096/pkg: skills/anatomy skills/animallore skills/armslore skills/begging skills/bowcraft skills/camping skills/carpentry skills/cartography skills/detecthidden skills/evalint skills/fishing skills/hiding skills/itemid skills/musicianship skills/musicianship/include skills/spiritspeak skills/stealth systems/attributes/include systems/crafting/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 15:09:59 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000808.html">[Poldistro-svn] r833 - in trunk/096/pkg/mobiles/oldAI: . combat main
+</A></li>
+        <LI>Next message: <A HREF="000807.html">[Poldistro-svn] r835 - trunk/096/pkg/skills/lumberjacking
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#809">[ date ]</a>
+              <a href="thread.html#809">[ thread ]</a>
+              <a href="subject.html#809">[ subject ]</a>
+              <a href="author.html#809">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 15:09:50 +0100 (Wed, 02 Nov 2005)
+New Revision: 834
+
+Modified:
+   trunk/096/pkg/skills/anatomy/anatomy.src
+   trunk/096/pkg/skills/animallore/animalLore.src
+   trunk/096/pkg/skills/armslore/armsLore.src
+   trunk/096/pkg/skills/begging/begging.src
+   trunk/096/pkg/skills/bowcraft/bowcraft.src
+   trunk/096/pkg/skills/camping/camping.src
+   trunk/096/pkg/skills/carpentry/carpentry.src
+   trunk/096/pkg/skills/cartography/mapmakersPen.src
+   trunk/096/pkg/skills/detecthidden/detectHidden.src
+   trunk/096/pkg/skills/evalint/evalInt.src
+   trunk/096/pkg/skills/fishing/fishing.src
+   trunk/096/pkg/skills/fishing/fishingFunctions.inc
+   trunk/096/pkg/skills/fishing/fishnets.src
+   trunk/096/pkg/skills/hiding/hiding.src
+   trunk/096/pkg/skills/itemid/itemID.src
+   trunk/096/pkg/skills/musicianship/include/bard.inc
+   trunk/096/pkg/skills/musicianship/include/bardInstrument.inc
+   trunk/096/pkg/skills/musicianship/include/bardSkill.inc
+   trunk/096/pkg/skills/musicianship/musicianship.src
+   trunk/096/pkg/skills/musicianship/peacemaking.src
+   trunk/096/pkg/skills/musicianship/provocation.src
+   trunk/096/pkg/skills/spiritspeak/logon.src
+   trunk/096/pkg/skills/spiritspeak/reconnect.src
+   trunk/096/pkg/skills/spiritspeak/spiritSpeak.src
+   trunk/096/pkg/skills/stealth/stealth.src
+   trunk/096/pkg/systems/attributes/include/attributeConstants.inc
+   trunk/096/pkg/systems/crafting/include/craftingRepair.inc
+Log:
+Updated to match removal of ATTRIBUTE_* and VITAL_* on the constant names.
+Now theyre just the raw name. This is to make them shorter and more like using plain strins. The advantage of using the constants is the compiler will catch typos when youre coding on tired mode.
+
+Modified: trunk/096/pkg/skills/anatomy/anatomy.src
+===================================================================
+--- trunk/096/pkg/skills/anatomy/anatomy.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/anatomy/anatomy.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -49,10 +49,10 @@
+ 		endif
+ 	endif
+ 
+-	if( SkillCheck(who, ATTRIBUTE_ANATOMY, -1) &gt; 0 )
++	if( SkillCheck(who, ANATOMY, -1) &gt; 0 )
+ 		PrintTextAbovePrivate(subject, strMsg + &quot; looks &quot; + streng + &quot; and &quot; + dext + &quot;.&quot;, who);
+ 		// player's anatomy skill equal/greater than 65 can get endurance info
+-		var skill := AP_GetSkill(who, ATTRIBUTE_ANATOMY);
++		var skill := AP_GetSkill(who, ANATOMY);
+ 		if(skill &gt;= 65)
+ 			PrintTextAbovePrivate(subject, strMsg + &quot; is at &quot; + endur + &quot; endurance.&quot;, who);
+ 		endif
+
+Modified: trunk/096/pkg/skills/animallore/animalLore.src
+===================================================================
+--- trunk/096/pkg/skills/animallore/animalLore.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/animallore/animalLore.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -32,7 +32,7 @@
+                 return 0;
+         endif
+ 
+-	if( SkillCheck(who, ATTRIBUTE_ANIMAL_LORE, -1) &gt; 0 )
++	if( SkillCheck(who, ANIMAL_LORE, -1) &gt; 0 )
+                 // If the player succeeds, send the gump.
+                 // Create the Gump
+                 var al_Gump := AL_LoadGump(who, creature);
+@@ -87,18 +87,18 @@
+         var hits := &quot;&quot;+GetVital(creature, &quot;Hits&quot;)/100+&quot;/&quot;+AP_GetVitalMaximumValue(creature, &quot;Hits&quot;)+&quot;&quot;;
+         var stamina := &quot;&quot;+GetVital(creature, &quot;Stamina&quot;)/100+&quot;/&quot;+AP_GetVitalMaximumValue(creature, &quot;Stamina&quot;)+&quot;&quot;;
+         var mana := &quot;&quot;+GetVital(creature, &quot;Mana&quot;)/100+&quot;/&quot;+AP_GetVitalMaximumValue(creature, &quot;Mana&quot;)+&quot;&quot;;
+-        var str := &quot;&quot;+AP_GetStat(creature, ATTRIBUTE_STRENGTH)+&quot;&quot;;
+-        var dex := &quot;&quot;+AP_GetStat(creature, ATTRIBUTE_DEXTERITY)+&quot;&quot;;
+-        var int := &quot;&quot;+AP_GetStat(creature, ATTRIBUTE_INTELLIGENCE)+&quot;&quot;;
++        var str := &quot;&quot;+AP_GetStat(creature, STRENGTH)+&quot;&quot;;
++        var dex := &quot;&quot;+AP_GetStat(creature, DEXTERITY)+&quot;&quot;;
++        var int := &quot;&quot;+AP_GetStat(creature, INTELLIGENCE)+&quot;&quot;;
+         var ar := &quot;&quot;+creature.ar+&quot;&quot;;
+-        var wrestStr := AP_GetSkill(creature, ATTRIBUTE_WRESTLING);
+-        var tactStr := AP_GetSkill(creature, ATTRIBUTE_TACTICS);
+-        var mrStr := CDbl(AP_GetSkill(creature, ATTRIBUTE_RESISTING_SPELLS));
+-        var anatStr := AP_GetSkill(creature, ATTRIBUTE_ANATOMY);
+-        var poisonStr := AP_GetSkill(creature, ATTRIBUTE_POISONING);
+-        var mageryStr := AP_GetSkill(creature, ATTRIBUTE_MAGERY);
+-        var eiStr := AP_GetSkill(creature, ATTRIBUTE_EVALUATING_INTELLIGENCE);
+-        var medStr := AP_GetSkill(creature, ATTRIBUTE_MEDITATION);
++        var wrestStr := AP_GetSkill(creature, WRESTLING);
++        var tactStr := AP_GetSkill(creature, TACTICS);
++        var mrStr := CDbl(AP_GetSkill(creature, RESISTING_SPELLS));
++        var anatStr := AP_GetSkill(creature, ANATOMY);
++        var poisonStr := AP_GetSkill(creature, POISONING);
++        var mageryStr := AP_GetSkill(creature, MAGERY);
++        var eiStr := AP_GetSkill(creature, EVALUATING_INTELLIGENCE);
++        var medStr := AP_GetSkill(creature, MEDITATION);
+ 
+         var cTemplate := NPC_GetNPCConfig(creature.npctemplate);
+ 
+
+Modified: trunk/096/pkg/skills/armslore/armsLore.src
+===================================================================
+--- trunk/096/pkg/skills/armslore/armsLore.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/armslore/armsLore.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -23,7 +23,7 @@
+ 		SendSysMessage(who, &quot;You can only use this skill on weapons or armor!&quot;);
+ 		return;
+ 	endif
+-	if(SkillCheck(who, ATTRIBUTE_ARMS_LORE, -1) &gt; 0)
++	if(SkillCheck(who, ARMS_LORE, -1) &gt; 0)
+ 		var item_max_hp := the_item.maxhp;
+ 		var max_hp := item_max_hp;
+ 		var hp := the_item.hp;
+
+Modified: trunk/096/pkg/skills/begging/begging.src
+===================================================================
+--- trunk/096/pkg/skills/begging/begging.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/begging/begging.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -74,7 +74,7 @@
+ 		return 0;
+ 	endif
+ 
+-	if( SkillCheck(who, ATTRIBUTE_BEGGING, -1) &gt; 0 )
++	if( SkillCheck(who, BEGGING, -1) &gt; 0 )
+ 		var gold;
+ 		case (wealth)
+ 			&quot;upper&quot;:	gold := RandomDiceRoll(&quot;4d5&quot;);
+
+Modified: trunk/096/pkg/skills/bowcraft/bowcraft.src
+===================================================================
+--- trunk/096/pkg/skills/bowcraft/bowcraft.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/bowcraft/bowcraft.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -31,7 +31,7 @@
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 	EraseObjProperty(who, &quot;HealTimer&quot;);
+ 
+-	var rinfo := sendCraftGump(who, ATTRIBUTE_BOWCRAP_T_FLETCHING);
++	var rinfo := sendCraftGump(who, BOWCRAFT_FLETCHING);
+ 
+ 	// OK was pressed, close it on out
+ 	if(rinfo == 0)
+@@ -48,7 +48,7 @@
+ 	endif
+ 
+ 	if(craft_config[Hex(the_objtype)].assemble == 1)
+-		CraftAssembly(who, ATTRIBUTE_BOWCRAP_T_FLETCHING, tool, the_objtype, amt);
++		CraftAssembly(who, BOWCRAFT_FLETCHING, tool, the_objtype, amt);
+ 	else
+ 		makeBowcraftItems(who, the_objtype, amt, tool);
+ 	endif
+
+Modified: trunk/096/pkg/skills/camping/camping.src
+===================================================================
+--- trunk/096/pkg/skills/camping/camping.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/camping/camping.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -34,7 +34,7 @@
+ 		return 0;
+ 	endif
+ 
+-	if( SkillCheck(who, ATTRIBUTE_CAMPING, -1) &gt; 0 )
++	if( SkillCheck(who, CAMPING, -1) &gt; 0 )
+ 		var x := wood.x;
+ 		var y := wood.y;
+ 		var z := wood.z;
+
+Modified: trunk/096/pkg/skills/carpentry/carpentry.src
+===================================================================
+--- trunk/096/pkg/skills/carpentry/carpentry.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/carpentry/carpentry.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -216,13 +216,13 @@
+ 		endif
+ 		theitem.movable := 1;
+ 		if( craft_config[theitem.objtype].lockable )
+-			if( SkillCheck(who, ATTRIBUTE_TINKERING, 40, 40) &gt; 0 )
++			if( SkillCheck(who, TINKERING, 40, 40) &gt; 0 )
+ 				SetObjProperty(theitem, &quot;lockable&quot;,&quot;1&quot;);
+ 				var lockid := AllocLockId();
+ 				var thekey := CreateItemInContainer(theitem, UOBJ_COPPER_KEY, 1 );
+ 				SetObjProperty(thekey, &quot;lockid&quot;,lockid);
+ 				SetObjProperty(theitem,&quot;lockid&quot;,lockid);
+-				SetObjProperty(theitem,&quot;LockPickDiff&quot;, AP_GetSkill(who, ATTRIBUTE_TINKERING));
++				SetObjProperty(theitem,&quot;LockPickDiff&quot;, AP_GetSkill(who, TINKERING));
+ 				SendSysMessage(who, &quot;Your tinker skill was sufficient to make the item lockable.&quot;);
+ 			endif
+ 		endif
+
+Modified: trunk/096/pkg/skills/cartography/mapmakersPen.src
+===================================================================
+--- trunk/096/pkg/skills/cartography/mapmakersPen.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/cartography/mapmakersPen.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -31,7 +31,7 @@
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 	EraseObjProperty(who, &quot;HealTimer&quot;);
+ 
+-	var rinfo := sendCraftGump(who, ATTRIBUTE_CARTOGRAPHY);
++	var rinfo := sendCraftGump(who, CARTOGRAPHY);
+ 
+ 	// OK was pressed, close it on out
+ 	if(rinfo == 0)
+
+Modified: trunk/096/pkg/skills/detecthidden/detectHidden.src
+===================================================================
+--- trunk/096/pkg/skills/detecthidden/detectHidden.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/detecthidden/detectHidden.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -34,7 +34,7 @@
+ 
+ 	SendSysMessage(who,&quot;Target the location to search.&quot;);
+ 	var targ := TargetCoordinates( who );
+-	var range := my_DetectRange( AP_GetSkill( who, ATTRIBUTE_DETECTING_HIDDEN  ) );
++	var range := my_DetectRange( AP_GetSkill( who, DETECTING_HIDDEN  ) );
+ 	var hiders := ListMobilesNearLocationEx( cint(targ.x), cint(targ.y), cint(targ.z), range, LISTEX_FLAG_HIDDEN, who.realm );
+ 	var items  := ListItemsNearLocation( cint(targ.x), cint(targ.y), cint(targ.z), range, who.realm );
+ 	var elem;
+@@ -60,7 +60,7 @@
+ 	 dtct := GetObjProperty(item, &quot;trapped&quot;);
+      var trapstrength := GetObjProperty(item,&quot;trap_strength&quot;);
+ 	 if( dtct )
+-        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1) &gt; 0)
++        if(SkillCheck( who, DETECTING_HIDDEN, -1) &gt; 0)
+ 	      PrintTextAbovePrivate( item, &quot;Trapped&quot;, who);
+         else
+           var results := RandomInt(9) + 1;
+@@ -90,7 +90,7 @@
+           endif
+         endif
+       elseif( data == TRAP)
+-        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1) &gt; 0)
++        if(SkillCheck( who, DETECTING_HIDDEN, -1) &gt; 0)
+ 	      PrintTextAbovePrivate( item, &quot;Trap&quot;, who );
+           SetObjProperty( item, &quot;trapped&quot;, 1 );
+         else
+@@ -125,7 +125,7 @@
+           endif
+         endif
+      elseif( prop )
+-        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1) &gt; 0 )
++        if(SkillCheck( who, DETECTING_HIDDEN, -1) &gt; 0 )
+ 	      PrintTextAbovePrivate( item, &quot;Trapped&quot;, who);
+ 	      SetObjProperty( item, &quot;trapped&quot;, 1 );
+         else
+@@ -177,8 +177,8 @@
+ 
+ 
+ function Found( finder, hider ) //FIXME: should not be 100% certain to find a hider if your skill is greater
+-  var hide_skill := AP_GetSkill( hider, ATTRIBUTE_HIDING );
+-  if (SkillCheck( finder, ATTRIBUTE_DETECTING_HIDDEN, hide_skill) &gt; 0)
++  var hide_skill := AP_GetSkill( hider, HIDING );
++  if (SkillCheck( finder, DETECTING_HIDDEN, hide_skill) &gt; 0)
+     return 1;
+   else
+     return 0;
+
+Modified: trunk/096/pkg/skills/evalint/evalInt.src
+===================================================================
+--- trunk/096/pkg/skills/evalint/evalInt.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/evalint/evalInt.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -45,10 +45,10 @@
+ 			strFail := subject.name + &quot;' mental abilities.&quot;;
+ 		endif
+ 	endif
+-	if(SkillCheck(who, ATTRIBUTE_EVALUATING_INTELLIGENCE, -1) &gt; 0)
++	if(SkillCheck(who, EVALUATING_INTELLIGENCE, -1) &gt; 0)
+ 		PrintTextAbovePrivate(subject, strMsg + &quot; looks &quot; + intell + &quot;.&quot;, who);
+ 		// player's evalint skill equal/greater than 76 can get mental strength info
+-		var skill := AP_GetSkill(who, ATTRIBUTE_EVALUATING_INTELLIGENCE);
++		var skill := AP_GetSkill(who, EVALUATING_INTELLIGENCE);
+ 		if(skill &gt;= 76)
+ 			PrintTextAbovePrivate(subject, strMsg + &quot; is at &quot; + mentalStrength + &quot; mental strength.&quot;, who);
+ 		endif
+
+Modified: trunk/096/pkg/skills/fishing/fishing.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishing.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/fishing/fishing.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -86,7 +86,7 @@
+ 				SendSysMessage(who, &quot;There doesn't seem to be any fish here.&quot;);
+ 				return 0;
+ 			endif
+-			if( SkillCheck(who, ATTRIBUTE_FISHING, difficulty) &gt; 0)
++			if( SkillCheck(who, FISHING, difficulty) &gt; 0)
+ 				var fishreturned := HarvestResource(&quot;fish&quot;, targetsquare.x, targetsquare.y, 1, 1, who.realm);
+ 				if( !fishreturned )
+ 					SendSysMessage(who, &quot;Oops, you let that one get away!&quot;);
+@@ -111,7 +111,7 @@
+ function GetTheCatch(who, targetsquare, fishingpole)
+ 
+ 	var fishtype;
+-	var currentskill := AP_GetSkill(who, ATTRIBUTE_FISHING);
++	var currentskill := AP_GetSkill(who, FISHING);
+ 	var thisone := RandomInt(100)+ 1;
+ 	if(thisone &lt;= 94)
+ 		fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
+@@ -161,7 +161,7 @@
+ 		endif
+ 	else
+ 		if( CreateItemInContainer(who.backpack, fishtype, 1) )
+-			CheckToolWear (who, fishingpole, ATTRIBUTE_FISHING);
++			CheckToolWear (who, fishingpole, FISHING);
+ 		endif
+         endif
+ 
+
+Modified: trunk/096/pkg/skills/fishing/fishingFunctions.inc
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishingFunctions.inc	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/fishing/fishingFunctions.inc	2005-11-02 14:09:50 UTC (rev 834)
+@@ -188,7 +188,7 @@
+ function GetSOSTreasure(who, targetsquare, sosmsg)
+ 
+ 	targetsquare := targetsquare;
+-	if( SkillCheck(who, ATTRIBUTE_FISHING, 80, 200) &gt; 0 )
++	if( SkillCheck(who, FISHING, 80, 200) &gt; 0 )
+ 		var itemcfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+ 		var it, oldname;
+ 		if( RandomInt(100) &lt; 75 )
+
+Modified: trunk/096/pkg/skills/fishing/fishnets.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishnets.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/fishing/fishnets.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -63,7 +63,7 @@
+ 				5: CreateNpcFromTemplate( &quot;waterelemental&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
+ 				6: CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
+ 			endcase
+-			var myskill := AP_GetSkill(who, ATTRIBUTE_FISHING);
++			var myskill := AP_GetSkill(who, FISHING);
+ 			if(myskill &lt;= 50)
+ 				CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
+ 			elseif(myskill &lt;= 75)
+
+Modified: trunk/096/pkg/skills/hiding/hiding.src
+===================================================================
+--- trunk/096/pkg/skills/hiding/hiding.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/hiding/hiding.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -25,13 +25,13 @@
+ 	if( who.warmode )
+ 		who.SetWarMode(0);
+ 	endif
+-	var my_range := my_HideRange(AP_GetSkill(who, ATTRIBUTE_HIDING));
++	var my_range := my_HideRange(AP_GetSkill(who, HIDING));
+ 	var my_attackers := ListHostiles(who, my_range, LH_FLAG_LOS);
+ 	if( my_attackers.size() &gt; 0 )
+ 		PrintTextAbovePrivate(who, &quot;You cannot hide as there are hostiles in view!&quot;, who);
+ 		return 0;
+ 	endif
+-	if( SkillCheck(who, ATTRIBUTE_HIDING, -1) &gt; 0 )
++	if( SkillCheck(who, HIDING, -1) &gt; 0 )
+ 		who.hidden := 1;
+ 		if( GetObjProperty(who, &quot;#Stealth&quot;) != 1)
+ 			PrintTextAbovePrivate(who, &quot;You have hidden yourself well.&quot;, who);
+
+Modified: trunk/096/pkg/skills/itemid/itemID.src
+===================================================================
+--- trunk/096/pkg/skills/itemid/itemID.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/itemid/itemID.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -28,7 +28,7 @@
+ 		return 0;
+ 	endif
+ 
+-	if( SkillCheck(who, ATTRIBUTE_ITEM_IDENTIFICATION, -1) &gt; 0 )
++	if( SkillCheck(who, ITEM_IDENTIFICATION, -1) &gt; 0 )
+ 		var name := &quot;&quot;;
+ 		var itsname := the_item.name;
+ 		if( !itsname )
+@@ -90,7 +90,7 @@
+ 			endif
+ 		endif
+ 		if( GetObjProperty(the_item, &quot;type&quot;) == &quot;cursed&quot; )
+-			if( SkillCheck(who, ATTRIBUTE_ITEM_IDENTIFICATION, 65) &gt; 0 )
++			if( SkillCheck(who, ITEM_IDENTIFICATION, 65) &gt; 0 )
+ 				SendSysMessage(who, &quot;* This item is cursed! *&quot;);
+ 			endif
+ 		endif
+
+Modified: trunk/096/pkg/skills/musicianship/include/bard.inc
+===================================================================
+--- trunk/096/pkg/skills/musicianship/include/bard.inc	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/musicianship/include/bard.inc	2005-11-02 14:09:50 UTC (rev 834)
+@@ -56,13 +56,13 @@
+ 		print( &quot;Debug Bard: Exceptional Check Passed&quot;);
+ 		barding_difficulty := barding_difficulty - 5;
+ 	endif
+-	var musicianship := CInt(AP_GetSkill(who, ATTRIBUTE_MUSICIANSHIP));
++	var musicianship := CInt(AP_GetSkill(who, MUSICIANSHIP));
+ 	if( musicianship &gt; 100 )
+ 		barding_difficulty := barding_difficulty - CInt((musicianship - 100) / 2);
+ 	endif
+-	if( attribute == ATTRIBUTE_PROVOCATION )
++	if( attribute == PROVOCATION )
+ 		barding_difficulty := barding_difficulty - 5;
+-	elseif( attribute == ATTRIBUTE_PEACEMAKING || attribute == ATTRIBUTE_DISCORDANCE )
++	elseif( attribute == PEACEMAKING || attribute == DISCORDANCE )
+ 		barding_difficulty := barding_difficulty - 10;
+ 	endif
+ 
+@@ -109,9 +109,9 @@
+ 	var ifCanBard := 1;
+ 
+ 	case(bard_skill)
+-		ATTRIBUTE_DISCORDANCE: ifCanBard := CInt(pTemplate.NoDiscord);
+-		ATTRIBUTE_PEACEMAKING: ifCanBard := CInt(pTemplate.NoPeacmake);
+-		ATTRIBUTE_PROVOCATION: ifCanBard := CInt(pTemplate.NoProvoke);
++		DISCORDANCE: ifCanBard := CInt(pTemplate.NoDiscord);
++		PEACEMAKING: ifCanBard := CInt(pTemplate.NoPeacmake);
++		PROVOCATION: ifCanBard := CInt(pTemplate.NoProvoke);
+ 	endcase
+ 
+ 	return ifCanBard;
+
+Modified: trunk/096/pkg/skills/musicianship/include/bardInstrument.inc
+===================================================================
+--- trunk/096/pkg/skills/musicianship/include/bardInstrument.inc	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/musicianship/include/bardInstrument.inc	2005-11-02 14:09:50 UTC (rev 834)
+@@ -143,9 +143,9 @@
+ function playHarp(theskill, iType:=1)
+ 
+ 	case(theskill)
+-		ATTRIBUTE_DISCORDANCE:  return 0x393;
+-		ATTRIBUTE_PEACEMAKING: return 0x394;
+-		ATTRIBUTE_PROVOCATION: return 0x392;
++		DISCORDANCE:  return 0x393;
++		PEACEMAKING: return 0x394;
++		PROVOCATION: return 0x392;
+ 	endcase
+ 
+ 	// If skill wasn't one of the three above,
+@@ -176,9 +176,9 @@
+ function playLute(theskill)
+ 
+ 	case(theskill)
+-		ATTRIBUTE_DISCORDANCE:  return 0x40C;
+-		ATTRIBUTE_PEACEMAKING: return 0x419;
+-		ATTRIBUTE_PROVOCATION: return 0x404;
++		DISCORDANCE:  return 0x40C;
++		PEACEMAKING: return 0x419;
++		PROVOCATION: return 0x404;
+ 	endcase
+ 
+ 	// If skill wasn't one of the three above,
+@@ -206,9 +206,9 @@
+ function playDrum(theskill)
+ 
+ 	case(theskill)
+-		ATTRIBUTE_DISCORDANCE:  return 0x2E9;
+-		ATTRIBUTE_PEACEMAKING: return 0x2EA;
+-		ATTRIBUTE_PROVOCATION: return 0x2E8;
++		DISCORDANCE:  return 0x2E9;
++		PEACEMAKING: return 0x2EA;
++		PROVOCATION: return 0x2E8;
+ 	endcase
+ 
+ 	// If skill wasn't one of the three above,
+@@ -236,9 +236,9 @@
+ function playTamb(theskill)
+ 
+ 	case(theskill)
+-		ATTRIBUTE_DISCORDANCE:  return 0x4B7;
+-		ATTRIBUTE_PEACEMAKING: return 0x4B8;
+-		ATTRIBUTE_PROVOCATION: return 0x4B6;
++		DISCORDANCE:  return 0x4B7;
++		PEACEMAKING: return 0x4B8;
++		PROVOCATION: return 0x4B6;
+ 	endcase
+ 
+ 	// If skill wasn't one of the three above,
+
+Modified: trunk/096/pkg/skills/musicianship/include/bardSkill.inc
+===================================================================
+--- trunk/096/pkg/skills/musicianship/include/bardSkill.inc	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/musicianship/include/bardSkill.inc	2005-11-02 14:09:50 UTC (rev 834)
+@@ -24,8 +24,8 @@
+ 	// Gets a dictionary for success/fail.
+ 	var soundCheck := bardSoundCheck(character, instrument, bard_skill);
+ 
+-	SkillCheck(character, ATTRIBUTE_MUSICIANSHIP, 1);
+-	if( (AP_GetSkill(character, ATTRIBUTE_MUSICIANSHIP) &lt; 10) &amp;&amp; (bard_skill != ATTRIBUTE_MUSICIANSHIP) )
++	SkillCheck(character, MUSICIANSHIP, 1);
++	if( (AP_GetSkill(character, MUSICIANSHIP) &lt; 10) &amp;&amp; (bard_skill != MUSICIANSHIP) )
+ 		SendSysMessage(character, &quot;You are not skilled enough in the musical arts.&quot;);
+ 		return 0;
+ 	endif
+
+Modified: trunk/096/pkg/skills/musicianship/musicianship.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/musicianship.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/musicianship/musicianship.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -28,7 +28,7 @@
+ 		return 0;
+ 	endif
+ 
+-	if( !bardSkillCheck(who, instrument, ATTRIBUTE_MUSICIANSHIP, -1) )
++	if( !bardSkillCheck(who, instrument, MUSICIANSHIP, -1) )
+ 		SendSysMessage(who, &quot;You fail in your attemp to play the instrument&quot;);
+ 	endif
+ 
+
+Modified: trunk/096/pkg/skills/musicianship/peacemaking.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/peacemaking.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/musicianship/peacemaking.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -43,15 +43,15 @@
+ 
+ 	var barding_difficulty := -1;
+ 	if( peacee.npctemplate )
+-		barding_difficulty := figureBardDifficulty(who, peacee, instrument, ATTRIBUTE_PEACEMAKING);
++		barding_difficulty := figureBardDifficulty(who, peacee, instrument, PEACEMAKING);
+ 	endif
+ 
+-	if ( !isBardable(who, peacee, ATTRIBUTE_PEACEMAKING, barding_difficulty) )
++	if ( !isBardable(who, peacee, PEACEMAKING, barding_difficulty) )
+ 		PrintTextAbovePrivate(peacee, &quot;You have no chance to calm that creature!&quot;, who);
+ 		return 0;
+ 	endif
+ 
+-	if( bardSkillCheck(who, instrument, ATTRIBUTE_PEACEMAKING, barding_difficulty) )
++	if( bardSkillCheck(who, instrument, PEACEMAKING, barding_difficulty) )
+ 		calmDown( who, peacee );
+ 	else
+ 		return 0;
+@@ -64,8 +64,8 @@
+ 
+ function calmDown( who, peacee )
+ 
+-	var peace_length_single := CInt(AP_GetSkill(who, ATTRIBUTE_PEACEMAKING) / 5);
+-	var peace_length_ranged := CInt(AP_GetSkill(who, ATTRIBUTE_PEACEMAKING) / 20);
++	var peace_length_single := CInt(AP_GetSkill(who, PEACEMAKING) / 5);
++	var peace_length_ranged := CInt(AP_GetSkill(who, PEACEMAKING) / 20);
+ 
+ 	var ev := struct;
+ 	ev.+ type;
+
+Modified: trunk/096/pkg/skills/musicianship/provocation.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/provocation.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/musicianship/provocation.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -47,15 +47,15 @@
+ 
+ 	var barding_difficulty := -1;
+ 	if( thetarg.npctemplate )
+-		barding_difficulty := figureBardDifficulty(who, thetarg, instrument, ATTRIBUTE_PROVOCATION);
++		barding_difficulty := figureBardDifficulty(who, thetarg, instrument, PROVOCATION);
+ 	endif
+ 
+-	if ( !isBardable(who, thetarg, ATTRIBUTE_PROVOCATION, barding_difficulty) )
++	if ( !isBardable(who, thetarg, PROVOCATION, barding_difficulty) )
+ 		PrintTextAbovePrivate(thetarg, &quot;You have no chance to provoke that creature!&quot;, who);
+ 		return 0;
+ 	endif
+ 
+-	if( bardSkillCheck(who, instrument, ATTRIBUTE_PROVOCATION, barding_difficulty) )
++	if( bardSkillCheck(who, instrument, PROVOCATION, barding_difficulty) )
+ 		var ev := struct;
+ 		ev.+ type;
+ 		ev.+ source;
+@@ -76,9 +76,9 @@
+ 		endif
+ 		barding_difficulty := -1;
+ 		if( newtarg.npctemplate )
+-			barding_difficulty := figureBardDifficulty(who, newtarg, instrument, ATTRIBUTE_PROVOCATION);
++			barding_difficulty := figureBardDifficulty(who, newtarg, instrument, PROVOCATION);
+ 		endif
+-		if( bardSkillCheck(who, instrument, ATTRIBUTE_PROVOCATION, barding_difficulty, 0, ADV_DISABLE) )
++		if( bardSkillCheck(who, instrument, PROVOCATION, barding_difficulty, 0, ADV_DISABLE) )
+ 			SetObjProperty(who, &quot;#LastMusic&quot;, Cint(ReadGameClock() + 3));
+ 			SendSysMessage(who, &quot;You provoke &quot; + thetarg.name + &quot; to attack &quot; + newtarg.name + &quot;.&quot;);
+ 			ev.source := newtarg;
+@@ -102,7 +102,7 @@
+ 			if( barding_difficulty == -1 )
+ 				barding_difficulty := 50;
+ 			endif
+-			if( RandomInt( barding_difficulty) &gt; AP_GetSkill(who, ATTRIBUTE_PROVOCATION) )
++			if( RandomInt( barding_difficulty) &gt; AP_GetSkill(who, PROVOCATION) )
+ 				ev.source := who;
+ 				if( thetarg.warmode )
+ 					ev.type := EVID_PEACEMADE;
+
+Modified: trunk/096/pkg/skills/spiritspeak/logon.src
+===================================================================
+--- trunk/096/pkg/skills/spiritspeak/logon.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/spiritspeak/logon.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -5,7 +5,7 @@
+ 
+ program spiritSpeak_OnLogon(who)
+ 
+-	var my_skill  := CInt(AP_GetSkill(who, ATTRIBUTE_SPIRIT_SPEAK));
++	var my_skill  := CInt(AP_GetSkill(who, SPIRIT_SPEAK));
+ 	if( my_skill &gt;= 100 )
+ 		GrantPrivilege(who, &quot;hearghosts&quot;);
+ 		who.enable(&quot;hearghosts&quot;);
+
+Modified: trunk/096/pkg/skills/spiritspeak/reconnect.src
+===================================================================
+--- trunk/096/pkg/skills/spiritspeak/reconnect.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/spiritspeak/reconnect.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -5,7 +5,7 @@
+ 
+ program spiritSpeak_OnReconnect(who)
+ 
+-	var my_skill  := CInt(AP_GetSkill(who, ATTRIBUTE_SPIRIT_SPEAK));
++	var my_skill  := CInt(AP_GetSkill(who, SPIRIT_SPEAK));
+ 	if( my_skill &gt;= 100 )
+ 		GrantPrivilege(who, &quot;hearghosts&quot;);
+ 		who.enable(&quot;hearghosts&quot;);
+
+Modified: trunk/096/pkg/skills/spiritspeak/spiritSpeak.src
+===================================================================
+--- trunk/096/pkg/skills/spiritspeak/spiritSpeak.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/spiritspeak/spiritSpeak.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -37,12 +37,12 @@
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 	EraseObjProperty(who, &quot;HealTimer&quot;);
+ 
+-	var my_skill  := CInt(AP_GetSkill(who, ATTRIBUTE_SPIRIT_SPEAK));
++	var my_skill  := CInt(AP_GetSkill(who, SPIRIT_SPEAK));
+ 
+ 	PlaySoundEffect(who, SFX_SKILL_SPIRITSPEAK);
+ 
+ 
+-  	if(SkillCheck(who, ATTRIBUTE_SPIRIT_SPEAK, -1) &gt; 0)
++  	if(SkillCheck(who, SPIRIT_SPEAK, -1) &gt; 0)
+ 		foreach corpse in ListItemsNearLocationOfType( who.x, who.y, who.z, SS_RANGE, 0x2006 )
+ 			channelFromCorpse(who, corpse, my_skill);
+ 		endforeach
+@@ -51,7 +51,7 @@
+   	  	elseif( AP_GetVital(who, &quot;Mana&quot;) &gt; 10 )
+   	  		channelFromSelf(who);
+ 		endif
+-		my_skill  := CInt(AP_GetSkill(who, ATTRIBUTE_SPIRIT_SPEAK));
++		my_skill  := CInt(AP_GetSkill(who, SPIRIT_SPEAK));
+ 		if( my_skill &gt;= 100 )
+ 			GrantPrivilege(who, &quot;hearghosts&quot;);
+ 			who.enable(&quot;hearghosts&quot;);
+
+Modified: trunk/096/pkg/skills/stealth/stealth.src
+===================================================================
+--- trunk/096/pkg/skills/stealth/stealth.src	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/skills/stealth/stealth.src	2005-11-02 14:09:50 UTC (rev 834)
+@@ -23,11 +23,11 @@
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 	EraseObjProperty(who, &quot;HealTimer&quot;);
+ 
+-	if( AP_GetSkill(who, ATTRIBUTE_HIDING) &lt; 80 )
++	if( AP_GetSkill(who, HIDING) &lt; 80 )
+ 		PrintTextAbovePrivate( who, &quot;You are not good enough at Hiding to do that.&quot;, who );
+ 		return 0;
+ 	endif
+-	if( (!who.hidden) &amp;&amp; (AP_GetSkill(who, ATTRIBUTE_STEALTH) &lt; 80) )
++	if( (!who.hidden) &amp;&amp; (AP_GetSkill(who, STEALTH) &lt; 80) )
+ 		PrintTextAbovePrivate( who, &quot;You must be hidden to use stealth&quot;, who );
+ 		return 0;
+ 	endif
+@@ -38,8 +38,8 @@
+ 		return 0;
+ 	endif
+ 
+-	var my_Skill := AP_GetSkill(who, ATTRIBUTE_STEALTH) / 10;
+-	if(SkillCheck(who, ATTRIBUTE_STEALTH, -1) &gt; 0)
++	var my_Skill := AP_GetSkill(who, STEALTH) / 10;
++	if(SkillCheck(who, STEALTH, -1) &gt; 0)
+ 		if( !who.hidden )
+ 			// Used RSTC because it runs the script in critical mode, thus
+ 			// ensuring the hiding attempt completes before the stealth
+
+Modified: trunk/096/pkg/systems/attributes/include/attributeConstants.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributeConstants.inc	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/systems/attributes/include/attributeConstants.inc	2005-11-02 14:09:50 UTC (rev 834)
+@@ -12,13 +12,13 @@
+ 	STAMINA			:= &quot;Stamina&quot;
+ endenum
+ 
+-enum ATTRIBUTE_STATS
++enum STATS
+ 	STRENGTH		:= &quot;Strength&quot;,
+ 	DEXTERITY		:= &quot;Dexterity&quot;,
+ 	INTELLIGENCE		:= &quot;Intelligence&quot;
+ endenum
+ 
+-enum ATTRIBUTE_SKILLS
++enum SKILLS
+ 	ALCHEMY			:= &quot;Alchemy&quot;,
+ 	ANATOMY			:= &quot;Anatomy&quot;,
+ 	ANIMAL_LORE		:= &quot;AnimalLore&quot;,
+
+Modified: trunk/096/pkg/systems/crafting/include/craftingRepair.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/craftingRepair.inc	2005-11-02 13:57:44 UTC (rev 833)
++++ trunk/096/pkg/systems/crafting/include/craftingRepair.inc	2005-11-02 14:09:50 UTC (rev 834)
+@@ -96,10 +96,10 @@
+ 
+   var type, title, color;
+   case(CInt(craft_skill))
+-     ATTRIBUTE_BLACKSMITHY: 		type := &quot;Blacksmith&quot;; color := CInt(2107);
+-     ATTRIBUTE_BOWCRAP_T_FLETCHING: 	type := &quot;Bowyer&quot;; color := CInt(2116);
+-     ATTRIBUTE_CARPENTRY: 		type := &quot;Carpenter&quot;; color := CInt(2113);
+-     ATTRIBUTE_TAILORING: 		type := &quot;Tailor&quot;; color := CInt(2128);
++     BLACKSMITHY: 		type := &quot;Blacksmith&quot;; color := CInt(2107);
++     BOWCRAFT_FLETCHING: 	type := &quot;Bowyer&quot;; color := CInt(2116);
++     CARPENTRY: 		type := &quot;Carpenter&quot;; color := CInt(2113);
++     TAILORING: 		type := &quot;Tailor&quot;; color := CInt(2128);
+   endcase
+   var ramt := AP_GetSkill(who, craft_skill);
+   if(ramt &lt; 50)
+@@ -138,7 +138,7 @@
+ 
+ endfunction
+ 
+-function repair_this(who, craft_skill := ATTRIBUTE_BLACKSMITHY)
++function repair_this(who, craft_skill := BLACKSMITHY)
+   SendSysMessage(who, &quot;Select item to repair.&quot;);
+   var use_on := Target(who);
+   if(!can_access(who, use_on))
+@@ -154,16 +154,16 @@
+   endif
+   if(CInt(use_on.objtype) == CInt(0xe34))
+     case(CInt(craft_skill))
+-       ATTRIBUTE_BLACKSMITHY:            CreateRepairDeed(who, use_on, craft_skill);
+-       ATTRIBUTE_BOWCRAP_T_FLETCHING:    CreateRepairDeed(who, use_on, craft_skill);
+-       ATTRIBUTE_CARPENTRY:   		 CreateRepairDeed(who, use_on, craft_skill);
+-       ATTRIBUTE_TAILORING:   		 CreateRepairDeed(who, use_on, craft_skill);
++       BLACKSMITHY:            CreateRepairDeed(who, use_on, craft_skill);
++       BOWCRAFT_FLETCHING:    CreateRepairDeed(who, use_on, craft_skill);
++       CARPENTRY:   		 CreateRepairDeed(who, use_on, craft_skill);
++       TAILORING:   		 CreateRepairDeed(who, use_on, craft_skill);
+     endcase
+     return;
+   endif
+   var forge := 0;
+   case(CInt(craft_skill))
+-     ATTRIBUTE_BLACKSMITHY: forge := 1;
++     BLACKSMITHY: forge := 1;
+   endcase
+   if(!forge)
+     if(is_weapon_armor(use_on.objtype))
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000808.html">[Poldistro-svn] r833 - in trunk/096/pkg/mobiles/oldAI: . combat main
+</A></li>
+	<LI>Next message: <A HREF="000807.html">[Poldistro-svn] r835 - trunk/096/pkg/skills/lumberjacking
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#809">[ date ]</a>
+              <a href="thread.html#809">[ thread ]</a>
+              <a href="subject.html#809">[ subject ]</a>
+              <a href="author.html#809">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

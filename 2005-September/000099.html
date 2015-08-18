@@ -1,0 +1,495 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r117 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r117%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200509131426.j8DEQiel020180%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000098.html">
+   <LINK REL="Next"  HREF="000100.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r117 - trunk/096/pkg/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r117%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200509131426.j8DEQiel020180%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r117 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep 13 16:26:44 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000098.html">[Poldistro-svn] r116 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc
+</A></li>
+        <LI>Next message: <A HREF="000100.html">[Poldistro-svn] r118 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#99">[ date ]</a>
+              <a href="thread.html#99">[ thread ]</a>
+              <a href="subject.html#99">[ subject ]</a>
+              <a href="author.html#99">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-13 16:26:42 +0200 (Tue, 13 Sep 2005)
+New Revision: 117
+
+Modified:
+   trunk/096/pkg/commands/gm/setprop.src
+Log:
+This is um.. smaller and better than the old version BY FAR.
+
+Modified: trunk/096/pkg/commands/gm/setprop.src
+===================================================================
+--- trunk/096/pkg/commands/gm/setprop.src	2005-09-13 14:05:03 UTC (rev 116)
++++ trunk/096/pkg/commands/gm/setprop.src	2005-09-13 14:26:42 UTC (rev 117)
+@@ -1,334 +1,113 @@
+-/////////////////////////////////////////////////////////////
+-// SETPROP.SRC
+-//
+-// Author: DC
+-// Date: 2/14/99
+-//
+-// Description: An GM text command that changes the value
+-//	  of the given inherent property. Note that
+-//	  mobiles have more props than items &amp;&amp;
+-//	  some properties are read-only.
+-//
+-// Syntax: .setprop &lt;propname&gt; &lt;value&gt;
+-// program textcmd_setprop: params: character using
+-//				  text
+-//			  Splits the param text into 2
+-//			  strings (propname &amp;&amp; value)
+-//					  passes the given prop &amp;&amp;
+-//			  value to SetObjctProp &amp;&amp;
+-//			  prints the old &amp;&amp; new values
+-//			  if the write was successful.
+-//
+-// function SetObjctProp: Matches the given text to one of
+-//			the known properties of the
+-//			targetted object. If the prop
+-//			name could not be matched, it
+-//			throws an uninitialized error
+-//			which the main program catches.
+-//			only writable props are listed.
+-//
+-// TODO: Give access to props setable only with
+-//   &quot;SetObjectProperty&quot; function.
+-//
+-//   ********
+-//   **NOTE**: to change an object's name, use &quot;rename&quot; cmd
+-//   ********
+-// updated by zulu (<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">zulu at cadvision.com</A>)
+-// updated by Shilohen (<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">shilohen at sympatico.ca</A>)
+-// n.b. Some properties for items weren't tested as the 
+-// walkonscript but those will be there in case of future
+-// core changes.
+-/////////////////////////////////////////////////////////////
++/*===============================================================
++* Current Version
++* SETPROP.SRC - v5.0
++* Updated 9/13/2005 7:15AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
+ 
+ use uo;
+-use basic;
+-use os;
+ 
+-include &quot;include/attributes&quot;;
++program SetProperties(who, text)
++	var param := SplitWords(text);
++	if ( param.size() &lt; 2 )
++		SendSysMessage(who, &quot;SYNTAX: .setprop &lt;property name&gt; &lt;value&gt;&quot;);
++		return;
++	endif
+ 
+-program textcmd_setprop( who, text )
+-
+-	var props := SplitWords( text );
+-	if( !props[1] )
+-		SendSysmessage( who , &quot;Syntax: .setprop [propname] [amount]&quot; );
+-	elseif( !props[2] )
+-		SendSysmessage( who , &quot;Syntax: .setprop [propname] [amount]&quot; );
++	var targ := target(who);
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return;
+ 	endif
+ 
+-	var propname	:= props[1];
+-	var amount	:= Cint( props[2] );
+-	var amount_str	:= Cstr( text - (propname + &quot; &quot;) );
++	var property := Lower(param[1]);
++	var pos := Find(text, param[2], Len(param[1])+1);
++	var value := text[pos, Len(text)];
+ 
+-	if( amount == 9999 )
+-		amount := 0;
+-		amount_str := &quot;&quot;;
++	// Useful for clearing something like 'mobile.guild_title'.
++	if ( value == &quot;NULL&quot; )
++		value := &quot;&quot;;
+ 	endif
+-	
+-	if (propname == &quot;concealed&quot;)
+-	  if (amount &gt; who.cmdlevel)
+-	    amount := who.cmdlevel;
+-	  endif
+-	endif
+-	  
+-	SendSysMessage( who, &quot;Select an object.&quot; );
+-	var obj := Target(who);
+-	if( !obj )
+-		return 0;
+-	endif
+-	
+-	SetScriptController(who);
+-	
+-	if( obj.IsA(POLCLASS_MOBILE) )
+-		ProcessMobileSetProp( who, obj, propname, amount, amount_str );
+-	else
+-		ProcessItemSetProp( who, obj, propname, amount, amount_str );
+-	endif
+ 
++	ProcessInput(who, targ, property, value);
+ endprogram
+ 
++function ProcessInput(who, targ, property, value)
++	var old_val := targ.get_member(property);
++	var old_type := Lower(TypeOf(old_val));
++	case ( old_type )
++		&quot;integer&quot;	: value := CInt(value);
++		&quot;string&quot;	: value := CStr(value);
++		&quot;double&quot;	: value := CDbl(value);
++	endcase
+ 
+-function ProcessMobileSetProp( who, mobile, propname, amount, amount_str )
++	SendSysMessage(who, &quot;Old Value-&gt;&quot;+old_val);
+ 
+-	var old_value := GetMobileProp( mobile, propname );
+-	if( !old_value )
+-		SendSysMessage( who, &quot;This property don't exist for mobiles.&quot; );
+-		return 0;
+-	endif
++	// Handles situations where methods or functions must be used.
++	case ( property )
++		&quot;x&quot;: &quot;y&quot;: &quot;z&quot;: &quot;realm&quot;: 
++			DoMovement(targ, property, value);
++			break;
++		&quot;concealed&quot;:
++			DoConceal(who, targ, value);
++			break;
++		&quot;cmdlevel&quot;:
++			DoCmdLevel(who, targ, value);
++			break;
++		&quot;criminal&quot;:
++			targ.SetCriminal(value);
++			break;
++		&quot;murderer&quot;:
++			targ.SetMurderer(value);
++			break;
++		default:
++			targ.set_member(property, value);
++			break;
++	endcase
+ 	
+-	SendSysmessage( who, propname + &quot; was: &quot; + old_value );
+-		
+-	if( SetMobileProp( mobile, propname, amount, amount_str ) )
+-		var new_value := GetMobileProp( mobile, propname );
+-		if( new_value == old_value )
+-			if( propname != &quot;lightlevel&quot; )
+-				SendSysMessage( who, &quot;Property unchanged.&quot; );
+-			else
+-				SendSysMessage( who, new_value );
+-			endif
+-		else
+-			SendSysmessage( who, propname + &quot; is now: &quot; + new_value );
+-		endif
+-	else
+-		SendSysmessage( who, &quot;Could not write to &quot; + propname + &quot;.&quot; );
+-	endif
+-	
+-	return 1;
+-	
++	SendSysMessage(who, &quot;New Value-&gt;&quot;+targ.get_member(property));
+ endfunction
+ 
++function DoMovement(targ, property, value)
++	var x := targ.x;
++	var y := targ.y;
++	var z := targ.z;
++	var realm := targ.realm;
+ 
+-function ProcessItemSetProp( who, item, propname, amount, amount_str )
++	if ( property == realm )
++		MoveObjectToRealm(targ, property, x, y, z);
++	else
++		case ( property )
++			&quot;x&quot;: x := value;
++			&quot;y&quot;: y := value;
++			&quot;z&quot;: z := value;
++		endcase
+ 
+-	var old_value := GetItemProp( item, propname );
+-	if( !old_value )
+-		SendSysMessage( who, &quot;This property don't exist for items.&quot; );
+-		return 0;
+-	endif
+-	
+-	SendSysmessage( who, propname + &quot; was: &quot; + old_value );
+-		
+-	if( SetItemProp( item, propname, amount, amount_str ) )
+-		var new_value := GetItemProp( item, propname );
+-		if( new_value == old_value )
+-			if( propname != &quot;lightlevel&quot; )
+-				SendSysMessage( who, &quot;Property unchanged.&quot; );
+-			else
+-				SendSysMessage( who, new_value );
+-			endif
+-		else
+-			SendSysmessage( who, propname + &quot; is now: &quot; + new_value );
++		if ( targ.IsA(POLCLASS_ITEM) )
++			MoveItemToLocation(targ, x, y, z, MOVEITEM_FORCELOCATION);
++		elseif ( targ.IsA(POLCLASS_MOBILE) )
++			MoveCharacterToLocation(targ, x, y, z, MOVECHAR_FORCELOCATION);
+ 		endif
+-	else
+-		SendSysmessage( who, &quot;Could not write to &quot; + propname + &quot;.&quot; );
+ 	endif
+-	
+-	return 1;
+-	
+ endfunction
+ 
+-
+-function GetMobileProp( mobile, propname )
+-
+-	var retstr;
+-	case( propname )
+-		&quot;x&quot;: 		retstr := mobile.x;				break;
+-		&quot;y&quot;: 		retstr := mobile.y;				break;
+-		&quot;z&quot;: 		retstr := mobile.z;				break;
+-		&quot;trueobjtype&quot;:	retstr := Hex(mobile.trueobjtype);		break;
+-		&quot;color&quot;: 	retstr := mobile.color;				break;
+-		&quot;truecolor&quot;:	retstr := mobile.truecolor;			break;
+-		&quot;facing&quot;: 	retstr := mobile.facing;			break;
+-		&quot;name&quot;:		retstr := mobile.name;				break;
+-		&quot;warmode&quot;:	retstr := mobile.warmode;			break;
+-		&quot;gender&quot;:	retstr := mobile.gender;			break;
+-		&quot;hp&quot;:		retstr := GetHp(mobile);			break;
+-		&quot;mana&quot;:		retstr := GetMana(mobile);			break;
+-		&quot;stamina&quot;:	retstr := GetStamina(mobile);			break;
+-		&quot;strength&quot;:	retstr := GetStrength(mobile);			break;
+-		&quot;dexterity&quot;:	retstr := GetDexterity(mobile);			break;
+-		&quot;intelligence&quot;:	retstr := GetIntelligence(mobile);		break;
+-		&quot;strmod&quot;:	retstr := GetStrengthMod(mobile);		break;
+-		&quot;intmod&quot;:	retstr := GetIntelligenceMod(mobile);		break;
+-		&quot;dexmod&quot;:	retstr := GetDexterityMod(mobile);		break;
+-		&quot;armod&quot;:	retstr := mobile.ar_mod;			break;
+-		&quot;graphic&quot;:	retstr := mobile.graphic;			break;
+-		&quot;poisoned&quot;:	retstr := mobile.poisoned;			break;
+-		&quot;paralyzed&quot;:	retstr := mobile.paralyzed;			break;
+-		&quot;hidden&quot;:	retstr := mobile.hidden;			break;
+-		&quot;concealed&quot;:	retstr := mobile.concealed;			break;
+-		&quot;frozen&quot;:	retstr := mobile.frozen;			break;
+-		&quot;stealthsteps&quot;:	retstr := mobile.stealthsteps;			break;
+-		&quot;squelched&quot;:	retstr := mobile.squelched;			break;
+-		&quot;lightlevel&quot;:	retstr := &quot;Can't read personnal light level&quot;;	break;
+-		&quot;title_guild&quot;:	retstr := mobile.title_guild;			break;
+-		&quot;title_prefix&quot;:	retstr := mobile.title_prefix;			break;
+-		&quot;title_suffix&quot;:	retstr := mobile.title_suffix;			break;
+-		&quot;title_race&quot;:	retstr := mobile.title_race;			break;
+-		&quot;criminal&quot;:	retstr := mobile.criminal;			break;
+-		&quot;murderer&quot;:	retstr := mobile.murderer;			break;
+-		default:	retstr := error;
+-	endcase
+-
+-	if( retstr != error )
+-		return Cstr(retstr);
+-	else
+-		return retstr;
++function DoCmdLevel(who, targ, value)
++	if ( value &gt; who.cmdlevel )
++		value := who.cmdlevel;
++		SendSysMessage(who, &quot;You can not set a command level higher than your own.&quot;);
+ 	endif
+-	
+-endfunction
+ 
+-
+-function SetMobileProp( mobile, propname, amount, amount_str )
+-
+-	var ret := 1;
+-	case( propname )
+-		&quot;x&quot;: 		ret := MoveCharacterToLocation( mobile, amount, mobile.y, mobile.z, MOVECHAR_FORCELOCATION );	break;
+-		&quot;y&quot;: 		ret := MoveCharacterToLocation( mobile, mobile.x, amount, mobile.z, MOVECHAR_FORCELOCATION );	break;
+-		&quot;z&quot;: 		ret := MoveCharacterToLocation( mobile, mobile.x, mobile.y, amount, MOVECHAR_FORCELOCATION );	break;
+-		&quot;trueobjtype&quot;:	mobile.trueobjtype	:= amount;		break;
+-		&quot;color&quot;: 	mobile.color		:= amount;		break;
+-		&quot;truecolor&quot;:	mobile.truecolor	:= amount;		break;
+-		&quot;facing&quot;: 	mobile.facing		:= amount;		break;
+-		&quot;name&quot;:		mobile.name		:= amount_str;		break;
+-		&quot;warmode&quot;:	mobile.warmode		:= amount;		break;
+-		&quot;gender&quot;:	mobile.gender		:= amount;		break;
+-		&quot;hp&quot;:		ret := SetHp(mobile,amount);			break;
+-		&quot;mana&quot;:		ret := SetMana(mobile,amount);			break;
+-		&quot;stamina&quot;:	ret := SetStamina(mobile,amount);		break;
+-		&quot;strength&quot;:	ret := SetBaseStrength(mobile,amount);		break;
+-		&quot;dexterity&quot;:	ret := SetBaseDexterity(mobile,amount);		break;
+-		&quot;intelligence&quot;:	ret := SetBaseIntelligence(mobile,amount);	break;
+-		&quot;strmod&quot;:	ret := SetStrengthMod(mobile,amount);		break;
+-		&quot;intmod&quot;:	ret := SetIntelligenceMod(mobile,amount);	break;
+-		&quot;dexmod&quot;:	ret := SetDexterityMod(mobile,amount);		break;
+-		&quot;armod&quot;:	mobile.ar_mod		:= amount;		break;
+-		&quot;graphic&quot;:	mobile.graphic		:= amount;		break;
+-		&quot;hidden&quot;:	mobile.hidden		:= amount;		break;
+-		&quot;concealed&quot;:	mobile.concealed	:= amount;		break;
+-		&quot;frozen&quot;:	mobile.frozen		:= amount;		break;
+-		&quot;stealthsteps&quot;:	mobile.stealthsteps	:= amount;		break;
+-//		&quot;poisoned&quot;:	mobile.SetPoisoned(amount);			break;
+-		&quot;paralyzed&quot;:	mobile.SetParalyzed(amount);			break;
+-		&quot;squelched&quot;:	mobile.Squelch(amount);				break;
+-		&quot;criminal&quot;:	mobile.SetCriminal(amount);			break;
+-		&quot;murderer&quot;:	mobile.SetMurderer(amount);			break;
+-		&quot;title_guild&quot;:	mobile.title_guild	:= amount_str;		break;
+-		&quot;title_prefix&quot;:	mobile.title_prefix	:= amount_str;		break;
+-		&quot;title_suffix&quot;:	mobile.title_suffix	:= amount_str;		break;
+-		&quot;title_race&quot;:	mobile.title_race	:= amount_str;		break;
+-		&quot;lightlevel&quot;:	amount_str := SplitWords(amount_str);
+-				mobile.SetLightLevel( Cint(amount_str[1]), Cint(amount_str[2]) );
+-				break;
+-		default:	ret := error;
+-	endcase
+-
+-	return ret;
+-
++	targ.cmdlevel := value;
+ endfunction
+ 
+-
+-function GetItemProp( item, propname )
+-
+-	var retstr;
+-	case( propname )
+-		&quot;x&quot;: 		retstr := item.x;		break;
+-		&quot;y&quot;: 		retstr := item.y;		break;
+-		&quot;z&quot;: 		retstr := item.z;		break;
+-		&quot;color&quot;: 	retstr := item.color;		break;
+-		&quot;facing&quot;: 	retstr := item.facing;		break;
+-		&quot;name&quot;:		retstr := item.name;		break;
+-		&quot;desc&quot;:		retstr := item.desc;		break;
+-		&quot;hp&quot;:		retstr := item.hp;		break;
+-		&quot;ar_mod&quot;:	retstr := item.ar_mod;		break;
+-		&quot;graphic&quot;:	retstr := item.graphic;		break;
+-		&quot;usescript&quot;:	retstr := item.usescript;	break;
+-		&quot;equipscript&quot;:	retstr := item.equipscript;	break;
+-		&quot;unequipscript&quot;: retstr := item.unequipscript;	break;
+-		&quot;newbie&quot;:	retstr := item.newbie;		break;
+-		&quot;movable&quot;:	retstr := item.movable;		break;
+-		&quot;decayat&quot;:	retstr := item.decayat;		break;
+-		&quot;maxhp_mod&quot;:	retstr := item.maxhp_mod;	break;
+-		&quot;quality&quot;:	retstr := item.quality;		break;
+-		&quot;ar_base&quot;:	retstr := item.ar_base;		break;
+-		&quot;hitscript&quot;:	retstr := item.hitscript;	break;
+-		&quot;dmg_mod&quot;:	retstr := item.dmg_mod;		break;
+-		&quot;controlscript&quot;: retstr := item.controlscript;	break;
+-		&quot;walkonscript&quot;:	retstr := item.walkonscript;	break;
+-		&quot;invisible&quot;:	retstr := item.invisible;	break;
+-		&quot;buyprice&quot;:	retstr := item.buyprice;	break;
+-		default:	retstr := error;
+-	endcase
+-
+-	if( retstr != error )
+-		return Cstr(retstr);
+-	else
+-		return retstr;
++function DoConceal(who, targ, value)
++	if ( value &gt; who.cmdlevel )
++		value := who.cmdlevel;
++		SendSysMessage(who, &quot;You can not conceal something higher than your cmdlevel.&quot;);
+ 	endif
+ 
++	targ.concealed := value;
+ endfunction
+-
+-
+-function SetItemProp( item, propname, amount, amount_str )
+-
+-	var ret := 1;
+-	case( propname )
+-		&quot;x&quot;: 		ret := MoveItemToLocation( item, amount, item.y, item.z, MOVEITEM_FORCELOCATION );	break;
+-		&quot;y&quot;: 		ret := MoveItemToLocation( item, item.x, amount, item.z, MOVEITEM_FORCELOCATION );	break;
+-		&quot;z&quot;: 		ret := MoveItemToLocation( item, item.x, item.y, amount, MOVEITEM_FORCELOCATION );	break;
+-		&quot;color&quot;: 	item.color		:= amount;		break;
+-		&quot;facing&quot;: 	item.facing		:= amount;		break;
+-		&quot;name&quot;:		item.name		:= amount;		break;
+-		&quot;desc&quot;:		item.desc		:= amount;		break;
+-		&quot;hp&quot;:		item.hp			:= amount;		break;
+-		&quot;ar_mod&quot;:	item.ar_mod		:= amount;		break;
+-		&quot;graphic&quot;:	item.graphic		:= amount;		break;
+-		&quot;newbie&quot;:	item.newbie		:= amount;		break;
+-		&quot;movable&quot;:	item.movable		:= amount;		break;
+-		&quot;decayat&quot;:	item.decayat		:= amount;		break;
+-		&quot;maxhp_mod&quot;:	item.maxhp_mod		:= amount;		break;
+-		&quot;ar_base&quot;:	item.ar_base		:= amount;		break;
+-		&quot;dmg_mod&quot;:	item.dmg_mod		:= amount;		break;
+-		&quot;invisible&quot;:	item.invisible		:= amount;		break;
+-		&quot;buyprice&quot;:	item.buyprice		:= amount;		break;
+-		&quot;hitscript&quot;:	item.hitscript		:= amount_str;		break;
+-		&quot;usescript&quot;:	item.usescript		:= amount_str;		break;
+-		&quot;equipscript&quot;:	item.equipscript	:= amount_str;		break;
+-		&quot;walkonscript&quot;:	item.walkonscript	:= amount_str;		break;
+-		&quot;unequipscript&quot;: item.unequipscript	:= amount_str;		break;
+-		&quot;controlscript&quot;: item.controlscript	:= amount_str;		break;
+-		&quot;quality&quot;:	amount_str := SplitWords(amount_str);
+-				amount	   := Cdbl(amount_str[1]);
+-				if( amount &gt; 0.0 )
+-					item.quality	:= amount;
+-				endif
+-				break;
+-		default:	ret := error;
+-	endcase
+-
+-	if( ret != error )
+-		return Cstr(ret);
+-	else
+-		return ret;
+-	endif
+-
+-endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000098.html">[Poldistro-svn] r116 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc
+</A></li>
+	<LI>Next message: <A HREF="000100.html">[Poldistro-svn] r118 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#99">[ date ]</a>
+              <a href="thread.html#99">[ thread ]</a>
+              <a href="subject.html#99">[ subject ]</a>
+              <a href="author.html#99">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

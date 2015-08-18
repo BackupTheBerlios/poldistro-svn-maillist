@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r747 - trunk/096/pkg/mobiles/timedScripts/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r747%20-%20trunk/096/pkg/mobiles/timedScripts/commands/gm&In-Reply-To=%3C200510312015.j9VKFfHq030814%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000720.html">
+   <LINK REL="Next"  HREF="000722.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r747 - trunk/096/pkg/mobiles/timedScripts/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r747%20-%20trunk/096/pkg/mobiles/timedScripts/commands/gm&In-Reply-To=%3C200510312015.j9VKFfHq030814%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r747 - trunk/096/pkg/mobiles/timedScripts/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 31 21:15:41 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000720.html">[Poldistro-svn] r746 - in trunk/096/pkg/mobiles/timedScripts: . config
+</A></li>
+        <LI>Next message: <A HREF="000722.html">[Poldistro-svn] r748 - in trunk/096: config pkg/items/containers/corpse pkg/mobiles/brainAI/include pkg/mobiles/npcutils pkg/mobiles/oldAI pkg/mobiles/oldAI/main
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#721">[ date ]</a>
+              <a href="thread.html#721">[ thread ]</a>
+              <a href="subject.html#721">[ subject ]</a>
+              <a href="author.html#721">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-31 21:15:29 +0100 (Mon, 31 Oct 2005)
+New Revision: 747
+
+Removed:
+   trunk/096/pkg/mobiles/timedScripts/commands/gm/cureTimers.src
+   trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimersByType.src
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/commands/gm/addTimer.src
+   trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimers.src
+   trunk/096/pkg/mobiles/timedScripts/commands/gm/lowerTimer.src
+Log:
+Commands updated to support new timer controller.
+
+Modified: trunk/096/pkg/mobiles/timedScripts/commands/gm/addTimer.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/commands/gm/addTimer.src	2005-10-31 19:38:46 UTC (rev 746)
++++ trunk/096/pkg/mobiles/timedScripts/commands/gm/addTimer.src	2005-10-31 20:15:29 UTC (rev 747)
+@@ -1,30 +1,33 @@
+ use uo;
+ 
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ 
+-
+ program cmd_AddPoison(who, text)
+ 	text := SplitWords(text);
+ 	
+-	var p_name := text[1];
+-	var amount := CInt(text[2]);
+-	var level := CInt(text[3]);
++	var timer_name	:= text[1];
++	var duration	:= CInt(text[2]);
++	var level	:= CInt(text[3]);
+ 
+-	if (!level)
++	if ( !level )
+ 		level := 1;
+ 	endif
+ 	
+-	if (!p_name || !amount)
+-		SendSysMessage(who, &quot;Syntax: .givepoison &lt;poison name&gt; &lt;amount&gt; (&lt;level&gt;)&quot;);
++	if ( !timer_name || !duration )
++		SendSysMessage(who, &quot;Syntax: .addTimer &lt;timer name&gt; &lt;duration&gt; (level)&quot;);
+ 		return;
+ 	endif
+ 	
+-	SendSysMessage(who, &quot;Who do you want to infect?&quot;);
++	SendSysMessage(who, &quot;Target mobile to add timer to.&quot;);
+ 	var targ := target(who);
+ 	
+-	if (targ.IsA(POLCLASS_MOBILE))
+-		AddPoison(targ, p_name, amount, who, level);
++	if ( !targ.IsA(POLCLASS_MOBILE) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
+ 	endif
++	
++	TS_StartTimer(targ, timer_name, duration, level);
++	SendSysMessage(who, &quot;Done.&quot;);
+ 
+-	return;
++	return 1;
+ endprogram
+
+Deleted: trunk/096/pkg/mobiles/timedScripts/commands/gm/cureTimers.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/commands/gm/cureTimers.src	2005-10-31 19:38:46 UTC (rev 746)
++++ trunk/096/pkg/mobiles/timedScripts/commands/gm/cureTimers.src	2005-10-31 20:15:29 UTC (rev 747)
+@@ -1,29 +0,0 @@
+-use uo;
+-
+-include &quot;:poisonwatcher:poisons&quot;;
+-
+-
+-program cmd_CurePoison(who, text)
+-	text := splitwords(text);
+-	var pname := text[1];
+-	var amount := CInt(text[2]);
+-	var level := Cint(text[3]);
+-
+-	if (!amount)
+-		Sendsysmessage(who, &quot;Usage: .curepoison poison_name amount [level]&quot;);
+-	endif
+-
+-	if (!level)
+-		level := 1;
+-	endif
+-
+-	SendSysMessage(who, &quot;Who do you want to cure?&quot;);
+-	var targ := target(who);
+-	
+-	if (targ)
+-		CurePoison(targ, amount, pname, level);
+-	endif
+-
+-	return;
+-endprogram
+-
+
+Modified: trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimers.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimers.src	2005-10-31 19:38:46 UTC (rev 746)
++++ trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimers.src	2005-10-31 20:15:29 UTC (rev 747)
+@@ -1,24 +1,24 @@
+ use uo;
+ use os;
+ 
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ 
+-
+-program Lister(who, type)
+-	if (!type)
+-		type := &quot;P&quot;;
+-	endif
++program textcmd_ListTimers(who, type)
+ 	
+-	SendSysMessage(who, &quot;Select the mobile to list poisons on.&quot;);
++	SendSysMessage(who, &quot;Select the mobile to list timers on.&quot;);
++	
+ 	var targ := target(who);
+ 	
+-	if (!targ.IsA(POLCLASS_MOBILE))
++	if ( !targ.IsA(POLCLASS_MOBILE) )
+ 		SendSysMessage(who, &quot;Cancelled&quot;);
+-		return;
++		return 0;
+ 	endif
+ 	
+-	foreach poison_name in GetAllPoisons(targ);
+-		SendSysMessage(who, &quot;-&gt;&quot;+poison_name);
++	foreach timer_name in ( TS_GetTimerNames(targ, type) )
++		SendSysMessage(who, &quot;-&gt;&quot;+timer_name);
+ 		sleepms(2);
+ 	endforeach
++	
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
+ endprogram
+
+Deleted: trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimersByType.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimersByType.src	2005-10-31 19:38:46 UTC (rev 746)
++++ trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimersByType.src	2005-10-31 20:15:29 UTC (rev 747)
+@@ -1,27 +0,0 @@
+-use uo;
+-use os;
+-
+-include &quot;:poisonwatcher:poisons&quot;;
+-
+-
+-program Lister(who, type)
+-	if (!type)
+-		type := &quot;P&quot;;
+-	endif
+-	
+-	SendSysMessage(who, &quot;Select the mobile to list poisons on.&quot;);
+-	var targ := target(who);
+-	
+-	if (!targ)
+-		SendSysMessage(who, &quot;Cancelled&quot;);
+-		return;
+-	endif
+-	
+-	foreach poison_name in ListPoisonsByType(targ, type)
+-		SendSysMessage(who, poison_name);
+-		sleepms(2);
+-	endforeach
+-
+-	return;
+-endprogram
+-
+
+Modified: trunk/096/pkg/mobiles/timedScripts/commands/gm/lowerTimer.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/commands/gm/lowerTimer.src	2005-10-31 19:38:46 UTC (rev 746)
++++ trunk/096/pkg/mobiles/timedScripts/commands/gm/lowerTimer.src	2005-10-31 20:15:29 UTC (rev 747)
+@@ -1,27 +1,27 @@
+ use uo;
+ 
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ 
+-program cmd_CureSpecific(who, text)
++program textcmd_LowerTimer(who, text)
+ 	text := SplitWords(text);
+ 	
+-	var p_name := text[1];
+-	var amount := CInt(text[2]);
+-	var level := CInt(text[3]);
++	var timer_name	:= text[1];
++	var amount	:= CInt(text[2]);
+ 	
+-	if (!p_name || !amount)
+-		SendSysMessage(who, &quot;Syntax: .curespecific &lt;poison name&gt; &lt;amount&gt;&quot;);
+-		return;
++	if ( !timer_name || amount )
++		SendSysMessage(who, &quot;Syntax: .lowerTimer &lt;timer name&gt; &lt;amount&gt;&quot;);
++		return 0;
+ 	endif
+ 
+-	if (!level)
+-		level := 1;
+-	endif
+-	
+-	SendSysMessage(who, &quot;Who do you want to cure?&quot;);
++	SendSysMessage(who, &quot;Select a mobile to lower the timer on.&quot;);
+ 	var targ := target(who);
+ 	
+-	if (targ.IsA(POLCLASS_MOBILE))
+-		CureSpecific(targ, p_name, amount, level);
++	if ( targ.IsA(POLCLASS_MOBILE) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
+ 	endif
++	
++	TS_LowerDuration(targ, timer_name, amount);
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
+ endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000720.html">[Poldistro-svn] r746 - in trunk/096/pkg/mobiles/timedScripts: . config
+</A></li>
+	<LI>Next message: <A HREF="000722.html">[Poldistro-svn] r748 - in trunk/096: config pkg/items/containers/corpse pkg/mobiles/brainAI/include pkg/mobiles/npcutils pkg/mobiles/oldAI pkg/mobiles/oldAI/main
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#721">[ date ]</a>
+              <a href="thread.html#721">[ thread ]</a>
+              <a href="subject.html#721">[ subject ]</a>
+              <a href="author.html#721">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

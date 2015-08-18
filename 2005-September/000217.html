@@ -1,0 +1,1760 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r235 - in trunk/096/pkg/commands: config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r235%20-%20in%20trunk/096/pkg/commands%3A%20config%20include&In-Reply-To=%3C200509250850.j8P8oDqW000634%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000216.html">
+   <LINK REL="Next"  HREF="000238.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r235 - in trunk/096/pkg/commands: config include</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r235%20-%20in%20trunk/096/pkg/commands%3A%20config%20include&In-Reply-To=%3C200509250850.j8P8oDqW000634%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r235 - in trunk/096/pkg/commands: config include">panosl at berlios.de
+       </A><BR>
+    <I>Sun Sep 25 10:50:13 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000216.html">[Poldistro-svn] r234 - in trunk/096/scripts: . include
+</A></li>
+        <LI>Next message: <A HREF="000238.html">[Poldistro-svn] r236 - in trunk/096: . batchfiles config data docs misc pkg/commands pkg/commands/admin pkg/commands/config pkg/commands/coun pkg/commands/gm pkg/commands/include pkg/commands/player pkg/commands/seer pkg/commands/test pkg/config pkg/config/config pkg/config/include pkg/expansions/aos pkg/expansions/aos/config pkg/expansions/aos/skills/chivalry pkg/expansions/aos/skills/chivalry/config pkg/expansions/aos/skills/focus pkg/expansions/aos/skills/focus/config pkg/expansions/aos/skills/necromancy pkg/expansions/aos/skills/necromancy/config pkg/expansions/lbr pkg/expansions/lbr/config pkg/expansions/uor pkg/expansions/uor/config pkg/items/bountyboard pkg/items/bountyboard/config pkg/items/bulletinboard pkg/items/bulletinboard/config pkg/items/commcrystals pkg/items/commcrystals/config pkg/items/corpses pkg/items/corpses/config pkg/items/decorations pkg/items/decorations/config pkg/items/doors pkg/items/dyes pkg/items/food pkg/items/guildstone pkg/items/guildstone/command/! player pkg/items/interiordecoratortool pkg/items/lighting pkg/items/magic pkg/items/moongates pkg/items/repaircontract pkg/items/runebook pkg/items/sysbook pkg/items/sysbook/command/admin pkg/items/sysbook/command/seer pkg/items/training pkg/items/traps pkg/items/trash pkg/items/treasuremap pkg/items/usestuff pkg/items/wands pkg/mobiles/ai_brain pkg/mobiles/ai_brain/commands/gm pkg/mobiles/ai_brain/commands/test pkg/mobiles/ai_brain/complete/testnpc pkg/mobiles/ai_brain/config pkg/mobiles/ai_brain/include pkg/mobiles/ai_brain/include/braincore pkg/mobiles/animaltrainer pkg/mobiles/barber pkg/mobiles/npcutils pkg/mobiles/playervendor pkg/other/gmtools pkg/other/gmtools/commands/gm pkg/other/hooks pkg/other/motd pkg/other/motd/commands/player pkg/other/motd/docs pkg/skills/alchemy pkg/skills/alchemy/config pkg/skills/anatomy pkg/skills/anatomy/config pkg/skills/animallore pkg/skills/animallore/config pkg/skills/armslore pkg/skills/armslore/config pkg/skills/begging pkg/skills! /begging/config pkg/skills/blacksmithy pkg/skills/blacksmithy/! config p
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#217">[ date ]</a>
+              <a href="thread.html#217">[ thread ]</a>
+              <a href="subject.html#217">[ subject ]</a>
+              <a href="author.html#217">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-09-25 10:50:11 +0200 (Sun, 25 Sep 2005)
+New Revision: 235
+
+Added:
+   trunk/096/pkg/commands/include/goAdd.inc
+   trunk/096/pkg/commands/include/goEdit.inc
+   trunk/096/pkg/commands/include/goGumps.inc
+   trunk/096/pkg/commands/include/goTemplate.inc
+   trunk/096/pkg/commands/include/goText.inc
+Removed:
+   trunk/096/pkg/commands/include/go-add.inc
+   trunk/096/pkg/commands/include/go-edit.inc
+   trunk/096/pkg/commands/include/go-gumps.inc
+   trunk/096/pkg/commands/include/go-template.inc
+   trunk/096/pkg/commands/include/go-text.inc
+Modified:
+   trunk/096/pkg/commands/config/icp.cfg
+Log:
+Converting to the distro standards, probably will not compile.
+
+Modified: trunk/096/pkg/commands/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/commands/config/icp.cfg	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/config/icp.cfg	2005-09-25 08:50:11 UTC (rev 235)
+@@ -1,15 +1,20 @@
++# $Id$
++#
++#
++
++
+ ICP Register
+ {
+-        Name            Text Commands
+-        Version         1.0
+-        Description     Main Package for Text Commands.
++	Name            Text Commands
++	Version         1.0
++	Description     Main Package for Text Commands.
+ 
+-        Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++	Creator         Distro Team
++	C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+ 
+-        Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++	Maintainer      Distro Team
++	M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+ 
+-        //TextCmd       cmdlevel path
+-        TextCmd         2 :commands:seer/go
++	//TextCmd       cmdlevel path
++	TextCmd         2 :commands:seer/go
+ }
+
+Deleted: trunk/096/pkg/commands/include/go-add.inc
+===================================================================
+--- trunk/096/pkg/commands/include/go-add.inc	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/include/go-add.inc	2005-09-25 08:50:11 UTC (rev 235)
+@@ -1,198 +0,0 @@
+-function Go_AddNewLocation(who, public:=1)
+-
+-	SendSysMessage(who, &quot;Click where you want the new Go Location to go to.&quot;);
+-	var targ := TargetCoordinates(who);
+-
+-	if (!targ)
+-		SendSysMessage(who, &quot;Cancelled&quot;);
+-		return 0;
+-	endif
+-
+-	var name := RequestInput(who, who.backpack, &quot;What do you want to call this go location?&quot;);
+-
+-	if ( !name )
+-		SendSysMessage(who, &quot;Cancelled&quot;);
+-		return 0;
+-	endif
+-
+-	if( public )
+-		go_prop_base := go_elem.GetProp(&quot;base_Distro&quot;);
+-		if ( go_prop_base.Exists(lower(name)) )
+-			GumpPrompt(who, &quot;You already have a public go location named [&quot;+name+&quot;]&quot;);
+-			return 0;
+-		endif
+-		Go_SetLocation(&quot;base_Distro&quot;, who, name, targ.realm, targ.x, targ.y, targ.z);
+-		GumpPrompt(who, &quot;New public go location added: [&quot;+name+&quot;]&quot;);
+-	else
+-		go_prop := go_elem.GetProp(who.acctname);
+-		if ( go_prop.Exists(lower(name)) )
+-			GumpPrompt(who, &quot;You already have a private go location named [&quot;+name+&quot;]&quot;);
+-			return 0;
+-		endif
+-		Go_SetLocation(who.acctname, who, name, targ.realm, targ.x, targ.y, targ.z);
+-		GumpPrompt(who, &quot;New private go location added: [&quot;+name+&quot;]&quot;);
+-	endif
+-
+-	return 0;
+-
+-endfunction
+-
+-function Go_CopyLocation(who, public:=1)
+-
+-	var gump;
+-	if( public )
+-		gump := Go_RetrieveGump(&quot;CopyIndex&quot;, &quot;base_Distro&quot;);
+-		num_keys := go_keys_base.size();
+-	else
+-		gump := Go_RetrieveGump(&quot;CopyIndex&quot;, who.acctname);
+-		num_keys := go_keys.size();
+-	endif
+-
+-	if  ( !gump )
+-		if( public )
+-			gump := Go_LocationCopyGump(1);
+-			Go_SaveGump(&quot;CopyIndex&quot;, gump, &quot;base_Distro&quot;);
+-		else
+-			gump := Go_LocationCopyGump(0);
+-			Go_SaveGump(&quot;CopyIndex&quot;, gump, who.acctname);
+-		endif
+-	endif
+-
+-	var input := GFSendGump(who, gump);
+-	input := input[0];
+-
+-	if(input)
+-		var send_Location := 0;
+-		if( public )
+-			send_Location := go_prop_base[lower(go_keys_base[input])];
+-		else
+-			send_Location := go_prop[lower(go_keys[input])];
+-		endif
+-		if ( send_Location )
+-			if( public )
+-				go_prop_base := go_elem.GetProp(&quot;base_Distro&quot;);
+-				if ( go_prop.Exists(lower(send_Location.Name)) )
+-					GumpPrompt(who, &quot;You already have a private go location named [&quot;+send_Location.Name+&quot;]&quot;);
+-					return 0;
+-				endif
+-				Go_SetLocation(who.acctname, who, send_Location.Name, send_Location.Realm, send_Location.X, send_Location.Y, send_Location.Z);
+-				GumpPrompt(who, &quot;Copied [&quot; + send_Location.Name + &quot;] to your private menu.&quot;);
+-			else
+-				go_prop := go_elem.GetProp(who.acctname);
+-				if ( go_prop_base.Exists(lower(send_Location.Name)) )
+-					GumpPrompt(who, &quot;You already have a public go location named [&quot;+send_Location.Name+&quot;]&quot;);
+-					return 0;
+-				endif
+-				Go_SetLocation(&quot;base_Distro&quot;, who, send_Location.Name, send_Location.Realm, send_Location.X, send_Location.Y, send_Location.Z);
+-				GumpPrompt(who, &quot;Copied [&quot; + send_Location.Name + &quot;] to the public menu.&quot;);
+-			endif
+-			return 0;
+-		else
+-			GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
+-			Go_RefreshMyGumps(who);
+-			return 0;
+-		endif
+-	else
+-		SendSysMessage(who, &quot;Copying Cancelled&quot;);
+-		Go_RefreshMyGumps(who);
+-		return 0;
+-	endif
+-
+-	return 0;
+-
+-endfunction
+-
+-function Go_SetLocation(gump_Type, who, name, realm, x, y, z)
+-
+-	if( !realm )
+-		realm := who.realm;
+-	endif
+-
+-	z := GetMapInfo(x, y, realm).z;
+-
+-	var temp := dictionary;
+-	temp.+Name := lower(name);
+-	temp.+Realm := lower(realm);
+-	temp.+X := x;
+-	temp.+Y := y;
+-	temp.+Z := z;
+-	case(gump_Type)
+-		&quot;base_Distro&quot;: go_prop_base[lower(name)] := temp;
+-			       go_elem.SetProp(gump_Type, go_prop_base);
+-		default:       go_prop[lower(name)] := temp;
+-                               go_elem.SetProp(gump_Type, go_prop);
+-	endcase
+-	Go_RefreshMyGumps(who);
+-
+-	return 0;
+-
+-endfunction
+-
+-function Go_LocationCopyGump(public:=1)
+-
+-	var gump := GFCreateGump();
+-	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
+-	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
+-	if( public )
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
+-	else
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
+-	endif
+-	GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
+-	GFHTMLArea(gump,  25, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Name&quot;);
+-	GFHTMLArea(gump, 175, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Realm&quot;);
+-	GFHTMLArea(gump, 295, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
+-	GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
+-
+-	GFPage(gump, 1);
+-
+-	var y_loc := 85;
+-	var page_num := 1;
+-	var counter := 1;
+-	var line_num := 0;
+-
+-	if( public )
+-		go_keys_base.sort();
+-		foreach place in ( go_keys_base )
+-			GFTextLine(gump,  25, y_loc, 2100, go_prop_base[place].Name);
+-			GFTextLine(gump, 175, y_loc, 2100, go_prop_base[place].Realm);
+-			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
+-
+-			counter := counter + 1;
+-			line_num := line_num+1;
+-			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
+-				page_num := page_num + 1;
+-				GFPage(gump, page_num);
+-				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+-				y_loc := 85;
+-				line_num := 0;
+-			endif
+-			sleepms(2);
+-		endforeach
+-	else
+-		go_keys.sort();
+-		foreach place in ( go_keys )
+-			GFTextLine(gump,  25, y_loc, 2100, go_prop[place].Name);
+-			GFTextLine(gump, 175, y_loc, 2100, go_prop[place].Realm);
+-			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
+-
+-			counter := counter + 1;
+-			line_num := line_num+1;
+-			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
+-				page_num := page_num + 1;
+-				GFPage(gump, page_num);
+-				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+-				y_loc := 85;
+-				line_num := 0;
+-			endif
+-			sleepms(2);
+-		endforeach
+-	endif
+-
+-	return gump;
+-
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/include/go-edit.inc
+===================================================================
+--- trunk/096/pkg/commands/include/go-edit.inc	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/include/go-edit.inc	2005-09-25 08:50:11 UTC (rev 235)
+@@ -1,197 +0,0 @@
+-function Go_EditSendLocation(who, public:=1)
+-
+-	var gump;
+-	if( public )
+-		gump := Go_SelectEditGump(1);
+-		num_keys := go_keys_base.size();
+-	else
+-		gump := Go_SelectEditGump(0);
+-		num_keys := go_keys.size();
+-	endif
+-
+-	var input := GFSendGump(who, gump);
+-        input := input[0];
+-
+-        if(input)
+-		var send_Location;
+-		if( public )
+-			send_Location := go_prop_base[lower(go_keys_base[input])];
+-		else
+-			send_Location := go_prop[lower(go_keys[input])];
+-		endif
+-                if ( send_Location )
+-			var edit_gump;
+-			if( public )
+-				edit_gump := Go_EditLocationGump(send_Location);
+-			else
+-				edit_gump := Go_EditLocationGump(send_Location, 0);
+-			endif
+-                        var edit_input := GFSendGump(who, edit_gump);
+-
+-                        if ( edit_input[edit_update] )
+-                                edit_name := GFExtractData(edit_input, edit_name);
+-                                xg_pos := CInt(GFExtractData(edit_input, xg_pos));
+-                                yg_pos := CInt(GFExtractData(edit_input, yg_pos));
+-                                zg_pos := CInt(GFExtractData(edit_input, zg_pos));
+-
+-                                if ( !edit_name )
+-                                        GumpPrompt(who, &quot;Cancelled - No name entered&quot;);
+-                                        return 0;
+-                                elseif ( lower(edit_name) != send_Location.Name )
+-					if( public )
+-						if ( go_prop_base.Exists( Lower(edit_name) ) )
+-							GumpPrompt(who, &quot;Cancelled - location already exists with the name [&quot;+edit_name+&quot;]&quot;);
+-							return 0;
+-						endif
+-					else
+-						if ( go_prop.Exists( Lower(edit_name) ) )
+-							GumpPrompt(who, &quot;Cancelled - location already exists with the name [&quot;+edit_name+&quot;]&quot;);
+-							return 0;
+-						endif
+-					endif
+-                                endif
+-
+-                                var original_Realm := send_Location.Realm;
+-				if( public )
+-					go_prop_base.erase(lower(send_Location.Name));
+-					go_elem.SetProp(&quot;base_Distro&quot;, go_prop_base);
+-					Go_SetLocation(&quot;base_Distro&quot;, who, edit_name, original_Realm, xg_pos, yg_pos, zg_pos);
+-				else
+-					go_prop.erase(lower(send_Location.Name));
+-					go_elem.SetProp(who.acctname, go_prop);
+-					Go_SetLocation(who.acctname, who, edit_name, original_Realm, xg_pos, yg_pos, zg_pos);
+-				endif
+-                                SendSysMessage(who, &quot;Updated [&quot;+edit_name+&quot;]&quot;);
+-                                Go_RefreshMyGumps(who);
+-                        elseif ( edit_input[edit_delete] )
+-                                SendSysMessage(who, &quot;Deleted [&quot; + send_Location.Name + &quot;]&quot;);
+-				if( public )
+-					go_prop_base.erase(lower(send_Location.Name));
+-					go_elem.SetProp(&quot;base_Distro&quot;, go_prop_base);
+-				else
+-					go_prop.erase(lower(send_Location.Name));
+-					go_elem.SetProp(who.acctname, go_prop);
+-				endif
+-                                Go_RefreshMyGumps(who);
+-                        else
+-                                SendSysMessage(who, &quot;Cancelled&quot;);
+-                        endif
+-                else
+-                        GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
+-                        return 0;
+-                endif
+-        else
+-                SendSysMessage(who, &quot;Editing Cancelled&quot;);
+-                return 0;
+-        endif
+-
+-        return 0;
+-
+-endfunction
+-
+-function Go_SelectEditGump(public)
+-
+-	var gump := GFCreateGump();
+-	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
+-	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
+-	if( public )
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
+-	else
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
+-	endif
+-        GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
+-        GFHTMLArea(gump,  25, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Name&quot;);
+-        GFHTMLArea(gump, 175, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Realm&quot;);
+-        GFHTMLArea(gump, 295, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
+-        GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
+-
+-
+-        GFPage(gump, 1);
+-
+-        var y_loc := 85;
+-        var page_num := 1;
+-        var counter := 1;
+-        var line_num := 0;
+-
+-	if( public )
+-		go_keys_base.sort();
+-		foreach place in ( go_keys_base )
+-			GFTextLine(gump,  25, y_loc, 2100, go_prop_base[place].Name);
+-			GFTextLine(gump, 175, y_loc, 2100, go_prop_base[place].Realm);
+-			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
+-
+-			counter := counter + 1;
+-			line_num := line_num+1;
+-			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
+-				page_num := page_num + 1;
+-				GFPage(gump, page_num);
+-				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+-				y_loc := 85;
+-				line_num := 0;
+-			endif
+-			sleepms(2);
+-		endforeach
+-	else
+-		go_keys.sort();
+-		foreach place in ( go_keys )
+-			GFTextLine(gump,  25, y_loc, 2100, go_prop[place].Name);
+-			GFTextLine(gump, 175, y_loc, 2100, go_prop[place].Realm);
+-			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
+-
+-			counter := counter + 1;
+-			line_num := line_num+1;
+-			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
+-				page_num := page_num + 1;
+-				GFPage(gump, page_num);
+-				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+-				y_loc := 85;
+-				line_num := 0;
+-			endif
+-			sleepms(2);
+-		endforeach
+-	endif
+-
+-        return gump;
+-
+-endfunction
+-
+-function Go_EditLocationGump(send_Location, public:=1)
+-
+-        var gump := GFCreateGump();
+-        GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
+-        GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
+-	if(public)
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
+-	else
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
+-	endif
+-        GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
+-        GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
+-        edit_update := GFAddButton(gump, 25, 477, 4008, 4010, GF_CLOSE_BTN, UPDATE_BUTTON);
+-        GFHTMLArea(gump,  57, 480, 40, 20, &quot;&lt;basefont color=#7FFFD4&gt;Update&quot;);
+-        edit_delete := GFAddButton(gump, 100, 477, 4005, 4007, GF_CLOSE_BTN, DELETE_BUTTON);
+-        GFHTMLArea(gump,  132, 480, 40, 20, &quot;&lt;basefont color=#7FFFD4&gt;Delete&quot;);
+-
+-        GFTextLine(gump, 20, 120, 2100, &quot;Name&quot;);
+-        GFResizePic(gump, 120, 117, 2620, 180, 30);
+-        edit_name := GFTextEntry(gump, 130, 122, 160, 25, 2100, send_Location.Name);
+-
+-        GFTextLine(gump, 20, 143, 2100, &quot;X Coordinate&quot;);
+-        GFResizePic(gump, 120, 140, 2620, 100, 30);
+-        xg_pos := GFTextEntry(gump, 130, 145, 80, 25, 2100, send_Location.X);
+-
+-        GFTextLine(gump, 20, 166, 2100, &quot;Y Coordinate&quot;);
+-        GFResizePic(gump, 120, 163, 2620, 100, 30);
+-        yg_pos := GFTextEntry(gump, 130, 168, 80, 25, 2100, send_Location.Y);
+-
+-        GFTextLine(gump, 20, 189, 2100, &quot;Z Coordinate&quot;);
+-        GFResizePic(gump, 120, 186, 2620, 100, 30);
+-        zg_pos := GFTextEntry(gump, 130, 191, 80, 25, 2100, send_Location.Z);
+-
+-        return gump;
+-
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/include/go-gumps.inc
+===================================================================
+--- trunk/096/pkg/commands/include/go-gumps.inc	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/include/go-gumps.inc	2005-09-25 08:50:11 UTC (rev 235)
+@@ -1,207 +0,0 @@
+-// Gump backgrounds - Used in various functions - easier to use globally.
+-var BKGND_SILVERTRIM := GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;);
+-var BKGND_DARK_STONE := GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;);
+-
+-
+-function Go_LocationIndex(who, gump_Type:=&quot;base_Distro&quot;)
+-
+-        var gump := Go_RetrieveGump(&quot;LocationIndex&quot;, gump_Type);
+-        if(gump_Type == &quot;base_Distro&quot;)
+-                num_keys := go_keys_base.size();
+-        else
+-                num_keys := go_keys.size();
+-        endif
+-        if  ( !gump )
+-                if(gump_Type == &quot;base_Distro&quot;)
+-                        gump := Go_LocationIndexGump(1);
+-                else
+-                        gump := Go_LocationIndexGump(0);
+-                endif
+-                Go_SaveGump(&quot;LocationIndex&quot;, gump, gump_Type);
+-        endif
+-
+-        var input := GFSendGump(who, gump);
+-        input := input[0];
+-
+-        case(input)
+-          0: SendSysMessage(who, &quot;Closed&quot;);
+-             return 0;
+-          ADD_NEW_PUBLIC:     Go_AddNewLocation(who, 1);
+-                              return 0;
+-          ADD_NEW_PRIVATE:    Go_AddNewLocation(who, 0);
+-                              return 0;
+-          COPY_PUBLIC_ITEM:   Go_CopyLocation(who, 1);
+-                              return 0;
+-          COPY_PRIVATE_ITEM:  Go_CopyLocation(who, 0);
+-                              return 0;
+-          EDIT_PUBLIC_ITEM:   print(&quot;Edit Public&quot;); Go_EditSendLocation(who, 1);
+-                              return 0;
+-          EDIT_PRIVATE_ITEM:  Go_EditSendLocation(who, 0);
+-                              return 0;
+-          SHOW_PUBLIC_INDEX:  SetObjProperty(who, &quot;#Go_Gump&quot;, 1);
+-                              Go_LocationIndex(who);
+-                              return 0;
+-          SHOW_PRIVATE_INDEX: SetObjProperty(who, &quot;#Go_Gump&quot;, 2);
+-                              Go_LocationIndex(who, who.acctname);
+-                              return 0;
+-          default:
+-        endcase
+-
+-        if(input)
+-                var send_Location;
+-                var moved := who;
+-                if ( input &lt;= num_keys )
+-                        case(gump_Type)
+-                          &quot;base_Distro&quot;: send_Location := go_prop_base[lower(go_keys_base[input])];
+-                          default:       send_Location := go_prop[lower(go_keys[input])];
+-                        endcase
+-                        SendSysMessage(who, &quot;Who do you want to send to &quot; + send_Location.Name);
+-                        moved := target(who);
+-                        if (!moved)
+-                                return 0;
+-                        endif
+-                else
+-                        input := input - num_keys;
+-                        case(gump_Type)
+-                          &quot;base_Distro&quot;: send_Location  := go_prop_base[lower(go_keys_base[input])];
+-                          default:       send_Location := go_prop[lower(go_keys[input])];
+-                        endcase
+-                endif
+-
+-                if ( send_Location )
+-                        var move;
+-                        SendSysMessage(who, &quot;Going to [&quot; + send_Location.Name + &quot;]&quot;);
+-                        if( moved.realm == send_Location.Realm )
+-                                if ( moved.IsA(POLCLASS_ITEM) )
+-                                        move := MoveItemToLocation(moved, CInt(send_Location.X), CInt(send_Location.Y), CInt(send_Location.Z), MOVEITEM_FORCELOCATION);
+-                                else
+-                                        move := MoveCharacterToLocation(moved, CInt(send_Location.X), CInt(send_Location.Y), CInt(send_Location.Z), MOVECHAR_FORCELOCATION);
+-                                endif
+-                        else
+-                                move := MoveObjectToRealm( who, send_Location.Realm, send_Location.X, send_Location.Y, send_Location.Z, MOVECHAR_FORCELOCATION );
+-                        endif
+-
+-                        if ( TypeOf(move) != &quot;Integer&quot; )
+-                                GumpPrompt(who, &quot;Error moving: X[&quot; + send_Location.X +&quot;] Y[&quot; + send_Location.Y + &quot;] Z[&quot; + send_Location.Z + &quot;]&quot;);
+-                        endif
+-                else
+-                        GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
+-                endif
+-        endif
+-
+-        return 0;
+-
+-endfunction
+-
+-function Go_LocationIndexGump(public:=1)
+-
+-	var gump := GFCreateGump();
+-	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
+-	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
+-	if( public )
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
+-	else
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
+-	endif
+-	GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
+-	GFHTMLArea(gump,  25, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Name&quot;);
+-	GFHTMLArea(gump, 175, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Realm&quot;);
+-	GFHTMLArea(gump, 295, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Send&quot;);
+-	GFHTMLArea(gump, 345, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Goto&quot;);
+-	GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
+-	if( public )
+-		GFAddButton(gump, 25, 477, 4008, 4010, GF_CLOSE_BTN, ADD_NEW_PUBLIC);
+-		GFHTMLArea(gump,  57, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Add&quot;);
+-		GFAddButton(gump, 100, 477, 4005, 4007, GF_CLOSE_BTN, COPY_PUBLIC_ITEM);
+-		GFHTMLArea(gump,  132, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
+-		GFAddButton(gump, 175, 477, 4008, 4010, GF_CLOSE_BTN, EDIT_PUBLIC_ITEM);
+-		GFHTMLArea(gump,  207, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
+-		GFAddButton(gump, 250, 477, 4008, 4010, GF_CLOSE_BTN, SHOW_PRIVATE_INDEX);
+-		GFHTMLArea(gump,  282, 480, 100, 20, &quot;&lt;basefont color=#7FFFD4&gt;Public Menu&quot;);
+-	else
+-		GFAddButton(gump, 25, 477, 4008, 4010, GF_CLOSE_BTN, ADD_NEW_PRIVATE);
+-		GFHTMLArea(gump,  57, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Add&quot;);
+-		GFAddButton(gump, 100, 477, 4005, 4007, GF_CLOSE_BTN, COPY_PRIVATE_ITEM);
+-		GFHTMLArea(gump,  132, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
+-		GFAddButton(gump, 175, 477, 4008, 4010, GF_CLOSE_BTN, EDIT_PRIVATE_ITEM);
+-		GFHTMLArea(gump,  207, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
+-		GFAddButton(gump, 250, 477, 4008, 4010, GF_CLOSE_BTN, SHOW_PUBLIC_INDEX);
+-		GFHTMLArea(gump,  282, 480, 100, 20, &quot;&lt;basefont color=#7FFFD4&gt;Public Menu&quot;);
+-	endif
+-
+-	GFPage(gump, 1);
+-
+-	var y_loc := 85;
+-	var page_num := 1;
+-	var counter := 1;
+-	var line_num := 0;
+-
+-	if( public )
+-		go_keys_base.sort();
+-		foreach place in ( go_keys_base )
+-			GFTextLine(gump,  25, y_loc, 2100, go_prop_base[place].Name);
+-			GFTextLine(gump, 175, y_loc, 2100, go_prop_base[place].Realm);
+-			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
+-			GFAddButton(gump, 350, y_loc+3, 2117, 2118, GF_CLOSE_BTN, (num_keys+counter));
+-
+-			counter := counter + 1;
+-			line_num := line_num+1;
+-			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
+-				page_num := page_num + 1;
+-				GFPage(gump, page_num);
+-				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+-				y_loc := 85;
+-				line_num := 0;
+-			endif
+-			sleepms(2);
+-		endforeach
+-	else
+-		go_keys.sort();
+-		foreach place in ( go_keys )
+-			GFTextLine(gump,  25, y_loc, 2100, go_prop[place].Name);
+-			GFTextLine(gump, 175, y_loc, 2100, go_prop[place].Realm);
+-			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
+-			GFAddButton(gump, 350, y_loc+3, 2117, 2118, GF_CLOSE_BTN, (num_keys+counter));
+-
+-			counter := counter + 1;
+-			line_num := line_num+1;
+-			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
+-				page_num := page_num + 1;
+-				GFPage(gump, page_num);
+-				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+-				y_loc := 85;
+-				line_num := 0;
+-			endif
+-			sleepms(2);
+-		endforeach
+-	endif
+-
+-        return gump;
+-
+-
+-endfunction
+-
+-function Go_RetrieveGump(elem_name, prop_name:=&quot;base_Distro&quot;)
+-
+-        var elem := DFFindElement(go_data_gumps, elem_name);
+-        return (elem.GetProp(prop_name));
+-
+-endfunction
+-
+-function Go_SaveGump(elem_name, gump, prop_name:=&quot;base_Distro&quot;)
+-
+-        var elem := DFFindElement(go_data_gumps, elem_name, DF_CREATE);
+-        return (elem.SetProp(prop_name, gump));
+-
+-endfunction
+-
+-function Go_RefreshGump(elem_name, prop_name:=&quot;base_Distro&quot;)
+-
+-        var elem := DFFindElement(go_data_gumps, elem_name);
+-        return (elem.EraseProp(prop_name));
+-
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/include/go-template.inc
+===================================================================
+--- trunk/096/pkg/commands/include/go-template.inc	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/include/go-template.inc	2005-09-25 08:50:11 UTC (rev 235)
+@@ -1,36 +0,0 @@
+-function Go_CheckInit(who)
+-
+-        if ( !go_prop_base )
+-                SendSysMessage(who, &quot;Creating initial go list dictionary...&quot;);
+-                var oldlocs := ReadConfigFile(&quot;::golocs&quot;);
+-                var MaxLocs := GetConfigMaxIntKey(oldlocs);
+-                go_prop_base := dictionary;
+-                for i:=1 to MaxLocs
+-                        // Open files and set veriables
+-                        var dest := oldlocs[i];
+-                        Go_SetLocation(&quot;base_Distro&quot;, who, dest.name, dest.realm, dest.x, dest.y, dest.z);
+-                        sleepms(2);
+-                endfor
+-
+-                go_prop_base := go_elem.GetProp(&quot;base_Distro&quot;);
+-                go_keys_base := go_prop_base.keys();
+-                Go_RefreshGump(&quot;LocationIndex&quot;, &quot;base_Distro&quot;);
+-        endif
+-
+-        return 0;
+-
+-endfunction
+-
+-function Go_RefreshMyGumps(who)
+-
+-        var elem := DFFindElement(go_data_gumps, &quot;LocationIndex&quot;);
+-        elem.EraseProp(&quot;base_Distro&quot;);
+-        elem.EraseProp(who.acctname);
+-
+-        elem := DFFindElement(go_data_gumps, &quot;CopyIndex&quot;);
+-        elem.EraseProp(&quot;base_Distro&quot;);
+-        elem.EraseProp(who.acctname);
+-
+-        return 1;
+-
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/include/go-text.inc
+===================================================================
+--- trunk/096/pkg/commands/include/go-text.inc	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/include/go-text.inc	2005-09-25 08:50:11 UTC (rev 235)
+@@ -1,141 +0,0 @@
+-function Go_Parse_Text(who, text)
+-
+-        if( !text )
+-                return 0;
+-        endif
+-
+-        var params := SplitWords(text);
+-
+-        case( lower(params[1]) )
+-          &quot;refresh&quot;: return Go_RefreshMyGumps(who);
+-          &quot;xyz&quot;:     return Go_GoXYZ(who, params);
+-          default:   return Go_FindLocationByText(who, params);
+-        endcase
+-
+-        return 0;
+-
+-endfunction
+-
+-function Go_GoXYZ(who, params)
+-
+-        var num_params := len(params);
+-
+-        case(num_params)
+-          1:
+-          2: SendSysMessage(who, &quot;Error. Insufficient data supplied. \&quot;.go xyz x y [z] [string realm name]\&quot;&quot;);
+-          3: params[4] := GetMapInfo( CInt(params[1]), CInt(params[2]), who.realm ).z;
+-             params[5] := who.realm;
+-          4: params[5] := who.realm;
+-          default:
+-        endcase
+-
+-        if( Realms().Exists( lower(params[5])) )
+-                if( who.realm == lower(params[5]) )
+-                        return ( MoveCharacterToLocation( who, CInt(params[2]), CInt(params[3]), CInt(params[4]), MOVECHAR_FORCELOCATION ) );
+-                else
+-                        return ( MoveObjectToRealm( who, lower(params[5]), CInt(params[2]), CInt(params[3]), CInt(params[4]), MOVECHAR_FORCELOCATION ) );
+-                endif
+-        else
+-                GumpPrompt(who, &quot;Invalid Realm name in xyz!&quot;);
+-                return 1;
+-        endif
+-
+-        return 1;
+-
+-endfunction
+-
+-function Go_FindLocationByText(who, params)
+-
+-        case( lower(params[params.size()]) )
+-          &quot;private&quot;: Go_ByPrivateLocation(who, params);
+-          &quot;public&quot;:  Go_ByPublicLocation(who, params);
+-          default:   Go_ByDefaultLocation(who, params);
+-        endcase
+-
+-        return 1;
+-
+-endfunction
+-
+-function Go_ByPrivateLocation(who, params)
+-
+-        if(go_prop.Exists( lower(params[1]) ) )
+-                var temp := go_prop[lower(params[1])];
+-                SendSysMessage(who, &quot;Going to private location [&quot; + params[1] + &quot;]&quot;);
+-                var move;
+-                if( who.realm == temp.Realm )
+-                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
+-                else
+-                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
+-                endif
+-                if ( TypeOf(move) != &quot;Integer&quot; )
+-                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
+-                        return 0;
+-                endif
+-        else
+-                GumpPrompt(who, &quot;Private Location [&quot; + params[1] + &quot;] does not exist.&quot;);
+-                return 0;
+-        endif
+-
+-        return 0;
+-
+-endfunction
+-
+-function Go_ByPublicLocation(who, params)
+-
+-        if(go_prop_base.Exists( lower(params[1]) ) )
+-                var temp := go_prop_base[lower(params[1])];
+-                SendSysMessage(who, &quot;Going to public location [&quot; + params[1] + &quot;]&quot;);
+-                var move;
+-                if( who.realm == temp.Realm )
+-                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
+-                else
+-                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
+-                endif
+-                if ( TypeOf(move) != &quot;Integer&quot; )
+-                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
+-                        return 0;
+-                endif
+-        else
+-                GumpPrompt(who, &quot;Public Location [&quot; + params[1] + &quot;] does not exist.&quot;);
+-                return 0;
+-        endif
+-
+-        return 0;
+-
+-endfunction
+-
+-function Go_ByDefaultLocation(who, params)
+-
+-        if(go_prop.Exists( lower(params[1]) ) )
+-                var temp := go_prop[lower(params[1])];
+-                SendSysMessage(who, &quot;Going to private location [&quot; + params[1] + &quot;]&quot;);
+-                var move;
+-                if( who.realm == temp.Realm )
+-                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
+-                else
+-                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
+-                endif
+-                if ( TypeOf(move) != &quot;Integer&quot; )
+-                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
+-                        return 0;
+-                endif
+-        elseif(go_prop_base.Exists( lower(params[1]) ) )
+-                var temp := go_prop_base[lower(params[1])];
+-                SendSysMessage(who, &quot;Going to public location[&quot; + params[1] + &quot;]&quot;);
+-                var move;
+-                if( who.realm == temp.Realm )
+-                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
+-                else
+-                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
+-                endif
+-                if ( TypeOf(move) != &quot;Integer&quot; )
+-                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
+-                        return 0;
+-                endif
+-        else
+-                GumpPrompt(who, &quot;Location [&quot; + params[1] + &quot;] does not exist.&quot;);
+-                return 0;
+-        endif
+-
+-
+-endfunction
+
+Copied: trunk/096/pkg/commands/include/goAdd.inc (from rev 234, trunk/096/pkg/commands/include/go-add.inc)
+===================================================================
+--- trunk/096/pkg/commands/include/go-add.inc	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/include/goAdd.inc	2005-09-25 08:50:11 UTC (rev 235)
+@@ -0,0 +1,203 @@
++/* $Id$
++ *
++ */
++
++
++function Go_AddNewLocation(who, public:=1)
++
++	SendSysMessage(who, &quot;Click where you want the new Go Location to go to.&quot;);
++	var targ := TargetCoordinates(who);
++
++	if (!targ)
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++
++	var name := RequestInput(who, who.backpack, &quot;What do you want to call this go location?&quot;);
++
++	if ( !name )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++
++	if( public )
++		go_prop_base := go_elem.GetProp(&quot;base_Distro&quot;);
++		if ( go_prop_base.Exists(lower(name)) )
++			GumpPrompt(who, &quot;You already have a public go location named [&quot;+name+&quot;]&quot;);
++			return 0;
++		endif
++		Go_SetLocation(&quot;base_Distro&quot;, who, name, targ.realm, targ.x, targ.y, targ.z);
++		GumpPrompt(who, &quot;New public go location added: [&quot;+name+&quot;]&quot;);
++	else
++		go_prop := go_elem.GetProp(who.acctname);
++		if ( go_prop.Exists(lower(name)) )
++			GumpPrompt(who, &quot;You already have a private go location named [&quot;+name+&quot;]&quot;);
++			return 0;
++		endif
++		Go_SetLocation(who.acctname, who, name, targ.realm, targ.x, targ.y, targ.z);
++		GumpPrompt(who, &quot;New private go location added: [&quot;+name+&quot;]&quot;);
++	endif
++
++	return 0;
++
++endfunction
++
++function Go_CopyLocation(who, public:=1)
++
++	var gump;
++	if( public )
++		gump := Go_RetrieveGump(&quot;CopyIndex&quot;, &quot;base_Distro&quot;);
++		num_keys := go_keys_base.size();
++	else
++		gump := Go_RetrieveGump(&quot;CopyIndex&quot;, who.acctname);
++		num_keys := go_keys.size();
++	endif
++
++	if  ( !gump )
++		if( public )
++			gump := Go_LocationCopyGump(1);
++			Go_SaveGump(&quot;CopyIndex&quot;, gump, &quot;base_Distro&quot;);
++		else
++			gump := Go_LocationCopyGump(0);
++			Go_SaveGump(&quot;CopyIndex&quot;, gump, who.acctname);
++		endif
++	endif
++
++	var input := GFSendGump(who, gump);
++	input := input[0];
++
++	if(input)
++		var send_Location := 0;
++		if( public )
++			send_Location := go_prop_base[lower(go_keys_base[input])];
++		else
++			send_Location := go_prop[lower(go_keys[input])];
++		endif
++		if ( send_Location )
++			if( public )
++				go_prop_base := go_elem.GetProp(&quot;base_Distro&quot;);
++				if ( go_prop.Exists(lower(send_Location.Name)) )
++					GumpPrompt(who, &quot;You already have a private go location named [&quot;+send_Location.Name+&quot;]&quot;);
++					return 0;
++				endif
++				Go_SetLocation(who.acctname, who, send_Location.Name, send_Location.Realm, send_Location.X, send_Location.Y, send_Location.Z);
++				GumpPrompt(who, &quot;Copied [&quot; + send_Location.Name + &quot;] to your private menu.&quot;);
++			else
++				go_prop := go_elem.GetProp(who.acctname);
++				if ( go_prop_base.Exists(lower(send_Location.Name)) )
++					GumpPrompt(who, &quot;You already have a public go location named [&quot;+send_Location.Name+&quot;]&quot;);
++					return 0;
++				endif
++				Go_SetLocation(&quot;base_Distro&quot;, who, send_Location.Name, send_Location.Realm, send_Location.X, send_Location.Y, send_Location.Z);
++				GumpPrompt(who, &quot;Copied [&quot; + send_Location.Name + &quot;] to the public menu.&quot;);
++			endif
++			return 0;
++		else
++			GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
++			Go_RefreshMyGumps(who);
++			return 0;
++		endif
++	else
++		SendSysMessage(who, &quot;Copying Cancelled&quot;);
++		Go_RefreshMyGumps(who);
++		return 0;
++	endif
++
++	return 0;
++
++endfunction
++
++function Go_SetLocation(gump_Type, who, name, realm, x, y, z)
++
++	if( !realm )
++		realm := who.realm;
++	endif
++
++	z := GetMapInfo(x, y, realm).z;
++
++	var temp := dictionary;
++	temp.+Name := lower(name);
++	temp.+Realm := lower(realm);
++	temp.+X := x;
++	temp.+Y := y;
++	temp.+Z := z;
++	case(gump_Type)
++		&quot;base_Distro&quot;: go_prop_base[lower(name)] := temp;
++			       go_elem.SetProp(gump_Type, go_prop_base);
++		default:       go_prop[lower(name)] := temp;
++                               go_elem.SetProp(gump_Type, go_prop);
++	endcase
++	Go_RefreshMyGumps(who);
++
++	return 0;
++
++endfunction
++
++function Go_LocationCopyGump(public:=1)
++
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
++	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
++	if( public )
++		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
++	else
++		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
++	endif
++	GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
++	GFHTMLArea(gump,  25, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Name&quot;);
++	GFHTMLArea(gump, 175, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Realm&quot;);
++	GFHTMLArea(gump, 295, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
++	GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
++
++	GFPage(gump, 1);
++
++	var y_loc := 85;
++	var page_num := 1;
++	var counter := 1;
++	var line_num := 0;
++
++	if( public )
++		go_keys_base.sort();
++		foreach place in ( go_keys_base )
++			GFTextLine(gump,  25, y_loc, 2100, go_prop_base[place].Name);
++			GFTextLine(gump, 175, y_loc, 2100, go_prop_base[place].Realm);
++			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
++
++			counter := counter + 1;
++			line_num := line_num+1;
++			y_loc := y_loc + 20;
++			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++				page_num := page_num + 1;
++				GFPage(gump, page_num);
++				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
++				y_loc := 85;
++				line_num := 0;
++			endif
++			sleepms(2);
++		endforeach
++	else
++		go_keys.sort();
++		foreach place in ( go_keys )
++			GFTextLine(gump,  25, y_loc, 2100, go_prop[place].Name);
++			GFTextLine(gump, 175, y_loc, 2100, go_prop[place].Realm);
++			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
++
++			counter := counter + 1;
++			line_num := line_num+1;
++			y_loc := y_loc + 20;
++			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++				page_num := page_num + 1;
++				GFPage(gump, page_num);
++				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
++				y_loc := 85;
++				line_num := 0;
++			endif
++			sleepms(2);
++		endforeach
++	endif
++
++	return gump;
++
++endfunction
+\ No newline at end of file
+
+Copied: trunk/096/pkg/commands/include/goEdit.inc (from rev 234, trunk/096/pkg/commands/include/go-edit.inc)
+===================================================================
+--- trunk/096/pkg/commands/include/go-edit.inc	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/include/goEdit.inc	2005-09-25 08:50:11 UTC (rev 235)
+@@ -0,0 +1,201 @@
++/* $Id$
++ *
++ */
++
++
++function Go_EditSendLocation(who, public:=1)
++	var gump;
++	if( public )
++		gump := Go_SelectEditGump(1);
++		num_keys := go_keys_base.size();
++	else
++		gump := Go_SelectEditGump(0);
++		num_keys := go_keys.size();
++	endif
++
++	var input := GFSendGump(who, gump);
++        input := input[0];
++
++        if(input)
++		var send_Location;
++		if( public )
++			send_Location := go_prop_base[lower(go_keys_base[input])];
++		else
++			send_Location := go_prop[lower(go_keys[input])];
++		endif
++                if ( send_Location )
++			var edit_gump;
++			if( public )
++				edit_gump := Go_EditLocationGump(send_Location);
++			else
++				edit_gump := Go_EditLocationGump(send_Location, 0);
++			endif
++                        var edit_input := GFSendGump(who, edit_gump);
++
++                        if ( edit_input[edit_update] )
++                                edit_name := GFExtractData(edit_input, edit_name);
++                                xg_pos := CInt(GFExtractData(edit_input, xg_pos));
++                                yg_pos := CInt(GFExtractData(edit_input, yg_pos));
++                                zg_pos := CInt(GFExtractData(edit_input, zg_pos));
++
++                                if ( !edit_name )
++                                        GumpPrompt(who, &quot;Cancelled - No name entered&quot;);
++                                        return 0;
++                                elseif ( lower(edit_name) != send_Location.Name )
++					if( public )
++						if ( go_prop_base.Exists( Lower(edit_name) ) )
++							GumpPrompt(who, &quot;Cancelled - location already exists with the name [&quot;+edit_name+&quot;]&quot;);
++							return 0;
++						endif
++					else
++						if ( go_prop.Exists( Lower(edit_name) ) )
++							GumpPrompt(who, &quot;Cancelled - location already exists with the name [&quot;+edit_name+&quot;]&quot;);
++							return 0;
++						endif
++					endif
++                                endif
++
++                                var original_Realm := send_Location.Realm;
++				if( public )
++					go_prop_base.erase(lower(send_Location.Name));
++					go_elem.SetProp(&quot;base_Distro&quot;, go_prop_base);
++					Go_SetLocation(&quot;base_Distro&quot;, who, edit_name, original_Realm, xg_pos, yg_pos, zg_pos);
++				else
++					go_prop.erase(lower(send_Location.Name));
++					go_elem.SetProp(who.acctname, go_prop);
++					Go_SetLocation(who.acctname, who, edit_name, original_Realm, xg_pos, yg_pos, zg_pos);
++				endif
++                                SendSysMessage(who, &quot;Updated [&quot;+edit_name+&quot;]&quot;);
++                                Go_RefreshMyGumps(who);
++                        elseif ( edit_input[edit_delete] )
++                                SendSysMessage(who, &quot;Deleted [&quot; + send_Location.Name + &quot;]&quot;);
++				if( public )
++					go_prop_base.erase(lower(send_Location.Name));
++					go_elem.SetProp(&quot;base_Distro&quot;, go_prop_base);
++				else
++					go_prop.erase(lower(send_Location.Name));
++					go_elem.SetProp(who.acctname, go_prop);
++				endif
++                                Go_RefreshMyGumps(who);
++                        else
++                                SendSysMessage(who, &quot;Cancelled&quot;);
++                        endif
++                else
++                        GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
++                        return 0;
++                endif
++        else
++                SendSysMessage(who, &quot;Editing Cancelled&quot;);
++                return 0;
++        endif
++
++        return 0;
++
++endfunction
++
++
++function Go_SelectEditGump(public)
++
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
++	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
++	if( public )
++		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
++	else
++		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
++	endif
++        GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
++        GFHTMLArea(gump,  25, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Name&quot;);
++        GFHTMLArea(gump, 175, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Realm&quot;);
++        GFHTMLArea(gump, 295, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
++        GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
++
++
++        GFPage(gump, 1);
++
++        var y_loc := 85;
++        var page_num := 1;
++        var counter := 1;
++        var line_num := 0;
++
++	if( public )
++		go_keys_base.sort();
++		foreach place in ( go_keys_base )
++			GFTextLine(gump,  25, y_loc, 2100, go_prop_base[place].Name);
++			GFTextLine(gump, 175, y_loc, 2100, go_prop_base[place].Realm);
++			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
++
++			counter := counter + 1;
++			line_num := line_num+1;
++			y_loc := y_loc + 20;
++			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++				page_num := page_num + 1;
++				GFPage(gump, page_num);
++				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
++				y_loc := 85;
++				line_num := 0;
++			endif
++			sleepms(2);
++		endforeach
++	else
++		go_keys.sort();
++		foreach place in ( go_keys )
++			GFTextLine(gump,  25, y_loc, 2100, go_prop[place].Name);
++			GFTextLine(gump, 175, y_loc, 2100, go_prop[place].Realm);
++			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
++
++			counter := counter + 1;
++			line_num := line_num+1;
++			y_loc := y_loc + 20;
++			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++				page_num := page_num + 1;
++				GFPage(gump, page_num);
++				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
++				y_loc := 85;
++				line_num := 0;
++			endif
++			sleepms(2);
++		endforeach
++	endif
++
++        return gump;
++
++endfunction
++
++
++function Go_EditLocationGump(send_Location, public:=1)
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
++	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
++	if (public)
++		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
++	else
++		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
++	endif
++	GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
++	GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
++	edit_update := GFAddButton(gump, 25, 477, 4008, 4010, GF_CLOSE_BTN, UPDATE_BUTTON);
++	GFHTMLArea(gump,  57, 480, 40, 20, &quot;&lt;basefont color=#7FFFD4&gt;Update&quot;);
++	edit_delete := GFAddButton(gump, 100, 477, 4005, 4007, GF_CLOSE_BTN, DELETE_BUTTON);
++	GFHTMLArea(gump,  132, 480, 40, 20, &quot;&lt;basefont color=#7FFFD4&gt;Delete&quot;);
++
++	GFTextLine(gump, 20, 120, 2100, &quot;Name&quot;);
++	GFResizePic(gump, 120, 117, 2620, 180, 30);
++	edit_name := GFTextEntry(gump, 130, 122, 160, 25, 2100, send_Location.Name);
++
++	GFTextLine(gump, 20, 143, 2100, &quot;X Coordinate&quot;);
++	GFResizePic(gump, 120, 140, 2620, 100, 30);
++	xg_pos := GFTextEntry(gump, 130, 145, 80, 25, 2100, send_Location.X);
++
++	GFTextLine(gump, 20, 166, 2100, &quot;Y Coordinate&quot;);
++	GFResizePic(gump, 120, 163, 2620, 100, 30);
++	yg_pos := GFTextEntry(gump, 130, 168, 80, 25, 2100, send_Location.Y);
++
++	GFTextLine(gump, 20, 189, 2100, &quot;Z Coordinate&quot;);
++	GFResizePic(gump, 120, 186, 2620, 100, 30);
++	zg_pos := GFTextEntry(gump, 130, 191, 80, 25, 2100, send_Location.Z);
++
++	return gump;
++endfunction
+\ No newline at end of file
+
+Copied: trunk/096/pkg/commands/include/goGumps.inc (from rev 234, trunk/096/pkg/commands/include/go-gumps.inc)
+===================================================================
+--- trunk/096/pkg/commands/include/go-gumps.inc	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/include/goGumps.inc	2005-09-25 08:50:11 UTC (rev 235)
+@@ -0,0 +1,210 @@
++/* $Id$
++ *
++ */
++// Gump backgrounds - Used in various functions - easier to use globally.
++var BKGND_SILVERTRIM := GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;);
++var BKGND_DARK_STONE := GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;);
++
++
++function Go_LocationIndex(who, gump_Type:=&quot;base_Distro&quot;)
++
++        var gump := Go_RetrieveGump(&quot;LocationIndex&quot;, gump_Type);
++        if(gump_Type == &quot;base_Distro&quot;)
++                num_keys := go_keys_base.size();
++        else
++                num_keys := go_keys.size();
++        endif
++        if  ( !gump )
++                if(gump_Type == &quot;base_Distro&quot;)
++                        gump := Go_LocationIndexGump(1);
++                else
++                        gump := Go_LocationIndexGump(0);
++                endif
++                Go_SaveGump(&quot;LocationIndex&quot;, gump, gump_Type);
++        endif
++
++        var input := GFSendGump(who, gump);
++        input := input[0];
++
++        case(input)
++          0: SendSysMessage(who, &quot;Closed&quot;);
++             return 0;
++          ADD_NEW_PUBLIC:     Go_AddNewLocation(who, 1);
++                              return 0;
++          ADD_NEW_PRIVATE:    Go_AddNewLocation(who, 0);
++                              return 0;
++          COPY_PUBLIC_ITEM:   Go_CopyLocation(who, 1);
++                              return 0;
++          COPY_PRIVATE_ITEM:  Go_CopyLocation(who, 0);
++                              return 0;
++          EDIT_PUBLIC_ITEM:   print(&quot;Edit Public&quot;); Go_EditSendLocation(who, 1);
++                              return 0;
++          EDIT_PRIVATE_ITEM:  Go_EditSendLocation(who, 0);
++                              return 0;
++          SHOW_PUBLIC_INDEX:  SetObjProperty(who, &quot;#Go_Gump&quot;, 1);
++                              Go_LocationIndex(who);
++                              return 0;
++          SHOW_PRIVATE_INDEX: SetObjProperty(who, &quot;#Go_Gump&quot;, 2);
++                              Go_LocationIndex(who, who.acctname);
++                              return 0;
++          default:
++        endcase
++
++        if(input)
++                var send_Location;
++                var moved := who;
++                if ( input &lt;= num_keys )
++                        case(gump_Type)
++                          &quot;base_Distro&quot;: send_Location := go_prop_base[lower(go_keys_base[input])];
++                          default:       send_Location := go_prop[lower(go_keys[input])];
++                        endcase
++                        SendSysMessage(who, &quot;Who do you want to send to &quot; + send_Location.Name);
++                        moved := target(who);
++                        if (!moved)
++                                return 0;
++                        endif
++                else
++                        input := input - num_keys;
++                        case(gump_Type)
++                          &quot;base_Distro&quot;: send_Location  := go_prop_base[lower(go_keys_base[input])];
++                          default:       send_Location := go_prop[lower(go_keys[input])];
++                        endcase
++                endif
++
++                if ( send_Location )
++                        var move;
++                        SendSysMessage(who, &quot;Going to [&quot; + send_Location.Name + &quot;]&quot;);
++                        if( moved.realm == send_Location.Realm )
++                                if ( moved.IsA(POLCLASS_ITEM) )
++                                        move := MoveItemToLocation(moved, CInt(send_Location.X), CInt(send_Location.Y), CInt(send_Location.Z), MOVEITEM_FORCELOCATION);
++                                else
++                                        move := MoveCharacterToLocation(moved, CInt(send_Location.X), CInt(send_Location.Y), CInt(send_Location.Z), MOVECHAR_FORCELOCATION);
++                                endif
++                        else
++                                move := MoveObjectToRealm( who, send_Location.Realm, send_Location.X, send_Location.Y, send_Location.Z, MOVECHAR_FORCELOCATION );
++                        endif
++
++                        if ( TypeOf(move) != &quot;Integer&quot; )
++                                GumpPrompt(who, &quot;Error moving: X[&quot; + send_Location.X +&quot;] Y[&quot; + send_Location.Y + &quot;] Z[&quot; + send_Location.Z + &quot;]&quot;);
++                        endif
++                else
++                        GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
++                endif
++        endif
++
++        return 0;
++
++endfunction
++
++function Go_LocationIndexGump(public:=1)
++
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
++	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
++	if( public )
++		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
++	else
++		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
++	endif
++	GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
++	GFHTMLArea(gump,  25, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Name&quot;);
++	GFHTMLArea(gump, 175, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Realm&quot;);
++	GFHTMLArea(gump, 295, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Send&quot;);
++	GFHTMLArea(gump, 345, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Goto&quot;);
++	GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
++	if( public )
++		GFAddButton(gump, 25, 477, 4008, 4010, GF_CLOSE_BTN, ADD_NEW_PUBLIC);
++		GFHTMLArea(gump,  57, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Add&quot;);
++		GFAddButton(gump, 100, 477, 4005, 4007, GF_CLOSE_BTN, COPY_PUBLIC_ITEM);
++		GFHTMLArea(gump,  132, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
++		GFAddButton(gump, 175, 477, 4008, 4010, GF_CLOSE_BTN, EDIT_PUBLIC_ITEM);
++		GFHTMLArea(gump,  207, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
++		GFAddButton(gump, 250, 477, 4008, 4010, GF_CLOSE_BTN, SHOW_PRIVATE_INDEX);
++		GFHTMLArea(gump,  282, 480, 100, 20, &quot;&lt;basefont color=#7FFFD4&gt;Public Menu&quot;);
++	else
++		GFAddButton(gump, 25, 477, 4008, 4010, GF_CLOSE_BTN, ADD_NEW_PRIVATE);
++		GFHTMLArea(gump,  57, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Add&quot;);
++		GFAddButton(gump, 100, 477, 4005, 4007, GF_CLOSE_BTN, COPY_PRIVATE_ITEM);
++		GFHTMLArea(gump,  132, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
++		GFAddButton(gump, 175, 477, 4008, 4010, GF_CLOSE_BTN, EDIT_PRIVATE_ITEM);
++		GFHTMLArea(gump,  207, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
++		GFAddButton(gump, 250, 477, 4008, 4010, GF_CLOSE_BTN, SHOW_PUBLIC_INDEX);
++		GFHTMLArea(gump,  282, 480, 100, 20, &quot;&lt;basefont color=#7FFFD4&gt;Public Menu&quot;);
++	endif
++
++	GFPage(gump, 1);
++
++	var y_loc := 85;
++	var page_num := 1;
++	var counter := 1;
++	var line_num := 0;
++
++	if( public )
++		go_keys_base.sort();
++		foreach place in ( go_keys_base )
++			GFTextLine(gump,  25, y_loc, 2100, go_prop_base[place].Name);
++			GFTextLine(gump, 175, y_loc, 2100, go_prop_base[place].Realm);
++			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
++			GFAddButton(gump, 350, y_loc+3, 2117, 2118, GF_CLOSE_BTN, (num_keys+counter));
++
++			counter := counter + 1;
++			line_num := line_num+1;
++			y_loc := y_loc + 20;
++			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++				page_num := page_num + 1;
++				GFPage(gump, page_num);
++				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
++				y_loc := 85;
++				line_num := 0;
++			endif
++			sleepms(2);
++		endforeach
++	else
++		go_keys.sort();
++		foreach place in ( go_keys )
++			GFTextLine(gump,  25, y_loc, 2100, go_prop[place].Name);
++			GFTextLine(gump, 175, y_loc, 2100, go_prop[place].Realm);
++			GFAddButton(gump, 300, y_loc+3, 2117, 2118, GF_CLOSE_BTN, counter);
++			GFAddButton(gump, 350, y_loc+3, 2117, 2118, GF_CLOSE_BTN, (num_keys+counter));
++
++			counter := counter + 1;
++			line_num := line_num+1;
++			y_loc := y_loc + 20;
++			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++				page_num := page_num + 1;
++				GFPage(gump, page_num);
++				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
++				y_loc := 85;
++				line_num := 0;
++			endif
++			sleepms(2);
++		endforeach
++	endif
++
++        return gump;
++
++
++endfunction
++
++function Go_RetrieveGump(elem_name, prop_name:=&quot;base_Distro&quot;)
++
++        var elem := DFFindElement(go_data_gumps, elem_name);
++        return (elem.GetProp(prop_name));
++
++endfunction
++
++function Go_SaveGump(elem_name, gump, prop_name:=&quot;base_Distro&quot;)
++
++        var elem := DFFindElement(go_data_gumps, elem_name, DF_CREATE);
++        return (elem.SetProp(prop_name, gump));
++
++endfunction
++
++function Go_RefreshGump(elem_name, prop_name:=&quot;base_Distro&quot;)
++
++        var elem := DFFindElement(go_data_gumps, elem_name);
++        return (elem.EraseProp(prop_name));
++
++endfunction
+\ No newline at end of file
+
+Copied: trunk/096/pkg/commands/include/goTemplate.inc (from rev 234, trunk/096/pkg/commands/include/go-template.inc)
+===================================================================
+--- trunk/096/pkg/commands/include/go-template.inc	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/include/goTemplate.inc	2005-09-25 08:50:11 UTC (rev 235)
+@@ -0,0 +1,41 @@
++/* $Id$
++ *
++ */
++
++
++function Go_CheckInit(who)
++
++        if ( !go_prop_base )
++                SendSysMessage(who, &quot;Creating initial go list dictionary...&quot;);
++                var oldlocs := ReadConfigFile(&quot;::golocs&quot;);
++                var MaxLocs := GetConfigMaxIntKey(oldlocs);
++                go_prop_base := dictionary;
++                for i:=1 to MaxLocs
++                        // Open files and set veriables
++                        var dest := oldlocs[i];
++                        Go_SetLocation(&quot;base_Distro&quot;, who, dest.name, dest.realm, dest.x, dest.y, dest.z);
++                        sleepms(2);
++                endfor
++
++                go_prop_base := go_elem.GetProp(&quot;base_Distro&quot;);
++                go_keys_base := go_prop_base.keys();
++                Go_RefreshGump(&quot;LocationIndex&quot;, &quot;base_Distro&quot;);
++        endif
++
++        return 0;
++
++endfunction
++
++function Go_RefreshMyGumps(who)
++
++        var elem := DFFindElement(go_data_gumps, &quot;LocationIndex&quot;);
++        elem.EraseProp(&quot;base_Distro&quot;);
++        elem.EraseProp(who.acctname);
++
++        elem := DFFindElement(go_data_gumps, &quot;CopyIndex&quot;);
++        elem.EraseProp(&quot;base_Distro&quot;);
++        elem.EraseProp(who.acctname);
++
++        return 1;
++
++endfunction
+\ No newline at end of file
+
+Copied: trunk/096/pkg/commands/include/goText.inc (from rev 234, trunk/096/pkg/commands/include/go-text.inc)
+===================================================================
+--- trunk/096/pkg/commands/include/go-text.inc	2005-09-25 08:34:03 UTC (rev 234)
++++ trunk/096/pkg/commands/include/goText.inc	2005-09-25 08:50:11 UTC (rev 235)
+@@ -0,0 +1,141 @@
++/* $Id$
++ *
++ */
++
++
++function Go_Parse_Text(who, text)
++	if (!text)
++		return 0;
++        endif
++
++	var params := SplitWords(text);
++
++	case (lower(params[1]))
++		&quot;refresh&quot;: return Go_RefreshMyGumps(who);
++		&quot;xyz&quot;:     return Go_GoXYZ(who, params);
++		default:   return Go_FindLocationByText(who, params);
++	endcase
++
++	return 0;
++endfunction
++
++
++function Go_GoXYZ(who, params)
++	var num_params := len(params);
++
++	case (num_params)
++		1:
++		2: SendSysMessage(who, &quot;Error. Insufficient data supplied. \&quot;.go xyz x y [z] [string realm name]\&quot;&quot;);
++		3: params[4] := GetMapInfo( CInt(params[1]), CInt(params[2]), who.realm ).z;
++		params[5] := who.realm;
++		4: params[5] := who.realm;
++		default:
++	endcase
++
++	if (Realms().Exists(lower(params[5])))
++		if (who.realm == lower(params[5]))
++			return (MoveCharacterToLocation(who, CInt(params[2]), CInt(params[3]), CInt(params[4]), MOVECHAR_FORCELOCATION));
++		else
++			return (MoveObjectToRealm(who, lower(params[5]), CInt(params[2]), CInt(params[3]), CInt(params[4]), MOVECHAR_FORCELOCATION));
++                endif
++	else
++		GumpPrompt(who, &quot;Invalid Realm name in xyz!&quot;);
++		return 1;
++	endif
++
++	return 1;
++endfunction
++
++
++function Go_FindLocationByText(who, params)
++	case (lower(params[params.size()]))
++		&quot;private&quot;: Go_ByPrivateLocation(who, params);
++		&quot;public&quot;:  Go_ByPublicLocation(who, params);
++		default:   Go_ByDefaultLocation(who, params);
++	endcase
++
++	return 1;
++endfunction
++
++function Go_ByPrivateLocation(who, params)
++
++        if(go_prop.Exists( lower(params[1]) ) )
++                var temp := go_prop[lower(params[1])];
++                SendSysMessage(who, &quot;Going to private location [&quot; + params[1] + &quot;]&quot;);
++                var move;
++                if( who.realm == temp.Realm )
++                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
++                else
++                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
++                endif
++                if ( TypeOf(move) != &quot;Integer&quot; )
++                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
++                        return 0;
++                endif
++        else
++                GumpPrompt(who, &quot;Private Location [&quot; + params[1] + &quot;] does not exist.&quot;);
++                return 0;
++        endif
++
++        return 0;
++
++endfunction
++
++
++function Go_ByPublicLocation(who, params)
++
++        if(go_prop_base.Exists( lower(params[1]) ) )
++                var temp := go_prop_base[lower(params[1])];
++                SendSysMessage(who, &quot;Going to public location [&quot; + params[1] + &quot;]&quot;);
++                var move;
++                if( who.realm == temp.Realm )
++                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
++                else
++                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
++                endif
++                if ( TypeOf(move) != &quot;Integer&quot; )
++                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
++                        return 0;
++                endif
++        else
++                GumpPrompt(who, &quot;Public Location [&quot; + params[1] + &quot;] does not exist.&quot;);
++                return 0;
++        endif
++
++        return 0;
++
++endfunction
++
++
++function Go_ByDefaultLocation(who, params)
++        if (go_prop.Exists( lower(params[1]) ) )
++		var temp := go_prop[lower(params[1])];
++		SendSysMessage(who, &quot;Going to private location [&quot; + params[1] + &quot;]&quot;);
++		var move;
++                if (who.realm == temp.Realm)
++                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
++                else
++                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
++                endif
++                if ( TypeOf(move) != &quot;Integer&quot; )
++                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
++                        return 0;
++                endif
++        elseif(go_prop_base.Exists( lower(params[1]) ) )
++                var temp := go_prop_base[lower(params[1])];
++                SendSysMessage(who, &quot;Going to public location[&quot; + params[1] + &quot;]&quot;);
++                var move;
++                if( who.realm == temp.Realm )
++                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
++                else
++                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
++                endif
++                if ( TypeOf(move) != &quot;Integer&quot; )
++                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
++                        return 0;
++                endif
++        else
++                GumpPrompt(who, &quot;Location [&quot; + params[1] + &quot;] does not exist.&quot;);
++                return 0;
++        endif
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000216.html">[Poldistro-svn] r234 - in trunk/096/scripts: . include
+</A></li>
+	<LI>Next message: <A HREF="000238.html">[Poldistro-svn] r236 - in trunk/096: . batchfiles config data docs misc pkg/commands pkg/commands/admin pkg/commands/config pkg/commands/coun pkg/commands/gm pkg/commands/include pkg/commands/player pkg/commands/seer pkg/commands/test pkg/config pkg/config/config pkg/config/include pkg/expansions/aos pkg/expansions/aos/config pkg/expansions/aos/skills/chivalry pkg/expansions/aos/skills/chivalry/config pkg/expansions/aos/skills/focus pkg/expansions/aos/skills/focus/config pkg/expansions/aos/skills/necromancy pkg/expansions/aos/skills/necromancy/config pkg/expansions/lbr pkg/expansions/lbr/config pkg/expansions/uor pkg/expansions/uor/config pkg/items/bountyboard pkg/items/bountyboard/config pkg/items/bulletinboard pkg/items/bulletinboard/config pkg/items/commcrystals pkg/items/commcrystals/config pkg/items/corpses pkg/items/corpses/config pkg/items/decorations pkg/items/decorations/config pkg/items/doors pkg/items/dyes pkg/items/food pkg/items/guildstone pkg/items/guildstone/command/! player pkg/items/interiordecoratortool pkg/items/lighting pkg/items/magic pkg/items/moongates pkg/items/repaircontract pkg/items/runebook pkg/items/sysbook pkg/items/sysbook/command/admin pkg/items/sysbook/command/seer pkg/items/training pkg/items/traps pkg/items/trash pkg/items/treasuremap pkg/items/usestuff pkg/items/wands pkg/mobiles/ai_brain pkg/mobiles/ai_brain/commands/gm pkg/mobiles/ai_brain/commands/test pkg/mobiles/ai_brain/complete/testnpc pkg/mobiles/ai_brain/config pkg/mobiles/ai_brain/include pkg/mobiles/ai_brain/include/braincore pkg/mobiles/animaltrainer pkg/mobiles/barber pkg/mobiles/npcutils pkg/mobiles/playervendor pkg/other/gmtools pkg/other/gmtools/commands/gm pkg/other/hooks pkg/other/motd pkg/other/motd/commands/player pkg/other/motd/docs pkg/skills/alchemy pkg/skills/alchemy/config pkg/skills/anatomy pkg/skills/anatomy/config pkg/skills/animallore pkg/skills/animallore/config pkg/skills/armslore pkg/skills/armslore/config pkg/skills/begging pkg/skills! /begging/config pkg/skills/blacksmithy pkg/skills/blacksmithy/! config p
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#217">[ date ]</a>
+              <a href="thread.html#217">[ thread ]</a>
+              <a href="subject.html#217">[ subject ]</a>
+              <a href="author.html#217">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

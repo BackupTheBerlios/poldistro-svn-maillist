@@ -1,0 +1,436 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r817 - in trunk/096/pkg/systems/combat: . config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r817%20-%20in%20trunk/096/pkg/systems/combat%3A%20.%20config%20include&In-Reply-To=%3C200511020400.jA240ZnC009503%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000790.html">
+   <LINK REL="Next"  HREF="000792.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r817 - in trunk/096/pkg/systems/combat: . config include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r817%20-%20in%20trunk/096/pkg/systems/combat%3A%20.%20config%20include&In-Reply-To=%3C200511020400.jA240ZnC009503%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r817 - in trunk/096/pkg/systems/combat: . config include">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 05:00:35 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000790.html">[Poldistro-svn] r816 - trunk/096/pkg/systems/combat/old
+</A></li>
+        <LI>Next message: <A HREF="000792.html">[Poldistro-svn] r818 - trunk/096/pkg/systems/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#791">[ date ]</a>
+              <a href="thread.html#791">[ thread ]</a>
+              <a href="subject.html#791">[ subject ]</a>
+              <a href="author.html#791">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 05:00:32 +0100 (Wed, 02 Nov 2005)
+New Revision: 817
+
+Added:
+   trunk/096/pkg/systems/combat/config/settings.cfg
+   trunk/096/pkg/systems/combat/include/settings.inc
+   trunk/096/pkg/systems/combat/mainHitScript.src
+Log:
+Updated combat system. Lotta config settings to make it more customizable per shard.
+
+Added: trunk/096/pkg/systems/combat/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/config/settings.cfg	2005-11-02 03:44:09 UTC (rev 816)
++++ trunk/096/pkg/systems/combat/config/settings.cfg	2005-11-02 04:00:32 UTC (rev 817)
+@@ -0,0 +1,31 @@
++Elem	General
++{
++	GainWait	25	// Seconds between gain checks.
++	PvPGains	1	// Players can gain from PvP. 0 - No. 1 - Yes.
++}
++
++Elem	Weapons
++{
++	WearChance	5	// % chance on hit the weapon wears down.
++	WearRate	0.99	// Quality = (Quality * WearRate)
++}
++
++Elem	Armor
++{
++	DmgToWear	15	// % of armor piece's hit points the damage must be to wear it down.
++	WearChance	65	// % chance armor wears down when hit.
++	WearRate	0.99	// Quality = ( Quality * WearRate)
++}
++
++Elem	Parry
++{
++	ParryRoll	1.0	// RandomFloat(ParryRoll) must be &lt; (ParrySkill / ParryDivisor)
++	ParryDivisor	200	// Divisor used with the defender's parry skill.
++	WearChance	80	// % Chance the shield wears down when hit.
++	WearRate	0.97	// Quality = (Quality * WearRate)
++}
++
++Elem	Archery
++{
++	RecoverChance	70	// Chance an arrow will be created in an npc's pack when it is hit.
++}
+
+Added: trunk/096/pkg/systems/combat/include/settings.inc
+===================================================================
+--- trunk/096/pkg/systems/combat/include/settings.inc	2005-11-02 03:44:09 UTC (rev 816)
++++ trunk/096/pkg/systems/combat/include/settings.inc	2005-11-02 04:00:32 UTC (rev 817)
+@@ -0,0 +1,58 @@
++/* 
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use cfgfile;
++
++/*
++ * CS_GetSettingsCfgFile(engine_name)
++ *
++ * Purpose
++ * Reads in :attributes:configs/settings.cfg
++ *
++ * Parameters
++ *
++ * Return value
++ * A config file reference.
++ *
++ */
++function CS_GetSettingsCfgFile()
++	var cfg := ReadConfigFile(&quot;:combat:config/settings&quot;);
++
++	if ( cfg.errortext )
++		SysLog(&quot;Error::CS_GetSettingsCfgFile() - Unable to open [:combat:config/settings.cfg] -&gt;&quot;+cfg.errortext);
++	endif
++
++	return cfg;
++endfunction
++
++/*
++ * CS_GetSettingsCfgElem(elem_name, cfg_file)
++ *
++ * Purpose
++ * Retrieves an elem from a config file. 
++ *
++ * Parameters
++ * elem_name:	A string matching the elem name to be retrieved.
++ * cfg_file:	Optional parameter - reference to a config already read in by CS_GetSettingsCfgFile()
++ *
++ * Return value
++ * A config file elem reference.
++ *
++ */
++function CS_GetSettingsCfgElem(elem_name, byref cfg_file:=0)
++	if ( !cfg_file )
++		cfg_file := CS_GetSettingsCfgFile();
++	endif
++	
++	var elem := cfg_file[elem_name];
++
++	if ( elem.errortext )
++		SysLog(&quot;Error::CS_GetSettingsCfgElem() - Unable to find elem [&quot;+elem_name+&quot;] -&gt;&quot;+elem.errortext);
++	endif
++
++	return elem;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/combat/mainHitScript.src
+===================================================================
+--- trunk/096/pkg/systems/combat/mainHitScript.src	2005-11-02 03:44:09 UTC (rev 816)
++++ trunk/096/pkg/systems/combat/mainHitScript.src	2005-11-02 04:00:32 UTC (rev 817)
+@@ -0,0 +1,256 @@
++/*
++ * $Id
++ *
++ */
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:attributes:attributes&quot;;
++include &quot;:brainai:npcUtil&quot;;
++include &quot;:blood:blood&quot;;
++include &quot;:combat:settings&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
++include &quot;include/client&quot;;
++
++var item_cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
++
++program MainHitScript(attacker, defender, weapon, armor, basedamage, rawdamage)
++	//
++	// Cheat checker
++	//
++	if ( attacker == defender )
++		ApplyRawDamage(attacker, 1000);
++	elseif ( attacker.hidden || defender.hidden )
++		return 0;
++	elseif ( !attacker.npctemplate )
++		if ( !attacker.warmode )
++			basedamage := CInt(basedamage/2);
++			rawdamage := CInt(rawdamage/2);
++		endif
++	endif
++	
++	PlayHitSounds(defender);
++	SkillChecks(attacker, defender, weapon, armor, basedamage, rawdamage);
++	ArrowRecovery(attacker, defender, weapon);
++	ParryCheck(attacker, defender, weapon, armor, basedamage, rawdamage);
++	WearDownWeapon(attacker, defender, weapon, armor, basedamage, rawdamage);
++	WearDownArmor(attacker, defender, weapon, armor, basedamage, rawdamage);
++	DamageInfo(attacker, defender, weapon, armor, basedamage, rawdamage);
++	WeaponHitScripts(attacker, defender, weapon, armor, basedamage, rawdamage);
++	ArmorHitScripts(attacker, defender, weapon, armor, basedamage, rawdamage);
++	PoisonChecks(attacker, defender, weapon, armor, basedamage, rawdamage);
++	
++	var hostiles := ListHostiles(defender, 1);
++	rawdamage := rawdamage+CInt(hostiles.size()/2);
++	hostiles := 0;
++	//
++	// Apply the damage to the defender
++	// Base = prearmor
++	// Raw = post armor
++	//
++	if ( rawdamage &gt; 0 )
++		ApplyRawDamage(defender, CInt(rawdamage));
++		MakeBleed(defender);
++	endif
++endprogram
++
++function PlayHitSounds(defender)
++	if ( defender.IsA(POLCLASS_NPC) )
++		var damaged_sound := NPC_GetNPCConfig(defender).DamagedSound;
++		if ( damaged_sound )
++			PlaySoundEffect(defender, damaged_sound);
++		endif
++	endif
++endfunction
++
++function SkillChecks(attacker, defender, weapon, armor, basedamage, rawdamage)
++	var can_gain := 0;
++	var next_gain := CInt(GetObjProperty(attacker, &quot;#CHGainTime&quot;));
++	if ( ReadGameClock() &gt;= next_gain )
++		if ( CS_GetSettingsCfgElem(&quot;General&quot;).PvPGains )
++			can_gain := 1;
++		elseif ( defender.IsA(POLCLASS_NPC) )
++			can_gain := 1;
++		endif
++	endif
++	
++	if ( can_gain )
++		var gain_wait := CInt(CS_GetSettingsCfgElem(&quot;General&quot;).GainWait);
++		SetObjProperty(attacker, &quot;#CHGainTime&quot;, ReadGameClock()+gain_wait);
++		if ( rawdamage &gt; 0 )
++			SkillCheck(attacker, weapon.attribute, -1);
++			SkillCheck(attacker, &quot;Tactics&quot;, -1);
++		endif
++	endif
++endfunction
++
++function ArrowRecovery(attacker, defender, weapon)
++	if ( defender.IsA(POLCLASS_NPC) &amp;&amp; defender.backpack )
++		var chance := CInt(CS_GetSettingsCfgElem(&quot;Archery&quot;).RecoverChance);
++		if ( RandomDiceRoll(&quot;1d100&quot;) &lt;= chance )
++			item_cfg := item_cfg[weapon.objtype];
++			if ( item_cfg.Projectile )
++				CreateItemInBackPack(defender, item_cfg.ProjectileType, 1);
++			endif
++		endif
++	endif
++endfunction
++
++function WearDownArmor(attacker, defender, weapon, armor, basedamage, rawdamage)
++	if ( armor )
++		var armr_elem := CS_GetSettingsCfgElem(&quot;Armor&quot;);
++		
++		// Turn into a percentage.
++		var dmg_to_wear := CDbl(CDbl(armr_elem.DmgToWear) * CDbl(armor.hp)) / 100.0;
++				
++		if ( CDbl(rawdamage) &gt; dmg_to_wear )
++			if ( RandomDiceRoll(&quot;1d100&quot;) &lt;= armr_elem.WearChance )
++				SendSysMessage(defender, armor.desc+&quot; takes some damage.&quot;);
++				armor.quality := armor.quality * CDbl(armr_elem.WearRate);
++				if ( armor.quality &lt;= 0.1 )
++					SendSysMessage(defender, armor.desc+&quot; has been destroyed.&quot;);
++					DestroyItem(armor);
++				elseif ( armor.hp &gt; armor.maxhp )
++					armor.hp := armor.maxhp;
++				endif
++			endif
++		endif
++	endif
++	
++	return 1;
++endfunction
++
++function WearDownWeapon(attacker, defender, weapon, armor, basedamage, rawdamage)
++	if ( weapon.IsA(POLCLASS_WEAPON) )
++		if ( weapon.objtype == 0xF020 )
++			return 1;
++		else
++			var wpn_elem := CS_GetSettingsCfgElem(&quot;Weapons&quot;);
++			if ( RandomDiceRoll(&quot;1d100&quot;) &lt;= CInt(wpn_elem.WearChance) )
++				weapon.quality := weapon.quality * CDbl(wpn_elem.WearRate);
++				if ( weapon.quality &lt;= 0.1 )
++					SendSysMessage(attacker, weapon.desc+&quot; breaks.&quot;);
++					MoveObjectToLocation(weapon, 1, 1, 1, attacker.realm, MOVEOBJECT_FORCELOCATION);
++					DestroyItem(weapon);
++				elseif ( weapon.hp &gt; weapon.maxhp )
++					weapon.hp := weapon.maxhp;
++				endif
++			endif
++			return 1;
++		endif
++	else
++		SendSysMessage(attacker, &quot;An attack without a weapon?! Waaaa! That shouldnt be.&quot;);
++		return 0;
++	endif
++endfunction
++
++function DamageInfo(attacker, defender, weapon, armor, basedamage, rawdamage)
++	if ( attacker.cmdlevel )
++		PrintTextAbovePrivate(attacker, &quot;Rawdamage:&quot;+rawdamage+&quot;  Base:&quot;+basedamage, attacker);
++	endif
++	if ( defender.cmdlevel )
++		PrintTextAbovePrivate(attacker, &quot;Rawdamage:&quot;+rawdamage+&quot;  Base:&quot;+basedamage, defender);
++	endif
++endfunction
++
++function WeaponHitScripts(attacker, defender, weapon, armor, basedamage, rawdamage)
++	var weapon_scripts := array;
++	if ( weapon.objtype == 0xF020 ) // Intrinsic fist
++		weapon_scripts := GetObjProperty(attacker, &quot;HitScripts&quot;);
++	elseif ( weapon.IsA(POLCLASS_WEAPON) )
++		weapon_scripts := GetObjProperty(weapon, &quot;HitScripts&quot;);
++	endif
++	
++	foreach hitscript in weapon_scripts
++		var script := start_script(hitscript, {attacker, defender, weapon, armor, basedamage, rawdamage});
++		if ( !script || script.errortext )
++			SendSysMessage(attacker, &quot;*Attacker* Weapon script error starting [&quot;+hitscript+&quot;] :&quot; + script.errortext);
++			SendSysMessage(defender, &quot;*Attacker* Weapon script error starting [&quot;+hitscript+&quot;] :&quot; + script.errortext);
++		endif
++		sleepms(2);
++	endforeach
++	
++	return 1;
++endfunction
++
++function ArmorHitScripts(attacker, defender, weapon, armor, basedamage, rawdamage)
++	var body_scripts := GetObjProperty(defender, &quot;ArmorHitScripts&quot;);
++	var armor_scripts := GetObjProperty(armor, &quot;ArmorHitScripts&quot;);
++	if ( !body_scripts )
++		body_scripts := array{};
++	endif
++	if ( !armor_scripts )
++		armor_scripts := array{};
++	endif
++	
++	armor_scripts := armor_scripts + body_scripts;
++	
++	foreach hitscript in armor_scripts
++		var script := start_script(hitscript, {attacker, defender, weapon, armor, basedamage, rawdamage});
++		if ( script.errortext )
++			SendSysMessage(attacker, &quot;*Defender* armor script error starting [&quot;+hitscript+&quot;] :&quot; + script.errortext);
++			SendSysMessage(defender, &quot;*Defender* armor script error starting [&quot;+hitscript+&quot;] :&quot; + script.errortext);
++		endif
++		sleepms(2);
++	endforeach
++	
++	return 1;
++endfunction
++
++function PoisonChecks(attacker, defender, weapon, armor, basedamage, rawdamage)
++	if ( rawdamage &lt; 1 )
++		return 0;
++	endif
++	
++	// Unsure how poisoned weapon CProps will look yet.
++endfunction
++
++//
++// Returns 1 on successful parry.
++//
++function ParryCheck(attacker, defender, weapon, armor, byref basedamage, byref rawdamage)
++	var shield := GetEquipmentByLayer(defender, LAYER_HAND2);
++	if ( !shield.ISA(POLCLASS_ARMOR) )
++		shield := GetEquipmentByLayer(defender, LAYER_HAND1);
++	endif
++	
++	if ( shield.IsA(POLCLASS_ARMOR) )
++		var parry_elem := CS_GetSettingsCfgElem(&quot;Parry&quot;);
++		var divisor := CDbl(parry_elem.ParryDivisor);
++		var roll := CDbl(parry_elem.ParryRoll);
++		var parry_chance := CDbl(AP_GetSkill(attacker, &quot;Tactics&quot;)) / divisor;
++		
++		if ( RandomFloat(roll) &lt; parry_chance )
++			//PerformAction(defender, ANIM_TWIST_DODGE);
++			SendSysMessage(defender, &quot;You deflect some damage using your shield.&quot;);
++			var decrease := RandomInt(shield.ar)+1;
++			var new_dmg := rawdamage - decrease;
++			
++			if ( attacker.cmdlevel )
++				PrintTextAbovePrivate(defender, &quot;Parry! Lowering damage from [&quot;+rawdamage+&quot;] to [&quot;+new_dmg+&quot;]&quot;, attacker);
++			endif
++			if ( defender.cmdlevel )
++				PrintTextAbovePrivate(defender, &quot;Parry! Lowering damage from [&quot;+rawdamage+&quot;] to [&quot;+new_dmg+&quot;]&quot;, defender);
++			endif
++			
++			rawdamage := new_dmg;
++				
++			if ( rawdamage &gt; CInt(0.15*shield.hp) )
++				SendSysMessage(defender, shield.desc+&quot; takes some damage.&quot;);
++				shield.quality := shield.quality * CDbl(CS_GetSettingsCfgElem(&quot;Parry&quot;).WearRate);
++				if ( shield.quality &lt;= 0.1 )
++					SendSysMessage(defender, shield.desc+&quot; has been destroyed.&quot;);
++					MoveObjectToLocation(shield, 1, 1, 1, defender.realm, MOVEOBJECT_FORCELOCATION);
++					DestroyItem(shield);
++				elseif ( shield.hp &gt; shield.maxhp )
++					shield.hp := shield.maxhp;
++				endif
++			endif
++			
++			return 1;
++		endif
++	endif
++	
++	return 0;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000790.html">[Poldistro-svn] r816 - trunk/096/pkg/systems/combat/old
+</A></li>
+	<LI>Next message: <A HREF="000792.html">[Poldistro-svn] r818 - trunk/096/pkg/systems/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#791">[ date ]</a>
+              <a href="thread.html#791">[ thread ]</a>
+              <a href="subject.html#791">[ subject ]</a>
+              <a href="author.html#791">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

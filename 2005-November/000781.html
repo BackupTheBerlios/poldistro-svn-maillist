@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r807 - in trunk/096/scripts: include items misc util
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r807%20-%20in%20trunk/096/scripts%3A%20include%20items%20misc%20util&In-Reply-To=%3C200511012157.jA1LveC4010417%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000780.html">
+   <LINK REL="Next"  HREF="000782.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r807 - in trunk/096/scripts: include items misc util</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r807%20-%20in%20trunk/096/scripts%3A%20include%20items%20misc%20util&In-Reply-To=%3C200511012157.jA1LveC4010417%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r807 - in trunk/096/scripts: include items misc util">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 22:57:40 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000780.html">[Poldistro-svn] r806 - in trunk/096/pkg: commands/gm mobiles/npcutils mobiles/oldAI mobiles/oldAI/combat mobiles/oldAI/main other/gmtools other/gmtools/commands/gm skills/alchemy skills/cooking skills/healing skills/herding skills/inscription skills/lumberjacking skills/magery skills/meditation skills/mining skills/tailoring skills/taming skills/tasteid skills/tinkering skills/tracking skills/veterinary systems/combat systems/daynight systems/housing systems/merchantnodes systems/spellcasting
+</A></li>
+        <LI>Next message: <A HREF="000782.html">[Poldistro-svn] r808 - in trunk/096/pkg/mobiles/oldAI: . combat main
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#781">[ date ]</a>
+              <a href="thread.html#781">[ thread ]</a>
+              <a href="subject.html#781">[ subject ]</a>
+              <a href="author.html#781">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 22:57:39 +0100 (Tue, 01 Nov 2005)
+New Revision: 807
+
+Modified:
+   trunk/096/scripts/include/bard.inc
+   trunk/096/scripts/include/magic.inc
+   trunk/096/scripts/include/mrcSpawn.inc
+   trunk/096/scripts/include/snooping.inc
+   trunk/096/scripts/items/dungTele.src
+   trunk/096/scripts/items/makeDTele.src
+   trunk/096/scripts/items/moongate.src
+   trunk/096/scripts/items/vendorDeed.src
+   trunk/096/scripts/misc/demod.src
+   trunk/096/scripts/misc/logoff.src
+   trunk/096/scripts/misc/logon.src
+   trunk/096/scripts/misc/unmod.src
+   trunk/096/scripts/util/conflicts.inc
+   trunk/096/scripts/util/repair.inc
+Log:
+Updated to use :attributes:attributes instead of include/attributes.
+
+This way I can find the function calls easier and change them.
+
+Modified: trunk/096/scripts/include/bard.inc
+===================================================================
+--- trunk/096/scripts/include/bard.inc	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/include/bard.inc	2005-11-01 21:57:39 UTC (rev 807)
+@@ -1,7 +1,7 @@
+ use uo;
+ 
+ include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ function play(character, theskill, item, skil)
+   var success, fail;
+
+Modified: trunk/096/scripts/include/magic.inc
+===================================================================
+--- trunk/096/scripts/include/magic.inc	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/include/magic.inc	2005-11-01 21:57:39 UTC (rev 807)
+@@ -1,6 +1,6 @@
+ const EVID_DISCHARGE := 0x123457;
+ 
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ 
+ function Resisted(circle, caster, cast_on, amt)
+
+Modified: trunk/096/scripts/include/mrcSpawn.inc
+===================================================================
+--- trunk/096/scripts/include/mrcSpawn.inc	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/include/mrcSpawn.inc	2005-11-01 21:57:39 UTC (rev 807)
+@@ -1,5 +1,5 @@
+ use cfgfile;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ include &quot;include/utility&quot;;
+ 
+ var mrcspawn_cfg := ReadConfigFile(&quot;::mrcspawn&quot;);
+
+Modified: trunk/096/scripts/include/snooping.inc
+===================================================================
+--- trunk/096/scripts/include/snooping.inc	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/include/snooping.inc	2005-11-01 21:57:39 UTC (rev 807)
+@@ -1,4 +1,4 @@
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ function snoop(who, victim)
+   victim := victim; // stops &quot;var not used&quot; ecompile warning
+
+Modified: trunk/096/scripts/items/dungTele.src
+===================================================================
+--- trunk/096/scripts/items/dungTele.src	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/items/dungTele.src	2005-11-01 21:57:39 UTC (rev 807)
+@@ -2,7 +2,7 @@
+ use uo;
+ 
+ include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ program walk_on_moongate(mobile, gate)
+   if((mobile.npctemplate) &amp;&amp; (mobile.script != &quot;employed&quot;) &amp;&amp; (mobile.script != &quot;tamed&quot;) &amp;&amp; (mobile.script != &quot;escortee&quot;))
+
+Modified: trunk/096/scripts/items/makeDTele.src
+===================================================================
+--- trunk/096/scripts/items/makeDTele.src	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/items/makeDTele.src	2005-11-01 21:57:39 UTC (rev 807)
+@@ -2,7 +2,7 @@
+ use uo;
+ 
+ include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ program walk_on_moongate( mobile, gate )
+   var magery := CInt(GetObjProperty(gate,&quot;magery&quot;));
+
+Modified: trunk/096/scripts/items/moongate.src
+===================================================================
+--- trunk/096/scripts/items/moongate.src	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/items/moongate.src	2005-11-01 21:57:39 UTC (rev 807)
+@@ -2,7 +2,7 @@
+ use uo;
+ 
+ include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ program walk_on_moongate(mobile, gate)
+   if((mobile.npctemplate) &amp;&amp; (mobile.script != &quot;employed&quot;) &amp;&amp; (mobile.script != &quot;tamed&quot;) &amp;&amp; (mobile.script != &quot;escortee&quot;))
+
+Modified: trunk/096/scripts/items/vendorDeed.src
+===================================================================
+--- trunk/096/scripts/items/vendorDeed.src	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/items/vendorDeed.src	2005-11-01 21:57:39 UTC (rev 807)
+@@ -1,7 +1,7 @@
+ use os;
+ use uo;
+ include &quot;include/canAccess&quot;;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ const SEARCH_RANGE := 10;
+ 
+
+Modified: trunk/096/scripts/misc/demod.src
+===================================================================
+--- trunk/096/scripts/misc/demod.src	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/misc/demod.src	2005-11-01 21:57:39 UTC (rev 807)
+@@ -1,6 +1,6 @@
+ use uo;
+ use os;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ program demod(parms)
+   var mod := lower(parms[1]);
+
+Modified: trunk/096/scripts/misc/logoff.src
+===================================================================
+--- trunk/096/scripts/misc/logoff.src	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/misc/logoff.src	2005-11-01 21:57:39 UTC (rev 807)
+@@ -12,7 +12,7 @@
+ 
+ include &quot;include/math&quot;;
+ include &quot;include/eventID&quot;;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ const EVID_UNEQUIP   := 0x123456;
+ const EVID_DISCHARGE := 0x123457;
+
+Modified: trunk/096/scripts/misc/logon.src
+===================================================================
+--- trunk/096/scripts/misc/logon.src	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/misc/logon.src	2005-11-01 21:57:39 UTC (rev 807)
+@@ -13,7 +13,7 @@
+ 
+ include &quot;include/eventID&quot;;
+ include &quot;include/myUtil&quot;;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ include &quot;:combat:equip&quot;;
+ include &quot;include/noto&quot;;
+ 
+
+Modified: trunk/096/scripts/misc/unmod.src
+===================================================================
+--- trunk/096/scripts/misc/unmod.src	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/misc/unmod.src	2005-11-01 21:57:39 UTC (rev 807)
+@@ -1,6 +1,6 @@
+ use uo;
+ use os;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ program demod(parms)
+   var mod := lower(parms[1]);
+
+Modified: trunk/096/scripts/util/conflicts.inc
+===================================================================
+--- trunk/096/scripts/util/conflicts.inc	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/util/conflicts.inc	2005-11-01 21:57:39 UTC (rev 807)
+@@ -13,7 +13,7 @@
+ ////////////////////////////////////////////////////////////
+ use os;
+ use cfgfile;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ var badguy         := 0;
+ var hunger         := 0;
+
+Modified: trunk/096/scripts/util/repair.inc
+===================================================================
+--- trunk/096/scripts/util/repair.inc	2005-11-01 21:56:02 UTC (rev 806)
++++ trunk/096/scripts/util/repair.inc	2005-11-01 21:57:39 UTC (rev 807)
+@@ -16,7 +16,7 @@
+ //
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ function repair_item(character, what, skillid )
+   var maxhp;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000780.html">[Poldistro-svn] r806 - in trunk/096/pkg: commands/gm mobiles/npcutils mobiles/oldAI mobiles/oldAI/combat mobiles/oldAI/main other/gmtools other/gmtools/commands/gm skills/alchemy skills/cooking skills/healing skills/herding skills/inscription skills/lumberjacking skills/magery skills/meditation skills/mining skills/tailoring skills/taming skills/tasteid skills/tinkering skills/tracking skills/veterinary systems/combat systems/daynight systems/housing systems/merchantnodes systems/spellcasting
+</A></li>
+	<LI>Next message: <A HREF="000782.html">[Poldistro-svn] r808 - in trunk/096/pkg/mobiles/oldAI: . combat main
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#781">[ date ]</a>
+              <a href="thread.html#781">[ thread ]</a>
+              <a href="subject.html#781">[ subject ]</a>
+              <a href="author.html#781">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

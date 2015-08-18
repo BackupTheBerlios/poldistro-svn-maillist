@@ -1,0 +1,806 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r380 - trunk/096/pkg/mobiles/oldAI
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r380%20-%20trunk/096/pkg/mobiles/oldAI&In-Reply-To=%3C200510021428.j92ESbtJ009183%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000354.html">
+   <LINK REL="Next"  HREF="000356.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r380 - trunk/096/pkg/mobiles/oldAI</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r380%20-%20trunk/096/pkg/mobiles/oldAI&In-Reply-To=%3C200510021428.j92ESbtJ009183%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r380 - trunk/096/pkg/mobiles/oldAI">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct  2 16:28:37 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000354.html">[Poldistro-svn] r379 - trunk/096/pkg/items/containers/include
+</A></li>
+        <LI>Next message: <A HREF="000356.html">[Poldistro-svn] r381 - trunk/096/pkg/systems/attributes/commands/test
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#355">[ date ]</a>
+              <a href="thread.html#355">[ thread ]</a>
+              <a href="subject.html#355">[ subject ]</a>
+              <a href="author.html#355">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-02 16:28:36 +0200 (Sun, 02 Oct 2005)
+New Revision: 380
+
+Modified:
+   trunk/096/pkg/mobiles/oldAI/animal.src
+   trunk/096/pkg/mobiles/oldAI/barker.src
+   trunk/096/pkg/mobiles/oldAI/bladeSpirit.src
+   trunk/096/pkg/mobiles/oldAI/cat.src
+   trunk/096/pkg/mobiles/oldAI/chicken.src
+   trunk/096/pkg/mobiles/oldAI/cow.src
+   trunk/096/pkg/mobiles/oldAI/crier.src
+   trunk/096/pkg/mobiles/oldAI/dumbKillPCs.src
+   trunk/096/pkg/mobiles/oldAI/escortee.src
+   trunk/096/pkg/mobiles/oldAI/firebreather.src
+   trunk/096/pkg/mobiles/oldAI/goodCaster.src
+   trunk/096/pkg/mobiles/oldAI/helpPCs.src
+   trunk/096/pkg/mobiles/oldAI/immobile.src
+   trunk/096/pkg/mobiles/oldAI/immobileSpell.src
+   trunk/096/pkg/mobiles/oldAI/killAny.src
+   trunk/096/pkg/mobiles/oldAI/killPCs.src
+   trunk/096/pkg/mobiles/oldAI/meek.src
+   trunk/096/pkg/mobiles/oldAI/packFirebreather.src
+   trunk/096/pkg/mobiles/oldAI/person.src
+   trunk/096/pkg/mobiles/oldAI/poisonElemental.src
+   trunk/096/pkg/mobiles/oldAI/poisonKillPCs.src
+   trunk/096/pkg/mobiles/oldAI/sheep.src
+   trunk/096/pkg/mobiles/oldAI/slime.src
+   trunk/096/pkg/mobiles/oldAI/spellFire.src
+   trunk/096/pkg/mobiles/oldAI/spellKillPCs.src
+   trunk/096/pkg/mobiles/oldAI/spiders.src
+   trunk/096/pkg/mobiles/oldAI/townPerson.src
+   trunk/096/pkg/mobiles/oldAI/undeadKillPCs.src
+   trunk/096/pkg/mobiles/oldAI/vortexAI.src
+   trunk/096/pkg/mobiles/oldAI/wolf.src
+   trunk/096/pkg/mobiles/oldAI/worker.src
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/oldAI/animal.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/animal.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/animal.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -10,11 +10,11 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopAnimal&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/setup/animalSetup&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/mainLoopAnimal&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:setup/animalSetup&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ const HALT_THRESHOLD := 5; // how close before he attacks?
+ var npccfgfile := ReadConfigFile(&quot;npcdesc&quot;);
+
+Modified: trunk/096/pkg/mobiles/oldAI/barker.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/barker.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/barker.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -10,11 +10,11 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopBarker&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/setup/animalSetup&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/mainLoopBarker&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:setup/animalSetup&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;:npcutils:vetement&quot;;
+ 
+ const HALT_THRESHOLD := 5; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/bladeSpirit.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/bladeSpirit.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/bladeSpirit.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -11,8 +11,8 @@
+ include &quot;include/objtype&quot;;
+ include &quot;:npcutils:anchors&quot;;
+ include &quot;include/dist&quot;;
+-include &quot;ai/main/setup&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/setup&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;:npcutils:animal&quot;;
+ 
+ 
+
+Modified: trunk/096/pkg/mobiles/oldAI/cat.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/cat.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/cat.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -10,11 +10,11 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopCat&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/setup/animalSetup&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/mainLoopCat&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:setup/animalSetup&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;:npcutils:vetement&quot;;
+ 
+ const HALT_THRESHOLD := 5; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/chicken.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/chicken.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/chicken.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -10,11 +10,11 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopChicken&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/setup/animalSetup&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/mainLoopChicken&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:setup/animalSetup&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;:npcutils:vetement&quot;;
+ 
+ const HALT_THRESHOLD := 5; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/cow.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/cow.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/cow.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -10,11 +10,11 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopCow&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/setup/animalSetup&quot;;
+-include &quot;ai/main/sleepModeCow&quot;;
++include &quot;:oldAI:main/mainLoopCow&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:setup/animalSetup&quot;;
++include &quot;:oldAI:main/sleepModeCow&quot;;
+ 
+ const HALT_THRESHOLD := 5; // how close before he attacks?
+ var npccfgfile := ReadConfigFile(&quot;npcdesc&quot;);
+
+Modified: trunk/096/pkg/mobiles/oldAI/crier.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/crier.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/crier.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -12,11 +12,11 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopCrier&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/main/sleepMode&quot;;
+-include &quot;ai/setup/crierSetup&quot;;
++include &quot;:oldAI:main/mainLoopCrier&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
++include &quot;:oldAI:setup/crierSetup&quot;;
+ include &quot;:begging:begging&quot;;
+ 
+ var npccfgfile := ReadConfigFile( &quot;npcdesc&quot; );
+
+Modified: trunk/096/pkg/mobiles/oldAI/dumbKillPCs.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/dumbKillPCs.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/dumbKillPCs.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -11,12 +11,12 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/killPCsLoop&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/animalCombatEvent&quot;;
+-include &quot;ai/setup/killPCsSetup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/killPCsLoop&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/animalCombatEvent&quot;;
++include &quot;:oldAI:setup/killPCsSetup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ const HALT_THRESHOLD := 8;
+ var npccfgfile := ReadConfigFile(&quot;npcdesc&quot;);
+
+Modified: trunk/096/pkg/mobiles/oldAI/escortee.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/escortee.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/escortee.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -8,13 +8,13 @@
+ include &quot;:npcutils:randName&quot;;
+ include &quot;:npcutils:anchors&quot;;
+ include &quot;include/dist&quot;;
+-include &quot;ai/main/mainLoopGood&quot;;
+-include &quot;ai/combat/animalCombatEvent&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/main/loot&quot;;
++include &quot;:oldAI:main/mainLoopGood&quot;;
++include &quot;:oldAI:combat/animalCombatEvent&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:main/loot&quot;;
+ include &quot;:npcutils:NPCUtil&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;include/skillLists&quot;;
+ include &quot;:npcutils:vetement&quot;;
+ include &quot;:begging:begging&quot;;
+
+Modified: trunk/096/pkg/mobiles/oldAI/firebreather.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/firebreather.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/firebreather.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -12,12 +12,12 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/killPCsLoop&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/fireCombatEvent&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/killPCsLoop&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/fireCombatEvent&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ const MOVING_EFFECT_FIREBALL  := 0x36d4;
+ const HALT_THRESHOLD := 8; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/goodCaster.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/goodCaster.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/goodCaster.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -12,12 +12,12 @@
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:NPCCast&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopGood&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/spellCombatEvent&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/mainLoopGood&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/spellCombatEvent&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;:begging:begging&quot;;
+ 
+ const HALT_THRESHOLD := 10; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/helpPCs.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/helpPCs.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/helpPCs.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -12,12 +12,12 @@
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:speech&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopGood&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/warriorCombatEvent&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/mainLoopGood&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/warriorCombatEvent&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;:begging:begging&quot;;
+ 
+ const HALT_THRESHOLD := 8; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/immobile.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/immobile.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/immobile.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -11,11 +11,11 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopImmobile&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/mainLoopImmobile&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ 
+ const HALT_THRESHOLD := 5;
+
+Modified: trunk/096/pkg/mobiles/oldAI/immobileSpell.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/immobileSpell.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/immobileSpell.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -28,11 +28,11 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopImmobile&quot;;
+-include &quot;ai/combat/immobileFight&quot;;
+-include &quot;ai/main/sleepMode&quot;;
+-include &quot;ai/combat/spellCombatEvent&quot;;
+-include &quot;ai/setup/spellSetup&quot;;
++include &quot;:oldAI:main/mainLoopImmobile&quot;;
++include &quot;:oldAI:combat/immobileFight&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
++include &quot;:oldAI:combat/spellCombatEvent&quot;;
++include &quot;:oldAI:setup/spellSetup&quot;;
+ include &quot;:npcutils:NPCCast&quot;;
+ 
+ const HALT_THRESHOLD := 10; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/killAny.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/killAny.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/killAny.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -27,13 +27,13 @@
+ include &quot;include/objtype&quot;;
+ include &quot;:npcutils:anchors&quot;;
+ include &quot;include/dist&quot;;
+-include &quot;ai/main/mainLoopKillAny&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/main/defaultNonCombatEvent&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/main/setup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/mainLoopKillAny&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:main/defaultNonCombatEvent&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:main/setup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ 
+ const HALT_THRESHOLD := 10; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/killPCs.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/killPCs.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/killPCs.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -12,12 +12,12 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/killPCsLoop&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/setup/killPCsSetup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/killPCsLoop&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:setup/killPCsSetup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ 
+ const HALT_THRESHOLD := 8; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/meek.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/meek.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/meek.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -28,12 +28,12 @@
+ include &quot;:npcutils:speech&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopMeek&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/mainLoopMeek&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ 
+ const HALT_THRESHOLD := 5; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/packFirebreather.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/packFirebreather.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/packFirebreather.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -12,12 +12,12 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/packKillPCsLoop&quot;;
+-include &quot;ai/combat/packFight&quot;;
+-include &quot;ai/combat/fireCombatEvent&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/packKillPCsLoop&quot;;
++include &quot;:oldAI:combat/packFight&quot;;
++include &quot;:oldAI:combat/fireCombatEvent&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ const HALT_THRESHOLD := 15;
+ var npccfgfile := ReadConfigFile( &quot;npcdesc&quot; );
+
+Modified: trunk/096/pkg/mobiles/oldAI/person.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/person.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/person.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -20,7 +20,7 @@
+ include &quot;:npcutils:speech&quot;;
+ include &quot;:npcutils:anchors&quot;;
+ include &quot;include/dist&quot;;
+-include &quot;ai/main/loot&quot;;
++include &quot;:oldAI:main/loot&quot;;
+ include &quot;:begging:begging&quot;;
+ 
+ const HALT_THRESHOLD := 2; // how close before he barks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/poisonElemental.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/poisonElemental.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/poisonElemental.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -14,11 +14,11 @@
+ include &quot;:npcutils:NPCCast&quot;;
+ include &quot;:npcutils:anchors&quot;;
+ include &quot;include/spellRestrictions&quot;;
+-include &quot;ai/main/killPCsLoop&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/setup/spellSetup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/killPCsLoop&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:setup/spellSetup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ 
+ const HALT_THRESHOLD := 8; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/poisonKillPCs.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/poisonKillPCs.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/poisonKillPCs.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -10,12 +10,12 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/killPCsLoop&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/poisonCombatEvent&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/killPCsLoop&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/poisonCombatEvent&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ const HALT_THRESHOLD := 8;
+ var npccfgfile := ReadConfigFile(&quot;npcdesc&quot;);
+
+Modified: trunk/096/pkg/mobiles/oldAI/sheep.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/sheep.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/sheep.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -10,11 +10,11 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopSheep&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/setup/sheepSetup&quot;;
+-include &quot;ai/main/sleepModeSheep&quot;;
++include &quot;:oldAI:main/mainLoopSheep&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:setup/sheepSetup&quot;;
++include &quot;:oldAI:main/sleepModeSheep&quot;;
+ 
+ 
+ const HALT_THRESHOLD := 5; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/slime.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/slime.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/slime.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -10,12 +10,12 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/killPCsLoop&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/slimeCombatEvent&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/killPCsLoop&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/slimeCombatEvent&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;include/client&quot;;
+ 
+ 
+
+Modified: trunk/096/pkg/mobiles/oldAI/spellFire.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/spellFire.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/spellFire.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -13,12 +13,12 @@
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:NPCCast&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/killPCsLoop&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/spellFireEvent&quot;;
+-include &quot;ai/setup/spellSetup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/killPCsLoop&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/spellFireEvent&quot;;
++include &quot;:oldAI:setup/spellSetup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ 
+ const HALT_THRESHOLD := 15;
+
+Modified: trunk/096/pkg/mobiles/oldAI/spellKillPCs.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/spellKillPCs.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/spellKillPCs.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -14,13 +14,13 @@
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:NPCCast&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/killPCsLoop&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/spellCombatEvent&quot;;
+-include &quot;ai/setup/spellSetup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
+-include &quot;ai/main/closeDistance&quot;;
++include &quot;:oldAI:main/killPCsLoop&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/spellCombatEvent&quot;;
++include &quot;:oldAI:setup/spellSetup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
++include &quot;:oldAI:main/closeDistance&quot;;
+ 
+ const HALT_THRESHOLD := 15;
+ var npccfgfile     := ReadConfigFile( &quot;npcdesc&quot; );
+
+Modified: trunk/096/pkg/mobiles/oldAI/spiders.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/spiders.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/spiders.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -10,12 +10,12 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/killPCsLoop&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/spiderCombatEvent&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/killPCsLoop&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/spiderCombatEvent&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ 
+ const HALT_THRESHOLD := 8; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/townPerson.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/townPerson.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/townPerson.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -9,15 +9,15 @@
+ include &quot;:npcutils:speech&quot;;
+ include &quot;:npcutils:anchors&quot;;
+ include &quot;include/dist&quot;;
+-include &quot;ai/main/mainLoopGood&quot;;
+-include &quot;ai/combat/warriorCombatEvent&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/main/loot&quot;;
++include &quot;:oldAI:main/mainLoopGood&quot;;
++include &quot;:oldAI:combat/warriorCombatEvent&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:main/loot&quot;;
+ include &quot;:npcutils:vetement&quot;;
+ include &quot;:npcutils:NPCUtil&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;include/skillLists&quot;;
+ include &quot;:begging:begging&quot;;
+ 
+
+Modified: trunk/096/pkg/mobiles/oldAI/undeadKillPCs.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/undeadKillPCs.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/undeadKillPCs.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -11,12 +11,12 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/killPCsLoop&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/animalCombatEvent&quot;;
+-include &quot;ai/setup/killPCsSetup&quot;;
+-include &quot;ai/main/loot&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/killPCsLoop&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/animalCombatEvent&quot;;
++include &quot;:oldAI:setup/killPCsSetup&quot;;
++include &quot;:oldAI:main/loot&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ 
+ const HALT_THRESHOLD := 8; // how close before he attacks?
+
+Modified: trunk/096/pkg/mobiles/oldAI/vortexAI.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/vortexAI.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/vortexAI.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -11,9 +11,9 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/combat/vortexCombatEvent&quot;;
+-include &quot;ai/setup/setup&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:combat/vortexCombatEvent&quot;;
++include &quot;:oldAI:setup/setup&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ 
+ const HALT_THRESHOLD := 8;
+ var npccfgfile := ReadConfigFile( &quot;npcdesc&quot; );
+
+Modified: trunk/096/pkg/mobiles/oldAI/wolf.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/wolf.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/wolf.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -10,11 +10,11 @@
+ include &quot;include/objtype&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;ai/main/mainLoopWolf&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/combat/defaultCombatEvent&quot;;
+-include &quot;ai/setup/animalSetup&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/mainLoopWolf&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:combat/defaultCombatEvent&quot;;
++include &quot;:oldAI:setup/animalSetup&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;:npcutils:vetement&quot;;
+ 
+ 
+
+Modified: trunk/096/pkg/mobiles/oldAI/worker.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/worker.src	2005-10-02 14:26:19 UTC (rev 379)
++++ trunk/096/pkg/mobiles/oldAI/worker.src	2005-10-02 14:28:36 UTC (rev 380)
+@@ -9,14 +9,14 @@
+ include &quot;:npcutils:speech&quot;;
+ include &quot;:npcutils:anchors&quot;;
+ include &quot;include/dist&quot;;
+-include &quot;ai/main/mainLoopGood&quot;;
+-include &quot;ai/combat/warriorCombatEvent&quot;;
+-include &quot;ai/combat/fight&quot;;
+-include &quot;ai/main/loot&quot;;
++include &quot;:oldAI:main/mainLoopGood&quot;;
++include &quot;:oldAI:combat/warriorCombatEvent&quot;;
++include &quot;:oldAI:combat/fight&quot;;
++include &quot;:oldAI:main/loot&quot;;
+ include &quot;:npcutils:vetement&quot;;
+ include &quot;:npcutils:NPCUtil&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;ai/main/sleepMode&quot;;
++include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;include/skillLists&quot;;
+ include &quot;:begging:begging&quot;;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000354.html">[Poldistro-svn] r379 - trunk/096/pkg/items/containers/include
+</A></li>
+	<LI>Next message: <A HREF="000356.html">[Poldistro-svn] r381 - trunk/096/pkg/systems/attributes/commands/test
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#355">[ date ]</a>
+              <a href="thread.html#355">[ thread ]</a>
+              <a href="subject.html#355">[ subject ]</a>
+              <a href="author.html#355">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

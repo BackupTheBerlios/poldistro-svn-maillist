@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r351 - trunk/096/pkg/items/bountyboard
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r351%20-%20trunk/096/pkg/items/bountyboard&In-Reply-To=%3C200510011439.j91Ed62W008934%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000328.html">
+   <LINK REL="Next"  HREF="000330.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r351 - trunk/096/pkg/items/bountyboard</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r351%20-%20trunk/096/pkg/items/bountyboard&In-Reply-To=%3C200510011439.j91Ed62W008934%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r351 - trunk/096/pkg/items/bountyboard">panosl at berlios.de
+       </A><BR>
+    <I>Sat Oct  1 16:39:06 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000328.html">[Poldistro-svn] r350 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000330.html">[Poldistro-svn] r352 - trunk/096/pkg/items/containers/commands/admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#329">[ date ]</a>
+              <a href="thread.html#329">[ thread ]</a>
+              <a href="subject.html#329">[ subject ]</a>
+              <a href="author.html#329">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-10-01 16:39:06 +0200 (Sat, 01 Oct 2005)
+New Revision: 351
+
+Modified:
+   trunk/096/pkg/items/bountyboard/bounty.src
+Log:
+
+
+Modified: trunk/096/pkg/items/bountyboard/bounty.src
+===================================================================
+--- trunk/096/pkg/items/bountyboard/bounty.src	2005-10-01 14:20:51 UTC (rev 350)
++++ trunk/096/pkg/items/bountyboard/bounty.src	2005-10-01 14:39:06 UTC (rev 351)
+@@ -3,82 +3,90 @@
+ 
+ include &quot;include/bounty&quot;;
+ include &quot;:datafile:datafile&quot;;
+-include &quot;:bank:bank&quot;;
++//include &quot;:bank:bank&quot;;
++include &quot;:containers:storageAreas&quot;;
+ include &quot;:gumps:include/old/old-gumps&quot;;
+ include &quot;include/client&quot;;
+ 
++
+ program Assign_Bounty(parms)
+-  var who := parms[1];
+-  var data := parms[2];
+-  var bank := FindBankBox(who);
+-  foreach id in data
+-    var holder := FindMyGold(bank);
+-	var mygold := Cint(holder[1]);
+-	var goldpiles := holder[2];
+-	if(mygold)
+-	  var mob := SystemFindObjectBySerial(id, SYSFIND_SEARCH_OFFLINE_MOBILES);
+-	  var bounty := GetBountyAmount(who, mygold, mob.name);
+-	  if((bounty) and (bounty &lt;= mygold))
+-        AddBounty(mob, bounty);
+-        foreach thing in goldpiles
+-	      if(thing.amount &lt; bounty)
+-	        bounty := bounty - thing.amount;
+-	        DestroyItem(thing);
+-	      elseif(thing.amount &gt;= bounty)
+-	        SubtractAmount(thing, bounty);
+-	        break;
+-	      endif
+-	      if(bounty &lt;= 0)
+-	        break;
+-	      endif
+-	    endforeach
+-	  elseif(bounty &gt; mygold)
+-	    SendSysMessage(who, &quot;You do not have that much gold.&quot;, 3, 40);
+-	  else
+-	    SendSysMessage(who, &quot;You have declined to place a bounty on &quot; + mob.killer.name + &quot;'s head.&quot;);
+-	  endif
++	var who := parms[1];
++	var data := parms[2];
++	var bank := FindBankBox(who);
++	foreach id in data
++		var holder := FindMyGold(bank);
++		var mygold := Cint(holder[1]);
++		var goldpiles := holder[2];
++		if (mygold)
++			var mob := SystemFindObjectBySerial(id, SYSFIND_SEARCH_OFFLINE_MOBILES);
++			var bounty := GetBountyAmount(who, mygold, mob.name);
++			if ((bounty) &amp;&amp; (bounty &lt;= mygold))
++				AddBounty(mob, bounty);
++				foreach thing in goldpiles
++					if (thing.amount &lt; bounty)
++						bounty := bounty - thing.amount;
++						DestroyItem(thing);
++					elseif (thing.amount &gt;= bounty)
++						SubtractAmount(thing, bounty);
++						break;
++					endif
++					if (bounty &lt;= 0)
++						break;
++					endif
++				endforeach
++			elseif (bounty &gt; mygold)
++				SendSysMessage(who, &quot;You do not have that much gold.&quot;, 3, 40);
++			else
++				SendSysMessage(who, &quot;You have declined to place a bounty on &quot; + mob.killer.name + &quot;'s head.&quot;);
++			endif
++		else
++			SendSysMessage(who, &quot;You have no gold in your bank from which to place a bounty.&quot;, 3, 40);
++		endif
++	endforeach
++endprogram
++
++
++function GetBountyAmount(who, mygold, name)
++	GFInitGump();
++	GFPage(0);
++	GFResizePic(50,  50, 5120, 500, 200);
++	GFResizePic(60,  60, 5054, 480, 180);
++	GFTextLine(247,  68, 0, &quot;Bounty Menu&quot;);
++	GFTextLine(250,  70, COLOR_YELLOW, &quot;Bounty Menu&quot;);
++	GFTextLine( 80, 120, 0, &quot;Your bank box contains &quot; + mygold + &quot; gold coins from which you&quot;);
++	GFTextLine( 80, 140, 0, &quot;may place a bounty on &quot; + name + &quot;'s head.&quot;);
++	GFTextLine( 80, 160, 0, &quot;Simply enter the bounty amount you wish to place below.&quot;);
++	GFResizePic(90, 185, 2620, 120, 30);
++	var amt := GFTextEntry( 100, 190, 100, 20, 900, &quot;0&quot;);
++	GFButtonID(380, 190, 2121, 2120, 0);
++	GFButtonID(440, 190, 2130, 2129, 1, 1);
++	var ret := GFSendGump(who);
++	if (ret[0] == 1)
++		amt := Cint(SplitWords(ret[amt.keyid])[2]);
+ 	else
+-	  SendSysMessage(who, &quot;You have no gold in your bank from which to place a bounty.&quot;, 3, 40);
++		SendSysMessage(who, &quot;Cancelled.&quot;, 3, 40);
++		amt := 0;
+ 	endif
+-  endforeach
+-endprogram
+ 
+-function GetBountyAmount(who, mygold, name)
+-  GFInitGump();
+-  GFPage(0);
+-  GFResizePic(50,  50, 5120, 500, 200);
+-  GFResizePic(60,  60, 5054, 480, 180);
+-  GFTextLine(247,  68, 0, &quot;Bounty Menu&quot;);
+-  GFTextLine(250,  70, COLOR_YELLOW, &quot;Bounty Menu&quot;);
+-  GFTextLine( 80, 120, 0, &quot;Your bank box contains &quot; + mygold + &quot; gold coins from which you&quot;);
+-  GFTextLine( 80, 140, 0, &quot;may place a bounty on &quot; + name + &quot;'s head.&quot;);
+-  GFTextLine( 80, 160, 0, &quot;Simply enter the bounty amount you wish to place below.&quot;);
+-  GFResizePic(90, 185, 2620, 120, 30);
+-  var amt := GFTextEntry( 100, 190, 100, 20, 900, &quot;0&quot;);
+-  GFButtonID(380, 190, 2121, 2120, 0);
+-  GFButtonID(440, 190, 2130, 2129, 1, 1);
+-  var ret := GFSendGump(who);
+-  if(ret[0] == 1)
+-    amt := Cint(SplitWords(ret[amt.keyid])[2]);
+-  else
+-    SendSysMessage(who, &quot;Cancelled.&quot;, 3, 40);
+-    amt := 0;
+-  endif
+-  return amt;
++	return amt;
+ endfunction
+ 
++
+ function FindMyGold(box)
+-  var amt := 0;
+-  var piles := array;
+-  foreach item in EnumerateItemsInContainer(box)
+-    if(item.objtype == 0xeed)
+-      amt := amt + item.amount;
+-      piles.append(item);
+-    endif
+-  endforeach
+-  var holder := array;
+-  holder.append(amt);
+-  holder.append(piles);
+-  print(holder);
+-  return holder;
+-endfunction
+\ No newline at end of file
++	var amt := 0;
++	var piles := array{};
++
++	foreach item in EnumerateItemsInContainer(box)
++		if (item.objtype == 0xeed)
++			amt := amt + item.amount;
++			piles.append(item);
++		endif
++	endforeach
++	var holder := array;
++	holder.append(amt);
++	holder.append(piles);
++	print(holder);
++
++	return holder;
++endfunction
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000328.html">[Poldistro-svn] r350 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000330.html">[Poldistro-svn] r352 - trunk/096/pkg/items/containers/commands/admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#329">[ date ]</a>
+              <a href="thread.html#329">[ thread ]</a>
+              <a href="subject.html#329">[ subject ]</a>
+              <a href="author.html#329">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1428 - trunk/096/docs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1428%20-%20trunk/096/docs&In-Reply-To=%3C200605152231.k4FMVcx9016206%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001396.html">
+   <LINK REL="Next"  HREF="001398.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1428 - trunk/096/docs</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1428%20-%20trunk/096/docs&In-Reply-To=%3C200605152231.k4FMVcx9016206%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1428 - trunk/096/docs">austin at berlios.de
+       </A><BR>
+    <I>Tue May 16 00:31:38 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001396.html">[Poldistro-svn] r1427 - in trunk/096/pkg: OLD/skills skills skills/spiritspeak skills/spiritspeak/config systems/attributes
+</A></li>
+        <LI>Next message: <A HREF="001398.html">[Poldistro-svn] r1429 - trunk/096/pkg/systems/combat/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1397">[ date ]</a>
+              <a href="thread.html#1397">[ thread ]</a>
+              <a href="subject.html#1397">[ subject ]</a>
+              <a href="author.html#1397">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-16 00:31:36 +0200 (Tue, 16 May 2006)
+New Revision: 1428
+
+Added:
+   trunk/096/docs/StyleGuide.txt
+Removed:
+   trunk/096/docs/naming_conventions.txt
+Log:
+
+
+Copied: trunk/096/docs/StyleGuide.txt (from rev 1427, trunk/096/docs/naming_conventions.txt)
+===================================================================
+--- trunk/096/docs/naming_conventions.txt	2006-05-15 22:15:28 UTC (rev 1427)
++++ trunk/096/docs/StyleGuide.txt	2006-05-15 22:31:36 UTC (rev 1428)
+@@ -0,0 +1,110 @@
++Naming Conventions:
++-------------------
++
++FileNames:
++The letter of the first word is lowercase, while the first letter of each additional
++word is capitalized. This naming convention is known as camelCase. All file extensions
++are lowercase.
++	Examples:
++		npcBackpack.inc
++		myIncludeFle.inc
++		showAll.src
++
++	Exceptions:
++		Commands are all lowercase.
++		Core files are all lowercase.
++
++
++Variables:
++	Examples:
++		var my_integer;
++		var my_string;
++		var layer_array;
++                       
++	Exceptions:
++		Constant variables are all capitalized and words are separated
++		using the underscore character '_'.
++                       
++		const MY_CONSTANT := 10.0;
++		const NUMBER_OF_GUARDS := 100;
++
++	Properties:
++		object.someproperty := 100;
++
++
++Functions:
++All functions use the PascalCase convention, which as you can see has the first
++letter of each word capitalized.
++	Examples:
++		function ListOnlineDrow(who)
++		function GetLastName(who, num_of_letters)
++	Methods:
++		object.MethodFunction(arguments)
++                      
++	Exceptions:
++		If the function/s is part of a special package it can include a small
++		prefix to define its origin i.e. AI_GetNerves(mobile).
++
++
++Programs:
++All programs are named after the file in which they are contained. Unlike their filenames
++though, the can either follow the 'cameCasing' or 'PascalCasing'.
++	Examples:
++		(FileName is &quot;bardInstruments.src&quot;), thus the program is named:
++		program bardInstruments(item)
++
++		(FileName is &quot;enumerateTowns.src), thus the program is named:
++		program EnumerateTowns(who, uX, uY, lX, lY, realm)
++
++	Exceptions:
++		There are certain exceptions with special kind of programs, such as commands
++		i.e. command_MyCommand(who, params) or textcmd_
++		or a spell program
++		i.e. spell_GreaterHeal(who)
++
++
++
++Other Formatting:
++
++	if ( something )
++		Code here;
++	endif
++
++	case ( something )
++	     	value:
++		     	code;
++		     	break;
++     		default:
++     			code;
++     			break;
++     	endcase
++
++	while ( something )
++		code here;
++		sleepms(2);
++	endwhile
++
++	do
++		codehere;
++		sleepms(2);
++	while ( case );
++	
++	foreach iteration in ( iterated )
++		codehere;
++		sleepms(2);
++	endforeach
++	
++	for ( i; i &lt;= 4; i:=i+1 )
++		codehere;
++		sleepms(2);
++	endfor
++	
++	for ( ( i:=1 ) to ( value ) )
++		codehere;
++		sleepms(2);
++	endfor
++	
++	var math := 4 + 3 * 10;
++	var string := &quot;Hello there &quot;+&quot;Stephen.&quot;+&quot; I am &quot;+math+&quot; years old.&quot;;
++	var value := SomeFunction(argument_1, argument_2);
++	
+
+Deleted: trunk/096/docs/naming_conventions.txt
+===================================================================
+--- trunk/096/docs/naming_conventions.txt	2006-05-15 22:15:28 UTC (rev 1427)
++++ trunk/096/docs/naming_conventions.txt	2006-05-15 22:31:36 UTC (rev 1428)
+@@ -1,64 +0,0 @@
+-Naming Conventions:
+--------------------
+-
+-FileNames:
+-The letter of the first word is lowercase, while the first letter of each additional
+-word is capitalized. This naming convention is known as camelCase. All file extensions
+-are lowercase.
+-	Examples:
+-		npcBackpack.inc
+-		myIncludeFle.inc
+-		showAll.src
+-
+-	Exceptions:
+-		Commands are all lowercase.
+-		Core files are all lowercase.
+-
+-
+-Variables:
+-	Examples:
+-		var my_integer;
+-		var my_string;
+-		var layer_array;
+-                       
+-	Exceptions:
+-		Constant variables are all capitalized and words are separated
+-		using the underscore character '_'.
+-                       
+-		const MY_CONSTANT := 10.0;
+-		const NUMBER_OF_GUARDS := 100;
+-
+-	Properties:
+-		object.someproperty := 100;
+-
+-
+-Functions:
+-All functions use the PascalCase convention, which as you can see has the first
+-letter of each word capitalized.
+-	Examples:
+-		function ListOnlineDrow(who)
+-		function GetLastName(who, num_of_letters)
+-	Methods:
+-		object.MethodFunction(arguments)
+-                      
+-	Exceptions:
+-		If the function/s is part of a special package it can include a small
+-		prefix to define its origin i.e. AI_GetNerves(mobile).
+-
+-
+-Programs:
+-All programs are named after the file in which they are contained. Unlike their filenames
+-though, the can either follow the 'cameCasing' or 'PascalCasing'.
+-	Examples:
+-		(FileName is &quot;bardInstruments.src&quot;), thus the program is named:
+-		program bardInstruments(item)
+-
+-		(FileName is &quot;enumerateTowns.src), thus the program is named:
+-		program EnumerateTowns(who, uX, uY, lX, lY, realm)
+-
+-	Exceptions:
+-		There are certain exceptions with special kind of programs, such as commands
+-		i.e. command_MyCommand(who, params) or textcmd_
+-		or a spell program
+-		i.e. spell_GreaterHeal(who)
+-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001396.html">[Poldistro-svn] r1427 - in trunk/096/pkg: OLD/skills skills skills/spiritspeak skills/spiritspeak/config systems/attributes
+</A></li>
+	<LI>Next message: <A HREF="001398.html">[Poldistro-svn] r1429 - trunk/096/pkg/systems/combat/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1397">[ date ]</a>
+              <a href="thread.html#1397">[ thread ]</a>
+              <a href="subject.html#1397">[ subject ]</a>
+              <a href="author.html#1397">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

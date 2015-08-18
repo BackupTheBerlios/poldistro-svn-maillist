@@ -1,0 +1,369 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r743 - trunk/096/pkg/mobiles/timedScripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r743%20-%20trunk/096/pkg/mobiles/timedScripts/include&In-Reply-To=%3C200510311605.j9VG5W6O018363%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000716.html">
+   <LINK REL="Next"  HREF="000718.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r743 - trunk/096/pkg/mobiles/timedScripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r743%20-%20trunk/096/pkg/mobiles/timedScripts/include&In-Reply-To=%3C200510311605.j9VG5W6O018363%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r743 - trunk/096/pkg/mobiles/timedScripts/include">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 31 17:05:32 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000716.html">[Poldistro-svn] r742 - trunk/096/pkg/mobiles/timedScripts/include
+</A></li>
+        <LI>Next message: <A HREF="000718.html">[Poldistro-svn] r744 - trunk/096/pkg/mobiles/timedScripts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#717">[ date ]</a>
+              <a href="thread.html#717">[ thread ]</a>
+              <a href="subject.html#717">[ subject ]</a>
+              <a href="author.html#717">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-31 17:05:32 +0100 (Mon, 31 Oct 2005)
+New Revision: 743
+
+Added:
+   trunk/096/pkg/mobiles/timedScripts/include/poisonUtil.inc
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc
+Log:
+Working on taking curing for poisons out of the core of the timer controller and moving it to a supporting include file.
+
+Timer controller will only control tracking of things (similarly to the brain core)
+
+Added: trunk/096/pkg/mobiles/timedScripts/include/poisonUtil.inc
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/include/poisonUtil.inc	2005-10-31 15:24:58 UTC (rev 742)
++++ trunk/096/pkg/mobiles/timedScripts/include/poisonUtil.inc	2005-10-31 16:05:32 UTC (rev 743)
+@@ -0,0 +1,65 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:timedscripts:timedScripts&quot;;
++
++/*
++ * TS_CurePoisons()
++ *
++ * Purpose
++ * Will take in a cure amount and try to cure / lower the duration 
++ * of poisons running on a mobile.
++ *
++ * Parameters
++ * mobile:	Mobile to cure the poisons on.
++ * cure_amount:	Number of duration-lowering points.
++ * cure_type:	Cures poisons (timers) of that type. (Note: Most are &quot;P&quot; for poison)
++ *
++ * Return value
++ * Returns 1 if any curing took place
++ * Returns 0 if no curing took place
++ *
++ */ 
++function TS_CurePoison(mobile, cure_amount, cure_type)
++	var poison_names := TS_GetTimerNames(mobile, cure_type);
++	var timer_list := TS_GetTimerList(mobile);
++	
++	var num_cured := 0;
++	//Run through all curable poisons, and keep curing until it runs out of curing power.
++	foreach timer_name in ( poison_names )
++		var timer_info := TS_GetTimerInfo(mobile, timer_name);
++		var duration := timer_info.endtime - ReadGameClock(); // Number of seconds left to run.
++		var elem_info := TS_GetCfgElem(timer_name);
++		
++		if ( elem_info.NoCure ) // Incurable
++			continue; // Go to the next point in the loop.
++		endif
++		
++		
++	endforeach
++endfunction
++
++/*
++//Run through all curable poisons, and keep curing until it runs out of curing power.
++
++	var cure_type := Lower(event.curetype);
++	foreach timer in ( timer_list )
++		var elem_info := TS_GetCfgElem(_timer_iter);
++		if ( !elem_info.NoCure ) // Its curable
++			if ( !cure_type || cure_type == Lower(elem_info.Type) )
++				event.name := _timer_iter;
++				LowerDuration(mobile, event, timer_list, num_poisons);
++			endif
++
++			if( event.amount &lt;= 0 ) // All out of cure power
++				break;
++			endif
++			sleepms(2);
++		endif
++	endforeach
++*/
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc	2005-10-31 15:24:58 UTC (rev 742)
++++ trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc	2005-10-31 16:05:32 UTC (rev 743)
+@@ -1,3 +1,8 @@
++/*
++ * $Id$
++ *
++ */
++
+ use uo;
+ use cfgfile;
+ use os;
+@@ -4,7 +9,7 @@
+ 
+ // Event flags
+ const EVENT_ADD_TIMER			:= 0x1;
+-const EVENT_CURE_TIMER			:= 0x2;
++const EVENT_LOWER_TIMER			:= 0x2;
+ const EVENT_CURE_SPECIFIC_TIMER		:= 0x4;
+ const EVENT_DEAD			:= 0x8;
+ const EVENT_LOGOFF			:= 0x10;
+@@ -40,7 +45,7 @@
+  * TS_GetCfgElem(elem_name, cfg_file)
+  *
+  * Purpose
+- * Retrieves an elem from a config file. 
++ * Retrieves an elem from a config file.
+  *
+  * Parameters
+  * elem_name:	A string matching the elem name to be retrieved.
+@@ -54,7 +59,7 @@
+ 	if ( !cfg_file )
+ 		cfg_file := TS_GetCfgFile();
+ 	endif
+-	
++
+ 	var elem := cfg_file[elem_name];
+ 
+ 	if ( elem.errortext )
+@@ -64,7 +69,7 @@
+ 	return elem;
+ endfunction
+ 
+-/* 
++/*
+  * TS_GetControllerProcess(mobile, start)
+  *
+  * Purpose
+@@ -89,7 +94,7 @@
+ 			process := TS_StartController(mobile);
+ 		endif
+ 	endif
+-	
++
+ 	return process;
+ endfunction
+ 
+@@ -111,11 +116,11 @@
+ 	if ( script.errortext )
+ 		SysLog(&quot;Error::TS_StartController() -&gt;&quot;+script.errortext);
+ 	endif
+-	
++
+ 	return script;
+ endfunction
+ 
+-/* 
++/*
+  * TS_GetTimerList(mobile)
+  *
+  * Purpose
+@@ -133,10 +138,10 @@
+ 	if ( Lower(TypeOf(timer_list)) != &quot;dictionary&quot; )
+ 		timer_list := dictionary;
+ 	endif
+-	
++
+ 	return timer_list;
+ endfunction
+-	
++
+ /*
+  * TS_SaveTimerList(mobile, timer_list)
+  *
+@@ -152,12 +157,12 @@
+ 	return SetObjProperty(mobile, &quot;%TimerList%&quot;, timer_list);
+ endfunction
+ 
+-/* 
++/*
+  * TS_GetTimerNames(mobile, type:=&quot;&quot;)
+  *
+  * Purpose
+  * Retrieves a list of names of timed scripts running on a mobile.
+- * 
++ *
+  * Parameters
+  * mobile:	Mobile to get the list from.
+  * type:	Optional parameter - Will only list timers of a certain type.
+@@ -171,7 +176,7 @@
+ 	type := Lower(type);
+ 	var timer_list := TS_GetTimerList(mobile);
+ 	var name_list := array{};
+-	
++
+ 	foreach timer_name in ( timer_list.keys() )
+ 		if ( type )
+ 			var elem_info := TS_GetCfgElem(timer_name);
+@@ -185,3 +190,112 @@
+ 	endforeach
+ endfunction
+ 
++/*
++ * TS_GetTimerInfo(mobile, timer_name)
++ *
++ * Purpose
++ * Retrieves information on a *running* timer on a mobile.
++ *
++ * Parameters
++ * mobile:	Mobile to find the timer on.
++ * timer_name:	Name of the timer (elem name from timedScripts.cfg) to find.
++ *
++ * Return value
++ * Returns a struct or error
++ *
++ */
++function TS_GetTimerInfo(mobile, timer_name)
++	var timer_list := TS_GetTimerList(mobile);
++	if ( timer_list.Exists(timer_name) )
++		return timer_list[timer_name];
++	else
++		return error{&quot;Error::TS_GetTimerInfo() - No timer exists by that name.&quot;};
++	endif
++endfunction
++
++/*
++ * TS_GetTimerDuration(mobile, timer_name)
++ *
++ * Purpose
++ * Gets the number of seconds a timer has left to run.
++ *
++ * Parameters
++ * mobile:	Mobile to find the timer on.
++ * timer_name:	Name of the timer (elem name from timedScripts.cfg) to find.
++ *
++ * Return value
++ * Returns an integer on success
++ * Returns an error on failure
++ *
++ */
++function TS_GetTimerDuration(mobile, timer_name)
++	var timer := TS_GetTimerInfo(mobile, timer_name);
++	if ( !timer )
++		return timer; // Returns the error
++	endif
++
++	return (timer.endtime - ReadGameClock());
++endfunction
++
++/*
++ * TS_StartTimer(mobile, timer_name, duration, attacker, level)
++ *
++ * Purpose
++ * Starts a timed script on a mobile. If it is already running, it adds to the time it runs.
++ *
++ * Parameters
++ * mobile:	Mobile to start the timed script on.
++ * timer_name:	Name of the timer (elem name from timedScripts.cfg) to start.
++ * duration:	Number of seconds to add to the timer's run time.
++ * attacker:	Optional - Sets an attacker.
++ * level:	Optional - Sets the level of the timer (for poisons)
++ *
++ * Return value
++ * Returns 1 on success.
++ * Returns error on failure.
++ *
++ */
++function TS_StartTimer(mobile, timer_name, duration, level:=0, attacker:=0)
++	duration := CInt(duration);
++	if ( duration &lt; 1 )
++		return error{&quot;errortext&quot;:=&quot;Error::TS_StartTimer() - Duration must be greater than 0.&quot;};
++	endif
++
++	var event := struct;
++	event.+type := EVENT_ADD_TIMER;
++	event.+name := CStr(timer_name);
++	event.+amount := duration;
++	event.+level := CInt(level);
++	event.+attacker := attacker;
++
++	var process := TS_GetControllerProcess(mobile, START_CONTROLLER);
++	return process.SendEvent(event);
++endfunction
++
++/*
++ * TS_LowerDuration(mobile, timer_name, amount)
++ *
++ * Purpose
++ * Lowers the amount of time a timer will run.
++ * If remaining time is &lt;= 0, it will turn the timer off.
++ * If -1 is passed for amount, it will turn the timer off.
++ *
++ * Parameters
++ * mobile:	Mobile to lower the timed script on.
++ * timer_name:	Name of the timer (elem name from timedScripts.cfg).
++ * duration:	Number of seconds lower the run time of the timer.
++ *
++ * Return value
++ * Returns 1 on success.
++ * Returns error on failure.
++ *
++ */
++function TS_LowerDuration(mobile, timer_name, amount)
++	var event := struct;
++	event.+type := EVENT_LOWER_TIMER;
++	event.+name := CStr(timer_name);
++	event.+amount := CInt(amount);
++
++	var process := TS_GetControllerProcess(mobile, START_CONTROLLER);
++	return process.SendEvent(event);
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000716.html">[Poldistro-svn] r742 - trunk/096/pkg/mobiles/timedScripts/include
+</A></li>
+	<LI>Next message: <A HREF="000718.html">[Poldistro-svn] r744 - trunk/096/pkg/mobiles/timedScripts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#717">[ date ]</a>
+              <a href="thread.html#717">[ thread ]</a>
+              <a href="subject.html#717">[ subject ]</a>
+              <a href="author.html#717">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

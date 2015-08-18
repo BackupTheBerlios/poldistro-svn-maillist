@@ -1,0 +1,1634 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r347 - trunk/096/scripts/ai
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r347%20-%20trunk/096/scripts/ai&In-Reply-To=%3C200510011337.j91DbNv7003644%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000324.html">
+   <LINK REL="Next"  HREF="000326.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r347 - trunk/096/scripts/ai</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r347%20-%20trunk/096/scripts/ai&In-Reply-To=%3C200510011337.j91DbNv7003644%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r347 - trunk/096/scripts/ai">austin at berlios.de
+       </A><BR>
+    <I>Sat Oct  1 15:37:23 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000324.html">[Poldistro-svn] r346 - trunk/096/pkg/items/containers/include
+</A></li>
+        <LI>Next message: <A HREF="000326.html">[Poldistro-svn] r348 - trunk/096/pkg/items/containers/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#325">[ date ]</a>
+              <a href="thread.html#325">[ thread ]</a>
+              <a href="subject.html#325">[ subject ]</a>
+              <a href="author.html#325">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-01 15:37:23 +0200 (Sat, 01 Oct 2005)
+New Revision: 347
+
+Removed:
+   trunk/096/scripts/ai/appraiser.src.temp
+   trunk/096/scripts/ai/banker.src.temp
+   trunk/096/scripts/ai/bucsBanker.src.temp
+   trunk/096/scripts/ai/playerMerchant.src.temp
+   trunk/096/scripts/ai/stablemaster.src.temp
+Log:
+.src.temp... O_o
+
+Deleted: trunk/096/scripts/ai/appraiser.src.temp
+===================================================================
+--- trunk/096/scripts/ai/appraiser.src.temp	2005-10-01 13:30:52 UTC (rev 346)
++++ trunk/096/scripts/ai/appraiser.src.temp	2005-10-01 13:37:23 UTC (rev 347)
+@@ -1,165 +0,0 @@
+-use npc;
+-use basic;
+-use os;
+-use uo;
+-
+-include &quot;include/eventID&quot;;
+-include &quot;include/sysEvent&quot;;
+-include &quot;:npcutils:randName&quot;;
+-include &quot;include/utility&quot;;
+-include &quot;include/client&quot;;
+-include &quot;:npcutils:vetement&quot;;
+-include &quot;:npcutils:NPCBackpacks&quot;;
+-include &quot;:bank:bank&quot;;
+-include &quot;:npcutils:anchors&quot;;
+-include &quot;include/dist&quot;;
+-include &quot;include/skillLists&quot;;
+-include &quot;:begging:begging&quot;;
+-
+-const MAX_SKILLS      := 48;     // There are currently 48 Skills.
+-const UOBJ_GOLDCOIN   := 0x0eed; // A gold coin
+-const UOBJ_METALCHEST := 0x0e7c; // A Metal Chest
+-const REACT_THRESHOLD := 2;
+-
+-set_priority( 50 );
+-
+-var me := Self();
+-var inv_rs, inv_fs, inv_pb, inv_1c;
+-var player, counter;
+-
+-program appraiser()
+-  start_script(&quot;:npcutils:NPCKeeper&quot;, me);
+-  EnableEvents(SYSEVENT_ITEM_GIVEN);
+-  EnableEvents(EVID_NODE);
+-  var myanchor := GetObjProperty(me, &quot;Anchor&quot;);
+-  if(myanchor)
+-    MoveCharacterToLocation(me, myanchor[1], myanchor[2], myanchor[3], MOVECHAR_FORCELOCATION);
+-  endif
+-  drop_anchor();
+-  var next_wander := ReadGameClock() + 10;
+-  var ev;
+-  var txt;
+-  while (1)
+-    ev := os::wait_for_event(120);
+-    if(ev)
+-      case(ev.type)
+-        EVID_NODE: txt := lower(ev.text);
+-		  if(txt[&quot;appraise&quot;])
+-		    TurnToward(ev.source);
+-		    appraise(ev.source);
+-		  elseif((txt[&quot;buy&quot;]) || (txt[&quot;sell&quot;]))
+-		    PrintTextAbovePrivate(me, &quot;I'm sorry, but you must go elsewhere to buy or sell.&quot;, ev.source);
+-		  endif
+-        SYSEVENT_ITEM_GIVEN:  processdeedsale(ev.source, ev.item);
+-      endcase
+-    endif
+-	if(ReadGameClock() &gt;= next_wander)
+-	  begpurse(me);
+-      wander();
+-      if(coordist(me.x, me.y, myanchor[1], myanchor[2]) &gt; 5)
+-        MoveCharacterToLocation(me, myanchor[1], myanchor[2], myanchor[3], MOVECHAR_FORCELOCATION);
+-      endif
+-      next_wander := ReadGameClock() + 30;
+-    endif
+-  endwhile
+-endprogram
+-
+-function appraise(who)
+-  PrintTextAbovePrivate(me, &quot;Target the item you want me to appraise.&quot;, who);
+-  var trg := Target(who);
+-  if(!trg)
+-    PrintTextAbovePrivate(me, &quot;Changed your mind?&quot;, who);
+-    return;
+-  endif
+-  var checker := 0;
+-  foreach thing in EnumerateItemsInContainer(who.backpack)
+-    if(thing == trg)
+-      checker := 1;
+-      break;
+-    endif
+-  endforeach
+-  if(checker == 0)
+-    PrintTextAbovePrivate(me, &quot;But you don't own that!&quot;, who);
+-    return;
+-  endif
+-  checker := 0;
+-  var deedarray := { 0x6019, 0x601a, 0x601b, 0x601c, 0x601d, 0x601e, 0x6020, 0x6021, 0x6022, 0x6023, 0x6024, 0x6025, 0x6026 };
+-  if(trg.objtype in deedarray)
+-    checker := 1;
+-  endif
+-  if(checker == 0)
+-    PrintTextAbovePrivate(me, &quot;I'm not interested in that!&quot;, who);
+-    return;
+-  endif
+-  var bankbox := FindBankBox(who);
+-  if(!bankbox)
+-    PrintTextAbove(me, &quot;I cannot seem to find your bankbox!&quot;, who);
+-    return;
+-  endif
+-  var cnfg := ReadConfigFile(&quot;:housing:itemdesc&quot;);
+-  var amt := cnfg[trg.objtype].VendorSellsFor;
+-  PrintTextAbovePrivate(me,&quot;I will give you &quot; + amt + &quot; gold coins for that deed.&quot;, who);
+-endfunction
+-
+-function processdeedsale(who, trg)
+-  var checker := 0;
+-  var deedarray := { 0x6019, 0x601a, 0x601b, 0x601c, 0x601d, 0x601e, 0x6020, 0x6021, 0x6022, 0x6023, 0x6024, 0x6025, 0x6026 };
+-  if(trg.objtype in deedarray)
+-    checker := 1;
+-  endif
+-  if(checker == 0)
+-    PrintTextAbovePrivate(me, &quot;I'm not interested in that!&quot;, who);
+-    MoveItemToContainer(trg, who.backpack);
+-    return;
+-  endif
+-  var bankbox := FindBankBox(who);
+-  if(!bankbox)
+-    PrintTextAbovePrivate(me, &quot;I cannot seem to find your bankbox!&quot;, who);
+-    MoveItemToContainer(trg, who.backpack);
+-    return;
+-  endif
+-  var cnfg := ReadConfigFile(&quot;:housing:itemdesc&quot;);
+-  var amt := cnfg[trg.objtype].VendorSellsFor;
+-  var holder;
+-  var goldarray := {};
+-  var chk := 0;
+-  while(amt &gt; 0)
+-     holder := 0;
+-     if(amt &gt; 60000)
+-       holder := CreateItemInContainer(bankbox, 0xeed, 60000);
+-       if(holder)
+-         goldarray.append(holder);
+-         amt := amt - 60000;
+-       else
+-         foreach thing in goldarray
+-           DestroyItem(thing);
+-         endforeach
+-         chk := 1;
+-         PrintTextAbovePrivate(me, &quot;Your bank box is too full!&quot;, who);
+-         break;
+-      endif
+-    else
+-       holder := CreateItemInContainer(bankbox, 0xeed, amt);
+-       if(holder)
+-         if(!DestroyItem(trg))
+-           foreach thing in goldarray
+-             DestroyItem(thing);
+-           endforeach
+-           chk := 1;
+-           PrintTextAbovePrivate(me, &quot;Your bank box is too full!&quot;, who);
+-         endif
+-         break;
+-       else
+-         foreach thing in goldarray
+-           DestroyItem(thing);
+-         endforeach
+-         chk := 1;
+-         PrintTextAbovePrivate(me, &quot;Your bank box is too full!&quot;, who);
+-         break;
+-       endif
+-    endif
+-  endwhile
+-  if(chk == 0)
+-    PrintTextAbovePrivate(me, &quot;The funds have been deposited in your bank box.&quot;, who);
+-  endif
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/ai/banker.src.temp
+===================================================================
+--- trunk/096/scripts/ai/banker.src.temp	2005-10-01 13:30:52 UTC (rev 346)
++++ trunk/096/scripts/ai/banker.src.temp	2005-10-01 13:37:23 UTC (rev 347)
+@@ -1,97 +0,0 @@
+-use npc;
+-use os;
+-use uo;
+-use cfgfile;
+-use util;
+-
+-include &quot;:bank:bank&quot;;
+-include &quot;include/eventID&quot;;
+-include &quot;include/sysEvent&quot;;
+-include &quot;include/client&quot;;
+-include &quot;:npcutils:anchors&quot;;
+-include &quot;include/dist&quot;;
+-include &quot;:begging:begging&quot;;
+-
+-var bank;
+-var me := Self();
+-var npccfg := ReadConfigFile(&quot;npcdesc&quot;);
+-
+-
+-program banker();
+-	start_script(&quot;:npcutils:NPCKeeper&quot;, me);
+-	var next_wander := ReadGameClock() + 30;
+-	var myanchor := GetObjProperty(me, &quot;Anchor&quot;);
+-
+-	if(myanchor)
+-		MoveCharacterToLocation(me, myanchor[1], myanchor[2], myanchor[3], MOVECHAR_FORCELOCATION);
+-	endif
+-	drop_anchor();
+-	myanchor := GetObjProperty(me, &quot;Anchor&quot;);
+-	EnableEvents(EVID_NODE);
+-	DisableEvents(SYSEVENT_SPEECH);
+-	var text;
+-	while (1)
+-		var ev;
+-		ev := os::wait_for_event(120);
+-		if (ev.type == EVID_NODE)
+-			text := lower(ev.text);
+-			if (text[&quot;bank&quot;])
+-				if (ev.source.criminal == 1)
+-					say(&quot;I will not do business with criminals!&quot;);
+-				else
+-					OpenBank(ev.source);
+-				endif
+-			elseif (text[&quot;balance&quot;])
+-				if (ev.source.criminal == 1)
+-					say(&quot;I will not do business with criminals!&quot;);
+-				else
+-					var bankbox := FindBankBox(ev.source);
+-					var contents := EnumerateItemsInContainer(bankbox);
+-					var amt := 0;
+-					foreach item in contents
+-						if(item.objtype == 0xeed)
+-							amt := (amt + item.amount);
+-						endif
+-					endforeach
+-					if (amt == 1)
+-						PrintTextAbove(me,&quot;&quot; + ev.source.name + &quot;, Your bank box holds &quot; + amt + &quot; gold coin.&quot;);
+-					else
+-						PrintTextAbove(me,&quot;&quot; + ev.source.name + &quot;, Your bank box holds &quot; + amt + &quot; gold coins.&quot;);
+-					endif
+-				endif
+-			endif
+-		endif
+-		
+-		if (ReadGameClock() &gt;= next_wander)
+-			begpurse(me);
+-			wander();
+-			if (coordist(me.x, me.y, myanchor[1], myanchor[2]) &gt; 5)
+-				MoveCharacterToLocation(me, myanchor[1], myanchor[2], myanchor[3], MOVECHAR_FORCELOCATION);
+-			endif
+-			next_wander := ReadGameClock() + 10;
+-		endif
+-	endwhile
+-
+-	return;
+-endprogram
+-
+-function OpenBank(you)
+-	TurnToward(you);
+-	var bankbox := FindBankBox(you);
+-	if (bankbox)
+-		var contents := EnumerateItemsInContainer(bankbox);
+-		var amt := 0;
+-		foreach item in contents
+-			if((item.container.objtype != 0xefa) &amp;&amp; (item.container.objtype != 0xe3b))
+-				amt := (amt + 1);
+-			endif
+-		endforeach
+-		printtextaboveprivate(me, &quot;Your bank box holds &quot; + amt + &quot; items.&quot;, you);
+-		SendOpenSpecialContainer(you, bankbox);
+-	else
+-		say(&quot;You don't seem to have a bank box, &quot;+ you.name+&quot;.&quot;);
+-	endif
+-
+-	return;
+-endfunction
+-
+
+Deleted: trunk/096/scripts/ai/bucsBanker.src.temp
+===================================================================
+--- trunk/096/scripts/ai/bucsBanker.src.temp	2005-10-01 13:30:52 UTC (rev 346)
++++ trunk/096/scripts/ai/bucsBanker.src.temp	2005-10-01 13:37:23 UTC (rev 347)
+@@ -1,79 +0,0 @@
+-use npc;
+-use os;
+-use uo;
+-use cfgfile;
+-use util;
+-
+-include &quot;:bank:bank&quot;;
+-include &quot;include/eventID&quot;;
+-include &quot;include/sysEvent&quot;;
+-include &quot;include/client&quot;;
+-include &quot;:npcutils:anchors&quot;;
+-include &quot;include/dist&quot;;
+-include &quot;:begging:begging&quot;;
+-
+-var bank;
+-var me := Self();
+-var npccfg := ReadConfigFile(&quot;npcdesc&quot;);
+-
+-program banker();
+-  start_script(&quot;:npcutils:NPCKeeper&quot;, me);
+-  var next_wander := ReadGameClock() + 10;
+-  var myanchor := GetObjProperty(me, &quot;Anchor&quot;);
+-  if(myanchor)
+-    MoveCharacterToLocation(me, myanchor[1], myanchor[2], myanchor[3], MOVECHAR_FORCELOCATION);
+-  endif
+-  drop_anchor();
+-  myanchor := GetObjProperty(me, &quot;Anchor&quot;);
+-  EnableEvents(EVID_NODE);
+-  DisableEvents(SYSEVENT_SPEECH);
+-  while(1)
+-    var ev;
+-    ev := os::wait_for_event(120);
+-    if(ev.type == EVID_NODE)
+-      if(ev.text[&quot;bank&quot;])
+-        OpenBank(ev.source);
+-      elseif(ev.text[&quot;balance&quot;])
+-        var bankbox := FindBankBox(ev.source);
+-        var contents := EnumerateItemsInContainer(bankbox);
+-        var amt := 0;
+-        foreach item in contents
+-          if(item.objtype == 0xeed)
+-            amt := (amt + item.amount);
+-          endif
+-        endforeach
+-        if(amt == 1)
+-          PrintTextAbove(me,&quot;&quot; + ev.source.name + &quot;, Your bank box holds &quot; + amt + &quot; gold coin.&quot;);
+-        else
+-          PrintTextAbove(me,&quot;&quot; + ev.source.name + &quot;, Your bank box holds &quot; + amt + &quot; gold coins.&quot;);
+-        endif
+-      endif
+-    endif
+-	if(ReadGameClock() &gt;= next_wander)
+-	  begpurse(me);
+-      wander();
+-      if(coordist(me.x, me.y, myanchor[1], myanchor[2]) &gt; 5)
+-        MoveCharacterToLocation(me, myanchor[1], myanchor[2], myanchor[3], MOVECHAR_FORCELOCATION);
+-      endif
+-      next_wander := ReadGameClock() + (RandomInt(9) + 21);
+-    endif
+-  endwhile
+-endprogram
+-
+-function OpenBank(you)
+-  TurnToward(you);
+-  var bankbox := FindBankBox(you);
+-  if(bankbox)
+-    var contents := EnumerateItemsInContainer(bankbox);
+-    var amt := 0;
+-    foreach item in contents
+-      if((item.container.objtype != 0xefa) &amp;&amp; (item.container.objtype != 0xe3b))
+-        amt := (amt + 1);
+-      endif
+-    endforeach
+-    printtextaboveprivate(me, &quot;Your bank box holds &quot; + amt + &quot; items.&quot;, you);
+-    SendOpenSpecialContainer(you, bankbox);
+-  else
+-    say(&quot;You don't seem to have a bank box, &quot;+ you.name +&quot;.&quot;);
+-  endif
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/ai/playerMerchant.src.temp
+===================================================================
+--- trunk/096/scripts/ai/playerMerchant.src.temp	2005-10-01 13:30:52 UTC (rev 346)
++++ trunk/096/scripts/ai/playerMerchant.src.temp	2005-10-01 13:37:23 UTC (rev 347)
+@@ -1,757 +0,0 @@
+-use npc;
+-use basic;
+-use os;
+-use uo;
+-use util;
+-
+-include &quot;:bank:bank&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/eventID&quot;;
+-include &quot;include/sysEvent&quot;;
+-include &quot;:npcutils:randName&quot;;
+-include &quot;:npcutils:vetement&quot;;
+-include &quot;include/utility&quot;;
+-include &quot;include/mrcSpawn&quot;;
+-include &quot;include/dist&quot;;
+-include &quot;include/client&quot;;
+-include &quot;:npcutils:NPCBackpacks&quot;;
+-include &quot;include/yesNo&quot;;
+-include &quot;include/canAccess&quot;;
+-
+-const UOBJ_GOLD_COIN := 0xeed;
+-const STARTHAIR := 0x2030;
+-const ENDHAIR := 0x2060;
+-
+-set_priority( 50 );
+-
+-var inv_fs, inv_pb;
+-var me := Self();
+-var master := CInt(GetObjProperty(me, &quot;master&quot;));
+-var cont := GetObjProperty(me, &quot;cont&quot;);
+-var firstname;
+-
+-set_critical(1);
+-  var vendors := GetGlobalProperty(&quot;pcvendors&quot;);
+-  if(!vendors)
+-    vendors := {};
+-  endif
+-  if(me.serial in vendors)
+-  else
+-	vendors.append(me.serial);
+-  endif
+-  SetGlobalProperty(&quot;pcvendors&quot;, vendors);
+-set_critical(0);
+-
+-program merchant()
+-  Detach();
+-  run_script_to_completion(&quot;:npcutils:NPCKeeper&quot;, me);
+-  start_script(&quot;:playervendor:payCounter&quot;, me);
+-  var nme := SplitWords(me.name);
+-  firstname := lower(nme[1]);
+-  var oldpack := me.backpack;
+-  if(oldpack.objtype != 0x966c)
+-    MoveItemToLocation(oldpack, 1, 1, 0, MOVEITEM_FORCELOCATION);
+-    var newpack := CreateItemAtLocation(1, 1, 0, 0x966c, 1, me.realm);
+-    EquipItem(me, newpack);
+-    foreach thing in ListRootItemsInContainer(oldpack)
+-      MoveItemToContainer(thing, newpack);
+-    endforeach
+-    DestroyItem(oldpack);
+-  endif
+-  inv_pb := find_or_create_in_pack(me.serial + &quot; PB&quot;, 0xe75);
+-  inv_fs := find_or_create_in_pack(me.serial + &quot; 1C&quot;, 0xe75);
+-  SetObjProperty(inv_pb, &quot;Vendor&quot;, me.serial);
+-  SetObjProperty(inv_fs, &quot;Vendor&quot;, me.serial);
+-  SetObjProperty(inv_pb, &quot;Vendored&quot;, me.serial);
+-  SetObjProperty(inv_fs, &quot;Vendored&quot;, me.serial);
+-  SetObjProperty(inv_pb, &quot;Master&quot;, master);
+-  SetObjProperty(inv_fs, &quot;Master&quot;, master);
+-  if(!inv_fs || !inv_pb || !inv_fs)
+-    exit;
+-  endif
+-  SetObjProperty(me,&quot;serial&quot;, me.serial);
+-  EnableEvents( SYSEVENT_ITEM_GIVEN + SYSEVENT_MERCHANT_SOLD + SYSEVENT_DOUBLECLICKED);
+-  EnableEvents( SYSEVENT_SPEECH, 4);
+-  var res;
+-  var ev;
+-  var text;
+-  while(1)
+-    ev := os::wait_for_event(120);
+-    if(ev)
+-      var who := ev.source;
+-      case (ev.type)
+-	    SYSEVENT_DOUBLECLICKED: if(CheckLineOfSight(me, who))
+-                                  SendOpenSpecialContainer(who, inv_fs);
+-                                else
+-                                  SendSysMessage(who, &quot;You cannot see that.&quot;);
+-                                endif
+-        SYSEVENT_SPEECH:        text := lower(ev.text);
+-                                if((text[firstname] and text[&quot;buy&quot;]) or (text[&quot;vendor&quot;] and text[&quot;buy&quot;]))
+-                                  TurnToward(who);
+-                                  if(!CheckLineOfSight(me, who))
+-                                    PrintTextAbovePrivate(me, &quot;Who is speaking? I cannot see you.&quot;, who);
+-                                  else
+-                                    process_sale(ev.source);
+-                                  endif
+-                                elseif((text[firstname] and text[&quot;purchase&quot;]) or (text[&quot;vendor&quot;] and text[&quot;purchase&quot;]))
+-                                  if(who.serial == master)
+-                                    addthingstobuy(who);
+-                                  endif
+-                                elseif(((text[firstname]) &amp;&amp; (text[&quot;dismiss&quot;])) and (ev.source.serial == master))
+-                                  TurnToward(who);
+-                                  if(YesNo(who, &quot;Fire him?&quot;))
+-                                    Fireme();
+-                                  endif
+-                                elseif((text[firstname] and text[&quot;sell&quot;]) or (text[&quot;vendor&quot;] and text[&quot;sell&quot;]))
+-                                  TurnToward(who);
+-                                  SpoutBuyList(who);
+-                                elseif((text[firstname] and text[&quot;contact&quot;]) or (text[&quot;vendor&quot;] and text[&quot;contact&quot;]))
+-                                  TurnToward(who);
+-                                  if(who.serial == master)
+-                                    cont := recontact(who);
+-                                    SetObjProperty(me, &quot;cont&quot;, cont);
+-                                  else
+-                                    PrintTextAbovePrivate(me, &quot;You may contact my employer &quot; + cont +&quot;.&quot;, who);
+-                                  endif
+-                                elseif(((text[firstname] and text[&quot;collect&quot;]) or (text[&quot;vendor&quot;] and text[&quot;collect&quot;])) &amp;&amp; (who.serial == master))
+-                                  TurnToward(who);
+-                                  cashout(who);
+-                                elseif(((text[firstname] and text[&quot;gold&quot;]) or (text[&quot;vendor&quot;] and text[&quot;gold&quot;])) &amp;&amp; (who.serial == master))
+-                                  TurnToward(who);
+-                                  cashout(who);
+-                                elseif(((text[firstname] and text[&quot;status&quot;]) or (text[&quot;vendor&quot;] and text[&quot;status&quot;])) &amp;&amp; (who.serial == master))
+-                                  TurnToward(who);
+-                                  statuscheck(who);
+-                                elseif(((text[firstname] and text[&quot;info&quot;]) or (text[&quot;vendor&quot;] and text[&quot;info&quot;])) &amp;&amp; (who.serial == master))
+-                                  TurnToward(who);
+-                                  statuscheck(who);
+-                                elseif(((text[firstname] and text[&quot;wear&quot;]) or (text[&quot;vendor&quot;] and text[&quot;wear&quot;])) &amp;&amp; (who.serial == master))
+-                                  TurnToward(who);
+-                                  PrintTextAbovePrivate(me, &quot;What shall I wear?&quot;, who);
+-                                  var this := Target(who);
+-                                  if (!can_access(ev.source, this))
+-                                    PrintTextAbovePrivate(me, &quot;I don't see what you are talking about.&quot;, ev.source);
+-                                  elseif (this in ListEquippedItems(ev.source))
+-                                    PrintTextAbovePrivate(me, &quot;Please take that off, first!&quot;, ev.source);
+-                                  else
+-                                    if (Distance(me, this) &lt; 3)
+-                                      wear_item( this);
+-                                    else
+-                                      PrintTextAbovePrivate(me, &quot;That is too far away.&quot;, ev.source);
+-                                    endif
+-                                  endif
+-                                elseif(((text[firstname] and text[&quot;strip&quot;]) or (text[&quot;vendor&quot;] and text[&quot;strip&quot;])) &amp;&amp; (who.serial == master))
+-                                  TurnToward( who );
+-                                  PrintTextAbovePrivate(me, &quot;Ooh, I think I feel a draft!&quot;, who);
+-                                  strip_items(who);
+-                                elseif((text[firstname] and text[&quot;help&quot;]) or (text[&quot;vendor&quot;] and text[&quot;help&quot;]))
+-                                  TurnToward( who );
+-                                  PrintTextAbovePrivate(me, &quot;I will obey the following orders:&quot;, who);
+-                                  sleep(1);
+-                                  PrintTextAbovePrivate(me, &quot;dismiss, sell, contact, collect,&quot;, who);
+-                                  sleep(2);
+-                                  PrintTextAbovePrivate(me, &quot;wear, strip, status and purchase.&quot;, who);
+-                                endif
+-        SYSEVENT_ITEM_GIVEN:    if(who.serial == master)
+-                                  SetObjProperty(ev.container, &quot;Hold&quot;, 1);
+-                                  stockitem(ev);
+-                                  EraseObjProperty(ev.container, &quot;Hold&quot;);
+-                                else
+-                                  buyitem(who, ev.item);
+-                                endif
+-      endcase
+-      sleep(1);
+-    endif
+-    if(GetObjProperty(me,&quot;deadbeat&quot;))
+-      Fireme();
+-    endif
+-  endwhile
+-endprogram
+-
+-function clearance(who, items)
+-  foreach trg in items
+-    trg.name := GetObjProperty(trg,&quot;OldName&quot;);
+-    EraseObjProperty(trg, &quot;OldName&quot;);
+-    EraseObjProperty(trg, &quot;Vendored&quot;);
+-    EraseObjProperty(trg, &quot;price&quot;);
+-    EraseObjProperty(trg, &quot;Owner&quot;);
+-    EraseObjProperty(trg, &quot;Master&quot;);
+-    if(trg.isA(POLCLASS_CONTAINER))
+-      SetObjProperty(trg, &quot;Owner&quot;, who.serial);
+-    endif
+-  endforeach
+-endfunction
+-
+-function statuscheck(who);
+-  var gold := CInt(GetObjProperty(me, &quot;g&quot;));
+-  var rsrv := CInt(GetObjProperty(me, &quot;r&quot;));
+-  var fees := 0;
+-  var mypay := 50;
+-  foreach item in inv_fs
+-    fees := fees + GetObjProperty(item,&quot;price&quot;);
+-  endforeach
+-  mypay := mypay + Cint(fees / 100);
+-  var gamedays := (gold + rsrv) / mypay;
+-  var realdays := gamedays / 8;
+-  PrintTextAbovePrivate(me, &quot;I am holding &quot; + gold + &quot; gold coins for you,&quot;, who);
+-  sleep(1);
+-  PrintTextAbovePrivate(me, &quot;and am holding &quot; + rsrv + &quot; gold coins for future wages.&quot;, who);
+-  sleep(1);
+-  if(realdays == 1)
+-    PrintTextAbovePrivate(me, &quot;I have enough gold to continue working for &quot; + gamedays + &quot; day. [1 real world day]&quot;, who);
+-  else
+-    PrintTextAbovePrivate(me, &quot;I have enough gold to continue working for &quot; + gamedays + &quot; days. [&quot; + realdays + &quot; real world days]&quot;, who);
+-  endif
+-endfunction
+-
+-function process_sale(who);
+-  var gold := GetObjProperty(me,&quot;g&quot;);
+-  if(Distance(me, who) &gt; 3)
+-    PrintTextAbovePrivate(me, &quot;You must come closer if you wish to purchase something.&quot;, who);
+-    return;
+-  endif
+-  PrintTextAbovePrivate(me, &quot;What do you wish to purchase?&quot;, who);
+-  var trg := Target(who);
+-  if(!trg)
+-    SendSysMessage(who,&quot;Cancelled.&quot;);
+-    return;
+-  endif
+-  var ok := 0;
+-  foreach item in EnumerateItemsInContainer(inv_fs)
+-    if(trg == item)
+-      ok := 1;
+-      break;
+-    endif
+-  endforeach
+-  if(ok == 0)
+-    PrintTextAbovePrivate(me, &quot;You cannot purchase that.&quot;, who);
+-    return;
+-  elseif(ok == 1)
+-    var bankbox := FindBankBox(who);
+-    var price := CInt(GetObjProperty(trg, &quot;price&quot;));
+-    if((!price) || (price == error))
+-      PrintTextAbovePrivate(me, &quot;I'm sorry, but that is not for sale.&quot;, who);
+-      return;
+-    endif
+-    var holder := {};
+-    set_critical(1);
+-    if(GetPayment(who, price))
+-      trg.movable:=1;
+-      if(MoveItemToContainer(trg, who.backpack))
+-        PrintTextAbovePrivate(me,&quot;I have withdrawn &quot; + price + &quot; gold from your backpack.&quot;, who);
+-        SetObjProperty(me,&quot;g&quot;, (price + gold));
+-        holder.append(trg);
+-        if(trg.isA(POLCLASS_CONTAINER))
+-          foreach thing in EnumerateItemsInContainer(trg)
+-            holder.append(thing);
+-          endforeach
+-        endif
+-        clearance(who, holder);
+-      else
+-        PrintTextAbovePrivate(me,&quot;You do not have enough room for that in your backpack.&quot;, who);
+-        GiveRefund(who, price);
+-      endif
+-    else
+-      var contents := EnumerateItemsInContainer(bankbox);
+-      var amt := 0;
+-      foreach item in contents
+-        if((item.objtype == 0xeed) &amp;&amp; (item.amount &gt;= price))
+-          amt := item;
+-          break;
+-        endif
+-      endforeach
+-      if(amt != 0)
+-        if(SubtractAmount(amt, price))
+-          if(MoveItemToContainer(trg, who.backpack))
+-            PrintTextAbovePrivate(me,&quot;I have withdrawn &quot; + price + &quot; gold from your bank account.&quot;, who);
+-            SetObjProperty(me,&quot;g&quot;, (price + gold));
+-            holder.append(trg);
+-            if(trg.isA(POLCLASS_CONTAINER))
+-              foreach thing in EnumerateItemsInContainer(trg)
+-                holder.append(thing);
+-              endforeach
+-            endif
+-            clearance(who, holder);
+-          else
+-            PrintTextAbovePrivate(me,&quot;You do not have enough room for that in your backpack.&quot;, who);
+-            AddAmount(amt, price);
+-          endif
+-        endif
+-      else
+-        PrintTextAbovePrivate(me,&quot;You cannot afford this item.&quot;, who);
+-      endif
+-    endif
+-    set_critical(0);
+-  endif
+-endfunction
+-
+-function stockitem(tev)
+-  if((tev.item.objtype == UOBJ_GOLD_COIN) and (!tev.container))
+-    TakeGold(tev);
+-    return;
+-  endif
+-  var tname;
+-  var item := tev.item;
+-  SetObjProperty(item, &quot;OldName&quot;, item.name);
+-  PrintTextAbovePrivate(me, &quot;How much shall I charge for this item? &quot;, tev.source);
+-  var cost := CInt(RequestInput(tev.source, item, &quot;&quot;));
+-  if(cost &lt; 0)
+-    PrintTextAbovePrivate(me, &quot;You cannot sell items for values below zero.&quot;, tev.source);
+-    EraseObjProperty(item, &quot;Master&quot;);
+-    EraseObjProperty(item, &quot;price&quot;);
+-    EraseObjProperty(item, &quot;OldName&quot;);
+-    EraseObjProperty(item, &quot;Vendored&quot;);
+-    item.movable := 1;
+-    MoveItemToContainer(item, tev.source.backpack);
+-    return;
+-  elseif(cost &gt; 60000)
+-    PrintTextAbovePrivate(me, &quot;You cannot price items for more than 60000 gold.&quot;, tev.source);
+-    if(item.isa(POLCLASS_CONTAINER))
+-      foreach thing in EnumerateItemsInContainer(item)
+-        thing.name := GetObjProperty(thing,&quot;OldName&quot;);
+-        EraseObjProperty(thing, &quot;OldName&quot;);
+-        EraseObjProperty(thing, &quot;Vendored&quot;);
+-        EraseObjProperty(thing, &quot;price&quot;);
+-        thing.movable := 1;
+-      endforeach
+-    endif
+-    EraseObjProperty(item, &quot;Master&quot;);
+-    EraseObjProperty(item, &quot;price&quot;);
+-    EraseObjProperty(item, &quot;OldName&quot;);
+-    EraseObjProperty(item, &quot;Vendored&quot;);
+-    item.movable := 1;
+-    MoveItemToContainer(item, tev.source.backpack);
+-    return;
+-  elseif(cost == 0)
+-    if(item.isa(POLCLASS_CONTAINER))
+-      if((item.objtype == 0x1940) || (item.objtype == 0xefa) || (item.objtype == 0x6100))
+-        PrintTextAbovePrivate(me, &quot;You cannot sell that item for 0 gold.&quot;, tev.source);
+-        if(item.isa(POLCLASS_CONTAINER))
+-          foreach thing in EnumerateItemsInContainer(item)
+-            thing.name := GetObjProperty(thing,&quot;OldName&quot;);
+-            EraseObjProperty(thing, &quot;OldName&quot;);
+-            EraseObjProperty(thing, &quot;Vendored&quot;);
+-            EraseObjProperty(thing, &quot;price&quot;);
+-            thing.movable := 1;
+-          endforeach
+-        endif
+-        EraseObjProperty(item, &quot;Master&quot;);
+-        EraseObjProperty(item, &quot;price&quot;);
+-        EraseObjProperty(item, &quot;OldName&quot;);
+-        EraseObjProperty(item, &quot;Vendored&quot;);
+-        item.movable := 1;
+-        MoveItemToContainer(item, tev.source.backpack);
+-        return;
+-      else
+-        var items := 0;
+-        foreach thing in EnumerateItemsInContainer(item)
+-          items := 1;
+-          break;
+-        endforeach
+-        if(items == 1)
+-          PrintTextAbovePrivate(me, &quot;Well, just keep it, then.&quot;, tev.source);
+-          if(item.isa(POLCLASS_CONTAINER))
+-            foreach thing in EnumerateItemsInContainer(item)
+-              thing.name := GetObjProperty(thing,&quot;OldName&quot;);
+-              EraseObjProperty(thing, &quot;OldName&quot;);
+-              EraseObjProperty(thing, &quot;Vendored&quot;);
+-              EraseObjProperty(thing, &quot;price&quot;);
+-              thing.movable := 1;
+-            endforeach
+-          endif
+-          EraseObjProperty(item, &quot;Master&quot;);
+-          EraseObjProperty(item, &quot;price&quot;);
+-          EraseObjProperty(item, &quot;OldName&quot;);
+-          EraseObjProperty(item, &quot;Vendored&quot;);
+-          item.movable := 1;
+-          MoveItemToContainer(item, tev.source.backpack);
+-          return;
+-        endif
+-        PrintTextAbovePrivate(me, &quot;How shall I advertise this item?&quot;, tev.source);
+-        tname := RequestInput(tev.source, item, &quot;&quot;);
+-        SetObjProperty(item, &quot;price&quot;, &quot;Not For Sale&quot;);
+-        cost := &quot;Not For Sale&quot;;
+-      endif
+-    else
+-      PrintTextAbovePrivate(me, &quot;Well, just keep it, then.&quot;, tev.source);
+-      if(item.isa(POLCLASS_CONTAINER))
+-        foreach thing in EnumerateItemsInContainer(item)
+-          thing.name := GetObjProperty(thing,&quot;OldName&quot;);
+-          EraseObjProperty(thing, &quot;OldName&quot;);
+-          EraseObjProperty(thing, &quot;Vendored&quot;);
+-          EraseObjProperty(thing, &quot;price&quot;);
+-          thing.movable := 1;
+-        endforeach
+-      endif
+-      EraseObjProperty(item, &quot;Master&quot;);
+-      EraseObjProperty(item, &quot;price&quot;);
+-      EraseObjProperty(item, &quot;OldName&quot;);
+-      EraseObjProperty(item, &quot;Vendored&quot;);
+-      item.movable := 1;
+-      MoveItemToContainer(item, tev.source.backpack);
+-      return;
+-    endif
+-  endif
+-  if(item.isa(POLCLASS_CONTAINER))
+-    var theoldname;
+-    foreach thing in EnumerateItemsInContainer(item)
+-      theoldname := thing.desc;
+-      if(!item.desc)
+-        theoldname := &quot;&quot;;
+-      endif
+-      SetName(thing, thing.desc + &quot; [Cost: Not For Sale]&quot;);
+-      SetObjProperty(thing, &quot;OldName&quot;, theoldname);
+-      SetObjProperty(thing, &quot;Vendored&quot;, me.serial);
+-      SetObjProperty(thing, &quot;price&quot;, &quot;Not For Sale&quot;);
+-      thing.movable := 1;
+-    endforeach
+-    SetObjProperty(item, &quot;Master&quot;, master);
+-    item.movable := 1;
+-  endif
+-  var oldname := item.desc;
+-  if(!item.desc)
+-    oldname := &quot;&quot;;
+-  endif
+-  SetObjProperty(item, &quot;OldName&quot;, oldname);
+-  SetObjProperty(item, &quot;price&quot;, CInt(cost));
+-  SetObjProperty(item, &quot;Vendored&quot;, me.serial);
+-  if(tname)
+-    SetName(item, tname + &quot; [Cost: &quot; + cost + &quot; ]&quot;);
+-  else
+-    SetName(item, item.desc + &quot; [Cost: &quot; + cost + &quot; ]&quot;);
+-  endif
+-  if(!tev.vendor)
+-    MoveItemToContainer(item, inv_fs);
+-  endif
+-  if(cost == &quot;Not For Sale&quot;)
+-    PrintTextAbovePrivate(me, &quot;I'll just hang on to that for ya.&quot;, tev.source);
+-  else
+-    PrintTextAbovePrivate(me, &quot;I will sell that for &quot; + cost + &quot; gold.&quot;, tev.source);
+-  endif
+-endfunction
+-
+-function cashout(person)
+-  var mygold := CInt(GetObjProperty(me, &quot;g&quot;));
+-  var payment := 0;
+-  var rsrv := GetObjProperty(me,&quot;r&quot;);
+-  var pbank := FindBankBox(person);
+-  if(mygold &gt; 0)
+-    while(mygold &gt; 60000)
+-      CreateItemInContainer(pbank, UOBJ_GOLD_COIN, 60000);
+-      payment := payment + 60000;
+-      mygold := mygold - 60000;
+-    endwhile
+-    payment := payment + mygold;
+-    PrintTextAbovePrivate(me, &quot;Ive placed &quot; + payment + &quot; gold coins in your bank box.&quot;, person);
+-    CreateItemInContainer(pbank, UOBJ_GOLD_COIN, mygold);
+-    SetObjProperty(me, &quot;g&quot;, 0);
+-  else
+-    PrintTextAbovePrivate(me, &quot;I am not holding any gold for you.&quot;, person);
+-  endif
+-  if(rsrv)
+-    PrintTextAbovePrivate(me, &quot;You have left me &quot; + rsrv + &quot; reserve gold coins to use towards my future wages.&quot;, person);
+-  else
+-    PrintTextAbovePrivate(me, &quot;But you have left me nothing towards my future wages.&quot;, person);
+-  endif
+-endfunction
+-
+-function recontact(who)
+-  var cnt := SendTextEntryGump( who, &quot;How shall I tell people to contact you? &quot;, TE_CANCEL_DISABLE, TE_STYLE_NORMAL, 50);
+-  return cnt;
+-endfunction
+-
+-function wear_item(item)
+-  foreach thing in ListEquippedItems(me)
+-    MoveItemToContainer(thing, inv_pb);
+-  endforeach
+-  EquipItem(me, item);
+-  foreach thingie in EnumerateItemsInContainer(inv_pb)
+-    EquipItem(me, thingie);
+-  endforeach
+-  foreach thingie in EnumerateItemsInContainer(inv_pb)
+-    MoveItemToLocation(thingie, me.x, me.y, me.z, MOVEITEM_FORCELOCATION );
+-  endforeach
+-endfunction
+-
+-function strip_items(mmaster)
+-  foreach thing in ListEquippedItems(me)
+-    if ((thing.objtype &lt; STARTHAIR) || (thing.objtype &gt; ENDHAIR))
+-      MoveItemToContainer(thing, inv_pb);
+-    endif
+-  endforeach
+-  foreach thing in EnumerateItemsInContainer(inv_fs)
+-    if (thing.container.serial == inv_fs.serial)
+-      MoveItemToContainer(thing, inv_pb);
+-    endif
+-  endforeach
+-  foreach thingie in EnumerateItemsInContainer(inv_pb)
+-    if (thingie.container.serial == inv_pb.serial)
+-      MoveItemToContainer(thingie, mmaster.backpack);
+-    endif
+-  endforeach
+-endfunction
+-
+-function Fireme()
+-  var mypack := findmypack(me.serial);
+-  var mygold := CInt(GetObjProperty(me, &quot;g&quot;));
+-  var payment := 0;
+-  if(mygold &gt; 0)
+-    while(mygold &gt; 60000)
+-      CreateItemInContainer(mypack, UOBJ_GOLD_COIN, 60000);
+-      payment := payment + 60000;
+-      mygold := mygold - 60000;
+-    endwhile
+-    CreateItemInContainer(mypack, UOBJ_GOLD_COIN, mygold);
+-  endif
+-  foreach thing in ListRootItemsInContainer(inv_fs)
+-    MoveItemToContainer(thing, mypack);
+-  endforeach
+-  foreach thingy in ListRootItemsInContainer(inv_pb)
+-    MoveItemToContainer(thingy, mypack);
+-  endforeach
+-  RevokePrivilege( me, &quot;invul&quot; );
+-  say(&quot;I regret nothing!&quot;);
+-  ApplyRawDamage( me, GetHp(me) +3);
+-endfunction
+-
+-function addthingstobuy(who)
+-    var buylist := {};
+-    var buyprice := { };
+-    var buyobj := { };
+-    var i;
+-    if (!GetObjProperty(me,&quot;buylist&quot;))
+-        buylist := {};
+-        buyprice := {};
+-        buyobj := { };
+-    else
+-        buylist := GetObjProperty(me,&quot;buylist&quot;);
+-        buyprice := GetObjProperty(me,&quot;buyprice&quot;);
+-        buyobj := GetObjProperty(me,&quot;buyobj&quot;);
+-    endif
+-    PrintTextAbovePrivate(me, &quot;What do you want me to buy?&quot;, who);
+-    var what := Target( master );
+-        if ((!what) || (what == error) || (GetStrength(what)) )
+-        PrintTextAbovePrivate(me, &quot;Nevermind.&quot;, who);
+-        return;
+-        endif
+-    if (what.desc in buylist)
+-        PrintTextAbovePrivate(me, &quot;I will no longer purchase &quot;+what.desc +&quot;.&quot;, who);
+-        var newbuylist := { };
+-        var newbuyprice := { };
+-        var newbuyobj := { };
+-        for (i := 1; i&lt;=len(buylist); i:=i+1)
+-            if (buylist[i] != what.desc)
+-                newbuylist[len(newbuylist)+1] := buylist[i];
+-                newbuyprice[len(newbuyprice)+1] := buyprice[i];
+-                newbuyobj[len(newbuyobj)+1] := buyobj[i];
+-            endif
+-        endfor
+-        SetObjProperty(me,&quot;buylist&quot;,newbuylist);
+-        SetObjProperty(me,&quot;buyprice&quot;,newbuyprice);
+-        SetObjProperty(me,&quot;buyobj&quot;,newbuyobj);
+-        return;
+-    endif
+-    if (!what.objtype)
+-        PrintTextAbovePrivate(me, &quot;I can't buy those.  What the hell is that, anyway?&quot;, who);
+-        return;
+-    endif
+-    buylist[ len(buylist)+1] := what.desc;
+-    buyprice[ len(buyprice)+1] := CInt(SendTextEntryGump( master,&quot;How much shall I pay for this item? &quot;, TE_CANCEL_ENABLE, TE_STYLE_NORMAL));
+-    buyobj[ len(buyobj)+1] := what.objtype;
+-    if (len(buylist)==1)
+-      PrintTextAbovePrivate(me, &quot;I will purchase &quot;+buylist[1] +&quot;.&quot;, master);
+-    elseif (len(buylist)==2)
+-        PrintTextAbovePrivate(me, &quot;I will purchase &quot;+buylist[1] +&quot; and &quot;+ buylist[2]+&quot;.&quot;, master);
+-    else
+-        var buying := &quot;I will purchase &quot;+buylist[1];
+-        for (i := 2; i&lt;=len(buylist)-1; i:=i+1)
+-            buying := buying + &quot;, &quot; +buylist[i];
+-        endfor
+-        buying := buying + &quot; and &quot; + buylist[len(buylist)];
+-        PrintTextAbovePrivate(me, buying +&quot;.&quot;, master);
+-    endif
+-    SetObjProperty(me,&quot;buylist&quot;,buylist);
+-    SetObjProperty(me,&quot;buyprice&quot;,buyprice);
+-    SetObjProperty(me,&quot;buyobj&quot;,buyobj);
+-endfunction
+-
+-function SpoutBuyList(you)
+-  var buylist := {};
+-  var buyprice := {};
+-  var i;
+-  if (!GetObjProperty(me,&quot;buylist&quot;))
+-    PrintTextAbovePrivate(me, &quot;I don't buy anything.&quot;, you);
+-    return;
+-  else
+-    buylist := GetObjProperty(me,&quot;buylist&quot;);
+-    buyprice := GetObjProperty(me,&quot;buyprice&quot;);
+-  endif
+-  for (i := 1; i&lt;=len(buylist); i:=i+1)
+-    PrintTextAbovePrivate(me, &quot;I'll pay &quot;+ buyprice[i] + &quot; for &quot; + buylist[i]+&quot;.&quot;, you);
+-    sleep(2);
+-  endfor
+-  PrintTextAbovePrivate(me, &quot;Just hand me what you want me to buy.&quot;, you);
+-endfunction
+-
+-function buyitem(you, it)
+-    var mypack := findmypack(me.serial);
+-    var itsownerserial := CInt(GetObjProperty(it, &quot;ownerserial&quot;));
+-    if (itsownerserial == CInt(master))
+-        PrintTextAbovePrivate(me, &quot;I'll see that this is returned to my employer.&quot;, you);
+-        MoveItemToContainer(it,mypack);
+-        NotifyMaster(you.name + &quot; gave me an item of yours.&quot;);
+-        return;
+-    endif
+-    var buylist := {};
+-    var buyprice := { };
+-    var buyobj := { };
+-    var i;
+-    if (!GetObjProperty(me,&quot;buylist&quot;))
+-      PrintTextAbovePrivate(me, &quot;I don't buy anything.&quot;, you);
+-        MoveItemToContainer(it,you.backpack);
+-        return;
+-    else
+-        buylist := GetObjProperty(me,&quot;buylist&quot;);
+-        buyprice := GetObjProperty(me,&quot;buyprice&quot;);
+-        buyobj := GetObjProperty(me,&quot;buyobj&quot;);
+-    endif
+-    if (!(it.objtype in buyobj))
+-      PrintTextAbovePrivate(me, &quot;Ugh, I don't want that.&quot;, you);
+-        MoveItemToContainer(it,you.backpack);
+-        return;
+-    endif
+-    var index := 0;
+-    for (i := 1; i&lt;=len(buylist); i:=i+1)
+-        if (it.objtype == buyobj[i])
+-            index := i;
+-            break;
+-        endif
+-    endfor
+-    if (!index)
+-      PrintTextAbovePrivate(me, &quot;Ugh, I don't want that.&quot;, you);
+-        MoveItemToContainer(it,you.backpack);
+-        return;
+-    endif
+-    var mygold := CInt(GetObjProperty(me, &quot;g&quot;));
+-    if ( (mygold-250) &lt; (buyprice[index]*it.amount))
+-      PrintTextAbovePrivate(me, &quot;Sorry, I can't afford that right now.&quot;, you);
+-        MoveItemToContainer(it,you.backpack);
+-        return;
+-    endif
+-    var itamount := it.amount;
+-    var itdesc := it.desc;
+-    if ( grabitem(it,mypack) )
+-      PrintTextAbovePrivate(me, &quot;Thank you!  Here's your &quot; + (buyprice[index]*itamount) + &quot; gold.&quot;, you);
+-            CreateItemInContainer(you.backpack, UOBJ_GOLD_COIN, buyprice[index]*itamount );
+-        NotifyMaster(you.name + &quot; just sold me &quot; + itdesc);
+-    else
+-        NotifyMaster(&quot;My backpack is full!&quot;);
+-        MoveItemToContainer(it,you.backpack);
+-        return;
+-    endif
+-    var theprice := buyprice[index]*itamount;
+-    var mypay := CInt(GetObjProperty(me,&quot;mypay&quot;));
+-    var commission := CInt( 0.05 * theprice);
+-    mygold := mygold - theprice;
+-    mypay := mypay + commission;
+-    if (mygold &gt;= mypay)
+-        mypay := 0;
+-        mygold := mygold - mypay;
+-    else
+-        mypay := mypay - mygold;
+-        mygold := 0;
+-    endif
+-    SetObjProperty(me, &quot;mypay&quot;,mypay);
+-    SetObjProperty(me, &quot;g&quot;, mygold);
+-endfunction
+-
+-function NotifyMaster(themessage)
+-    foreach onlinechr in EnumerateOnlineCharacters()
+-        if (onlinechr.serial == master)
+-        SendSysMessage(onlinechr, me.name + &quot; : &quot; + themessage);
+-        break;
+-        endif
+-    endforeach
+-endfunction
+-
+-function TakeGold(ev)
+-    var goldamount := ev.item.amount;
+-    var mygold := CInt(GetObjProperty(me, &quot;r&quot;));
+-    if(goldamount)
+-      mygold := mygold + goldamount;
+-      var totalgold := CInt(GetObjProperty(me,&quot;g&quot;)) + mygold;
+-      PrintTextAbovePrivate(me, &quot;I am holding &quot; + totalgold + &quot; gold for you.&quot;, ev.source);
+-    endif
+-    SetObjProperty(me, &quot;r&quot;, mygold);
+-    DestroyItem(ev.item);
+-endfunction
+-
+-function grabitem(it,mypack)
+-  var mystuff := EnumerateItemsInContainer(mypack);
+-  if (it.amount &gt; 1 )
+-    foreach item in mystuff
+-      if (item.objtype == it.objtype)
+-        if (CreateItemInContainer( mypack, it.objtype, it.amount ))
+-          DestroyItem(it);
+-          return 1;
+-        else
+-          return 0;
+-        endif
+-      endif
+-    endforeach
+-  else
+-    foreach item in mystuff
+-      if ((item.objtype == it.objtype) &amp;&amp; (item.amount &gt; 1 ))
+-        if ( CreateItemInContainer( mypack, it.objtype, it.amount ) )
+-          DestroyItem(it);
+-          return 1;
+-        else
+-          return 0;
+-        endif
+-      endif
+-    endforeach
+-  endif
+-  if (MoveItemToContainer(it,mypack))
+-    return 1;
+-  else
+-    return 0;
+-  endif
+-endfunction
+-
+-function GetPayment(player, price)
+-  var backpack := EnumerateItemsInContainer(player.backpack);
+-  var a := 0;
+-  foreach item in backpack
+-    if ((item.objtype == 0xeed) &amp;&amp; (item.amount &gt;= price) )
+-      if(SubtractAmount(item, price))
+-        a := 1;
+-        break;
+-      endif
+-    endif
+-  endforeach
+-  if(a == 1)
+-    return 1;
+-  else
+-    return 0;
+-  endif
+-endfunction
+-
+-function Giverefund(who, price)
+-  CreateItemInContainer(who.backpack, 0xeed, price);
+-endfunction
+-
+-function find_or_create_in_pack(name, objtype);
+-  var mypack := me.backpack;
+-  var check := 0;
+-  foreach thing in ListRootItemsInContainer(mypack)
+-    if(thing.name == name)
+-      check := thing;
+-      break;
+-    endif
+-  endforeach
+-  if(check == 0)
+-    check := CreateItemInContainer(mypack, objtype, 1);
+-    SetName(check, name);
+-  endif
+-  return check;
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/ai/stablemaster.src.temp
+===================================================================
+--- trunk/096/scripts/ai/stablemaster.src.temp	2005-10-01 13:30:52 UTC (rev 346)
++++ trunk/096/scripts/ai/stablemaster.src.temp	2005-10-01 13:37:23 UTC (rev 347)
+@@ -1,428 +0,0 @@
+-use npc;
+-use basic;
+-use os;
+-use uo;
+-
+-include &quot;include/eventID&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/sysEvent&quot;;
+-include &quot;include/utility&quot;;
+-include &quot;include/mrcSpawn&quot;;
+-include &quot;include/client&quot;;
+-include &quot;:npcutils:randName&quot;;
+-include &quot;include/dist&quot;;
+-include &quot;include/findCity&quot;;
+-include &quot;include/mobileID&quot;;
+-include &quot;:npcutils:speech&quot;;
+-include &quot;:npcutils:vetement&quot;;
+-include &quot;:npcutils:NPCBackpacks&quot;;
+-include &quot;:bank:bank&quot;;
+-include &quot;:npcutils:anchors&quot;;
+-include &quot;:begging:begging&quot;;
+-include &quot;:npcutils:trainSkill&quot;;
+-
+-const RESPAWN_MINUTES := 30;     // In how many minutes will the NPC respawn if killed.
+-const MAX_SKILLS      := 48;     // There are currently 48 Skills.
+-const UOBJ_GOLDCOIN   := 0x0eed; // A gold coin
+-const UOBJ_METALCHEST := 0x0e7c; // A Metal Chest
+-const REACT_THRESHOLD := 2;
+-
+-set_priority( 50 );
+-
+-var me := Self();
+-me.hidden := 1;
+-var buyimage  := {0x211b, 0x211c, 0x2121, 0x2124, 0x211f, 0x2120, 0x2126, 0x20f6, 0x211a, 0x2123, 0x2125, 0x2122, 0x211e, 0x211d, 0x2119, 0x20e6, 0x2108, 0x2103, 0x2101, 0x2135, 0x2136, 0x2137, 0x2127};
+-var sellimage := {0xc9, 0xd9, 0xcc, 0xc8, 0xe2, 0xe4, 0x123, 0xdc, 0x06, 0xee, 0xcd, 0xe1, 0xd4, 0x05, 0xd6, 0xcf, 0xd1, 0xd8, 0xcb, 0xd2, 0xda, 0xdb, 0x124};
+-var speech, inv_rs, inv_fs, inv_pb, inv_1c;
+-var merchant_type := GetObjProperty(me, &quot;MerchantType&quot;);
+-var npccfg := ReadConfigFile( &quot;npcdesc&quot; );
+-var mystorage := GetObjProperty(me, &quot;Pets&quot;);
+-var player, counter, pet, mx := 5306, my := 1164;
+-if(!merchant_type)
+-  SetObjProperty(me, &quot;MerchantType&quot;, &quot;stable&quot;);
+-  merchant_type := &quot;stable&quot;;
+-endif
+-
+-program stablemaster()
+-  start_script(&quot;:npcutils:NPCKeeper&quot;, me);
+-  var time := ReadGameClock();
+-  SetObjProperty(me,&quot;countercheck&quot;, time);
+-  var parms := {};
+-  parms[1] := me;
+-  parms[2] := time;
+-  start_script(&quot;:taming:stableCounter&quot;, parms);
+-  var myanchor := GetObjProperty(me, &quot;Anchor&quot;);
+-  if(myanchor)
+-    MoveCharacterToLocation(me, myanchor[1], myanchor[2], myanchor[3], MOVECHAR_FORCELOCATION);
+-  endif
+-  drop_anchor();
+-  myanchor     := GetObjProperty(me, &quot;Anchor&quot;);
+-  var spawnname := merchant_type + &quot; &quot; + myanchor[1] + &quot; &quot; + myanchor[2] + &quot; &quot; + myanchor[3];
+-  inv_fs := FindRootItemInStorageArea(storage, spawnname + &quot; FS&quot;);
+-  inv_pb := FindRootItemInStorageArea(storage, spawnname + &quot; PB&quot;);
+-  inv_1c := FindRootItemInStorageArea(storage, spawnname + &quot; 1C&quot;);
+-  inv_rs := FindRootItemInStorageArea(storage, spawnname + &quot; RS&quot;);
+-  while((!inv_rs) or (!inv_fs) or (!inv_pb) or (!inv_1c))
+-    sleep(5);
+-    inv_fs := FindRootItemInStorageArea(storage, spawnname + &quot; FS&quot;);
+-    inv_pb := FindRootItemInStorageArea(storage, spawnname + &quot; PB&quot;);
+-    inv_1c := FindRootItemInStorageArea(storage, spawnname + &quot; 1C&quot;);
+-    inv_rs := FindRootItemInStorageArea(storage, spawnname + &quot; RS&quot;);
+-  endwhile
+-  me.hidden := 0;
+-  EnableEvents(EVID_NODE);
+-  EnableEvents(SYSEVENT_ITEM_GIVEN);
+-  DisableEvents(SYSEVENT_SPEECH);
+-  var next_wander := ReadGameClock() + 10;
+-  if(GetObjProperty(me, &quot;frozen&quot;))
+-    me.frozen := 1;
+-  endif
+-  counter := GetObjProperty(me, &quot;counter&quot;);
+-  if(!counter)
+-    counter := 0;
+-  endif
+-  if(!mystorage)
+-    mystorage := array;
+-    SetObjProperty(me, &quot;Pets&quot;, mystorage);
+-  endif
+-  var ev, text;
+-  var petname;
+-  var newpet;
+-  while (1)
+-    ev := os::wait_for_event(120);
+-    if(ev)
+-      mystorage := GetObjProperty(me, &quot;Pets&quot;);
+-      case (ev.type)
+-        EVID_NODE:                text := Lower(ev.text);
+-                                  if((ev.source.cmdlevel &gt; 2) &amp;&amp; (text[&quot;showinventory&quot;]))
+-                                    SendOpenSpecialContainer(ev.source, inv_fs);
+-                                  endif
+-                                    if(text[&quot;buy&quot;])
+-                                      TurnToward(ev.source);
+-                                      var res;
+-                                      res := SendBuyWindow(ev.source, inv_fs, Self(), inv_pb );
+-                                      if (!res)
+-                                      endif
+-                                    elseif (text[&quot;sell&quot;])
+-                                      if(GetObjProperty(inv_rs, &quot;MyGold&quot;) &gt;= 1000)
+-                                        TurnToward(ev.source);
+-		                                sellanimal(ev.source);
+-                                      else
+-                                        PrintTextAbovePrivate(Self(), &quot;I cannot afford any more of that.&quot;, ev.source );
+-                                      endif
+-                                    elseif((text[&quot;vendor train&quot;]) || (text[&quot;vendor teach&quot;]) || (text[&quot;merchant train&quot;]) || (text[&quot;merchant teach&quot;]))
+-                                      TurnToward(ev.source);
+-                                      MerchantTrain(me, ev.source, text);
+-                                    elseif(ev.text[&quot;stable&quot;])
+-                                    if(len(mystorage) &gt;= 50)
+-                                      say(&quot;I'm afraid I'm booked solid at the moment, please come again later.&quot;);
+-                                    else
+-                                      player := ev.source;
+-                                      TurnToward(ev.source);
+-                                      say(&quot;Show me your pet.&quot;);
+-                                      pet := Target(player);
+-                                      if (pet)
+-                                        var tempdata := GetObjProperty(pet, &quot;master&quot;);
+-                                        var summoned := GetObjProperty(pet, &quot;summoned&quot;);
+-                                        if((pet.script == &quot;tamed&quot;) &amp;&amp; (!summoned))
+-                                          if (tempdata == player.serial)
+-                                            var price := 30 + (GetStrength(pet)/5);
+-                                            say(&quot;I charge &quot; + price + &quot; per real world week to take care of &quot; + pet.name + &quot;.&quot;);
+-                                            if (GetPayment(player, price))
+-                                              say(&quot;Keep this ticket and give it to me when you want &quot; + pet.name + &quot; back.&quot;);
+-                                              var ticket := CreateItemInBackpack(player, 0x14f0, 1);
+-                                              ticket.usescript := &quot;&quot;;
+-                                              Save_Pet_Data(ticket, pet);
+-                                            endif
+-                                          else
+-                                            say(&quot;This is not a zoo!&quot;);
+-                                          endif
+-                                        elseif((pet.graphic == MOB_HUMAN_MALE) || (pet.graphic == MOB_HUMAN_FEMALE) )
+-                                          say(&quot;Do I look like an innkeeper?!&quot;);
+-                                        else
+-                                          say(&quot;That is not your pet.&quot;);
+-                                        endif
+-                                      endif
+-                                    endif
+-                                  endif
+-        SYSEVENT_MERCHANT_BOUGHT: TurnToward(ev.source);
+-                                  PrintTextAbovePrivate(Self(), &quot;The total of thy sale is &quot; + ev.amount +&quot;.&quot;, ev.source );
+-                                  var mygold := GetObjProperty(inv_rs, &quot;MyGold&quot;);
+-                                  mygold := mygold - ev.amount;
+-                                  SetObjProperty(inv_rs, &quot;MyGold&quot;, mygold);
+-                                  foreach item in EnumerateItemsInContainer(inv_pb )
+-                                    DestroyItem(item);
+-                                  endforeach
+-                                  PlaySoundEffect(me, 0x38);
+-        SYSEVENT_MERCHANT_SOLD:   TurnToward(ev.source);
+-                                  PrintTextAbovePrivate(Self(), &quot;The total of thy purchase is &quot; + ev.amount +&quot;.&quot;, ev.source );
+-                                  var mygold := GetObjProperty(inv_rs, &quot;MyGold&quot;);
+-                                  mygold := mygold + ev.amount;
+-                                  SetObjProperty(inv_rs, &quot;MyGold&quot;, mygold);
+-                                  foreach item in EnumerateItemsInContainer(ev.source.backpack )
+-		                            petname :=GetObjProperty(item, &quot;animalkind&quot;);
+-		                            if(petname)
+-		                              newpet := CreateNpcFromTemplate(petname, ev.source.x, ev.source.y,ev.source.z,0,me.realm);
+-		                              DestroyItem(item);
+-                                      SetObjProperty(newpet, &quot;master&quot;, ev.source.serial);
+-                                      SetObjProperty(newpet, &quot;prevtamed&quot;, 1);
+-		                              newpet.script := &quot;tamed&quot;;
+-                                      RestartScript(newpet);
+-		                            endif
+-                                  endforeach
+-                                  PlaySoundEffect(me, 0x38);
+-        SYSEVENT_ITEM_GIVEN:      if(ev.item.objtype == UOBJ_GOLDCOIN);
+-                                    TrainSkill(me, ev.source, ev.item);
+-		                          else
+-		                            TurnToward(ev.source);
+-		                            Load_Ticket_Data(ev.source, ev.item);
+-		                          endif
+-      endcase
+-    endif
+-	if(ReadGameClock() &gt;= next_wander)
+-	  begpurse(me);
+-      wander();
+-      if(coordist(me.x, me.y, myanchor[1], myanchor[2]) &gt; 5)
+-        MoveCharacterToLocation(me, myanchor[1], myanchor[2], myanchor[3], MOVECHAR_FORCELOCATION);
+-      endif
+-      next_wander := ReadGameClock() + 30;
+-    endif
+-    Lookiehere(me);
+-  endwhile
+-endprogram
+-
+-function sellanimal(who)
+-  var i;
+-  say(&quot;What pet would you like to sell?&quot;);
+-  var pet := Target(who);
+-  if((!pet) || (pet==&quot;&quot;))
+-	SendSysMessage(who, &quot;Cancelled.&quot;);
+-	return;
+-  endif
+-  var tempdata  := GetObjProperty(pet, &quot;master&quot;);
+-  var summoned  := GetObjProperty(pet, &quot;summoned&quot;);
+-  if(!tempdata)
+-	say(&quot;I cannot buy that.&quot;);
+-	return;
+-  endif
+-  if((pet.script == &quot;tamed&quot;) &amp;&amp; (tempdata == who.serial) &amp;&amp; (!summoned))
+-    var theitem;
+-	if((pet.objtype==0xd3) &amp;&amp; (pet.color==0x02e6))
+-	  theitem := CreateItemInContainer(inv_fs, 0x20cf, 1);
+-	elseif(pet.objtype==0xd3)
+-	  theitem := CreateItemInContainer(inv_fs, 0x2118, 1);
+-	else
+-	  for(i:=1;i&lt;=sellimage.size();i:=i+1)
+-		if(pet.objtype==sellimage[i])
+-		  theitem := CreateItemInContainer(inv_fs, buyimage[i], 1);
+-		  break;
+-		endif
+-	  endfor
+-	endif
+-    SetObjProperty(theitem, &quot;ClearRestock&quot;, (ReadGameClock() + 1800));
+-	var buyamount := CInt(GetStrength(pet) / 2);
+-    var mygold := GetObjProperty(inv_rs, &quot;MyGold&quot;);
+-    if(buyamount &gt; mygold)
+-      say(&quot;I'm sorry, but I cannot afford to buy any pets right now.&quot;);
+-      return;
+-    else
+-      mygold := mygold - buyamount;
+-      SetObjProperty(inv_rs, &quot;MyGold&quot;, mygold);
+-	  say(pet.name + &quot; is worth $&quot; + buyamount);
+-	  SetObjProperty(pet, &quot;guardkill&quot;, 1);
+-	  MoveCharacterToLocation(pet, 1, 1, 0, MOVECHAR_FORCELOCATION);
+-	  ApplyRawDamage(pet, GetHp(pet) + 10);
+-	  CreateItemInBackpack(who, 0x0eed, buyamount);
+-	  return;
+-    endif
+-  elseif((pet.graphic == MOB_HUMAN_MALE) || (pet.graphic == MOB_HUMAN_FEMALE) )
+-	say(&quot;Do I look like an innkeeper?!&quot;);
+-  else
+-	say(&quot;You could sell &quot; + pet.name + &quot; but that is not your pet.&quot;);
+-  endif
+-endfunction
+-
+-function Save_Pet_Data(ticket, pet)
+-  var tempdata;
+-  ticket.name := &quot;Pet claim ticket for : &quot; + pet.name;
+-  SetObjProperty(ticket, &quot;StableMaster&quot;, me.serial);
+-  SetObjProperty(ticket, &quot;petserial&quot;, pet.serial);
+-  SetObjProperty(ticket, &quot;pettemplate&quot;, pet.npctemplate);
+-  SetObjProperty(pet,&quot;stabled&quot;, 1);
+-  SetObjProperty(pet,&quot;days&quot;, 1);
+-  GrantPrivilege(pet, &quot;invul&quot;);
+-  pet.enable(&quot;invul&quot;);
+-  MoveCharacterToLocation(pet, mx, my, 0, MOVECHAR_FORCELOCATION);
+-  mystorage.append(pet.serial);
+-  SetObjProperty(me, &quot;Pets&quot;, mystorage);
+-  SetObjProperty(pet, &quot;NextCounter&quot;, ReadGameClock() + 86400);
+-endfunction
+-
+-function Load_Ticket_Data(player, ticket)
+-  if(GetObjProperty(ticket, &quot;StableMaster&quot;) != me.serial)
+-    PrintTextAbovePrivate(me, &quot;This doesn't seem to be one of my tickets, please take it to the stable master who issued it.&quot;, player);
+-    MoveItemToContainer(ticket, player.backpack);
+-    return;
+-  elseif(!canclaim(player,GetObjProperty(ticket, &quot;pettemplate&quot;)))
+-    say(&quot;You have no chance of controlling that!&quot;);
+-    return;
+-  endif
+-  var tempdata := 0;
+-  var newpet := 0;
+-  var pet;
+-  if(ticket.objtype == 0x14f0)
+-    tempdata := GetObjProperty(ticket, &quot;petserial&quot;);
+-    say(&quot;Oh, let me find your pet for you. One moment, please.&quot;);
+-    sleep(1);
+-    var petserial := GetObjProperty(ticket, &quot;petserial&quot;);
+-    mystorage := GetObjProperty(me, &quot;Pets&quot;);
+-    if(petserial in mystorage)
+-      pet := SystemFindObjectBySerial(petserial);
+-    endif
+-    if(!pet)
+-      say(&quot;I'm sorry, but I don't have this pet.&quot;);
+-      sleep(1);
+-      say(&quot;Perhaps you may have left him here too long?&quot;);
+-      DestroyItem(ticket);
+-      return;
+-    endif
+-    SetObjProperty(pet, &quot;master&quot;, player.serial);
+-    SetObjProperty(pet, &quot;prevtamed&quot;, 1);
+-    EraseObjProperty(pet,&quot;stabled&quot;);
+-    EraseObjProperty(pet,&quot;days&quot;);
+-	pet.script := &quot;tamed&quot;;
+-    RestartScript(pet);
+-    RevokePrivilege(pet, &quot;invul&quot;);
+-    MoveCharacterToLocation(pet, player.x, player.y, player.z, MOVECHAR_FORCELOCATION);
+-    var holder := array;
+-    mystorage := GetObjProperty(me, &quot;Pets&quot;);
+-    foreach thing in mystorage
+-      if(thing != pet.serial)
+-        holder.append(thing);
+-      endif
+-    endforeach
+-    mystorage := holder;
+-    SetObjProperty(me, &quot;Pets&quot;, mystorage);
+-    EraseObjProperty(pet, &quot;NextCounter&quot;);
+-    say(&quot;Take care of &quot; + pet.name + &quot; and be sure to feed it!&quot;);
+-    DestroyItem(ticket);
+-  else
+-    TakeItem(player, ticket);
+-  endif
+-endfunction
+-
+-function GetPayment(player, price)
+-  var backpack := EnumerateItemsInContainer(player.backpack);
+-  var a := 0;
+-  foreach item in backpack
+-    if ((item.objtype == 0xeed) &amp;&amp; (item.amount &gt;= price) )
+-      if(SubtractAmount(item, price))
+-        a := 1;
+-        break;
+-      endif
+-    endif
+-  endforeach
+-  if(a == 1)
+-    return 1;
+-  else
+-    say(&quot;You dont have &quot; + price + &quot; gold coins!&quot;);
+-    return 0;
+-  endif
+-endfunction
+-
+-function canclaim(player, pettemplate)
+-  case (pettemplate)
+-    &quot;horse&quot;:
+-    &quot;horse1&quot;:
+-    &quot;horse2&quot;:
+-    &quot;horse3&quot;:
+-    &quot;forestostard&quot;:
+-    &quot;desertostard&quot;:
+-    &quot;llama&quot;:
+-    return 1;
+-  endcase
+-  var conf := ReadConfigFile(&quot;::npcdesc&quot;);
+-  var elem;
+-  var points := 0;
+-  elem := FindConfigElem(conf, pettemplate);
+-  if (!elem)
+-    return 0;
+-  endif
+-  var difficulty := CInt(GetConfigInt(elem, &quot;tameskill&quot;));
+-  if (difficulty &lt; 50)
+-    return 1;
+-  elseif ( ( difficulty - 20 ) &gt; GetEffectiveSkill(player, SKILLID_TAMING ) )
+-    return 0;
+-  else
+-    return 1;
+-  endif
+-endfunction
+-
+-function Lookiehere(who)
+-  var mobiles := ListMobilesNearLocation(who.x, who.y, who.z, 15, who.realm);
+-  var guard, num, i, hogcall, guardzone, element, range, timer, elem;
+-  var cfgfile := ReadConfigFile(&quot;::gzone&quot;);
+-  var entries := GetConfigStringKeys(cfgfile);
+-  foreach listing in entries
+-    element :=  cfgfile[listing];
+-    range := element.range;
+-    range := SplitWords(range);
+-    if((who.x &gt;= CInt(range[1])) &amp;&amp; (who.x &lt;= CInt(range[3])) &amp;&amp; (who.y &gt;= CInt(range[2])) &amp;&amp; (who.y &lt;= CInt(range[4])))
+-      guardzone := 1;
+-      break;
+-    endif
+-  endforeach
+-  foreach npc in mobiles
+-	if(!npc.acctname)
+-	  elem := FindConfigElem(npccfg, npc.npctemplate);
+-	  if(!elem.guardignore &amp;&amp; !GetObjProperty(npc, &quot;called&quot;));
+-		if((npc) &amp;&amp; (npc.script != &quot;tamed&quot;) &amp;&amp; (npc.script != &quot;light&quot;))
+-          case(RandomInt(4) + 1)
+-            1: hogcall := &quot;Guards! They're killing people here!&quot;;
+-            2: hogcall := &quot;Guards! I pay my taxes and no guards? Guards!&quot;;
+-            3: hogcall := &quot;Help! They're dying here! Guards!&quot;;
+-            4: hogcall := &quot;Guards! Come save us quick!&quot;;
+-            5: hogcall := &quot;Ah! Help us! Guards!&quot;;
+-          endcase
+-          PrintTextAbove(me, hogcall);
+-          if(guardzone == 1)
+-		    SetObjProperty(npc, &quot;called&quot;, 1);
+-            num := RandomInt(4) + 1;
+-            foreach mobile in ListMobilesNearLocation(me.x, me.y, me.z, 15, me.realm)
+-		      if(mobile.npctemplate == &quot;townguard&quot;)
+-		        var ev := array;
+-                ev.+ type;
+-                ev.+ source;
+-                ev.type := EVID_PEACEMADE;
+-                ev.source := npc;
+-                SendEvent(mobile, ev);
+-                ev.type := SYSEVENT_ENGAGED;
+-                SendEvent(mobile, ev);
+-                SetObjProperty(npc, &quot;guardkill&quot;, 1);
+-              endif
+-            endforeach
+-          endif
+-		endif
+-	  endif
+-    else
+-	  timer := GetObjProperty(npc, &quot;guardstimer&quot;);
+-	  if(npc.criminal &amp;&amp; (timer &lt; ReadGameClock() || timer.errortext))
+-        foreach mobile in ListMobilesNearLocation(me.x, me.y, me.z, 15, me.realm)
+-		  if(mobile.npctemplate == &quot;townguard&quot;)
+-		    var ev := array;
+-            ev.+ type;
+-            ev.+ source;
+-            ev.type := EVID_PEACEMADE;
+-            ev.source := npc;
+-            SendEvent(mobile, ev);
+-            ev.type := SYSEVENT_ENGAGED;
+-            SendEvent(mobile, ev);
+-            SetObjProperty(npc, &quot;guardkill&quot;, 1);
+-          endif
+-        endforeach
+-        SetObjProperty(npc, &quot;guardstimer&quot;, ReadGameClock()+60);
+-	  endif
+-	endif
+-  endforeach
+-  sleep(1);
+-endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000324.html">[Poldistro-svn] r346 - trunk/096/pkg/items/containers/include
+</A></li>
+	<LI>Next message: <A HREF="000326.html">[Poldistro-svn] r348 - trunk/096/pkg/items/containers/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#325">[ date ]</a>
+              <a href="thread.html#325">[ thread ]</a>
+              <a href="subject.html#325">[ subject ]</a>
+              <a href="author.html#325">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

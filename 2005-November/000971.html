@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r998 - in trunk/096/pkg/items/acid: . include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r998%20-%20in%20trunk/096/pkg/items/acid%3A%20.%20include&In-Reply-To=%3C200511142012.jAEKCpIF017350%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000970.html">
+   <LINK REL="Next"  HREF="000972.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r998 - in trunk/096/pkg/items/acid: . include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r998%20-%20in%20trunk/096/pkg/items/acid%3A%20.%20include&In-Reply-To=%3C200511142012.jAEKCpIF017350%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r998 - in trunk/096/pkg/items/acid: . include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon Nov 14 21:12:51 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000970.html">[Poldistro-svn] r997 - trunk/096/pkg/items/acid/include
+</A></li>
+        <LI>Next message: <A HREF="000972.html">[Poldistro-svn] r999 - trunk/096/pkg/items/acid/acid
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#971">[ date ]</a>
+              <a href="thread.html#971">[ thread ]</a>
+              <a href="subject.html#971">[ subject ]</a>
+              <a href="author.html#971">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-14 21:12:45 +0100 (Mon, 14 Nov 2005)
+New Revision: 998
+
+Modified:
+   trunk/096/pkg/items/acid/include/acid.inc
+   trunk/096/pkg/items/acid/itemdesc.cfg
+Log:
+Upgraded DealAcidDamage and made a header for it.
+
+Added WalkOn Script for acid pools.
+
+Modified: trunk/096/pkg/items/acid/include/acid.inc
+===================================================================
+--- trunk/096/pkg/items/acid/include/acid.inc	2005-11-14 19:23:04 UTC (rev 997)
++++ trunk/096/pkg/items/acid/include/acid.inc	2005-11-14 20:12:45 UTC (rev 998)
+@@ -29,7 +29,7 @@
+ 	endif
+ 	PlayMovingEffectXYZHued(spitter, spit_on, 0x36d4, 5, 1, 1, 0x47, 0);
+ 	var acid_pool := CreateItemAtLocation(spit_on.x, spit_on.y, GetMapInfo(spit_on.x, spit_on.y).z, &quot;acid&quot;,  1, spit_on.realm);
+-	DealAcidDamage(spitter, spit_on);
++	DealAcidDamage(spitter, spit_on, acid_pool);
+ 	return acid_pool;
+ endfunction
+ 
+@@ -38,25 +38,39 @@
+  * DealAcidDamage(npc, mobile)
+  *
+  * Purpose
+- * Deals damage to a mob based on an npc's AcidDamage entry in it's npctemplate.
+- * Also deals damage randomly to the mobile's armor or weapon.
++ * Deals damage to a mob based on an npc's AcidDamage entry in it's npctemplate
++ * if 0 is sent for acid_damage. Otherwise uses the Dice Roll sent. Also checks
++ * for a cprop on the acid itself. CProp is set here in this function. The CProp
++ * is used by walkOn/Timer scripts. Also deals damage randomly to the mobile's
++ * armor or weapon.
+  *
+  * Parameters
+  * npc:		The npc spitting the acid
+  * mobile:	The mobile the npc is spitting on.
++ * acid_damage:	Optional. If 0/Not sent, then it defaults to
++ *		to the npc's AcidDamage setting in template.
+  *
+  * Return value
+  * Returns 1 if armor damaged, 0 elsewise.
+  *
++ * Note:	If NPC is sent as the acid_pool, it will store the AcidDamage string
++ * 		on the NPC itself, and make it useable for future occurances instead
++ *		of reading the template.
+  */
+-function DealAcidDamage(npc, mobile)
++function DealAcidDamage(npc, mobile, acid_pool, acid_damage:=0)
+ 	var npc_info := NPC_GetNPCConfig(npc.npctemplate);
+-	var acid_damage := 0;
+-	if( !npc_info.AcidDamage )
+-		// NPC doesn't Spit Acid
+-		return 0;
++	if( acid_damage )
++		acid_damage := RandomDiceRoll(acid_damage);
++	elseif( !npc_info.AcidDamage )
++		if( TypeOf(GetObjProperty(acid_pool, &quot;%AcidDice%&quot;)) == &quot;String&quot; )
++			acid_damage := RandomDiceRoll(GetObjProperty(acid_pool, &quot;%AcidDice%&quot;));
++		else
++			// Can't Deal Acid Damage
++			return 0;
++		endif
+ 	else
+ 		acid_damage := RandomDiceRoll(npc_info.AcidDamage);
++		SetObjProperty(acid_pool, &quot;%AcidDice%&quot;, npc_info.AcidDamage);
+ 	endif
+ 	ApplyRawDamage(mobile, acid_damage);
+ 	var equipped_items := ListEquippedItems(mobile);
+
+Modified: trunk/096/pkg/items/acid/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/acid/itemdesc.cfg	2005-11-14 19:23:04 UTC (rev 997)
++++ trunk/096/pkg/items/acid/itemdesc.cfg	2005-11-14 20:12:45 UTC (rev 998)
+@@ -10,4 +10,5 @@
+ 
+ 	ControlScript	acid/control
+ 	CreateScript	acid/onCreate
++	WalkOnScript	acid/walkOn
+ }
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000970.html">[Poldistro-svn] r997 - trunk/096/pkg/items/acid/include
+</A></li>
+	<LI>Next message: <A HREF="000972.html">[Poldistro-svn] r999 - trunk/096/pkg/items/acid/acid
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#971">[ date ]</a>
+              <a href="thread.html#971">[ thread ]</a>
+              <a href="subject.html#971">[ subject ]</a>
+              <a href="author.html#971">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

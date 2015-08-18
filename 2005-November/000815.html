@@ -1,0 +1,595 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r841 - in trunk/096/pkg/skills: herding lockpicking magery
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r841%20-%20in%20trunk/096/pkg/skills%3A%20herding%20lockpicking%20magery&In-Reply-To=%3C200511021847.jA2Il2JS026930%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000814.html">
+   <LINK REL="Next"  HREF="000816.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r841 - in trunk/096/pkg/skills: herding lockpicking magery</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r841%20-%20in%20trunk/096/pkg/skills%3A%20herding%20lockpicking%20magery&In-Reply-To=%3C200511021847.jA2Il2JS026930%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r841 - in trunk/096/pkg/skills: herding lockpicking magery">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 19:47:02 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000814.html">[Poldistro-svn] r840 - in trunk/096/pkg/items: treasuremap wands
+</A></li>
+        <LI>Next message: <A HREF="000816.html">[Poldistro-svn] r842 - in trunk/096: pkg/skills/magery scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#815">[ date ]</a>
+              <a href="thread.html#815">[ thread ]</a>
+              <a href="subject.html#815">[ subject ]</a>
+              <a href="author.html#815">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 19:46:59 +0100 (Wed, 02 Nov 2005)
+New Revision: 841
+
+Modified:
+   trunk/096/pkg/skills/herding/herd.src
+   trunk/096/pkg/skills/lockpicking/lockpicking.src
+   trunk/096/pkg/skills/magery/agility.src
+   trunk/096/pkg/skills/magery/archCure.src
+   trunk/096/pkg/skills/magery/archProt.src
+   trunk/096/pkg/skills/magery/bladeSpirit.src
+   trunk/096/pkg/skills/magery/bless.src
+   trunk/096/pkg/skills/magery/clumsy.src
+   trunk/096/pkg/skills/magery/cunning.src
+   trunk/096/pkg/skills/magery/cure.src
+   trunk/096/pkg/skills/magery/curse.src
+   trunk/096/pkg/skills/magery/dispelField.src
+   trunk/096/pkg/skills/magery/feeblemind.src
+   trunk/096/pkg/skills/magery/gHeal.src
+   trunk/096/pkg/skills/magery/heal.src
+   trunk/096/pkg/skills/magery/invisibility.src
+   trunk/096/pkg/skills/magery/magicLock.src
+   trunk/096/pkg/skills/magery/magicTrap.src
+   trunk/096/pkg/skills/magery/massCurse.src
+   trunk/096/pkg/skills/magery/massDispel.src
+   trunk/096/pkg/skills/magery/nightSight.src
+   trunk/096/pkg/skills/magery/paralyze.src
+   trunk/096/pkg/skills/magery/poison.src
+   trunk/096/pkg/skills/magery/polymorph.src
+   trunk/096/pkg/skills/magery/protection.src
+   trunk/096/pkg/skills/magery/reactiveArmor.src
+   trunk/096/pkg/skills/magery/strength.src
+   trunk/096/pkg/skills/magery/summon.inc
+   trunk/096/pkg/skills/magery/summonCreature.src
+   trunk/096/pkg/skills/magery/telekinesis.src
+   trunk/096/pkg/skills/magery/weaken.src
+Log:
+Attribute updates
+
+Modified: trunk/096/pkg/skills/herding/herd.src
+===================================================================
+--- trunk/096/pkg/skills/herding/herd.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/herding/herd.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -45,8 +45,8 @@
+                 SendSysMessage(who, &quot;You can't herd that!&quot;);
+                 return;
+         endif
+-	var thepoints := 50;
+-        if(CheckSkill(who, SKILLID_HERDING, herdskill, thepoints))
++	
++        if( SkillCheck(who, HERDING, herdskill) &gt; 0 )
+ 
+                 SendSysMessage(who, &quot;Where do you want to move &quot;+ npc.name +&quot; to?&quot;);
+                 var location := TargetCoordinates(who);
+
+Modified: trunk/096/pkg/skills/lockpicking/lockpicking.src
+===================================================================
+--- trunk/096/pkg/skills/lockpicking/lockpicking.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/lockpicking/lockpicking.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -59,7 +59,7 @@
+   PlaySoundEffect(chest,SFX_242);
+   sleep(2);
+   var diff := (lvl * 20)+10;
+-  if ( CheckSkill(me,SKILLID_LOCKPICKING,diff,0) )
++  if ( SkillCheck(me, LOCKPICKING, diff) &gt; 0 )
+ 	PlaySoundEffect(chest,SFX_200);
+ 	PrintTextAbovePrivate(chest,&quot;*Unlocked!*&quot;,me);
+   else
+@@ -69,7 +69,7 @@
+ 	else
+ 	  diff := diff -10;
+ 	endif
+-	if (!CheckSkill(me,SKILLID_LOCKPICKING,diff,0) )
++	if ( !SkillCheck(me, LOCKPICKING, diff) &gt; 0 )
+ 	  PlaySoundEffect(chest,0xef);
+ 	  SendSysMessage(me,&quot;Your pick breaks!&quot;);
+ 	  SubtractAmount(lockpick,1);
+@@ -94,7 +94,7 @@
+   PlaySoundEffect(chest,SFX_242);
+   sleep(2);
+   var diff := (lvl * 10)+10;
+-  if ( CheckSkill(me,SKILLID_LOCKPICKING,diff,0) )
++  if ( SkillCheck(me, LOCKPICKING, diff) &gt; 0 )
+ 	PlaySoundEffect(chest,SFX_200);
+ 	PrintTextAbovePrivate(chest,&quot;*Unlocked!*&quot;,me);
+   else
+@@ -104,7 +104,7 @@
+ 	else
+ 	  diff := diff -10;
+ 	endif
+-	if (!CheckSkill(me,SKILLID_LOCKPICKING,diff,0) )
++	if ( !SkillCheck(me, LOCKPICKING,diff) &gt; 0 )
+ 	  PlaySoundEffect(chest,0xef);
+ 	  SendSysMessage(me,&quot;Your pick breaks!&quot;);
+ 	  SubtractAmount(lockpick,1);
+@@ -143,7 +143,7 @@
+   PlaySoundEffect(chest,SFX_242);
+   sleepms(1500);
+   var diff := (lvl+10);
+-  if ( CheckSkill(me,SKILLID_LOCKPICKING,diff,(diff*2)) )
++  if ( SkillCheck(me, LOCKPICKING, diff) &gt; 0 )
+ 	PlaySoundEffect(chest,SFX_200);
+     chest.locked := 0;
+   else
+
+Modified: trunk/096/pkg/skills/magery/agility.src
+===================================================================
+--- trunk/096/pkg/skills/magery/agility.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/agility.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -14,7 +14,7 @@
+     SendSysMessage(caster,&quot;Another existing effect negates your spell!&quot;);
+     return;
+   endif
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var modAmount := GetModAmount( magery );
+   var duration := GetModDuration( magery );
+   DoTempMod(castOn, &quot;dex&quot;, modAmount, duration);
+
+Modified: trunk/096/pkg/skills/magery/archCure.src
+===================================================================
+--- trunk/096/pkg/skills/magery/archCure.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/archCure.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -13,8 +13,8 @@
+   var castOn := parms.castOn;
+   var npccfg := ReadConfigFile(&quot;::npcdesc&quot;);
+   PlaySoundEffect(caster, SFX_SPELL_ARCH_CURE);
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
+-  var potency := CInt(GetEffectiveSkill( caster, SKILLID_MAGERY ) /33)+1;
++  var magery := AP_GetSkill(caster, MAGERY);
++  var potency := CInt(AP_GetSkill( caster, MAGERY ) /33)+1;
+   foreach castOn in ListMobilesNearLocation( castOn.x, castOn.y, castOn.z, CInt(magery/15), caster.realm );
+     if((CheckLineOfSight(castOn, caster)) and (castOn.cmdlevel &lt; 2))
+ 	  PlayObjectCenteredEffect( castOn, FX_BLESS_EFFECT, 10,10);
+
+Modified: trunk/096/pkg/skills/magery/archProt.src
+===================================================================
+--- trunk/096/pkg/skills/magery/archProt.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/archProt.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -11,7 +11,7 @@
+ 	var caster := parms.caster;
+ 	var castOn := parms.castOn;
+ 	PlaySoundEffect(caster, SFX_SPELL_PROTECTION);
+-	var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++	var magery := AP_GetSkill(caster, MAGERY);
+ 	var modAmount := CInt(RandomInt(6) + 5);
+ 	var duration := GetModDuration( magery );
+ 	foreach castOn in ListMobilesNearLocation( castOn.x, castOn.y, castOn.z, CInt(magery/15), caster.realm );
+
+Modified: trunk/096/pkg/skills/magery/bladeSpirit.src
+===================================================================
+--- trunk/096/pkg/skills/magery/bladeSpirit.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/bladeSpirit.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -15,9 +15,9 @@
+   SetObjProperty(thecritter, &quot;summoned&quot;, 1);
+   SetObjProperty(thecritter, &quot;master&quot;, caster.serial);
+   Detach();
+-  sleep( (GetEffectiveSkill( caster, SKILLID_MAGERY ) ) );
++  sleep( (AP_GetSkill( caster, MAGERY ) ) );
+   PlaySoundEffect( thecritter, SFX_SPELL_MANA_VAMPIRE );
+   PlayStationaryEffect( thecritter.x, thecritter.y, thecritter.z, FX_SMOKE, 0xa, 0xa, 0, caster.realm );
+   MoveCharacterToLocation(thecritter,0,0,0,MOVECHAR_FORCELOCATION);
+-  ApplyRawDamage(thecritter, GetHp(thecritter) + 3);
++  ApplyRawDamage(thecritter, AP_GetVital(thecritter, &quot;Hits&quot;) + 3);
+ endprogram
+
+Modified: trunk/096/pkg/skills/magery/bless.src
+===================================================================
+--- trunk/096/pkg/skills/magery/bless.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/bless.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -13,7 +13,7 @@
+   var castOn := parms.castOn;
+   PlaySoundEffect(castOn, SFX_SPELL_BLESS);
+   PlayObjectCenteredEffect( castOn, FX_BLESS_EFFECT, 10,10);
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var modAmount := GetModAmount(magery);
+   var duration := GetModDuration(magery);
+   if(CanMod(castOn, &quot;str&quot;))
+
+Modified: trunk/096/pkg/skills/magery/clumsy.src
+===================================================================
+--- trunk/096/pkg/skills/magery/clumsy.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/clumsy.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -27,7 +27,7 @@
+ 	SendSysMessage(caster,&quot;Already under the influence!&quot;);
+ 	return;
+   endif
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var modAmount := Resisted(circle,caster,castOn,(GetModAmount( magery )));
+   var duration := GetModDuration( magery );
+   DoTempMod(castOn, &quot;dex&quot;, 0 - modAmount, duration);
+
+Modified: trunk/096/pkg/skills/magery/cunning.src
+===================================================================
+--- trunk/096/pkg/skills/magery/cunning.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/cunning.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -19,7 +19,7 @@
+ 		SendSysMessage(caster,&quot;Already under the influence!&quot;);
+ 		return;
+ 	endif
+-	var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++	var magery := AP_GetSkill(caster, MAGERY);
+ 	var modAmount := GetModAmount( magery );
+ 	var duration := GetModDuration( magery );
+ 	DoTempMod(castOn, &quot;int&quot;, modAmount, duration);
+
+Modified: trunk/096/pkg/skills/magery/cure.src
+===================================================================
+--- trunk/096/pkg/skills/magery/cure.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/cure.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -15,7 +15,7 @@
+   var npccfg := ReadConfigFile(&quot;::npcdesc&quot;);
+   PlaySoundEffect(caster, SFX_SPELL_CURE);
+   PlayObjectCenteredEffect( castOn, FX_BLESS_EFFECT, 10,10);
+-  var potency := CInt(GetEffectiveSkill(caster, SKILLID_MAGERY) / 33) +1;
++  var potency := CInt(AP_GetSkill(caster, MAGERY) / 33) +1;
+   if(castOn.isA(POLCLASS_NPC))
+     var element := npccfg[castOn.npctemplate].elemental;
+     if(element == &quot;poison&quot;)
+
+Modified: trunk/096/pkg/skills/magery/curse.src
+===================================================================
+--- trunk/096/pkg/skills/magery/curse.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/curse.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -18,7 +18,7 @@
+ 
+   PlaySoundEffect(castOn, SFX_SPELL_CURSE);
+   PlayObjectCenteredEffect( castOn, FX_CURSE_EFFECT, 10,10);
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var modAmount := Resisted(circle,caster,castOn,GetModAmount( magery ));
+   var duration := GetModDuration( magery );
+ 	SetObjProperty(castOn, &quot;LastHit&quot;, {caster.name,caster.serial, &quot;curse&quot; });
+
+Modified: trunk/096/pkg/skills/magery/dispelField.src
+===================================================================
+--- trunk/096/pkg/skills/magery/dispelField.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/dispelField.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -9,7 +9,7 @@
+ program dispelField( parms )
+   var caster := parms.caster;
+   var castOn := parms.castOn;
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var therange := CInt(magery / 15 );
+   var items := ListItemsNearLocation(castOn.x, castOn.y, castOn.z, therange, caster.realm);
+   PlaySoundEffect( caster, SFX_SPELL_DISPEL );
+
+Modified: trunk/096/pkg/skills/magery/feeblemind.src
+===================================================================
+--- trunk/096/pkg/skills/magery/feeblemind.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/feeblemind.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -28,7 +28,7 @@
+ 	SendSysMessage(caster,&quot;Already under the influence!&quot;);
+ 	return;
+   endif
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var modAmount := Resisted(circle,caster,castOn,(GetModAmount( magery )));
+   var duration := GetModDuration( magery );
+   DoTempMod(castOn, &quot;int&quot;, 0 - modAmount, duration);
+
+Modified: trunk/096/pkg/skills/magery/gHeal.src
+===================================================================
+--- trunk/096/pkg/skills/magery/gHeal.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/gHeal.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -12,7 +12,7 @@
+ 	var caster := parms.caster;
+ 	var castOn := parms.castOn;
+ 	var healed := RandomDiceRoll(&quot;1d3&quot;);
+-	healed := CInt(GetEffectiveSkill(caster, SKILLID_MAGERY)/2) + healed;
++	healed := CInt(AP_GetSkill(caster, MAGERY)/2) + healed;
+ 	SendSysMessage(caster, &quot;You healed &quot; + healed + &quot; damage.&quot;);
+ 	if (castOn.isA(POLCLASS_NPC))
+ 		healed := healed * 2;
+
+Modified: trunk/096/pkg/skills/magery/heal.src
+===================================================================
+--- trunk/096/pkg/skills/magery/heal.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/heal.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -11,7 +11,7 @@
+ program spell_heal(parms)
+   var caster := parms.caster;
+   var castOn := parms.castOn;
+-  var healed := CInt(GetEffectiveSkill(caster, SKILLID_MAGERY) / 20) + 5;
++  var healed := CInt(AP_GetSkill(caster, MAGERY) / 20) + 5;
+   if(healed &gt; 20)
+ 	healed := 20;
+   endif
+
+Modified: trunk/096/pkg/skills/magery/invisibility.src
+===================================================================
+--- trunk/096/pkg/skills/magery/invisibility.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/invisibility.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -13,7 +13,7 @@
+ 	PlaySoundEffect(castOn, SFX_SPELL_INVISIBILITY);
+ 	castOn.hidden := 1;
+ 	Detach();
+-	sleep(CInt(GetEffectiveSkill(caster, SKILLID_MAGERY)));
++	sleep(CInt(AP_GetSkill(caster, MAGERY)));
+ 	castOn.hidden := 0;
+ 
+ 	return;
+
+Modified: trunk/096/pkg/skills/magery/magicLock.src
+===================================================================
+--- trunk/096/pkg/skills/magery/magicLock.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/magicLock.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -27,7 +27,7 @@
+   if(((castOn.graphic&lt;=0x9ab) &amp;&amp;(castOn.graphic&gt;=0x9a8)) ||((castOn.graphic&lt;=0xe43) &amp;&amp;(castOn.graphic&gt;=0xe3c)) ||((castOn.graphic&lt;=0xe80) &amp;&amp;(castOn.graphic&gt;=0xe7c)) ||(checkfordoors(castOn)))
+     PlaySoundEffect(caster, SFX_SPELL_MAGIC_LOCK);
+     PrintTextAbovePrivate(castOn, &quot;*Locked!*&quot;, caster);
+-    var magery := CInt(GetEffectiveSkill(caster, SKILLID_MAGERY) / 4);
++    var magery := CInt(AP_GetSkill(caster, MAGERY) / 4);
+     SetObjProperty(castOn, &quot;MLockPickDiff&quot;, magery);
+     castOn.locked := 1;
+   else
+
+Modified: trunk/096/pkg/skills/magery/magicTrap.src
+===================================================================
+--- trunk/096/pkg/skills/magery/magicTrap.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/magicTrap.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -13,7 +13,7 @@
+ 	var castOn := parms.castOn;
+ 
+ 	if ((castOn.isa(POLCLASS_DOOR)) || (castOn.objtype == 0xe79) || ((castOn.graphic&lt;=0x9ab) &amp;&amp;(castOn.graphic&gt;=0x9a8)) ||((castOn.graphic&lt;=0xe43) &amp;&amp;(castOn.graphic&gt;=0xe3c)) ||((castOn.graphic&lt;=0xe80) &amp;&amp;(castOn.graphic&gt;=0xe7c)))
+-		var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++		var magery := AP_GetSkill(caster, MAGERY);
+ 		var trapstr := CInt(magery/5);
+ 		if (findcity(castOn) != &quot;no city&quot;)
+ 			caster.setCriminal(1);
+
+Modified: trunk/096/pkg/skills/magery/massCurse.src
+===================================================================
+--- trunk/096/pkg/skills/magery/massCurse.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/massCurse.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -18,7 +18,7 @@
+   var circle := spellcfg[spellid].circle;
+ 
+   PlaySoundEffect(caster, SFX_SPELL_MASS_CURSE);
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var modAmount := GetModAmount( magery );
+   var duration := GetModDuration( magery );
+   Detach();
+
+Modified: trunk/096/pkg/skills/magery/massDispel.src
+===================================================================
+--- trunk/096/pkg/skills/magery/massDispel.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/massDispel.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -17,7 +17,7 @@
+   var circle := spellcfg[spellid].circle;
+ 
+   var npccfg := ReadConfigFile(&quot;::npcdesc&quot;);
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var range := CInt(magery / 20);
+   var targets := ListMobilesNearLocation( castOn.x, castOn.y, castOn.z, range, caster.realm );
+   PlaySoundEffect( caster, 0x202 );
+
+Modified: trunk/096/pkg/skills/magery/nightSight.src
+===================================================================
+--- trunk/096/pkg/skills/magery/nightSight.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/nightSight.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -15,7 +15,7 @@
+ 	var castOn := parms.castOn;
+ 
+ 	PlaySoundEffect(castOn, SFX_SPELL_NIGHT_SIGHT );
+-	var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++	var magery := AP_GetSkill(caster, MAGERY);
+ 	castOn.setlightlevel(0, magery * 60);
+ 	PlayObjectCenteredEffect(castOn, FX_BLESS_EFFECT, 10,10);
+ 
+
+Modified: trunk/096/pkg/skills/magery/paralyze.src
+===================================================================
+--- trunk/096/pkg/skills/magery/paralyze.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/paralyze.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -17,7 +17,7 @@
+ 	if (spell_reflect(castOn))
+ 		castOn := caster;
+ 	endif
+-	var amt := 10 + RandomInt(CInt(GetEffectiveSkill(caster, SKILLID_MAGERY)/5));
++	var amt := 10 + RandomInt(CInt(AP_GetSkill(caster, MAGERY)/5));
+ 	var duration := ParaResist(2, caster, castOn, amt);
+ 	PlayStationaryEffect( castOn.x, castOn.y, castOn.z, FX_CURSE_EFFECT, 10, 0xa, 0, caster.realm );
+ 	PlaySoundEffect( castOn, SFX_SPELL_PARALYZE );
+@@ -28,7 +28,7 @@
+ 
+ 
+ function ParaResist(circle, caster, castOn, amt)
+-  var magery := CInt(GetEffectiveSkill(caster, SKILLID_MAGERY));
++  var magery := CInt(AP_GetSkill(caster, MAGERY));
+   var evalint := CInt(GetEffectiveSkill(caster, SKILLID_EVALINT));
+   var resist := CInt(GetEffectiveSkill(castOn, SKILLID_MAGICRESISTANCE));
+   var chk1 := (resist / 5);
+
+Modified: trunk/096/pkg/skills/magery/poison.src
+===================================================================
+--- trunk/096/pkg/skills/magery/poison.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/poison.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -24,7 +24,7 @@
+   PlaySoundEffect(castOn, 0x206);
+   PlayObjectCenteredEffect(castOn, FX_CURSE_EFFECT, 0x0a,0x1e);
+   var pLevel :=  0;
+-  var skil := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var skil := AP_GetSkill(caster, MAGERY);
+   if(skil &lt;= 50)
+     pLevel := 1;
+   elseif(skil &lt;= 90)
+@@ -73,7 +73,7 @@
+ endprogram
+ 
+ function PoisonResist(caster, castOn, amt)
+-  var diff := Cint(GetEffectiveSkill(caster, SKILLID_MAGERY) + Cint(GetEffectiveSkill(caster, SKILLID_EVALINT) / 10));
++  var diff := Cint(AP_GetSkill(caster, MAGERY) + Cint(GetEffectiveSkill(caster, SKILLID_EVALINT) / 10));
+   if(CheckSkill(castOn, SKILLID_MAGICRESISTANCE, diff, (diff * 2)))
+     SendSysMessage(castOn, &quot;You feel yourself resisting magical energy!&quot;);
+     PlaySoundEffect(castOn, SFX_SPELL_WEAKEN);
+
+Modified: trunk/096/pkg/skills/magery/polymorph.src
+===================================================================
+--- trunk/096/pkg/skills/magery/polymorph.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/polymorph.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -5,7 +5,7 @@
+ 
+ program spell_polymorph( parms )
+   var caster := parms.caster;
+-  var magery     := CInt(GetEffectiveSkill(caster, SKILLID_MAGERY));
++  var magery     := CInt(AP_GetSkill(caster, MAGERY));
+   var meditation := CInt(GetEffectiveSkill(caster, SKILLID_MEDITATION));
+   var evalint    := CInt(GetEffectiveSkill(caster, SKILLID_EVALINT));
+   var critgroup;
+
+Modified: trunk/096/pkg/skills/magery/protection.src
+===================================================================
+--- trunk/096/pkg/skills/magery/protection.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/protection.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -16,7 +16,7 @@
+ 	SendSysMessage(caster,&quot;Already under the influence!&quot;);
+ 	return;
+   endif
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var modAmount := (GetModAmount(magery) * 2);
+   var duration := GetModDuration(magery);
+   var itmcfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+
+Modified: trunk/096/pkg/skills/magery/reactiveArmor.src
+===================================================================
+--- trunk/096/pkg/skills/magery/reactiveArmor.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/reactiveArmor.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -15,7 +15,7 @@
+ 	SendSysMessage(caster,&quot;Already under the influence!&quot;);
+ 	return;
+   endif
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var modAmount := magery / 10;
+   var duration := CInt(RandomInt(10) + (magery / 2));
+   SetObjProperty(castOn, &quot;ReactiveArmor&quot;, modAmount);
+
+Modified: trunk/096/pkg/skills/magery/strength.src
+===================================================================
+--- trunk/096/pkg/skills/magery/strength.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/strength.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -17,7 +17,7 @@
+ 		SendSysMessage(caster,&quot;Already under the influence!&quot;);
+ 		return;
+ 	endif
+-	var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++	var magery := AP_GetSkill(caster, MAGERY);
+ 	var mod_amount := GetModAmount( magery );
+ 	var duration := GetModDuration( magery );
+ 	DoTempMod(castOn, &quot;str&quot;, mod_amount, duration);
+
+Modified: trunk/096/pkg/skills/magery/summon.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/summon.inc	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/summon.inc	2005-11-02 18:46:59 UTC (rev 841)
+@@ -9,7 +9,7 @@
+ 
+ function DoSummon( caster, circle, npctemplate, cast_loc )
+   var thecritter;
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var duration := 20 + (magery * 2);
+   var parms := {};
+   parms .+ script := &quot;tamed&quot;;
+
+Modified: trunk/096/pkg/skills/magery/summonCreature.src
+===================================================================
+--- trunk/096/pkg/skills/magery/summonCreature.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/summonCreature.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -13,7 +13,7 @@
+   
+   var thecreature;
+   var critgroup;
+-  var basemagery := CInt(GetEffectiveSkill(caster, SKILLID_MAGERY));
++  var basemagery := CInt(AP_GetSkill(caster, MAGERY));
+   if (basemagery &lt; 70)
+ 	critgroup := RandomInt(1);
+   elseif (basemagery &lt; 80)
+
+Modified: trunk/096/pkg/skills/magery/telekinesis.src
+===================================================================
+--- trunk/096/pkg/skills/magery/telekinesis.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/telekinesis.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -23,7 +23,7 @@
+     endif
+     PlaySoundEffect(castOn, 0x144);
+     PlayObjectCenteredEffect(castOn, 0x37b9,0x03, 0x0a);
+-    var dmg := RandomInt(GetEffectiveSkill(caster, SKILLID_MAGERY) / 10);
++    var dmg := RandomInt(AP_GetSkill(caster, MAGERY) / 10);
+     ApplyRawDamage(castOn, Resisted(circle,caster,castOn,dmg));
+     if((castOn.graphic  == 0x190) or (castOn.graphic == 0x191))
+       PerformAction(castOn, 20);
+
+Modified: trunk/096/pkg/skills/magery/weaken.src
+===================================================================
+--- trunk/096/pkg/skills/magery/weaken.src	2005-11-02 18:46:32 UTC (rev 840)
++++ trunk/096/pkg/skills/magery/weaken.src	2005-11-02 18:46:59 UTC (rev 841)
+@@ -26,7 +26,7 @@
+   if(!CanMod(castOn, &quot;str&quot;))
+ 	return;
+   endif
+-  var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
++  var magery := AP_GetSkill(caster, MAGERY);
+   var modAmount := Resisted(circle,caster,castOn,(GetModAmount( magery )));
+   var duration := GetModDuration( magery );
+   DoTempMod(castOn, &quot;str&quot;, 0 - modAmount, duration);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000814.html">[Poldistro-svn] r840 - in trunk/096/pkg/items: treasuremap wands
+</A></li>
+	<LI>Next message: <A HREF="000816.html">[Poldistro-svn] r842 - in trunk/096: pkg/skills/magery scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#815">[ date ]</a>
+              <a href="thread.html#815">[ thread ]</a>
+              <a href="subject.html#815">[ subject ]</a>
+              <a href="author.html#815">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

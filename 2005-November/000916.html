@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r942 - trunk/096/pkg/commands/coun
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r942%20-%20trunk/096/pkg/commands/coun&In-Reply-To=%3C200511122236.jACMav92030022%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000915.html">
+   <LINK REL="Next"  HREF="000917.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r942 - trunk/096/pkg/commands/coun</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r942%20-%20trunk/096/pkg/commands/coun&In-Reply-To=%3C200511122236.jACMav92030022%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r942 - trunk/096/pkg/commands/coun">panosl at berlios.de
+       </A><BR>
+    <I>Sat Nov 12 23:36:57 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000915.html">[Poldistro-svn] r941 - in trunk/096: config pkg/mobiles pkg/mobiles/newCharacter pkg/mobiles/newCharacter/config pkg/mobiles/newCharacter/include scripts/misc
+</A></li>
+        <LI>Next message: <A HREF="000917.html">[Poldistro-svn] r943 - trunk/096/pkg/mobiles/brainAI/include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#916">[ date ]</a>
+              <a href="thread.html#916">[ thread ]</a>
+              <a href="subject.html#916">[ subject ]</a>
+              <a href="author.html#916">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-11-12 23:36:56 +0100 (Sat, 12 Nov 2005)
+New Revision: 942
+
+Added:
+   trunk/096/pkg/commands/coun/reveal.txt
+Modified:
+   trunk/096/pkg/commands/coun/conceal.src
+   trunk/096/pkg/commands/coun/reveal.src
+   trunk/096/pkg/commands/coun/tele.src
+Log:
+
+
+Modified: trunk/096/pkg/commands/coun/conceal.src
+===================================================================
+--- trunk/096/pkg/commands/coun/conceal.src	2005-11-12 17:04:21 UTC (rev 941)
++++ trunk/096/pkg/commands/coun/conceal.src	2005-11-12 22:36:56 UTC (rev 942)
+@@ -15,7 +15,8 @@
+ 
+ 	if (!params)
+ 		SendMessage(who, MSG_TARGET_MOB, array{}, MSG_COMMAND);
+-		if ((mobile := Target(who, TGTOPT_NOCHECK_LOS)) == 0)
++		mobile := Target(who, TGTOPT_NOCHECK_LOS);
++		if (mobile == 0)
+ 			SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
+ 		else
+ 			if (!mobile.isA(POLCLASS_MOBILE))
+
+Modified: trunk/096/pkg/commands/coun/reveal.src
+===================================================================
+--- trunk/096/pkg/commands/coun/reveal.src	2005-11-12 17:04:21 UTC (rev 941)
++++ trunk/096/pkg/commands/coun/reveal.src	2005-11-12 22:36:56 UTC (rev 942)
+@@ -12,7 +12,8 @@
+ 
+ 	if (!params)
+ 		SendMessage(who, MSG_TARGET_MOB, array{}, MSG_COMMAND);
+-		if ((mobile := Target(who, TGTOPT_NOCHECK_LOS) == 0))
++		mobile := Target(who, TGTOPT_NOCHECK_LOS);
++		if (mobile == 0)
+ 			SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
+ 		else
+ 			if (!mobile.isA(POLCLASS_MOBILE))
+
+Added: trunk/096/pkg/commands/coun/reveal.txt
+===================================================================
+--- trunk/096/pkg/commands/coun/reveal.txt	2005-11-12 17:04:21 UTC (rev 941)
++++ trunk/096/pkg/commands/coun/reveal.txt	2005-11-12 22:36:56 UTC (rev 942)
+@@ -0,0 +1,6 @@
++&lt;b&gt;Syntax:&lt;/b&gt;
++.reveal [me]
++
++&lt;b&gt;Purpose:&lt;/b&gt;
++Let's you reveal yourself or target another mobile
++
+
+Modified: trunk/096/pkg/commands/coun/tele.src
+===================================================================
+--- trunk/096/pkg/commands/coun/tele.src	2005-11-12 17:04:21 UTC (rev 941)
++++ trunk/096/pkg/commands/coun/tele.src	2005-11-12 22:36:56 UTC (rev 942)
+@@ -1,3 +1,8 @@
++/* $Id$
++ *
++ * Purpose
++ *
++ */
+ use uo;
+ 
+ include &quot;include/messages&quot;;
+@@ -21,3 +26,4 @@
+ 
+ 	return;
+ endprogram
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000915.html">[Poldistro-svn] r941 - in trunk/096: config pkg/mobiles pkg/mobiles/newCharacter pkg/mobiles/newCharacter/config pkg/mobiles/newCharacter/include scripts/misc
+</A></li>
+	<LI>Next message: <A HREF="000917.html">[Poldistro-svn] r943 - trunk/096/pkg/mobiles/brainAI/include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#916">[ date ]</a>
+              <a href="thread.html#916">[ thread ]</a>
+              <a href="subject.html#916">[ subject ]</a>
+              <a href="author.html#916">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

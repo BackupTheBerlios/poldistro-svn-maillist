@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r110 - trunk/096/pkg/mobiles/ai_brain/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r110%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509131102.j8DB2sol009000%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000091.html">
+   <LINK REL="Next"  HREF="000093.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r110 - trunk/096/pkg/mobiles/ai_brain/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r110%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509131102.j8DB2sol009000%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r110 - trunk/096/pkg/mobiles/ai_brain/include">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep 13 13:02:54 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000091.html">[Poldistro-svn] r109 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000093.html">[Poldistro-svn] r111 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#92">[ date ]</a>
+              <a href="thread.html#92">[ thread ]</a>
+              <a href="subject.html#92">[ subject ]</a>
+              <a href="author.html#92">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-13 13:02:52 +0200 (Tue, 13 Sep 2005)
+New Revision: 110
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc
+Log:
+Watch lists!
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc	2005-09-13 10:29:42 UTC (rev 109)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc	2005-09-13 11:02:52 UTC (rev 110)
+@@ -14,20 +14,25 @@
+ /////////////////////////////////////////////////////////////////
+ // * Function List *
+ //
++// NPC_AddToWatchList(npc, mobile)
++// NPC_IsInWatchList(npc, mobile)
++// NPC_LoadWatchList(npc)
++// NPC_RemoveFromWatchList(npc, mobile)
++// NPC_SaveWatchList(npc, dict_list)
+ //
+ /////////////////////////////////////////////////////////////////
+ 
+ /*
+- * NPC_GetWatchList(npc)
++ * NPC_LoadWatchList(npc)
+  *
+  * Purpose
+- * 
++ * Loads the watch list on an npc.
+  *
+  * Parameters
+- * npc:	
++ * npc:	NPC to load the watch list from.
+  *
+  * Return value
+- * 
++ * Returns a dictionary
+  *
+  */
+ function NPC_LoadWatchList(npc)
+@@ -43,37 +48,47 @@
+  * NPC_SaveWatchList(npc)
+  *
+  * Purpose
+- * 
++ * Saves the NPC's watch list.
+  *
+  * Parameters
+- * npc:	
++ * npc:		NPC to save the watch list on.
++ * dict_list:	Dictionary containing serials the npc is watching.
+  *
+  * Return value
+- * 
++ * Returns the result of SetObjProperty()
+  *
+  */
+ function NPC_SaveWatchList(npc, dict_list)
+-	SetObjProprty(npc, &quot;#WatchList&quot;, dict_list);
++	SetObjProperty(npc, &quot;#WatchList&quot;, dict_list);
+ endfunction
+ 
+ /*
+  * NPC_AddToWatchList(npc, mobile)
+  *
+  * Purpose
+- * 
++ * Adds a mobile to the npc's watch list.
+  *
+  * Parameters
+- * npc:	
++ * npc:		NPC that will have its list added to.
++ * mobile:	Mobile to add to the watch list.
+  *
+  * Return value
+- * 
++ * Returns 1 if the mobile was added.
+  *
+  */
+ function NPC_AddToWatchList(npc, mobile)
+-	var watch_dict := NPC_GetWatchList(npc);
+-	if ( !watch_dict.Exists(mobile.serial) )
+-		watch_dict.Insert(mobile.serial, 1);
++	if ( mobile.IsA(POLCLASS_MOBILE) )
++		mobile := mobile.serial;
++	endif
++	
++	var watch_dict := NPC_LoadWatchList(npc);
++	if ( !watch_dict.Exists(mobile) )
++		watch_dict.Insert(mobile, 1);
+ 		NPC_SaveWatchList(npc, watch_dict);
++		
++		return 1;
++	else
++		return 0;
+ 	endif
+ endfunction
+ 
+@@ -81,32 +96,49 @@
+  * NPC_RemoveFromWatchList(npc)
+  *
+  * Purpose
+- * 
++ * Removes a mobile from the npc's watch list.
+  *
+  * Parameters
+- * npc:	
++ * npc:		NPC that will have its list modified.
++ * mobile:	Mobile to remove from the watch list.
+  *
+  * Return value
+- * 
++ * Returns 1 if the mobile was removed.
+  *
+  */
+ function NPC_RemoveFromWatchList(npc, mobile)
++	if ( mobile.IsA(POLCLASS_MOBILE) )
++		mobile := mobile.serial;
++	endif
+ 	
++	var watch_dict := NPC_LoadWatchList(npc);
++	if ( watch_dict.Exists(mobile) )
++		watch_dict.Erase(mobile);
++		NPC_SaveWatchList(npc, watch_dict);
++	else
++		return 0;
++	endif
+ endfunction
+ 
+ /*
+  * NPC_IsInWatchList(npc, mobile)
+  *
+  * Purpose
+- * 
++ * Checks if a mobile is in an npc's watch list.
+  *
+  * Parameters
+- * npc:	
++ * npc:		NPC with the list to check
++ * mobile:	Mobile that will be checked for in the list.
+  *
+  * Return value
+- * 
++ * Returns 1 if the mobile is in the list.
+  *
+  */
+ function NPC_IsInWatchList(npc, mobile)
+-
++	if ( mobile.IsA(POLCLASS_MOBILE) )
++		mobile := mobile.serial;
++	endif
++	
++	var watch_dict := NPC_LoadWatchList(npc);
++	return watch_dict.Exists(mobile);
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000091.html">[Poldistro-svn] r109 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000093.html">[Poldistro-svn] r111 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#92">[ date ]</a>
+              <a href="thread.html#92">[ thread ]</a>
+              <a href="subject.html#92">[ subject ]</a>
+              <a href="author.html#92">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

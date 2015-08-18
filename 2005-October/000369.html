@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r391 - in trunk/096/pkg/mobiles/brainAI: . complete/exampleNPC scripts
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r391%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20complete/exampleNPC%20scripts&In-Reply-To=%3C200510030137.j931bEcK008588%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000368.html">
+   <LINK REL="Next"  HREF="000370.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r391 - in trunk/096/pkg/mobiles/brainAI: . complete/exampleNPC scripts</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r391%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20complete/exampleNPC%20scripts&In-Reply-To=%3C200510030137.j931bEcK008588%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r391 - in trunk/096/pkg/mobiles/brainAI: . complete/exampleNPC scripts">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct  3 03:37:14 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000368.html">[Poldistro-svn] r390 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+        <LI>Next message: <A HREF="000370.html">[Poldistro-svn] r392 - in trunk/096/pkg/mobiles/brainAI: complete/exampleNPC include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#369">[ date ]</a>
+              <a href="thread.html#369">[ thread ]</a>
+              <a href="subject.html#369">[ subject ]</a>
+              <a href="author.html#369">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-03 03:37:11 +0200 (Mon, 03 Oct 2005)
+New Revision: 391
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/init.src
+   trunk/096/pkg/mobiles/brainAI/scripts/init/
+Modified:
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/cycle.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/restart.src
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/cycle.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/cycle.src	2005-10-03 01:07:22 UTC (rev 390)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/cycle.src	2005-10-03 01:37:11 UTC (rev 391)
+@@ -1,5 +1,6 @@
+ use uo;
+ use os;
++use util;
+ 
+ include &quot;:brainAI:npcNerves&quot;;
+ include &quot;:brainAI:npcCommands&quot;;
+@@ -12,5 +13,7 @@
+ 	//var scripts	:= params[5];
+ 	params := 0; // Not needed anymore.
+ 	
++	//npc.color := RandomDiceRoll(&quot;1d1000&quot;);
++	
+ 	return 1;
+ endprogram
+
+Added: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/init.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/init.src	2005-10-03 01:07:22 UTC (rev 390)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/init.src	2005-10-03 01:37:11 UTC (rev 391)
+@@ -0,0 +1,18 @@
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcInit&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++
++program BrainCriticalScript(params)
++	var npc		:= params[1];
++	//var settings	:= params[2];
++	//var scripts	:= params[3];
++	params := 0; // Not needed anymore.
++	
++	npc.color := RandomDiceRoll(&quot;1d100&quot;);
++	NPC_SetupBackPack(npc);
++	
++	return 1;
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src	2005-10-03 01:07:22 UTC (rev 390)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src	2005-10-03 01:37:11 UTC (rev 391)
+@@ -47,8 +47,14 @@
+ 			break;
+ 	endcase
+ 	
+-	if ( event.text[&quot;buy&quot;] )
+-		SendBuyWindow(event.source, npc.backpack, npc, (event.source).backpack);
++	if ( event.text[&quot;restock&quot;] )
++		CreateItemInBackPack(npc, &quot;longsword&quot;, 1);
++	elseif ( event.text[&quot;buy&quot;] )
++		AI_Turn(npc, event.source, NETURN_TOWARD);
++		var result := SendBuyWindow(event.source, npc.backpack, npc, (event.source).backpack);
++		if ( !result )
++			PrintTextAbove(npc, &quot;SendBuyWindow() error - &quot;+result.errortext);
++		endif
+ 	endif
+ 	
+ 	return 1;
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/restart.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/restart.src	2005-10-03 01:07:22 UTC (rev 390)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/restart.src	2005-10-03 01:37:11 UTC (rev 391)
+@@ -4,7 +4,7 @@
+ include &quot;:brainAI:npcNerves&quot;;
+ include &quot;:brainAI:npcCommands&quot;;
+ 
+-program BrainNerve(params)
++program BrainCriticalScript(params)
+ 	var npc		:= params[1];
+ 	//var settings	:= params[2];
+ 	//var scripts	:= params[3];
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-10-03 01:07:22 UTC (rev 390)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-10-03 01:37:11 UTC (rev 391)
+@@ -32,6 +32,7 @@
+ 	AIScript	Disengaged	:brainAI:complete/exampleNPC/disengaged
+ 	AIScript	EnterArea	:brainAI:complete/exampleNPC/enteredArea
+ 	AIScript	GoneCriminal	:brainAI:complete/exampleNPC/goneCriminal
++	AIScript	Init		:brainAI:complete/exampleNPC/init
+ 	AIScript	ItemGiven	:brainAI:complete/exampleNPC/itemGiven
+ 	AIScript	LeftArea	:brainAI:complete/exampleNPC/leftArea
+ 	AIScript	LookAround	:brainAI:complete/exampleNPC/lookAround
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000368.html">[Poldistro-svn] r390 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+	<LI>Next message: <A HREF="000370.html">[Poldistro-svn] r392 - in trunk/096/pkg/mobiles/brainAI: complete/exampleNPC include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#369">[ date ]</a>
+              <a href="thread.html#369">[ thread ]</a>
+              <a href="subject.html#369">[ subject ]</a>
+              <a href="author.html#369">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

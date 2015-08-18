@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r800 - trunk/096/pkg/items/wands
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r800%20-%20trunk/096/pkg/items/wands&In-Reply-To=%3C200511011959.jA1JxLe3000504%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000773.html">
+   <LINK REL="Next"  HREF="000775.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r800 - trunk/096/pkg/items/wands</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r800%20-%20trunk/096/pkg/items/wands&In-Reply-To=%3C200511011959.jA1JxLe3000504%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r800 - trunk/096/pkg/items/wands">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 20:59:21 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000773.html">[Poldistro-svn] r799 - trunk/096/pkg/items/treasuremap
+</A></li>
+        <LI>Next message: <A HREF="000775.html">[Poldistro-svn] r801 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#774">[ date ]</a>
+              <a href="thread.html#774">[ thread ]</a>
+              <a href="subject.html#774">[ subject ]</a>
+              <a href="author.html#774">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 20:59:21 +0100 (Tue, 01 Nov 2005)
+New Revision: 800
+
+Modified:
+   trunk/096/pkg/items/wands/magicWands.src
+Log:
+Replaced function calls to use new attributes system.
+
+Modified: trunk/096/pkg/items/wands/magicWands.src
+===================================================================
+--- trunk/096/pkg/items/wands/magicWands.src	2005-11-01 19:57:00 UTC (rev 799)
++++ trunk/096/pkg/items/wands/magicWands.src	2005-11-01 19:59:21 UTC (rev 800)
+@@ -2,7 +2,7 @@
+ use os;
+ use cfgfile;
+ 
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ include &quot;include/canAccess&quot;;
+ include &quot;include/tileEffects&quot;;
+ include &quot;include/client&quot;;
+@@ -61,7 +61,7 @@
+     SendSysMessage(who, &quot;You can't see that.&quot;);
+     return;
+   endif
+-  if(!GetHp(trg))
++  if(!AP_GetVital(trg, &quot;Hits&quot;))
+     SendSysMessage(who, &quot;You can only use that on living things.&quot;);
+     return;
+   endif
+@@ -152,7 +152,7 @@
+   endif
+   PlaySoundEffect(cast_on, SFX_SPELL_HARM);
+   PlayObjectCenteredEffect(cast_on, FX_GLOW_SPIKE, 0x0a,0x1e);
+-  if(GetHp(cast_on) &gt;= 1)
++  if(AP_GetVital(cast_on, &quot;Hits&quot;) &gt;= 1)
+     if(cast_on.npctemplate)
+       dmg := dmg * 2;
+     endif
+@@ -168,7 +168,7 @@
+   endif
+   PlayMovingEffect( caster, cast_on, FX_FIREBALL, 5, 1 );
+   PlaySoundEffect( caster, 0x15f);
+-  if(GetHp(cast_on) &gt;= 1)
++  if(AP_GetVital(cast_on, &quot;Hits&quot;) &gt;= 1)
+     if(cast_on.npctemplate)
+       dmg := dmg * 2;
+     endif
+@@ -216,15 +216,15 @@
+   //var target_resist := GetEffectiveSkill(cast_on, SKILLID_MAGICRESISTANCE); // uncomment if needed
+   var diff := Resisted(40, cast_on, (RandomInt(30)));
+   if(diff &gt; 0)
+-    if(diff &gt; GetMaxMana(cast_on))
+-      diff := GetMaxMana(cast_on);
++    if(diff &gt; AP_GetVitalMaximumValue(cast_on, &quot;Mana&quot;))
++      diff := AP_GetVitalMaximumValue(cast_on, &quot;Mana&quot;);
+     endif
+     PlaySoundEffect(caster, SFX_SPELL_MANA_DRAIN);
+     PlayObjectCenteredEffect(cast_on, FX_HEAL_EFFECT, 7, 0x10);
+-    if((GetMana(cast_on) - diff) &lt; 0)
+-      diff := GetMana(cast_on);
++    if((AP_GetVital(cast_on, &quot;Mana&quot;) - diff) &lt; 0)
++      diff := AP_GetVital(cast_on, &quot;Mana&quot;);
+     endif
+-    SetMana(cast_on, (GetMana(cast_on) - diff));
++    AP_SetVital(cast_on, &quot;Mana&quot;, (AP_GetVital(cast_on, &quot;Mana&quot;) - diff));
+   endif
+ endfunction
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000773.html">[Poldistro-svn] r799 - trunk/096/pkg/items/treasuremap
+</A></li>
+	<LI>Next message: <A HREF="000775.html">[Poldistro-svn] r801 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#774">[ date ]</a>
+              <a href="thread.html#774">[ thread ]</a>
+              <a href="subject.html#774">[ subject ]</a>
+              <a href="author.html#774">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

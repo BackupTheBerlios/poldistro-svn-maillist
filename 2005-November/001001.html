@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1028 - trunk/096/scripts
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1028%20-%20trunk/096/scripts&In-Reply-To=%3C200511191340.jAJDeMTM011772%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001000.html">
+   <LINK REL="Next"  HREF="001002.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1028 - trunk/096/scripts</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1028%20-%20trunk/096/scripts&In-Reply-To=%3C200511191340.jAJDeMTM011772%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1028 - trunk/096/scripts">austin at berlios.de
+       </A><BR>
+    <I>Sat Nov 19 14:40:22 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001000.html">[Poldistro-svn] r1027 - trunk/096/scripts/misc
+</A></li>
+        <LI>Next message: <A HREF="001002.html">[Poldistro-svn] r1029 - trunk/096/scripts/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1001">[ date ]</a>
+              <a href="thread.html#1001">[ thread ]</a>
+              <a href="subject.html#1001">[ subject ]</a>
+              <a href="author.html#1001">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-19 14:40:17 +0100 (Sat, 19 Nov 2005)
+New Revision: 1028
+
+Removed:
+   trunk/096/scripts/doRes.src
+   trunk/096/scripts/storageWipe.src
+   trunk/096/scripts/testFile.esc
+Log:
+
+
+Deleted: trunk/096/scripts/doRes.src
+===================================================================
+--- trunk/096/scripts/doRes.src	2005-11-19 13:38:08 UTC (rev 1027)
++++ trunk/096/scripts/doRes.src	2005-11-19 13:40:17 UTC (rev 1028)
+@@ -1,50 +0,0 @@
+-use uo;
+-use os;
+-
+-include &quot;include/OLD/resurrection&quot;;
+-include &quot;include/client&quot;;
+-//include &quot;include/poisons&quot;;
+-
+-const SOUND_EFFECT_RES := 0x215;
+-const ACTION_EFFECT_CAST2 := 0x11;
+-
+-
+-program do_res(parms)
+-
+-	var who := parms[1];
+-	var mobile := parms[2];
+-
+-	if( ((who.npctemplate == &quot;healer&quot;) || (who.npctemplate == &quot;townhealer&quot;) ||
+-	(who.npctemplate == &quot;wanderinghealer&quot;)) &amp;&amp; (mobile.criminal) )
+-		PrintTextAbove(who, &quot;I will not aid a criminal.&quot;);
+-		return 0;
+-	endif
+-	if( (mobile.dead) &amp;&amp; (CheckLineOfSight(who, mobile)) )
+-		set_critical(1);
+-		if( GetObjProperty(mobile, &quot;#ResMenu&quot;) )
+-			return 0;
+-		endif
+-		SetObjProperty(mobile, &quot;#ResMenu&quot;, 1);
+-		set_critical(0);
+-		if( ResNow(mobile) == 1 )
+-			PrintTextAbove(who, &quot;Live again by the Virtues!&quot;);
+-			PerformAction(who, ACTION_EFFECT_CAST2);
+-			PlaySoundEffect(who, SOUND_EFFECT_RES);
+-			Resurrect(mobile);
+-			MurdererStatLoss(mobile);
+-		endif
+-		EraseObjProperty(mobile, &quot;#ResMenu&quot;);
+-//	elseif( GetPoisonByType(who, &quot;DefaultPoison&quot;).size() &gt; 0 )
+-//		if( CheckLineOfSight(who, mobile) )
+-//			PrintTextAbove(who, &quot;Sacrifice Purifies the Body and Soul!&quot;);
+-//			PerformAction(who, ANIM_CAST_AREA);
+-//			FakeDeath(who);
+-//			sleep(1);
+-//			PlayObjectCenteredEffect(mobile, FX_BLESS_EFFECT, 10,10);
+-//			SendSysMessage(mobile, who.name + &quot; has cured you completely!&quot;);
+-//		endif
+-	endif
+-
+-	return 1;
+-
+-endprogram
+
+Deleted: trunk/096/scripts/storageWipe.src
+===================================================================
+--- trunk/096/scripts/storageWipe.src	2005-11-19 13:38:08 UTC (rev 1027)
++++ trunk/096/scripts/storageWipe.src	2005-11-19 13:40:17 UTC (rev 1028)
+@@ -1,62 +0,0 @@
+-use os;
+-use uo;
+-
+-program storagewipe()
+-
+-	// without list line it runs fast, goes RunAway, makes megalag.
+-	set_critical(0);
+-
+-	var endnum, npctest;
+-	var startnum := CInt( GetGlobalProperty(&quot;storagestart&quot;) );
+-
+-	if (!startnum)
+-		startnum := 1;
+-		SetGlobalProperty(&quot;storagestart&quot;, startnum);
+-	endif
+-
+-	if (GetGlobalProperty(&quot;storageend&quot;))
+-	EraseGlobalProperty(&quot;storageend&quot;);
+-	endif
+-
+-	npctest := CreateNpcFromTemplate( &quot;banker&quot;, 5445, 1153, 0, &quot;britannia&quot; ); //FIXME realms
+-	endnum := npctest.serial;
+-	RevokePrivilege( npctest, &quot;invul&quot; );
+-	SetObjProperty(npctest, &quot;guardkill&quot;, 1);
+-	ApplyRawDamage( npctest, 510 );
+-
+-	print(&quot;Wiping orphaned storage locations&quot;);
+-	var tamedstorage, merchantstorage, inv_fs, inv_pb, inv_1c;
+-	tamedstorage := FindStorageArea( &quot;Tamed Storage&quot; );
+-	merchantstorage := FindStorageArea( &quot;Merchant Storage&quot; );
+-
+-	var containername;
+-	var num := 0;
+-	var mercs := 0;
+-	var i;
+-	for (i := startnum; i &lt; endnum; i:= i + 1)
+-		//without list line it runs fast, goes RunAway, makes megalag.
+-		sleepms(250);
+-		if (!SystemFindObjectBySerial(i))
+-			inv_fs := i + &quot; FS&quot;;
+-			inv_pb := i + &quot; PB&quot;;
+-			inv_1c := i + &quot; 1C&quot;;
+-			containername := &quot;Bankbox  &quot; + Hex(i);
+-			if (DestroyRootItemInStorageArea( tamedstorage, containername))
+-				num := num + 1;
+-				print(&quot;Tamed Storage destroyed for &quot;+i);
+-			endif
+-			if (DestroyRootItemInStorageArea( merchantstorage, inv_fs))
+-				DestroyRootItemInStorageArea( merchantstorage, inv_pb);
+-				DestroyRootItemInStorageArea( merchantstorage, inv_1c);
+-				print(&quot;Merchant Storage destroyed for &quot;+i);
+-				mercs := mercs +1;
+-			endif
+-		endif
+-		SetGlobalProperty(&quot;storagestart&quot;, i);
+-	endfor
+-
+-	print(&quot;Searched from &quot; + startnum + &quot; through &quot; + endnum);
+-	print(&quot;Total Tamed areas destroyed: &quot;+num);
+-	print(&quot;Total Merc areas destroyed: &quot;+mercs);
+-
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/testFile.esc
+===================================================================
+--- trunk/096/scripts/testFile.esc	2005-11-19 13:38:08 UTC (rev 1027)
++++ trunk/096/scripts/testFile.esc	2005-11-19 13:40:17 UTC (rev 1028)
+@@ -1 +0,0 @@
+-/* I am an escript in disguise! */
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001000.html">[Poldistro-svn] r1027 - trunk/096/scripts/misc
+</A></li>
+	<LI>Next message: <A HREF="001002.html">[Poldistro-svn] r1029 - trunk/096/scripts/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1001">[ date ]</a>
+              <a href="thread.html#1001">[ thread ]</a>
+              <a href="subject.html#1001">[ subject ]</a>
+              <a href="author.html#1001">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,4557 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r686 - in trunk/096/pkg: items/containers skills/carpentry skills/carpentry/config systems/crafting/config systems/crafting/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r686%20-%20in%20trunk/096/pkg%3A%20items/containers%20skills/carpentry%20skills/carpentry/config%20systems/crafting/config%20systems/crafting/include&In-Reply-To=%3C200510280715.j9S7F1bO019073%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000659.html">
+   <LINK REL="Next"  HREF="000661.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r686 - in trunk/096/pkg: items/containers skills/carpentry skills/carpentry/config systems/crafting/config systems/crafting/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r686%20-%20in%20trunk/096/pkg%3A%20items/containers%20skills/carpentry%20skills/carpentry/config%20systems/crafting/config%20systems/crafting/include&In-Reply-To=%3C200510280715.j9S7F1bO019073%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r686 - in trunk/096/pkg: items/containers skills/carpentry skills/carpentry/config systems/crafting/config systems/crafting/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Fri Oct 28 09:15:01 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000659.html">[Poldistro-svn] r685 - trunk/096/pkg/items/containers
+</A></li>
+        <LI>Next message: <A HREF="000661.html">[Poldistro-svn] r687 - in trunk/096/pkg: skills/carpentry systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#660">[ date ]</a>
+              <a href="thread.html#660">[ thread ]</a>
+              <a href="subject.html#660">[ subject ]</a>
+              <a href="author.html#660">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-28 09:14:49 +0200 (Fri, 28 Oct 2005)
+New Revision: 686
+
+Added:
+   trunk/096/pkg/skills/carpentry/CarpMenu.cfg
+Removed:
+   trunk/096/pkg/skills/carpentry/buildKeg.src
+Modified:
+   trunk/096/pkg/items/containers/itemdesc.cfg
+   trunk/096/pkg/skills/carpentry/carpentry.cfg
+   trunk/096/pkg/skills/carpentry/carpentry.src
+   trunk/096/pkg/skills/carpentry/carpentryDeed.src
+   trunk/096/pkg/skills/carpentry/config/icp.cfg
+   trunk/096/pkg/skills/carpentry/itemdesc.cfg
+   trunk/096/pkg/skills/carpentry/loomDeed.src
+   trunk/096/pkg/skills/carpentry/ovenDeed.src
+   trunk/096/pkg/systems/crafting/config/craftConfig.cfg
+   trunk/096/pkg/systems/crafting/include/craftGumps.inc
+   trunk/096/pkg/systems/crafting/include/crafting.inc
+Log:
+Typos fixed in containers/itemdesc.cfg
+Initial upload of carpentry rewrite. Wish it luck..
+Misc. checks added to crafting backbone for uninit strings if a scripter is careless (Caught the need via debug.log).
+Revamped itemdesc.cfg in carpentry package for new items, format, and more.
+Crafting issue resolved in carpentry with secondary skill usage and subracting secondary material.
+
+Modified: trunk/096/pkg/items/containers/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/containers/itemdesc.cfg	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/items/containers/itemdesc.cfg	2005-10-28 07:14:49 UTC (rev 686)
+@@ -777,7 +777,7 @@
+ 	Movable			1
+ 	Lockable		0
+ 
+-	Script			cotainer/use
++	Script			container/use
+ 	CanRemoveScript		container/canRemove
+ 	CanInsertScript		container/canInsert
+ 	DestroyScript		container/canDestroy
+@@ -800,7 +800,7 @@
+ 	MaxItems		75
+ 	MaxWeight		200
+ 	Moveable		0
+-	Script			cotainer/use
++	Script			container/use
+ 	CanRemoveScript		container/canRemove
+ 	CanInsertScript		container/canInsert
+ 	DestroyScript		container/canDestroy
+@@ -820,7 +820,7 @@
+ 	MaxItems		75
+ 	MaxWeight		200
+ 	Moveable		0
+-	Script			cotainer/use
++	Script			container/use
+ 	CanRemoveScript		container/canRemove
+ 	CanInsertScript		container/canInsert
+ 	DestroyScript		container/canDestroy
+@@ -841,7 +841,7 @@
+ 	MaxItems		75
+ 	MaxWeight		200
+ 	Moveable		0
+-	Script			cotainer/use
++	Script			container/use
+ 	CanRemoveScript		container/canRemove
+ 	CanInsertScript		container/canInsert
+ 	DestroyScript		container/canDestroy
+@@ -861,7 +861,7 @@
+ 	MaxItems		75
+ 	MaxWeight		200
+ 	Moveable		0
+-	Script			cotainer/use
++	Script			container/use
+ 	CanRemoveScript		container/canRemove
+ 	CanInsertScript		container/canInsert
+ 	DestroyScript		container/canDestroy
+
+Added: trunk/096/pkg/skills/carpentry/CarpMenu.cfg
+===================================================================
+--- trunk/096/pkg/skills/carpentry/CarpMenu.cfg	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/skills/carpentry/CarpMenu.cfg	2005-10-28 07:14:49 UTC (rev 686)
+@@ -0,0 +1,146 @@
++# $Id$
++#
++#
++##########################################################################
++# Format for Crafting Menus Config Files:
++#
++#  Index Entry for Config:
++#
++#     Craftitem Index      &lt;- This is the Index. Contains the Sub Menu Names
++#     {
++#      Title	   Example &lt;- HTML Name of the Menu
++#      Skill       blacksmithy  &lt;- Skill the menu is for. Same as the ID's in pol
++#      SkillID     blacksmithy  &lt;- SkillID of the skill listed in Skill. Needs removed
++#      Group       Axes    &lt;- Used for each Sub Menu Name
++#     }
++#
++#  Sub Menu Entry for Config:
++#
++#     Craftitem RingMail   &lt;- Should match the Sub-Menu Group name in Index
++#     {
++#     	Item	RingmailGloves   &lt;- For each item in the sub-menu. You use the
++#                                   objtype name here, not the objtype.
++#     }
++#
++##########################################################################
++Craftitem Index
++{
++        Title   &lt;center&gt;Carpentry Selection Menu&lt;/center&gt;
++        Skill   Carpentry
++        SkillID Carpentry
++	Group	Other
++	Group   Furniture
++	Group	Containers
++        Group   Staves and Shields
++	Group	Instruments
++	Group	Misc. Add-Ons
++        Group   Blacksmithy
++	Group	Training
++	Group   Tailoring
++	Group   Cooking
++}
++
++Craftitem Other
++{
++	Item	Board
++	Item	barrelstaves
++	Item	Barrellid
++        Item    shortmusicstand
++        Item    tallmusicstand
++        Item    easel
++}
++
++Craftitem Furniture
++{
++	Item	stool2
++	Item	stool
++	Item	strawchair4
++	Item	woodenchair2
++	Item	cushoinedchair2
++        Item    cushoinedchair1
++	Item	bench1
++	Item	woodthrone
++	Item	throne
++	Item	smallcounter
++        Item    writingtable
++	Item	largecounter
++	Item	table
++	Item	yewtable
++}
++
++Craftitem Containers
++{
++	Item	woodenbox
++	Item	SmallCrate
++	Item	MediumCrate
++	Item	LargeCrate
++	Item	WoodenChest2
++	Item	Barrel
++        Item    strongbox
++	Item	shelf2
++	Item	dresser2
++	Item	cherrydresser2
++	Item	armoir2
++	Item	cherryarmoir2
++	Item	keg
++}
++
++Craftitem Staves and Shields
++{
++	Item	Club
++	Item	ShepherdsCrook
++	Item	Quarterstaff
++	Item	GnarledStaff
++	Item	WoodenShield
++	Item	Torch1
++	Item	FishingPole
++}
++
++Craftitem Instruments
++{
++	Item	harp
++	Item	standingharp
++	Item	Drum
++	Item	lute
++	Item	Tambourine
++	Item	Tambourine2
++}
++
++Craftitem Misc. Add-Ons
++{
++	Item	smallbeddeed
++	Item	beddeed
++        Item    dartboarddeed
++	Item	pentagramdeed
++	Item	abbatoirdeed
++}
++
++Craftitem Blacksmithy
++{
++	Item    SmallForgeDeed
++        Item    largeforgedeed
++        Item    AnvilDeed
++}
++
++Craftitem Training
++{
++	Item	DummieDeed
++	Item	DipDeed
++}
++
++Craftitem Tailoring
++{
++	Item	dressformfront
++	Item	WheelDeed
++	Item	loomdeed
++}
++
++Craftitem Cooking
++{
++	Item	StoneOvendeed
++	Item	sandstoneovendeed
++	Item	stonefireplacedeed
++	Item	sandstonefireplacedeed
++	Item	FlourMilldeed
++	Item	WaterTroughdeed
++}
+
+Deleted: trunk/096/pkg/skills/carpentry/buildKeg.src
+===================================================================
+--- trunk/096/pkg/skills/carpentry/buildKeg.src	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/skills/carpentry/buildKeg.src	2005-10-28 07:14:49 UTC (rev 686)
+@@ -1,175 +0,0 @@
+-use uo;
+-use os;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/canAccess&quot;;
+-
+-var layout := array(
+-&quot;page 0&quot;,
+-&quot;gumppic   0  50 0206             &quot;,
+-&quot;gumppic  40  50 0201             &quot;,
+-&quot;gumppic 460  50 0207             &quot;,
+-&quot;gumppic   0  94 0202             &quot;,
+-&quot;gumppic  40  94 2604             &quot;,
+-&quot;gumppic 460  94 2605             &quot;,
+-&quot;gumppic   0 410 2606             &quot;,
+-&quot;gumppic  40 410 2607             &quot;,
+-&quot;gumppic 460 410 2608             &quot;,
+-&quot;gumppic  20 120 5100             &quot;,
+-&quot;gumppic  28 120 5101             &quot;,
+-&quot;gumppic 118 120 5101             &quot;,
+-&quot;gumppic 208 120 5101             &quot;,
+-&quot;gumppic 298 120 5101             &quot;,
+-&quot;gumppic 370 120 5101             &quot;,
+-&quot;gumppic 460 120 5102             &quot;,
+-&quot;gumppic  20 128 5103             &quot;,
+-&quot;gumppic  28 128 5104             &quot;,
+-&quot;gumppic 118 128 5104             &quot;,
+-&quot;gumppic 208 128 5104             &quot;,
+-&quot;gumppic 298 128 5104             &quot;,
+-&quot;gumppic 370 128 5104             &quot;,
+-&quot;gumppic 460 128 5105             &quot;,
+-&quot;gumppic  20 136 5058             &quot;,
+-&quot;gumppic 118 136 5058             &quot;,
+-&quot;gumppic 232 136 5058             &quot;,
+-&quot;gumppic 350 136 5058             &quot;,
+-&quot;gumppic  20 136 5106             &quot;,
+-&quot;gumppic  28 136 5107             &quot;,
+-&quot;gumppic 118 136 5107             &quot;,
+-&quot;gumppic 208 136 5107             &quot;,
+-&quot;gumppic 298 136 5107             &quot;,
+-&quot;gumppic 370 136 5107             &quot;,
+-&quot;gumppic 460 136 5108             &quot;,
+-&quot;gumppic  28 308 5104             &quot;,
+-&quot;gumppic 118 308 5104             &quot;,
+-&quot;gumppic 208 308 5104             &quot;,
+-&quot;gumppic 298 308 5104             &quot;,
+-&quot;gumppic 368 308 5104             &quot;,
+-&quot;gumppic  20 308 5103             &quot;,
+-&quot;gumppic 460 308 5105             &quot;,
+-&quot;gumppic  20 256 5058             &quot;,
+-&quot;gumppic 118 256 5058             &quot;,
+-&quot;gumppic 232 256 5058             &quot;,
+-&quot;gumppic 350 256 5058             &quot;,
+-&quot;gumppic  20 396 5106             &quot;,
+-&quot;gumppic  28 396 5107             &quot;,
+-&quot;gumppic 118 396 5107             &quot;,
+-&quot;gumppic 208 396 5107             &quot;,
+-&quot;gumppic 298 396 5107             &quot;,
+-&quot;gumppic 370 396 5107             &quot;,
+-&quot;gumppic 460 396 5108             &quot;,
+-&quot;gumppic  20 380 5100             &quot;,
+-&quot;gumppic  28 380 5101             &quot;,
+-&quot;gumppic 118 380 5101             &quot;,
+-&quot;gumppic 208 380 5101             &quot;,
+-&quot;gumppic 298 380 5101             &quot;,
+-&quot;gumppic 370 380 5101             &quot;,
+-&quot;gumppic 460 380 5102             &quot;,
+-&quot;button  320 410  241  242 1 0 999&quot;,
+-&quot;text    110  80  900    0        &quot;,
+-&quot;text     50 160  900    1        &quot;,
+-&quot;text    160 160  900    2        &quot;,
+-&quot;text    350 160  900    3        &quot;,
+-&quot;text     40 301  900    4        &quot;,
+-&quot;text    220 301  900    5        &quot;,
+-&quot;text    290 301  900    6        &quot;,
+-&quot;text    360 301  900    7        &quot;,
+-&quot;text     90 420  900    8        &quot;,
+-&quot;tilepic  50 330 6464             &quot;,
+-&quot;tilepic 220 330 7608             &quot;,
+-&quot;tilepic 295 330 4100             &quot;,
+-&quot;tilepic 380 330 3854             &quot;,
+-&quot;button  100 333  210  211 1  0 10&quot;,
+-&quot;button   70 424    3    4 1  0 10&quot;
+-);
+-
+-var data := {
+-  &quot;KEG TINKERING MENU&quot;,              // 0
+-  &quot;ITEM&quot;,                            // 1
+-  &quot;COMPONENTS&quot;,                      // 2
+-  &quot;LINING&quot;,                          // 3
+-  &quot;Potion Keg&quot;,                      // 4
+-  &quot;Lid&quot;,                             // 5
+-  &quot;Tap&quot;,                             // 6
+-  &quot;Bottles(10)&quot;,                     // 7
+-  &quot;Make Last&quot;                        // 8
+-};
+-
+-program buildkeg(who, item)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  if(!can_access(who, item))
+-    return;
+-  endif
+-  var res := SendDialogGump(who, layout, data);
+-  if((res[0] == 0) || (res[0] == 999))
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  endif
+-  var bottlecounter := 0;
+-  var tapcounter := 0;
+-  var lidcounter := 0;
+-  var bottles := 0;
+-  var lid := 0;
+-  var tap := 0;
+-  foreach thing in EnumerateItemsInContainer(who.backpack)
+-    if(thing.objtype == 0xf0e)
+-      if(bottlecounter == 0)
+-        if(thing.amount &gt;= 10)
+-          if(ReserveItem(thing))
+-            bottles := thing;
+-            bottlecounter := bottlecounter + 1;
+-          endif
+-        endif
+-      endif
+-    elseif(thing.objtype == 0x1db8)
+-      if(lidcounter == 0)
+-        if(ReserveItem(thing))
+-          lid := thing;
+-          lidcounter := lidcounter + 1;
+-        endif
+-      endif
+-    elseif(thing.objtype == 0x1004)
+-      if(tapcounter == 0)
+-        if(ReserveItem(thing))
+-          tap := thing;
+-          tapcounter := tapcounter + 1;
+-        endif
+-      endif
+-    endif
+-    if((bottlecounter == 1) &amp;&amp; (tapcounter == 1) &amp;&amp; (lidcounter == 1))
+-      break;
+-    endif
+-  endforeach
+-  if((bottlecounter == 0) || (tapcounter == 0) || (lidcounter == 0))
+-    SendSysMessage(who, &quot;You do not have all the required pieces.&quot;);
+-    return;
+-  endif
+-  if(CheckSkill(who, SKILLID_TINKERING, 52, GetEffectiveSkill(who, SKILLID_TINKERING)))
+-    var checker := 0;
+-    if(!SubtractAmount(bottles, 10))
+-      checker := 1;
+-    endif
+-    if(!DestroyItem(tap))
+-      checker := 1;
+-    endif
+-    if(!DestroyItem(lid))
+-      checker := 1;
+-    endif
+-    if(!DestroyItem(item))
+-      checker := 1;
+-    endif
+-    if(checker == 1)
+-      SendSysMessage(who, &quot;Error: could not find all the parts.&quot;);
+-      return;
+-    endif
+-    var theitem := CreateItemInBackpack(who, 0x1940, 1);
+-      if(!theitem)
+-        SendSysMessage(who, &quot;Error: could not create barrel.&quot;);
+-        return;
+-      endif
+-      theitem.movable := 1;
+-      SendSysMessage( who, &quot;You made the item and put it in your pack.&quot;);
+-    endif
+-endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/carpentry/carpentry.cfg
+===================================================================
+--- trunk/096/pkg/skills/carpentry/carpentry.cfg	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/skills/carpentry/carpentry.cfg	2005-10-28 07:14:49 UTC (rev 686)
+@@ -1,653 +1,971 @@
++##########################################################################
++# Format for carpentry.cfg:
++#
++#     carpentry         0xB005      &lt;- Objtype of the item
++#     {
++#      Name             pentagram   &lt;- Name of the item
++#      material         100         &lt;- Material Amount Required
++#      material2        40          &lt;- Second Material Amount Required
++#      material2obj     metal       &lt;- Type of second material used to craft this (cloth/metal)
++#      skill            100.0       &lt;- Skill Required of Carpentry to make xx.x formated
++#      skillID          Magery      &lt;- SkillID of secondary skill
++#      skill2           75.0        &lt;- Skill Required of Second Skill to make xx.x formated
++#      difficulty       75.0        &lt;- Difficulty of creating this item xx.x formated
++#      points           0.0         &lt;- Points given for crafting this item, xx.x formated
++#      parts            0x0 0x0 3 1 &lt;- list of Objtypes of parts for an assemble item
++#                                      &lt;objtype&gt; &lt;objtype&gt; &lt;amount&gt; &lt;amount&gt;
++#      type             wood        &lt;- Type of material used to craft this
++#      exceptional 1                &lt;- 0/1 Flag. 1 = Can be exceptional
++#      mark        1                &lt;- 0/1 Flag. 1 = Can retain maker's mark
++#      retain      1                &lt;- 0/1 Flag. 1 = Can retain color of ore used
++#      assemble    1                &lt;- Used in tinker/carpentry for items marked
++#     }                                as assemblies. This includes making boards.
++#
++# Notes: 1.) Objtype in entry header must NOT use 0x0aaa format, but 0xaaa
++##########################################################################
++
+ carpentry         0x1bd7
+ {
+- Name	          boards
+- exchk            0
++ Name             boards
+  material         1
+- skill            1
+- type             1
+- icon             0x1bd7
++ skill            1.0
++ difficulty       1.0
++ points           1.0
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
++ assemble         1
+ }
+ 
+ carpentry         0x1eb2
+ {
+  Name	          barrel staves
+- exchk            0
+  material         5
+- skill            1
+- type             1
+- icon             0x1eb2
++ skill            1.0
++ difficulty       0.0
++ points           5.0
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
+ carpentry         0x1db8
+ {
+  Name	          barrel lid
+- exchk            0
+  material         5
+- skill            11
+- type             1
+- icon             0x1db8
++ skill            11.0
++ difficulty       3.0
++ points           11.0
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
+-carpentry         0x0e7f
++carpentry         0xEB6
+ {
+- Name	          open keg
+- exchk            0
+- material         0
+- skill            57
+- type             5
+- icon             0xe7f
++ Name	          short music stand
++ material         15
++ skill            78.9
++ difficulty       53.9
++ points           78.9
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
++carpentry         0xEBB
++{
++ Name	          tall music stand
++ material         20
++ skill            81.5
++ difficulty       56.5
++ points           81.5
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
++}
++
++carpentry         0xF66
++{
++ Name	          easel
++ material         20
++ skill            86.8
++ difficulty       61.8
++ points           86.8
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
++}
++
+ carpentry         0xb3a
+ {
+- Name	          small table
+- exchk            0
+- material         15
+- skill            35
+- type             2
+- icon             0x0b3a
++ Name	          table
++ material         17
++ skill            42.1
++ difficulty       17.1
++ points           42.1
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0b7d
++carpentry         0xb49
+ {
++ Name	          writing table
++ material         17
++ skill            63.1
++ difficulty       38.1
++ points           63.1
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
++}
++
++carpentry         0xb7d
++{
+  Name	          yew table
+- exchk            0
+- material         25
+- skill            65
+- type             2
+- icon             0x0b7d
++ material         27
++ skill            84.2
++ difficulty       84.2
++ points           84.2
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0b7c
++carpentry         0xb7c
+ {
+  Name	          table
+- exchk            0
+- material         25
+- skill            70
+- type             2
+- icon             0x0b7c
++ material         23
++ skill            63.1
++ points           63.1
++ difficulty       38.1
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0b3f
++carpentry         0xb3f
+ {
+- Name	          largecounter
+- exchk            0
++ Name	          counter
+  material         25
+- skill            70
+- type             2
+- icon             0x0b3f
++ skill            69.1
++ points           69.1
++ difficulty       44.1
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0a2a
++carpentry         0xa2a
+ {
+  Name             stool
+- exchk            0
+- material         7
+- skill            11
+- type             3
+- icon             0x0a2a
++ material         9
++ skill            11.0
++ points           11.0
++ difficulty       3.0
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0b5b
++carpentry         0xb5e
+ {
+- Name             poorchair
+- exchk            0
+- material         7
+- skill            11
+- type             3
+- icon             0x0b5e
++ Name             foot stool
++ material         9
++ skill            11.0
++ points           11.0
++ difficulty       3.0
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0b2c
++carpentry         0xb5b
+ {
+- Name             bench
+- exchk            0
+- material         14
+- skill            42
+- type             3
+- icon             0x0b2c
++ Name             straw chair
++ material         13
++ skill            21.0
++ points           21.0
++ difficulty       7.0
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0b57
++carpentry         0xb57
+ {
+  Name             wooden chair
+- exchk            0
++ material         13
++ skill            21.0
++ points           21.0
++ difficulty       7.0
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
++}
++
++carpentry         0xb4e
++{
++ Name             chair
+  material         15
+- skill            50
+- type             3
+- icon             0x0b57
++ skill            42.1
++ points           42.1
++ difficulty       17.1
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0b4f
++carpentry         0xb52
+ {
+- Name             fancy chair
+- exchk            0
++ Name             chair
++ material         15
++ skill            42.1
++ points           42.1
++ difficulty       17.1
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
++}
++
++carpentry         0xb2c
++{
++ Name             bench
+  material         17
+- skill            65
+- type             3
+- icon             0x0b4f
++ skill            52.6
++ points           52.6
++ difficulty       27.6
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0b2E
++carpentry         0xb2E
+ {
+  Name             wooden throne
+- exchk            0
+- material         20
+- skill            65
+- type             3
+- icon             0x0b2E
++ material         17
++ skill            52.6
++ points           52.6
++ difficulty       27.6
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0b32
++carpentry         0xb32
+ {
+  Name             throne
+- exchk            0
+- material         30
+- skill            70
+- type             3
+- icon             0x0b32
++ material         19
++ skill            73.6
++ points           73.6
++ difficulty       48.6
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0a53
++carpentry         0x9aa
+ {
+- Name             oak armoire
+- exchk            0
+- material         35
+- skill            85
+- type             4
+- icon             0x0a53
++ Name             wooden box
++ material         10
++ skill            21.0
++ points           21.0
++ difficulty       7.0
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0a51
++carpentry         0x9a9
+ {
+- Name             cherry armoire
+- exchk            0
+- material         35
+- skill            80
+- type             4
+- icon             0x0a51
++ Name             small crate
++ material         8
++ skill            10.0
++ points           10.0
++ difficulty       3.0
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0a34
++carpentry         0xe3f
+ {
+- Name             oakdresser
+- exchk            0
+- material         20
+- skill            65
+- type             4
+- icon             0x0a34
++ Name             medium crate
++ material         15
++ skill            31.5
++ points           31.5
++ difficulty       6.5
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0a38
++carpentry         0xe3c
+ {
+- Name             cherrydresser
+- exchk            0
++ Name             large crate
++ material         18
++ skill            47.3
++ points           47.3
++ difficulty       22.3
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
++}
++
++carpentry         0xe43
++{
++ Name             wooden chest
+  material         20
+- skill            65
+- type             4
+- icon             0x0a38
++ skill            73.6
++ points           73.6
++ difficulty       38.6
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0a9d
++carpentry         0xa9e
+ {
+  Name             shelf
+- exchk            0
+  material         25
+- skill            60
+- type             4
+- icon             0x0a9a
++ skill            31.5
++ points           31.5
++ difficulty       6.5
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x09aa
++carpentry         0xa53
+ {
+- Name             wooden box
+- exchk            0
+- material         13
+- skill            31
+- type             5
+- icon             0x09aa
++ Name             armoire
++ material         35
++ skill            84.2
++ points           84.2
++ difficulty       59.2
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0e80
++carpentry         0xa51
+ {
+- Name             strong box
+- exchk            0
+- material         13
+- skill            31
+- type             5
+- icon             0x0e80
++ Name             armoire
++ material         35
++ skill            84.2
++ points           84.2
++ difficulty       59.2
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0e43
++carpentry         0xa34
+ {
+- Name             wooden chest
+- exchk            0
+- material         20
+- skill            73
+- type             5
+- icon             0x0e43
++ Name             dresser
++ material         30
++ skill            72.6
++ points           72.6
++ difficulty       72.6
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x09a9
++carpentry         0xa38
+ {
+- Name             small crate
+- exchk            0
+- material         8
+- skill            10
+- type             5
+- icon             0x09a9
++ Name             dresser
++ material         30
++ skill            72.6
++ points           72.6
++ difficulty       72.6
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0e3f
++carpentry         0xe77
+ {
+- Name             medium crate
+- exchk            0
+- material         10
+- skill            21
+- type             5
+- icon             0x0e3f
++ Name             barrel
++ material         15
++ skill            52.6
++ points           52.6
++ difficulty       27.6
++ parts            0x1eb2 0x10e1 3 1
++ type             wood
++ exceptional      1
++ mark             0
++ retain           0
++ assemble         1
+ }
+ 
+-carpentry         0x0e3c
++carpentry         0xe7f
+ {
+- Name             large crate
+- exchk            0
+- material         20
+- skill            47
+- type             5
+- icon             0x0e3c
++ Name	          open keg
++ material         0
++ skill            57.8
++ difficulty       32.8
++ points           57.8
++ parts            0x1eb2 0x10e1 0x1db8 3 1 1
++ type             wood
++ exceptional      1
++ mark             0
++ retain           0
++ assemble         1
+ }
+ 
+-carpentry         0x0e77
++carpentry         0xe80
+ {
+- Name             barrel
+- exchk            0
+- material         15
+- skill            20
+- type             5
+- icon             0X0e77
++ Name             strong box
++ material         12
++ skill            47.8
++ difficulty       22.8
++ points           47.8
++ type             wood
++ exceptional      1
++ mark             0
++ retain           0
+ }
+ 
+-carpentry         0x0ec6
++carpentry         0xEC6
+ {
+- Name             dressform
+- exchk            0
+- material         23
+- skill            63
+- type             6
+- icon             0x0ec6
++ Name             dress form
++ material         25
++ skill            63.1
++ difficulty       38.1
++ points           63.1
++ skill2           65.0
++ material2        10
++ material2obj     cloth
++ skillID          Musicianship
++ type             wood
++ exceptional      1
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0x1b7a
+ {
+  Name             wooden shield
+- exchk            1
+  material         9
+- skill            52
+- type             6
+- icon             0x1b7a
++ skill            52.6
++ difficulty       27.6
++ points           52.6
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+ carpentry         0x13b3
+ {
+  Name             club
+- exchk            1
+  material         4
+- skill            40
+- type             6
+- icon             0x13b3
++ skill            40.6
++ difficulty       15.6
++ points           40.6
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0f64
++carpentry         0xf64
+ {
+  Name             torch
+- exchk            0
+  material         1
+- skill            30
+- type             6
+- icon             0x0f64
++ skill            30.2
++ difficulty       5.2
++ points           30.2
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
+ carpentry         0x13f9
+ {
+  Name             gnarled staff
+- exchk            1
+  material         7
+- skill            78
+- type             6
+- icon             0x13f9
++ skill            78.9
++ difficulty       53.9
++ points           78.9
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0e8a
++carpentry         0xe8a
+ {
+  Name             quarter staff
+- exchk            1
+  material         6
+- skill            73
+- type             6
+- icon             0x0e8a
++ skill            73.6
++ difficulty       48.6
++ points           73.6
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0e81
++carpentry         0xe81
+ {
+  Name             shepherd's crook
+- exchk            1
+  material         7
+- skill            78
+- type             6
+- icon             0x0e81
++ skill            78.9
++ difficulty       53.9
++ points           78.9
++ type             wood
++ exceptional      1
++ mark             1
++ retain           1
+ }
+ 
+-carpentry         0x0df0
++carpentry         0xdbf
+ {
+- Name             black staff
+- exchk            1
+- material         15
+- skill            80
+- type             6
+- icon             0x0df0
+-}
+-
+-carpentry         0x0dc0
+-{
+  Name	          fishing pole
+- exchk            1
+- material         15
+- skill            70
+- skill2           40
++ material         5
++ skill            68.4
++ difficulty       43.4
++ points           68.4
++ skill2           40.0
+  material2        5
+  material2obj     cloth
+- skillID          34
+- type             6
+- icon             0x0dc0
++ skillID          Tailoring
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
+-carpentry         0x0eb1
++carpentry         0xeb1
+ {
+  Name	          standing harp
+- exchk            1
+  material         35
++ skill            78.9
++ difficulty       53.9
++ points           78.9
++ skill2           45.0
+  material2        15
+- skill            79
+- skill2           45
+  material2obj     cloth
+- skillID          29
+- type             6
+- icon             0x0eb1
++ skillID          Musicianship
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
+-carpentry         0x0eb2
++carpentry         0xeb2
+ {
+  Name	          lap harp
+- exchk            1
+  material         20
+  material2        10
+- skill            63
+- skill2           45
++ skill            63.1
++ difficulty       38.1
++ points           63.1
++ skill2           45.0
+  material2obj     cloth
+- skillID          29
+- type             6
+- icon             0x0eb2
++ skillID          Musicianship
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
+-carpentry         0x0eb3
++carpentry         0xeb3
+ {
+  Name	          lute
+- exchk            1
+  material         25
+  material2        10
+- skill            68
+- skill2           45
++ skill            68.4
++ difficulty       43.4
++ points           68.4
++ skill2           45.0
+  material2obj     cloth
+- skillID          29
+- type             6
+- icon             0x0eb3
++ skillID          Musicianship
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
+-carpentry         0x0e9c
++carpentry         0xe9c
+ {
+  Name	          drum
+- exchk            1
+  material         20
+  material2        10
+- skill            58
+- skill2           45
++ skill            57.8
++ difficulty       32.8
++ points           57.8
++ skill2           45.0
+  material2obj     cloth
+- skillID          29
+- type             6
+- icon             0x0e9c
++ skillID          Musicianship
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
+-carpentry         0x0e9d
++carpentry         0xe9d
+ {
+  Name	          tambourine
+- exchk            1
+  material         15
+  material2        10
+- skill            58
+- skill2           45
++ skill            57.8
++ difficulty       32.8
++ points           57.8
++ skill2           45.0
+  material2obj     cloth
+- skillID          29
+- type             6
+- icon             0x0e9d
++ skillID          Musicianship
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
+-carpentry         0x0e9e
++carpentry         0xe9e
+ {
+  Name	          tambourine with tassel
+- exchk            1
+  material         15
+  material2        15
+- skill            58
+- skill2           45
++ skill            57.8
++ difficulty       32.8
++ points           57.8
++ skill2           45.0
+  material2obj     cloth
+- skillID          29
+- type             6
+- icon             0x0e9e
++ skillID          Musicianship
++ type             wood
++ exceptional      1
++ mark             1
++ retain           0
+ }
+ 
+ carpentry         0xB000
+ {
+  Name	          anvil deed
+- exchk            0
+  material         5
+  material2        150
+- skill            74
+- skill2           75
++ skill            73.6
++ difficulty       48.6
++ points           73.6
++ skill2           75.0
+  material2obj     metal
+- skillID          7
+- type             7
+- icon             0x0FAF
++ skillID          Blacksmithy
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xB001
+ {
+  Name	          small forge deed
+- exchk            0
+  material         5
+  material2        75
+- skill            74
+- skill2           75
++ skill            73.6
++ difficulty       48.6
++ points           73.6
++ skill2           75.0
+  material2obj     metal
+- skillID          7
+- type             7
+- icon             0x0FB1
++ skillID          Blacksmithy
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xB007
+ {
+- Name             large forge
+- exchk            0
++ Name             large forge deed
+  material         5
+  material2        100
+- skill            79
+- skill2           80
++ skill            78.9
++ difficulty       53.9
++ points           78.9
++ skill2           80.0
+  material2obj     metal
+- skillID          7
+- type             7
+- icon             0x197a
++ skillID          Blacksmithy
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xB002
+ {
+  Name	          training dummy deed
+- exchk            0
+  material         55
+  material2        60
+- skill            68
+- skill2           50
++ skill            68.4
++ difficulty       43.4
++ points           68.4
++ skill2           50.0
+  material2obj     cloth
+- skillID          34
+- type             7
+- icon             0x1070
++ skillID          Tailoring
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xB003
+ {
+  Name	          pickpockets dip deed
+- exchk            0
+  material         65
+  material2        60
+- skill            74
+- skill2           50
++ skill            73.6
++ difficulty       48.6
++ points           73.6
++ skill2           50.0
+  material2obj     cloth
+- skillID          34
+- type             7
+- icon             0x1EC0
++ skillID          Tailoring
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xB004
+ {
+  Name	          spinning wheel deed
+- exchk            0
+  material         75
+  material2        25
+- skill            74
+- skill2           65
++ skill            73.6
++ difficulty       48.6
++ points           73.6
++ skill2           65.0
+  material2obj     cloth
+- skillID          34
+- type             7
+- icon             0x1019
++ skillID          Tailoring
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
++carpentry         0xb00d
++{
++ Name	          dart board deed
++ material         5
++ skill            15.7
++ difficulty       5.7
++ points           15.7
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
++}
++
+ carpentry         0xB005
+ {
+  Name             pentagram
+- exchk            0
+  material         100
+  material2        40
+- skill            100
+- skill2           75
++ skill            100.0
++ difficulty       75.0
++ points           100.0
++ skill2           75.0
+  material2obj     metal
+- skillID          25
+- type             7
+- icon             0x0fea
++ skillID          Magery
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xB006
+ {
+  Name             abbatoir
+- exchk            0
+  material         100
+  material2        40
+- skill            100
+- skill2           50
++ skill            100.0
++ difficulty       75.0
++ points           100.0
++ skill2           50.0
+  material2obj     metal
+- skillID          25
+- type             7
+- icon             0x1216
++ skillID          Magery
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xB008
+ {
+  Name             loom
+- exchk            0
+  material         85
+  material2        25
+- skill            84
+- skill2           65
++ skill            84.2
++ difficulty       59.2
++ points           84.2
++ skill2           65.0
+  material2obj     cloth
+- skillID          34
+- type             7
+- icon             0x105f
++ skillID          Tailoring
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xb009
+ {
+  Name             bed
+- exchk            0
+  material         150
+  material2        150
+- skill            95
+- skill2           75
++ skill            94.7
++ difficulty       69.7
++ points           94.7
++ skill2           75.0
+  material2obj     cloth
+- skillID          34
+- type             7
+- icon             0x0a81
++ skillID          Tailoring
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xb011
+ {
+  Name             small bed
+- exchk            0
+  material         100
+  material2        100
+- skill            95
+- skill2           75
++ skill            94.7
++ difficulty       69.7
++ points           94.7
++ skill2           75.0
+  material2obj     cloth
+- skillID          34
+- type             7
+- icon             0xb011
++ skillID          Tailoring
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xb00a
+ {
+  Name             water trough
+- exchk            0
+  material         150
+- skill            95
+- type             7
+- icon             0x0b42
++ skill            94.7
++ difficulty       69.7
++ points           94.7
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xb00b
+ {
+- Name             mill
+- exchk            0
++ Name             flour mill
+  material         100
+  material2        50
+- skill            95
+- skill2           50
++ skill            94.7
++ difficulty       69.7
++ points           94.7
++ skill2           50.0
+  material2obj     metal
+- skillID          37
+- type             7
+- icon             0x1920
++ skillID          Tinkering
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+ carpentry         0xb00c
+ {
+  Name             stone oven
+- exchk            0
+  material         85
+  material2        125
+- skill            68
+- skill2           50
++ skill            94.7
++ difficulty       69.7
++ points           94.7
++ skill2           50.0
+  material2obj     metal
+- skillID          37
+- type             7
+- icon             0x092b
++ skillID          Tinkering
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
+ }
+ 
+-carpentry         0xb00d
++carpentry         0xb00e
+ {
+  Name             sandstone oven
+- exchk            0
+  material         85
+  material2        125
+- skill            68
+- skill2           50
++ skill            94.7
++ difficulty       69.7
++ points           94.7
++ skill2           50.0
+  material2obj     metal
+- skillID          37
+- type             7
+- icon             0x0461
+-}
+\ No newline at end of file
++ skillID          Tinkering
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
++}
++
++carpentry         0xafff
++{
++ Name             sandstone fireplace
++ material         85
++ material2        125
++ material2obj     metal
++ skill            94.7
++ difficulty       69.7
++ points           94.7
++ skill2           50.0
++ skillID          Tinkering
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
++}
++
++carpentry         0xaffe
++{
++ Name             stone fireplace
++ material         85
++ material2        125
++ material2obj     metal
++ skill            94.7
++ difficulty       69.7
++ points           94.7
++ skill2           50.0
++ skillID          Tinkering
++ type             wood
++ exceptional      0
++ mark             0
++ retain           0
++}
+
+Modified: trunk/096/pkg/skills/carpentry/carpentry.src
+===================================================================
+--- trunk/096/pkg/skills/carpentry/carpentry.src	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/skills/carpentry/carpentry.src	2005-10-28 07:14:49 UTC (rev 686)
+@@ -1,993 +1,234 @@
++/* $Id$
++ *
++ */
+ use cfgfile;
++use polsys;
+ use util;
+ 
+-include &quot;:gumps:include/old/old-gumps&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/dist&quot;;
+-include &quot;util/repair&quot;;
+-include &quot;include/client&quot;;
+-include &quot;include/objtype&quot;;
+-include &quot;include/client&quot;;
+-include &quot;include/objtype&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
++include &quot;:crafting:crafting&quot;;
++include &quot;:crafting:craftingRepair&quot;;
++include &quot;:crafting:toolWear&quot;;
+ include &quot;include/canAccess&quot;;
+-include &quot;util/key&quot;;
+-include &quot;include/toolWear&quot;;
+-include &quot;include/noto&quot;;
+ 
+-// These entries are unnecessary?  - HellRazor 19 Nov 02
+-// var itemcfg   := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-// var smith_cfg := ReadConfigFile(&quot;blacksmithy&quot;);
+-GFref.x := 50;
+-GFref.y := 50;
+-var O := 501;
++CONST CARP_WOOD_SOUND := 0x23e;
+ 
+-program carpentry(who, tool)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  if(!can_access(who, tool))
+-    return;
+-  endif
+-  if((!Accessible(who,tool)) || (Distance(who, tool) &gt; 1))
+-    return 0;
+-  endif
+-  if(!ReserveItem(tool))
+-    return;
+-  endif
+-  OldGFInitGump(0, 0);
+-  OldGFNoDispose();
+-  OldGFNoClose();
+-  OldGFPage(0);
+-  OldGFResizePic(0, 60, 2600, 500, 400);
+-  OldGFGumpPic( 20, 120, 5100);
+-  OldGFGumpPic( 28, 120, 5101);
+-  OldGFGumpPic(118, 120, 5101);
+-  OldGFGumpPic(208, 120, 5101);
+-  OldGFGumpPic(298, 120, 5101);
+-  OldGFGumpPic(370, 120, 5101);
+-  OldGFGumpPic(460, 120, 5102);
+-  OldGFGumpPic( 20, 128, 5103);
+-  OldGFGumpPic( 28, 128, 5104);
+-  OldGFGumpPic(118, 128, 5104);
+-  OldGFGumpPic(208, 128, 5104);
+-  OldGFGumpPic(298, 128, 5104);
+-  OldGFGumpPic(370, 128, 5104);
+-  OldGFGumpPic(460, 128, 5105);
+-  OldGFGumpPic( 20, 136, 5058);
+-  OldGFGumpPic(118, 136, 5058);
+-  OldGFGumpPic(232, 136, 5058);
+-  OldGFGumpPic(350, 136, 5058);
+-  OldGFGumpPic( 20, 136, 5106);
+-  OldGFGumpPic( 28, 136, 5107);
+-  OldGFGumpPic(118, 136, 5107);
+-  OldGFGumpPic(208, 136, 5107);
+-  OldGFGumpPic(298, 136, 5107);
+-  OldGFGumpPic(370, 136, 5107);
+-  OldGFGumpPic(460, 136, 5108);
+-  OldGFGumpPic( 28, 278, 5104);
+-  OldGFGumpPic(118, 278, 5104);
+-  OldGFGumpPic(208, 278, 5104);
+-  OldGFGumpPic(298, 278, 5104);
+-  OldGFGumpPic(368, 278, 5104);
+-  OldGFGumpPic( 20, 278, 5103);
+-  OldGFGumpPic(460, 278, 5105);
+-  OldGFGumpPic( 20, 226, 5058);
+-  OldGFGumpPic(118, 226, 5058);
+-  OldGFGumpPic(232, 226, 5058);
+-  OldGFGumpPic(350, 226, 5058);
+-  OldGFGumpPic( 20, 366, 5106);
+-  OldGFGumpPic( 28, 366, 5107);
+-  OldGFGumpPic(118, 366, 5107);
+-  OldGFGumpPic(208, 366, 5107);
+-  OldGFGumpPic(298, 366, 5107);
+-  OldGFGumpPic(370, 366, 5107);
+-  OldGFGumpPic(460, 366, 5108);
+-  OldGFGumpPic( 20, 350, 5100);
+-  OldGFGumpPic( 28, 350, 5101);
+-  OldGFGumpPic(118, 350, 5101);
+-  OldGFGumpPic(208, 350, 5101);
+-  OldGFGumpPic(298, 350, 5101);
+-  OldGFGumpPic(370, 350, 5101);
+-  OldGFGumpPic(460, 350, 5102);
+-  OldGFTextLine(110,  80, 900, &quot;CARPENTRY SELECTION MENU&quot;);
+-  OldGFTextLine( 30, 121,   0, &quot;Materials&quot;);
+-  OldGFTextLine(160, 121,   0, &quot;Tables&quot;);
+-  OldGFTextLine(260, 121,   0, &quot;Chairs&quot;);
+-  OldGFTextLine(350, 121,   0, &quot;Instruments&quot;);
+-  OldGFTextLine( 30, 351,   0, &quot;Shelves&quot;);
+-  OldGFTextLine(140, 351,   0, &quot;Containers&quot;);
+-  OldGFTextLine(265, 351,   0, &quot;Misc&quot;);
+-  OldGFTextLine(365, 351,   0, &quot;add-ons&quot;);
+-  OldGFTextLine( 90, 380, 900, &quot;Make Last&quot;);
+-  var lastitm := OldGFButtonID( 70, 384,   3, 4, 99);
+-  var close   := OldGFButtonID(410, 380, 242, 241, 1);
+-  OldGFButtonPage(110, 123, 5209, 5209,  2);
+-  OldGFButtonPage(210, 123, 5209, 5209,  3);
+-  OldGFButtonPage(310, 123, 5209, 5209,  4);
+-  OldGFButtonPage(440, 123, 5209, 5209,  5);
+-  OldGFButtonPage( 90, 353, 5209, 5209,  6);
+-  OldGFButtonPage(220, 353, 5209, 5209,  7);
+-  OldGFButtonPage(320, 353, 5209, 5209,  8);
+-  OldGFButtonPage(430, 353, 5209, 5209,  9);
+-  OldGFTextLine(  300, 420, 900, &quot;How Many?&quot;);
+-  OldGFGumpPic(390, 417, 2443);
+-  var sa := GetObjProperty(who, &quot;#CarpAmt&quot;);
+-  if(!sa)
+-    sa := 1;
+-  endif
+-  var ct := OldGFTextEntry(400, 420, 100, 30, 0, sa);
+-  ComposeSubMenu(who);
+-  var res := OldGFSendGump(who);
+-  if((res[0] == 999) || (res[close.keyid]))
+-    SendSysMessage(who, &quot;Cancelled&quot;);
+-    return;
+-  endif
+-  var amt := CInt(SplitWords(res[ct.keyid])[2]);
+-  if(!amt)
+-    amt := 1;
+-  elseif(amt &gt; 10)
+-    SendSysMessage(who, &quot;You can only make up to 10 at a time.&quot;);
+-    return;
+-  endif
+-  SetObjProperty(who, &quot;#CarpAmt&quot;, amt);
+-  var cont := tool.container;
+-  if((!cont) || (cont.isa(POLCLASS_MOBILE)))
+-    cont := who.backpack;
+-  endif
+-  var the_objtype := res[0];
+-  if(res[lastitm.keyid])
+-    the_objtype := GetObjProperty(who, &quot;LastCarpentryItem&quot;);
+-    if(!the_objtype)
+-      SendSysMessage(who, &quot;You have never woodworked before.&quot;);
+-      return;
+-    endif
+-  endif
+-  SetObjProperty(who, &quot;LastCarpentryItem&quot;, the_objtype);
+-  if(makewooditems(who, tool, the_objtype, amt, cont) == 1)
+-    var chk := 0;
+-    SendSysMessage(who, &quot;Target the wood you wish to work with.&quot;);
+-    var item1 := Target(who);
+-    if(!item1)
+-      SendSysMessage(who, &quot;Cancelled.&quot;);
+-      return;
+-    endif
+-    var x := who.x;
+-    var y := who.y;
+-    var cfg := ReadConfigFile( &quot;carpentry&quot; );
+-    var material2obj := cfg[the_objtype].&quot;material2obj&quot;;
+-    var item2 := 0;
+-    if(material2obj)
+-      var holder := &quot;&quot;;
+-      if(material2obj == &quot;cloth&quot;)
+-        holder := &quot;fabric&quot;;
+-      else
+-        holder := &quot;ingots&quot;;
+-      endif
+-      SendSysMessage(who, &quot;Target the &quot; + holder + &quot; you wish to use.&quot;);
+-      item2 := Target(who);
+-      if(!item2)
+-        SendSysMessage(who, &quot;Cancelled.&quot;);
+-        return;
+-      endif
+-    endif
+-    var totalcloth := item2.amount * 50;
+-    if((item2.objtype &gt;= UOBJ_BOLT_START) &amp;&amp; (item2.objtype &lt;= UOBJ_BOLT_END))
+-      totalcloth := item2.amount * 50;
+-      if(item2.container)
+-        var bag := item2.container;
+-        var counter := 1;
+-        MoveItemToLocation(item2, 1, 1, 0, MOVEITEM_FORCELOCATION);
+-        var holder := CreateItemInContainer(who.backpack, 0x1766, 50);
+-        if(holder)
+-          while(counter &lt; item2.amount)
+-            if(CreateItemInContainer(who.backpack, 0x1766, 50))
+-              counter := counter + 1;
+-            else
+-              counter := item2.amount;
+-              DestroyItem(holder);
+-              MoveItemToContainer(item2, bag);
+-              item2 := 0;
+-              break;
+-            endif
+-          endwhile
+-          if(holder)
+-            DestroyItem(item2);
+-            item2 := holder;
+-          endif
+-        else
+-          MoveItemToContainer(item2, bag);
+-          item2 := 0;
+-        endif
+-      else
+-        var x := item2.x;
+-        var y := item2.y;
+-        var z := item2.z;
+-        if(MoveItemToLocation(item2, 1, 1, 0, MOVEITEM_FORCELOCATION))
+-          var temppack := CreateItemAtLocation(1, 1, 0, 0xe40, 1, who.realm);
+-          var holder := CreateItemInContainer(temppack, 0x1766, totalcloth);
+-          if(MoveItemToLocation(holder, x, y, z, MOVEITEM_NORMAL))
+-            DestroyItem(item2);
+-            item2 := holder;
+-          else
+-            MoveItemToLocation(item2, x, y, z, MOVEITEM_FORCELOCATION);
+-            DestroyItem(holder);
+-            item2 := 0;
+-          endif
+-          DestroyItem(temppack);
+-        else
+-          item2 := 0;
+-        endif
+-      endif
+-      if(item2 == 0)
+-        SendSysMessage(who, &quot;Your backpack was too full.&quot;);
+-        return;
+-      endif
+-    endif
+-    while(chk &lt; amt)
+-      if((who.x != x) || (who.y != y))
+-        SendSysMessage(who, &quot;You stop what you are doing.&quot;);
+-        break;
+-      endif
+-      if(!tool)
+-        break;
+-      endif
+-      if(MakeCarpentryItems(who, tool, the_objtype, cont, item1, item2) == 1)
+-        chk := chk + 1;
+-      else
+-        break;
+-      endif
+-    endwhile
+-  endif
++var item_config     := ReadConfigFile(&quot;:*:itemdesc&quot;);
++var craft_config    := ReadConfigFile(&quot;:carpentry:carpentry&quot;);
++
++program use_carptool(who, tool)
++
++	if(!can_access(who, tool))
++		return 0;
++	endif
++	if( (!tool.movable) or !ReserveItem(tool) )
++		SendSysMessage(who, &quot;You cannot use that&quot;);
++		return 0;
++	endif
++	if( !(tool in EnumerateItemsInContainer(who.backpack)) )
++		SendSysMessage(who, &quot;That item is not in your backpack.&quot;);
++		return 0;
++	endif
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	var rinfo := sendCraftGump(who, &quot;Carpentry&quot;);
++
++	// OK was pressed, close it on out
++	if(rinfo == 0)
++		return 0;
++	endif
++
++	var the_objtype := rinfo[1];
++	var amt         := rinfo[2];
++	var repairit    := rinfo[3];
++
++	if(repairit)
++		repair_this(who, craft_skill);
++		return 0;
++	endif
++
++	if(craft_config[Hex(the_objtype)].assemble == 1)
++		AssembleParts(who, tool, the_objtype, amt);
++	else
++		CarpentryItems(who, tool, the_objtype, amt);
++	endif
++
+ endprogram
+ 
+-function MakeCarpentryItems(who, tool, objtype, cont, item1, item2)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  var itemname, theitem;
+-  var elm, exchk, skill, name, skill2, skillid, material, material2, material2obj;
+-  var carpentryskill := CInt(GetEffectiveSkill(who, SKILLID_CARPENTRY));
+-  var cfg := ReadConfigFile( &quot;carpentry&quot; );
+-  case(objtype)
+-    0x0faf: objtype := 0xb000;
+-    0x0fb1: objtype := 0xb001;
+-    0x1070: objtype := 0xb002;
+-    0x1ec0: objtype := 0xb003;
+-    0x1019: objtype := 0xb004;
+-    0x0fea: objtype := 0xb005;
+-    0x1216: objtype := 0xb006;
+-    0x197a: objtype := 0xb007;
+-    0x105f: objtype := 0xb008;
+-    0x0a81: objtype := 0xb009;
+-    0x0b42: objtype := 0xb00a;
+-    0x1920: objtype := 0xb00b;
+-    0x092b: objtype := 0xb00c;
+-    0x0461: objtype := 0xb00d;
+-  endcase
+-  elm          := FindConfigElem(cfg, objtype);
+-  skill        := elm.skill;
+-  name         := elm.Name;
+-  exchk        := elm.exchk;
+-  skillid      := elm.skillID;
+-  skill2       := Cint(elm.skill2);
+-  material     := elm.material;
+-  material2    := CInt(elm.material2);
+-  material2obj := elm.material2obj;
+-  var modpts := 0;
+-  if(carpentryskill &gt;=  skill)
+-    modpts := (carpentryskill - (skill - 10));
+-  endif
+-  var ok2:=0;
+-  if(!material2)
+-    ok2 := 1;
+-  endif
+-  if(!skillid)
+-    ok2:=1;
+-  endif
+-  if(!can_access(who, item1))
+-    return 0;
+-  endif
+-  if((!Accessible(who, item1)) || (Distance(who, item1) &gt; 2) || (!ReserveItem(item1)))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return 0;
+-  endif
+-  if((item1.objtype != 0x1bdd) &amp;&amp; (item1.objtype != 0x1bd7))
+-    SendSysMessage(who, &quot;You can only work with wood.&quot;);
+-    return 0;
+-  endif
+-  if(material &gt; item1.amount)
+-    SendSysMessage(who, &quot;You don't have enough wood to make that.&quot;);
+-    return 0;
+-  endif
+-  if(material2)
+-    if(item2.objtype in  gettypes(material2obj))
+-      if(item2.amount &gt;= material2)
+-        if(!ReserveItem(item2))
+-          SendSysMessage(who, &quot;You cannot use that.&quot;);
+-          return 0;
+-        endif
+-      else
+-        SendSysMessage(who, &quot;You don't have enough of that material.&quot;);
+-        return 0;
+-      endif
+-    else
+-      SendSysMessage(who, &quot;That's not the correct material.&quot;);
+-      return 0;
+-    endif
+-    if(!can_access(who, item2))
+-      return 0;
+-    endif
+-    if((!Accessible(who, item2)) || (Distance(who, item2) &gt; 2) || (!ReserveItem(item2)))
+-      SendSysMessage(who, &quot;You cannot use that.&quot;);
+-      return 0;
+-    endif
+-  endif
+-  PlaySoundEffect(who, 0x23e);
+-  sleep(2);
+-  PlaySoundEffect(who, 0x23e);
+-  sleep(2);
+-  PlaySoundEffect(who, 0x23e);
+-  sleep(2);
+-  var chk := 0;
+-  if(CheckSkill(who, SKILLID_CARPENTRY, skill, (skill * 2)))
+-    if(skillid)
+-      if(CheckSkill(who, skillid, CInt(skill2), (skill2 * 2)))
+-        if(SubtractAmount(item1, material) &amp;&amp; SubtractAmount(item2, material2))
+-          theitem := CreateItemInContainer(cont, objtype, 1);
+-          if(theitem)
+-            CheckToolWear (who, tool, SKILLID_CARPENTRY);
+-            chk := 1;
+-          endif
+-        endif
+-      endif
+-    else
+-      if(SubtractAmount(item1, material))
+-        theitem := CreateItemInContainer(cont, objtype, 1);
+-        if(theitem)
+-          CheckToolWear (who, tool, SKILLID_CARPENTRY);
+-          chk := 1;
+-        endif
+-      endif
+-    endif
+-  endif
+-  if(chk == 0)
+-    SubtractAmount(item1, (material / 2));
+-    if(material2)
+-      SubtractAmount(item2, CInt(material2 / 2));
+-    endif
+-    SendSysMessage( who, &quot;You destroy some materials.&quot;);
+-    return 1;
+-  endif
+-  theitem.movable := 1;
+-  var rint := RandomInt(100);
+-  if(modpts &gt;= rint)
+-    ExceptionalFameMod(who, carpentryskill, skill, skill);
+-    if(exchk)
+-      theitem.quality := 1.2;
+-      theitem.hp := theitem.maxhp;
+-      SetObjProperty(theitem, &quot;Exceptional&quot;, 1);
+-      SetObjProperty(theitem, &quot;type&quot;,&quot;c&quot;);
+-      itemname:=&quot;an exceptional &quot; + name;
+-      if(carpentryskill &gt;= 99)
+-        itemname := itemname + &quot; [crafted by &quot; + who.name + &quot;]&quot;;
+-      endif
+-      SetName(theitem, itemname);
+-      SendSysMessage(who, &quot;You make an exceptional item and put it in your pack.&quot;);
+-    endif
+-  else
+-    var fq :=  RandomInt(GetEffectiveSkill(who, SKILLID_CARPENTRY));
+-    if(skill &gt; 20)
+-      skill := skill - 20;
+-    else
+-      skill := 3;
+-    endif
+-    if((fq &lt; skill) and (exchk))
+-      SendSysMessage( who, &quot;You create the item, but its quality is below average.&quot; );
+-      var val := RandomInt(2) + 1;
+-      case(val)
+-        1: theitem.quality := 0.7;
+-        2: theitem.quality := 0.8;
+-        3: theitem.quality := 0.9;
+-      endcase
+-      theitem.hp := theitem.maxhp;
+-    else
+-      SendSysMessage( who, &quot;You make the item and put it in your pack.&quot; );
+-    endif
+-  endif
+-  if((theitem.objtype in array( UOBJ_CHEST, UOBJ_BOX, 0x0e77, 0x0e3c, 0x0e3f, 0x09a9, 0x0e43, 0x0e42, 0x0e80, 0x09aa )) || (cfg[theitem.objtype].lockable))
+-    var tinker:= CheckSkill(who, SKILLID_TINKERING, 40, 40);
+-    if(tinker)
+-      SetObjProperty(theitem, &quot;lockable&quot;,&quot;1&quot;);
+-      var lockid := AllocLockId();
+-      var thekey := CreateItemInContainer(theitem, UOBJ_COPPER_KEY, 1 );
+-      SetObjProperty(thekey, &quot;lockid&quot;,lockid);
+-      SetObjProperty(theitem,&quot;lockid&quot;,lockid);
+-      SetObjProperty(theitem,&quot;LockPickDiff&quot;, GetEffectiveSkill(who, SKILLID_TINKERING));
+-      SendSysMessage(who, &quot;You put the key inside the container.&quot;);
+-    endif
+-  endif
+-  return 1;
+-endfunction
++function AssembleParts(who, tool, objtype, amt)
+ 
+-function ComposeSubMenu(who)
+-  var num := 2;
+-  var skill := (GetEffectiveSkill(who, SKILLID_CARPENTRY) + 20);
+-  var skill2;
+-  var color := 0;
+-  var cfg := ReadConfigFile(&quot;:carpentry:carpentry&quot;);
+-  while(num &lt; 10)
+-    case(num)
+-       2: OldGFPage(2);        // Page 2 (building materials)
+-          if(skill &gt;= CInt(cfg[0x1bd7].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(150, 200, 210, 211, 1, 7127);
+-          endif
+-          OldGFTextLine(120, 175, color, &quot;boards&quot;);
+-          OldGFTilePic( 100, 200, 7127);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x1db8].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(300, 200, 210, 211, 1, 7608);
+-          endif
+-          OldGFTextLine(250, 175, color, &quot;barrel lid&quot;);
+-          OldGFTilePic( 250, 200, 7608);
+-         color := 0;
+-          if(skill &gt;= CInt(cfg[0x1eb2].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(150, 295, 210, 211, 1, 7858);
+-          endif
+-          OldGFTextLine( 90, 270, color, &quot;barrel staves&quot;);
+-          OldGFTilePic( 100, 295, 7858);
+-          color := 0;
+-       3: OldGFPage(3);        // Page 3 (tables)
+-          if(skill &gt;= CInt(cfg[0xb3a].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(150, 200, 210, 211, 1, 2874);
+-          endif
+-          OldGFTextLine( 90, 175, color, &quot;small table&quot;);
+-          OldGFTilePic( 100, 200, 2874);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0b3f].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(300, 200, 210, 211, 1, 2879);
+-          endif
+-          OldGFTextLine(260, 175, color, &quot;large counter&quot;);
+-          OldGFTilePic( 250, 195, 2879);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0b7d].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(150, 285, 210, 211, 1, 2941);
+-          endif
+-          OldGFTextLine(100, 260, color, &quot;yew table&quot;);
+-          OldGFTilePic(  75, 280, 2941);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0b7c].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(300, 285, 210, 211, 1, 2940);
+-          endif
+-          OldGFTextLine(260, 260, color, &quot;table&quot;);
+-          OldGFTilePic( 210, 280, 2940);
+-          color := 0;
+-       4: OldGFPage(4);        // Page 4 (chairs)
+-          if(skill &gt;= CInt(cfg[0x0a2a].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(110, 185, 210, 211, 1, 2602);
+-          endif
+-          OldGFTextLine( 65, 160, color, &quot;stool&quot;);
+-          OldGFTilePic(  60, 185, 2602);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0b2c].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(210, 185, 210, 211, 1, 2860);
+-          endif
+-          OldGFTextLine(160, 160, color, &quot;bench&quot;);
+-          OldGFTilePic( 160, 185, 2860);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0b2e].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(310, 185, 210, 211, 1, 2862);
+-          endif
+-          OldGFTextLine(255, 160, color, &quot;wood throne&quot;);
+-          OldGFTilePic( 260, 185, 2862);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0b32].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(410, 185, 210, 211, 1, 2866);
+-          endif
+-          OldGFTextLine(370, 160, color, &quot;throne&quot;);
+-          OldGFTilePic( 345, 185, 2866);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0b4f].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(110, 280, 210, 211, 1, 2895);
+-          endif
+-          OldGFTextLine( 60, 255, color, &quot;fancy chair&quot;);
+-          OldGFTilePic(  45, 275, 2895);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0b57].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(210, 280, 210, 211, 1, 2903);
+-          endif
+-          OldGFTextLine(160, 255, color, &quot;wood chair&quot;);
+-          OldGFTilePic( 170, 280, 2903);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0b5b].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(310, 280, 210, 211, 1, 2907);
+-          endif
+-          OldGFTextLine(260, 255, color, &quot;poor chair&quot;);
+-          OldGFTilePic( 275, 280, 2907);
+-          color := 0;
+-       5: OldGFPage(5);        // Page 5 (instruments)
+-          if(skill &gt;= CInt(cfg[0x0eb1].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(110, 200, 210, 211, 1, 3761);
+-          endif
+-          OldGFTextLine( 65, 175, color, &quot;standing harp&quot;);
+-          OldGFTilePic(  45, 200, 3761);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0eb2].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(210, 200, 210, 211, 1, 3762);
+-          endif
+-          OldGFTextLine(180, 175, color, &quot;lap harp&quot;);
+-          OldGFTilePic( 160, 200, 3762);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0eb3].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(310, 200, 210, 211, 1, 3763);
+-          endif
+-          OldGFTextLine(285, 175, color, &quot;lute&quot;);
+-          OldGFTilePic( 260, 200, 3763);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0e9c].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(410, 200, 210, 211, 1, 3740);
+-          endif
+-          OldGFTextLine(370, 175, color, &quot;drum&quot;);
+-          OldGFTilePic( 360, 200, 3740);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0e9d].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(110, 295, 210, 211, 1, 3741);
+-          endif
+-          OldGFTextLine( 65, 270, color, &quot;tambourine&quot;);
+-          OldGFTilePic(  60, 295, 3741);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0e9d].&quot;skill&quot;))
+-            color := 900;
+-           OldGFButtonIDC(210, 295, 210, 211, 1, 3742);
+-          endif
+-          OldGFTextLine(160, 270, color, &quot;tasseled tambourine&quot;);
+-          OldGFTilePic( 160, 295, 3742);
+-          color := 0;
+-       6: OldGFPage(6);        //Page 6 (large furniture)
+-          if(skill &gt;= CInt(cfg[0x0a34].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC( 70, 175, 210, 211, 1, 2612);
+-          endif
+-          OldGFTextLine( 20, 150, color, &quot;oak dresser&quot;);
+-          OldGFTilePic(  25, 175, 2612);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0a38].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC( 70, 275, 210, 211, 1, 2616);
+-          endif
+-          OldGFTextLine( 20, 250, color, &quot;cherry dresser&quot;);
+-          OldGFTilePic(  20, 275, 2616);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0a53].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(200, 200, 210, 211, 1, 2643);
+-          endif
+-          OldGFTextLine(150, 175, color, &quot;oak armoir&quot;);
+-          OldGFTilePic( 150, 200, 2643);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0a51].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(300, 200, 210, 211, 1, 2641);
+-          endif
+-          OldGFTextLine(250, 175, color, &quot;cherry armoir&quot;);
+-          OldGFTilePic( 250, 200, 2641);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0a9d].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(400, 200, 210, 211, 1, 2717);
+-          endif
+-          OldGFTextLine(360, 175, color, &quot;bookshelf&quot;);
+-          OldGFTilePic( 350, 200, 2717);
+-          color := 0;
+-       7: OldGFPage(7);        //Page 7 (Containers)
+-          if(skill &gt;= CInt(cfg[0x0e7f].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(110, 200, 210, 211, 1, 3711);
+-          endif
+-          OldGFTextLine( 65, 175, color, &quot;open keg&quot;);
+-          OldGFTilePic(  60, 200, 3711);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x09aa].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(210, 200, 210, 211, 1, 2474);
+-          endif
+-          OldGFTextLine(160, 175, color, &quot;small box&quot;);
+-          OldGFTilePic( 160, 200, 2474);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0e77].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(310, 200, 210, 211, 1, 3703);
+-          endif
+-          OldGFTextLine(275, 175, color, &quot;barrel&quot;);
+-          OldGFTilePic( 260, 200, 3703);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0e43].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(410, 200, 210, 211, 1, 3651);
+-          endif
+-          OldGFTextLine(360, 175, color, &quot;wooden chest&quot;);
+-          OldGFTilePic( 360, 200, 3651);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x09a9].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(110, 295, 210, 211, 1, 2473);
+-          endif
+-          OldGFTextLine( 65, 270, color, &quot;small crate&quot;);
+-          OldGFTilePic(  60, 295, 2473);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0e3f].&quot;skill&quot;))
+-            color := 900;
+-           OldGFButtonIDC(210, 295, 210, 211, 1, 3647);
+-          endif
+-          OldGFTextLine(160, 270, color, &quot;medium crate&quot;);
+-          OldGFTilePic( 160, 295, 3647);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0e3c].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(310, 295, 210, 211, 1, 3644);
+-          endif
+-          OldGFTextLine(260, 270, color, &quot;large crate&quot;);
+-          OldGFTilePic( 260, 295, 3644);
+-          color := 0;
+-       8: OldGFPage(8);        //Page 8 (miscellaneous)
+-          if(skill &gt;= CInt(cfg[0x0dc0].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(100, 200, 210, 211, 1, 3520);
+-          endif
+-          OldGFTextLine( 50, 175, color, &quot;fishing pole&quot;);
+-          OldGFTilePic(  45, 200, 3520);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x13f9].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(210, 200, 210, 211, 1, 5113);
+-          endif
+-          OldGFTextLine(145, 175, color, &quot;gnarled staff&quot;);
+-          OldGFTilePic( 160, 200, 5113);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0e81].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(310, 200, 210, 211, 1, 3713);
+-          endif
+-          OldGFTextLine(245, 175, color, &quot;shepherd's crook&quot;);
+-          OldGFTilePic( 260, 200, 3713);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0e8a].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(410, 200, 210, 211, 1, 3722);
+-          endif
+-          OldGFTextLine(365, 175, color, &quot;quarter staff&quot;);
+-          OldGFTilePic( 360, 200, 3722);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0ec6].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(110, 295, 210, 211, 1, 3782);
+-          endif
+-          OldGFTextLine( 65, 270, color, &quot;dress form&quot;);
+-          OldGFTilePic(  80, 295, 3782);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x0f64].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(210, 295, 210, 211, 1, 3940);
+-          endif
+-          OldGFTextLine(185, 270, color, &quot;torch&quot;);
+-          OldGFTilePic( 160, 295, 3940);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x13b3].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(310, 295, 210, 211, 1, 5043);
+-          endif
+-          OldGFTextLine(285, 270, color, &quot;club&quot;);
+-          OldGFTilePic( 270, 295, 5043);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[0x1b7a].&quot;skill&quot;))
+-            color := 900;
+-            OldGFButtonIDC(410, 295, 210, 211, 1, 7034);
+-          endif
+-          OldGFTextLine(360, 270, color, &quot;wooden shield&quot;);
+-          OldGFTilePic( 360, 295, 7034);
+-          color := 0;
+-       9: OldGFPage(9);        //Page 9 (add-ons)
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb002].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb002].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb002].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC( 20, 175, 210, 211, 1, 45058);
+-          endif
+-          OldGFTextLine( 45, 175, color, &quot;training dummy deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb003].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb003].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb003].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC( 20, 200, 210, 211, 1, 45059);
+-          endif
+-          OldGFTextLine( 45, 200, color, &quot;pickpocket dip deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb004].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb004].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb004].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC( 20, 225, 210, 211, 1, 45060);
+-          endif
+-          OldGFTextLine( 45, 225, color, &quot;spinning wheel deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb008].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb008].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb008].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC( 20, 250, 210, 211, 1, 45064);
+-          endif
+-          OldGFTextLine( 45, 250, color, &quot;loom deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb009].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb009].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb009].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC( 20, 275, 210, 211, 1, 45065);
+-          endif
+-          OldGFTextLine( 45, 275, color, &quot;large bed deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb006].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb006].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb006].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC( 20, 300, 210, 211, 1, 45062);
+-          endif
+-          OldGFTextLine( 45, 300, color, &quot;abbatoir deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb005].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb005].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb005].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC( 20, 325, 210, 211, 1, 45061);
+-          endif
+-          OldGFTextLine( 45, 325, color, &quot;pentagram deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb00a].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb00a].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb00a].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC(260, 175, 210, 211, 1, 45066);
+-          endif
+-          OldGFTextLine(285, 175, color, &quot;water trough deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb00b].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb00b].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb00b].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC(260, 200, 210, 211, 1, 45067);
+-          endif
+-          OldGFTextLine(285, 200, color, &quot;mill deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb00c].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb00c].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb00c].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC(260, 225, 210, 211, 1, 45068);
+-          endif
+-          OldGFTextLine(285, 225, color, &quot;stone oven deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb000].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb000].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb000].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC(260, 250, 210, 211, 1, 45056);
+-          endif
+-          OldGFTextLine(285, 250, color, &quot;anvil deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb001].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb001].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb001].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC(260, 275, 210, 211, 1, 45057);
+-          endif
+-          OldGFTextLine(285, 275, color, &quot;small forge deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb007].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb007].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb007].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC(260, 300, 210, 211, 1, 45063);
+-          endif
+-          OldGFTextLine(285, 300, color, &quot;large forge deed&quot;);
+-          color := 0;
+-          skill2 := GetEffectiveSkill(who, CInt(cfg[0xb011].&quot;skillID&quot;));
+-          if((skill &gt;= CInt(cfg[0xb011].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb011].&quot;skill2&quot;)))
+-            color := 900;
+-            OldGFButtonIDC(260, 325, 210, 211, 1, 45073);
+-          endif
+-          OldGFTextLine(285, 325, color, &quot;small bed deed&quot;);
+-    endcase
+-    num := num + 1;
+-  endwhile
+-  return;
+-endfunction
++	case(objtype)
++		0x1bd7:		CreateBoards(who, tool, objtype); return 1;
++		default:	CraftAssembly(who, craft_skill, tool, objtype, amt); return 1;
++	endcase
+ 
+-function OldGFButtonIDC(x, y, release, press, close, retval)
+-  close := close;
+-  var line := &quot;button &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+-  line := line + &quot; &quot; + CStr(CInt(release)) + &quot; &quot; + CStr(CInt(press)) + &quot; &quot;;
+-  line := line + &quot;1 0 &quot;;
+-  line := line + CStr(retval);
+-  GFlayout.append( line );
+-  return XGFRetVal( GFlayout.size(), -1, GFbutid - 1 );
+ endfunction
+ 
+-function makewooditems(who, tool, objtype, lop, cont)
+-  var theitem;
+-  var cfg := ReadConfigFile( &quot;carpentry&quot; );
+-  var skill := cfg[objtype].&quot;skill&quot;;
+-  var carpentryskill := CInt(GetEffectiveSkill(who, SKILLID_CARPENTRY));
+-  var modpts := 0;
+-  if(carpentryskill &gt;= skill)
+-    modpts := (carpentryskill - (skill - 10));
+-  endif
+-  var counter := 0, chk := 0;
+-  if(objtype == 0xe7f)
+-    var stavearray, stavecounter, lidcounter, hoopcounter, hoop, lid, checker;
+-    var x := who.x;
+-    var y := who.y;
+-    while(counter &lt; lop)
+-      if((who.x != x) || (who.y != y))
+-        SendSysMessage(who, &quot;You stop what you are doing.&quot;);
+-        break;
+-      endif
+-      if(chk == 1)
+-        break;
+-      endif
+-      stavearray := {};
+-      stavecounter := 0;
+-      lidcounter := 0;
+-      hoopcounter := 0;
+-      hoop := 0;
+-      lid := 0;
+-      foreach thing in EnumerateItemsInContainer(who.backpack)
+-        if(thing.objtype == 0x1eb2)
+-          if(stavecounter &lt; 3)
+-            if(ReserveItem(thing))
+-              stavearray.append(thing);
+-              stavecounter := stavecounter + 1;
+-            endif
+-          endif
+-        elseif(thing.objtype == 0x1db8)
+-          if(lidcounter == 0)
+-            if(ReserveItem(thing))
+-              lid := thing;
+-              lidcounter := lidcounter + 1;
+-            endif
+-          endif
+-        elseif(thing.objtype == 0x10e1)
+-          if(hoopcounter == 0)
+-            if(ReserveItem(thing))
+-              hoop := thing;
+-              hoopcounter := hoopcounter + 1;
+-            endif
+-          endif
+-        endif
+-        if((stavecounter == 3) &amp;&amp; (hoopcounter == 1) &amp;&amp; (lidcounter == 1))
+-          break;
+-        endif
+-      endforeach
+-      if((stavecounter &lt; 3) || (hoopcounter == 0) || (lidcounter == 0))
+-        SendSysMessage(who, &quot;You do not have all the required pieces.&quot;);
+-        chk := 1;
+-      else
+-        PlaySoundEffect(who, 0x23e);
+-        sleep(2);
+-        PlaySoundEffect(who, 0x23e);
+-        sleep(2);
+-        PlaySoundEffect(who, 0x23e);
+-        sleep(2);
+-        if(CheckSkill(who, SKILLID_CARPENTRY, CInt(skill), CInt(skill*4)))
+-          checker := 0;
+-          foreach thing in stavearray
+-            if(!DestroyItem(thing))
+-              checker := 1;
+-              break;
+-            endif
+-          endforeach
+-          if(!DestroyItem(hoop))
+-            checker := 1;
+-          endif
+-          if(!DestroyItem(lid))
+-            checker := 1;
+-          endif
+-          if(checker == 1)
+-            SendSysMessage(who, &quot;Error: could not find all the parts.&quot;);
+-            return 0;
+-          endif
+-          theitem := CreateItemInContainer(cont, 0xe7f, 1);
+-          if(!theitem)
+-            SendSysMessage(who, &quot;Error: could not create barrel.&quot;);
+-            return 0;
+-          endif
+-          var rint := RandomInt(100);
+-          if(modpts &gt;= rint)
+-            ExceptionalFameMod(who, carpentryskill, skill, skill);
+-          endif
+-          CheckToolWear (who, tool, SKILLID_CARPENTRY);
+-          theitem.movable := 1;
+-          SendSysMessage( who, &quot;You make the item and put it in your pack.&quot;);
+-        endif
+-      endif
+-      counter := counter + 1;
+-    endwhile
+-    return 0;
+-  endif
+-  if(objtype == 0x1bd7)
+-    SendSysMessage(who, &quot;Target the material you wish to work with.&quot;);
+-    var item1 := Target(who);
+-    if(!item1)
+-      SendSysMessage(who, &quot;Cancelled&quot;);
+-      return 0;
+-    endif
+-    if(!can_access(who, item1))
+-      return 0;
+-    endif
+-    if((!Accessible(who, item1)) || (Distance(who, item1) &gt; 2) || (!ReserveItem(item1)))
+-      SendSysMessage(who, &quot;You cannot use that.&quot;);
+-      return 0;
+-    endif
+-    if((item1.objtype != 0x1bdd) &amp;&amp; (item1.objtype != 0x1bd7))
+-      SendSysMessage(who, &quot;You can only work with wood.&quot;);
+-      return 0;
+-    endif
+-    if(item1.objtype != 0x1bdd)
+-      SendSysMessage(who, &quot;Only logs can be made into boards.&quot;);
+-      return 0;
+-    endif
+-    PlaySoundEffect(who, 0x23e);
+-    sleep(2);
+-    PlaySoundEffect(who, 0x23e);
+-    sleep(2);
+-    PlaySoundEffect(who, 0x23e);
+-    sleep(2);
+-    var chk := 0;
+-    if(CheckSkill(who, SKILLID_CARPENTRY, CInt(skill), 0))
+-      var amt := item1.amount;
+-      if(SubtractAmount(item1, amt))
+-        theitem := CreateItemInContainer(cont, objtype, amt);
+-        if(theitem)
+-          AwardRawSkillPoints(who, SKILLID_CARPENTRY, getpoints(who, GetEffectiveSkill(who, SKILLID_CARPENTRY), (skill * 4)));
+-          CheckToolWear (who, tool, SKILLID_CARPENTRY);
+-          chk := 1;
+-        endif
+-      endif
+-    endif
+-    if(chk == 0)
+-      SendSysMessage( who, &quot;You destroy some materials.&quot;);
+-      return 0;
+-    endif
+-    return 0;
+-  endif
+-  return 1;
+-endfunction
++function CreateBoards(who, tool, objtype)
+ 
+-function gettypes(type)
+-  case(type)
+-    &quot;wood&quot;:  return array(0xbd7, 0xbd2);
+-    &quot;metal&quot;: return array(0x6309, 0x630a, 0x630b, 0x630c, 0x630d, 0x630e, 0x630f, 0x6310, 0x6311);
+-    &quot;cloth&quot;: return array(0x1766);
+-  endcase
++	// Wood is sent for the ResourceList entry type.
++	var itemchk := MaterialSelection(who, craft_skill, lower(&quot;Wood&quot;));
++	if( !itemchk )
++		return 0;
++	endif
++	var item1 := itemchk[1];
++	var item1objtype := itemchk[2];
++	var ptmod := itemchk[3];
++
++	if( CInt(item1.objtype) == CInt(objtype) )
++		return 0;
++	endif
++
++	sleep(2);
++	var theitem := 0, chk := 0;
++	if( SkillCheck(who, craft_skill, 0, (ptmod/2)) &gt; 0 )
++		var amt := item1.amount;
++		if( SubtractAmount(item1, 1) )
++			var ret := GetItemDescriptor(0x1bd7);
++			ret.Color := resource_config[item1objtype].Color;
++			ret.CProps.insert(&quot;boards&quot;, item1objtype); //assuming the existing stack have this color and cprop
++			theitem := CreateItemInBackpack(who, ret, 1);
++			if( theitem )
++				set_critical(1);
++				SubtractAmount(item1, (amt - 1));
++				if( resource_config[item1objtype].Name != &quot;plain&quot; )
++					var tempname := (resource_config[item1objtype].Name) + &quot; &quot; + &quot;board&quot;;
++					SetName(theitem, tempname);
++				endif
++				AddAmount(theitem, (amt - 1));
++				set_critical(0);
++				CheckToolWear (who, tool, craft_skill);
++				chk := 1;
++			endif
++		endif
++	endif
++	if( chk == 0 )
++		SendSysMessage(who, &quot;You don't have enough room in your backpack!&quot;);
++		return 0;
++	endif
++
+ endfunction
+ 
+-function getpoints(who, diff, pts)
+-  var skill := GetEffectiveSkill(who, SKILLID_CARPENTRY);
+-  if(skill &gt; (diff - 20))
+-    if((skill - diff) &lt;= 5)
+-      pts := pts;
+-    elseif((skill - diff) &lt;= 10)
+-      pts := (pts * 3) / 4;
+-    elseif((skill - diff) &lt;= 15)
+-      pts := pts / 2;
+-    elseif((skill - diff) &lt;= 15)
+-      pts := pts / 4;
+-    else
+-      pts := 0;
+-    endif
+-  endif
+-  return pts;
++function CarpentryItems(who, tool, objtype, amt)
++
++	// Wood is sent for the ResourceList entry type, boards is to check for the
++	// boards cprop on the material. Boards cprop is made when logs are cut into
++	// boards on them, so if you have colored logs it can get the original log
++	// type from there to use as the resource type.
++	var itemchk := MaterialSelection(who, craft_skill, lower(&quot;Wood&quot;), &quot;boards&quot;);
++	if( !itemchk )
++		return 0;
++	endif
++	var item1 := itemchk[1];
++	var item1objtype := itemchk[2];
++	var ptmod := itemchk[3];
++
++	var x := who.x, y := who.y, item2 := 0;
++	var material2obj := craft_config[objtype].material2obj;
++	if( TypeOf(material2obj) == &quot;String&quot; )
++		var holder := material2obj;
++		// Let's now select the secondary material. Chk is not passed, as currently
++		// ingots do not hold a cprop to know which type they was originally like boards
++		// or cut leather.
++		itemchk := MaterialSelection(who, craft_skill, lower(holder));
++		if( !itemchk )
++			return 0;
++		endif
++		item2 := itemchk[1];
++		ptmod := ptmod + CInt(itemchk[3]);
++	endif
++
++	var theitem, chk := 0;
++	var itemname  := craft_config[objtype].name;
++	var material  := Cint(craft_config[objtype].material);
++	var material2 := Cint(craft_config[objtype].material2);
++	var reqd      := Cint(craft_config[objtype].skill);
++	var skillid2  := craft_config[objtype].skillID;
++	var skill2    := Cint(craft_config[objtype].skill2);
++	var diff      := Cint(craft_config[objtype].difficulty);
++	var pts       := Cint(craft_config[objtype].points);
++	pts           := CInt(pts + ptmod);
++
++	var counter := 0;
++
++	while(counter &lt; amt)
++		if((who.x != x) || (who.y != y))
++			SendSysMessage(who, &quot;You stop woodworking.&quot;);
++			break;
++		endif
++		if( !tool )
++			break;
++		endif
++		sleep(2);
++		if( GetAmount(item1) &gt;= material )
++			if( item2 != 0 &amp;&amp; GetAmount(item2) &lt; material2 )
++				SendSysMessage(who, &quot;You do not have enough materials.&quot;);
++				return 0;
++			endif
++			if( CraftCheckSkill(who, craft_skill, diff, pts) &gt; 0 )
++				if( skillid2 )
++					if( (skill2 &lt;= AP_GetSkill(who, skillid2)) )
++						theitem := CreateCraftItem(who, craft_skill, item1, item1objtype, objtype, material, itemname, reqd);
++					else
++						chk := -2;
++					endif
++				else
++					theitem := CreateCraftItem(who, craft_skill, item1, item1objtype, objtype, material, itemname, reqd);
++					if( theitem &amp;&amp; theitem != 0 &amp;&amp; !theitem.errortext )
++						if( item2 != 0 )
++							if( !SubtractAmount(item2, material2) )
++								DestroyItem(theitem);
++								chk := -1;
++							endif
++						else
++							CheckToolWear (who, tool, craft_skill);
++							chk := 1;
++						endif
++					else
++						chk := 0;
++					endif
++				endif
++			endif
++		endif
++		if( chk == 0 )
++			SubtractAmount(item1, (material / 2));
++			if( material2 )
++				if( !SubtractAmount(item2, CInt(material2 / 2)) )
++					SendSysMessage(who, &quot;You do not have enough materials.&quot;);
++					return 0;
++				endif
++			endif
++			SendSysMessage(who, &quot;You failed to create the item, and some of your materials are lost.&quot;);
++			counter := counter + 1;
++			continue;
++		endif
++		if( chk == -1 )
++			SendSysMessage(who, &quot;You do not have enough materials.&quot;);
++			return 0;
++		endif
++		if( chk == -2 )
++			SendSysMessage(who, &quot;You do not have the required skill.&quot;);
++			return 0;
++		endif
++		theitem.movable := 1;
++		if( craft_config[theitem.objtype].lockable )
++			if( SkillCheck(who, ATTRIBUTE_TINKERING, 40, 40) &gt; 0 )
++				SetObjProperty(theitem, &quot;lockable&quot;,&quot;1&quot;);
++				var lockid := AllocLockId();
++				var thekey := CreateItemInContainer(theitem, UOBJ_COPPER_KEY, 1 );
++				SetObjProperty(thekey, &quot;lockid&quot;,lockid);
++				SetObjProperty(theitem,&quot;lockid&quot;,lockid);
++				SetObjProperty(theitem,&quot;LockPickDiff&quot;, AP_GetSkill(who, ATTRIBUTE_TINKERING));
++				SendSysMessage(who, &quot;Your tinker skill was sufficient to make the item lockable.&quot;);
++			endif
++		endif
++		counter := counter + 1;
++	endwhile
++
++	return 1;
++
+ endfunction
+
+Modified: trunk/096/pkg/skills/carpentry/carpentryDeed.src
+===================================================================
+--- trunk/096/pkg/skills/carpentry/carpentryDeed.src	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/skills/carpentry/carpentryDeed.src	2005-10-28 07:14:49 UTC (rev 686)
+@@ -5,7 +5,7 @@
+ include &quot;util/key&quot;;
+ include &quot;include/attributes&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;:gumps:yesno&quot;;
++include &quot;include/yesNo&quot;;
+ 
+ const UOBJECT_DOORS_START   := 0x0675;
+ const UOBJECT_DOORS_END     := 0x06f4;
+@@ -97,7 +97,7 @@
+       x_mod := 0 - x_mod;
+       y_mod := 0 - y_mod;
+     endif
+-    var the_item := CreateItemAtLocation(1, 1, 0, obj, 1, who.realm);
++    var the_item := CreateItemAtLocation(5886, 1179, 0, obj, 1);
+     the_item.movable := 1;
+     the_item.graphic := 1;
+     if(!MoveItemToLocation(the_item, start.x + x_mod, start.y + y_mod, start.z, MOVEITEM_NORMAL))
+@@ -150,13 +150,14 @@
+     SendSysMessage(who, &quot;Could not build that there&quot;);
+     return;
+   elseif(failed == 2)
+-    SendSysMessage(who, &quot;You may only place this in a house you own.&quot;);
++    SendSysMessage(who, &quot;You may only place this in a house you own&quot;);
+     return;
+   endif
+   foreach thing in created
+     thing.graphic := thing.objtype;
+   endforeach
+   var deed_objtype := deed.objtype;
++  var deed_color := deed.color;
+   if(YesNo(who, &quot;Placed well?&quot;))
+     if(DestroyItem(deed))
+       var the_serials := {};
+@@ -168,6 +169,7 @@
+           SetObjProperty(part, &quot;DeedOwnerSerial&quot;, who.serial);
+           SetObjProperty(part, &quot;ItemsCreatedSerials&quot;, the_serials);
+           SetObjProperty(part, &quot;FromDeed&quot;, deed_objtype);
++          SetObjProperty(part, &quot;DeedColor&quot;, deed_color);
+         endif
+       endforeach
+     endif
+@@ -214,4 +216,4 @@
+     opposing := 1;
+   endif
+   return CInt(ids[choice]);
+-endfunction
+\ No newline at end of file
++endfunction
+
+Modified: trunk/096/pkg/skills/carpentry/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/skills/carpentry/config/icp.cfg	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/skills/carpentry/config/icp.cfg	2005-10-28 07:14:49 UTC (rev 686)
+@@ -4,8 +4,8 @@
+         Version         1.0
+         Description     Carpentry Skill
+ 
+-        Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++        Creator         MuadDib
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
+ 
+         Maintainer      Distro Team
+         M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+
+Modified: trunk/096/pkg/skills/carpentry/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/carpentry/itemdesc.cfg	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/skills/carpentry/itemdesc.cfg	2005-10-28 07:14:49 UTC (rev 686)
+@@ -1,660 +1,867 @@
+ # $Id$
+ #
+ #
++Item 0xEB6
++{
++	Name		shortmusicstand
++	desc		short music stand
++	VendorSellsFor	100
++	VendorBuysFor	45
++}
++
++Item 0xEBB
++{
++	Name		tallmusicstand
++	Desc		tall music stand
++	VendorSellsFor	100
++	VendorBuysFor	45
++}
++
++Item 0xEC6
++{
++	Name		dressformfront
++	Desc		dress form
++	VendorSellsFor	100
++	VendorBuysFor	45
++}
++
++Item 0xEC7
++{
++	Name		dressformside
++	Desc		dress form
++	VendorSellsFor	100
++	VendorBuysFor	45
++}
++
++Item 0x10e1
++{
++	Name		barrelhoops
++	Desc		barrel hoops
++	VendorSellsFor	5
++	VendorBuysFor	2
++}
++
++Item 0xF66
++{
++	Name		easel
++	Desc		easel
++	VendorSellsFor	300
++	VendorBuysFor	75
++}
++
++Item  0x1db8
++{
++	Name		barrellid
++	Desc		barrel lid
++	VendorSellsFor	6
++	VendorBuysFor	3
++    Weight              1
++}
++
++Item  0x1eb2
++{
++	Name		barrelstaves
++	Desc		barrel staves
++	VendorSellsFor	10
++	VendorBuysFor	3
++	Weight		1
++}
++
+ Item  0x1034
+ {
+-    Name                Saw
+-    Script              carpentry
+-    VendorSellsFor      36
+-    VendorBuysFor       9
+-    Weight		        2
++	Name		saw
++	Desc		saw
++	Script		carpentry
++	VendorSellsFor	36
++	VendorBuysFor	9
++	Weight		2
+ }
+ 
+ Item  0x1035
+ {
+-    Name                Saw2
+-    Script              carpentry
+-    VendorSellsFor      36
+-    VendorBuysFor       9
+-    Weight		        2
++	Name		saw2
++	Desc		saw
++	Script		carpentry
++	VendorSellsFor	36
++	VendorBuysFor	9
++	Weight		2
+ }
+ 
+ Item  0x1028
+ {
+-    Name                Dovetailsaw
+-    Script              carpentry
+-    VendorSellsFor      28
+-    VendorBuysFor       7
+-    Weight		        1
++	Name		Dovetailsaw
++	Desc		dovetail saw
++	Script		carpentry
++	VendorSellsFor	28
++	VendorBuysFor	7
++	Weight		1
+ }
+ 
+ Item  0x10e4
+ {
+-    Name                drawknife
+-    Script              carpentry
+-    VendorSellsFor      24
+-    VendorBuysFor       6
+-    Weight		        1
++	Name		drawknife
++	Desc		draw knife
++	Script		carpentry
++	VendorSellsFor	24
++	VendorBuysFor	6
++	Weight		1
+ }
+ 
+ Item  0x10e5
+ {
+-    Name                Froe
+-    Script              carpentry
+-    VendorSellsFor      24
+-    VendorBuysFor       6
+-    Weight		        1
++	Name		Froe
++	Desc		froe
++	Script		carpentry
++	VendorSellsFor	24
++	VendorBuysFor	6
++	Weight		1
+ }
+ 
+ Item  0x10e6
+ {
+-    Name                inshave
+-    Script              carpentry
+-    VendorSellsFor      24
+-    VendorBuysFor       6
+-    Weight		        1
++	Name		inshave
++	Desc		inshave
++	Script		carpentry
++	VendorSellsFor	24
++	VendorBuysFor	6
++	Weight		1
+ }
+ 
+ Item  0x10e7
+ {
+-    Name                Scorp
+-    Script              carpentry
+-    VendorSellsFor      24
+-    VendorBuysFor       6
+-    Weight		        1
++	Name		Scorp
++	Desc		scorp
++	Script		carpentry
++	VendorSellsFor	24
++	VendorBuysFor	6
++	Weight		1
+ }
+ 
+ Item  0x1030
+ {
+-    Name                Jointingplane
+-    Script              carpentry
+-    VendorSellsFor      36
+-    VendorBuysFor       6
+-    Weight		        2
++	Name		Jointingplane
++	Desc		jointingplane
++	Script		carpentry
++	VendorSellsFor	36
++	VendorBuysFor	6
++	Weight		2
+ }
+ 
+ Item  0x102c
+ {
+-    Name                mouldingplane
+-    Script              carpentry
+-    VendorSellsFor      26
+-    VendorBuysFor       6
+-    Weight		        2
++	Name		mouldingplane
++	Desc		moulding plane
++	Script		carpentry
++	VendorSellsFor	26
++	VendorBuysFor	6
++	Weight		2
+ }
+ 
+ Item  0x1032
+ {
+-    Name                Smoothingplane
+-    Script              carpentry
+-    VendorSellsFor      24
+-    VendorBuysFor       6
+-    Weight		        2
++	Name		Smoothingplane
++	Desc		smoothing plane
++	Script		carpentry
++	VendorSellsFor	24
++	VendorBuysFor	6
++	Weight		2
+ }
+ 
+ Item 0x102a
+ {
+-    Name                Hammer
+-    Script              carpentry
+-    VendorSellsFor      56
+-    VendorBuysFor       14
+-    Weight		        2
++	Name		Hammer
++	Desc		hammer
++	Script		carpentry
++	VendorSellsFor	56
++	VendorBuysFor	14
++	Weight		2
+ }
+ 
+ Item 0xb2c
+ {
+-    Name                Bench
+-    VendorSellsFor      28
+-    VendorBuysFor       7
+-    Weight		        2
+-    Cprop furniture     i1
++	Name		bench1
++	Desc		bench
++	VendorSellsFor	28
++	VendorBuysFor	7
++	Weight		2
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb2d
+ {
+-    Name                Bench2
+-    VendorSellsFor      28
+-    VendorBuysFor       7
+-    Weight		        2
+-    Cprop furniture     i1
++	Name		bench2
++	Desc		bench
++	VendorSellsFor	28
++	VendorBuysFor	7
++	Weight		2
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb5d
+ {
+-    Name                poorchair
+-    VendorSellsFor      39
+-    VendorBuysFor       19
+-    Weight		        1
+-    Cprop furniture     i1
++	Name		strawchair1
++	Desc		straw chair
++	VendorSellsFor	39
++	VendorBuysFor	19
++	Weight		1
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb5a
+ {
+-    Name                poorchair2
+-    VendorSellsFor      39
+-    VendorBuysFor       19
+-    Weight		        1
+-    Cprop furniture     i1
++	Name		strawchair2
++	Desc		straw chair
++	VendorSellsFor	39
++	VendorBuysFor	19
++	Weight		1
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb5c
+ {
+-    Name                poorchair3
+-    VendorSellsFor      39
+-    VendorBuysFor       19
+-    Weight		        1
+-    Cprop furniture     i1
++	Name		strawchair3
++	Desc		straw chair
++	VendorSellsFor	39
++	VendorBuysFor	19
++	Weight		1
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb5b
+ {
+-    Name                poorchair4
+-    VendorSellsFor      39
+-    VendorBuysFor       19
+-    Weight		        1
+-    Cprop furniture     i1
++	Name		strawchair4
++	Desc		straw chair
++	VendorSellsFor	39
++	VendorBuysFor	19
++	Weight		1
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb56
+ {
+-    Name                Chair
+-    VendorSellsFor      28
+-    VendorBuysFor       7
+-    Weight		        2
+-    Cprop furniture     i1
++	Name		woodenchair1
++	Desc		wooden chair
++	VendorSellsFor	28
++	VendorBuysFor	7
++	Weight		2
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb57
+ {
+-    Name                Chair2
+-    VendorSellsFor      28
+-    VendorBuysFor       7
+-    Weight		        2
+-    Cprop furniture     i1
++	Name		woodenchair2
++	Desc		wooden chair
++	VendorSellsFor	28
++	VendorBuysFor	7
++	Weight		2
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb58
+ {
+-    Name                Chair3
+-    VendorSellsFor      28
+-    VendorBuysFor       7
+-    Weight		        2
+-    Cprop furniture     i1
++	Name		woodenchair3
++	Desc		wooden chair
++	VendorSellsFor	28
++	VendorBuysFor	7
++	Weight		2
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb59
+ {
+-    Name                Chair4
+-    VendorSellsFor      28
+-    VendorBuysFor       7
+-    Weight		        2
+-    Cprop furniture     i1
++	Name		woodenchair4
++	Desc		wooden chair
++	VendorSellsFor	28
++	VendorBuysFor	7
++	Weight		2
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb2e
+ {
+-    Name                woodthrone
+-    VendorSellsFor      60
+-    VendorBuysFor       30
+-    Weight		        5
+-    Cprop furniture     i1
++	Name		woodthrone
++	Desc		wooden throne
++	VendorSellsFor	60
++	VendorBuysFor	30
++	Weight		5
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb2f
+ {
+-    Name                woodthrone2
+-    VendorSellsFor      60
+-    VendorBuysFor       30
+-    Weight		        5
+-    Cprop furniture     i1
++	Name		woodthrone2
++	Desc		wooden throne
++	VendorSellsFor	60
++	VendorBuysFor	30
++	Weight		5
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb32
+ {
+-    Name                throne
+-    VendorSellsFor      90
+-    VendorBuysFor       45
+-    Weight		        8
+-    Cprop furniture     i1
++	Name		throne
++	Desc		throne
++	VendorSellsFor	90
++	VendorBuysFor	45
++	Weight		8
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb33
+ {
+-    Name                throne2
+-    VendorSellsFor      90
+-    VendorBuysFor       45
+-    Weight		        8
+-    Cprop furniture     i1
++	Name		throne2
++	Desc		throne
++	VendorSellsFor	90
++	VendorBuysFor	45
++	Weight		8
++	Cprop		furniture	i1
+ }
+ 
+ 
+-Item 0xb53
++Item 0xb4E
+ {
+-    Name                Cushioned Chair
+-    VendorSellsFor      28
+-    VendorBuysFor       7
+-    Weight		        2
+-    Cprop furniture     i1
++	Name		cushoinedchair1
++	Desc		trinsic chair
++	VendorSellsFor	28
++	VendorBuysFor	7
++	Weight		2
++	Cprop		furniture	i1
+ }
+ 
+-Item 0xa2a
++Item 0xb52
+ {
+-    Name                Stool
+-    VendorSellsFor      24
+-    VendorBuysFor       6
+-    Weight		        1
+-    Cprop furniture     i1
++	Name		cushoinedchair2
++	Desc		vesper chair
++	VendorSellsFor	28
++	VendorBuysFor	7
++	Weight		2
++	Cprop		furniture	i1
+ }
+ 
+-Item 0xb5e
++Item 0xa2a
+ {
+-    Name                Stool2
+-    VendorSellsFor      24
+-    VendorBuysFor       6
+-    Weight		        1
+-    Cprop furniture     i1
++	Name		stool1
++	Desc		stool
++	VendorSellsFor	24
++	VendorBuysFor	6
++	Weight		1
++	Cprop		furniture	i1
+ }
+ 
+-Item 0xb4f
++Item 0xb5e
+ {
+-    Name                vesperchair
+-    VendorSellsFor      51
+-    VendorBuysFor       26
+-    Weight		        3
+-    Cprop furniture     i1
++	Name		stool2
++	Desc		foot stool
++	VendorSellsFor	24
++	VendorBuysFor	6
++	Weight		1
++	Cprop		furniture	i1
+ }
+ 
+-Item 0xb4e
+-{
+-    Name                vesperchair2
+-    VendorSellsFor      51
+-    VendorBuysFor       26
+-    Weight		        3
+-    Cprop furniture     i1
+-}
+-
+-Item 0xb50
+-{
+-    Name                vesperchair3
+-    VendorSellsFor      51
+-    VendorBuysFor       26
+-    Weight		        3
+-    Cprop furniture     i1
+-}
+-
+-Item 0xb51
+-{
+-    Name                vesperchair4
+-    VendorSellsFor      51
+-    VendorBuysFor       26
+-    Weight		        3
+-    Cprop furniture     i1
+-}
+-
+ Item 0xe7f
+ {
+-    Name                keg
+-    Script              buildKeg
+-    VendorSellsFor      40
+-    VendorBuysFor       20
+-    Weight		        10
+-    movable             1
+-    Cprop furniture     i1
++	Name		keg
++	Desc		open keg
++	VendorSellsFor	40
++	VendorBuysFor	20
++	Weight		10
++	movable		1
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb3a
+ {
+-    Name                smallcounter
+-    VendorSellsFor      45
+-    VendorBuysFor       22
+-    Weight		        5
+-    Cprop furniture     i1
++	Name		smallcounter
++	Desc		small counter
++	VendorSellsFor	45
++	VendorBuysFor	22
++	Weight		5
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb3f
+ {
+-    Name                largecounter
+-    VendorSellsFor      66
+-    VendorBuysFor       33
+-    Weight		        7
+-    Cprop furniture     i1
+-    movable             1
++	Name		largecounter
++	Desc		large counter
++	VendorSellsFor	66
++	VendorBuysFor	33
++	Weight		7
++	Cprop		furniture	i1
++	movable		1
+ }
+ 
+ Item 0xb7d
+ {
+-    Name                yewtable
+-    Desc                yew table
+-    VendorSellsFor      75
+-    VendorBuysFor       38
+-    Weight		        5
+-    Cprop furniture     i1
++	Name		yewtable
++	Desc		yew table
++	VendorSellsFor	75
++	VendorBuysFor	38
++	Weight		5
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb90
+ {
+-    Name                yewtable2
+-    Desc                yew table
+-    VendorSellsFor      75
+-    VendorBuysFor       38
+-    Weight		        5
+-    Cprop furniture     i1
++	Name		yewtable2
++	Desc		yew table
++	VendorSellsFor	75
++	VendorBuysFor	38
++	Weight		5
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb7c
+ {
+-    Name                table
+-    VendorSellsFor      75
+-    VendorBuysFor       38
+-    Weight		        4
+-    Cprop furniture     i1
++	Name		table
++	Desc		table
++	VendorSellsFor	75
++	VendorBuysFor	38
++	Weight		4
++	Cprop		furniture	i1
+ }
+ 
+ Item 0xb8f
+ {
+-    Name                table2
+-    VendorSellsFor      75
+-    VendorBuysFor       38
+-    Weight		        4
+-    Cprop furniture     i1
++	Name		table2
++	Desc		table
++	VendorSellsFor	75
++	VendorBuysFor	38
++	Weight		4
++	Cprop		furniture	i1
+ }
+ 
++Item 0xb49
++{
++	Name		writingtable1
++	Desc		writing table
++	VendorSellsFor	18
++	VendorBuysFor	9
++	Weight		5
++	Cprop		furniture	i1
++}
++
+ Item  0xB000
+ {
+-    Name                AnvilDeed
+-    Desc 	            anvil deed
+-    Graphic	            0x14EF
+-	Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x0FB0
+-	ObjXMod		        0
+-	ObjYMod		        0
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    1
+-	OrientationId	    0	-1
++	Name		AnvilDeed
++	Desc		anvil deed
++	Graphic		0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0xFB0
++	ObjXMod		0
++	ObjYMod		0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0	-1
+ }
+ 
+ Item  0xB001
+ {
+-    Name                SmallForgeDeed
+-    Desc 	            small forge deed
+-    Graphic	            0x14EF
+-    Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x0FB1
+-	ObjXMod		        0
+-	ObjYMod		        0
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    0
+-	OrientationId	    0
++	Name		SmallForgeDeed
++	Desc		small forge deed
++	Graphic		0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0xFB1
++	ObjXMod		0
++	ObjYMod		0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	0
++	OrientationId	0
+ }
+ 
+ Item  0xB002
+ {
+-    Name                DummieDeed
+-    Desc 	            training dummy deed
+-    Graphic	            0x14EF
+-	Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x1070
+-	ObjXMod		        0
+-	ObjYMod		        0
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    1
+-	OrientationId	    0	4
++	Name		DummieDeed
++	Desc		training dummy deed
++	Graphic		0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0x1070
++	ObjXMod		0
++	ObjYMod		0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0	4
+ }
+ 
+ 
+ Item  0xB003
+ {
+-    Name                DipDeed
+-    Desc 	            pickpockets dip deed
+-    Graphic	            0x14EF
+-	Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x1E2C
+-	ObjXMod		        0
+-	ObjYMod		        0
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    1
+-	OrientationId	    0	1
++	Name		DipDeed
++	Desc		pickpockets dip deed
++	Graphic		0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0x1E2C
++	ObjXMod		0
++	ObjYMod		0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0	1
+ }
+ 
+ Item  0xB004
+ {
+-    Name                WheelDeed
+-    Desc 	            spinning wheel deed
+-    Graphic	            0x14EF
+-	Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x1015
+-	ObjXMod		        0
+-	ObjYMod		        0
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    1
+-	OrientationId	    0   4	7   143
++	Name		WheelDeed
++	Desc		spinning wheel deed
++	Graphic		0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0x1015
++	ObjXMod		0
++	ObjYMod		0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0	4	7	143
+ }
+ 
+ Item  0xB005
+ {
+-    Name                pentagram
+-    Desc 	            pentagram deed
+-    Graphic	            0x14EF
+-	Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x0FE6	0x0FE7	0x0FE8	0x0FE9	0x0FEA	0x0FEB	0x0FEC	0x0FED	0x0FEE
+-	ObjXMod		        -1	-1	0	-1	0	1	0	1	1
+-	ObjYMod		        0	-1	-1	1	0	-1	1	1	0
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    0
+-	OrientationId	    0
++	Name		pentagramdeed
++	Desc		pentagram deed
++	Graphic		0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0xFE6	0xFE7	0xFE8	0xFE9	0xFEA	0xFEB	0xFEC	0xFED	0xFEE
++	ObjXMod		-1	-1	0	-1	0	1	0	1	1
++	ObjYMod		0	-1	-1	1	0	-1	1	1	0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	0
++	OrientationId	0
+ }
+ 
+ Item  0xB006
+ {
+-    Name                abbatoir
+-    Desc 	            stone pentagram deed
+-    Graphic	            0x14EF
+-	Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x120E	0x120F	0x1210	0x1211	0x1212	0x1213	0x1214	0x1215	0x1216
+-	ObjXMod		        -1	0	1	1	1	0	-1	-1	0
+-	ObjYMod		        -1	-1	-1	0	1	1	1	0	0
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    0
+-	OrientationId	    0
++	Name		abbatoirdeed
++	Desc		stone pentagram deed
++	Graphic		0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0x120E	0x120F	0x1210	0x1211	0x1212	0x1213	0x1214	0x1215	0x1216
++	ObjXMod		-1	0	1	1	1	0	-1	-1	0
++	ObjYMod		-1	-1	-1	0	1	1	1	0	0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	0
++	OrientationId	0
+ }
+ 
+ Item  0xB007
+ {
+-    Name                largeforge
+-    Desc 	            deed for a large forge
+-    Graphic	            0x14EF
+-	Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x197A	0x197E	0x1982
+-	ObjXMod		        0	1	2
+-	ObjYMod		        0	0	0
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    1
+-	OrientationId	    0	12	36	24
++	Name		largeforgedeed
++	Desc		deed for a large forge
++	Graphic		0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0x197A	0x197E	0x1982
++	ObjXMod		0	1	2
++	ObjYMod		0	0	0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0	12	36	24
+ }
+ 
+ Item  0xB008
+ {
+-    Name                loomdeed
+-    Desc 	            deed for a loom
+-    Graphic	            0x14EF
+-	Script		        loomDeed
+-	Weight		        1
+-	ObjList		        0x1060  0x105f
+-	ObjXMod		        0	0
+-	ObjYMod		        0	1
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    1
+-	OrientationId	    0   2
++	Name		loomdeed
++	Desc		deed for a loom
++	Graphic		0x14EF
++	Script		loomDeed
++	Weight		1
++	ObjList		0x1060  0x105f
++	ObjXMod		0	0
++	ObjYMod		0	1
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0	2
+ }
+ 
+ item 0xb009
+ {
+-    Name                bed
+-    Desc 	            deed for a bed
+-    Graphic	            0x14EF
+-	Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x0A74	0x0A75	0x0A76	0x0A77
+-	ObjXMod		        0	0	-1	-1
+-	ObjYMod		        0	1	1	0
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    1
+-	OrientationId	    0	-4
++	Name		beddeed
++	Desc		deed for a bed
++	Graphic		0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0xA74	0xA75	0xA76	0xA77
++	ObjXMod		0	0	-1	-1
++	ObjYMod		0	1	1	0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0	-4
+ }
+ 
+ Item 0xb00a
+ {
+-	Name		        WaterTroughdeed
+-	desc                water trough deed
+-	Graphic	            0x14EF
+-	Graphic		        0x14f0
+-	Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x0B43	0x0B44
+-	ObjXMod		        0	1
+-	ObjYMod		        0
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    1
+-	OrientationId	    0	-2
++	Name		WaterTroughdeed
++	Desc		water trough deed
++	Graphic	        0x14EF
++	Graphic		0x14f0
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0xB43	0xB44
++	ObjXMod		0	1
++	ObjYMod		0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0	-2
+ }
+ 
+ Item 0xb00b
+ {
+-	Name		        FlourMilldeed
+-	Desc                flour mill deed
+-	Graphic		        0x14ef
+-	Script		        carpentryDeed
+-	Weight		        1
+-	ObjList		        0x192C	0x192E	0x1930
+-	ObjXMod		        0	0	0
+-	ObjYMod		        0	1	2
+-	InHouse		        1
+-	ObjMovable	        0
+-	MultOrientation	    1
+-	OrientationId	    0	-12
++	Name		FlourMilldeed
++	Desc		flour mill deed
++	Graphic		0x14ef
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0x192C	0x192E	0x1930
++	ObjXMod		0	0	0
++	ObjYMod		0	1	2
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0	-12
+ }
+ 
+ Item 0xb00c
+ {
+-	Name		        StoneOvendeed
+-	Desc                stone oven deed
+-	Graphic		        0x14ef
+-	Script		        ovenDeed
+-	Weight		        1
+-	ObjList		        0x0931 0x0930 0x08dc 0x08dd
+-	ObjList2            0x092b 0x092c 0x08d8 0x08d9
+-	ObjXMod		        0	1   0   1
+-	ObjYMod		        0	0   0   0
+-	ObjXMod2		    0	0   0   0
+-	ObjYMod2		    0	-1  0   -1
++	Name		StoneOvendeed
++	Desc		stone oven deed
++	Graphic		0x14ef
++	Script		ovenDeed
++	Weight		1
++	ObjList		0x931	0x930	0x8dc	0x8dd
++	ObjList2        0x92b	0x92c	0x8d8	0x8d9
++	ObjXMod		0	1	0	1
++	ObjYMod		0	0	0	0
++	ObjXMod2	0	0	0	0
++	ObjYMod2	0	-1	0	-1
+ }
+ 
++Item 0xb011
++{
++	Name		smallbeddeed
++	Desc		small bed deed
++	Graphic	        0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0x0A5e	0x0A5f
++	ObjXMod		0	0
++	ObjYMod		0	1
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0	2
++}
++
++Item 0xaffe
++{
++	Name            stonefireplacedeed
++	Desc 	        stone fireplace deed
++	Graphic		0x14ef
++	Script		ovenDeed
++	Weight		1
++	ObjList		0x0944	0x0945	0x08d1	0x08d2
++	ObjList2        0x0937	0x093d	0x08d5	0x08d6
++	ObjXMod		0	1	0	1
++	ObjYMod		0	0	0	0
++	ObjXMod2	0	0	0	0
++	ObjYMod2	0	-1	0	-1
++}
++
++Item 0xafff
++{
++	Name		sandstonefireplacedeed
++	Desc 	        sandstone fireplace deed
++	Graphic		0x14ef
++	Script		ovenDeed
++	Weight		1
++	ObjList		0x0482	0x047b
++	ObjList2        0x0475	0x0489
++	ObjXMod		0	1
++	ObjYMod		0	0
++	ObjXMod2	0       0
++	ObjYMod2	0	-1
++
++}
++
++Item 0xb00e
++{
++	Name            sandstoneovendeed
++	Desc 	        sandstone oven deed
++	Graphic		0x14ef
++	Script		ovenDeed
++	Weight		1
++	ObjList		0x046e	0x046f
++	ObjList2        0x0461	0x0462
++	ObjXMod		0	1
++	ObjYMod		0	0
++	ObjXMod2	0       0
++	ObjYMod2	0	-1
++}
++
++Item 0xb012
++{
++	Name		fancydresserdeed
++	desc		fancy dresser deed
++	Graphic		0x14EF
++	Script		carpentryDeed
++	Weight		1
++	ObjList		0xA44	0xA45
++	ObjXMod		0	0
++	ObjYMod		1	0
++	InHouse		1
++	ObjMovable	0
++	MultOrientation	1
++	OrientationId	0   -8
++
++}
++
++Item 0x1E2F
++{
++	Name		dartboard1
++	Desc		dartboard
++}
++
++Item 0x1E2E
++{
++	Name		dartboard2
++	Desc		dartboard
++}
++
+ Item  0x120e
+ {
+-  movable               0
++	Name		altar1
++	Desc		altar
++	movable		0
+ }
+ 
+ Item  0x1215
+ {
+-  movable               0
++	Name		altar2
++	Desc		altar
++	movable		0
+ }
+ 
+ Item  0x1214
+ {
+-  movable               0
++	Name		altar3
++	Desc		altar
++	movable		0
+ }
+ 
+ Item  0x120f
+ {
+-  movable               0
++	Name		altar4
++	Desc		altar
++	movable		0
+ }
+ 
+ Item  0x1216
+ {
+-  movable               0
++	Name		altar5
++	Desc		altar
++	movable		0
+ }
+ 
+ Item  0x1213
+ {
+-  movable               0
++	Name		altar6
++	Desc		altar
++	movable		0
+ }
+ 
+ Item  0x1210
+ {
+-  movable               0
++	Name		altar7
++	Desc		altar
++	movable		0
+ }
+ 
+ Item  0x1211
+ {
+-  movable               0
++	Name		altar8
++	Desc		altar
++	movable		0
+ }
+ 
+ Item  0x1212
+ {
+-  movable               0
++	Name		altar9
++	Desc		altar
++	movable		0
+ }
+ 
+-Item  0x0fe7
++Item  0xfe6
+ {
+-  movable               0
++	Name		pentagram1
++	Desc		pentagram
++	movable		0
+ }
+ 
+-Item  0x0fe6
++Item  0xfe7
+ {
+-  movable               0
++	Name		pentagram2
++	Desc		pentagram
++	movable		0
+ }
+ 
+-Item  0x0fe9
++Item  0xfe9
+ {
+-  movable               0
++	Name		pentagram3
++	Desc		pentagram
++	movable		0
+ }
+ 
+-Item  0x0fe8
++Item  0xfe8
+ {
+-  movable               0
++	Name		pentagram4
++	Desc		pentagram
++	movable		0
+ }
+ 
+-Item  0x0fea
++Item  0xfea
+ {
+-  movable               0
++	Name		pentagram5
++	Desc		pentagram
++	movable		0
+ }
+ 
+-Item  0x0fec
++Item  0xfec
+ {
+-  movable               0
++	Name		pentagram6
++	Desc		pentagram
++	movable		0
+ }
+ 
+-Item  0x0feb
++Item  0xfeb
+ {
+-  movable               0
++	Name		pentagram7
++	Desc		pentagram
++	movable		0
+ }
+ 
+-Item  0x0fee
++Item  0xfee
+ {
+-  movable               0
++	Name		pentagram8
++	Desc		pentagram
++	movable		0
+ }
+ 
+-Item  0x0fed
++Item  0xfed
+ {
+-  movable               0
+-}
+-
+-
++	Name		pentagram9
++	Desc		pentagram
++	movable		0
++}
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/carpentry/loomDeed.src
+===================================================================
+--- trunk/096/pkg/skills/carpentry/loomDeed.src	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/skills/carpentry/loomDeed.src	2005-10-28 07:14:49 UTC (rev 686)
+@@ -5,7 +5,7 @@
+ include &quot;util/key&quot;;
+ include &quot;include/attributes&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;:gumps:yesno&quot;;
++include &quot;include/yesNo&quot;;
+ 
+ const UOBJECT_DOORS_START   := 0x0675;
+ const UOBJECT_DOORS_END     := 0x06f4;
+@@ -97,7 +97,7 @@
+       x_mod := 0 - x_mod;
+       y_mod := 0 - y_mod;
+     endif
+-    var the_item := CreateItemAtLocation(1, 1, 0, obj, 1, who.realm);
++    var the_item := CreateItemAtLocation(5886, 1179, 0, obj, 1);
+     the_item.movable := 1;
+     the_item.graphic := 1;
+     if(!MoveItemToLocation(the_item, start.x + x_mod, start.y + y_mod, start.z, MOVEITEM_NORMAL))
+@@ -150,13 +150,14 @@
+     SendSysMessage(who, &quot;Could not build that there&quot;);
+     return;
+   elseif(failed == 2)
+-    SendSysMessage(who, &quot;You may only place this in a house you own.&quot;);
++    SendSysMessage(who, &quot;You may only place this in a house you own&quot;);
+     return;
+   endif
+   foreach thing in created
+     thing.graphic := thing.objtype;
+   endforeach
+   var deed_objtype := deed.objtype;
++  var deed_color := deed.color;
+   if(YesNo(who, &quot;Placed well?&quot;))
+     if(DestroyItem(deed))
+       var the_serials := {};
+@@ -168,6 +169,7 @@
+           SetObjProperty(part, &quot;DeedOwnerSerial&quot;, who.serial);
+           SetObjProperty(part, &quot;ItemsCreatedSerials&quot;, the_serials);
+           SetObjProperty(part, &quot;FromDeed&quot;, deed_objtype);
++          SetObjProperty(part, &quot;DeedColor&quot;, deed_color);
+         endif
+       endforeach
+     endif
+@@ -207,4 +209,4 @@
+     opposing := 1;
+   endif
+   return CInt(ids[choice]);
+-endfunction
+\ No newline at end of file
++endfunction
+
+Modified: trunk/096/pkg/skills/carpentry/ovenDeed.src
+===================================================================
+--- trunk/096/pkg/skills/carpentry/ovenDeed.src	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/skills/carpentry/ovenDeed.src	2005-10-28 07:14:49 UTC (rev 686)
+@@ -5,7 +5,7 @@
+ include &quot;util/key&quot;;
+ include &quot;include/attributes&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;:gumps:yesno&quot;;
++include &quot;include/yesNo&quot;;
+ 
+ const UOBJECT_DOORS_START   := 0x0675;
+ const UOBJECT_DOORS_END     := 0x06f4;
+@@ -94,7 +94,7 @@
+     x_mod := CInt(xmods[i]);
+     y_mod := CInt(ymods[i]);
+     i := i + 1;
+-    the_item := CreateItemAtLocation(1, 1, 0, obj, 1, who.realm);
++    the_item := CreateItemAtLocation(5886, 1179, 0, obj, 1);
+     the_item.movable := 1;
+     the_item.graphic := 1;
+     if(!MoveItemToLocation(the_item, start.x + x_mod, start.y + y_mod, start.z, MOVEITEM_NORMAL))
+@@ -126,16 +126,17 @@
+     endif
+   endforeach
+   if(failed == 1)
+-    SendSysMessage(who, &quot;Could not build that there.&quot;);
++    SendSysMessage(who, &quot;Could not build that there&quot;);
+     return;
+   elseif(failed == 2)
+-    SendSysMessage(who, &quot;You may only place this in a house you own.&quot;);
++    SendSysMessage(who, &quot;You may only place this in a house you own&quot;);
+     return;
+   endif
+   foreach thing in created
+     thing.graphic := thing.objtype;
+   endforeach
+   var deed_objtype := deed.objtype;
++  var deed_color := deed.color;
+   if(DestroyItem(deed))
+     if(YesNo(who, &quot;Placed well?&quot;))
+       var the_serials := {};
+@@ -147,6 +148,7 @@
+           SetObjProperty(part, &quot;DeedOwnerSerial&quot;, who.serial);
+           SetObjProperty(part, &quot;ItemsCreatedSerials&quot;, the_serials);
+           SetObjProperty(part, &quot;FromDeed&quot;, deed_objtype);
++          SetObjProperty(part, &quot;DeedColor&quot;, deed_color);
+         endif
+       endforeach
+     else
+@@ -157,4 +159,4 @@
+       CreateItemInContainer(who.backpack, deed_objtype, 1);
+     endif
+   endif
+-endprogram
+\ No newline at end of file
++endprogram
+
+Modified: trunk/096/pkg/systems/crafting/config/craftConfig.cfg
+===================================================================
+--- trunk/096/pkg/systems/crafting/config/craftConfig.cfg	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/systems/crafting/config/craftConfig.cfg	2005-10-28 07:14:49 UTC (rev 686)
+@@ -74,7 +74,7 @@
+ {
+ 	Skill	alchemy
+         Skill   Blacksmithy
+-        Skill   carpentry
++        Skill   Carpentry
+         Skill   cartography
+ 	Skill	cooking
+ 	Skill	BowcraftFletching
+@@ -114,13 +114,14 @@
+ 	ExceptionalName	crafted by
+ }
+ 
+-Crafting carpentry
++Crafting Carpentry
+ {
+ 	Name		carpentry
+-	Attribute	carpentry
++	Attribute	Carpentry
+ 	CraftDelay	2
+ 	CraftLoops	0
+ 	CraftAnim	0
++	CraftSound	0x23e
+ 	Repair		1
+ 	Smelt		0
+ 	MakersMark	1
+
+Modified: trunk/096/pkg/systems/crafting/include/craftGumps.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/craftGumps.inc	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/systems/crafting/include/craftGumps.inc	2005-10-28 07:14:49 UTC (rev 686)
+@@ -322,13 +322,16 @@
+ 	if(!skillreqb || skillreqb.errortext)
+ 		skillreqb  := 0;
+ 	endif
+-
+ 	// Set up skill 2 if one required
+ 	var aid_skill := elem.skillID;
+ 	// Get their xxx.x skill amount
+ 	var temp1 := CDbl(AP_GetSkill(who, craft_skill));
+ 	// Get their xxx.x skill amount of the secondary skill entry
+-	var temp2 := CDbl(AP_GetSkill(who, craft_config[objtype].skillID));
++	var temp2 := 0;
++	if( TypeOf(craft_config[objtype].skillID) == &quot;String&quot; )
++		temp2 := CDbl(AP_GetSkill(who, craft_config[objtype].skillID));
++	endif
++
+ 	// If there was no secondary skill in the cfg entry, set it to main skill
+ 	if(temp2 == error)
+ 		temp2 := temp1;
+@@ -451,7 +454,7 @@
+ 	// Material Required
+ 	GFHTMLArea(gump, 170, 219, 300, 80, (&quot;&lt;basefont color=#ffffff&gt;&quot; + matname));
+ 	if(material != 0)
+-		GFHTMLArea(gump, 430, 219, 10, 80, (&quot;&lt;basefont color=#ffffff&gt;&quot; + material));
++		GFHTMLArea(gump, 430, 219, 20, 80, (&quot;&lt;basefont color=#ffffff&gt;&quot; + material));
+ 	endif
+ 	// Success Chance % text
+ 	GFTextLine(gump, 170, 80, 1153, &quot;Success Chance:&quot;);
+
+Modified: trunk/096/pkg/systems/crafting/include/crafting.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/crafting.inc	2005-10-28 04:14:04 UTC (rev 685)
++++ trunk/096/pkg/systems/crafting/include/crafting.inc	2005-10-28 07:14:49 UTC (rev 686)
+@@ -40,7 +40,7 @@
+ use polsys;
+ use datafile;
+ 
+-include &quot;include/objtype&quot;;
++include &quot;util/key&quot;;
+ include &quot;:crafting:include/craftGumps&quot;;
+ include &quot;:crafting:include/craftingSkill&quot;;
+ include &quot;:gumps:include/gumps&quot;;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000659.html">[Poldistro-svn] r685 - trunk/096/pkg/items/containers
+</A></li>
+	<LI>Next message: <A HREF="000661.html">[Poldistro-svn] r687 - in trunk/096/pkg: skills/carpentry systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#660">[ date ]</a>
+              <a href="thread.html#660">[ thread ]</a>
+              <a href="subject.html#660">[ subject ]</a>
+              <a href="author.html#660">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

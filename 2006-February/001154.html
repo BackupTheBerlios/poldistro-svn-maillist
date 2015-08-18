@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1183 - trunk/096/pkg/items/doors/door
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1183%20-%20trunk/096/pkg/items/doors/door&In-Reply-To=%3C200602101747.k1AHliHi008301%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001153.html">
+   <LINK REL="Next"  HREF="001155.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1183 - trunk/096/pkg/items/doors/door</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1183%20-%20trunk/096/pkg/items/doors/door&In-Reply-To=%3C200602101747.k1AHliHi008301%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1183 - trunk/096/pkg/items/doors/door">austin at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 18:47:44 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001153.html">[Poldistro-svn] r1182 - trunk/096/pkg/items/doors/door
+</A></li>
+        <LI>Next message: <A HREF="001155.html">[Poldistro-svn] r1184 - trunk/096/pkg/items/doors/door
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1154">[ date ]</a>
+              <a href="thread.html#1154">[ thread ]</a>
+              <a href="subject.html#1154">[ subject ]</a>
+              <a href="author.html#1154">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-10 18:47:42 +0100 (Fri, 10 Feb 2006)
+New Revision: 1183
+
+Modified:
+   trunk/096/pkg/items/doors/door/method.src
+   trunk/096/pkg/items/doors/door/use.src
+Log:
+Fixed a bug in the method script with MoveObjectToLocation(), use script does door.Toggle() for simple opening/closing.
+
+Modified: trunk/096/pkg/items/doors/door/method.src
+===================================================================
+--- trunk/096/pkg/items/doors/door/method.src	2006-02-10 13:37:50 UTC (rev 1182)
++++ trunk/096/pkg/items/doors/door/method.src	2006-02-10 17:47:42 UTC (rev 1183)
+@@ -19,7 +19,7 @@
+ endfunction
+ 
+ exported function Toggle(door)
+-	if ( Opened(door) )
++	if ( IsOpened(door) )
+ 		Close(door);
+ 	else
+ 		Open(door);
+@@ -29,7 +29,7 @@
+ endfunction
+ 
+ exported function Open(door)
+-	if ( Opened(door) )
++	if ( IsOpened(door) )
+ 		return error{&quot;errortext&quot;:=&quot;Door is already open.&quot;};
+ 	endif
+ 	
+@@ -46,13 +46,14 @@
+ endfunction
+ 
+ exported function Close(door)
+-	if ( !Opened(door) )
++	if ( !IsOpened(door) )
+ 		return error{&quot;errortext&quot;:=&quot;Door is already closed.&quot;};
+ 	endif
+ 	
+ 	ChangeDoor(door);
+ 	
+ 	EraseObjProperty(door, &quot;Open&quot;);
++	
+ 	case ( lower(ConfigInfo(door).DoorType) )
+ 		&quot;metal&quot; : PlaySoundEffect(door, SFX_METAL_DOOR_CLOSE);
+ 		&quot;wooden&quot; : PlaySoundEffect(door, SFX_WOODEN_DOOR_CLOSE);
+@@ -61,7 +62,7 @@
+ 	return 1;
+ endfunction
+ 
+-exported function Opened(door)
++exported function IsOpened(door)
+ 	return CInt(GetObjProperty(door, &quot;Open&quot;));
+ endfunction
+ 
+@@ -80,24 +81,25 @@
+ 	if ( door.container )
+ 		return 0;
+ 	endif
+-	
++		
+ 	var move_state := door.movable;
+ 	var door_info := ConfigInfo(door);
+-	
++		
+ 	Set_Critical(1);	
+ 	
+ 	door.movable := 1;
+ 	door.graphic := door_info.ChangeTo;
+ 	
+-	MoveObjectToLocation(door, door.x+door_info.xmod, door.y+door_info.ymod, door.z, MOVEITEM_FORCELOCATION);
+-	
++	MoveObjectToLocation(door, door.x+CInt(door_info.xmod), door.y+CInt(door_info.ymod), door.z, door.realm, MOVEOBJECT_FORCELOCATION);
++		
+ 	door.movable := move_state;
+-	EraseObjProperty(door, &quot;open&quot;);
+ 	
+ 	Set_Critical(0);
++	
++	return 1;
+ endfunction
+ 
+ function ConfigInfo(door)
+ 	var config := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-	return config[door.graphic];
++	return config[Hex(door.graphic)];
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/doors/door/use.src
+===================================================================
+--- trunk/096/pkg/items/doors/door/use.src	2006-02-10 13:37:50 UTC (rev 1182)
++++ trunk/096/pkg/items/doors/door/use.src	2006-02-10 17:47:42 UTC (rev 1183)
+@@ -6,7 +6,9 @@
+  */
+ 
+ use uo;
++use os;
++use cfgfile;
+ 
+ program useScript(mobile, door)
+-	return 1;
++	door.Toggle();
+ endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001153.html">[Poldistro-svn] r1182 - trunk/096/pkg/items/doors/door
+</A></li>
+	<LI>Next message: <A HREF="001155.html">[Poldistro-svn] r1184 - trunk/096/pkg/items/doors/door
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1154">[ date ]</a>
+              <a href="thread.html#1154">[ thread ]</a>
+              <a href="subject.html#1154">[ subject ]</a>
+              <a href="author.html#1154">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

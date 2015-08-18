@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1093 - trunk/096/pkg/multis/boat/tiller
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1093%20-%20trunk/096/pkg/multis/boat/tiller&In-Reply-To=%3C200601051341.k05DfUM7009302%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001063.html">
+   <LINK REL="Next"  HREF="001065.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1093 - trunk/096/pkg/multis/boat/tiller</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1093%20-%20trunk/096/pkg/multis/boat/tiller&In-Reply-To=%3C200601051341.k05DfUM7009302%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1093 - trunk/096/pkg/multis/boat/tiller">austin at berlios.de
+       </A><BR>
+    <I>Thu Jan  5 14:41:30 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001063.html">[Poldistro-svn] r1092 - trunk/096/pkg/multis/boat/plank
+</A></li>
+        <LI>Next message: <A HREF="001065.html">[Poldistro-svn] r1094 - in trunk/096/pkg/skills/magery/spellScripts: circle4 circle6 circle7
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1064">[ date ]</a>
+              <a href="thread.html#1064">[ thread ]</a>
+              <a href="subject.html#1064">[ subject ]</a>
+              <a href="author.html#1064">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-05 14:41:29 +0100 (Thu, 05 Jan 2006)
+New Revision: 1093
+
+Modified:
+   trunk/096/pkg/multis/boat/tiller/methods.src
+   trunk/096/pkg/multis/boat/tiller/use.src
+Log:
+
+
+Modified: trunk/096/pkg/multis/boat/tiller/methods.src
+===================================================================
+--- trunk/096/pkg/multis/boat/tiller/methods.src	2006-01-05 12:55:02 UTC (rev 1092)
++++ trunk/096/pkg/multis/boat/tiller/methods.src	2006-01-05 13:41:29 UTC (rev 1093)
+@@ -0,0 +1,140 @@
++use uo;
++use boat;
++use os;
++
++include &quot;include/string&quot;;
++
++program Install()
++	return 1;
++endprogram
++
++exported function GetMulti(tiller)
++	return SystemFindBoatBySerial((tiller.multi).serial);
++endfunction
++
++exported function IsOnBoat(tiller, boat, mobile)
++	if ( (mobile.multi).serial == boat.serial )
++		return 1;
++	else
++		return 0;
++	endif
++endfunction
++
++exported function CanCommand(tiller, mobile)
++	if ( IsOwner(tiller, mobile) )
++		return 1;
++	elseif ( IsCrewMate(tiller, mobile) )
++		return 1;
++	else
++		return 0;
++	endif
++endfunction
++
++exported function IsOwner(tiller, mobile)
++	if ( mobile.serial == GetOwner(tiller).serial )
++		return 1;
++	else
++		return 0;
++	endif
++endfunction
++
++exported function GetOwner(tiller)
++	return GetObjProperty(tiller, &quot;Owner&quot;);
++endfunction
++
++exported function SetOwner(tiller, owner)
++	var info := struct;
++	info.+name := owner.name;
++	info.+serial := owner.serial;
++	info.+acctname := owner.acctname;
++	
++	return SetObjProperty(tiller, &quot;Owner&quot;, info);
++endfunction
++
++exported function GetCrewMates(tiller)
++	var crew_mates := GetObjProperty(tiller, &quot;CrewMates&quot;);
++	if ( crew_mates == error )
++		crew_mates := array;
++		SetCrewMates(tiller, crew_mates);
++	endif
++	
++	return crew_mates;
++endfunction
++
++exported function RemoveCrewMate(tiller, index)
++	var crew_mates := GetCrewMates(tiller);
++	var crew_mate := crew_mates[index];
++	crew_mates.erase(index);
++	SetCrewMates(tiller, crew_mates);
++	
++	return crew_mate;
++endfunction
++
++exported function AddCrewMate(tiller, mobile, index)
++	var crew_mates := GetCrewMates(tiller);
++	
++	var info := struct;
++	info.+name := mobile.name;
++	info.+serial := mobile.serial;
++	info.+acctname := mobile.acctname;
++	
++	crew_mates[index] := info;
++	
++	SetCrewMates(tiller, crew_mates);
++endfunction
++
++exported function IsCrewMate(tiller, mobile)
++	var crew_mates := GetCrewMates(tiller);
++	var i;
++	for ( i:=1; i&lt;=crew_mates.size(); i:=i+1 )
++		if ( crew_mates[i].name == mobile.name )
++			return i;
++		endif
++	endfor
++	
++	return 0;
++endfunction
++
++exported function SetCrewMates(tiller, list)
++	SetObjProperty(tiller, &quot;CrewMates&quot;, list);
++endfunction
++
++exported function GetCondition(tiller)
++	var condition := GetObjProperty(tiller, &quot;Condition&quot;);
++	
++	return condition;
++endfunction
++
++exported function SetCondition(tiller, value)
++	SetObjProperty(tiller, &quot;Condition&quot;, value);
++endfunction
++
++exported function GetSpeed(tiller)
++	var speed := GetObjProperty(tiller, &quot;Speed&quot;);
++	if ( !speed )
++		SetSpeed(tiller, 350);
++	endif
++	
++	return CInt(speed);
++endfunction
++
++exported function SetSpeed(tiller, value)
++	SetObjProperty(tiller, &quot;Speed&quot;, value);
++endfunction
++
++exported function SetAnchorStatus(tiller, value)
++	var tiller_name := tiller.desc;
++	if ( value )
++		SetObjProperty(tiller, &quot;Anchored&quot;, 1);
++		SetName(tiller, tiller_name+&quot; [Anchored]&quot;);
++	else
++		EraseObjProperty(tiller, &quot;Anchored&quot;);
++		tiller_name[&quot; [Anchored]&quot;] := &quot;&quot;;
++		tiller_name := RemoveSpaces(tiller_name, CLR_LEADING_SPACES+CLR_TRAILING_SPACES+CLR_DOUBLE_SPACES);
++		SetName(tiller, tiller_name);
++	endif
++endfunction
++
++exported function IsAnchored(tiller)
++	return GetObjProperty(tiller, &quot;Anchored&quot;);
++endfunction
+
+Modified: trunk/096/pkg/multis/boat/tiller/use.src
+===================================================================
+--- trunk/096/pkg/multis/boat/tiller/use.src	2006-01-05 12:55:02 UTC (rev 1092)
++++ trunk/096/pkg/multis/boat/tiller/use.src	2006-01-05 13:41:29 UTC (rev 1093)
+@@ -0,0 +1,12 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++include &quot;:gumps:gumps&quot;;
++
++program UseScript(who, tillerman)
++	return 1;
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001063.html">[Poldistro-svn] r1092 - trunk/096/pkg/multis/boat/plank
+</A></li>
+	<LI>Next message: <A HREF="001065.html">[Poldistro-svn] r1094 - in trunk/096/pkg/skills/magery/spellScripts: circle4 circle6 circle7
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1064">[ date ]</a>
+              <a href="thread.html#1064">[ thread ]</a>
+              <a href="subject.html#1064">[ subject ]</a>
+              <a href="author.html#1064">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

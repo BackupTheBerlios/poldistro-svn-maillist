@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r501 - trunk/096/pkg/systems/merchantnodes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r501%20-%20trunk/096/pkg/systems/merchantnodes&In-Reply-To=%3C200510092220.j99MKg5d019749%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000473.html">
+   <LINK REL="Next"  HREF="000475.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r501 - trunk/096/pkg/systems/merchantnodes</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r501%20-%20trunk/096/pkg/systems/merchantnodes&In-Reply-To=%3C200510092220.j99MKg5d019749%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r501 - trunk/096/pkg/systems/merchantnodes">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 00:20:42 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000473.html">[Poldistro-svn] r500 - trunk/096/pkg/systems/merchantnodes
+</A></li>
+        <LI>Next message: <A HREF="000475.html">[Poldistro-svn] r502 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#474">[ date ]</a>
+              <a href="thread.html#474">[ thread ]</a>
+              <a href="subject.html#474">[ subject ]</a>
+              <a href="author.html#474">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 00:20:42 +0200 (Mon, 10 Oct 2005)
+New Revision: 501
+
+Modified:
+   trunk/096/pkg/systems/merchantnodes/merchantNode.src
+Log:
+
+
+Modified: trunk/096/pkg/systems/merchantnodes/merchantNode.src
+===================================================================
+--- trunk/096/pkg/systems/merchantnodes/merchantNode.src	2005-10-09 22:19:29 UTC (rev 500)
++++ trunk/096/pkg/systems/merchantnodes/merchantNode.src	2005-10-09 22:20:42 UTC (rev 501)
+@@ -3,7 +3,6 @@
+ 
+ include &quot;:gumps:include/old/old-gumps&quot;;
+ include &quot;include/client&quot;;
+-include &quot;include/gumpUtil&quot;;
+ include &quot;include/mrcSpawn&quot;;
+ 
+ var pid, proc, item, restock, respawn, apply, cancel, page := 0, chk := 0, sy := 60, type;
+@@ -17,23 +16,23 @@
+     SendSysMessage(who, &quot;That merchant node is not responding.&quot;);
+     return;
+   endif
+-  GFInitGump(0, 0);
+-  GFPage(page);
++  OldGFInitGump(0, 0);
++  OldGFPage(page);
+   page := page + 1;
+-  GFPage(page);
+-  GFResizePic(  0,   0, 5120, 540, 400);
+-  GFResizePic( 10,  10, 5054, 520, 350);
++  OldGFPage(page);
++  OldGFResizePic(  0,   0, 5120, 540, 400);
++  OldGFResizePic( 10,  10, 5054, 520, 350);
+   var template := GetObjProperty(item, &quot;Template&quot;);
+   if(!template)
+     template := 1;
+     SetObjProperty(item, &quot;Template&quot;, 1);
+   endif
+   if(template == 1)
+-    GFTextLine(232, 17, 0, &quot;Merchant Node Interface&quot;);
+-    GFTextLine(230, 15, COLOR_YELLOW, &quot;Merchant Node Interface&quot;);
++    OldGFTextLine(232, 17, 0, &quot;Merchant Node Interface&quot;);
++    OldGFTextLine(230, 15, COLOR_YELLOW, &quot;Merchant Node Interface&quot;);
+   else
+-    GFTextLine(232, 17, 0, &quot;Banker Node Interface&quot;);
+-    GFTextLine(230, 15, COLOR_YELLOW, &quot;Banker Node Interface&quot;);
++    OldGFTextLine(232, 17, 0, &quot;Banker Node Interface&quot;);
++    OldGFTextLine(230, 15, COLOR_YELLOW, &quot;Banker Node Interface&quot;);
+   endif
+   type := GetObjProperty(item, &quot;Type&quot;);
+   if(!type)
+@@ -41,19 +40,19 @@
+     SetObjProperty(item, &quot;Type&quot;, type);
+   endif
+   var amt := len(type);
+-  GFTextLine( 20, 40, COLOR_BLUE, &quot;Type&quot;);
+-  GFTextLine(150, 40, COLOR_BLUE, &quot;X&quot;);
+-  GFTextLine(210, 40, COLOR_BLUE, &quot;Y&quot;);
+-  GFTextLine(270, 40, COLOR_BLUE, &quot;Z&quot;);
+-  GFTextLine(310, 40, COLOR_BLUE, &quot;Enable&quot;);
+-  GFTextLine(360, 40, COLOR_BLUE, &quot;Delete&quot;);
+-  GFTextLine(420, 40, COLOR_BLUE, &quot;Rebuild Stock&quot;);
++  OldGFTextLine( 20, 40, COLOR_BLUE, &quot;Type&quot;);
++  OldGFTextLine(150, 40, COLOR_BLUE, &quot;X&quot;);
++  OldGFTextLine(210, 40, COLOR_BLUE, &quot;Y&quot;);
++  OldGFTextLine(270, 40, COLOR_BLUE, &quot;Z&quot;);
++  OldGFTextLine(310, 40, COLOR_BLUE, &quot;Enable&quot;);
++  OldGFTextLine(360, 40, COLOR_BLUE, &quot;Delete&quot;);
++  OldGFTextLine(420, 40, COLOR_BLUE, &quot;Rebuild Stock&quot;);
+   FillInPageData();
+   if(len(type) &lt; 10)
+-    GFTextLine(40, sy, COLOR_YELLOW, &quot;Create a new merchant here?   (negates all other choices)&quot;);
+-    GFButtonID(20, sy, 210, 211, 1, sy);
++    OldGFTextLine(40, sy, COLOR_YELLOW, &quot;Create a new merchant here?   (negates all other choices)&quot;);
++    OldGFButtonID(20, sy, 210, 211, 1, sy);
+   endif
+-  GFTextLine( 20, 20, COLOR_GREEN, &quot;Current:&quot;);
++  OldGFTextLine( 20, 20, COLOR_GREEN, &quot;Current:&quot;);
+   var npclist := GetObjProperty(item, &quot;NpcList&quot;);
+   var current := 0;
+   var holder := array;
+@@ -65,16 +64,16 @@
+   endforeach
+   SetObjProperty(item, &quot;NpcList&quot;, holder);
+   if(current == amt)
+-    GFTextLine(90, 20, COLOR_BLUE,   current+&quot;/&quot;+amt);
++    OldGFTextLine(90, 20, COLOR_BLUE,   current+&quot;/&quot;+amt);
+   elseif(current == 0)
+-    GFTextLine(90, 20, COLOR_RED,    current+&quot;/&quot;+amt);
++    OldGFTextLine(90, 20, COLOR_RED,    current+&quot;/&quot;+amt);
+   else
+-    GFTextLine(90, 20, COLOR_YELLOW, current+&quot;/&quot;+amt);
++    OldGFTextLine(90, 20, COLOR_YELLOW, current+&quot;/&quot;+amt);
+   endif
+-  apply   := GFButtonID( 20, 370, G_YELLOW_OVAL_APPLY_0, G_YELLOW_OVAL_APPLY_1, 1);
+-  cancel  := GFButtonID(100, 370, G_RED_OVAL_CANCEL_0, G_RED_OVAL_CANCEL_1, 1, 0);
++  apply   := OldGFButtonID( 20, 370, 2124, 2123, 1);
++  cancel  := OldGFButtonID(100, 370, 2121, 2120, 1, 0);
+   GetStatus(item);
+-  var retkey  := GFSendGump(who);
++  var retkey  := OldGFSendGump(who);
+   if((retkey[cancel.keyid]) or (retkey[0] == 1))
+     SendSysMessage(who, &quot;Cancelled&quot;, 3, 40);
+   elseif(retkey[apply.keyid])
+@@ -138,13 +137,13 @@
+     if(!status)
+       color := COLOR_RED;
+     endif
+-    GFTextLine( 20, sy, color, template);
+-    GFTextLine(150, sy, color, x);
+-    GFTextLine(210, sy, color, y);
+-    GFTextLine(270, sy, color, z);
+-    GFCheckBox(320, sy, 208, 209, 0, 5000+i);
+-    GFCheckBox(370, sy, 208, 209, 0, 6000+i);
+-    GFCheckBox(460, sy, 208, 209, 0, 7000+i);
++    OldGFTextLine( 20, sy, color, template);
++    OldGFTextLine(150, sy, color, x);
++    OldGFTextLine(210, sy, color, y);
++    OldGFTextLine(270, sy, color, z);
++    OldGFCheckBox(320, sy, 208, 209, 0, 5000+i);
++    OldGFCheckBox(370, sy, 208, 209, 0, 6000+i);
++    OldGFCheckBox(460, sy, 208, 209, 0, 7000+i);
+     sy := sy + 25;
+     i := i + 1;
+   endforeach
+@@ -155,18 +154,18 @@
+   var color, txt;
+     case(status)
+       &quot;on&quot;:      color := COLOR_GREEN; txt := &quot;Merchant Node Enabled&quot;;
+-                 GFSetRadioGroup(1);
+-                 GFRadioButton(20, 320, 208, 209, 1, 200);
+-                 GFRadioButton(20, 340, 208, 209, 0, 201);
++                 OldGFSetRadioGroup(1);
++                 OldGFRadioButton(20, 320, 208, 209, 1, 200);
++                 OldGFRadioButton(20, 340, 208, 209, 0, 201);
+       &quot;off&quot;:     color := COLOR_RED; txt := &quot;Merchant Node Disabled&quot;;
+-                 GFSetRadioGroup(1);
+-                 GFRadioButton(20, 320, 208, 209, 0, 200);
+-                 GFRadioButton(20, 340, 208, 209, 1, 201);
++                 OldGFSetRadioGroup(1);
++                 OldGFRadioButton(20, 320, 208, 209, 0, 200);
++                 OldGFRadioButton(20, 340, 208, 209, 1, 201);
+       default:   color := COLOR_GREEN; txt := &quot;Merchant Node Enabled&quot;;
+                  SetObjProperty(item, &quot;Status&quot;, &quot;on&quot;);
+-                 GFSetRadioGroup(1);
+-                 GFRadioButton(20, 320, 208, 209, 1, 200);
+-                 GFRadioButton(20, 340, 208, 209, 0, 201);
++                 OldGFSetRadioGroup(1);
++                 OldGFRadioButton(20, 320, 208, 209, 1, 200);
++                 OldGFRadioButton(20, 340, 208, 209, 0, 201);
+     endcase
+   var cs := GetObjProperty(item, &quot;#wait&quot;);
+   if(cs == 1)
+@@ -176,14 +175,14 @@
+     color := COLOR_YELLOW;
+     txt := &quot;Merchant Nodes Are Disabled Globally&quot;;
+   elseif(status != &quot;off&quot;)
+-    restock := GFCheckBox(340, 320, 208, 209, 0, 400);
+-    respawn := GFCheckBox(340, 340, 208, 209, 0, 300);
+-    GFTextLine(370, 320, COLOR_GREEN, &quot;Restock Merchants&quot;);
+-    GFTextLine(370, 340, COLOR_GREEN, &quot;Respawn Merchants&quot;);
++    restock := OldGFCheckBox(340, 320, 208, 209, 0, 400);
++    respawn := OldGFCheckBox(340, 340, 208, 209, 0, 300);
++    OldGFTextLine(370, 320, COLOR_GREEN, &quot;Restock Merchants&quot;);
++    OldGFTextLine(370, 340, COLOR_GREEN, &quot;Respawn Merchants&quot;);
+   endif
+-  GFTextMid(150, 370, 300, color, txt);
+-  GFTextLine(50, 320, COLOR_GREEN, &quot;Enable Node&quot;);
+-  GFTextLine(50, 340, COLOR_GREEN, &quot;Disable Node&quot;);
++  OldGFTextMid(150, 370, 300, color, txt);
++  OldGFTextLine(50, 320, COLOR_GREEN, &quot;Enable Node&quot;);
++  OldGFTextLine(50, 340, COLOR_GREEN, &quot;Disable Node&quot;);
+ endfunction
+ 
+ function ResetMerchantNode(who, ret)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000473.html">[Poldistro-svn] r500 - trunk/096/pkg/systems/merchantnodes
+</A></li>
+	<LI>Next message: <A HREF="000475.html">[Poldistro-svn] r502 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#474">[ date ]</a>
+              <a href="thread.html#474">[ thread ]</a>
+              <a href="subject.html#474">[ subject ]</a>
+              <a href="author.html#474">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

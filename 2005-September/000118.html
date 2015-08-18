@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r136 - trunk/096/pkg/utils/gumps/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r136%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200509150426.j8F4Qd3b012847%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000117.html">
+   <LINK REL="Next"  HREF="000119.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r136 - trunk/096/pkg/utils/gumps/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r136%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200509150426.j8F4Qd3b012847%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r136 - trunk/096/pkg/utils/gumps/include">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep 15 06:26:39 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000117.html">[Poldistro-svn] r135 - trunk/096/pkg/utils/gumps/include
+</A></li>
+        <LI>Next message: <A HREF="000119.html">[Poldistro-svn] r137 - trunk/096/batchfiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#118">[ date ]</a>
+              <a href="thread.html#118">[ thread ]</a>
+              <a href="subject.html#118">[ subject ]</a>
+              <a href="author.html#118">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-15 06:26:37 +0200 (Thu, 15 Sep 2005)
+New Revision: 136
+
+Modified:
+   trunk/096/pkg/utils/gumps/include/gumpprompt.inc
+   trunk/096/pkg/utils/gumps/include/gumps.inc
+   trunk/096/pkg/utils/gumps/include/gumps_ex.inc
+   trunk/096/pkg/utils/gumps/include/requestgump.inc
+   trunk/096/pkg/utils/gumps/include/yesno.inc
+Log:
+
+
+Modified: trunk/096/pkg/utils/gumps/include/gumpprompt.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/gumpprompt.inc	2005-09-15 04:22:51 UTC (rev 135)
++++ trunk/096/pkg/utils/gumps/include/gumpprompt.inc	2005-09-15 04:26:37 UTC (rev 136)
+@@ -1,3 +1,13 @@
++/*===============================================================
++* Current Version
++* GUMPPROMPT.INC - v1.0
++* Updated 9/14/2005 9:24PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
+ use uo;
+ use os;
+ 
+@@ -4,8 +14,7 @@
+ include &quot;:gumps:include/gumps&quot;;
+ include &quot;:gumps:include/gumps_ex&quot;;
+ 
+-/* Version 1.0 - Austin
+- *
++/* 
+  * GumpPrompt(mobile, text)
+  *
+  * Purpose
+@@ -28,8 +37,7 @@
+ 	endif
+ 	GFResizePic(gump_prompt, 180, 100, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 300, 160);
+ 	GFResizePic(gump_prompt, 195, 115, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 270, 130);
+-	GFAddButton(gump_prompt, 300, 220, 2128, 2129, GF_CLOSE_BTN, 1);
+-	
++		
+ 	var y_pos := 125;
+ 	foreach line in (GFWordWrap(text, 260))
+ 		GFTextLine(gump_prompt, 200, y_pos, 1153, line);
+@@ -37,6 +45,8 @@
+ 		sleepms(2);
+ 	endforeach
+ 	
++	GFAddButton(gump_prompt, 300, 220, 2128, 2129, GF_CLOSE_BTN, 1);
++	
+ 	var prompt_input := GFSendGump(mobile, gump_prompt);
+ 	return prompt_input[0];
+ endfunction
+
+Modified: trunk/096/pkg/utils/gumps/include/gumps.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/gumps.inc	2005-09-15 04:22:51 UTC (rev 135)
++++ trunk/096/pkg/utils/gumps/include/gumps.inc	2005-09-15 04:26:37 UTC (rev 136)
+@@ -1,7 +1,3 @@
+-use uo;
+-use os;
+-use basic;
+-
+ /*===============================================================
+ * Current Version
+ * GUMPS.INC - v0.3
+@@ -49,6 +45,10 @@
+ *
+ ===============================================================*/
+ 
++use uo;
++use os;
++use basic;
++
+ /////////////////////////////////////////////////////////////////
+ // * Function List *
+ //
+
+Modified: trunk/096/pkg/utils/gumps/include/gumps_ex.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/gumps_ex.inc	2005-09-15 04:22:51 UTC (rev 135)
++++ trunk/096/pkg/utils/gumps/include/gumps_ex.inc	2005-09-15 04:26:37 UTC (rev 136)
+@@ -1,10 +1,3 @@
+-use uo;
+-use os;
+-use basic;
+-use cfgfile;
+-
+-include &quot;:gumps:include/gumps&quot;;
+-
+ /*===============================================================
+ * Current Version
+ * GUMPS_EX.INC - v0.2
+@@ -28,6 +21,13 @@
+ *
+ ===============================================================*/
+ 
++use uo;
++use os;
++use basic;
++use cfgfile;
++
++include &quot;:gumps:include/gumps&quot;;
++
+ /////////////////////////////////////////////////////////////////
+ // * Function List *
+ //
+
+Modified: trunk/096/pkg/utils/gumps/include/requestgump.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/requestgump.inc	2005-09-15 04:22:51 UTC (rev 135)
++++ trunk/096/pkg/utils/gumps/include/requestgump.inc	2005-09-15 04:26:37 UTC (rev 136)
+@@ -1,3 +1,13 @@
++/*===============================================================
++* Current Version
++* REQUESTGUMP.INC - v1.0
++* Updated 9/14/2005 9:24PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
+ use uo;
+ use os;
+ 
+@@ -4,8 +14,7 @@
+ include &quot;:gumps:include/gumps&quot;;
+ include &quot;:gumps:include/gumps_ex&quot;;
+ 
+-/* Version 1.0 - Austin
+- *
++/* 
+  * RequestGump(mobile, question, option, pre_val, cancel_btn)
+  *
+  * Purpose
+@@ -25,10 +34,6 @@
+  *
+  */
+ function RequestGump(mobile, question, option := &quot;&quot;, pre_val := &quot;&quot;, cancel_btn:=0)
+-	//Mobile = Character input gump is sent to.
+-	//Question = Question to ask.
+-	//Option = Optional text to put under the question.
+-	//Preval = What you want them to see in the text area when it comes up.
+ 	
+ 	if ( !pre_val || pre_val == error )
+ 		pre_val := &quot;&quot;;
+@@ -73,4 +78,4 @@
+ 	else
+ 		return text_area;
+ 	endif
+-endfunction
+\ No newline at end of file
++endfunction
+
+Modified: trunk/096/pkg/utils/gumps/include/yesno.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/yesno.inc	2005-09-15 04:22:51 UTC (rev 135)
++++ trunk/096/pkg/utils/gumps/include/yesno.inc	2005-09-15 04:26:37 UTC (rev 136)
+@@ -1,3 +1,13 @@
++/*===============================================================
++* Current Version
++* YESNO.INC - v1.0
++* Updated 9/14/2005 9:23PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
+ use uo;
+ use os;
+ 
+@@ -4,8 +14,7 @@
+ include &quot;:gumps:include/gumps&quot;;
+ include &quot;:gumps:include/gumps_ex&quot;;
+ 
+-/* Version 1.0 - Austin
+- *
++/* 
+  * YesNo(mobile, prompt, yes_text, no_text)
+  *
+  * Purpose
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000117.html">[Poldistro-svn] r135 - trunk/096/pkg/utils/gumps/include
+</A></li>
+	<LI>Next message: <A HREF="000119.html">[Poldistro-svn] r137 - trunk/096/batchfiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#118">[ date ]</a>
+              <a href="thread.html#118">[ thread ]</a>
+              <a href="subject.html#118">[ subject ]</a>
+              <a href="author.html#118">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

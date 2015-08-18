@@ -1,0 +1,847 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r837 - in trunk/096/pkg/skills/lumberjacking: . config include treeRegen
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r837%20-%20in%20trunk/096/pkg/skills/lumberjacking%3A%20.%20config%20include%20treeRegen&In-Reply-To=%3C200511021536.jA2FaVDE006274%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000810.html">
+   <LINK REL="Next"  HREF="000812.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r837 - in trunk/096/pkg/skills/lumberjacking: . config include treeRegen</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r837%20-%20in%20trunk/096/pkg/skills/lumberjacking%3A%20.%20config%20include%20treeRegen&In-Reply-To=%3C200511021536.jA2FaVDE006274%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r837 - in trunk/096/pkg/skills/lumberjacking: . config include treeRegen">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 16:36:31 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000810.html">[Poldistro-svn] r836 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000812.html">[Poldistro-svn] r838 - trunk/096/pkg/utils/gumps/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#811">[ date ]</a>
+              <a href="thread.html#811">[ thread ]</a>
+              <a href="subject.html#811">[ subject ]</a>
+              <a href="author.html#811">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 16:36:28 +0100 (Wed, 02 Nov 2005)
+New Revision: 837
+
+Added:
+   trunk/096/pkg/skills/lumberjacking/config/
+   trunk/096/pkg/skills/lumberjacking/config/icp.cfg
+   trunk/096/pkg/skills/lumberjacking/config/settings.cfg
+   trunk/096/pkg/skills/lumberjacking/config/woodRegions.cfg
+   trunk/096/pkg/skills/lumberjacking/include/
+   trunk/096/pkg/skills/lumberjacking/include/lumberJack.inc
+   trunk/096/pkg/skills/lumberjacking/include/settings.inc
+   trunk/096/pkg/skills/lumberjacking/lumberJack.src
+   trunk/096/pkg/skills/lumberjacking/pkg.cfg
+   trunk/096/pkg/skills/lumberjacking/start.src
+   trunk/096/pkg/skills/lumberjacking/treeRegen/
+   trunk/096/pkg/skills/lumberjacking/treeRegen/control.src
+Log:
+New lumberjacking system.
+Support for different types of logs and regionalizing them on each realm.
+
+
+Added: trunk/096/pkg/skills/lumberjacking/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/config/icp.cfg	2005-11-02 15:30:07 UTC (rev 836)
++++ trunk/096/pkg/skills/lumberjacking/config/icp.cfg	2005-11-02 15:36:28 UTC (rev 837)
+@@ -0,0 +1,13 @@
++ICP Register
++{
++	Name		Lumberjacking
++	Version		1.0
++
++	Description	Handles lumberjacking and wood regeneration in trees.
++
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+
+Added: trunk/096/pkg/skills/lumberjacking/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/config/settings.cfg	2005-11-02 15:30:07 UTC (rev 836)
++++ trunk/096/pkg/skills/lumberjacking/config/settings.cfg	2005-11-02 15:36:28 UTC (rev 837)
+@@ -0,0 +1,187 @@
++Elem Settings
++{
++	// Minutes the tree regeneration waits between cycles.
++	RegenWait	30
++	
++	// Max number of log points per tree.
++	MaxWood		15
++}
++
++
++Elem TreeList
++{
++	// Graphics that the lumberjacking skill can be used on.
++	Graphic	0x0C95
++	Graphic	0x0C96
++	Graphic	0x0CAA
++	Graphic	0x0CAB
++	Graphic	0x0CC8
++	Graphic	0x0CC9
++	Graphic	0x0CCA
++	Graphic	0x0CCB
++	Graphic	0x0CCD
++	Graphic	0x0CCE
++	Graphic	0x0CCF
++	Graphic	0x0CD0
++	Graphic	0x0CD1
++	Graphic	0x0CD2
++	Graphic	0x0CD3
++	Graphic	0x0CD4
++	Graphic	0x0CD5
++	Graphic	0x0CD6
++	Graphic	0x0CD7
++	Graphic	0x0CD8
++	Graphic	0x0CD9
++	Graphic	0x0CDA
++	Graphic	0x0CDB
++	Graphic	0x0CDC
++	Graphic	0x0CDD
++	Graphic	0x0CDE
++	Graphic	0x0CDF
++	Graphic	0x0CE0
++	Graphic	0x0CE1
++	Graphic	0x0CE2
++	Graphic	0x0CE3
++	Graphic	0x0CE4
++	Graphic	0x0CE5
++	Graphic	0x0CE6
++	Graphic	0x0CE7
++	Graphic	0x0CE8
++	Graphic	0x0CF8
++	Graphic	0x0CF9
++	Graphic	0x0CFA
++	Graphic	0x0CFB
++	Graphic	0x0CFC
++	Graphic	0x0CFD
++	Graphic	0x0CFE
++	Graphic	0x0CFF
++	Graphic	0x0D00
++	Graphic	0x0D01
++	Graphic	0x0D02
++	Graphic	0x0D03
++	Graphic	0x0D41
++	Graphic	0x0D42
++	Graphic	0x0D43
++	Graphic	0x0D44
++	Graphic	0x0D45
++	Graphic	0x0D46
++	Graphic	0x0D47
++	Graphic	0x0D48
++	Graphic	0x0D49
++	Graphic	0x0D4A
++	Graphic	0x0D4B
++	Graphic	0x0D4C
++	Graphic	0x0D4D
++	Graphic	0x0D4E
++	Graphic	0x0D4F
++	Graphic	0x0D50
++	Graphic	0x0D51
++	Graphic	0x0D52
++	Graphic	0x0D53
++	Graphic	0x0D54
++	Graphic	0x0D55
++	Graphic	0x0D56
++	Graphic	0x0D57
++	Graphic	0x0D58
++	Graphic	0x0D59
++	Graphic	0x0D5A
++	Graphic	0x0D5B
++	Graphic	0x0D5C
++	Graphic	0x0D5D
++	Graphic	0x0D5E
++	Graphic	0x0D5F
++	Graphic	0x0D60
++	Graphic	0x0D61
++	Graphic	0x0D62
++	Graphic	0x0D63
++	Graphic	0x0D64
++	Graphic	0x0D65
++	Graphic	0x0D66
++	Graphic	0x0D67
++	Graphic	0x0D68
++	Graphic	0x0D69
++	Graphic	0x0D6A
++	Graphic	0x0D6B
++	Graphic	0x0D6C
++	Graphic	0x0D6D
++	Graphic	0x0D6E
++	Graphic	0x0D6F
++	Graphic	0x0D70
++	Graphic	0x0D71
++	Graphic	0x0D72
++	Graphic	0x0D73
++	Graphic	0x0D74
++	Graphic	0x0D75
++	Graphic	0x0D76
++	Graphic	0x0D77
++	Graphic	0x0D78
++	Graphic	0x0D79
++	Graphic	0x0D7A
++	Graphic	0x0D7B
++	Graphic	0x0D7C
++	Graphic	0x0D7D
++	Graphic	0x0D7E
++	Graphic	0x0D7F
++	Graphic	0x0D80
++	Graphic	0x0D81
++	Graphic	0x0D82
++	Graphic	0x0D83
++	Graphic	0x0D84
++	Graphic	0x0D85
++	Graphic	0x0D86
++	Graphic	0x0D87
++	Graphic	0x0D88
++	Graphic	0x0D89
++	Graphic	0x0D8A
++	Graphic	0x0D8B
++	Graphic	0x0D8C
++	Graphic	0x0D8D
++	Graphic	0x0D8E
++	Graphic	0x0D8F
++	Graphic	0x0D90
++	Graphic	0x0D91
++	Graphic	0x0D92
++	Graphic	0x0D93
++	Graphic	0x0D94
++	Graphic	0x0D95
++	Graphic	0x0D96
++	Graphic	0x0D97
++	Graphic	0x0D98
++	Graphic	0x0D99
++	Graphic	0x0D9A
++	Graphic	0x0D9B
++	Graphic	0x0D9C
++	Graphic	0x0D9D
++	Graphic	0x0D9E
++	Graphic	0x0D9F
++	Graphic	0x0DA0
++	Graphic	0x0DA1
++	Graphic	0x0DA2
++	Graphic	0x0DA3
++	Graphic	0x0DA4
++	Graphic	0x0DA5
++	Graphic	0x0DA6
++	Graphic	0x0DA7
++	Graphic	0x0DA8
++	Graphic	0x0DA9
++	Graphic	0x0DAA
++	Graphic	0x0DAB
++	Graphic	0x12B6
++	Graphic	0x12B7
++	Graphic	0x12B8
++	Graphic	0x12B9
++	Graphic	0x12BA
++	Graphic	0x12BB
++	Graphic	0x12BC
++	Graphic	0x12BD
++	Graphic	0x12BE
++	Graphic	0x12BF
++	Graphic	0x12C0
++	Graphic	0x12C1
++	Graphic	0x12C2
++	Graphic	0x12C3
++	Graphic	0x12C4
++	Graphic	0x12C5
++	Graphic	0x12C6
++	Graphic	0x12C7
++}
+
+Added: trunk/096/pkg/skills/lumberjacking/config/woodRegions.cfg
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/config/woodRegions.cfg	2005-11-02 15:30:07 UTC (rev 836)
++++ trunk/096/pkg/skills/lumberjacking/config/woodRegions.cfg	2005-11-02 15:36:28 UTC (rev 837)
+@@ -0,0 +1,10 @@
++Realm	Britannia
++{
++	Region	Britannia-Global
++}
++
++Region Britannia-Global
++{
++	Rect		0 0 6138 4090
++	WoodType	Log
++}
+
+Added: trunk/096/pkg/skills/lumberjacking/include/lumberJack.inc
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/include/lumberJack.inc	2005-11-02 15:30:07 UTC (rev 836)
++++ trunk/096/pkg/skills/lumberjacking/include/lumberJack.inc	2005-11-02 15:36:28 UTC (rev 837)
+@@ -0,0 +1,264 @@
++use uo;
++use os;
++use util;
++use cfgfile;
++use file;
++
++include &quot;:datafile:datafile&quot;;
++include &quot;:lumberjacking:settings&quot;;
++
++/*
++ * LJ_ReportText(text)
++ *
++ * Purpose
++ * Outputs text to pol/log/lumberjacking.log rather than pol.log or the console.
++ *
++ * Parameters
++ * text:	Text to log.
++ *
++ * Return value
++ * Result of LogToFile()
++ *
++ */
++function LJ_ReportText(text)
++	var script_name := GetProcess(GetPid()).name;
++	return LogToFile(&quot;::log/lumberjacking.log&quot;, &quot;[&quot;+script_name+&quot;]: &quot;+text, LOG_DATETIME);
++endfunction
++
++/*
++ * LJ_IsTree(graphic)
++ *
++ * Purpose
++ * Determines if the graphic can be used for lumberjacking.
++ * Uses settings.cfg elem TreeList
++ *
++ * Parameters
++ * graphic:	Graphic to verify
++ *
++ * Return value
++ * Returns 1 if the object can be used.
++ *
++ */
++function LJ_IsTree(graphic)
++	var cfg_elem := LJ_GetSettingsCfgElem(&quot;TreeList&quot;);
++	graphic := CStr(graphic);
++
++	return ( graphic in GetConfigStringArray(cfg_elem, &quot;Graphic&quot;) );
++endfunction
++
++/*
++ * LJ_InRect(x_pos, y_pos, rect_string)
++ *
++ * Purpose
++ * Determines if a coordinate is within an area.
++ *
++ * Parameters
++ * x_pos:	X position of the coordinate to verify.
++ * y_pos:	Y position of the coordinate to verify.
++ * rect_string:	Rect line from WoodRegions.cfg
++ *
++ * Return value
++ * Returns 1 if the coordinates are in the rect.
++ *
++ */
++function LJ_InRect(x_pos, y_pos, rect)
++	var x1 := CInt(rect[1]);
++	var y1 := CInt(rect[2]);
++	var x2 := CInt(rect[3]);
++	var y2 := CInt(rect[4]);
++
++	return ( (x_pos &gt;= x1 &amp;&amp; x_pos &lt;= x2) &amp;&amp; (y_pos &gt;= y1 &amp;&amp; y_pos &lt;= y2) );
++endfunction
++
++
++
++/*
++ * LJ_GetDataFile()
++ *
++ * Purpose
++ * Retrieves the lumberjacking datafile
++ *
++ * Parameters
++ *
++ * Return value
++ * data file
++ *
++ */
++function LJ_GetDataFile()
++	var data_file := DFOpenDataFile(&quot;:lumberjacking:TreeSettings&quot;, DF_CREATE);
++
++	return data_file;
++endfunction
++
++/*
++ * LJ_GetDataFile()
++ *
++ * Purpose
++ * Retrieves an elem from the lumberjacking data file.
++ *
++ * Parameters
++ * elem_name:	Name of the elem to retrieve.
++ *
++ * Return value
++ * Data elem
++ *
++ */
++function LJ_GetDataElem(elem_name)
++	var data_file := LJ_GetDataFile();
++	var data_elem := DFFindElement(data_file, elem_name, DF_CREATE);
++
++	return data_elem;
++endfunction
++
++/*
++ * LJ_GetWoodType(realm, x_pos, y_pos)
++ *
++ * Purpose
++ * Retrieves the type of wood set for an X and Y coordinate.
++ *
++ * Parameters
++ * realm:	Name of the realm the coordinates are on.
++ * x_pos:	X coordinate to use.
++ * y_pos:	Y coordinate to use.
++ *
++ * Return value
++ * returns an object type number
++ *
++ */
++function LJ_GetWoodType(realm, x_pos, y_pos)
++	var pos_string := CStr(realm+&quot; &quot;+x_pos+&quot;x&quot;+y_pos);
++
++	var data_elem := LJ_GetDataElem(pos_string);
++
++	var type := data_elem.GetProp(&quot;Type&quot;);
++	if ( !type )
++		type := LJ_PickWoodType(realm, x_pos, y_pos);
++		LJ_SetWoodType(realm, x_pos, y_pos, type);
++	endif
++
++	return type;
++endfunction
++
++/*
++ * LJ_SetWoodType(realm, x_pos, y_pos, wood_type)
++ *
++ * Purpose
++ * Sets the wood type for an X Y coordinate on a realm.
++ * 
++ * Parameters
++ * realm:	Name of the realm to set the wood type on.
++ * x_pos:	X coordinate to set the wood type on.
++ * y_pos:	Y coordinate to set the wood type on.
++ * wood_type:	object type of the wood to set.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
++function LJ_SetWoodType(realm, x_pos, y_pos, wood_type)
++	var pos_string := CStr(realm+&quot; &quot;+x_pos+&quot;x&quot;+y_pos);
++	
++	var data_elem := LJ_GetDataElem(pos_string);
++	
++	return data_elem.SetProp(&quot;Type&quot;, wood_type);
++endfunction
++
++/*
++ * LJ_SetWoodAmount(realm, x_pos, y_pos, amount)
++ *
++ * Purpose
++ * Sets the wood amount for an X Y coordinate on a realm.
++ * 
++ * Parameters
++ * realm:	Name of the realm to set the wood amount on.
++ * x_pos:	X coordinate to set the wood amount on.
++ * y_pos:	Y coordinate to set the wood amount on.
++ * amount:	Amount of wood to make available.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
++function LJ_SetWoodAmount(realm, x_pos, y_pos, amount)
++	var pos_string := CStr(realm+&quot; &quot;+x_pos+&quot;x&quot;+y_pos);
++	
++	var data_elem := LJ_GetDataElem(pos_string);
++	
++	data_elem.SetProp(&quot;Amount&quot;, amount);
++endfunction
++
++/*
++ * LJ_GetWoodAmount(realm, x_pos, y_pos)
++ *
++ * Purpose
++ * Retrieves the amount of wood set for an X and Y coordinate.
++ *
++ * Parameters
++ * realm:	Name of the realm the coordinates are on.
++ * x_pos:	X coordinate to use.
++ * y_pos:	Y coordinate to use.
++ *
++ * Return value
++ * returns a number
++ *
++ */
++function LJ_GetWoodAmount(realm, x_pos, y_pos)
++	var pos_string := CStr(realm+&quot; &quot;+x_pos+&quot;x&quot;+y_pos);
++	
++	var data_elem := LJ_GetDataElem(pos_string);
++	
++	var amount := data_elem.GetProp(&quot;Amount&quot;);
++	if ( amount == error )
++		var settings := LJ_GetSettingsCfgElem(&quot;Settings&quot;);
++		amount := CInt(settings.MaxWood);
++		LJ_SetWoodAmount(realm, x_pos, y_pos, amount);
++	endif
++	
++	return CInt(amount);
++endfunction
++
++/*
++ * LJ_PickWoodType(realm, x_pos, y_pos)
++ *
++ * Purpose
++ * Selects a random wood type for a tree based on
++ * the realm and region coordinates in woodRegions.cfg
++ *
++ * Parameters
++ * realm:	Name of the realm the coordinates are on.
++ * x_pos:	X coordinate to use.
++ * y_pos:	Y coordinate to use.
++ *
++ * Return value
++ * returns an object type number
++ *
++ */
++function LJ_PickWoodType(realm, x_pos, y_pos)
++	var wood_cfg := ReadConfigFile(&quot;:lumberjacking:config/woodRegions&quot;);
++	if ( !wood_cfg )
++		return GetObjTypeByName(&quot;Log&quot;);
++	endif
++
++	var realm_elem := wood_cfg[realm];
++	if ( !realm_elem )
++		return GetObjTypeByName(&quot;Log&quot;);
++	endif
++
++	var wood_found := array{&quot;Log&quot;};
++	foreach region_name in ( GetConfigStringArray(realm_elem, &quot;Region&quot;) )
++		var region_elem := wood_cfg[region_name];
++		if ( !LJ_InRect(x_pos, y_pos, region_elem.Rect) )
++			continue;
++		endif
++
++		var wood_types := GetConfigStringArray(region_elem, &quot;WoodType&quot;);
++		if ( wood_types.Size() &gt;= 1 )
++			wood_found := wood_found+wood_types;
++		endif
++		sleepms(2);
++	endforeach
++
++	var selected_wood := wood_found[RandomInt(wood_found.Size())+1];
++	return GetObjTypeByName(selected_wood);
++endfunction
++
+
+Added: trunk/096/pkg/skills/lumberjacking/include/settings.inc
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/include/settings.inc	2005-11-02 15:30:07 UTC (rev 836)
++++ trunk/096/pkg/skills/lumberjacking/include/settings.inc	2005-11-02 15:36:28 UTC (rev 837)
+@@ -0,0 +1,66 @@
++//$Id: settings.inc 264 2005-09-27 21:55:42Z austin $
++
++/*===============================================================
++* Current Version
++* SETTINGS.INC - v1.0
++* Updated 9/27/2005 2:54PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++use cfgfile;
++
++/*
++ * LJ_GetSettingsCfgFile(engine_name)
++ *
++ * Purpose
++ * Reads in :lumberjacking:config/settings.cfg
++ *
++ * Parameters
++ *
++ * Return value
++ * A config file reference.
++ *
++ */
++function LJ_GetSettingsCfgFile()
++	var cfg := ReadConfigFile(&quot;:lumberjacking:config/settings&quot;);
++
++	if ( cfg.errortext )
++		SysLog(&quot;Error::LJ_GetSettingsCfgFile() - Unable to open [:lumberjacking:config/settings.cfg] -&gt;&quot;+cfg.errortext);
++	endif
++
++	return cfg;
++endfunction
++
++/*
++ * LJ_GetSettingsCfgElem(elem_name, cfg_file)
++ *
++ * Purpose
++ * Retrieves an elem from a config file. 
++ *
++ * Parameters
++ * elem_name:	A string matching the elem name to be retrieved.
++ * cfg_file:	Optional parameter - reference to a config already read in by LJ_GetSettingsCfgFile()
++ *
++ * Return value
++ * A config file elem reference.
++ *
++ */
++function LJ_GetSettingsCfgElem(elem_name, byref cfg_file:=0)
++	if ( !cfg_file )
++		cfg_file := LJ_GetSettingsCfgFile();
++	endif
++	
++	var elem := cfg_file[elem_name];
++
++	if ( elem.errortext )
++		SysLog(&quot;Error::LJ_GetSettingsCfgElem() - Unable to find elem [&quot;+elem_name+&quot;] -&gt;&quot;+elem.errortext);
++	endif
++
++	return elem;
++endfunction
++
+
+Added: trunk/096/pkg/skills/lumberjacking/lumberJack.src
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/lumberJack.src	2005-11-02 15:30:07 UTC (rev 836)
++++ trunk/096/pkg/skills/lumberjacking/lumberJack.src	2005-11-02 15:36:28 UTC (rev 837)
+@@ -0,0 +1,99 @@
++/*
++ * $Id$
++ *
++ */
++use uo;
++use os;
++
++include &quot;:attributes:attributes&quot;;
++include &quot;:datafile:datafile&quot;;
++include &quot;:lumberjacking:settings&quot;;
++include &quot;:lumberjacking:lumberJack&quot;;
++include &quot;include/client&quot;;
++
++program skill_LumberJack(who, tool)
++	SendSysMessage(who, &quot;Select a tree to chop.&quot;);
++	var targ := TargetCoordinates(who);
++	
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	elseif ( !LJ_IsTree(targ.objtype) )
++		SendSysMessage(who, &quot;That is not a tree.&quot;);
++		return 0;
++	endif
++	
++	var orig_x := who.x;
++	var orig_y := who.y;
++	
++	var num_loops := RandomDiceRoll(&quot;1d5&quot;);
++	for ( num_loops; num_loops&gt;=0; num_loops:=num_loops-1 )
++		if ( !ChopTree(who, tool, targ, orig_x, orig_y) )
++			break;
++		endif
++		// Wear down tool function call goes here.
++		sleep(3);
++	endfor
++
++	SendSysMessage(who, &quot;You stop lumberjacking.&quot;);
++endprogram
++
++function ChopTree(who, tool, targ, orig_x, orig_y)
++	var i:=RandomDiceRoll(&quot;3d4&quot;);
++	for ( i; i&gt;=0; i:=i-1 )
++		if ( !CanChop(who, tool, targ, orig_x, orig_y) )
++			return 0;
++		endif
++
++		PerformAction(who, ANIM_ATTACK_2HAND_WIDE);
++		//PlaySoundEffect(who, SFX_SKILL_LUMBERJACK); - Need to get sound constants in client.inc!
++		sleepms(1200);
++	endfor
++
++	var wood_type := LJ_GetWoodType(who.realm, targ.x, targ.y);
++	var wood_amount := LJ_GetWoodAmount(who.realm, targ.x, targ.y);
++
++	var material_cfg := ReadConfigFile(&quot;:crafting:configs/materials&quot;);
++	var diff_mod := material_cfg[wood_type].Difficulty;
++	if ( material_cfg.errortext )
++		SendSysMessage(who, &quot;Error - Unable to open :crafting:configs/materials.cfg -&gt;&quot;+material_cfg.errortext);
++		return 0;
++	endif
++
++	var max_wood := CInt(LJ_GetSettingsCfgElem(&quot;Settings&quot;).MaxWood);
++	// The less wood there is, the more difficult it becomes.
++	var difficulty := CInt( 40 + ( diff_mod - 0.4 ) * 100 - 40 * wood_amount / max_wood );
++	
++	wood_amount := wood_amount - 1;
++	LJ_SetWoodAmount(who.realm, targ.x, targ.y, wood_amount);
++
++	if ( SkillCheck(who, LUMBERJACKING, difficulty) &gt; 0 )
++		CreateItemInBackPack(who, wood_type, 1);
++		SendSysMessage(who, &quot;You place the log in your pack.&quot;);
++		return 1;
++	endif
++
++	SendSysMessage(who, &quot;You are unable to produce a useable log from this tree.&quot;);
++	return 0;
++endfunction
++
++function CanChop(who, axe, targ, orig_x, orig_y)
++	if ( who.hidden )
++		SendSysMessage(who, &quot;You stop chopping to remain hidden.&quot;);
++		return 0;
++	elseif ( who.x != orig_x || who.y != orig_y )
++		SendSysMessage(who, &quot;You turn your attention away from lumberjacking.&quot;);
++		return 0;
++	elseif ( !(axe in ListEquippedItems(who)) )
++		SendSysMessage(who, &quot;You put the axe away and stop chopping.&quot;);
++		return 0;
++	elseif ( LJ_GetWoodAmount(who.realm, targ.x, targ.y) &lt;= 0 )
++		SendSysMessage(who, &quot;That tree has been chopped down.&quot;);
++		return 0;
++	elseif ( GetEquipmentByLayer(who, LAYER_MOUNT) )
++		SendSysMessage(who, &quot;You can't chop while mounted.&quot;);
++		return 0;
++	else
++		return 1;
++	endif
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/lumberjacking/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/pkg.cfg	2005-11-02 15:30:07 UTC (rev 836)
++++ trunk/096/pkg/skills/lumberjacking/pkg.cfg	2005-11-02 15:36:28 UTC (rev 837)
+@@ -0,0 +1,18 @@
++#
++# $Id$
++#
++Enabled		1
++Name		lumberjacking
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires none
++#conflicts	none
+
+Added: trunk/096/pkg/skills/lumberjacking/start.src
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/start.src	2005-11-02 15:30:07 UTC (rev 836)
++++ trunk/096/pkg/skills/lumberjacking/start.src	2005-11-02 15:36:28 UTC (rev 837)
+@@ -0,0 +1,8 @@
++use os;
++
++var script := start_script(&quot;regen/WoodRegen&quot;);
++if ( script.errortext )
++	SysLog(&quot;Error starting tree regen -&gt;&quot;+script.errortext);
++else
++	Print(&quot;Starting tree regeneration controller... ok.&quot;);
++endif
+
+Added: trunk/096/pkg/skills/lumberjacking/treeRegen/control.src
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/treeRegen/control.src	2005-11-02 15:30:07 UTC (rev 836)
++++ trunk/096/pkg/skills/lumberjacking/treeRegen/control.src	2005-11-02 15:36:28 UTC (rev 837)
+@@ -0,0 +1,44 @@
++/*
++ * $Id$
++ *
++ */
++use uo;
++use os;
++
++include &quot;:datafile:datafile&quot;;
++include &quot;:lumberjacking:settings&quot;;
++include &quot;:lumberjacking:lumberJack&quot;;
++
++program GlobalControl()
++	var settings := LJ_GetSettingsCfgElem(&quot;Settings&quot;);
++	var cycle_wait := CInt(settings.RegenWait);
++	if ( cycle_wait &lt; 1 )
++		cycle_wait := 1;
++	endif
++	cycle_wait := cycle_wait * 60;
++	
++	SetGlobalProperty(&quot;#TreeRegenPId&quot;, GetPid());
++	
++	set_priority(1);
++	while( 1 )
++		sleep(cycle_wait);
++		RegenWood(settings);
++	endwhile
++endprogram
++
++function RegenWood(settings)
++	Print(&quot;Running wood regeneration cycle...&quot;);
++	var data_file := LJ_GetDataFile();
++	
++	foreach elem_name in DFGetElemNames(data_file)
++		var data_elem := LJ_GetDataElem(elem_name);
++		
++		var amount := CInt(data_elem.GetProp(&quot;Amount&quot;));
++		if ( amount &lt; CInt(settings.MaxWood) )
++			amount := amount+1;
++			data_elem.SetProp(&quot;Amount&quot;, amount);
++		endif
++		
++		sleep(1);
++	endforeach
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000810.html">[Poldistro-svn] r836 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000812.html">[Poldistro-svn] r838 - trunk/096/pkg/utils/gumps/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#811">[ date ]</a>
+              <a href="thread.html#811">[ thread ]</a>
+              <a href="subject.html#811">[ subject ]</a>
+              <a href="author.html#811">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

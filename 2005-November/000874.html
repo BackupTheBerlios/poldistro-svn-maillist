@@ -1,0 +1,398 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r900 - in trunk/096: pkg/mobiles/death/commands/seer scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r900%20-%20in%20trunk/096%3A%20pkg/mobiles/death/commands/seer%20scripts/include&In-Reply-To=%3C200511041349.jA4Dn5Bu028053%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000872.html">
+   <LINK REL="Next"  HREF="000875.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r900 - in trunk/096: pkg/mobiles/death/commands/seer scripts/include</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r900%20-%20in%20trunk/096%3A%20pkg/mobiles/death/commands/seer%20scripts/include&In-Reply-To=%3C200511041349.jA4Dn5Bu028053%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r900 - in trunk/096: pkg/mobiles/death/commands/seer scripts/include">panosl at berlios.de
+       </A><BR>
+    <I>Fri Nov  4 14:49:05 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000872.html">[Poldistro-svn] r899 - in trunk/096/pkg: items/bountyboard systems/merchantnodes
+</A></li>
+        <LI>Next message: <A HREF="000875.html">[Poldistro-svn] r901 - in trunk/096/pkg/skills/magery: . delay
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#874">[ date ]</a>
+              <a href="thread.html#874">[ thread ]</a>
+              <a href="subject.html#874">[ subject ]</a>
+              <a href="author.html#874">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-11-04 14:48:31 +0100 (Fri, 04 Nov 2005)
+New Revision: 900
+
+Modified:
+   trunk/096/pkg/mobiles/death/commands/seer/resurrect.src
+   trunk/096/scripts/include/client.inc
+   trunk/096/scripts/include/equipment.inc
+   trunk/096/scripts/include/facings.inc
+   trunk/096/scripts/include/itemdesc.inc
+   trunk/096/scripts/include/messages.inc
+   trunk/096/scripts/include/packets.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/death/commands/seer/resurrect.src
+===================================================================
+--- trunk/096/pkg/mobiles/death/commands/seer/resurrect.src	2005-11-04 07:49:13 UTC (rev 899)
++++ trunk/096/pkg/mobiles/death/commands/seer/resurrect.src	2005-11-04 13:48:31 UTC (rev 900)
+@@ -1,40 +1,41 @@
+-/*
+- * $Id$
++/* $Id$
+  *
+  */
+-
+ use uo;
+ 
+ include &quot;:attributes:attributes&quot;;
++include &quot;include/messages&quot;;
++include &quot;include/localization&quot;;
+ 
+-program textcmd_Resurrection(who)
+-	if ( who.dead )
++
++program command_Resurrect(who, params)
++	if (params == &quot;&quot;)
++		SendMessage(who, MSG_TARGET_CHAR, array{}, MSG_COMMAND);
++		if ((var targ := Target(who, TGTOPT_NOCHECK_LOS)) == 0)
++			SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
++			return 0;
++		else
++			if (targ.isA(POLCLASS_CORPSE))
++				targ := SystemFindObjectBySerial(targ.ownerserial);
++				if (!targ)
++					SendSysMessage(who, &quot;No owner could be found for that corpse.&quot;);
++					return 0;
++				endif
++					var result := Resurrect(targ);
++				if (result.errortext)
++					SendSysMessage(who, &quot;Error - &quot;+result.errortext);
++					return 0;
++				endif
++			endif
++		endif		
++	elseif (params == &quot;me&quot;)
+ 		Resurrect(who);
+ 		AP_RefreshVitals(who);
+ 		return 1;
++	else
++		SendMessage(who, MSG_USE_HELP, array{}, MSG_COMMAND);
+ 	endif
+ 
+-	SendSysMessage(who, &quot;Select a player corpse or ghost to resurrect.&quot;);
+-	var targ := Target(who);
+-	if ( !targ )
+-		SendSysMessage(who, &quot;Cancelled.&quot;);
+-		return 0;
+-	endif
+-
+-	if ( targ.IsA(POLCLASS_CORPSE) )
+-		targ := SystemFindObjectBySerial(targ.ownerserial);
+-		if ( !targ )
+-			SendSysMessage(who, &quot;No owner could be found for that corpse.&quot;);
+-			return 0;
+-		endif
+-	endif
+-
+-	var result := Resurrect(targ);
+-	if ( result.errortext )
+-		SendSysMessage(who, &quot;Error - &quot;+result.errortext);
+-		return 0;
+-	endif
+-
+-	SendSysMessage(who, &quot;Done.&quot;);
++	SendMessage(who, MSG_DONE, array{}, MSG_COMMAND);
+ 	return 1;
+ endprogram
+
+Modified: trunk/096/scripts/include/client.inc
+===================================================================
+--- trunk/096/scripts/include/client.inc	2005-11-04 07:49:13 UTC (rev 899)
++++ trunk/096/scripts/include/client.inc	2005-11-04 13:48:31 UTC (rev 900)
+@@ -1,8 +1,10 @@
+-/* CLIENT.INC - defines client releated constants.
++/* $Id$
+  *
++ * Purpose
+  * This include file is designed to hold all the client lowlevel constants.
+  * Not all constants might be usable as of now, but in the future, they
+  * might be.
++ *
+  */
+ 
+ 
+@@ -165,7 +167,7 @@
+ 	SFX_BEAR_4C		:= 0x4C7,
+ 	SFX_BEAR_5C		:= 0x4C8,
+ 	
+-	SFX_SPELL_FAIL		:= 0x5D,
++	SFX_SPELL_FAIL		:= 0x5D
+ endenum
+ 
+ enum GRAPHIC_EFFECTS
+
+Modified: trunk/096/scripts/include/equipment.inc
+===================================================================
+--- trunk/096/scripts/include/equipment.inc	2005-11-04 07:49:13 UTC (rev 899)
++++ trunk/096/scripts/include/equipment.inc	2005-11-04 13:48:31 UTC (rev 900)
+@@ -1,5 +1,4 @@
+-/*
+- * $Id$
++/* $Id$
+  *
+  * Purpose
+  * Allows modifiers to be easily set and removed.
+@@ -12,7 +11,6 @@
+  * was chosen to be used in this script.
+  *
+  */
+-
+ use uo;
+ use cfgfile;
+ 
+@@ -23,6 +21,7 @@
+ CONST	EQUIP_BOTH_MODS		:= 0x3;
+ CONST	EQUIP_CSTM_OR_ITEMDESC	:= 0x4;
+ 
++
+ /* 
+  * GetEquipmentModifiers(item, flags:=EQUIP_CSTM_OR_ITEMDESC)
+  *
+@@ -77,6 +76,7 @@
+ 		return cstm_mods;
+ 	endif
+ endfunction
++
+ 	
+ /*
+  * AddModifierToEquipment(item, attrib_name, modifier)
+@@ -117,6 +117,7 @@
+ 	return SetObjProperty(item, &quot;AttribMods&quot;, cstm_mods);
+ endfunction
+ 
++
+ /*
+  * RemoveModifierFromEquipment(item, attrib_name)
+  *
+@@ -149,6 +150,7 @@
+ 	endif
+ endfunction
+ 
++
+ /* 
+  * ApplyEquipmentMods(mobile, item)
+  *
+@@ -186,6 +188,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /* 
+  * RemoveEquipmentMods(mobile, item)
+  *
+
+Modified: trunk/096/scripts/include/facings.inc
+===================================================================
+--- trunk/096/scripts/include/facings.inc	2005-11-04 07:49:13 UTC (rev 899)
++++ trunk/096/scripts/include/facings.inc	2005-11-04 13:48:31 UTC (rev 900)
+@@ -1,12 +1,11 @@
+-/*
+- * $Id$
++/* $Id$
+  *
+  */
+-
+ use uo;
+ use os;
+ use math;
+ 
++
+ /*
+  * TurnObjectToward(object, x_pos, y_pos)
+  *
+@@ -30,6 +29,7 @@
+ 	return orig;
+ endfunction
+ 
++
+ /*
+  * IsFacing(mobile, x_pos, y_pos)
+  *
+@@ -50,6 +50,7 @@
+ 	return ( mobile.facing == GetFacing(mobile.x, mobile.y, x, y) );
+ endfunction
+ 
++
+ /*
+  * IsBehind(mobile, x_pos, y_pos)
+  * Determines if a set of coordinates are behind a character.
+@@ -69,12 +70,11 @@
+  * Returns 0 if not.
+  *
+  */
+-function IsBehind( tgt_mob, locx, locy )
++function IsBehind(tgt_mob, locx, locy)
+ 	var frot := Abs(((tgt_mob.facing+4)%8)-GetFacing(tgt_mob.x,tgt_mob.y,locx,locy));
+-	if ( frot &gt; 4 )
++	if (frot &gt; 4)
+ 		frot := 8-frot;
+ 	endif
+ 
+-	return ( frot &lt; 2 );
++	return (frot &lt; 2);
+ endfunction
+-
+
+Modified: trunk/096/scripts/include/itemdesc.inc
+===================================================================
+--- trunk/096/scripts/include/itemdesc.inc	2005-11-04 07:49:13 UTC (rev 899)
++++ trunk/096/scripts/include/itemdesc.inc	2005-11-04 13:48:31 UTC (rev 900)
+@@ -1,13 +1,12 @@
+-/*
+- * $Id$
++/* $Id$
+  *
+  */
+-
+ use uo;
+ use os;
+ use cfgfile;
+ use polsys;
+ 
++
+ /*
+  * LoadItemDescCfgFile(package)
+  *
+@@ -36,6 +35,7 @@
+ 	return item_cfg;
+ endfunction
+ 
++
+ /*
+  * GetItemDescInfo(obj_type)
+  *
+@@ -55,6 +55,7 @@
+ 	return item_cfg[obj_type];
+ endfunction
+ 
++
+ /*
+  * GetObjTypeGraphic(obj_type)
+  *
+@@ -84,6 +85,7 @@
+ 	endif
+ endfunction	
+ 
++
+ /*
+  * GetObjTypeDesc(obj_type, plural)
+  *
+
+Modified: trunk/096/scripts/include/messages.inc
+===================================================================
+--- trunk/096/scripts/include/messages.inc	2005-11-04 07:49:13 UTC (rev 899)
++++ trunk/096/scripts/include/messages.inc	2005-11-04 13:48:31 UTC (rev 900)
+@@ -28,8 +28,6 @@
+ /*
+  * SendMessage(who, id, type)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Sends a message to a character.
+  *
+@@ -61,8 +59,6 @@
+ /*
+  * SendAll(id, parms, type)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Sends a message to all online characters.
+  *
+@@ -88,9 +84,6 @@
+ /*
+  * SendHTMLMessage(who, text)
+  *
+- * Author: Folko
+- * Last-Edit: MuadDib
+- *
+  * Purpose
+  * Sends a HTML gump containing the text to the character.
+  *
+@@ -117,8 +110,6 @@
+ /*
+  * SendCliloc(who, num, params, type, origin, hue, font)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Sends a localized message to the client.
+  *
+@@ -174,8 +165,6 @@
+ /*
+  * FormatMessage(message, parms)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Formats a message by inserting the parameters.
+  *
+
+Modified: trunk/096/scripts/include/packets.inc
+===================================================================
+--- trunk/096/scripts/include/packets.inc	2005-11-04 07:49:13 UTC (rev 899)
++++ trunk/096/scripts/include/packets.inc	2005-11-04 13:48:31 UTC (rev 900)
+@@ -21,8 +21,6 @@
+ /*
+  * SendFeatures(who, features)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Enable OSI client features like the chat button or LBR graphics.
+  *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000872.html">[Poldistro-svn] r899 - in trunk/096/pkg: items/bountyboard systems/merchantnodes
+</A></li>
+	<LI>Next message: <A HREF="000875.html">[Poldistro-svn] r901 - in trunk/096/pkg/skills/magery: . delay
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#874">[ date ]</a>
+              <a href="thread.html#874">[ thread ]</a>
+              <a href="subject.html#874">[ subject ]</a>
+              <a href="author.html#874">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

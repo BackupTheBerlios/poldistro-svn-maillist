@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1387 - in trunk/096/pkg/items/moongates: . moongate
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1387%20-%20in%20trunk/096/pkg/items/moongates%3A%20.%20moongate&In-Reply-To=%3C200605131000.k4DA0QFj022235%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001355.html">
+   <LINK REL="Next"  HREF="001357.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1387 - in trunk/096/pkg/items/moongates: . moongate</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1387%20-%20in%20trunk/096/pkg/items/moongates%3A%20.%20moongate&In-Reply-To=%3C200605131000.k4DA0QFj022235%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1387 - in trunk/096/pkg/items/moongates: . moongate">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 12:00:26 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001355.html">[Poldistro-svn] r1386 - trunk/096/pkg/commands/include
+</A></li>
+        <LI>Next message: <A HREF="001357.html">[Poldistro-svn] r1388 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1356">[ date ]</a>
+              <a href="thread.html#1356">[ thread ]</a>
+              <a href="subject.html#1356">[ subject ]</a>
+              <a href="author.html#1356">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 12:00:26 +0200 (Sat, 13 May 2006)
+New Revision: 1387
+
+Added:
+   trunk/096/pkg/items/moongates/moongate/
+   trunk/096/pkg/items/moongates/moongate/method.src
+   trunk/096/pkg/items/moongates/moongate/walkOn.src
+Modified:
+   trunk/096/pkg/items/moongates/itemdesc.cfg
+Log:
+Made normal moongates functional.
+
+Modified: trunk/096/pkg/items/moongates/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/moongates/itemdesc.cfg	2006-05-13 09:39:10 UTC (rev 1386)
++++ trunk/096/pkg/items/moongates/itemdesc.cfg	2006-05-13 10:00:26 UTC (rev 1387)
+@@ -1,61 +1,69 @@
+-# System moongate
++# $Id$
++#
++#
+ 
+ Item 0x6008
+ {
+ 	Name			permmoongate
+ 	Graphic			0xF6C
+-	Facing			2
+-	WalkOnScript		moonGate/walkOn
+-	SaveOnExit		1
++	Facing			29
++	
+ 	Movable			0
++	
++	MethodScript		moongate/method
++	WalkOnScript		moongate/walkOn
+ }
+ 
+-
+-Item 0x6201
++Item 0x6009
+ {
+ 	Name           		SystemMoonGate
+ 	Desc			magical moongate
+-       	Graphic			0x0F6C
++       	Graphic			0xF6C
+ 	Facing			29
+ 
++	Movable			0
+ 	SaveOnExit		0
+ 
+ 	Script			systemMoonGate/use
++	MethodScript		systemMoonGate/method
+ 	WalkOnScript		systemMoonGate/walkOn
+-	MethodScript		systemMoonGate/method
+ }
+ 
++
+ Item 0xF6C
+ {
+ 	Name			BlueMoonGate
+ 	Desc			blue moon gate
+-	Facing			2
++	Facing			29
+ 
+ 	Movable			0
+ 
+-	WalkOnScript		moonGate/walkOn
++	MethodScript		moongate/method
++	WalkOnScript		moongate/walkOn
+ }
+ 
+ Item 0xDDA
+ {
+ 	Name			RedMoonGate
+ 	Desc			red moon gate
+-	Facing			2
++	Facing			29
+ 
+ 	Movable			0
+ 	
+-	moonGate/walkOn
++	MethodScript		moongate/method
++	WalkOnScript		moongate/walkOn
+ }
+ 
+ Item 0x1FD4
+ {
+ 	Name			BlackMoonGate
+ 	Desc			black moon gate
+-	Facing			2
++	Facing			29
+ 
+ 	Movable			0
+ 	
+-	moonGate/walkOn
++	MethodScript		moongate/method
++	WalkOnScript		moongate/walkOn
+ }
+ 
+ Item 0x1FE7
+@@ -63,9 +71,10 @@
+ 	Name			WhiteMoonGate
+ 	Desc			white moon gate
+ 
+-	Facing			2
++	Facing			29
+ 
+ 	Movable			0
+ 	
+-	moonGate/walkOn
++	MethodScript		moongate/method
++	WalkOnScript		moongate/walkOn
+ }
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/moongates/moongate/method.src
+===================================================================
+--- trunk/096/pkg/items/moongates/moongate/method.src	2006-05-13 09:39:10 UTC (rev 1386)
++++ trunk/096/pkg/items/moongates/moongate/method.src	2006-05-13 10:00:26 UTC (rev 1387)
+@@ -0,0 +1,39 @@
++/* $Id$
++ *
++ */
++
++use uo;
++
++include &quot;:moongates:moongate&quot;;
++
++program Install()
++	return 1;
++endprogram
++
++exported function IsMoonGate(moongate)
++	moongate := moongate;
++	return 1;
++endfunction
++
++exported function SetDestination(moongate, x, y, z, realm)
++	var coords := struct;
++	coords.+x := CInt(x);
++	coords.+y := CInt(y);
++	coords.+z := CInt(z);
++	coords.+realm := CStr(realm);
++	
++	return SetObjProperty(moongate, &quot;Destination&quot;, coords);
++endfunction
++
++exported function GetDestination(moongate)
++	return GetObjProperty(moongate, &quot;Destination&quot;);
++endfunction
++
++exported function SendToDestination(moongate, object)
++	var dest := GetDestination(moongate);
++	if ( !dest )
++		return error{&quot;errortext&quot;:=&quot;moongate has no destination set.&quot;};
++	endif
++
++	return MoveObjectToLocation(object, dest.x, dest.y, dest.z, dest.realm, MOVEOBJECT_FORCELOCATION);
++endfunction
+
+Added: trunk/096/pkg/items/moongates/moongate/walkOn.src
+===================================================================
+--- trunk/096/pkg/items/moongates/moongate/walkOn.src	2006-05-13 09:39:10 UTC (rev 1386)
++++ trunk/096/pkg/items/moongates/moongate/walkOn.src	2006-05-13 10:00:26 UTC (rev 1387)
+@@ -0,0 +1,32 @@
++/* $Id$
++ *
++ */
++ 
++use uo;
++use polsys;
++
++program walkOnScript(mobile, tile)
++	if ( JustTeleported(mobile) )
++		return 0;
++	endif
++	
++	SetObjProperty(mobile, &quot;#Teleported&quot;, ReadMillisecondClock());
++	var result := tile.SendToDestination(mobile);
++	if ( result.errortext )
++		SendSysMessage(mobile, &quot;Error teleporting:&quot;+result.errortext);
++		return 0;
++	endif
++	
++	return 1;
++endprogram
++
++function JustTeleported(mobile)
++	var tele_time := CInt(GetObjProperty(mobile, &quot;#Teleported&quot;));
++	if ( tele_time &gt; ReadMillisecondClock()-800 )
++		// Mobile just teleported. Too soon to teleport again.
++		return 1;
++	else
++		// Safe to teleport the mobile
++		return 0;
++	endif
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001355.html">[Poldistro-svn] r1386 - trunk/096/pkg/commands/include
+</A></li>
+	<LI>Next message: <A HREF="001357.html">[Poldistro-svn] r1388 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1356">[ date ]</a>
+              <a href="thread.html#1356">[ thread ]</a>
+              <a href="subject.html#1356">[ subject ]</a>
+              <a href="author.html#1356">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

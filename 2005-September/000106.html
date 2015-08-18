@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r124 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r124%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20complete/testnpc%20include/braincore&In-Reply-To=%3C200509140505.j8E55WMO007916%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000105.html">
+   <LINK REL="Next"  HREF="000107.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r124 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r124%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20complete/testnpc%20include/braincore&In-Reply-To=%3C200509140505.j8E55WMO007916%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r124 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 14 07:05:32 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000105.html">[Poldistro-svn] r123 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc
+</A></li>
+        <LI>Next message: <A HREF="000107.html">[Poldistro-svn] r125 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#106">[ date ]</a>
+              <a href="thread.html#106">[ thread ]</a>
+              <a href="subject.html#106">[ subject ]</a>
+              <a href="author.html#106">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-14 07:05:00 +0200 (Wed, 14 Sep 2005)
+New Revision: 124
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/combat.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/combat.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/combat.src	2005-09-14 01:57:45 UTC (rev 123)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/combat.src	2005-09-14 05:05:00 UTC (rev 124)
+@@ -24,7 +24,6 @@
+ 		if ( ShouldFlee(npc, flee_level) )
+ 			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, 100);
+ 		elseif ( DoneFighting(npc, opponent, dist) )
+-			AI_WarMode(npc, 0);
+ 			AI_EndNerve(npc, nerve_name);
+ 		elseif( dist &gt; 1 )
+ 			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, dist+1);
+@@ -74,7 +73,7 @@
+ 				endif
+ 				break;
+ 			SYSEVENT_DAMAGED:
+-				AI_Speak(npc, &quot;OWCH &quot;+source.name+&quot; that hurts.&quot;);
++				//AI_Speak(npc, &quot;OWCH &quot;+source.name+&quot; that hurts.&quot;);
+ 				break;
+ 			default:
+ 				break;
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src	2005-09-14 01:57:45 UTC (rev 123)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src	2005-09-14 05:05:00 UTC (rev 124)
+@@ -32,9 +32,12 @@
+ endprogram
+ 
+ function Disengaged(npc, source)
++	PrintTextAbove(npc, &quot;Disengaged -&gt;&quot;+source.name+&quot; Source.dead == &quot;+source.dead);
++	PrintTextAbove(npc, &quot;Opponent == &quot;+(npc.opponent).name);
+ 	if ( npc.opponent == source )
+ 		if ( source.dead )
+ 			AI_Speak(npc, &quot;Killed ya! Neener!&quot;);
++			AI_WarMode(npc, 0);
+ 		else
+ 			AI_Speak(npc, &quot;Wuss! Get back here and finish fighting me!&quot;);
+ 		endif
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-14 01:57:45 UTC (rev 123)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-14 05:05:00 UTC (rev 124)
+@@ -188,6 +188,20 @@
+ 		//
+ 		// * Check custom events
+ 		//
++		
++		// Combat completed with the npc being victorious
++		// .source	: What dragged the item over the npc.
++		// .item	: The item being given to the npc.
++		SYSEVENT_ITEM_GIVEN:
++			if ( g_scripts.Exists(&quot;ItemGiven&quot;) )
++				var process := GetNerveProcess(npc, &quot;ItemGiven&quot;);
++				if ( !process )
++					StartNerve(npc, &quot;ItemGiven&quot;, g_scripts[&quot;ItemGiven&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;ItemGiven&quot;].flags);
++				else
++					process.SendEvent(event);
++				endif
++			endif
++			break;
+ 
+ 		//A nerve has instructed the brain to kill another nerve or its self.
+ 		// .name	: Nerve name
+@@ -203,13 +217,6 @@
+ 			StartNerve(npc, event.name, event.script, event.data, event.flags);
+ 			break;
+ 
+-		// Set a new opponent!
+-		// NOTE: Auto-sets Warmode=1!
+-		// .source	: Opponent (mobile)
+-		NPCEVENT_OPPONENT:
+-			SetOpponent(event.source);
+-			break;
+-
+ 		// Say something
+ 		// .text	: Speech content
+ 		// .texttype	: Speech type (&quot;default&quot;, &quot;whisper&quot;, yell&quot;)
+@@ -241,11 +248,20 @@
+ 					TurnAwayFromLocation(event.x, event.y);
+ 			endcase
+ 			break;
++			
++		// Set a new opponent!
++		// NOTE: Auto-sets Warmode=1!
++		// .source	: Opponent (mobile)
++		NPCEVENT_OPPONENT:
++			Say(&quot;Changing my warmode status to &quot;+event.source);
++			SetOpponent(event.source);
++			break;
+ 
+ 		// Set WarMode state
+ 		// NOTE: Auto-clears Opponent if turned off!
+ 		// .value : 0=Off. 1=On.
+ 		NPCEVENT_WARMODE:
++			Say(&quot;Changing my warmode status to &quot;+event.value);
+ 			SetWarmode( event.value );
+ 			break;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000105.html">[Poldistro-svn] r123 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc
+</A></li>
+	<LI>Next message: <A HREF="000107.html">[Poldistro-svn] r125 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#106">[ date ]</a>
+              <a href="thread.html#106">[ thread ]</a>
+              <a href="subject.html#106">[ subject ]</a>
+              <a href="author.html#106">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

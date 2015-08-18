@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r91 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r91%20-%20trunk/096/pkg/mobiles/ai_brain/include/braincore&In-Reply-To=%3C200509071414.j87EEPY6017801%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000072.html">
+   <LINK REL="Next"  HREF="000074.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r91 - trunk/096/pkg/mobiles/ai_brain/include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r91%20-%20trunk/096/pkg/mobiles/ai_brain/include/braincore&In-Reply-To=%3C200509071414.j87EEPY6017801%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r91 - trunk/096/pkg/mobiles/ai_brain/include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep  7 16:14:25 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000072.html">[Poldistro-svn] r90 - trunk/096/pkg/other/hooks
+</A></li>
+        <LI>Next message: <A HREF="000074.html">[Poldistro-svn] r92 - trunk/096/pkg/commands/admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#73">[ date ]</a>
+              <a href="thread.html#73">[ thread ]</a>
+              <a href="subject.html#73">[ subject ]</a>
+              <a href="author.html#73">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-07 16:14:25 +0200 (Wed, 07 Sep 2005)
+New Revision: 91
+
+Added:
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/sleep.inc
+Removed:
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/sleepMode.inc
+Log:
+
+
+Copied: trunk/096/pkg/mobiles/ai_brain/include/braincore/sleep.inc (from rev 89, trunk/096/pkg/mobiles/ai_brain/include/braincore/sleepMode.inc)
+
+Deleted: trunk/096/pkg/mobiles/ai_brain/include/braincore/sleepMode.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/sleepMode.inc	2005-09-07 13:34:47 UTC (rev 90)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/sleepMode.inc	2005-09-07 14:14:25 UTC (rev 91)
+@@ -1,82 +0,0 @@
+-/*===============================================================
+-* Current Version
+-* SLEEPMODE.INC - v1.0
+-* Updated 9/6/2005 6:35AM
+-*
+-* -- Revision v1.0 --
+-* Austin:
+-*  Created include file
+-===============================================================*/
+-
+-/*
+- * EnterSleepMode()
+- *
+- * Purpose
+- * Starts the sleep script if the npc has one.
+- *
+- * Parameters
+-  *
+- * Return value
+- * Always returns 1
+- *
+- */
+-function EnterSleepMode()
+-	if ( !sleep_mode )
+-		if ( g_scripts[&quot;Sleep&quot;] )
+-			var process := GetNerveProcess(npc, &quot;Sleep&quot;, g_nerves);
+-			if ( !process )
+-				StartNerve(npc, &quot;Sleep&quot;, g_scripts[&quot;Sleep&quot;].script, array{g_settings, g_scripts, g_nerves}, g_scripts[&quot;Sleep&quot;].flags, g_nerves);
+-			endif
+-		endif
+-					
+-		//The brain is now in sleep mode, isnt it cute?
+-		sleep_mode := 1;
+-	endif
+-	
+-	return 1;
+-endfunction
+-
+-/*
+- * LeaveSleepMode()
+- *
+- * Purpose
+- * Brings the npc out of sleep mode.
+- *
+- * Parameters
+-  *
+- * Return value
+- * Always returns 1
+- *
+- */
+-function LeaveSleepMode()
+-	StopNerve(npc, &quot;Sleep&quot;, g_nerves);
+-	idle_ticks := 0;
+-	sleep_mode := 1;
+-endfunction
+-
+-/*
+- * ShouldSleep()
+- *
+- * Purpose
+- * Determines if it is time to sleep
+- *
+- * Parameters
+- *
+- * Return Value
+- * Returns 0 or 1
+- *
+- */
+-function ShouldSleep()
+-	if ( sleep_mode )
+-		//Already asleep
+-		return 0;
+-	elseif ( Events_Waiting() )
+-		//Events are waiting to process.
+-		return 0;
+-	elseif ( idle_ticks &lt; g_settings[&quot;idle_ticks&quot;] )
+-		//Not enough idle ticks have gone by yet.
+-		return 0;
+-	endif
+-	
+-	return 1;
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000072.html">[Poldistro-svn] r90 - trunk/096/pkg/other/hooks
+</A></li>
+	<LI>Next message: <A HREF="000074.html">[Poldistro-svn] r92 - trunk/096/pkg/commands/admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#73">[ date ]</a>
+              <a href="thread.html#73">[ thread ]</a>
+              <a href="subject.html#73">[ subject ]</a>
+              <a href="author.html#73">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

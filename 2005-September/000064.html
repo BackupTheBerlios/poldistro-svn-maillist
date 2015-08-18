@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r82 - trunk/096/pkg/other/hooks
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r82%20-%20trunk/096/pkg/other/hooks&In-Reply-To=%3C200509061101.j86B12d5008491%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000063.html">
+   <LINK REL="Next"  HREF="000065.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r82 - trunk/096/pkg/other/hooks</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r82%20-%20trunk/096/pkg/other/hooks&In-Reply-To=%3C200509061101.j86B12d5008491%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r82 - trunk/096/pkg/other/hooks">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep  6 13:01:02 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000063.html">[Poldistro-svn] r81 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="000065.html">[Poldistro-svn] r83 - trunk/096/pkg/systems/attributes/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#64">[ date ]</a>
+              <a href="thread.html#64">[ thread ]</a>
+              <a href="subject.html#64">[ subject ]</a>
+              <a href="author.html#64">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-06 13:00:27 +0200 (Tue, 06 Sep 2005)
+New Revision: 82
+
+Modified:
+   trunk/096/pkg/other/hooks/uoclient.cfg
+Log:
+Support for 2.0.0b on port 5002 and no encryption on 5003.
+
+Modified: trunk/096/pkg/other/hooks/uoclient.cfg
+===================================================================
+--- trunk/096/pkg/other/hooks/uoclient.cfg	2005-09-06 10:54:07 UTC (rev 81)
++++ trunk/096/pkg/other/hooks/uoclient.cfg	2005-09-06 11:00:27 UTC (rev 82)
+@@ -1,9 +1,27 @@
++////////////////////////////////
++// General controls which attributes/vitals are mapped to the client's status window.
++// 
++// Layout:
++//	&lt;onstatus&gt; &lt;attrib/vital&gt;
++//
++// Valid &lt;onstatus&gt; constants are...
++//
++//     Strength, Intelligence, Dexterity
++//     Hits, Stamina, Mana
++//
++// Valid &lt;attrib&gt; constants are any valid attribute name from attributes.cfg
++// Valid &lt;vital&gt; constants are specified in vitals.cfg
++////////////////////////////////
+ General
+ {
++	// Left side of Status Window (Attributes)
++	//
+ 	Strength	Strength
+ 	Intelligence	Intelligence
+ 	Dexterity	Dexterity
+ 
++	// Right side of Status Window (Vitals)
++	//
+ 	Hits		Life
+ 	Mana		Mana
+ 	Stamina		Stamina
+@@ -23,3 +41,25 @@
+     EnableFlowControlPackets    0
+ }
+ 
++
++////////////////////////////////
++// Listener elems control which ports control which encryption protocols.
++// 
++// Listener
++// {
++//	Port            xxxx
++//	Encryption      1.26.4 / 2.0.0 / none
++// }
++////////////////////////////////
++Listener
++{
++	// Enabled mostly for development purposes
++	// Will be removed when distro goes final
++	Port		5002
++	Encryption	2.0.0
++}
++Listener
++{
++	Port		5003
++	Encryption	none
++}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000063.html">[Poldistro-svn] r81 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="000065.html">[Poldistro-svn] r83 - trunk/096/pkg/systems/attributes/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#64">[ date ]</a>
+              <a href="thread.html#64">[ thread ]</a>
+              <a href="subject.html#64">[ subject ]</a>
+              <a href="author.html#64">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

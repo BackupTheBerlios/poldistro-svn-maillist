@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1270 - in trunk/096/pkg/systems/spawnSystem: . commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1270%20-%20in%20trunk/096/pkg/systems/spawnSystem%3A%20.%20commands/gm&In-Reply-To=%3C200605060022.k460MCEB029721%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001241.html">
+   <LINK REL="Next"  HREF="001243.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1270 - in trunk/096/pkg/systems/spawnSystem: . commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1270%20-%20in%20trunk/096/pkg/systems/spawnSystem%3A%20.%20commands/gm&In-Reply-To=%3C200605060022.k460MCEB029721%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1270 - in trunk/096/pkg/systems/spawnSystem: . commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sat May  6 02:22:12 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001241.html">[Poldistro-svn] r1269 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001243.html">[Poldistro-svn] r1271 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1242">[ date ]</a>
+              <a href="thread.html#1242">[ thread ]</a>
+              <a href="subject.html#1242">[ subject ]</a>
+              <a href="author.html#1242">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-06 02:22:03 +0200 (Sat, 06 May 2006)
+New Revision: 1270
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+   trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+Log:
+Starting to get the gump finished for adding a new region.
+
+Modified: trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-05 20:55:08 UTC (rev 1269)
++++ trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-06 00:22:03 UTC (rev 1270)
+@@ -34,6 +34,7 @@
+ const Y1_TEXT_POS	:= 0xA01;
+ const X2_TEXT_POS	:= 0xA02;
+ const Y2_TEXT_POS	:= 0xA03;
++const REALM_NAME_POS	:= 0xA04;
+ 
+ program SpawnerCMD(who)
+ 	var input := SHOW_REALMS_BTN;
+@@ -51,6 +52,8 @@
+ 				input := BuildRegionInfoGump(who, cur_realm, cur_region);
+ 			elseif ( cur_menu == ADD_REALM_BTN )
+ 				input := BuildAddRealmGump(who);
++			elseif ( cur_menu == ADD_REGION_BTN )
++				input := BuildAddRegionGump(who, cur_realm);
+ 			endif
+ 		endif
+ 
+@@ -72,6 +75,8 @@
+ 			cur_menu := SHOW_REALMS_BTN;
+ 		elseif ( input == ADD_REALM_BTN )
+ 			cur_menu := ADD_REALM_BTN;
++		elseif ( input == ADD_REGION_BTN )
++			cur_menu := ADD_REGION_BTN;
+ 		endif
+ 	endwhile
+ 
+@@ -89,24 +94,24 @@
+ 	GFResizePic(gump, 15, 15, bkgnd_dark_stone, 125, 450);
+ 	GFResizePic(gump, 145, 15, bkgnd_dark_stone, 480, 450);
+ 
+-	GFAddButton(gump, 15, 23, 2117, 2118, GF_CLOSE_BTN, SHOW_REALMS_BTN);
++	GFAddButton(gump, 20, 23, 2117, 2118, GF_CLOSE_BTN, SHOW_REALMS_BTN);
+ 	GFTextLine(gump, 35, 20, 2100, &quot;Realm List&quot;);
+-	GFAddButton(gump, 15, 43, 2117, 2118, GF_CLOSE_BTN, ADD_REALM_BTN);
++	GFAddButton(gump, 20, 43, 2117, 2118, GF_CLOSE_BTN, ADD_REALM_BTN);
+ 	GFTextLine(gump, 35, 40, 2100, &quot;Add Realm&quot;);
+ 
+-	GFAddButton(gump, 15, 83, 2117, 2118, GF_CLOSE_BTN, SHOW_GROUPS_BTN);
++	GFAddButton(gump, 20, 83, 2117, 2118, GF_CLOSE_BTN, SHOW_GROUPS_BTN);
+ 	GFTextLine(gump, 35, 80, 2100, &quot;Group List&quot;);
+-	GFAddButton(gump, 15, 103, 2117, 2118, GF_CLOSE_BTN, ADD_GROUP_BTN);
++	GFAddButton(gump, 20, 103, 2117, 2118, GF_CLOSE_BTN, ADD_GROUP_BTN);
+ 	GFTextLine(gump, 35, 100, 2100, &quot;Add Group&quot;);
+ 
+ 	if ( realm_name )
+-		GFAddButton(gump, 15, 143, 2117, 2118, GF_CLOSE_BTN, SHOW_REGIONS_BTN);
++		GFAddButton(gump, 20, 143, 2117, 2118, GF_CLOSE_BTN, SHOW_REGIONS_BTN);
+ 		GFTextLine(gump, 35, 140, 2100, &quot;Regions List&quot;);
+-		GFAddButton(gump, 15, 163, 2117, 2118, GF_CLOSE_BTN, ADD_REGION_BTN);
++		GFAddButton(gump, 20, 163, 2117, 2118, GF_CLOSE_BTN, ADD_REGION_BTN);
+ 		GFTextLine(gump, 35, 160, 2100, &quot;Add Region&quot;);
+ 	endif
+-	
+-	GFAddButton(gump, 15, 443, 2117, 2118, GF_CLOSE_BTN, CLOSE_BTN);
++
++	GFAddButton(gump, 20, 443, 2117, 2118, GF_CLOSE_BTN, CLOSE_BTN);
+ 	GFTextLine(gump, 35, 440, 2100, &quot;CLOSE&quot;);
+ 
+ 	return gump;
+@@ -170,7 +175,7 @@
+ 	GFTextLine(gump, 375, 46, 2100, &quot;Y2&quot;);
+ 	GFResizePic(gump, 360, 64, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 45, 28);
+ 	GFTextEntry(gump, 366, 68, 35, 20, 2100, coords.y2, Y2_TEXT_POS);
+-	
++
+ 	GFAddButton(gump, 430, 71, 2117, 2118, GF_CLOSE_BTN, VISIT_REGION_BTN);
+ 	GFTextLine(gump, 450, 68, 2100, &quot;Goto center.&quot;);
+ 
+@@ -184,7 +189,7 @@
+ 	var x := ((coords.x2 - coords.x1) / 2) + coords.x1;
+ 	var y := ((coords.y2 - coords.y1) / 2) + coords.y1;
+ 	var z := GetMapInfo(x, y, realm_name).z;
+-		
++
+ 	var result := MoveObjectToLocation(who, x, y, z, realm_name, MOVECHAR_FORCELOCATION);
+ 	if ( result.errortext )
+ 		GumpPrompt(who, &quot;&quot;+result.errortext);
+@@ -192,19 +197,19 @@
+ 	else
+ 		GumpPrompt(who, &quot;Moved to &quot;+realm_name+&quot; [P] X(&quot;+x+&quot;) Y(&quot;+y+&quot;) Z(&quot;+z+&quot;)&quot;);
+ 	endif
+-	
++
+ 	return 1;
+ endfunction
+ 
+ function BuildAddRealmGump(who)
+ 	var gump := BuildGumpTemplate();
+-	
++
+ 	GFTextMid(gump, 145, 20, 485, 2100, &quot;Add Realm&quot;);
+-	
++
+ 	var used_realms := SS_GetRealmNames();
+ 	var realm_names := Realms().keys();
+-	var y_pos := 40;
+-		
++	var y_pos := 50;
++
+ 	foreach realm_name in ( realm_names )
+ 		//if ( !(realm_name in used_realms) )
+ 			GFAddButton(gump, 155, y_pos+3, 2117, 2118, GF_CLOSE_BTN, _realm_name_iter);
+@@ -213,10 +218,10 @@
+ 		//endif
+ 		sleepms(2);
+ 	endforeach
+-	
++
+ 	var input := GFSendGump(who, gump);
+ 	input := input[0];
+-		
++
+ 	var new_realm := realm_names[input];
+ 	if ( new_realm )
+ 		var result := SS_AddRealm(new_realm);
+@@ -227,4 +232,35 @@
+ 
+ 	return input;
+ endfunction
+-	
+\ No newline at end of file
++
++function BuildAddRegionGump(who, realm_name)
++	var gump := BuildGumpTemplate();
++
++	GFTextMid(gump, 145, 20, 485, 2100, &quot;Add Region [&quot;+realm_name+&quot;]&quot;);
++
++	GFTextLine(gump, 155, 50, 2100, &quot;Region Name&quot;);
++	GFResizePic(gump, 230, 46, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 245, 28);
++	GFTextEntry(gump, 236, 50, 235, 20, 2100, &quot;&quot;, X1_TEXT_POS);
++	
++	GFTextLine(gump, 155, 80, 2100, &quot;Coordinates&quot;);
++	GFTextLine(gump, 245, 80, 2100, &quot;X1&quot;);
++	GFResizePic(gump, 230, 100, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 45, 28);
++	GFTextEntry(gump, 236, 104, 35, 20, 2100, &quot;&quot;, X1_TEXT_POS);
++	GFTextLine(gump, 285, 80, 2100, &quot;Y1&quot;);
++	GFResizePic(gump, 270, 100, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 45, 28);
++	GFTextEntry(gump, 276, 104, 35, 20, 2100, &quot;&quot;, Y1_TEXT_POS);
++	GFTextLine(gump, 335, 80, 2100, &quot;X2&quot;);
++	GFResizePic(gump, 320, 100, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 45, 28);
++	GFTextEntry(gump, 326, 104, 35, 20, 2100, &quot;&quot;, X2_TEXT_POS);
++	GFTextLine(gump, 375, 80, 2100, &quot;Y2&quot;);
++	GFResizePic(gump, 360, 100, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 45, 28);
++	GFTextEntry(gump, 366, 104, 35, 20, 2100, &quot;&quot;, Y2_TEXT_POS);
++	
++	GFTextLine(gump, 500, 80, 2100, &quot;Spawn Wait (Sec.)&quot;);
++	GFResizePic(gump, 525, 100, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 65, 28);
++	GFTextEntry(gump, 531, 104, 55, 20, 2100, &quot;&quot;, Y2_TEXT_POS);
++	
++	var input := GFSendGump(who, gump);
++	
++	return input[0];
++endfunction
+
+Modified: trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/spawnSystem.src	2006-05-05 20:55:08 UTC (rev 1269)
++++ trunk/096/pkg/systems/spawnSystem/spawnSystem.src	2006-05-06 00:22:03 UTC (rev 1270)
+@@ -37,6 +37,7 @@
+ 		endif
+ 		
+ 		SetGlobalProperty(&quot;SpawnSystemInit&quot;, 1);
++		SS_ReportText(&quot;---=[ SPANER INITIALIZATION COMPLETE ]=---&quot;);
+ 	endif
+ 	
+ 	return 1;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001241.html">[Poldistro-svn] r1269 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001243.html">[Poldistro-svn] r1271 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1242">[ date ]</a>
+              <a href="thread.html#1242">[ thread ]</a>
+              <a href="subject.html#1242">[ subject ]</a>
+              <a href="author.html#1242">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

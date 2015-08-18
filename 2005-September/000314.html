@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r336 - in trunk/096/pkg: items/containers/container items/sysbook/book other/hooks skills/armslore skills/magery
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r336%20-%20in%20trunk/096/pkg%3A%20items/containers/container%20items/sysbook/book%20other/hooks%20skills/armslore%20skills/magery&In-Reply-To=%3C200509301532.j8UFW9qj023376%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000313.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r336 - in trunk/096/pkg: items/containers/container items/sysbook/book other/hooks skills/armslore skills/magery</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r336%20-%20in%20trunk/096/pkg%3A%20items/containers/container%20items/sysbook/book%20other/hooks%20skills/armslore%20skills/magery&In-Reply-To=%3C200509301532.j8UFW9qj023376%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r336 - in trunk/096/pkg: items/containers/container items/sysbook/book other/hooks skills/armslore skills/magery">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Fri Sep 30 17:32:09 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000313.html">[Poldistro-svn] r335 - in trunk/096/pkg: skills/bowcraft systems/combat systems/crafting/include
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#314">[ date ]</a>
+              <a href="thread.html#314">[ thread ]</a>
+              <a href="subject.html#314">[ subject ]</a>
+              <a href="author.html#314">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-30 17:32:08 +0200 (Fri, 30 Sep 2005)
+New Revision: 336
+
+Modified:
+   trunk/096/pkg/items/containers/container/canDestroy.src
+   trunk/096/pkg/items/containers/container/canInsert.src
+   trunk/096/pkg/items/containers/container/canRemove.src
+   trunk/096/pkg/items/sysbook/book/onCreate.src
+   trunk/096/pkg/other/hooks/attributeCore.src
+   trunk/096/pkg/skills/armslore/armsLore.src
+   trunk/096/pkg/skills/magery/nightSight.src
+   trunk/096/pkg/skills/magery/poisonDamage.src
+Log:
+Misc fixes for unused variables in ecompile reports.
+Fixed unused includes/removed includes.
+
+Modified: trunk/096/pkg/items/containers/container/canDestroy.src
+===================================================================
+--- trunk/096/pkg/items/containers/container/canDestroy.src	2005-09-30 15:05:18 UTC (rev 335)
++++ trunk/096/pkg/items/containers/container/canDestroy.src	2005-09-30 15:32:08 UTC (rev 336)
+@@ -1,5 +1,8 @@
+ // $Id$
+ 
+ program canDestroy(container)
++
++	container := container;
+ 	return 1;
++
+ endprogram
+
+Modified: trunk/096/pkg/items/containers/container/canInsert.src
+===================================================================
+--- trunk/096/pkg/items/containers/container/canInsert.src	2005-09-30 15:05:18 UTC (rev 335)
++++ trunk/096/pkg/items/containers/container/canInsert.src	2005-09-30 15:32:08 UTC (rev 336)
+@@ -6,16 +6,23 @@
+ 
+ 
+ program canInsert(mobile, container, item, move_type, insert_type, adding_item, existing_stack, amount_to_add)
++
++	amount_to_add := amount_to_add;
++	existing_stack := existing_stack;
++	adding_item := adding_item;
++	insert_type := insert_type;
++	container := container;
++
+ 	if ( mobile.cmdlevel )
+ 		return 1;
+ 	elseif ( move_type == MOVETYPE_COREMOVE )
+-		return 1;	
++		return 1;
+ 	elseif ( CP_RootContainerLocked(item) )
+ 		SendSysMessage(mobile, &quot;You can't insert items into locked containers.&quot;);
+ 		return 0;
+ 	endif
+-		
+-	//To-do 
++
++	//To-do
+ 	//Play sound effect now that item is being added.
+ 	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/items/containers/container/canRemove.src
+===================================================================
+--- trunk/096/pkg/items/containers/container/canRemove.src	2005-09-30 15:05:18 UTC (rev 335)
++++ trunk/096/pkg/items/containers/container/canRemove.src	2005-09-30 15:32:08 UTC (rev 336)
+@@ -6,16 +6,19 @@
+ 
+ 
+ program canRemove(mobile, container, item, move_type)
++
++	container := container;
++
+ 	if ( mobile.cmdlevel )
+ 		return 1;
+ 	elseif ( move_type == MOVETYPE_COREMOVE )
+-		return 1;	
++		return 1;
+ 	elseif ( CP_RootContainerLocked(item) )
+ 		SendSysMessage(mobile, &quot;You can't remove items from locked containers.&quot;);
+ 		return 0;
+ 	endif
+-	
+-	//To-do 
++
++	//To-do
+ 	//Play sound effect now that item is being removed.
+ 	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/items/sysbook/book/onCreate.src
+===================================================================
+--- trunk/096/pkg/items/sysbook/book/onCreate.src	2005-09-30 15:05:18 UTC (rev 335)
++++ trunk/096/pkg/items/sysbook/book/onCreate.src	2005-09-30 15:32:08 UTC (rev 336)
+@@ -1,5 +1,6 @@
+ // $Id$
+ 
+ program OnCreate(book)
++	book := book;
+ 	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/other/hooks/attributeCore.src
+===================================================================
+--- trunk/096/pkg/other/hooks/attributeCore.src	2005-09-30 15:05:18 UTC (rev 335)
++++ trunk/096/pkg/other/hooks/attributeCore.src	2005-09-30 15:32:08 UTC (rev 336)
+@@ -93,7 +93,6 @@
+   var check := 0;
+   var loops := 0;
+   var holder, newval, final;
+-  var base, true;
+   while(check == 0)
+     if(loops &gt;= 6)
+       break;
+
+Modified: trunk/096/pkg/skills/armslore/armsLore.src
+===================================================================
+--- trunk/096/pkg/skills/armslore/armsLore.src	2005-09-30 15:05:18 UTC (rev 335)
++++ trunk/096/pkg/skills/armslore/armsLore.src	2005-09-30 15:32:08 UTC (rev 336)
+@@ -1,18 +1,16 @@
+ use cfgfile;
+ use uo;
+-use basic;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/skillPoints&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ 
+-
+ program skill_armslore(who)
++
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 	EraseObjProperty(who, &quot;HealTimer&quot;);
+ 
+ 	var quality_descr, damage_descr;
+-	var thepoints := (CInt(GetEffectiveSkill(who, SKILLID_ARMSLORE)) * 2) + 20;
+ 	SendSysMessage(who, &quot;Select an object to evaluate.&quot;);
+ 	var the_item := Target(who, TGTOPT_CHECK_LOS);
+ 	if (!the_item)
+@@ -25,7 +23,7 @@
+ 		SendSysMessage(who, &quot;You can only use this skill on weapons or armor!&quot;);
+ 		return;
+ 	endif
+-	if(CheckSkill(who, SKILLID_ARMSLORE, -1, thepoints))
++	if(SkillCheck(who, ATTRIBUTE_ARMS_LORE, -1) &gt; 0)
+ 		var item_max_hp := the_item.maxhp;
+ 		var max_hp := item_max_hp;
+ 		var hp := the_item.hp;
+@@ -69,4 +67,5 @@
+ 	else
+ 		SendSysMessage(who, &quot;You can't quite tell . . .&quot;);
+ 	endif
++
+ endprogram
+
+Modified: trunk/096/pkg/skills/magery/nightSight.src
+===================================================================
+--- trunk/096/pkg/skills/magery/nightSight.src	2005-09-30 15:05:18 UTC (rev 335)
++++ trunk/096/pkg/skills/magery/nightSight.src	2005-09-30 15:32:08 UTC (rev 336)
+@@ -8,6 +8,9 @@
+ 
+ 
+ program nightSight(parms, spellid)
++
++	spellid := spellid;
++
+ 	var caster := parms.caster;
+ 	var castOn := parms.castOn;
+ 
+@@ -17,4 +20,5 @@
+ 	PlayObjectCenteredEffect(castOn, FX_BLESS_EFFECT, 10,10);
+ 
+ 	return;
++
+ endprogram
+
+Modified: trunk/096/pkg/skills/magery/poisonDamage.src
+===================================================================
+--- trunk/096/pkg/skills/magery/poisonDamage.src	2005-09-30 15:05:18 UTC (rev 335)
++++ trunk/096/pkg/skills/magery/poisonDamage.src	2005-09-30 15:32:08 UTC (rev 336)
+@@ -14,6 +14,7 @@
+ 	var weapon   := passparms[3];
+ 	var level    := passparms[4];
+ 	var pfield   := Cint(passparms[5]);
++	weapon := weapon;
+ 	if (who.npctemplate)
+ 		//var npccfg := ReadConfigFile(&quot;::npcdesc&quot;);
+ 		if (who.npctemplate == &quot;bladespirit&quot;)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000313.html">[Poldistro-svn] r335 - in trunk/096/pkg: skills/bowcraft systems/combat systems/crafting/include
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#314">[ date ]</a>
+              <a href="thread.html#314">[ thread ]</a>
+              <a href="subject.html#314">[ subject ]</a>
+              <a href="author.html#314">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

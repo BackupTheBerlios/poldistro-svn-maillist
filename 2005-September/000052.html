@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r70 - trunk/096
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r70%20-%20trunk/096&In-Reply-To=%3C200509060019.j860JjTi003778%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000051.html">
+   <LINK REL="Next"  HREF="000053.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r70 - trunk/096</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r70%20-%20trunk/096&In-Reply-To=%3C200509060019.j860JjTi003778%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r70 - trunk/096">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep  6 02:19:45 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000051.html">[Poldistro-svn] r69 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="000053.html">[Poldistro-svn] r71 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#52">[ date ]</a>
+              <a href="thread.html#52">[ thread ]</a>
+              <a href="subject.html#52">[ subject ]</a>
+              <a href="author.html#52">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-06 02:19:41 +0200 (Tue, 06 Sep 2005)
+New Revision: 70
+
+Modified:
+   trunk/096/realmgen.bat
+Log:
+Menu driven interface to control uoconvert.exe
+
+Modified: trunk/096/realmgen.bat
+===================================================================
+--- trunk/096/realmgen.bat	2005-09-05 23:34:29 UTC (rev 69)
++++ trunk/096/realmgen.bat	2005-09-06 00:19:41 UTC (rev 70)
+@@ -1,17 +1,114 @@
+<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">- at echo</A> off
+-REM $Id: realmgen.bat,v 1.1 2004/03/16 14:05:46 folko Exp $
+<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">+ at ECHO</A> OFF
+ 
+-uoconvert multis
+-move multis.cfg config
++REM -- If a special path is needed to uoconvert.exe set it here
++SET UOCNVRT_PATH=uoconvert.exe
++REM ----------
+ 
+-uoconvert tiles
+-move tiles.cfg config
++GOTO :MENU()
+ 
+-uoconvert landtiles
+-move landtiles.cfg config
++REM -- MENU FUNCTION
++:MENU()
++CLS
++ECHO RealmGen.bat by Austin
++ECHO ========================
++ECHO Command        Purpose
++ECHO  [ a ] - Build multis.cfg
++ECHO  [ b ] - Build tiles.cfg
++ECHO  [ c ] - Build landtiles.cfg
++ECHO  [ d ] - Build all config files
++ECHO.
++ECHO  [ e ] - Build 'Britannia' realm     (mapid=0)
++ECHO  [ f ] - Build 'Britannia Alt' realm (mapid=1)
++ECHO  [ g ] - Build 'Ilshenar' realm      (mapid=2)
++ECHO  [ h ] - Build 'Malas' realm         (mapid=3)
++ECHO  [ i ] - Build 'Tokuno' realm        (mapid=4)
++ECHO.
++ECHO  [ x ] - Quit
+ 
+-uoconvert map     realm=britannia mapid=0 usedif=1 width=6144 height=4096
+-uoconvert statics realm=britannia
+-uoconvert maptile realm=britannia
++SET /p CMD=Command:
+ 
++IF &quot;%CMD%&quot; == &quot;a&quot; GOTO :MULTIS.CFG()
++IF &quot;%cMD%&quot; == &quot;b&quot; GOTO :TILES.CFG()
++IF &quot;%cMD%&quot; == &quot;c&quot; GOTO :LANDTILES.CFG()
++IF &quot;%cMD%&quot; == &quot;d&quot; GOTO :ALLCONFIGS()
++IF &quot;%CMD%&quot; == &quot;e&quot; GOTO :REALM_BRITTANIA()
++IF &quot;%CMD%&quot; == &quot;f&quot; GOTO :REALM_BRITTANIA_ALT()
++IF &quot;%CMD%&quot; == &quot;g&quot; GOTO :REALM_ILSHENAR()
++IF &quot;%CMD%&quot; == &quot;h&quot; GOTO :REALM_MALAS()
++IF &quot;%CMD%&quot; == &quot;i&quot; GOTO :REALM_TOKUNO()
++IF &quot;%CMD%&quot; == &quot;x&quot; GOTO :QUIT()
+ 
++ECHO.
++ECHO Invalid command.
++GOTO :RETURN_TO_MENU()
++
++REM -- RETURN_TO_MENU() FUNCTION
++:RETURN_TO_MENU()
++PAUSE
++GOTO :MENU()
++
++REM -- MULTIS.CFG FUNCTION
++:MULTIS.CFG()
++%UOCNVRT_PATH% multis
++MOVE multis.cfg config
++GOTO :RETURN_TO_MENU()
++
++REM -- TILES.CFG FUNCTION
++:TILES.CFG()
++%UOCNVRT_PATH% tiles
++MOVE tiles.cfg config
++GOTO :RETURN_TO_MENU()
++
++REM -- LANDTILES.CFG FUNCTION
++:LANDTILES.CFG()
++%UOCNVRT_PATH% landtiles
++MOVE landtiles.cfg config
++GOTO :RETURN_TO_MENU()
++
++REM -- ALLCONFIGS FUNCTION
++:ALLCONFIGS()
++%UOCNVRT_PATH% multis
++MOVE multis.cfg config
++%UOCNVRT_PATH% tiles
++MOVE tiles.cfg config
++%UOCNVRT_PATH% landtiles
++MOVE landtiles.cfg config
++GOTO :RETURN_TO_MENU()
++
++REM -- REALM_BRITTANIA()
++:REALM_BRITTANIA()
++%UOCNVRT_PATH% map     realm=britannia mapid=0 usedif=1 width=6144 height=4096
++%UOCNVRT_PATH% statics realm=britannia
++%UOCNVRT_PATH% maptile realm=britannia
++GOTO :RETURN_TO_MENU()
++
++REM -- REALM_BRITTANIA_ALT() FUNCTION
++:REALM_BRITTANIA_ALT()
++%UOCNVRT_PATH% map     realm=britannia_alt mapid=1 usedif=1 width=6144 height=4096
++%UOCNVRT_PATH% statics realm=britannia_alt
++%UOCNVRT_PATH% maptile realm=britannia_alt
++GOTO :RETURN_TO_MENU()
++
++REM -- REALM_ILSHENAR FUNCTION
++:REALM_ILSHENAR()
++%UOCNVRT_PATH% map     realm=ilshenar mapid=2 usedif=1 width=2304 height=1600
++%UOCNVRT_PATH% statics realm=ilshenar
++%UOCNVRT_PATH% maptile realm=ilshenar
++GOTO :RETURN_TO_MENU()
++
++REM -- REALM_MALAS FUNCTION
++:REALM_MALAS()
++%UOCNVRT_PATH% map     realm=malas mapid=3 usedif=1 width=2560 height=2048
++%UOCNVRT_PATH% statics realm=malas
++%UOCNVRT_PATH% maptile realm=malas
++GOTO :RETURN_TO_MENU()
++
++REM -- REALM_TOKUNO FUNCTION
++:REALM_TOKUNO()
++%UOCNVRT_PATH% map     realm=tokuno mapid=4 usedif=1 width=1448 height=1448
++%UOCNVRT_PATH% statics realm=tokuno
++%UOCNVRT_PATH% maptile realm=tokuno
++GOTO :RETURN_TO_MENU()
++
++REM -- QUIT FUNCTION
++:QUIT()
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000051.html">[Poldistro-svn] r69 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="000053.html">[Poldistro-svn] r71 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#52">[ date ]</a>
+              <a href="thread.html#52">[ thread ]</a>
+              <a href="subject.html#52">[ subject ]</a>
+              <a href="author.html#52">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

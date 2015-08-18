@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r348 - trunk/096/pkg/items/containers/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r348%20-%20trunk/096/pkg/items/containers/include&In-Reply-To=%3C200510011346.j91DkPbv004319%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000325.html">
+   <LINK REL="Next"  HREF="000327.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r348 - trunk/096/pkg/items/containers/include</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r348%20-%20trunk/096/pkg/items/containers/include&In-Reply-To=%3C200510011346.j91DkPbv004319%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r348 - trunk/096/pkg/items/containers/include">panosl at berlios.de
+       </A><BR>
+    <I>Sat Oct  1 15:46:25 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000325.html">[Poldistro-svn] r347 - trunk/096/scripts/ai
+</A></li>
+        <LI>Next message: <A HREF="000327.html">[Poldistro-svn] r349 - in trunk/096/pkg/items/containers/commands: . admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#326">[ date ]</a>
+              <a href="thread.html#326">[ thread ]</a>
+              <a href="subject.html#326">[ subject ]</a>
+              <a href="author.html#326">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-10-01 15:46:25 +0200 (Sat, 01 Oct 2005)
+New Revision: 348
+
+Modified:
+   trunk/096/pkg/items/containers/include/storageAreas.inc
+Log:
+
+
+Modified: trunk/096/pkg/items/containers/include/storageAreas.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/storageAreas.inc	2005-10-01 13:37:23 UTC (rev 347)
++++ trunk/096/pkg/items/containers/include/storageAreas.inc	2005-10-01 13:46:25 UTC (rev 348)
+@@ -5,12 +5,13 @@
+  * Function List
+  * CP_GetStorageContainerForMobile(container_id, storage_area_name:=0)
+  * CP_GetStorageAreaContainer(mobile, storage_area_name:=0, create:=CP_NOCREATE)
+- * CP_GetStorageAreaContainer(container_id, storage_area_name:=0)
++ * CP_CreateStorageAreaContainer(container_id, storage_area_name:=0)
+  * CP_RegisterStorageArea(storage_area_name)
+  * CP_RemoveStorageAreaContainer(container_id, storage_area_name)
+  * CP_StorageDebugMsg(text)
+  *
+  * Internal Function List
++ *
+  */
+ use uo;
+ use os;
+@@ -52,20 +53,23 @@
+  * create:		Controls if the container will be created if it does not already exist.
+  *
+  * Return Value
+- * A container object
++ * A container object if CP_CREATE
++ * 0 if CP_NOCREATE
+  *
+  */
+ function CP_GetStorageContainerForMobile(mobile, storage_area_name:=0, create:=CP_NOCREATE)
+-	if ( (!storage_area_name) || (storage_area_name == error) )
++	if ((!storage_area_name) || (storage_area_name == error))
+ 		storage_area_name := CP_DEFAULT_AREA;
+ 	endif
+ 	
+ 	var root_container := CP_GetStorageAreaContainer(Hex(mobile.serial), storage_area_name);
+-	if ( !root_container &amp;&amp; create )
++	if (!root_container &amp;&amp; create)
+ 		root_container := CP_CreateStorageAreaContainer(Hex(mobile.serial), storage_area_name);
++
++		return root_container;
++	else
++		return 0;
+ 	endif
+-	
+-	return root_container;
+ endfunction
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000325.html">[Poldistro-svn] r347 - trunk/096/scripts/ai
+</A></li>
+	<LI>Next message: <A HREF="000327.html">[Poldistro-svn] r349 - in trunk/096/pkg/items/containers/commands: . admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#326">[ date ]</a>
+              <a href="thread.html#326">[ thread ]</a>
+              <a href="subject.html#326">[ subject ]</a>
+              <a href="author.html#326">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

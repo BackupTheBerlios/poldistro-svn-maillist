@@ -1,0 +1,376 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r109 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r109%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20complete/testnpc%20include%20include/braincore&In-Reply-To=%3C200509131029.j8DAThuO005823%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000090.html">
+   <LINK REL="Next"  HREF="000092.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r109 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r109%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20complete/testnpc%20include%20include/braincore&In-Reply-To=%3C200509131029.j8DAThuO005823%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r109 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep 13 12:29:43 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000090.html">[Poldistro-svn] r108 - trunk/096/pkg/commands/test
+</A></li>
+        <LI>Next message: <A HREF="000092.html">[Poldistro-svn] r110 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#91">[ date ]</a>
+              <a href="thread.html#91">[ thread ]</a>
+              <a href="subject.html#91">[ subject ]</a>
+              <a href="author.html#91">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-13 12:29:42 +0200 (Tue, 13 Sep 2005)
+New Revision: 109
+
+Added:
+   trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/enteredArea.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/restart.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcCommands.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcError.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc
+Log:
+Updates so far tonight...
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/enteredArea.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/enteredArea.src	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/enteredArea.src	2005-09-13 10:29:42 UTC (rev 109)
+@@ -13,6 +13,6 @@
+ 	params := 0; // Not needed anymore.
+ 	
+ 	while ( npc )
+-		// Do stuff here
++		//
+ 	endwhile
+ endprogram
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/restart.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/restart.src	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/restart.src	2005-09-13 10:29:42 UTC (rev 109)
+@@ -10,8 +10,7 @@
+ 	//var scripts	:= params[3];
+ 	params := 0; // Not needed anymore.
+ 	
+-	foreach nerve_name in (LoadNerves(npc))
+-		StopNerve(npc, nerve_name);
+-	endforeach
+-endprogram		
+-	
+\ No newline at end of file
++	KillNerves(npc);
++	
++	return 1;
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src	2005-09-13 10:29:42 UTC (rev 109)
+@@ -6,16 +6,17 @@
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+-	//var nerve_name:= params[2];
++	var nerve_name	:= params[2];
+ 	//var settings	:= params[3];
+ 	//var scripts	:= params[4];
+ 	params := 0; // Not needed anymore.
+ 	
+-	foreach nerve_name in (LoadNerves(npc).keys())
+-		if ( nerve_name.flags &amp; NF_CONTINUE_ON_SLEEP )
++	// Shut down appropriate nerves.
++	foreach nerve in (LoadNerves(npc))
++		if ( nerve.flags &amp; NF_CONTINUE_ON_SLEEP )
+ 			continue;
+-		else
+-			StopNerve(npc, nerve_name);
++		elseif ( _nerve_iter != nerve_name )
++			StopNerve(npc, _nerve_iter);
+ 		endif
+ 		sleepms(2);
+ 	endforeach
+@@ -23,7 +24,6 @@
+ 	while ( npc )
+ 		AI_Speak(npc, &quot;ZzzzzZzz&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, NOWAKE);
+ 		AI_ClearThoughts(npc, CLR_NERVE);
+-		sleep(20);
++		sleep(40);
+ 	endwhile
+-endprogram		
+-	
+\ No newline at end of file
++endprogram
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-13 10:29:42 UTC (rev 109)
+@@ -106,11 +106,8 @@
+ 	if ( GetObjProperty(npc, &quot;npc_info&quot;) )
+ 		//This can only happen if restart() was done on the npc or when POL starts up.
+ 		
+-		SetWarmode(0);
+-		//StopNerves();
+-		
+ 		if ( g_scripts.Exists(&quot;Restart&quot;) )
+-			var restart_script := Run_Script_To_Completion(g_scripts[&quot;Restart&quot;], {npc, g_settings, g_scripts});
++			var restart_script := Run_Script_To_Completion(g_scripts[&quot;Restart&quot;].script, {npc, g_settings, g_scripts});
+ 			if ( restart_script.errortext )
+ 				FatalError(&quot;Error::StartupScripts() - Restart script failed: &quot;+restart_script.errortext);
+ 				return 0;
+@@ -121,7 +118,7 @@
+ 		SetObjProperty(npc, &quot;npc_info&quot;, npc_info);
+ 		
+ 		if ( g_scripts.Exists(&quot;Init&quot;) )
+-			var init_script := Run_Script_To_Completion(g_scripts[&quot;Init&quot;], {npc, g_settings, g_scripts});
++			var init_script := Run_Script_To_Completion(g_scripts[&quot;Init&quot;].script, {npc, g_settings, g_scripts});
+ 			if ( init_script.errortext )
+ 				FatalError(&quot;Error::StartupScripts() - Init script failed:&quot;+init_script.errortext);
+ 				return 0;
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcCommands.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcCommands.inc	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcCommands.inc	2005-09-13 10:29:42 UTC (rev 109)
+@@ -1,6 +1,6 @@
+ /*===============================================================
+ * Current Version
+-* NPC_COMMANDS.INC - v1.0
++* NPCCOMMANDS.INC - v1.0
+ * Updated 8/31/2005 6:38AM
+ *
+ * -- Revision v1.0 --
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcError.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcError.inc	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcError.inc	2005-09-13 10:29:42 UTC (rev 109)
+@@ -1,6 +1,6 @@
+ /*===============================================================
+ * Current Version
+-* NPC_ERRORS.INC - v1.0
++* NPCERRORS.INC - v1.0
+ * Updated 8/31/2005 5:08AM
+ *
+ * -- Revision v1.0 --
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc	2005-09-13 10:29:42 UTC (rev 109)
+@@ -1,6 +1,6 @@
+ /*===============================================================
+ * Current Version
+-* NPC_UTIL.INC - v1.0
++* NPCUTIL.INC - v1.0
+ * Updated 9/4/2005 3:43PM
+ *
+ * -- Revision v1.0 --
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc	2005-09-13 10:29:42 UTC (rev 109)
+@@ -1,6 +1,6 @@
+ /*===============================================================
+ * Current Version
+-* NERVES.INC - v1.0
++* NPCNERVES.INC - v1.0
+ * Updated 9/11/2005 2:06AM
+ *
+ * -- Revision v1.0 --
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc	2005-09-13 10:29:42 UTC (rev 109)
+@@ -1,6 +1,6 @@
+ /*===============================================================
+ * Current Version
+-* NPC_SETTINGS.INC - v1.0
++* NPCSETTINGS.INC - v1.0
+ * Updated 9/8/2005 5:21AM
+ *
+ * -- Revision v1.0 --
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc	2005-09-13 10:29:42 UTC (rev 109)
+@@ -1,6 +1,6 @@
+ /*===============================================================
+ * Current Version
+-* NPC_UTIL.INC - v1.0
++* NPCUTIL.INC - v1.0
+ * Updated 8/31/2005 4:23AM
+ *
+ * -- Revision v1.0 --
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc	2005-09-13 10:14:12 UTC (rev 108)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc	2005-09-13 10:29:42 UTC (rev 109)
+@@ -0,0 +1,112 @@
++/*===============================================================
++* Current Version
++* NPCWATCHLIST.INC - v1.0
++* Updated 9/13/2005 3:21AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++
++/////////////////////////////////////////////////////////////////
++// * Function List *
++//
++//
++/////////////////////////////////////////////////////////////////
++
++/*
++ * NPC_GetWatchList(npc)
++ *
++ * Purpose
++ * 
++ *
++ * Parameters
++ * npc:	
++ *
++ * Return value
++ * 
++ *
++ */
++function NPC_LoadWatchList(npc)
++	var watch_dict := GetObjProperty(npc, &quot;#WatchList&quot;);
++	if ( Lower(TypeOf(watch_dict)) != &quot;dictionary&quot; )
++		watch_dict := dictionary;
++	endif
++	
++	return watch_dict;
++endfunction
++
++/*
++ * NPC_SaveWatchList(npc)
++ *
++ * Purpose
++ * 
++ *
++ * Parameters
++ * npc:	
++ *
++ * Return value
++ * 
++ *
++ */
++function NPC_SaveWatchList(npc, dict_list)
++	SetObjProprty(npc, &quot;#WatchList&quot;, dict_list);
++endfunction
++
++/*
++ * NPC_AddToWatchList(npc, mobile)
++ *
++ * Purpose
++ * 
++ *
++ * Parameters
++ * npc:	
++ *
++ * Return value
++ * 
++ *
++ */
++function NPC_AddToWatchList(npc, mobile)
++	var watch_dict := NPC_GetWatchList(npc);
++	if ( !watch_dict.Exists(mobile.serial) )
++		watch_dict.Insert(mobile.serial, 1);
++		NPC_SaveWatchList(npc, watch_dict);
++	endif
++endfunction
++
++/*
++ * NPC_RemoveFromWatchList(npc)
++ *
++ * Purpose
++ * 
++ *
++ * Parameters
++ * npc:	
++ *
++ * Return value
++ * 
++ *
++ */
++function NPC_RemoveFromWatchList(npc, mobile)
++	
++endfunction
++
++/*
++ * NPC_IsInWatchList(npc, mobile)
++ *
++ * Purpose
++ * 
++ *
++ * Parameters
++ * npc:	
++ *
++ * Return value
++ * 
++ *
++ */
++function NPC_IsInWatchList(npc, mobile)
++
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000090.html">[Poldistro-svn] r108 - trunk/096/pkg/commands/test
+</A></li>
+	<LI>Next message: <A HREF="000092.html">[Poldistro-svn] r110 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#91">[ date ]</a>
+              <a href="thread.html#91">[ thread ]</a>
+              <a href="subject.html#91">[ subject ]</a>
+              <a href="author.html#91">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

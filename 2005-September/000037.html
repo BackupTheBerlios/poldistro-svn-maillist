@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r58 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r58%20-%20trunk/096/pkg/mobiles/ai_brain/include/braincore&In-Reply-To=%3C200509041640.j84GeHO4016737%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000036.html">
+   <LINK REL="Next"  HREF="000041.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r58 - trunk/096/pkg/mobiles/ai_brain/include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r58%20-%20trunk/096/pkg/mobiles/ai_brain/include/braincore&In-Reply-To=%3C200509041640.j84GeHO4016737%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r58 - trunk/096/pkg/mobiles/ai_brain/include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep  4 18:40:17 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000036.html">[Poldistro-svn] r57 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000041.html">[Poldistro-svn] r59 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#37">[ date ]</a>
+              <a href="thread.html#37">[ thread ]</a>
+              <a href="subject.html#37">[ subject ]</a>
+              <a href="author.html#37">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-04 18:39:27 +0200 (Sun, 04 Sep 2005)
+New Revision: 58
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-04 16:37:23 UTC (rev 57)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-04 16:39:27 UTC (rev 58)
+@@ -37,8 +37,8 @@
+ 		// Wander somewhere
+ 		// .loop	: Number of times to attept to wander.
+ 		NPCEVENT_WANDER:
+-	   		MovementWander(event);
+-	   		break;
++			MovementWander(event);
++			break;
+ 
+ 		//
+ 		// * Check System Events that the core sends.
+@@ -249,25 +249,25 @@
+ 			SetWarmode( event.value );
+ 			break;
+ 
+-	   	// Force the npc to go into its sleep mode.
+-	   	// If the next event in the queue tells it to wake up,
+-	   	// this command will be useless.
+-	   	NPCEVENT_SLEEP:
+-	   		//idle_ticks := g_settings[&quot;idle_ticks&quot;]+1;
+-	   		break;
++		// Force the npc to go into its sleep mode.
++		// If the next event in the queue tells it to wake up,
++		// this command will be useless.
++		NPCEVENT_SLEEP:
++			//idle_ticks := g_settings[&quot;idle_ticks&quot;]+1;
++			break;
+ 
+-	   	// Force the npc out of sleep mode.
+-	   	NPCEVENT_WAKEUP:
+-	   		//sleep_mode := 0;
+-	   		//idle_ticks := 0;
+-	   		break;
++		// Force the npc out of sleep mode.
++		NPCEVENT_WAKEUP:
++			//sleep_mode := 0;
++			//idle_ticks := 0;
++			break;
+ 
+-	   	// Forward an event from one nerve to another.
+-	   	// .NerveName	: The name of the nerve to forward the event to.
+-	   	// .mask	: Type of event for the nerve to receive.
+-	   	// .data	: Data to forward to the nerve.
+-	   	NPCEVENT_FWDNERVE:
+-	   	var process := GetNerveProcess(npc, event.NerveName, g_nerves);
++		// Forward an event from one nerve to another.
++		// .NerveName	: The name of the nerve to forward the event to.
++		// .mask	: Type of event for the nerve to receive.
++		// .data	: Data to forward to the nerve.
++		NPCEVENT_FWDNERVE:
++		var process := GetNerveProcess(npc, event.NerveName, g_nerves);
+ 			if ( process )
+ 				process.SendEvent(event);
+ 			endif
+@@ -275,9 +275,9 @@
+ 
+ 		// If the event .type is unknown, send it to the
+ 		// npc's &quot;virtual&quot; nerve if it has one.
+-	   	default:
+-	   		if ( g_scripts.Exists(&quot;Virtual&quot;) )
+-	   			var process := GetNerveProcess(npc, &quot;Virtual&quot;, g_nerves);
++		default:
++			if ( g_scripts.Exists(&quot;Virtual&quot;) )
++				var process := GetNerveProcess(npc, &quot;Virtual&quot;, g_nerves);
+ 				if ( !process )
+ 					StartNerve(npc, &quot;Virtual&quot;, g_scripts[&quot;Virtual&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;Virtual&quot;].flags, g_nerves);
+ 				else
+@@ -292,7 +292,7 @@
+ 	   // and telling it what event it sent that has finished
+ 	   // being processed.
+ 	   if ( event.process )
+-	   	(event.process).SendEvent(struct{&quot;type&quot;:=NPCEVENT_DONE, &quot;source&quot;:=event.type});
++		(event.process).SendEvent(struct{&quot;type&quot;:=NPCEVENT_DONE, &quot;source&quot;:=event.type});
+ 	   endif
+ 
+ 	   set_priority(old_priority);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000036.html">[Poldistro-svn] r57 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000041.html">[Poldistro-svn] r59 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#37">[ date ]</a>
+              <a href="thread.html#37">[ thread ]</a>
+              <a href="subject.html#37">[ subject ]</a>
+              <a href="author.html#37">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

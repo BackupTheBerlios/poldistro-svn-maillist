@@ -1,0 +1,718 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r924 - in trunk/096: pkg/mobiles/brainAI pkg/mobiles/brainAI/complete/blackEye pkg/mobiles/brainAI/scripts/combat scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r924%20-%20in%20trunk/096%3A%20pkg/mobiles/brainAI%20pkg/mobiles/brainAI/complete/blackEye%20pkg/mobiles/brainAI/scripts/combat%20scripts/include&In-Reply-To=%3C200511061546.jA6FkoqG011470%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000897.html">
+   <LINK REL="Next"  HREF="000899.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r924 - in trunk/096: pkg/mobiles/brainAI pkg/mobiles/brainAI/complete/blackEye pkg/mobiles/brainAI/scripts/combat scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r924%20-%20in%20trunk/096%3A%20pkg/mobiles/brainAI%20pkg/mobiles/brainAI/complete/blackEye%20pkg/mobiles/brainAI/scripts/combat%20scripts/include&In-Reply-To=%3C200511061546.jA6FkoqG011470%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r924 - in trunk/096: pkg/mobiles/brainAI pkg/mobiles/brainAI/complete/blackEye pkg/mobiles/brainAI/scripts/combat scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov  6 16:46:50 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000897.html">[Poldistro-svn] r923 - in trunk/096: pkg/mobiles/brainAI pkg/mobiles/brainAI/complete pkg/mobiles/brainAI/complete/blackEye pkg/mobiles/brainAI/scripts/combat scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000899.html">[Poldistro-svn] r925 - trunk/096/pkg/items/bountyboard
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#898">[ date ]</a>
+              <a href="thread.html#898">[ thread ]</a>
+              <a href="subject.html#898">[ subject ]</a>
+              <a href="author.html#898">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-06 16:46:49 +0100 (Sun, 06 Nov 2005)
+New Revision: 924
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src
+   trunk/096/scripts/include/shapes.inc
+   trunk/096/scripts/include/sounds.inc
+Modified:
+   trunk/096/pkg/mobiles/brainAI/complete/blackEye/combat.src
+   trunk/096/pkg/mobiles/brainAI/complete/blackEye/virtual.src
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+   trunk/096/scripts/include/client.inc
+Log:
+Added firebeetle npc (shoots napalm!)
+
+Added shapes.inc - will be used for getting coordinates for various shapes.
+
+Moved sound constants from client.inc to sounds.inc (per Melanius' request)
+
+
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/blackEye/combat.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/blackEye/combat.src	2005-11-06 15:00:49 UTC (rev 923)
++++ trunk/096/pkg/mobiles/brainAI/complete/blackEye/combat.src	2005-11-06 15:46:49 UTC (rev 924)
+@@ -10,7 +10,7 @@
+ include &quot;:brainAI:npcCommands&quot;;
+ include &quot;:brainAI:npcNerves&quot;;
+ 
+-program MeleeCombatNerve(params)
++program BrainNerve(params)
+ 	var npc		:= params[1];
+ 	var nerve_name	:= params[2];
+ 	var event	:= params[3];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/blackEye/virtual.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/blackEye/virtual.src	2005-11-06 15:00:49 UTC (rev 923)
++++ trunk/096/pkg/mobiles/brainAI/complete/blackEye/virtual.src	2005-11-06 15:46:49 UTC (rev 924)
+@@ -15,7 +15,7 @@
+ include &quot;include/client&quot;;
+ 
+ 
+-program VirtualNerve(params)
++program BrainNerve(params)
+ 	var npc		:= params[1];
+ 	//var nerve_name	:= params[2];
+ 	//var event	:= params[3];
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-06 15:00:49 UTC (rev 923)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-06 15:46:49 UTC (rev 924)
+@@ -9,25 +9,25 @@
+ NPCTemplate ExampleNPC
+ {
+ 	// Primary NPC information
+-	Name		&lt;Example NPC&gt;
+-	Script		:brainAI:brain
+-	ObjType		0x190
+-	Color		0
+-	TrueColor	0
+-	Gender		0
+-	AR		25
+-	RunSpeed	200
+-	Category	Testing
++	Name			&lt;Example NPC&gt;
++	Script			:brainAI:brain
++	ObjType			0x190
++	Color			0
++	TrueColor		0
++	Gender			0
++	AR			25
++	RunSpeed		200
++	Category		Testing
+ 
+ 	// Attributes
+-	Strength	100
+-	Intelligence	1
+-	Dexterity	10
++	Strength		100
++	Intelligence		1
++	Dexterity		10
+ 
+ 	// Vitals
+-	HITS		100
+-	MANA		1
+-	STAM		100
++	HITS			100
++	MANA			1
++	STAM			100
+ 
+ 	// Intrinsic Weapon
+ 	AttackHitScript	:combat:mainHitScript
+@@ -132,38 +132,34 @@
+ 
+ NPCTemplate BlackEye
+ {
+-	Name		a black eye
+-	Script		:brainAI:brain
+-	ObjType		0x16
+-	TrueColor	1109
+-	Color		1109
+-	Gender		0
+-	AR		2
+-	RunSpeed	25
+-	Category	Austin
++	Name			a black eye
++	Script			:brainAI:brain
++	ObjType			0x16
++	TrueColor		1109
++	Color			1109
++	Gender			0
++	AR			2
++	RunSpeed		25
++	Category		Austin
+ 
+ 	// Attributes
+-	Strength	100
+-	Intelligence	10
+-	Dexterity	40
+-	ResistingSpells	10
+-	Tactics		20
+-	Wrestling	50
++	Strength		100
++	Intelligence		10
++	Dexterity		40
++	ResistingSpells		10
++	Tactics			20
++	Wrestling		50
+ 
+ 	// Vitals
+-	HITS		200
+-	MANA		0
+-	STAM		100
++	HITS			200
++	MANA			0
++	STAM			100
+ 
+ 	// Intrinsic Weapon
+-	AttackSpeed	10
+-	AttackDamage	1d3
+-	AttackAttribute	Wrestling
+-	AttackHitSound	0x17C
+-	AttackMissSound	0x239
+-	DeathSound	0x17E
+-	DamagedSound	0x17D
+-	AttackHitScript	:combat:mainHitScript
++	AttackSpeed		10
++	AttackDamage		1d3
++	AttackAttribute		Wrestling
++	AttackHitScript		:combat:mainHitScript
+ 
+ 	// Sounds
+ 	AttackHitSounds		a1:i380
+@@ -173,19 +169,20 @@
+ 	IdleSounds		a2:i378i379
+ 
+ 	// Brain AI Settings
+-	AISetting	AreaSize		i13
+-	AISetting	CycleWait		i10
+-	AISetting	FleeLevel		i0
+-	AISetting	IdleTicks		i30
+-	AISetting	SleepWait		i1000
++	AISetting	AreaSize	i13
++	AISetting	AttackRange	i10
++	AISetting	CycleWait	i10
++	AISetting	FleeLevel	i0
++	AISetting	IdleTicks	i30
++	AISetting	SleepWait	i1000
+ 
+-	AIScript	Combat			:BrainAI:complete/blackEye/combat
+-	AIScript	EnterArea		:BrainAI:scripts/enterArea/generic
+-	AIScript	LeftArea		:brainAI:scripts/LeftArea/generic
+-	AIScript	LookAround		:brainAI:scripts/lookAround/findAttackables
+-	AIScript	Sleep			:brainAI:scripts/sleep/generic
+-	AIScript	ShouldWatch		:brainAI:scripts/shouldWatch/targetPlayers
+-	AIScript	Virtual			:brainAI:complete/blackEye/virtual
++	AIScript	Combat		:brainAI:complete/blackEye/combat
++	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
++	AIScript	LeftArea	:brainAI:scripts/LeftArea/generic
++	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
++	AIScript	Sleep		:brainAI:scripts/sleep/generic
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/targetPlayers
++	AIScript	Virtual		:brainAI:complete/blackEye/virtual
+ 
+ 	// Skinning Info
+ 
+@@ -194,6 +191,67 @@
+ 	// CProps (eww!)
+ }
+ 
++NPCTemplate FireBeetle
++{
++	Name			a fire beetle
++	Script			:ai_brain:brain
++	ObjType			0x30
++	Color			2118
++	TrueColor		2118
++	Gender			0
++	AR			10
++	RunSpeed		150
++	Category		Austin
++	
++	// Attributes
++	Strength		80
++	Dexterity		20
++	Intelligence		30
++	Wrestling		30
++	Tactics			25
++	
++	// Vitals
++	HITS			80
++	MANA			0
++	STAM			100
++
++	// Intrinsic Weapon
++	AttackAttribute		WAR_Wrestling
++	AttackSpeed		10
++	AttackDamage		5d5
++	AttackHitScript		:combat:mainHitScript
++		
++	// Sounds
++	AttackHitSound		a1:i390
++	AttackMissSound		a1:i569
++	DeathSound		a1:i392
++	DamagedSound		a1:i391
++	IdleSounds		a1:i398
++
++	// Brain AI Settings
++	AISetting	AreaSize	i15
++	AISetting	AttackRange	i14
++	AISetting	CycleWait	i10
++	AISetting	FleeLevel	i20
++	AISetting	IdleTicks	i20
++	AISetting	SleepWait	i1000
++	
++	// Brain AI Nerves
++	// Brain AI Nerves
++	AIScript	Combat		:brainAI:scripts/combat/fireBeetle
++	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
++	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
++	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
++	AIScript	Sleep		:brainAI:scripts/sleep/generic
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/targetPlayers
++
++	// Skinning Info
++
++	// Settings other scripts use...
++
++	// CProps (eww!)
++}
++
+ ##########################################
+ # Animals
+ ##########################################
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src	2005-11-06 15:00:49 UTC (rev 923)
++++ trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src	2005-11-06 15:46:49 UTC (rev 924)
+@@ -0,0 +1,145 @@
++/*
++ * $Id*
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;include/shapes&quot;;
++include &quot;include/client&quot;;
++include &quot;include/sounds&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	var nerve_name	:= params[2];
++	var event	:= params[3];
++	var settings	:= params[4];
++	var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++
++	//Store it here so it does not have to do the math over and over.
++	var flee_level := AP_GetVitalMaximumValue(npc, &quot;Hits&quot;) * (CDbl(settings[&quot;FleeLevel&quot;])/100.0);
++
++	var opponent := event.source;
++	var flee_mode := 0;
++
++	AI_SetOpponent(npc, opponent);
++
++	while( npc )
++		var dist := Distance(npc, opponent);
++		if ( ShouldFlee(npc, flee_level, flee_mode) )
++			flee_mode := 1;
++			AI_WarMode(npc, 0);
++			AI_Move(npc, opponent, NEMOVE_AWAY, NEMOVE_RUN, WAKEUP, 100);
++		elseif ( DoneFighting(npc, opponent, dist) )
++			if ( scripts.Exists(&quot;EndFight&quot;) )
++				params := array{opponent, settings, scripts};
++				AI_StartNerve(npc, &quot;EndFight&quot;, scripts[&quot;EndFight&quot;].script, params);
++			else
++				AI_WarMode(npc, 0);
++			endif
++			AI_EndNerve(npc, nerve_name);
++		elseif ( dist &lt;= 5 )
++			AI_Move(npc, opponent, NEMOVE_AWAY, NEMOVE_RUN, WAKEUP, (12-dist));
++		elseif( dist &gt; 5 )
++			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, dist+1);
++		endif
++
++		SpecialAttack(npc, opponent, dist);
++
++		sleepms(400);
++		AI_ClearThoughts(npc, CLR_NERVE);
++	endwhile
++endprogram
++
++function DoneFighting(npc, opponent, byref dist)
++	if ( opponent.dead )
++		return 1;
++	elseif ( !opponent )
++		return 1;
++	elseif ( opponent.hidden )
++		return 1;
++	elseif ( opponent.concealed &gt; npc.cmdlevel )
++		return 1;
++	elseif ( dist &gt; 20 )
++		return 1;
++	elseif ( dist &gt; 10 &amp;&amp; !CheckLineOfSight(npc, opponent) )
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++function ShouldFlee(npc, byref flee_level, byref flee_mode)
++	if ( flee_mode )
++		return 1;
++	elseif ( AP_GetVital(npc, &quot;Hits&quot;) &lt; flee_level )
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++function SpecialAttack(npc, opponent, byref dist)
++	if ( dist &lt; 5 || dist &gt; 14 )
++		return 0;
++	elseif ( !CheckLineOfSight(npc, opponent) )
++		return 0;
++	elseif ( RandomInt(3) != 1 )
++		return 0;
++	endif
++
++	var next_shoot := CInt(GetObjProperty(npc, &quot;#NextShoot&quot;));
++	if ( next_shoot &gt; ReadGameClock() )
++		return 0;
++	endif
++
++	AI_Turn(npc, opponent, NETURN_TOWARD);
++	npc.frozen := 1;
++
++	PerformAction(npc, 0x6);
++	sleepms(80);
++	PrintTextAbove(npc, &quot;*&quot;+npc.name+&quot; spits a ball of fire*&quot;);
++	PlayMovingEffect(npc, opponent, GFX_SMALL_FIREBALL, 10, 10, 1);
++
++	var coord_list := GetCoordsInLine(npc.x, npc.y, opponent.x, opponent.y);
++	foreach coord in coord_list
++		if ( _coord_iter &gt; 1 )
++			var field := CreateItemAtLocation(coord.x, coord.y, npc.z, &quot;FireFieldNS&quot;, 1);
++			field.SetDamageDice(&quot;1d2&quot;);
++			field.SetFieldDuration(&quot;3&quot;);
++			sleepms(105);
++		endif
++	endforeach
++
++	PlaySoundEffect(opponent, 0x208);
++	ApplyRawDamage(opponent, RandomDiceRoll(&quot;3d7&quot;));
++
++	foreach coord in GetCoordsInSquare(opponent.x, opponent.y, 3)
++		if ( RandomInt(2) == 1 )
++			case(RandomInt(3))
++				default:
++					PlayStationaryEffect(coord.x, coord.y, npc.z, FX_EXPLODE_1, 10, 10, 0);
++					break;
++				1:
++					PlayStationaryEffect(coord.x, coord.y, npc.z, FX_EXPLODE_2, 10, 10, 0);
++					break;
++				2:
++					PlayStationaryEffect(coord.x, coord.y, npc.z, FX_EXPLODE_3, 10, 10, 0);
++					break;
++			endcase
++			var field := CreateItemAtLocation(coord.x, coord.y, opponent.z, &quot;FireFieldNS&quot;, 1);
++			field.SetDuration(&quot;1d3&quot;);
++		endif
++		sleepms(5);
++	endforeach
++	
++	npc.frozen := 0;
++	SetObjProperty(npc, &quot;#NextShoot&quot;, ReadGameClock()+15);
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/scripts/include/client.inc
+===================================================================
+--- trunk/096/scripts/include/client.inc	2005-11-06 15:00:49 UTC (rev 923)
++++ trunk/096/scripts/include/client.inc	2005-11-06 15:46:49 UTC (rev 924)
+@@ -117,59 +117,10 @@
+ 	DIR_NW	:=  0x07    // Northwest.
+ endenum
+ 
+-// SOUNDS ABC order by insideUO
+-// NOTE: Any number over 0xFF (255) will not work in older clients.
+-enum SOUNDS
+-	SFX_AGILITY		:= 0x1E8,
+-	SFX_AGILITY2		:= 0x28F,
+-	SFX_AIR_1		:= 0x291,
+-	SFX_AIR_2		:= 0x292,
+-	SFX_AIR_3		:= 0x293,
+-	SFX_AIR_4		:= 0x294,
+-	SFX_AIR_5		:= 0x295,
+-	SFX_AIRELEMENTAL_1	:= 0x108,
+-	SFX_AIRELEMENTAL_2	:= 0x109,
+-	SFX_AIRELEMENTAL_3	:= 0x10A,
+-	SFX_AIRELEMENTAL_4	:= 0x10B,
+-	SFX_AIRELEMENTAL_5	:= 0x10C,
+-	SFX_ALIGATOR_1		:= 0x5B,
+-	SFX_ALIGATOR_2		:= 0x5C,
+-	SFX_ALIGATOR_3		:= 0x5D,
+-	SFX_ALIGATOR_4		:= 0x5E,
+-	SFX_ALIGATOR_5		:= 0x5F,
+-	SFX_ALIGATORB_1		:= 0x295,
+-	SFX_ALIGATORB_2		:= 0x296,
+-	SFX_ALIGATORB_3		:= 0x297,
+-	SFX_ALIGATORB_4		:= 0x298,
+-	SFX_ALIGATORB_5		:= 0x299,
+-	SFX_ANVIL		:= 0x2B,
+-	SFX_ARCH_PROTECT	:= 0x1F8,
+-	SFX_AQUARIUM_DEADFISH	:= 0x5A3,
+-	SFX_AQUARIUM_REWARDS	:= 0x5A4,
+-	SFX_AQUARIUM_USE	:= 0x5A5,
+-	SFX_ARCANE_CIRCLE	:= 0x5A6,
+-	SFX_ARCANE_EMPOWERMENT	:= 0x5C2,
+-	SFX_ARCANE_EMPOWER_END	:= 0x5C3,
+-	SFX_ARCH_CURE		:= 0x1E9,
+-	SFX_ARCH_CURE2		:= 0x29A,
+-	SFX_ATTUNE_WEAPON	:= 0x5C4,
+-	SFX_AXE_01		:= 0x233,
+-	SFX_BEAR_1		:= 0x60,
+-	SFX_BEAR_2		:= 0x61,
+-	SFX_BEAR_3		:= 0x62,
+-	SFX_BEAR_4		:= 0x63,
+-	SFX_BEAR_5		:= 0x64,
+-	SFX_BEAR_6		:= 0x29B,
+-	SFX_BEAR_1B		:= 0x4C3,
+-	SFX_BEAR_1C		:= 0x4C4,
+-	SFX_BEAR_2C		:= 0x4C5,
+-	SFX_BEAR_3C		:= 0x4C6,
+-	SFX_BEAR_4C		:= 0x4C7,
+-	SFX_BEAR_5C		:= 0x4C8,
+-	
+-	SFX_SPELL_FAIL		:= 0x5D
+-endenum
+-
+ enum GRAPHIC_EFFECTS
+-	GFX_SPELL_FAIL		:= 0x3735
++	GFX_SPELL_FAIL		:= 0x3735,
++	GFX_SMALL_FIREBALL	:= 0x36E4,
++	FX_EXPLODE_1		:= 0x36CB,
++	FX_EXPLODE_2		:= 0x36BD,
++	FX_EXPLODE_3		:= 0x36B0
+ endenum
+\ No newline at end of file
+
+Added: trunk/096/scripts/include/shapes.inc
+===================================================================
+--- trunk/096/scripts/include/shapes.inc	2005-11-06 15:00:49 UTC (rev 923)
++++ trunk/096/scripts/include/shapes.inc	2005-11-06 15:46:49 UTC (rev 924)
+@@ -0,0 +1,109 @@
++/*
++ * $Id*
++ *
++ */
++ 
++use uo;
++use os;
++
++/*
++ * GetCoordsInSquare(mid_x, mid_y, radius)
++ *
++ * Purpose
++ * Retrieves the coordinates in the area of a square.
++ *
++ * Parameters
++ * mid_x:	X coordinate of the middle of the square.
++ * mid_y:	Y coordinate of the middle of the square.
++ * radius:	Size of the square
++ *
++ * Return value
++ * Array of structs (.x, .y)
++ * 
++ */
++function GetCoordsInSquare(mid_x, mid_y, radius)
++	var x_row := mid_x-radius;
++	var y_col := mid_y-radius;
++	var stop_x := mid_x+radius;
++	var stop_y := mid_y+radius;
++
++	var point_list := array{};
++	var coord := struct;
++	coord.+x;
++	coord.+y;
++
++	for ( x_row:=(mid_x-radius); x_row&lt;=stop_x; x_row:=x_row+1 )
++		sleepms(2);
++		for ( y_col:=(mid_y-radius); y_col&lt;=stop_y; y_col:=y_col+1 )
++			coord.x := x_row;
++			coord.y := y_col;
++			point_list.Append(coord);
++			sleepms(2);
++		endfor
++	endfor
++	
++	return point_list;
++endfunction
++
++/*
++ * GetCoordsInRect(x1, y1, x2, y2)
++ *
++ * Purpose
++ * Retrieves the coordinates in the area of a rectangle.
++ *
++ * Parameters
++ * x1:	Upper left X coordinate
++ * y1:	Upper left Y coordinate
++ * x2:	Lower right X coordinate
++ * y2:	Lower right Y coordinate
++ *
++ * Return value
++ * Array of structs (.x, .y)
++ * 
++ */
++function GetCoordsInRect(x1, y1, x2, y2)
++	var point_list := array{};
++	var coord := struct;
++	coord.+x;
++	coord.+y;
++	
++	if ( x2 &lt; x1 )
++		return error;
++	elseif ( y2 &lt; y1 )
++		return error;
++	endif
++
++	for ( x1; x1&lt;=x2; x1:=x1+1 )
++		for ( y1; y1&lt;=y2; y1:=y1+1 )
++			coord.x := x1;
++			coord.y := y1;
++			point_list.Append(coord);
++			sleepms(2);
++		endfor
++		sleepms(2);
++	endfor
++
++	return point_list;
++endfunction
++
++/*
++ * GetCoordsInCircle(mid_x, mid_y, radius)
++ *
++ * Purpose
++ * Retrieves the coordinates in the area of a circle.
++ *
++ * Parameters
++ * mid_x:	X coordinate of the middle of the square.
++ * mid_y:	Y coordinate of the middle of the square.
++ * radius:	Size of the circle
++ *
++ * Return value
++ * Array of structs (.x, .y)
++ * 
++ */
++function GetCoordsInCircle(mid_x, mid_y, radius)
++	mid_x := mid_x;
++	mid_y := mid_y;
++	radius := radius;
++	return error{&quot;errortext&quot;:=&quot;Hasn't been coded yet!&quot;};
++endfunction
+
+Added: trunk/096/scripts/include/sounds.inc
+===================================================================
+--- trunk/096/scripts/include/sounds.inc	2005-11-06 15:00:49 UTC (rev 923)
++++ trunk/096/scripts/include/sounds.inc	2005-11-06 15:46:49 UTC (rev 924)
+@@ -0,0 +1,54 @@
++// SOUNDS ABC order by insideUO
++// NOTE: Any number over 0xFF (255) will not work in older clients.
++enum PRIMARY_SOUNDS
++	SFX_AGILITY		:= 0x1E8,
++	SFX_AGILITY2		:= 0x28F,
++	SFX_AIR_1		:= 0x291,
++	SFX_AIR_2		:= 0x292,
++	SFX_AIR_3		:= 0x293,
++	SFX_AIR_4		:= 0x294,
++	SFX_AIR_5		:= 0x295,
++	SFX_AIRELEMENTAL_1	:= 0x108,
++	SFX_AIRELEMENTAL_2	:= 0x109,
++	SFX_AIRELEMENTAL_3	:= 0x10A,
++	SFX_AIRELEMENTAL_4	:= 0x10B,
++	SFX_AIRELEMENTAL_5	:= 0x10C,
++	SFX_ALIGATOR_1		:= 0x5B,
++	SFX_ALIGATOR_2		:= 0x5C,
++	SFX_ALIGATOR_3		:= 0x5D,
++	SFX_ALIGATOR_4		:= 0x5E,
++	SFX_ALIGATOR_5		:= 0x5F,
++	SFX_ALIGATORB_1		:= 0x295,
++	SFX_ALIGATORB_2		:= 0x296,
++	SFX_ALIGATORB_3		:= 0x297,
++	SFX_ALIGATORB_4		:= 0x298,
++	SFX_ALIGATORB_5		:= 0x299,
++	SFX_ANVIL		:= 0x2B,
++	SFX_ARCH_PROTECT	:= 0x1F8,
++	SFX_AQUARIUM_DEADFISH	:= 0x5A3,
++	SFX_AQUARIUM_REWARDS	:= 0x5A4,
++	SFX_AQUARIUM_USE	:= 0x5A5,
++	SFX_ARCANE_CIRCLE	:= 0x5A6,
++	SFX_ARCANE_EMPOWERMENT	:= 0x5C2,
++	SFX_ARCANE_EMPOWER_END	:= 0x5C3,
++	SFX_ARCH_CURE		:= 0x1E9,
++	SFX_ARCH_CURE2		:= 0x29A,
++	SFX_ATTUNE_WEAPON	:= 0x5C4,
++	SFX_AXE_01		:= 0x233,
++	SFX_BEAR_1		:= 0x60,
++	SFX_BEAR_2		:= 0x61,
++	SFX_BEAR_3		:= 0x62,
++	SFX_BEAR_4		:= 0x63,
++	SFX_BEAR_5		:= 0x64,
++	SFX_BEAR_6		:= 0x29B,
++	SFX_BEAR_1B		:= 0x4C3,
++	SFX_BEAR_1C		:= 0x4C4,
++	SFX_BEAR_2C		:= 0x4C5,
++	SFX_BEAR_3C		:= 0x4C6,
++	SFX_BEAR_4C		:= 0x4C7,
++	SFX_BEAR_5C		:= 0x4C8
++endenum
++
++enum CUSTOM_SOUNDS
++	SFX_SPELL_FAIL		:= 0x5D // Really aligator 1
++endenum
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000897.html">[Poldistro-svn] r923 - in trunk/096: pkg/mobiles/brainAI pkg/mobiles/brainAI/complete pkg/mobiles/brainAI/complete/blackEye pkg/mobiles/brainAI/scripts/combat scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000899.html">[Poldistro-svn] r925 - trunk/096/pkg/items/bountyboard
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#898">[ date ]</a>
+              <a href="thread.html#898">[ thread ]</a>
+              <a href="subject.html#898">[ subject ]</a>
+              <a href="author.html#898">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

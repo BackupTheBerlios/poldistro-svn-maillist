@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1196 - trunk/096/pkg/items/doors/door
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1196%20-%20trunk/096/pkg/items/doors/door&In-Reply-To=%3C200602111813.k1BIDRqp010949%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001166.html">
+   <LINK REL="Next"  HREF="001168.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1196 - trunk/096/pkg/items/doors/door</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1196%20-%20trunk/096/pkg/items/doors/door&In-Reply-To=%3C200602111813.k1BIDRqp010949%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1196 - trunk/096/pkg/items/doors/door">austin at berlios.de
+       </A><BR>
+    <I>Sat Feb 11 19:13:27 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001166.html">[Poldistro-svn] r1195 - in trunk/096/pkg/items/traps: config include trapScripts
+</A></li>
+        <LI>Next message: <A HREF="001168.html">[Poldistro-svn] r1197 - in trunk/096/pkg/items: containers/container doors/door
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1167">[ date ]</a>
+              <a href="thread.html#1167">[ thread ]</a>
+              <a href="subject.html#1167">[ subject ]</a>
+              <a href="author.html#1167">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-11 19:13:24 +0100 (Sat, 11 Feb 2006)
+New Revision: 1196
+
+Modified:
+   trunk/096/pkg/items/doors/door/use.src
+Log:
+Added trap support.
+
+Modified: trunk/096/pkg/items/doors/door/use.src
+===================================================================
+--- trunk/096/pkg/items/doors/door/use.src	2006-02-11 14:58:18 UTC (rev 1195)
++++ trunk/096/pkg/items/doors/door/use.src	2006-02-11 18:13:24 UTC (rev 1196)
+@@ -9,9 +9,11 @@
+ use os;
+ 
+ include &quot;:keys:key&quot;;
++include &quot;:traps:traps&quot;;
+ 
+ program useScript(mobile, door)
+ 	if ( DoorIsLocked(mobile, door) )
++		RunTraps(door, mobile);
+ 		return 0;
+ 	elseif ( door.IsOpen() )
+ 		var pid := CInt(GetObjProperty(door, &quot;#ClosePid&quot;));
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001166.html">[Poldistro-svn] r1195 - in trunk/096/pkg/items/traps: config include trapScripts
+</A></li>
+	<LI>Next message: <A HREF="001168.html">[Poldistro-svn] r1197 - in trunk/096/pkg/items: containers/container doors/door
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1167">[ date ]</a>
+              <a href="thread.html#1167">[ thread ]</a>
+              <a href="subject.html#1167">[ subject ]</a>
+              <a href="author.html#1167">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

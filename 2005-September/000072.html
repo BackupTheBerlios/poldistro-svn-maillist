@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r90 - trunk/096/pkg/other/hooks
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r90%20-%20trunk/096/pkg/other/hooks&In-Reply-To=%3C200509071334.j87DYlcJ004599%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000071.html">
+   <LINK REL="Next"  HREF="000073.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r90 - trunk/096/pkg/other/hooks</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r90%20-%20trunk/096/pkg/other/hooks&In-Reply-To=%3C200509071334.j87DYlcJ004599%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r90 - trunk/096/pkg/other/hooks">panosl at berlios.de
+       </A><BR>
+    <I>Wed Sep  7 15:34:47 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000071.html">[Poldistro-svn] r89 - in trunk/096: . batchfiles
+</A></li>
+        <LI>Next message: <A HREF="000073.html">[Poldistro-svn] r91 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#72">[ date ]</a>
+              <a href="thread.html#72">[ thread ]</a>
+              <a href="subject.html#72">[ subject ]</a>
+              <a href="author.html#72">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-09-07 15:34:47 +0200 (Wed, 07 Sep 2005)
+New Revision: 90
+
+Modified:
+   trunk/096/pkg/other/hooks/uoclient.cfg
+Log:
+
+
+Modified: trunk/096/pkg/other/hooks/uoclient.cfg
+===================================================================
+--- trunk/096/pkg/other/hooks/uoclient.cfg	2005-09-07 05:49:48 UTC (rev 89)
++++ trunk/096/pkg/other/hooks/uoclient.cfg	2005-09-07 13:34:47 UTC (rev 90)
+@@ -1,60 +1,74 @@
+-////////////////////////////////
+-// General controls which attributes/vitals are mapped to the client's status window.
+-// 
+-// Layout:
+-//	&lt;onstatus&gt; &lt;attrib/vital&gt;
+-//
+-// Valid &lt;onstatus&gt; constants are...
+-//
+-//     Strength, Intelligence, Dexterity
+-//     Hits, Stamina, Mana
+-//
+-// Valid &lt;attrib&gt; constants are any valid attribute name from attributes.cfg
+-// Valid &lt;vital&gt; constants are specified in vitals.cfg
+-////////////////////////////////
++# $$
++#
++# Purpose:
++# Maps vital and attribute names onto UO Client idioms for character status.
++#
++# Structure:
++# General
++# {
++#   Strength        (string Strength)
++#   Intelligence    (string Intelligence)
++#   Dexterity       (string Dexterity)
++#
++#   Hits            (string Life)
++#   Mana            (string Mana)
++#   Stamina         (string Stamina)
++#   MaxSkillID      (integer maximum UO client skill ID)
++# }
++#
++# Protocol
++# {
++#   # EnableFlowControlPackets: use the 0x33 (0x00 / 0x01) pause/restart packets.
++#   # Though OSI seems to no longer send these packets, they seem to help with smoothness,
++#   # particularly with boat movement.
++#   # NOTE: causes clients 4.0.0e and newer to fail login
++#   EnableFlowControlPackets    1
++# }
++#
++# Listener
++# {
++#   Port (int port number 1024..65535)
++#   Encryption (string encryption type)
++# }
++#
++# Explanation:
++# The left-hand-side &quot;Strength&quot;, &quot;Intelligence&quot;, and &quot;Dexterity&quot; are Attribute names that
++# MUST be defined in attributes.cfg.
++# The right-hand-side &quot;Life&quot;, &quot;Mana&quot;, and &quot;Stamina&quot; are Vital names that
++# MUST be defined in vitals.cfg.
++# MaxSkillID allows you to use new client skills, but setting it too high can crash older clients.
++# You must define skills.cfg entries for each skillID up to MaxSkillID (default 51).
++# The Protocol and Listener sections are optional.
++# Each Listener section allows you to listen for different client encryption types on different ports.
++# This means you can listen for &quot;1.26.4&quot; clients on port 5003 and &quot;ignition&quot; clients on port 5555.
++# Valid encryption types are found in the pol.cfg section. If you use Listeners set ListenPort
++# in pol.cfg to 0.
++
+ General
+ {
+-	// Left side of Status Window (Attributes)
+-	//
+-	Strength	Strength
+-	Intelligence	Intelligence
+-	Dexterity	Dexterity
++	Strength       Strength
++	Intelligence   Intelligence
++	Dexterity      Dexterity
+ 
+-	// Right side of Status Window (Vitals)
+-	//
+-	Hits		Life
+-	Mana		Mana
+-	Stamina		Stamina
++	Hits           Hits
++	Mana           Mana
++	Stamina        Stamina
+ 
+-	MaxSkillID	51
++	MaxSkillID     51
+ }
+ 
++
+ Protocol
+ {
+-    #
+-    # EnableFlowControlPackets: use the 0x33 (0x00 / 0x01) pause/restart packets.
+-    # Though OSI seems to no longer send these packets, they seem to help with smoothness,
+-    # particularly with boat movement.
+-    # Note: clients 4.0.0e and newer do not like the uoclient.cfg setting 
+-    #  EnableControlFlowPackets enabled, and causes login to fail. No way around this it
+-    #  seems.
+-    EnableFlowControlPackets    0
++	EnableFlowControlPackets 0
+ }
+ 
+ 
+-////////////////////////////////
+-// Listener elems control which ports control which encryption protocols.
+-// 
+-// Listener
+-// {
+-//	Port            xxxx
+-//	Encryption      1.26.4 / 2.0.0 / none
+-// }
+-////////////////////////////////
+ Listener
+ {
+-	// Enabled mostly for development purposes
+-	// Will be removed when distro goes final
++	#
++	# Enabled mostly for development purposes
++	# Will be removed when distro goes final
+ 	Port		5002
+ 	Encryption	2.0.0
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000071.html">[Poldistro-svn] r89 - in trunk/096: . batchfiles
+</A></li>
+	<LI>Next message: <A HREF="000073.html">[Poldistro-svn] r91 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#72">[ date ]</a>
+              <a href="thread.html#72">[ thread ]</a>
+              <a href="subject.html#72">[ subject ]</a>
+              <a href="author.html#72">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

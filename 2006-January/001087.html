@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1116 - in trunk/096/pkg/mobiles/timedScripts: config subScripts/magery
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1116%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20config%20subScripts/magery&In-Reply-To=%3C200601091142.k09BgHU1002866%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001086.html">
+   <LINK REL="Next"  HREF="001088.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1116 - in trunk/096/pkg/mobiles/timedScripts: config subScripts/magery</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1116%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20config%20subScripts/magery&In-Reply-To=%3C200601091142.k09BgHU1002866%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1116 - in trunk/096/pkg/mobiles/timedScripts: config subScripts/magery">austin at berlios.de
+       </A><BR>
+    <I>Mon Jan  9 12:42:17 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001086.html">[Poldistro-svn] r1115 - trunk/096/pkg/mobiles/timedScripts/subScripts/magery
+</A></li>
+        <LI>Next message: <A HREF="001088.html">[Poldistro-svn] r1117 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1087">[ date ]</a>
+              <a href="thread.html#1087">[ thread ]</a>
+              <a href="subject.html#1087">[ subject ]</a>
+              <a href="author.html#1087">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-09 12:42:10 +0100 (Mon, 09 Jan 2006)
+New Revision: 1116
+
+Added:
+   trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endClumsy.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endFeebleMind.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/magery/feebleMind.src
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+Log:
+Added support for the feebleMind spell.
+endClumsy has correct camel casing in the file name.
+
+Modified: trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2006-01-09 11:40:00 UTC (rev 1115)
++++ trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2006-01-09 11:42:10 UTC (rev 1116)
+@@ -95,7 +95,7 @@
+ 
+ #--=[ Odors ]=------------------------------------
+ 
+-TimerElem poostink
++TimerElem pooStink
+ {
+ 	Name			Poo Stink
+ 	Script			subScripts/odors/poostink
+@@ -138,3 +138,12 @@
+ 	
+ 	NoCure			1
+ }
++
++TimerElem feebleMind
++{
++	Name			Clumsy
++	Script			subScripts/magery/feebleMind
++	CureScript		subScripts/magery/endFeebleMind
++	
++	NoCure			1
++}
+
+Added: trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endClumsy.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endClumsy.src	2006-01-09 11:40:00 UTC (rev 1115)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endClumsy.src	2006-01-09 11:42:10 UTC (rev 1116)
+@@ -0,0 +1,20 @@
++/*
++ * $Id$
++ *
++ */
++ 
++use uo;
++use os;
++
++include &quot;:attributes:attributes&quot;;
++
++program cureScript(params)
++	var mobile := params[1];
++	
++	var points := CInt(GetObjProperty(mobile, &quot;#ClumsyMod&quot;));	
++	AP_ModifyStatMod(mobile, DEXTERITY, points);
++	EraseObjProperty(mobile, &quot;#ClumsyMod&quot;);
++	
++	return 1;
++endprogram
++
+
+Added: trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endFeebleMind.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endFeebleMind.src	2006-01-09 11:40:00 UTC (rev 1115)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endFeebleMind.src	2006-01-09 11:42:10 UTC (rev 1116)
+@@ -0,0 +1,20 @@
++/*
++ * $Id$
++ *
++ */
++ 
++use uo;
++use os;
++
++include &quot;:attributes:attributes&quot;;
++
++program cureScript(params)
++	var mobile := params[1];
++	
++	var points := CInt(GetObjProperty(mobile, &quot;#FeebleMindMod&quot;));	
++	AP_ModifyStatMod(mobile, INTELLIGENCE, points);
++	EraseObjProperty(mobile, &quot;#FeebleMindMod&quot;);
++	
++	return 1;
++endprogram
++
+
+Added: trunk/096/pkg/mobiles/timedScripts/subScripts/magery/feebleMind.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/magery/feebleMind.src	2006-01-09 11:40:00 UTC (rev 1115)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/magery/feebleMind.src	2006-01-09 11:42:10 UTC (rev 1116)
+@@ -0,0 +1,32 @@
++/*
++ * $Id$
++ *
++ */
++ 
++use uo;
++use os;
++
++include &quot;:attributes:attributes&quot;;
++
++program poisonScript(params)
++	var mobile := params[1];
++	var attacker := params[2];
++	params := 0; // Not needed anymore.
++	
++	if ( GetObjProperty(mobile, &quot;#ClumsyMod&quot;) )
++		// Condition is met if the mobile logs out and back in.
++		// Prevents mod from being applied twice.
++		return 0;
++	endif
++	
++	// Stratics reports - ((8 + (Evaluate Intelligence)/10 - (Resist)/10)
++	var cast_points := CInt(AP_GetSkill(attacker, EVALUATING_INTELLIGENCE)) / 10;
++	var defense := CInt(AP_GetSkill(mobile, RESISTING_SPELLS)) / 10;
++	var points := (8 + (cast_points - defense)) * -1;
++	
++	SetObjProperty(mobile, &quot;#FeebleMindMod&quot;, points);
++	AP_ModifyStatMod(mobile, INTELLIGENCE, points);
++	
++	return 1;
++endprogram
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001086.html">[Poldistro-svn] r1115 - trunk/096/pkg/mobiles/timedScripts/subScripts/magery
+</A></li>
+	<LI>Next message: <A HREF="001088.html">[Poldistro-svn] r1117 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1087">[ date ]</a>
+              <a href="thread.html#1087">[ thread ]</a>
+              <a href="subject.html#1087">[ subject ]</a>
+              <a href="author.html#1087">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

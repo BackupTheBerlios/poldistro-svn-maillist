@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r106 - trunk/096/pkg/systems/merchantnodes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r106%20-%20trunk/096/pkg/systems/merchantnodes&In-Reply-To=%3C200509130832.j8D8WpSc031974%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000087.html">
+   <LINK REL="Next"  HREF="000089.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r106 - trunk/096/pkg/systems/merchantnodes</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r106%20-%20trunk/096/pkg/systems/merchantnodes&In-Reply-To=%3C200509130832.j8D8WpSc031974%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r106 - trunk/096/pkg/systems/merchantnodes">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep 13 10:32:51 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000087.html">[Poldistro-svn] r105 - trunk/096/batchfiles
+</A></li>
+        <LI>Next message: <A HREF="000089.html">[Poldistro-svn] r107 - trunk/096/pkg/commands/coun
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#88">[ date ]</a>
+              <a href="thread.html#88">[ thread ]</a>
+              <a href="subject.html#88">[ subject ]</a>
+              <a href="author.html#88">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-13 10:32:51 +0200 (Tue, 13 Sep 2005)
+New Revision: 106
+
+Modified:
+   trunk/096/pkg/systems/merchantnodes/merchantNodeControl.src
+Log:
+Renamed 'root' to 'root_canal' (which it often feels like im getting when I see this old distro code!) so it does not conflict with the math.em Root() function.
+
+Modified: trunk/096/pkg/systems/merchantnodes/merchantNodeControl.src
+===================================================================
+--- trunk/096/pkg/systems/merchantnodes/merchantNodeControl.src	2005-09-13 07:30:30 UTC (rev 105)
++++ trunk/096/pkg/systems/merchantnodes/merchantNodeControl.src	2005-09-13 08:32:51 UTC (rev 106)
+@@ -233,22 +233,26 @@
+ 
+ function SpawnAll()
+ 	foreach thing in spawn
+-		var type	 := thing[1];
+-		var root	 := thing[2];
+-		var status := thing[3];
++		var type	:= thing[1];
++		// 9-13-2005 Austin
++		// New function in math.em makes 'root' here not compile.
++		// I renamed the var to 'root_canal' which it often feels 
++		// like I am getting when i work on old distro code.
++		var root_canal	:= thing[2];
++		var status 	:= thing[3];
+ 		var chest	:= thing[4];
+ 		var chk := 0;
+ 		foreach npc in npclist
+-			if(root == GetObjProperty(npc, &quot;Anchor&quot;))
++			if(root_canal == GetObjProperty(npc, &quot;Anchor&quot;))
+ 				chk := 1;
+ 			endif
+ 		endforeach
+ 		if((chk == 0) and (status == 1))
+ 			var new := 0;
+ 			while((!new) and item)
+-				new := CreateNpcFromTemplate(type, root[1], root[2], root[3], 0, item.realm);
++				new := CreateNpcFromTemplate(type, root_canal[1], root_canal[2], root_canal[3], 0, item.realm);
+ 				if(new)
+-					SetObjProperty(new, &quot;Anchor&quot;, array(root[1], root[2], root[3]));
++					SetObjProperty(new, &quot;Anchor&quot;, array(root_canal[1], root_canal[2], root_canal[3]));
+ 					SetObjProperty(new, &quot;restockserial&quot;, chest);
+ 					npclist.append(new);
+ 				endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000087.html">[Poldistro-svn] r105 - trunk/096/batchfiles
+</A></li>
+	<LI>Next message: <A HREF="000089.html">[Poldistro-svn] r107 - trunk/096/pkg/commands/coun
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#88">[ date ]</a>
+              <a href="thread.html#88">[ thread ]</a>
+              <a href="subject.html#88">[ subject ]</a>
+              <a href="author.html#88">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

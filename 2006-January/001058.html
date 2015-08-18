@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1087 - in trunk/096/pkg/multis/boat: . config deed multi plank tiller
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1087%20-%20in%20trunk/096/pkg/multis/boat%3A%20.%20config%20deed%20multi%20plank%20tiller&In-Reply-To=%3C200601051137.k05BbVpA006372%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001057.html">
+   <LINK REL="Next"  HREF="001059.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1087 - in trunk/096/pkg/multis/boat: . config deed multi plank tiller</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1087%20-%20in%20trunk/096/pkg/multis/boat%3A%20.%20config%20deed%20multi%20plank%20tiller&In-Reply-To=%3C200601051137.k05BbVpA006372%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1087 - in trunk/096/pkg/multis/boat: . config deed multi plank tiller">austin at berlios.de
+       </A><BR>
+    <I>Thu Jan  5 12:37:31 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001057.html">[Poldistro-svn] r1086 - in trunk/096/pkg/multis/boat: . OLD
+</A></li>
+        <LI>Next message: <A HREF="001059.html">[Poldistro-svn] r1088 - trunk/096/pkg/multis/boat/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1058">[ date ]</a>
+              <a href="thread.html#1058">[ thread ]</a>
+              <a href="subject.html#1058">[ subject ]</a>
+              <a href="author.html#1058">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-05 12:37:28 +0100 (Thu, 05 Jan 2006)
+New Revision: 1087
+
+Added:
+   trunk/096/pkg/multis/boat/commands/
+   trunk/096/pkg/multis/boat/config/
+   trunk/096/pkg/multis/boat/config/icp.cfg
+   trunk/096/pkg/multis/boat/deed/
+   trunk/096/pkg/multis/boat/deed/use.src
+   trunk/096/pkg/multis/boat/include/
+   trunk/096/pkg/multis/boat/itemdesc.cfg
+   trunk/096/pkg/multis/boat/multi/
+   trunk/096/pkg/multis/boat/multi/listener.src
+   trunk/096/pkg/multis/boat/pkg.cfg
+   trunk/096/pkg/multis/boat/plank/
+   trunk/096/pkg/multis/boat/plank/methods.src
+   trunk/096/pkg/multis/boat/plank/use.src
+   trunk/096/pkg/multis/boat/plank/walkOn.src
+   trunk/096/pkg/multis/boat/tiller/
+   trunk/096/pkg/multis/boat/tiller/methods.src
+   trunk/096/pkg/multis/boat/tiller/use.src
+Log:
+Setting up the boat package (since it didnt compile before)
+
+Added: trunk/096/pkg/multis/boat/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/multis/boat/config/icp.cfg	2006-01-05 11:23:07 UTC (rev 1086)
++++ trunk/096/pkg/multis/boat/config/icp.cfg	2006-01-05 11:37:28 UTC (rev 1087)
+@@ -0,0 +1,13 @@
++ICP Register
++{
++	Name		Boat
++	Version		1.0
++
++	Description	Boat stuff of course!
++
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/multis/boat/deed/use.src
+===================================================================
+
+Added: trunk/096/pkg/multis/boat/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/multis/boat/itemdesc.cfg	2006-01-05 11:23:07 UTC (rev 1086)
++++ trunk/096/pkg/multis/boat/itemdesc.cfg	2006-01-05 11:37:28 UTC (rev 1087)
+@@ -0,0 +1,161 @@
++# $Id$
++#
++#
++
++//
++// Important boat pieces
++//
++Item 0xF010
++{
++	Name			Tillerman
++	Graphic			1
++
++	Script			tiller/use
++	MethodScript		tiller/methods
++}
++Item 0xF011
++{
++	Name			gangplank
++	Graphic			1
++	Lockable		1
++	RequiresAttention	0
++	DoubleClickRange	20
++
++	Script			plank/use
++	MethodScript		plank/methods
++	WalkOnScript		plank/walkOn
++}
++Item 0xF012
++{
++	Name			gangplank2
++	Graphic			1
++	Lockable		1
++	RequiresAttention 	0
++	DoubleClickRange	20
++
++	Script			plank/use
++	MethodScript		plank/methods
++	WalkOnScript		plank/walkOn
++}
++// Hold can be found in the containers package.
++
++//
++// Boat deeds
++//
++Item 0x6027
++{
++	Name			smallboatdeed
++	Desc			deed to a small boat
++	Graphic			0x14F2
++	Script			deed/use
++	ShipObjType		smallboat
++	VendorSellsFor		12500
++	VendorBuysFor		12500
++	Newbie			1
++}
++Item 0x6028
++{
++	Name			smalldragonboatdeed
++	Desc			deed to a small dragon boat
++	Graphic			0x14F2
++	Script			deed/use
++	ShipObjType		smalldragonboat
++	VendorSellsFor		12500
++	VendorBuysFor		12500
++	Newbie			1
++}
++
++
++Item 0x6029
++{
++	Name			mediumboatdeed
++	Desc			deed to a medium boat
++	Graphic			0x14F2
++	Script			deed/use
++	ShipObjType		mediumboat
++	VendorSellsFor		14200
++	VendorBuysFor		14200
++	Newbie			1
++}
++Item 0x602A
++{
++	Name			mediumdragonboatdeed
++	Desc			deed to a medium dragon boat
++	Graphic			0x14F2
++	Script			deed/use
++	ShipObjType		mediumdragonboat
++	VendorSellsFor		14200
++	VendorBuysFor		14200
++	Newbie			1
++}
++
++
++Item 0x602B
++{
++	Name			largeboatdeed
++	Desc			deed to a large boat
++	Graphic			0x14F2
++	Script			deed/use
++	ShipObjType		largeboat
++	VendorSellsFor		15900
++	VendorBuysFor		15900
++	Newbie			1
++}
++
++Item 0x602C
++{
++	Name			largedragonboatdeed
++	Desc			deed to a large dragon boat
++	Graphic			0x14F2
++	Script			deed/use
++	ShipObjType		largedragonboat
++	VendorSellsFor		15900
++	VendorBuysFor		15900
++	Newbie			1
++}
++
++//
++// Boats (Multis) 
++//
++
++Boat 0x6040
++{
++	Name			smallboat
++	Graphic			0x4000
++	MultiID			0x0000
++}
++
++Boat 0x6041
++{
++	Name			smalldragonboat
++	Graphic			0x4004
++	MultiID			0x0004
++}
++
++Boat 0x6042
++{
++	Name			mediumboat
++	Graphic			0x4008
++	MultiID			0x0008
++}
++
++Boat 0x6043
++{
++	Name			mediumdragonboat
++	Graphic			0x400C
++	MultiID			0x000C
++}
++
++Boat 0x6044
++{
++	Name			largeboat
++	Graphic			0x4010
++	MultiID			0x0010
++}
++
++Boat 0x6045
++{
++	Name			largedragonboat
++	Graphic			0x4014
++	MultiID			0x0014
++}
+
+Added: trunk/096/pkg/multis/boat/multi/listener.src
+===================================================================
+
+Added: trunk/096/pkg/multis/boat/pkg.cfg
+===================================================================
+--- trunk/096/pkg/multis/boat/pkg.cfg	2006-01-05 11:23:07 UTC (rev 1086)
++++ trunk/096/pkg/multis/boat/pkg.cfg	2006-01-05 11:37:28 UTC (rev 1087)
+@@ -0,0 +1,17 @@
++# $Id$
++#
++#
++Enabled		1
++Name		boat
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires	none
++#Conflicts	none
+
+Added: trunk/096/pkg/multis/boat/plank/methods.src
+===================================================================
+
+Added: trunk/096/pkg/multis/boat/plank/use.src
+===================================================================
+
+Added: trunk/096/pkg/multis/boat/plank/walkOn.src
+===================================================================
+
+Added: trunk/096/pkg/multis/boat/tiller/methods.src
+===================================================================
+
+Added: trunk/096/pkg/multis/boat/tiller/use.src
+===================================================================
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001057.html">[Poldistro-svn] r1086 - in trunk/096/pkg/multis/boat: . OLD
+</A></li>
+	<LI>Next message: <A HREF="001059.html">[Poldistro-svn] r1088 - trunk/096/pkg/multis/boat/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1058">[ date ]</a>
+              <a href="thread.html#1058">[ thread ]</a>
+              <a href="subject.html#1058">[ subject ]</a>
+              <a href="author.html#1058">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

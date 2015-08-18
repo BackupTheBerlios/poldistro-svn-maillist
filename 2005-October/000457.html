@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r484 - in trunk/096/pkg/items/walkon: . firefield resurrect spiderWeb
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r484%20-%20in%20trunk/096/pkg/items/walkon%3A%20.%20firefield%20resurrect%20spiderWeb&In-Reply-To=%3C200510091316.j99DGMKB015533%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000456.html">
+   <LINK REL="Next"  HREF="000458.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r484 - in trunk/096/pkg/items/walkon: . firefield resurrect spiderWeb</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r484%20-%20in%20trunk/096/pkg/items/walkon%3A%20.%20firefield%20resurrect%20spiderWeb&In-Reply-To=%3C200510091316.j99DGMKB015533%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r484 - in trunk/096/pkg/items/walkon: . firefield resurrect spiderWeb">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct  9 15:16:22 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000456.html">[Poldistro-svn] r483 - trunk/096/pkg/items/walkon/firefield
+</A></li>
+        <LI>Next message: <A HREF="000458.html">[Poldistro-svn] r485 - in trunk/096/scripts: control items
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#457">[ date ]</a>
+              <a href="thread.html#457">[ thread ]</a>
+              <a href="subject.html#457">[ subject ]</a>
+              <a href="author.html#457">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-09 15:16:22 +0200 (Sun, 09 Oct 2005)
+New Revision: 484
+
+Added:
+   trunk/096/pkg/items/walkon/spiderWeb/
+   trunk/096/pkg/items/walkon/spiderWeb/walkOn.src
+Modified:
+   trunk/096/pkg/items/walkon/firefield/control.src
+   trunk/096/pkg/items/walkon/itemdesc.cfg
+   trunk/096/pkg/items/walkon/resurrect/walkOn.src
+Log:
+
+
+Modified: trunk/096/pkg/items/walkon/firefield/control.src
+===================================================================
+--- trunk/096/pkg/items/walkon/firefield/control.src	2005-10-09 13:12:02 UTC (rev 483)
++++ trunk/096/pkg/items/walkon/firefield/control.src	2005-10-09 13:16:22 UTC (rev 484)
+@@ -22,25 +22,26 @@
+ 	endif
+ 	
+ 	while ( field )
+-		PlaySoundEffect(field, 0x209);
++		PlaySoundEffect(field, 0x1DE);
+ 		
+-		var event := Wait_For_Event(1);
++		var event := Wait_For_Event(2);
+ 		if ( event )
+ 			//Someone just walked onto the tile.
+ 			BurnMobile(event, dmg_dice);
+ 		endif
+-		BurnNearbyMobiles(field, dmg_dice);		
++		BurnNearbyMobiles(field, dmg_dice);
+ 	endwhile
+ endprogram
+ 
+ function BurnNearbyMobiles(field, dmg_dice)
+-	foreach mobile in (ListMobilesNearLocationEX(field.x, field.y, field.z, 0, LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN, field.realm))
++	var nearby := ListMobilesNearLocationEX(field.x, field.y, field.z, 0, LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN, field.realm);
++	foreach mobile in ( nearby )
+ 		BurnMobile(mobile, dmg_dice);
+ 		
+ 		sleepms(2);
+ 	endforeach
+ 	
+-	return 1;
++	return (nearby.size());
+ endfunction
+ 
+ function BurnMobile(mobile, dmg_dice)
+
+Modified: trunk/096/pkg/items/walkon/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/walkon/itemdesc.cfg	2005-10-09 13:12:02 UTC (rev 483)
++++ trunk/096/pkg/items/walkon/itemdesc.cfg	2005-10-09 13:16:22 UTC (rev 484)
+@@ -86,16 +86,19 @@
+ 
+ Item 0xEE01
+ {
++	Name		restile
+ 	Name		rescob1
+ 	Name		rescob2
+ 	Name		rescob3
+ 	Name		rescob4
+-	Graphic		0x515
+-
++	Graphic		0x1822
++	Color		1001
++	
+ 	OldObjType	0xEE02
+ 	OldObjType	0xEE03
+ 	OldObjType	0xEE04
+ 
++	Invisible	1
+ 	Movable		0
+ 
+ 	WalkOnScript	resurrect/walkOn
+
+Modified: trunk/096/pkg/items/walkon/resurrect/walkOn.src
+===================================================================
+--- trunk/096/pkg/items/walkon/resurrect/walkOn.src	2005-10-09 13:12:02 UTC (rev 483)
++++ trunk/096/pkg/items/walkon/resurrect/walkOn.src	2005-10-09 13:16:22 UTC (rev 484)
+@@ -0,0 +1,12 @@
++// $Id$
++
++use uo;
++use os;
++
++program walkon(mobile, tile)
++	if ( mobile.dead )
++		Resurrect(mobile);
++	else
++		SendSysMessage(mobile, &quot;You are at peace...&quot;);
++	endif
++endprogram
+
+Added: trunk/096/pkg/items/walkon/spiderWeb/walkOn.src
+===================================================================
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000456.html">[Poldistro-svn] r483 - trunk/096/pkg/items/walkon/firefield
+</A></li>
+	<LI>Next message: <A HREF="000458.html">[Poldistro-svn] r485 - in trunk/096/scripts: control items
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#457">[ date ]</a>
+              <a href="thread.html#457">[ thread ]</a>
+              <a href="subject.html#457">[ subject ]</a>
+              <a href="author.html#457">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

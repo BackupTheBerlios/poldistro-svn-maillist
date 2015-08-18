@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1252 - trunk/uomul
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1252%20-%20trunk/uomul&In-Reply-To=%3C200604261507.k3QF79LE018911%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001223.html">
+   <LINK REL="Next"  HREF="001225.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1252 - trunk/uomul</H1>
+    <B>panosl at berlios.de</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1252%20-%20trunk/uomul&In-Reply-To=%3C200604261507.k3QF79LE018911%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1252 - trunk/uomul">panosl at berlios.de
+       </A><BR>
+    <I>Wed Apr 26 17:07:09 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001223.html">[Poldistro-svn] r1251 - trunk/uomul
+</A></li>
+        <LI>Next message: <A HREF="001225.html">[Poldistro-svn] r1253 - trunk/uomul
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1224">[ date ]</a>
+              <a href="thread.html#1224">[ thread ]</a>
+              <a href="subject.html#1224">[ subject ]</a>
+              <a href="author.html#1224">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2006-04-26 17:07:02 +0200 (Wed, 26 Apr 2006)
+New Revision: 1252
+
+Modified:
+   trunk/uomul/index.py
+   trunk/uomul/skills.py
+Log:
+writeSkills() works, Cool eh?
+
+Modified: trunk/uomul/index.py
+===================================================================
+--- trunk/uomul/index.py	2006-04-26 14:17:44 UTC (rev 1251)
++++ trunk/uomul/index.py	2006-04-26 15:07:02 UTC (rev 1252)
+@@ -3,16 +3,16 @@
+ 
+ 
+ class Index:
+-	def __init__(self, fname):
+-		self.entries = self.__getEntries(fname)
++	def __init__(self, file):
++		self.entries = self.__getEntries(file)
+ 
+-	def __getEntries(self, fname):
+-		li = []
+-		fsock = open(fname, 'rb')
++	def __getEntries(self, file):
++		entries = []
++		fsock = open(file, 'rb')
+ 		data = fsock.read()
+ 		fsock.close()
+-		data = unpack(str(len(data)/4)+'i', data)
++		data = unpack('%di' % (len(data)/4), data)
+ 		for i in range(0, len(data), 3):
+-			li.append(data[i:i+3])
+-		return li
++			entries.append(data[i:i+3])
++		return entries 
+ 
+
+Modified: trunk/uomul/skills.py
+===================================================================
+--- trunk/uomul/skills.py	2006-04-26 14:17:44 UTC (rev 1251)
++++ trunk/uomul/skills.py	2006-04-26 15:07:02 UTC (rev 1252)
+@@ -61,7 +61,7 @@
+ 		charodds = idxnew[1] - idxold[1]
+ 		for i in range(id+1, self.max):
+ 			self.newentries[i][0] += charodds
+-		packed = pack('b'+str(idxnew[1]-2)+'s', active, name) + '\x00'
++		packed = pack('b%ds' % (idxnew[1]-2), active, name) + '\x00'
+ 		temp = self.newdata[:idxold[0]] + packed + self.newdata[idxold[0]+idxold[1]:]
+ 		self.newdata = temp
+ 
+@@ -73,11 +73,11 @@
+ 	def writeSkills(self, flush=True):
+ 		'''Write the changes to the files and flush the old data'''
+ 		idxpacked = pack('%di' % (len(self.newentries)*3),
+-			*(i for entry in self.entries for i in entry))
+-		fsock = open('Skills.idx', 'w')
++			*(i for entry in self.newentries for i in entry))
++		fsock = open('Skills.idx', 'wb')
+ 		fsock.write(idxpacked)
+ 		fsock.close()
+-		fsock = open('skills.mul', 'w')
++		fsock = open('skills.mul', 'wb')
+ 		fsock.write(self.newdata)
+ 		fsock.close()
+ 		self.__flushData()
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001223.html">[Poldistro-svn] r1251 - trunk/uomul
+</A></li>
+	<LI>Next message: <A HREF="001225.html">[Poldistro-svn] r1253 - trunk/uomul
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1224">[ date ]</a>
+              <a href="thread.html#1224">[ thread ]</a>
+              <a href="subject.html#1224">[ subject ]</a>
+              <a href="author.html#1224">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

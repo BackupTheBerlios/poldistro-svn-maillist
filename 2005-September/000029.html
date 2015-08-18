@@ -1,0 +1,1072 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r47 - trunk/096/pkg/mobiles/ai_brain/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r47%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509031852.j83IqDJ9011675%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000028.html">
+   <LINK REL="Next"  HREF="000030.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r47 - trunk/096/pkg/mobiles/ai_brain/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r47%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509031852.j83IqDJ9011675%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r47 - trunk/096/pkg/mobiles/ai_brain/include">austin at berlios.de
+       </A><BR>
+    <I>Sat Sep  3 20:52:13 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000028.html">[Poldistro-svn] r46 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000030.html">[Poldistro-svn] r48 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#29">[ date ]</a>
+              <a href="thread.html#29">[ thread ]</a>
+              <a href="subject.html#29">[ subject ]</a>
+              <a href="author.html#29">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-03 20:52:13 +0200 (Sat, 03 Sep 2005)
+New Revision: 47
+
+Removed:
+   trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npc_error.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npc_util.inc
+Log:
+
+
+Deleted: trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc	2005-09-03 18:51:35 UTC (rev 46)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc	2005-09-03 18:52:13 UTC (rev 47)
+@@ -1,520 +0,0 @@
+-/*===============================================================
+-* Current Version
+-* NPC_COMMANDS.INC - v1.0
+-* Updated 8/31/2005 6:38AM
+-*
+-* -- Revision v1.0 --
+-* Austin:
+-*  Created include file
+-===============================================================*/
+-
+-use uo;
+-use os;
+-
+-include &quot;include/sysEvent&quot;;
+-include &quot;:ai_brain:include/eventid&quot;;
+-
+-/////////////////////////////////////////////////////////////////
+-// * Function List *
+-//
+-// AI_Attack(mobile, opponent, no_wake:=WAKEUP)
+-// AI_ClearThoughts(mobile, flags)
+-// AI_EndNerve(mobile, nerve_name, no_wake:=WAKEUP)
+-// AI_Flee(mobile, opponent, no_wake:=WAKEUP)
+-// AI_FowardEvent(mobile, nerve_name, mask, data, no_wake:=WAKEUP)
+-// AI_Move(mobile, object, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
+-// AI_MoveXY(mobile, x, y, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
+-// AI_SetOpponent(mobile, opponent, no_wake:=WAKEUP)
+-// AI_Sleep(mobile)
+-// AI_Speak(mobile, text, text_type:=SPEAK_TEXTTYPE_DEFAULT, do_event:=SPEAK_DOEVENT_DISABLE, no_wake:=WAKEUP)
+-// AI_StartNerve(mobile, nerve_name, script_name, data, no_wake:=WAKEUP)
+-// AI_Turn(mobile, turn_to, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
+-// AI_TurnXY(mobile, x, y, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
+-// AI_WakeUp(mobile)
+-// AI_Wander(mobile, no_wake:=WAKEUP, loop:=0)
+-// AI_WarMode(mobile, mode:=0, no_wake:=WAKEUP)
+-// 
+-/////////////////////////////////////////////////////////////////
+-
+-/*
+- * AI_Attack(mobile, opponent, no_wake)
+- *
+- * Purpose
+- * Triggers the npc's combat script on opponent.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * opponent:	What the npc's combat nerve will attack.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_Attack(mobile, opponent, no_wake:=WAKEUP)
+-	var ev		:= struct;
+-	ev.+type	:= SYSEVENT_ENGAGED;
+-	ev.+source	:= opponent;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_ClearThoughts(mobile, flags)
+- *
+- * Purpose
+- * Clears the event queue for the script calling it and or the brain.
+- *
+- * Parameters
+- * mobile:	A reference to the npc.
+- * flags:	CLR_* flag for what scripts should have their event queues cleared.
+- *		CLR_BRAIN - Clears the brain's queue.
+- *		CLR_NERVE - Clears the nerve's queue.
+- *		CLR_BOTH  - Clears the queue for both.
+- *
+- * Return value
+- * Always returns 1
+- *
+- */
+-function AI_ClearThoughts(mobile, flags)
+-	var brain	:= flags &amp; CLR_BRAIN;
+-	var nerve	:= flags &amp; CLR_NERVE;
+-	var both	:= flags &amp; CLR_BOTH;
+-
+-	if ( both || brain )
+-		brain := mobile.process;
+-		brain.clear_event_queue();
+-	endif
+-
+-	if ( both || nerve )
+-		nerve := GetProcess(GetPid());
+-		nerve.clear_event_queue();
+-	endif
+-
+-	return 1;
+-endfunction
+-
+-/*
+- * AI_EndNerve(mobile, nerve_name, no_wake)
+- *
+- * Purpose
+- * Used to tell the brain to stop a nerve script.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * nerve_name:	String containing the name of the nerve (dictionary key).
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_EndNerve(mobile, nerve_name, no_wake:=WAKEUP)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_ENDNERVE;
+-	ev.+name	:= nerve_name;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_Flee(mobile, opponent, no_wake)
+- *
+- * Purpose
+- * Used to tell the brain to stop a nerve script.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * opponent:	Opponent to flee from.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_Flee(mobile, opponent, no_wake:=WAKEUP)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_FLEE;
+-	ev.+source	:= opponent;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_ForwardEvent(mobile, nerve_name, mask, data, no_wake)
+- *
+- * Purpose
+- * Used to send an event from one nerve to another.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * nerve_name:	String containing the name of the nerve to forward the event to (dictionary key).
+- * mask:	The type of event the nerve should handle the forward as. (example: SYSEVENT_LEFTAREA)
+- * data:	Data that the nerve will receive.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_FowardEvent(mobile, nerve_name, mask, data, no_wake:=WAKEUP)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_FWDNERVE;
+-	ev.+NerveName	:= nerve_name;
+-	ev.+mask	:= mask;
+-	ev.+data	:= data;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_Move(mobile, opponent, to_from, speed, no_wake, loop)
+- *
+- * Purpose
+- * Commands an npc to move toward / away from an item or mobile.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * object:	Item or mobile the npc will move away from/toward.
+- * to_from:	Direction the npc will go:
+- *		NEMOVE_TOWARD - Will make the npc move toward the object - Default
+- *		NEMOVE_AWAY   - Will make the npc move away from the object.
+- * speed:	Speed the npc will move at:
+- *		NEMOVE_RUN  - NPC will run
+- *		NEMOVE_WALK - NPC will walk
+- * no_wake:	Optional wakeup flag::
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- * loop:	Number of steps for the npc to take toward/away from the object.
+- *		Note: Loop can be interrupted and end prematurely!
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_Move(mobile, object, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_MOVE;
+-	ev.+source	:= object;
+-	ev.+direction	:= to_from;
+-	ev.+speed	:= speed;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+loop	:= loop;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_MoveXY(mobile, x, y, to_from, speed, no_wake, loop)
+- *
+- * Purpose
+- * Commands an npc to move toward or away from an XY coordinate.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * x:		X coordinate to move away from/toward
+- * y:		Y coordinate to move away from/toward
+- * to_from:	Direction the npc will go:
+- *		NEMOVE_TOWARD - Will make the npc move toward the object - Default
+- *		NEMOVE_AWAY   - Will make the npc move away from the object.
+- * speed:	Speed the npc will move at:
+- *		NEMOVE_RUN  - NPC will run
+- *		NEMOVE_WALK - NPC will walk
+- * no_wake:	Optional wakeup flag::
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- * loop:	Number of steps for the npc to take toward/away from the object.
+- *		Note: Loop can be interrupted and end prematurely!
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_MoveXY(mobile, x, y, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_MOVE_XY;
+-	ev.+x		:= x;
+-	ev.+y		:= y;
+-	ev.+direction	:= to_from;
+-	ev.+speed	:= speed;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+loop	:= loop;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_SetOpponent(mobile, opponent, no_wake)
+- *
+- * Purpose
+- * Places the npc into war mode and sets an opponent.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * opponent:	Mobile reference that will be considered an opponent.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_SetOpponent(mobile, opponent, no_wake:=WAKEUP)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_OPPONENT;
+-	ev.+source	:= opponent;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_Sleep(mobile)
+- *
+- * Purpose
+- * Instructs the npc to go into sleep mode - shuts down all nerves.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_Sleep(mobile)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_SLEEP;
+-	ev.+WakeUp	:= NOWAKE;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_Speak(mobile, text, text_type, do_event, no_wake)
+- *
+- * Purpose
+- * Commands the NPC to speak.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * text:	The text the npc will speak.
+- * text_type:	text_type for npc.em :
+- *		SPEAK_TEXTTYPE_DEFAULT - Default
+- *		SPEAK_TEXTTYPE_WHISPER
+- *		SPEAK_TEXTTYPE_YELL
+- * do_event:	Flags for sending a system event for speech to surrounding npcs.
+- *		SPEAK_DOEVENT_DISABLE - Default
+- *		SPEAK_DOEVENT_ENABLE
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_Speak(mobile, text, text_type:=SPEAK_TEXTTYPE_DEFAULT, do_event:=SPEAK_DOEVENT_DISABLE, no_wake:=WAKEUP)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_SPEAK;
+-	ev.+text	:= text;
+-	ev.+texttype	:= text_type;
+-	ev.+doevent	:= do_event;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_StartNerve(mobile, nerve_name, script_name, data, no_wake)
+- *
+- * Purpose
+- * Used to start a custom nerve up from within a nerve.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * nerve_name:	String containing the name of the nerve (dictionary key).
+- * script_name:	Path of the script to start.
+- * data:	Data to be sent to the nerve once it starts.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_StartNerve(mobile, nerve_name, script_name, data, no_wake:=WAKEUP)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_STARTNERVE;
+-	ev.+name	:= nerve_name;
+-	ev.+script	:= script_name;
+-	ev.+data	:= data;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_Turn(mobile, turn_to, direction, no_wake)
+- *
+- * Purpose
+- * Commands the NPC to face away from / toward an object.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * turn_to:	item or moble reference to turn away from / toward.
+- * direction:	Direction the npc will face:
+- *		NETURN_TOWARD - Will make the npc turn toward the object - Default.
+- 		NETURN_AWAY   - Will make the npc turn away from the object.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_Turn(mobile, turn_to, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_TURN;
+-	ev.+source	:= turn_to;
+-	ev.+direction	:= direction;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_TurnXY(mobile, x, y, direction, no_wake)
+- *
+- * Purpose
+- * Commands the NPC to face away from / toward a coordinate.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * x:		X coordinate to turn away from / toward.
+- * y:		Y coordinate to turn away from / toward.
+- * direction:	Direction the npc will face:
+- *		NETURN_TOWARD - Will make the npc turn toward the object - Default.
+- 		NETURN_AWAY   - Will make the npc turn away from the object.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_TurnXY(mobile, x, y, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_TURN_XY;
+-	ev.+x		:= x;
+-	ev.+y		:= y;
+-	ev.+direction	:= direction;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_WakeUp(mobile)
+- *
+- * Purpose
+- * Sends an event to the npc causing its sleep script to end.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_WakeUp(mobile)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_WAKEUP;
+-	ev.+WakeUp	:= WAKEUP;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_Wander(mobile, opponent, no_wake)
+- *
+- * Purpose
+- * Commands the NPC to wander one step in a random direction.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- * loop:	Number of times to attempt to wander.
+- *		Note: Loop can be interrupted and end prematurely!
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_Wander(mobile, no_wake:=WAKEUP, loop:=0)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_WANDER;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+loop	:= CInt(loop);
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_WarMode(mobile, mode, no_wake)
+- *
+- * Purpose
+- * Toggles warmode on the npc. Setting to 0 also clears the opponent.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
+- * mode:	0 - Takes the NPC out of warmode and clears the opponent - Default.
+- *		1 - Places the npc into warmode.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_WarMode(mobile, mode:=0, no_wake:=WAKEUP)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_WARMODE;
+-	ev.+value	:= mode;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+
+Deleted: trunk/096/pkg/mobiles/ai_brain/include/npc_error.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_error.inc	2005-09-03 18:51:35 UTC (rev 46)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_error.inc	2005-09-03 18:52:13 UTC (rev 47)
+@@ -1,36 +0,0 @@
+-/*===============================================================
+-* Current Version
+-* NPC_ERRORS.INC - v1.0
+-* Updated 8/31/2005 5:08AM
+-*
+-* -- Revision v1.0 --
+-* Austin:
+-*  Created include file
+-===============================================================*/
+-
+-use uo;
+-use os;
+-
+-/*
+- * NPC_ErrorSysLog(errmsg)
+- *
+- * Purpose
+- * Logs an error message.
+- *
+- * Parameters
+- * errmsg:	Error message
+- *
+- * Return value
+- * Always returns 1
+- *
+- */
+-function NPC_ErrorSysLog(mobile, errmsg)
+-	Set_Critical(1);
+-	SysLog(&quot;NPC Template: &quot; + mobile.npctemplate);
+-	SysLog(&quot;NPC Name    : &quot; + mobile.name);
+-	SysLog(errmsg );
+-	SysLog(&quot;------------&quot;);
+-	Set_Critical(0);
+-	
+-	return 1;
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc	2005-09-03 18:51:35 UTC (rev 46)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc	2005-09-03 18:52:13 UTC (rev 47)
+@@ -1,213 +0,0 @@
+-/*===============================================================
+-* Current Version
+-* NERVES.INC - v1.0
+-* Updated 9/1/2005 6:15PM
+-*
+-* -- Revision v1.0 --
+-* Austin:
+-*  Created include file
+-===============================================================*/
+-
+-use uo;
+-use os;
+-
+-include &quot;:ai_brain:include/npc_error&quot;;
+-
+-/////////////////////////////////////////////////////////////////
+-// * Function List *
+-//
+-// GetNerveFlags(mobile, nerve_name, byref nerve_dict:=0)
+-// GetNerveProcess(mobile, nerve_name, byref nerve_dict:=0)
+-// LoadNerves(mobile)
+-// SaveNerves(mobile, nerve_dict)
+-// StartNerve(mobile, nerve_name, nerve_script, data:=array, flags:=NF_NO_FLAGS, byref nerve_dict:=0)
+-// StopNerve(mobile, nerve_name, byref nerve_dict:=0)
+-//
+-/////////////////////////////////////////////////////////////////
+-// * Global Varibles *
+-//
+-// Nerve flags
+-const NF_NO_FLAGS		:= 0x0;
+-const NF_CONTINUE_ON_SLEEP	:= 0x1;
+-//
+-/////////////////////////////////////////////////////////////////
+-
+-/*
+- * LoadNerves()
+- *
+- * Purpose
+- * Loads nerve information for an npc.
+- *
+- * Parameters
+- * mobile:	NPC to get the nerve settings from.
+- *
+- * Return value
+- * Returns a dictionary
+- *
+- */
+-function LoadNerves(mobile)
+-	var nerve_dict := GetObjProperty(mobile, &quot;#NerveInfo&quot;);
+-	if ( Lower(TypeOf(nerve_dict)) != &quot;dictionary&quot; )
+-		nerve_dict := dictionary;
+-	endif
+-
+-	return nerve_dict;
+-endfunction
+-
+-/*
+- * SaveNerves(mobile, nerve_dict)
+- *
+- * Purpose
+- * Saves nerve information for an npc.
+- *
+- * Parameters
+- * mobile:	NPC to save the nerve settings on.
+- * nerve_dict:	Dictionary containing nerve information.
+- *
+- * Return value
+- * Returns 1 on success
+- *
+- */
+-function SaveNerves(mobile, byref nerve_dict)
+-	return SetObjProperty(mobile, &quot;#NerveInfo&quot;, nerve_dict);
+-endfunction
+-
+-/*
+- * GetNerveProcess(mobile, nerve_name, byref nerve_dict)
+- *
+- * Purpose
+- * Retrieves a reference to a running nerve script.
+- *
+- * Parameters
+- * mobile:	NPC to get the nerve information from.
+- * nerve_name:	Name of the nerve to get the information for.
+- * nerve_dict:	Optional parameter. Use if the settings were already loaded for faster access.
+- *
+- * Return value
+- * Returns a script reference.
+- *
+- */
+-function GetNerveProcess(mobile, nerve_name, byref nerve_dict:=0)
+-	if ( !nerve_dict )
+-		nerve_dict := LoadNerves(mobile);
+-	endif
+-
+-	if ( nerve_dict.exists(nerve_name) )
+-		return GetProcess(CInt(nerve_dict[nerve_name].pid));
+-	else
+-		return error{&quot;errortext&quot; := &quot;GetNerveProcess() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+-	endif
+-endfunction
+-
+-/*
+- * GetNerveFlags(mobile, nerve_name, byref nerve_dict)
+- *
+- * Purpose
+- * Retrieves the flag setting set on a nerve.
+- *
+- * Parameters
+- * mobile:	NPC to get the nerve information from.
+- * nerve_name:	Name of the nerve to get the information for.
+- * nerve_dict:	Optional parameter. Use if the settings were already loaded for faster access.
+- *
+- * Return value
+- * Returns a script reference.
+- *
+- */
+-function GetNerveFlags(mobile, nerve_name, byref nerve_dict:=0)
+-	if ( !nerve_dict )
+-		nerve_dict := LoadNerves(mobile);
+-	endif
+-
+-	if ( nerve_dict.exists(nerve_name) )
+-		return GetProcess(CInt(nerve_dict[nerve_name].flags));
+-	else
+-		return error{&quot;errortext&quot; := &quot;GetNerveProcess() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+-	endif
+-endfunction
+-
+-/*
+- * StartNerve(mobile, nerve_name, nerve_script, data, flags, byref nerve_dict)
+- *
+- * Purpose
+- * Starts up a nerve script.
+- *
+- * Parameters
+- * mobile:	NPC the nerve will be running for.
+- * nerve_name:	The name the nerve script will be run under. (Example: &quot;CombatScript&quot; or &quot;EnterReact&quot;)
+- * data:	Array of data to send to the nerve script when it starts.
+- * flags:	Can contain anything - but should use NF_* flags for bitwise checks.
+- * nerve_dict:	Optional parameter. Use if the settings were already loaded for faster access.
+- *
+- * Notes:
+- * data[1] - Will contain the mobile argument.
+- * data[2] - Will contain the nerve name argument.
+- * If data is not an array, it will be placed at index[3].
+- * If data is sent as an array, it will begin at the index of [3].
+- *
+- * Return value
+- * Returns a script reference to the nerve script.
+- *
+- */
+-function StartNerve(mobile, nerve_name, nerve_script, data:=array, flags:=NF_NO_FLAGS, byref nerve_dict:=0)
+-	if ( Lower(TypeOf(data)) != &quot;array&quot;)
+-		data := array{data};
+-	endif
+-	//Mobile is always the begining of the data array.
+-	data.Insert(1, mobile);
+-	//Nerve name is always the second part of the data array.
+-	data.Insert(2, nerve_name);
+-
+-	var process := start_script(nerve_script, data);
+-
+-	if ( process.errortext )
+-		var errmsg := &quot;StartNerve() [&quot;+nerve_name+&quot;] [&quot;+nerve_script+&quot;] failed to start! -&gt;&quot;+process.errortext;
+-		NPC_ErrorSysLog(mobile, errmsg);
+-		return error{&quot;errortext&quot;:=errmsg};
+-	else
+-		//Before setting the new nerve, check if one is already running.
+-		if ( nerve_dict.exists(nerve_name) )
+-			//Stop the old nerve, before storing the new one.
+-			StopNerve(mobile, nerve_name, nerve_dict);
+-		endif
+-		var nerve_info := struct;
+-		nerve_info.+pid := process.pid;
+-		nerve_info.+flags := flags;
+-		nerve_dict[nerve_name] := nerve_info;
+-
+-		SaveNerves(mobile, nerve_dict);
+-
+-		return process;
+-	endif
+-endfunction
+-
+-/*
+- * StopNerve(mobile, nerve_name, byref nerve_dict)
+- *
+- * Purpose
+- * Starts up a nerve script.
+- *
+- * Parameters
+- * mobile:	NPC the nerve will be stopped on.
+- * nerve_name:	The name of the nerve script to stop.
+- * nerve_dict:	Optional parameter. Use if the settings were already loaded for faster access.
+- *
+- * Return value
+- * Returns 1 on success.
+- *
+- */
+-function StopNerve(mobile, nerve_name, byref nerve_dict:=0)
+-	if ( !nerve_dict )
+-		nerve_dict := LoadNerves(mobile);
+-	endif
+-
+-	if ( nerve_dict.Exists(nerve_name) )
+-		GetNerveProcess(mobile, nerve_name, nerve_dict).kill();
+-		nerve_dict.Erase(nerve_name);
+-
+-		return SaveNerves(mobile, nerve_dict);
+-	else
+-		return error{&quot;errortext&quot; := &quot;StopNerve() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+-	endif
+-endfunction
+-
+
+Deleted: trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc	2005-09-03 18:51:35 UTC (rev 46)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc	2005-09-03 18:52:13 UTC (rev 47)
+@@ -1,153 +0,0 @@
+-/*===============================================================
+-* Current Version
+-* NPC_SETTINGS.INC - v1.0
+-* Updated 8/30/2005 7:28AM
+-*
+-* -- Revision v1.0 --
+-* Austin:
+-*  Created include file
+-===============================================================*/
+-
+-use uo;
+-use os;
+-use cfgfile;
+-
+-include &quot;:ai_brain:include/npc_util&quot;;
+-
+-/*
+- * NPC_LoadCfgDefaults(template_name)
+- *
+- * Purpose
+- * Loads settings for a template from npcdesc.cfg
+- *
+- * Parameters
+- * template:	Name of the npc template to load settings for.
+- *
+- * Return value
+- * Returns a dictionary
+- *
+- */
+-function NPC_LoadCfgDefaults(template)
+-	if ( !template.package )
+-		template := NPC_ParseTemplateName(template);
+-	endif
+-	
+-	var npc_cfg := ReadConfigFile(template.package+&quot;npcdesc&quot;);
+-	var npc_elem := npc_cfg[template];
+-	
+-	var settings := dictionary;
+-	/*
+-	 * NPC Settings - Step 1 - npcdesc.cfg defaults.
+-	 * Reads in the AISetting lines from the npcdesc.cfg elem.
+-	 * Values are stored in packed form.
+-	 */
+-	foreach setting in GetConfigStringArray(npc_elem, &quot;AISetting&quot;)
+-		setting := SplitWords(setting);
+-		var key := setting[1];
+-		var value := setting[2];
+-
+-		settings[key] := UnPack(value);
+-
+-		sleepms(2);
+-	endforeach
+-
+-	return settings;
+-endfunction
+-
+-function NPC_LoadScriptSettings(source)
+-	var template:=source;
+-	if ( source.IsA(POLCLASS_NPC) )
+-		template := NPC_ParseTemplateName(source.npctemplate);
+-	elseif ( !template.package )
+-		template := NPC_ParseTemplateName(template);
+-	endif
+-	
+-	var npc_cfg := ReadConfigFile(template.package+&quot;npcdesc&quot;);
+-	var npc_elem := npc_cfg[template];
+-	
+-	var script_list := GetConfigStringArray(npc_elem, &quot;AIScript&quot;);
+-	var flag_list := GetConfigStringArray(npc_elem, &quot;AIScriptFlag&quot;);
+-	
+-	var script_settings := dictionary;
+-	foreach script_line in (script_list)
+-		script_line := SplitWords(script_line);
+-		var key := script_line[1];
+-		var value := script_line[2];
+-		var flags := 		
+-		
+-		var temp := struct;
+-		
+-		script_settings[key] := struct{&quot;
+-		
+-endfunction
+-
+-/*
+- * NPC_LoadCustomSettings(npc_ref, settings:=0)
+- * 
+- * Purpose
+- * Loads custom settings that are set on a specific npc.
+- *
+- * Parameters
+- * npc_ref:		Mobile reference
+- * settings:	Optional parameter
+- *		Dictionary read in from LoadNPCCfgDefaults()
+- *		Existing keys will be overwritten with any custom settings.
+- * 
+- * Return value
+- * Returns a dictionary
+- *		
+- */
+-function NPC_LoadCustomSettings(npc_ref, settings:=0)
+-	if ( Lower(TypeOf(settings)) != &quot;dictionary&quot; )
+-		settings := dictionary;
+-	endif
+-	
+-	var cstm_settings := GetObjProperty(npc_ref, &quot;AI_Settings&quot;);
+-	foreach key in (cstm_settings.keys())
+-		var value := cstm_settings[key];
+-		if ( value == error )
+-			settings.erase(key);
+-		else
+-			settings[key] := value;
+-		endif
+-		
+-		sleepms(2);
+-	endforeach
+-	
+-	return settings;
+-endfunction
+-
+-/*
+- * NPC_DefaultSettings(settings:=0)
+- *
+- * Purpose
+- * Checks the settings dictionary to make sure required values are set.
+- * If a dictionary is passed, it will check it for required parameters.
+- * If they are not present, they will be set. 
+- * Nothing will be overwritten in this function.
+- *
+- * Parameters
+- * settings:	Optional parameter
+- *		Dictionary read in from NPC_GetDefaultSettings()
+- *
+- * Return value
+- * Returns a dictionary 
+- *
+- */
+-function NPC_GetDefaultSettings(settings:=0)
+-	if ( Lower(TypeOf(settings)) != &quot;dictionary&quot; )
+-		settings := dictionary;
+-	endif
+-	
+-	if ( CInt(settings.exists(&quot;cycle_wait&quot;)) &lt;= 0 )
+-		settings[&quot;cycle_wait&quot;] := 10;
+-	endif
+-	if ( CInt(settings.exists(&quot;sleep_time&quot;)) &lt;= 0 )
+-		settings[&quot;sleep_time&quot;] := 1024;
+-	endif
+-	if ( CInt(settings.exists(&quot;idle_ticks&quot;)) &lt;= 0 )
+-		settings[&quot;idle_ticks&quot;] := 5;
+-	endif
+-		
+-	return settings;
+-endfunction
+
+Deleted: trunk/096/pkg/mobiles/ai_brain/include/npc_util.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_util.inc	2005-09-03 18:51:35 UTC (rev 46)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_util.inc	2005-09-03 18:52:13 UTC (rev 47)
+@@ -1,45 +0,0 @@
+-/*===============================================================
+-* Current Version
+-* NPC_UTIL.INC - v1.0
+-* Updated 8/31/2005 4:23AM
+-*
+-* -- Revision v1.0 --
+-* Austin:
+-*  Created include file
+-===============================================================*/
+-
+-/*
+- * NPC_ParseTemplateName(template_name)
+- *
+- * Purpose
+- * Finds the appropriate npcdesc.cfg to load.
+- * This enables npcs to be placed in packages and not just the ::npcdesc file.
+- * ReadConfigFile(&quot;:*:npcdesc&quot;) does not work in this case because packaged npcs
+- * have the package name at the begining of their .npctemplate member. Reading the
+- * specific config file - helps to avoid possible elem name collisions.
+- *
+- * Parameters
+- * template_name:	Name of the npc template to parse
+- *
+- * Return value
+- * Returns struct .package .template
+- *
+- */
+-function NPC_ParseTemplateName(template_name)
+-	//Find positions of &quot;:&quot; characters
+-	var colon_a := Find(template_name, &quot;:&quot;, 1);
+-	var colon_b := Find(template_name, &quot;:&quot;, 2);
+-
+-	var parsed := struct{&quot;package&quot;, &quot;template&quot;};
+-
+-	if ( !colon_a || !colon_b )
+-		//Not a complete package name - use default npcdesc.cfg
+-		parsed.package := &quot;::&quot;;
+-		parsed.template := template_name;
+-	else
+-		parsed.package := template_name[colon_a, colon_b];
+-		parsed.template := template_name[colon_b+1, Len(template_name)];
+-	endif
+-
+-	return parsed;
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000028.html">[Poldistro-svn] r46 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000030.html">[Poldistro-svn] r48 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#29">[ date ]</a>
+              <a href="thread.html#29">[ thread ]</a>
+              <a href="subject.html#29">[ subject ]</a>
+              <a href="author.html#29">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

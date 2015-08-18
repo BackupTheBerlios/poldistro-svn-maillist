@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1232 - in trunk/096: pkg/utils/coords pkg/utils/coords/regionScripts pkg/utils/coords/regionScripts/enter pkg/utils/coords/regionScripts/leave regions
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1232%20-%20in%20trunk/096%3A%20pkg/utils/coords%20pkg/utils/coords/regionScripts%20pkg/utils/coords/regionScripts/enter%20pkg/utils/coords/regionScripts/leave%20regions&In-Reply-To=%3C200603032004.k23K4YAe000859%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="001205.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1232 - in trunk/096: pkg/utils/coords pkg/utils/coords/regionScripts pkg/utils/coords/regionScripts/enter pkg/utils/coords/regionScripts/leave regions</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1232%20-%20in%20trunk/096%3A%20pkg/utils/coords%20pkg/utils/coords/regionScripts%20pkg/utils/coords/regionScripts/enter%20pkg/utils/coords/regionScripts/leave%20regions&In-Reply-To=%3C200603032004.k23K4YAe000859%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1232 - in trunk/096: pkg/utils/coords pkg/utils/coords/regionScripts pkg/utils/coords/regionScripts/enter pkg/utils/coords/regionScripts/leave regions">austin at berlios.de
+       </A><BR>
+    <I>Fri Mar  3 21:04:34 CET 2006</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="001205.html">[Poldistro-svn] r1233 - in trunk/096/pkg/utils/coords/regionScripts: enter leave
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1204">[ date ]</a>
+              <a href="thread.html#1204">[ thread ]</a>
+              <a href="subject.html#1204">[ subject ]</a>
+              <a href="author.html#1204">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-03-03 21:04:13 +0100 (Fri, 03 Mar 2006)
+New Revision: 1232
+
+Added:
+   trunk/096/pkg/utils/coords/regionScripts/
+   trunk/096/pkg/utils/coords/regionScripts/enter/
+   trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src
+   trunk/096/pkg/utils/coords/regionScripts/leave/
+   trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src
+Modified:
+   trunk/096/regions/regions.cfg
+Log:
+
+
+Added: trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src
+===================================================================
+--- trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src	2006-02-18 01:59:23 UTC (rev 1231)
++++ trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src	2006-03-03 20:04:13 UTC (rev 1232)
+@@ -0,0 +1,21 @@
++/* $Id$
++ *
++ */
++
++use uo;
++
++program EnterRegionZone(mobile, region_name)
++	
++	mobile.GrantPrivilege(&quot;Invul&quot;);
++	mobile.Enable(&quot;Invul&quot;);
++	
++	if ( mobile.cmdlevel )
++		SendSysMessage(mobile, &quot;Ahh another hard day of work in the office. (Entering &quot;+region_name+&quot;)&quot;);
++		return 1;
++	else 
++		SendSysMessage(mobile, &quot;You are in the GM jail. Please wait for someone to assist you.&quot;);
++		return 1;
++	endif
++	
++        return 1;
++endprogram
+
+Added: trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src
+===================================================================
+--- trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src	2006-02-18 01:59:23 UTC (rev 1231)
++++ trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src	2006-03-03 20:04:13 UTC (rev 1232)
+@@ -0,0 +1,19 @@
++/* $Id$
++ *
++ */
++
++use uo;
++
++program EnterRegionZone(mobile, region_name)
++	
++	if ( mobile.cmdlevel )
++		SendSysMessage(mobile, &quot;Off to go check on the players. (Leaving &quot;+region_name+&quot;)&quot;);
++		return 1;
++	else 
++		SendSysMessage(mobile, &quot;Go on, get out of here and behave for once.&quot;);
++		mobile.Disable(&quot;Invul&quot;);
++		return 1;
++	endif
++	
++        return 1;
++endprogram
+
+Modified: trunk/096/regions/regions.cfg
+===================================================================
+--- trunk/096/regions/regions.cfg	2006-02-18 01:59:23 UTC (rev 1231)
++++ trunk/096/regions/regions.cfg	2006-03-03 20:04:13 UTC (rev 1232)
+@@ -296,3 +296,17 @@
+ #       LightLevel      15
+ #}
+ 
++Region GM Jail
++{
++	Range		5268 1156 5311 1191
++	Guarded		1
++	LightLevel	0
++	LightOverride	1
++	NoCast		1
++	
++	//EnterText	You have entered GM Jail.
++	//LeaveText	You have left GM Jail.
++	
++	EnterScript	:coords:regionScripts/enter/GMJail
++	LeaveScript	:coords:regionScripts/leave/GMJail
++}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="001205.html">[Poldistro-svn] r1233 - in trunk/096/pkg/utils/coords/regionScripts: enter leave
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1204">[ date ]</a>
+              <a href="thread.html#1204">[ thread ]</a>
+              <a href="subject.html#1204">[ subject ]</a>
+              <a href="author.html#1204">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

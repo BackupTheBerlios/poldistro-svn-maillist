@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r168 - trunk/096/pkg/commands/seer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r168%20-%20trunk/096/pkg/commands/seer&In-Reply-To=%3C200509200424.j8K4OlNx003875%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000149.html">
+   <LINK REL="Next"  HREF="000151.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r168 - trunk/096/pkg/commands/seer</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r168%20-%20trunk/096/pkg/commands/seer&In-Reply-To=%3C200509200424.j8K4OlNx003875%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r168 - trunk/096/pkg/commands/seer">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Sep 20 06:24:47 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000149.html">[Poldistro-svn] r167 - trunk/096/pkg/items/decorations
+</A></li>
+        <LI>Next message: <A HREF="000151.html">[Poldistro-svn] r169 - trunk/096/pkg/systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#150">[ date ]</a>
+              <a href="thread.html#150">[ thread ]</a>
+              <a href="subject.html#150">[ subject ]</a>
+              <a href="author.html#150">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-20 06:24:44 +0200 (Tue, 20 Sep 2005)
+New Revision: 168
+
+Removed:
+   trunk/096/pkg/commands/seer/addgoloc.src
+Log:
+Removed addgoloc.src due to go.src now fully handling all Go Location commands.
+
+Deleted: trunk/096/pkg/commands/seer/addgoloc.src
+===================================================================
+--- trunk/096/pkg/commands/seer/addgoloc.src	2005-09-20 04:15:41 UTC (rev 167)
++++ trunk/096/pkg/commands/seer/addgoloc.src	2005-09-20 04:24:44 UTC (rev 168)
+@@ -1,52 +0,0 @@
+-use npc;
+-use uo;
+-use basicio;
+-use util;
+-use basic;
+-use cfgfile;
+-
+-
+-var  cfg;
+-var colors;
+-var num_colors;
+-
+-program addgoloc(who)
+-
+-
+-var where := TargetCoordinates(who);
+-var desc := RequestInput(who, who.backpack, &quot;How would you like to refer to this location?&quot; );
+-var locs    := ReadConfigFile(&quot;golocs&quot;);
+-var locvalue := GetConfigMaxIntKey(locs)+1;
+-var elemkey := &quot;&quot; + lower(desc);
+-
+-    var props:= array;
+-    var prop:= array;
+-    prop .+ pname;
+-    prop .+ pvalue;
+-
+-    prop.pname := &quot;Name&quot;;
+-    prop.pvalue := elemkey;
+-    props[1] := prop;
+-
+-    prop.pname := &quot;Type&quot;;
+-    prop.pvalue := &quot;all&quot;;
+-    props[2] := prop;
+-
+-    prop.pname := &quot;x&quot;;
+-    prop.pvalue := where.x;
+-    props[3] := prop;
+-
+-    prop.pname := &quot;y&quot;;
+-    prop.pvalue := where.y;
+-    props[4] := prop;
+-
+-    prop.pname := &quot;z&quot;;
+-    prop.pvalue := where.z;
+-    props[5] := prop;
+-
+-    AppendConfigFileElem( &quot;golocs&quot;, &quot;goloc&quot;, locvalue, props );
+-
+-
+-UnloadConfigFile(&quot;golocs&quot;);
+-
+-endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000149.html">[Poldistro-svn] r167 - trunk/096/pkg/items/decorations
+</A></li>
+	<LI>Next message: <A HREF="000151.html">[Poldistro-svn] r169 - trunk/096/pkg/systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#150">[ date ]</a>
+              <a href="thread.html#150">[ thread ]</a>
+              <a href="subject.html#150">[ subject ]</a>
+              <a href="author.html#150">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r500 - trunk/096/pkg/systems/merchantnodes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r500%20-%20trunk/096/pkg/systems/merchantnodes&In-Reply-To=%3C200510092219.j99MJUok019578%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000472.html">
+   <LINK REL="Next"  HREF="000474.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r500 - trunk/096/pkg/systems/merchantnodes</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r500%20-%20trunk/096/pkg/systems/merchantnodes&In-Reply-To=%3C200510092219.j99MJUok019578%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r500 - trunk/096/pkg/systems/merchantnodes">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 00:19:30 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000472.html">[Poldistro-svn] r499 - trunk/096/pkg/systems/housing
+</A></li>
+        <LI>Next message: <A HREF="000474.html">[Poldistro-svn] r501 - trunk/096/pkg/systems/merchantnodes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#473">[ date ]</a>
+              <a href="thread.html#473">[ thread ]</a>
+              <a href="subject.html#473">[ subject ]</a>
+              <a href="author.html#473">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 00:19:29 +0200 (Mon, 10 Oct 2005)
+New Revision: 500
+
+Modified:
+   trunk/096/pkg/systems/merchantnodes/guardNode.src
+Log:
+
+
+Modified: trunk/096/pkg/systems/merchantnodes/guardNode.src
+===================================================================
+--- trunk/096/pkg/systems/merchantnodes/guardNode.src	2005-10-09 22:16:20 UTC (rev 499)
++++ trunk/096/pkg/systems/merchantnodes/guardNode.src	2005-10-09 22:19:29 UTC (rev 500)
+@@ -3,7 +3,6 @@
+ 
+ include &quot;:gumps:include/old/old-gumps&quot;;
+ include &quot;include/client&quot;;
+-include &quot;include/gumpUtil&quot;;
+ 
+ var pid, proc, item, newtype, newamt, respawn, apply, cancel;
+ 
+@@ -16,12 +15,12 @@
+     SendSysMessage(who, &quot;That guard node is not responding.&quot;);
+     return;
+   endif
+-  GFInitGump(0, 0);
+-  GFPage(0);
+-  GFResizePic(  0,   0, 5120, 440, 300);
+-  GFResizePic( 10,  10, 5054, 420, 250);
+-  GFTextLine(132, 17, 0, &quot;Guard Node Interface&quot;);
+-  GFTextLine(130, 15, COLOR_YELLOW, &quot;Guard Node Interface&quot;);
++  OldGFInitGump(0, 0);
++  OldGFPage(0);
++  OldGFResizePic(  0,   0, 5120, 440, 300);
++  OldGFResizePic( 10,  10, 5054, 420, 250);
++  OldGFTextLine(132, 17, 0, &quot;Guard Node Interface&quot;);
++  OldGFTextLine(130, 15, COLOR_YELLOW, &quot;Guard Node Interface&quot;);
+   var type := GetObjProperty(item, &quot;Type&quot;);
+   if(!type)
+     type := &quot;townguard&quot;;
+@@ -32,9 +31,9 @@
+     amt := 1;
+     SetObjProperty(item, &quot;Amount&quot;, 1);
+   endif
+-  GFTextLine( 20,  50, COLOR_GREEN, &quot;Guard Set Type:&quot;);
+-  GFTextLine( 20,  80, COLOR_GREEN, &quot;Guard Set Amount:&quot;);
+-  GFTextLine(255,  80, COLOR_GREEN, &quot;Current:&quot;);
++  OldGFTextLine( 20,  50, COLOR_GREEN, &quot;Guard Set Type:&quot;);
++  OldGFTextLine( 20,  80, COLOR_GREEN, &quot;Guard Set Amount:&quot;);
++  OldGFTextLine(255,  80, COLOR_GREEN, &quot;Current:&quot;);
+   var npclist := GetObjProperty(item, &quot;NpcList&quot;);
+   var current := 0;
+   var holder := array;
+@@ -46,20 +45,20 @@
+   endforeach
+   SetObjProperty(item, &quot;NpcList&quot;, holder);
+   if(current == amt)
+-    GFTextLine(350,  80, COLOR_BLUE,   current+&quot;/&quot;+amt);
++    OldGFTextLine(350,  80, COLOR_BLUE,   current+&quot;/&quot;+amt);
+   elseif(current == 0)
+-    GFTextLine(350,  80, COLOR_RED,    current+&quot;/&quot;+amt);
++    OldGFTextLine(350,  80, COLOR_RED,    current+&quot;/&quot;+amt);
+   else
+-    GFTextLine(350,  80, COLOR_YELLOW, current+&quot;/&quot;+amt);
++    OldGFTextLine(350,  80, COLOR_YELLOW, current+&quot;/&quot;+amt);
+   endif
+-  GFGumpPic(171, 50, 2440);
+-  GFGumpPic(171, 80, 2444);
+-  newtype     := GFTextEntry(178,  50, 200,  30, COLOR_GREEN, type);
+-  newamt      := GFTextEntry(178,  80, 200,  30, COLOR_GREEN, amt);
+-  apply   := GFButtonID( 20, 270, G_YELLOW_OVAL_APPLY_0, G_YELLOW_OVAL_APPLY_1, 1);
+-  cancel  := GFButtonID(100, 270, G_RED_OVAL_CANCEL_0, G_RED_OVAL_CANCEL_1, 1);
++  OldGFGumpPic(171, 50, 2440);
++  OldGFGumpPic(171, 80, 2444);
++  newtype     := OldGFTextEntry(178,  50, 200,  30, COLOR_GREEN, type);
++  newamt      := OldGFTextEntry(178,  80, 200,  30, COLOR_GREEN, amt);
++  apply   := OldGFButtonID( 20, 270, 2124, 2123, 1);
++  cancel  := OldGFButtonID(100, 270, 2121, 2120, 1);
+   GetStatus(item, respawn);
+-  var retkey  := GFSendGump(who);
++  var retkey  := OldGFSendGump(who);
+   if((retkey[cancel.keyid]) or (retkey[0] == 0))
+     SendSysMessage(who, &quot;Cancelled.&quot;);
+   elseif(retkey[apply.keyid])
+@@ -72,18 +71,18 @@
+   var color, txt;
+     case(status)
+       &quot;on&quot;:      color := COLOR_GREEN; txt := &quot;Guard Node Enabled&quot;;
+-                 GFSetRadioGroup(1);
+-                 GFRadioButton(20, 150, 210, 211, 1, 200);
+-                 GFRadioButton(20, 175, 210, 211, 0, 201);
++                 OldGFSetRadioGroup(1);
++                 OldGFRadioButton(20, 150, 210, 211, 1, 200);
++                 OldGFRadioButton(20, 175, 210, 211, 0, 201);
+       &quot;off&quot;:     color := COLOR_RED; txt := &quot;Guard Node Disabled&quot;;
+-                 GFSetRadioGroup(1);
+-                 GFRadioButton(20, 150, 210, 211, 0, 200);
+-                 GFRadioButton(20, 175, 210, 211, 1, 201);
++                 OldGFSetRadioGroup(1);
++                 OldGFRadioButton(20, 150, 210, 211, 0, 200);
++                 OldGFRadioButton(20, 175, 210, 211, 1, 201);
+       default:   color := COLOR_GREEN; txt := &quot;Guard Node Enabled&quot;;
+                  SetObjProperty(item, &quot;Status&quot;, &quot;on&quot;);
+-                 GFSetRadioGroup(1);
+-                 GFRadioButton(20, 150, 210, 211, 1, 200);
+-                 GFRadioButton(20, 175, 210, 211, 0, 201);
++                 OldGFSetRadioGroup(1);
++                 OldGFRadioButton(20, 150, 210, 211, 1, 200);
++                 OldGFRadioButton(20, 175, 210, 211, 0, 201);
+     endcase
+   var cs := GetObjProperty(item, &quot;#wait&quot;);
+   if(cs == 1)
+@@ -93,12 +92,12 @@
+     color := COLOR_YELLOW;
+     txt := &quot;Guard Nodes Are Disabled Globally&quot;;
+   elseif(status != &quot;off&quot;)
+-    respawn := GFCheckBox(  20, 120, 208, 209, 0, 300);
+-    GFTextLine( 50, 120, COLOR_GREEN, &quot;Respawn Guards&quot;);
++    respawn := OldGFCheckBox(  20, 120, 208, 209, 0, 300);
++    OldGFTextLine( 50, 120, COLOR_GREEN, &quot;Respawn Guards&quot;);
+   endif
+-  GFTextMid(150, 270, 300, color, txt);
+-  GFTextLine(60, 150, COLOR_GREEN, &quot;Enable Node&quot;);
+-  GFTextLine(60, 175, COLOR_GREEN, &quot;Disable Node&quot;);
++  OldGFTextMid(150, 270, 300, color, txt);
++  OldGFTextLine(60, 150, COLOR_GREEN, &quot;Enable Node&quot;);
++  OldGFTextLine(60, 175, COLOR_GREEN, &quot;Disable Node&quot;);
+ endfunction
+ 
+ function ResetGuardNode(item, ret)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000472.html">[Poldistro-svn] r499 - trunk/096/pkg/systems/housing
+</A></li>
+	<LI>Next message: <A HREF="000474.html">[Poldistro-svn] r501 - trunk/096/pkg/systems/merchantnodes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#473">[ date ]</a>
+              <a href="thread.html#473">[ thread ]</a>
+              <a href="subject.html#473">[ subject ]</a>
+              <a href="author.html#473">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

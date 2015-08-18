@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1304 - trunk/096/pkg/systems/accounts/hook
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1304%20-%20trunk/096/pkg/systems/accounts/hook&In-Reply-To=%3C200605110656.k4B6uGWu022314%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001275.html">
+   <LINK REL="Next"  HREF="001277.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1304 - trunk/096/pkg/systems/accounts/hook</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1304%20-%20trunk/096/pkg/systems/accounts/hook&In-Reply-To=%3C200605110656.k4B6uGWu022314%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1304 - trunk/096/pkg/systems/accounts/hook">austin at berlios.de
+       </A><BR>
+    <I>Thu May 11 08:56:16 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001275.html">[Poldistro-svn] r1303 - in trunk/096/pkg/systems/accounts: . config hook
+</A></li>
+        <LI>Next message: <A HREF="001277.html">[Poldistro-svn] r1305 - in trunk/096/pkg: commands/gm systems/accounts/commands/gm systems/accounts/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1276">[ date ]</a>
+              <a href="thread.html#1276">[ thread ]</a>
+              <a href="subject.html#1276">[ subject ]</a>
+              <a href="author.html#1276">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-11 08:55:40 +0200 (Thu, 11 May 2006)
+New Revision: 1304
+
+Modified:
+   trunk/096/pkg/systems/accounts/hook/onLogin.src
+Log:
+
+
+Modified: trunk/096/pkg/systems/accounts/hook/onLogin.src
+===================================================================
+--- trunk/096/pkg/systems/accounts/hook/onLogin.src	2006-05-11 06:51:44 UTC (rev 1303)
++++ trunk/096/pkg/systems/accounts/hook/onLogin.src	2006-05-11 06:55:40 UTC (rev 1304)
+@@ -102,33 +102,33 @@
+ 	if ( !account )
+ 		// Account doesn't even exist.
+ 		return ACCT_NOT_EXIST;
+-	endif
+-
+-	if ( account )
+-		 if ( !account.CheckPassword(password) )
+-		 	var failed_login := account.GetProp(&quot;FailedLogin&quot;);
+-			// First attempt at failing the password check.
+-			if ( !failed_login )
+-				account.SetProp( &quot;FailedLogin&quot;, {1, ReadGameClock()});
+-				return ACCT_LOGIN_FAIL; // Let pol tell the user it's an incorrect password.
+-			else
+-				// Incorrect password for the 5th time.
+-			 	// Leave the user hanging at login for the next 10 minutes.
+-			 	if ( failed_login[1] &gt;= 5 &amp;&amp; ( failed_login[2] &gt;&gt; ReadGameClock() ) )
+-			  		account.SetProp( &quot;FailedLogin&quot;, {failed_login[1]+1, ReadGameClock()+10});
+-			  		return ACCT_LOGIN_HACK; // Leave user hanging.
+-			 	elseif ( failed_login[1] &gt;= 5 &amp;&amp; ( failed_login[2] &lt;&lt; ReadGameClock() ) )
+-			  		// User attempted to login with the wrong password after 10 minutes.
+-			 		// Reset user's wait time.
+-			 		account.EraseProp( &quot;FailedLogin&quot; );
+-			  		return ACCT_LOGIN_FAIL; // Let pol tell the user it's an incorrect password.
+-			 	elseif ( failed_login[1] &lt;&lt; 5 )
+-			  		account.SetProp( &quot;FailedLogin&quot;, {failed_login[1]+1, ReadGameClock()});
+-			  		return ACCT_LOGIN_FAIL; // Let pol tell him it's an incorrect password.
+-			 	endif
+-			endif
++	elseif ( !account.CheckPassword(password) )
++		var failed_login := account.GetProp(&quot;FailedLogin&quot;);
++		// First attempt at failing the password check.
++		if ( !failed_login )
++			account.SetProp( &quot;FailedLogin&quot;, {1, ReadGameClock()});
++			return ACCT_LOGIN_FAIL; // Let pol tell the user it's an incorrect password.
+ 		else
+-			return ACCT_LOGIN_OKAY; // Passed password check, let them login.
++			if ( failed_login[1] &gt;= 5 &amp;&amp; ( failed_login[2] &gt;&gt; ReadGameClock() ) )
++		  		// Incorrect password for the 5th time.
++		 		// Leave the user hanging at login for the next 10 minutes.
++		 		account.SetProp(&quot;FailedLogin&quot;, {failed_login[1]+1, ReadGameClock()+10});
++		  		return ACCT_LOGIN_HACK; // Leave user hanging.
++		 	
++		 	elseif ( failed_login[1] &gt;= 5 &amp;&amp; ( failed_login[2] &lt;&lt; ReadGameClock() ) )
++		  		// User attempted to login with the wrong password after 10 minutes.
++		 		// Reset user's wait time.
++		 		account.EraseProp(&quot;FailedLogin&quot;);
++		  		return ACCT_LOGIN_FAIL; // Let pol tell the user it's an incorrect password.
++		 	
++		 	elseif ( failed_login[1] &lt;&lt; 5 )
++		 		// Let pol tell user it's an incorrect password.
++		  		account.SetProp(&quot;FailedLogin&quot;, {failed_login[1]+1, ReadGameClock()});
++		  		return ACCT_LOGIN_FAIL;
++		 	endif
+ 		endif
++	else
++		// Passed password check, let user login.
++		return ACCT_LOGIN_OKAY;
+ 	endif
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001275.html">[Poldistro-svn] r1303 - in trunk/096/pkg/systems/accounts: . config hook
+</A></li>
+	<LI>Next message: <A HREF="001277.html">[Poldistro-svn] r1305 - in trunk/096/pkg: commands/gm systems/accounts/commands/gm systems/accounts/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1276">[ date ]</a>
+              <a href="thread.html#1276">[ thread ]</a>
+              <a href="subject.html#1276">[ subject ]</a>
+              <a href="author.html#1276">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,403 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r428 - trunk/096/pkg/items/containers/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r428%20-%20trunk/096/pkg/items/containers/include&In-Reply-To=%3C200510060804.j9684SIi004124%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000405.html">
+   <LINK REL="Next"  HREF="000407.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r428 - trunk/096/pkg/items/containers/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r428%20-%20trunk/096/pkg/items/containers/include&In-Reply-To=%3C200510060804.j9684SIi004124%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r428 - trunk/096/pkg/items/containers/include">austin at berlios.de
+       </A><BR>
+    <I>Thu Oct  6 10:04:28 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000405.html">[Poldistro-svn] r427 - trunk/096/pkg/items/containers
+</A></li>
+        <LI>Next message: <A HREF="000407.html">[Poldistro-svn] r429 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#406">[ date ]</a>
+              <a href="thread.html#406">[ thread ]</a>
+              <a href="subject.html#406">[ subject ]</a>
+              <a href="author.html#406">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-06 10:04:28 +0200 (Thu, 06 Oct 2005)
+New Revision: 428
+
+Added:
+   trunk/096/pkg/items/containers/include/merchantUtil.inc
+Removed:
+   trunk/096/pkg/items/containers/include/vendorUtil.inc
+Modified:
+   trunk/096/pkg/items/containers/include/storageAreas.inc
+Log:
+
+
+Added: trunk/096/pkg/items/containers/include/merchantUtil.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/merchantUtil.inc	2005-10-06 08:03:55 UTC (rev 427)
++++ trunk/096/pkg/items/containers/include/merchantUtil.inc	2005-10-06 08:04:28 UTC (rev 428)
+@@ -0,0 +1,67 @@
++// $Id$
++
++/*===============================================================
++* Current Version
++* MERCHANTUTIL.INC - v1.0
++* Updated 10/5/2005 6:15AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++
++include &quot;:containers:storageAreas&quot;;
++
++const CPM_FORSALE	:= &quot;Merchant - ForSale&quot;;
++const CPM_BUYING	:= &quot;Merchant - Buying&quot;;
++const CPM_SHOPPINGCART	:= &quot;Merchant - ShoppingCart&quot;;
++const CPM_HOLDING	:= &quot;Merchant - Holding&quot;;
++
++/*
++ * NPC_MerchantForSaleContainer(npc)
++ *
++ * Purpose
++ *
++ * Parameters
++ * npc:
++ *
++ * Return value
++ * Returns a container
++ *
++ */
++function CPM_DeleteContainers(npc)
++	var container_id := CP_GetMobileContainerID(npc);
++	CP_RemoveStorageAreaContainer(container_id, CPM_FORSALE);
++	CP_RemoveStorageAreaContainer(container_id, CPM_BUYING);
++	CP_RemoveStorageAreaContainer(container_id, CPM_SHOPPINGCART);
++	CP_RemoveStorageAreaContainer(container_id, CPM_HOLDING);
++endfunction
++
++/*
++ * CPM_GetMerchantContainer(npc, type)
++ *
++ * Purpose
++ * Retrieves a merchant (vendor) container.
++ *
++ * Parameters
++ * npc:		NPC that owns the container.
++ * type:	Storage area to retrieve the container from.
++ *		CPM_FORSALE		- Items the vendor is selling.
++ *		CPM_BUYING		- Items the vendor will buy.
++ *		CPM_SHOPPINGCART	- Items a buyer has selected (but not paid for).
++ *		CPM_HOLDING		- Items the vendor is holding onto for its owner.
++ *
++ * Return value
++ * Returns a container
++ *
++ */
++function CPM_GetMerchantContainer(npc, type)
++	var shared_container := GetObjProperty(npc, &quot;MerchantContainer&quot;);
++	if ( shared_container )
++		return CP_GetStorageAreaContainer(shared_container, type, CP_CREATE);
++	else
++		return CP_GetStorageContainerForMobile(npc, type, CP_CREATE);
++	endif
++endfunction
+
+Modified: trunk/096/pkg/items/containers/include/storageAreas.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/storageAreas.inc	2005-10-06 08:03:55 UTC (rev 427)
++++ trunk/096/pkg/items/containers/include/storageAreas.inc	2005-10-06 08:04:28 UTC (rev 428)
+@@ -27,14 +27,14 @@
+ const CP_DEFAULT_AREA	:= &quot;World Bank&quot;;
+ const CP_DEFAULT_PREFIX	:= &quot;[Root Container] &quot;;
+ 
+-/* 
++/*
+  * Set the 'box_type' variable to the object name of the container type
+- * you want to be used for bank box. 
++ * you want to be used for bank box.
+  * Example: &quot;pouch&quot; &quot;metalchest&quot; &quot;barrel&quot;
+  *
+  * This is ONLY used when a new root container is created. It can be changed on
+  * the fly inside of a script for when you want to use specific container
+- * types for special storage areas. 
++ * types for special storage areas.
+  *
+  * Ideally, you should make an object type with the name 'BankBox' to better
+  * control the number of items that can be put in the storage container.
+@@ -46,10 +46,10 @@
+ 
+ /*
+  * CP_GetMobileContainerID(mobile)
+- * 
++ *
+  * Purpose
+  * Sets up the container_id string for a mobile's root container.
+- * 
++ *
+  * Parameters
+  * mobile:	Mobile whos box will be retrieved.
+  *
+@@ -76,17 +76,17 @@
+  * create:		Controls if the container will be created if it does not already exist.
+  *
+  * Return Value
+- * A container object 
++ * A container object
+  *
+  */
+ function CP_GetStorageContainerForMobile(mobile, storage_area_name:=0, create:=CP_NOCREATE)
+ 	if ((!storage_area_name) || (storage_area_name == error))
+ 		storage_area_name := CP_DEFAULT_AREA;
+ 	endif
+-	
++
+ 	var container_id := CP_GetMobileContainerID(mobile);
+ 	var root_container := CP_GetStorageAreaContainer(container_id, storage_area_name, create);
+-		
++
+ 	return root_container;
+ endfunction
+ 
+@@ -109,14 +109,14 @@
+ 	if ( (!storage_area_name) || (storage_area_name == error) )
+ 		storage_area_name := CP_DEFAULT_AREA;
+ 	endif
+-	var storage_area := FindStorageArea(storage_area_name);
+-	
+ 	var container_name := CP_DEFAULT_PREFIX + container_id;
++
++	var storage_area := FindStorageArea(storage_area_name);
+ 	var root_container := FindRootItemInStorageArea(storage_area, container_name);
+ 	if ( (!root_container) &amp;&amp; (create) )
+ 		root_container := CP_CreateStorageAreaContainer(container_id, storage_area_name);
+ 	endif
+-		
++
+ 	return root_container;
+ endfunction
+ 
+@@ -139,22 +139,21 @@
+ 	if ( (!storage_area_name) || (storage_area_name == error) )
+ 		storage_area_name := CP_DEFAULT_AREA;
+ 	endif
+-	
++
+ 	var storage_area := FindStorageArea(storage_area_name);
+ 	if ( !storage_area )
+ 		// The storage area does not exist - so create it.
+-		CreateStorageArea(storage_area_name);
+-		storage_area := FindStorageArea(storage_area_name);
++		storage_area := CreateStorageArea(storage_area_name);
+ 	endif
+-	
++
+ 	var container_name := CP_DEFAULT_PREFIX + container_id;
+-	
+-	var result := CreateRootItemInStorageArea(storage_area, container_name, container_type);
+-	if ( result.errortext )
+-		return result;
++
++	var root_container := CreateRootItemInStorageArea(storage_area, container_name, container_type);
++	if ( root_container.errortext )
++		CP_StorageDebugMsg(&quot;Error::CP_CreateStorageAreaContainer() - &quot;+root_container.errortext);
+ 	endif
+-		
+-	return FindRootItemInStorageArea(storage_area_name, container_name);
++
++	return root_container;
+ endfunction
+ 
+ 
+@@ -186,7 +185,7 @@
+ 	return DestroyRootItemInStorageArea(storage_area, container_name);
+ endfunction
+ 
+-/* 
++/*
+  * CP_GetStorageAreaNames()
+  *
+  * Purpose
+@@ -204,13 +203,13 @@
+ 		name_list.Append(_storage_area_iter);
+ 		sleepms(2);
+ 	endforeach
+-	
++
+ 	return name_list;
+ endfunction
+ 
+-/* 
++/*
+  * CP_GetRootContainersInStorageArea(storage_area_name)
+- * 
++ *
+  * Purpose
+  *
+  * Parameters
+@@ -226,7 +225,7 @@
+ 		root_list.Append(container);
+ 		sleepms(2);
+ 	endforeach
+-	
++
+ 	return root_list;
+ endfunction
+ 
+@@ -244,6 +243,6 @@
+ 	if ( STORAGE_DEBUG )
+ 		SysLog(text);
+ 	endif
+-	
++
+ 	return 1;
+ endfunction
+
+Deleted: trunk/096/pkg/items/containers/include/vendorUtil.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/vendorUtil.inc	2005-10-06 08:03:55 UTC (rev 427)
++++ trunk/096/pkg/items/containers/include/vendorUtil.inc	2005-10-06 08:04:28 UTC (rev 428)
+@@ -1,99 +0,0 @@
+-// $Id$
+-
+-/*===============================================================
+-* Current Version
+-* VENDORUTIL.INC - v1.0
+-* Updated 10/5/2005 6:15AM
+-*
+-* -- Revision v1.0 --
+-* Austin:
+-*  Created include file
+-===============================================================*/
+-
+-use uo;
+-
+-include &quot;:containers:storageAreas&quot;;
+-
+-/*
+- * NPC_MerchantForSaleContainer(npc)
+- *
+- * Purpose
+- *
+- * Parameters
+- * npc:	
+- *
+- * Return value
+- * Returns a container
+- *
+- */
+-function CPV_DeleteContainers(npc)
+-	var container_id := CP_GetMobileContainerID(npc);	
+-	CP_RemoveStorageAreaContainer(container_id, &quot;Merchat - ForSale&quot;);
+-	CP_RemoveStorageAreaContainer(container_id, &quot;Merchat - Buying&quot;);
+-	CP_RemoveStorageAreaContainer(container_id, &quot;Merchat - ShoppingCart&quot;);
+-	CP_RemoveStorageAreaContainer(container_id, &quot;Merchat - Holding&quot;);
+-endfunction
+-
+-/*
+- * NPC_MerchantForSaleContainer(npc)
+- *
+- * Purpose
+- *
+- * Parameters
+- * npc:	
+- *
+- * Return value
+- * Returns a container
+- *
+- */
+-function CPV_GetForSaleContainer(npc)
+-	return CP_GetStorageContainerForMobile(npc, &quot;Merchat - ForSale&quot;, CP_CREATE);
+-endfunction
+-
+-/*
+- * NPC_MerchantBuyingContainer(npc)
+- *
+- * Purpose
+- *
+- * Parameters
+- * npc:	
+- *
+- * Return value
+- * Returns a container
+- *
+- */
+-function CPV_GetBuyingContainer(npc)
+-	return CP_GetStorageContainerForMobile(npc, &quot;Merchat - Buying&quot;, CP_CREATE);
+-endfunction
+-
+-/*
+- * NPC_MerchantShoppingCartContainer(npc)
+- *
+- * Purpose
+- *
+- * Parameters
+- * npc:	
+- *
+- * Return value
+- * Returns a container
+- *
+- */
+-function CPV_GetShoppingCartContainer(npc)
+-	return CP_GetStorageContainerForMobile(npc, &quot;Merchat - ShoppingCart&quot;, CP_CREATE);
+-endfunction
+-
+-/*
+- * CPV_ShoppingCartContainer(npc)
+- *
+- * Purpose
+- *
+- * Parameters
+- * npc:	
+- *
+- * Return value
+- * Returns a container
+- *
+- */
+-function CPV_GetHoldingContainer(npc)
+-	return CP_GetStorageContainerForMobile(npc, &quot;Merchat - Holding&quot;, CP_CREATE);
+-endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000405.html">[Poldistro-svn] r427 - trunk/096/pkg/items/containers
+</A></li>
+	<LI>Next message: <A HREF="000407.html">[Poldistro-svn] r429 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#406">[ date ]</a>
+              <a href="thread.html#406">[ thread ]</a>
+              <a href="subject.html#406">[ subject ]</a>
+              <a href="author.html#406">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

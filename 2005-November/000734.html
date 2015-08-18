@@ -1,0 +1,367 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r760 - in trunk/096/pkg/skills: alchemy detecthidden fishing healing magery meditation tinkering veterinary
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r760%20-%20in%20trunk/096/pkg/skills%3A%20alchemy%20detecthidden%20fishing%20healing%20magery%20meditation%20tinkering%20veterinary&In-Reply-To=%3C200511010426.jA14QZEV014997%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000733.html">
+   <LINK REL="Next"  HREF="000735.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r760 - in trunk/096/pkg/skills: alchemy detecthidden fishing healing magery meditation tinkering veterinary</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r760%20-%20in%20trunk/096/pkg/skills%3A%20alchemy%20detecthidden%20fishing%20healing%20magery%20meditation%20tinkering%20veterinary&In-Reply-To=%3C200511010426.jA14QZEV014997%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r760 - in trunk/096/pkg/skills: alchemy detecthidden fishing healing magery meditation tinkering veterinary">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 05:26:35 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000733.html">[Poldistro-svn] r759 - in trunk/096/pkg: items/food items/traps items/walkOn/paraField items/walkOn/poisonField mobiles/brainAI/scripts/combat mobiles/oldAI mobiles/timedScripts/subScripts/paralysis
+</A></li>
+        <LI>Next message: <A HREF="000735.html">[Poldistro-svn] r761 - trunk/096/scripts/control
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#734">[ date ]</a>
+              <a href="thread.html#734">[ thread ]</a>
+              <a href="subject.html#734">[ subject ]</a>
+              <a href="author.html#734">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 05:26:31 +0100 (Tue, 01 Nov 2005)
+New Revision: 760
+
+Modified:
+   trunk/096/pkg/skills/alchemy/drinkPotion.inc
+   trunk/096/pkg/skills/detecthidden/detectHidden.src
+   trunk/096/pkg/skills/fishing/magicFish.src
+   trunk/096/pkg/skills/healing/healing.src
+   trunk/096/pkg/skills/magery/archCure.src
+   trunk/096/pkg/skills/magery/cure.src
+   trunk/096/pkg/skills/magery/poisonDamage.src
+   trunk/096/pkg/skills/meditation/meditation.src
+   trunk/096/pkg/skills/tinkering/tinkerTraps.src
+   trunk/096/pkg/skills/veterinary/vet.src
+Log:
+Updated scripts to use the new timedScripts package rather than poison watcher.
+Some also just got the include line removed.. because they used no functions from it.
+
+Modified: trunk/096/pkg/skills/alchemy/drinkPotion.inc
+===================================================================
+--- trunk/096/pkg/skills/alchemy/drinkPotion.inc	2005-11-01 04:14:25 UTC (rev 759)
++++ trunk/096/pkg/skills/alchemy/drinkPotion.inc	2005-11-01 04:26:31 UTC (rev 760)
+@@ -1,5 +1,5 @@
+ include &quot;include/attributes&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ use cfgfile;
+ 
+ const POISON_SOUND := 0x247;
+@@ -66,6 +66,6 @@
+   if(who.cmdlevel &gt; 1)
+     return;
+   endif
+-  AddPoison(who, &quot;defaultPoison&quot;, 120, who, level);
++  TS_StartTimer(who, &quot;defaultPoison&quot;, 120, level, who);
+ endfunction
+ 
+
+Modified: trunk/096/pkg/skills/detecthidden/detectHidden.src
+===================================================================
+--- trunk/096/pkg/skills/detecthidden/detectHidden.src	2005-11-01 04:14:25 UTC (rev 759)
++++ trunk/096/pkg/skills/detecthidden/detectHidden.src	2005-11-01 04:26:31 UTC (rev 760)
+@@ -21,7 +21,6 @@
+ include &quot;:attributes:skillCheck&quot;;
+ include &quot;include/sound&quot;;
+ include &quot;include/tileEffects&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
+ 
+ CONST TRAP := &quot;hiddentrap&quot;;
+ CONST CRITICAL_FAILURE := 1;
+
+Modified: trunk/096/pkg/skills/fishing/magicFish.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/magicFish.src	2005-11-01 04:14:25 UTC (rev 759)
++++ trunk/096/pkg/skills/fishing/magicFish.src	2005-11-01 04:26:31 UTC (rev 760)
+@@ -9,7 +9,8 @@
+ 
+ include &quot;include/statMod&quot;;
+ include &quot;include/canAccess&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
++include &quot;:timedscripts:poisonUtil&quot;;
+ 
+ program use_MagicFish(who, fish)
+ 
+@@ -49,8 +50,8 @@
+ 				10: if (CanMod(who, &quot;int&quot;))
+ 					DoTempMod(who, &quot;int&quot;, miscprop1, miscprop2);
+ 				    endif
+-				11:  if (ListPoisonsByType(who, &quot;defaultPoison&quot;).size() &gt; 0 )
+-					CurePoison(who, 120, &quot;defaultPoison&quot;,CInt(miscprop1));
++				11:  if (TS_GetTimerNames(who, &quot;P&quot;).size() &gt; 0 )
++					TS_CurePoison(who, 120, &quot;P&quot;, CInt(miscprop1));
+ 				     endif
+ 				16: if (CanMod(who, &quot;str&quot;))
+ 					DoTempMod(who, &quot;str&quot;, miscprop1, miscprop2);
+
+Modified: trunk/096/pkg/skills/healing/healing.src
+===================================================================
+--- trunk/096/pkg/skills/healing/healing.src	2005-11-01 04:14:25 UTC (rev 759)
++++ trunk/096/pkg/skills/healing/healing.src	2005-11-01 04:26:31 UTC (rev 760)
+@@ -9,7 +9,8 @@
+ include &quot;include/resurrection&quot;;
+ include &quot;include/canAccess&quot;;
+ include &quot;include/attributes&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
++include &quot;:timedscripts:poisonUtil&quot;;
+ 
+ var clock := ReadGameClock();
+ var healing;
+@@ -28,7 +29,7 @@
+ 		SendSysMessage(who, &quot;Cancelled.&quot;);
+ 		return;
+ 	endif
+-	var poisons := ListPoisonsByType(patient, &quot;defaultPoisons&quot;);
++	var poisons := TS_GetTimerNames(patient, &quot;P&quot;);
+ 	if(dist(who, patient) &gt;= 2)
+ 		SendSysMessage(who, &quot;Your patient is too far away.&quot;);
+ 		return;
+@@ -199,7 +200,7 @@
+ 			  resurrect_pc(who, patient, counter);
+ 			endif
+ 			return;
+-		elseif(ListPoisonsByType(patient, &quot;defaultPoison&quot;).size() &gt; 0)
++		elseif(TS_GetTimerNames(patient, &quot;P&quot;).size() &gt; 0)
+ 		// can't heal a patient who is poisoned.
+ 			if((healing &lt; 60) or (anatomy &lt; 60))
+ 				SendSysMessage(who, &quot;You have no chance of curing your patient's poison.&quot;);
+@@ -288,7 +289,7 @@
+ 			SendSysMessage(patient, who.name + &quot; starts to resurrect you.&quot;);
+ 			resurrect_pc(who, patient, counter);
+ 			break;
+-		elseif(ListPoisonsByType(patient, &quot;defaultPoison&quot;).size() == 0)
++		elseif(TS_GetTimerNames(patient, &quot;P&quot;).size() == 0)
+ 			SendSysMessage(who,&quot;You start to heal &quot; + patient.name + &quot;.&quot;);
+ 			if(patient != who)
+ 				SendSysMessage(patient, who.name + &quot; starts to heal you.&quot;);
+@@ -307,8 +308,8 @@
+ 		endif
+ 		if(counter &gt;= cycles)
+ 			if(CheckSkill(who, SKILLID_HEALING, 48, 0))
+-				CurePoison(patient, 120, &quot;defaultPoison&quot;, healamt);
+-	if (ListPoisonsByType(patient, &quot;defaultPoison&quot;).size() == 0)
++				TS_CurePoison(patient, 120, &quot;P&quot;, healamt);
++	if (TS_GetTimerNames(patient, &quot;P&quot;).size() == 0)
+ 					SendSysMessage(who,&quot;You have cured your patient completely.&quot;);
+ 					SendSysMessage(patient, who.name + &quot; has cured you completely.&quot;);
+ 					AwardPoints(who, SKILLID_HEALING, (healamt * 100));
+
+Modified: trunk/096/pkg/skills/magery/archCure.src
+===================================================================
+--- trunk/096/pkg/skills/magery/archCure.src	2005-11-01 04:14:25 UTC (rev 759)
++++ trunk/096/pkg/skills/magery/archCure.src	2005-11-01 04:26:31 UTC (rev 760)
+@@ -5,7 +5,8 @@
+ include &quot;include/sound&quot;;
+ include &quot;include/tileEffects&quot;;
+ include &quot;include/attributes&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
++include &quot;:timedscripts:poisonUtil&quot;;
+ 
+ program archCure(parms)
+   var caster := parms.caster;
+@@ -32,9 +33,9 @@
+           ApplyRawDamage(castOn, potency);
+         endif
+       endif
+-      if (ListPoisonsByType(castOn, &quot;defaultPoison&quot;).size() &gt; 0)
+-        CurePoison(castOn, 180, &quot;defaultPoison&quot;, potency);
+-        if (ListPoisonsByType(castOn, &quot;defaultPoison&quot;).size() &gt; 0)
++      if (TS_GetTimerNames(castOn, &quot;P&quot;).size() &gt; 0)
++        TS_CurePoison(castOn, 180, &quot;P&quot;, potency);
++        if (TS_GetTimerNames(castOn, &quot;P&quot;).size() &gt; 0)
+           SendSysMessage(caster, &quot;You cure some poison.&quot;);  
+           SendSysMessage(castOn, caster.name + &quot; has partially cured you!&quot;);
+         else
+
+Modified: trunk/096/pkg/skills/magery/cure.src
+===================================================================
+--- trunk/096/pkg/skills/magery/cure.src	2005-11-01 04:14:25 UTC (rev 759)
++++ trunk/096/pkg/skills/magery/cure.src	2005-11-01 04:26:31 UTC (rev 760)
+@@ -5,7 +5,8 @@
+ include &quot;include/attributes&quot;;
+ include &quot;include/sound&quot;;
+ include &quot;include/tileEffects&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
++include &quot;:timedscripts:poisonUtil&quot;;
+ 
+ 
+ program cure( parms )
+@@ -30,9 +31,9 @@
+       ApplyRawDamage(castOn, potency);
+     endif
+   endif
+-  if (ListPoisonsByType(castOn, &quot;defaultPoison&quot;).size() &gt; 0)
+-    CurePoison(castOn, 120, &quot;defaultPoison&quot;, potency);
+-    if (ListPoisonsByType(castOn, &quot;defaultPoison&quot;).size() &gt; 0)
++  if (TS_GetTimerNames(castOn, &quot;P&quot;).size() &gt; 0)
++    TS_CurePoison(castOn, 120, &quot;P&quot;, potency);
++    if (TS_GetTimerNames(castOn, &quot;P&quot;).size() &gt; 0)
+       SendSysMessage(caster, &quot;You cure some poison.&quot;);  
+       SendSysMessage(castOn, caster.name + &quot; has partially cured you!&quot;);
+     else
+
+Modified: trunk/096/pkg/skills/magery/poisonDamage.src
+===================================================================
+--- trunk/096/pkg/skills/magery/poisonDamage.src	2005-11-01 04:14:25 UTC (rev 759)
++++ trunk/096/pkg/skills/magery/poisonDamage.src	2005-11-01 04:26:31 UTC (rev 760)
+@@ -4,7 +4,7 @@
+ 
+ include &quot;include/client&quot;;
+ include &quot;include/attributes&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ include &quot;include/spellRestrictions&quot;;
+ 
+ 
+@@ -23,7 +23,7 @@
+ 	elseif (who.cmdlevel &gt; 1)
+ 		return;
+ 	endif
+-	AddPoison(who, &quot;defaultPoison&quot;, 120, attacker, level);
++	TS_StartTimer(who, &quot;defaultPoison&quot;, 120, level, attacker);
+ 	if (pfield == 1)
+ 		PrintTextAbovePrivate(who, &quot;You choke on the noxious fumes!&quot;, who);
+ 		var dmg := Resisted(5, attacker, who, CInt(GetAttribute(attacker, &quot;magery&quot;) / 25));
+
+Modified: trunk/096/pkg/skills/meditation/meditation.src
+===================================================================
+--- trunk/096/pkg/skills/meditation/meditation.src	2005-11-01 04:14:25 UTC (rev 759)
++++ trunk/096/pkg/skills/meditation/meditation.src	2005-11-01 04:26:31 UTC (rev 760)
+@@ -6,7 +6,7 @@
+ 
+ include &quot;include/client&quot;;
+ include &quot;include/attributes&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ 
+ program meditation( who )
+   EraseObjProperty(who, &quot;HealTimer&quot;);
+@@ -18,7 +18,7 @@
+    Detach();
+    return;
+   endif
+-  if (ListPoisonsByType(who, &quot;defaultPoison&quot;).size() &gt; 0)
++  if (TS_GetTimerNames(who, &quot;P&quot;).size() &gt; 0)
+     SendSysMessage( who, &quot;You cannot meditate while poisoned.&quot; );
+    Detach();
+     return;
+@@ -55,7 +55,7 @@
+         SendSysMessage(who,&quot;Regenerative forces cannot penetrate your armor.&quot;);
+         EraseObjProperty(who, &quot;IsMeditating&quot;);
+         break;
+-      elseif(ListPoisonsByType(who, &quot;defaultPoison&quot;).size() &gt; 0)
++      elseif(TS_GetTimerNames(who, &quot;P&quot;).size() &gt; 0)
+         EraseObjProperty(who, &quot;IsMeditating&quot;);
+       break;
+       elseif(GetMana(who) &gt;= GetMaxMana(who))
+
+Modified: trunk/096/pkg/skills/tinkering/tinkerTraps.src
+===================================================================
+--- trunk/096/pkg/skills/tinkering/tinkerTraps.src	2005-11-01 04:14:25 UTC (rev 759)
++++ trunk/096/pkg/skills/tinkering/tinkerTraps.src	2005-11-01 04:26:31 UTC (rev 760)
+@@ -6,7 +6,6 @@
+ include &quot;include/sound&quot;;
+ include &quot;include/tileEffects&quot;;
+ include &quot;include/client&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
+ include &quot;include/canAccess&quot;;
+ 
+ 
+
+Modified: trunk/096/pkg/skills/veterinary/vet.src
+===================================================================
+--- trunk/096/pkg/skills/veterinary/vet.src	2005-11-01 04:14:25 UTC (rev 759)
++++ trunk/096/pkg/skills/veterinary/vet.src	2005-11-01 04:26:31 UTC (rev 760)
+@@ -6,7 +6,8 @@
+ include &quot;include/client&quot;;
+ include &quot;include/attributes&quot;;
+ include &quot;include/dist&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
++include &quot;:timedscripts:poisonUtil&quot;;
+ 
+ var config;
+ var elem;
+@@ -25,13 +26,13 @@
+   elseif(!CheckLineOfSight(who,patient))
+ 	SendSysMessage(who,&quot;You can't see your patient.&quot;);
+ 	return;
+-  elseif((GetHp(patient) &gt;= GetStrength(patient)) &amp;&amp; (ListPoisonsByType(patient, &quot;defaultPoison&quot;).size() == 0))
++  elseif((GetHp(patient) &gt;= GetStrength(patient)) &amp;&amp; (TS_GetTimerNames(patient, &quot;P&quot;).size() == 0))
+ 	SendSysMessage(who,&quot;Your patient is at full health!&quot;);
+ 	return;
+   endif
+   Detach();
+   SetObjProperty(who, &quot;HealTimer&quot;, clock);
+-  if(ListPoisonsByType(patient, &quot;defaultPoison&quot;).size() &gt; 0)
++  if(TS_GetTimerNames(patient, &quot;P&quot;).size() &gt; 0)
+     if(!CheckLineOfSight(who,patient))
+       SendSysMessage(who,&quot;You can't see your patient.&quot;);
+       return;
+@@ -103,7 +104,7 @@
+         healamt := (healamt / 2);
+       endif
+     endif
+-    if(ListPoisonsByType(patient,&quot;defaultPoison&quot;).size() &gt; 0)
++    if(TS_GetTimerNames(patient,&quot;P&quot;).size() &gt; 0)
+       cure(who, patient);
+       break;
+     endif
+@@ -182,8 +183,8 @@
+     if(counter &gt;= cycles)
+       if(CheckSkill(who, SKILLID_VETERINARY, 80, 0) &amp;&amp; (CInt(GetEffectiveSkill(who, SKILLID_ANATOMY)) &gt;= 61))
+         if((RandomInt(100) + 1) &lt; healamt);
+-          CurePoison(patient,(healamt/40),&quot;defaultPoison&quot;);
+-          if (ListPoisonsByType(patient, &quot;defaultPoison&quot;).size() &gt; 0)
++         TS_CurePoison(patient,(healamt/40),&quot;P&quot;);
++          if (TS_GetTimerNames(patient, &quot;P&quot;).size() &gt; 0)
+             SendSysMessage(who, &quot;You have partially cured your patient.&quot;);
+           else
+             SendSysMessage(who, &quot;You have cured your patient completely.&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000733.html">[Poldistro-svn] r759 - in trunk/096/pkg: items/food items/traps items/walkOn/paraField items/walkOn/poisonField mobiles/brainAI/scripts/combat mobiles/oldAI mobiles/timedScripts/subScripts/paralysis
+</A></li>
+	<LI>Next message: <A HREF="000735.html">[Poldistro-svn] r761 - trunk/096/scripts/control
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#734">[ date ]</a>
+              <a href="thread.html#734">[ thread ]</a>
+              <a href="subject.html#734">[ subject ]</a>
+              <a href="author.html#734">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

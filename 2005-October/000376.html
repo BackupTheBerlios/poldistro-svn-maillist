@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r398 - trunk/096/pkg/items/mounts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r398%20-%20trunk/096/pkg/items/mounts/include&In-Reply-To=%3C200510032047.j93Kl3QQ026673%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000375.html">
+   <LINK REL="Next"  HREF="000377.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r398 - trunk/096/pkg/items/mounts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r398%20-%20trunk/096/pkg/items/mounts/include&In-Reply-To=%3C200510032047.j93Kl3QQ026673%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r398 - trunk/096/pkg/items/mounts/include">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct  3 22:47:03 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000375.html">[Poldistro-svn] r397 - trunk/096/pkg/items/mounts/include
+</A></li>
+        <LI>Next message: <A HREF="000377.html">[Poldistro-svn] r399 - trunk/096/pkg/items/mounts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#376">[ date ]</a>
+              <a href="thread.html#376">[ thread ]</a>
+              <a href="subject.html#376">[ subject ]</a>
+              <a href="author.html#376">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-03 22:47:03 +0200 (Mon, 03 Oct 2005)
+New Revision: 398
+
+Modified:
+   trunk/096/pkg/items/mounts/include/mounts.inc
+Log:
+
+
+Modified: trunk/096/pkg/items/mounts/include/mounts.inc
+===================================================================
+--- trunk/096/pkg/items/mounts/include/mounts.inc	2005-10-03 20:23:23 UTC (rev 397)
++++ trunk/096/pkg/items/mounts/include/mounts.inc	2005-10-03 20:47:03 UTC (rev 398)
+@@ -137,6 +137,105 @@
+ endfunction
+ 
+ /* 
++ * MP_Mount(mobile, npc)
++ *
++ * Purpose
++ * Removes the NPC, sets the mount piece up, and equips it on the mobile.
++ *
++ * Parameters
++ * mobile:	Mobile that will be mounted.
++ * npc:		NPC to convert into a mount piece.
++ * 
++ * Return value
++ * Returns the mount piece.
++ *
++ */
++function MP_Mount(mobile, npc)
++	var mount_piece := GetEquipmentByLayer(mobile, LAYER_MOUNT);
++	if ( mount_piece )
++		return error{&quot;errortext&quot;:=&quot;Mobile is already mounted.&quot;};
++	endif
++	
++	Set_Critical(1);
++	var mount_graphic := MP_GetMountGraphic(npc);
++	if ( !mount_graphic )
++		return mount_graphic;
++	endif
++	
++	mount_piece := CreateItemAtLocation(mobile.x, mobile.y, mobile.z, MOUNT_OBJTYPE, 1);
++	mount_piece.graphic := mount_graphic;
++	SetName(mount_piece, npc.name);
++	
++	var result := EquipItem(mobile, mount_piece);
++	if ( !result )
++		// Unable to equip the mount piece.
++		DestroyItem(mount_piece);
++		return result;
++	else
++		// Setting equipped mounts prevents un-equip exploits.
++		mount_piece.movable := 0;
++	endif
++	
++	return mount_piece;
++endfunction
++
++
++/* 
++ * MP_Unmount(mobile)
++ *
++ * Purpose
++ * Removes the mount piece from the mobile and restores it to an npc.
++ *
++ * Parameters
++ * mobile:	Mobile to unmount
++ *
++ * Return value
++ * Returns the restored npc.
++ *
++ */
++function MP_Unmount(mobile)
++	var mount_piece := GetEquipmentByLayer(mobile, LAYER_MOUNT);
++
++	if ( !mount_piece )
++		return error{&quot;errortext&quot;:=&quot;Mobile does not have a mount item.&quot;};
++	elseif ( Lower(mount_piece.desc) == &quot;mount piece&quot; )
++		// Mount piece exists, but contains no npc information.
++		DestroyItem(mount_piece);
++		return 0;
++	else
++		return MP_RestoreMountToAnimal(mobile, mount_piece);
++	endif
++endfunction
++
++/*
++ * MP_DeathUnmount(corpse)
++ *
++ * Purpose
++ * Finds a mount piece in the corpse and restores the npc.
++ *
++ * Parameters
++ * corpse:	Corpse to search for mount pieces in.
++ *
++ * Return value
++ * Returns the restored npc.
++ *
++ */
++function MP_DeathUnmount(corpse)
++	if ( !corpse.IsA(POLCLASS_CORPSE) )
++		return error{&quot;errortext&quot;:=&quot;Object passed is not a corpse.&quot;};
++	endif
++	
++	foreach item in ( EnumerateItemsInContainer(corpse) )
++		if ( item.objtype == MOUNT_OBJTYPE )
++			return MP_RestoreMountToAnimal(corpse, item);
++			break;
++		endif
++	endforeach
++	
++	return error{&quot;errortext&quot;:=&quot;No mount pieces were found on the corpse.&quot;};
++endfunction
++ 
++/* 
+  * MP_RestoreMountToAnimal(mobile, mount)
+  *
+  * Purpose
+@@ -147,7 +246,7 @@
+  * mount:	Mount piece that will be used to create and restore the npc.
+  *
+  * Return value
+- * Returns the npc that was created
++ * Returns the npc that was created / restored.
+  *
+  */
+ function MP_RestoreMountToAnimal(mobile, mount)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000375.html">[Poldistro-svn] r397 - trunk/096/pkg/items/mounts/include
+</A></li>
+	<LI>Next message: <A HREF="000377.html">[Poldistro-svn] r399 - trunk/096/pkg/items/mounts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#376">[ date ]</a>
+              <a href="thread.html#376">[ thread ]</a>
+              <a href="subject.html#376">[ subject ]</a>
+              <a href="author.html#376">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

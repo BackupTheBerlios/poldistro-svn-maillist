@@ -1,0 +1,727 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r877 - in trunk/096/pkg: . other packetHooks packetHooks/CharProfile packetHooks/CharProfile/config packetHooks/OpenDoor packetHooks/OpenDoor/config packetHooks/RequestAttack packetHooks/RequestAttack/config packetHooks/WarAndPeace packetHooks/WarAndPeace/config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r877%20-%20in%20trunk/096/pkg%3A%20.%20other%20packetHooks%20packetHooks/CharProfile%20packetHooks/CharProfile/config%20packetHooks/OpenDoor%20packetHooks/OpenDoor/config%20packetHooks/RequestAttack%20packetHooks/RequestAttack/config%20packetHooks/WarAndPeace%20packetHooks/WarAndPeace/config&In-Reply-To=%3C200511030733.jA37XOAU029157%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000849.html">
+   <LINK REL="Next"  HREF="000851.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r877 - in trunk/096/pkg: . other packetHooks packetHooks/CharProfile packetHooks/CharProfile/config packetHooks/OpenDoor packetHooks/OpenDoor/config packetHooks/RequestAttack packetHooks/RequestAttack/config packetHooks/WarAndPeace packetHooks/WarAndPeace/config</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r877%20-%20in%20trunk/096/pkg%3A%20.%20other%20packetHooks%20packetHooks/CharProfile%20packetHooks/CharProfile/config%20packetHooks/OpenDoor%20packetHooks/OpenDoor/config%20packetHooks/RequestAttack%20packetHooks/RequestAttack/config%20packetHooks/WarAndPeace%20packetHooks/WarAndPeace/config&In-Reply-To=%3C200511030733.jA37XOAU029157%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r877 - in trunk/096/pkg: . other packetHooks packetHooks/CharProfile packetHooks/CharProfile/config packetHooks/OpenDoor packetHooks/OpenDoor/config packetHooks/RequestAttack packetHooks/RequestAttack/config packetHooks/WarAndPeace packetHooks/WarAndPeace/config">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Thu Nov  3 08:33:24 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000849.html">[Poldistro-svn] r876 - trunk/096/pkg/skills/tailoring
+</A></li>
+        <LI>Next message: <A HREF="000851.html">[Poldistro-svn] r878 - in trunk/096/pkg/packetHooks: . BFCommand BFCommand/config StatHook StatHook/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#850">[ date ]</a>
+              <a href="thread.html#850">[ thread ]</a>
+              <a href="subject.html#850">[ subject ]</a>
+              <a href="author.html#850">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-03 08:33:13 +0100 (Thu, 03 Nov 2005)
+New Revision: 877
+
+Added:
+   trunk/096/pkg/packetHooks/
+   trunk/096/pkg/packetHooks/CharProfile/
+   trunk/096/pkg/packetHooks/CharProfile/charprofile.src
+   trunk/096/pkg/packetHooks/CharProfile/config/
+   trunk/096/pkg/packetHooks/CharProfile/config/icp.cfg
+   trunk/096/pkg/packetHooks/CharProfile/onDelete.src
+   trunk/096/pkg/packetHooks/CharProfile/parseCharProfile.src
+   trunk/096/pkg/packetHooks/CharProfile/pkg.cfg
+   trunk/096/pkg/packetHooks/CharProfile/uopacket.cfg
+   trunk/096/pkg/packetHooks/OpenDoor/
+   trunk/096/pkg/packetHooks/OpenDoor/config/
+   trunk/096/pkg/packetHooks/OpenDoor/config/icp.cfg
+   trunk/096/pkg/packetHooks/OpenDoor/openDoor.src
+   trunk/096/pkg/packetHooks/OpenDoor/pkg.cfg
+   trunk/096/pkg/packetHooks/OpenDoor/uopacket.cfg
+   trunk/096/pkg/packetHooks/RequestAttack/
+   trunk/096/pkg/packetHooks/RequestAttack/config/
+   trunk/096/pkg/packetHooks/RequestAttack/config/icp.cfg
+   trunk/096/pkg/packetHooks/RequestAttack/pkg.cfg
+   trunk/096/pkg/packetHooks/RequestAttack/requestAttack.src
+   trunk/096/pkg/packetHooks/RequestAttack/uopacket.cfg
+   trunk/096/pkg/packetHooks/WarAndPeace/
+   trunk/096/pkg/packetHooks/WarAndPeace/config/
+   trunk/096/pkg/packetHooks/WarAndPeace/config/icp.cfg
+   trunk/096/pkg/packetHooks/WarAndPeace/pkg.cfg
+   trunk/096/pkg/packetHooks/WarAndPeace/readme.txt
+   trunk/096/pkg/packetHooks/WarAndPeace/requestWar.src
+   trunk/096/pkg/packetHooks/WarAndPeace/uopacket.cfg
+Removed:
+   trunk/096/pkg/other/packetHooks/
+Log:
+Moved packetHooks pkgs from /pkg/other/packetHooks to pkg/packetHooks for better dir layout.
+
+Any packetHooks pkgs that are Expansion sensitive will be here also, but make use of Conflicts entry in pkg.cfg so they are only useable under compatible expansions. That way I don't have to tell 5000 different tards why StatLocking won't work with 2.x clients.
+
+Added: trunk/096/pkg/packetHooks/CharProfile/charprofile.src
+===================================================================
+--- trunk/096/pkg/packetHooks/CharProfile/charprofile.src	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/CharProfile/charprofile.src	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,22 @@
++/* $Id: charprofile.src 688 2005-10-28 13:04:01Z panosl $
++ *
++ */
++use os;
++
++program charprofile()
++	Print( &quot;INSTALLING: Character Profile PH...&quot; );
++	return 1;
++endprogram
++
++CONST PROFILE_UPDATE_MODE := 1;
++CONST PROFILE_REQUEST_MODE := 0;
++CONST OFFSET_MODE := 3;
++
++exported function HandleCharProfileRequest( character, byref packet )
++
++
++	start_script(&quot;parseCharProfile&quot;, { character, packet });
++
++	return 1;
++
++endfunction
+
+Added: trunk/096/pkg/packetHooks/CharProfile/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/CharProfile/config/icp.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/CharProfile/config/icp.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,19 @@
++# $Id: icp.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++ICP Register
++{
++	Name		Character Profile Handler
++	Version		1.0
++	Description	PacketHook for handling Character Profile.
++
++	Creator		Racalac
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">racalac at burdell.org</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	#Script	cmdlevel path
++
++	#TextCmd	cmdlevel path
++}
+
+Added: trunk/096/pkg/packetHooks/CharProfile/onDelete.src
+===================================================================
+--- trunk/096/pkg/packetHooks/CharProfile/onDelete.src	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/CharProfile/onDelete.src	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,17 @@
++/* $Id: onDelete.src 661 2005-10-26 15:39:23Z muaddiblsd $
++ *
++ */
++use datafile;
++
++include &quot;:datafile:datafile&quot;;
++
++program charProfile_onDelete(who)
++
++	var cp_data_file  := DFOpenDataFile(&quot;:charprofile:CPFile&quot;, DF_NO_CREATE);
++	if( cp_data_file )
++		return cp_data_file.DeleteElement(who.serial);
++	endif
++
++	return 1;
++
++endprogram
+
+Added: trunk/096/pkg/packetHooks/CharProfile/parseCharProfile.src
+===================================================================
+--- trunk/096/pkg/packetHooks/CharProfile/parseCharProfile.src	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/CharProfile/parseCharProfile.src	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,100 @@
++/* $Id: parseCharProfile.src 661 2005-10-26 15:39:23Z muaddiblsd $
++ *
++ */
++use uo;
++use os;
++use polsys;
++use datafile;
++
++include &quot;:datafile:datafile&quot;;
++
++CONST PROFILE_MSGTYPE := 0xB8;
++CONST PROFILE_TITLE := &quot;Profile for &quot;;
++CONST PROFILE_UPDATE_MODE := 1;
++CONST PROFILE_REQUEST_MODE := 0;
++CONST HEADER_SIZE := 7;
++CONST NULL_SIZE := 1;
++CONST UNULL_SIZE := 2;
++CONST UCHAR_SIZE := 2;
++
++CONST OFFSET_MSGTYPE := 0;
++CONST OFFSET_MSGLEN := 1;
++CONST OFFSET_MODE := 3;
++CONST OFFSET_SERIAL_OUT := 3;
++CONST OFFSET_SERIAL_IN := 4;
++CONST OFFSET_TITLE_STR := 7;
++CONST OFFSET_CMDTYPE := 8;
++CONST OFFSET_NEW_PROFILE_TEXTLEN := 10;
++CONST OFFSET_NEW_PROFILE := 12;
++
++program runScript_CharProfileRequest( who, packet )
++
++	var mode := packet.GetInt8(OFFSET_MODE); //mode 0 for request, 1 for update
++	var id := packet.GetInt32(OFFSET_SERIAL_IN);  //serial of requested profile
++                                                //who
++	var chr := SystemFindObjectBySerial(id);
++	if(!chr || !chr.isa(POLCLASS_MOBILE))
++		return; //don't bother working on nonexistant or items :P
++	endif
++
++	var cp_data_file  := DFOpenDataFile(&quot;:charprofile:CPFile&quot;, DF_CREATE);
++	var cp_elem       := DFFindElement(cp_data_file, who.serial, DF_CREATE);
++	var cp_profile    := DFGetProp(cp_elem, &quot;Profile&quot;, DF_CREATE);
++
++	if(mode == PROFILE_UPDATE_MODE)
++		//number of unicode whos
++		var msglen := packet.GetInt16(OFFSET_NEW_PROFILE_TEXTLEN);
++
++		//updated profile str
++		var uctext := packet.GetUnicodeString(OFFSET_NEW_PROFILE,msglen);
++		if(chr.serial == who.serial) // don't allow setting profile for others
++			cp_elem.SetProp(&quot;Profile&quot;, uctext); // set my profile
++		endif
++	elseif(mode == PROFILE_REQUEST_MODE)
++		//profile request, send profile back
++		if(cp_profile == error)
++			cp_profile := array; //empty array if no profile was set prev.
++		endif
++
++		//create the response packet
++		var title_str := PROFILE_TITLE + chr.name; //goes at the top of scroll
++		var outpkt := CreatePacket(PROFILE_MSGTYPE, MSGLEN_VARIABLE);
++
++		outpkt.SetInt16(OFFSET_MSGLEN, outpkt.GetSize()); //set the size of the packet
++		outpkt.SetInt32(OFFSET_SERIAL_OUT, chr.serial); //set the serial of the who
++		outpkt.SetString(OFFSET_TITLE_STR,title_str,1); //set the title string+terminator
++
++		//profile packet includes an uneditable string and an editable one.
++		//if this is &quot;my&quot; profile, put the profile text in the editable
++		//location. if this is another who's profile, put it in the
++		//uneditable location. This is why we reserved 2 bytes twice for the
++		//terminators. only one of the strings will be filled, the other will
++		//only include a 2-byte terminator.
++		var uneditable_profile_offset := OFFSET_TITLE_STR+len(title_str)+NULL_SIZE; //edit comes first
++		var editable_profile_offset;
++
++		if(chr.serial != who.serial)
++			//not me, set the string at the uneditable offset
++			outpkt.SetUnicodeString(uneditable_profile_offset,cp_profile,1);
++			//calculate the editable string offset
++			editable_profile_offset := uneditable_profile_offset + (cp_profile.size()*UCHAR_SIZE);
++			//set just a double terminator at the editable offset
++			outpkt.SetInt16(editable_profile_offset,0);
++		else
++			//it's my profile, no text at uneditable
++			outpkt.SetInt16(uneditable_profile_offset,0);
++			//editable offset past the 2 byte terminator
++			editable_profile_offset := uneditable_profile_offset + UNULL_SIZE;
++			//set the unicode text
++			outpkt.SetUnicodeString(editable_profile_offset,cp_profile,1);
++		endif
++		//send the packet to the _requesting_ who, not the who
++		//whose profile this is.
++		outpkt.SendPacket(who);
++	else
++		SysLog(&quot;Unknown profile mode: &quot; + mode);
++	endif
++
++	return 1;
++
++endprogram
+
+Added: trunk/096/pkg/packetHooks/CharProfile/pkg.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/CharProfile/pkg.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/CharProfile/pkg.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,9 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled		1
++Name		charprofile
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++CoreRequired	96
++Version		1.0
+
+Added: trunk/096/pkg/packetHooks/CharProfile/uopacket.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/CharProfile/uopacket.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/CharProfile/uopacket.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,5 @@
++Packet 0xB8
++{
++  Length variable
++  ReceiveFunction charprofile:HandleCharProfileRequest
++}
+
+Added: trunk/096/pkg/packetHooks/OpenDoor/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/OpenDoor/config/icp.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/OpenDoor/config/icp.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,19 @@
++# $Id: icp.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++ICP Register
++{
++	Name		OpenDoor Macro Handler
++	Version		1.0
++	Description	PacketHook for handling OpenDoor Action Macro.
++
++	Creator		MuadDib
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	#Script	cmdlevel path
++
++	#TextCmd	cmdlevel path
++}
+
+Added: trunk/096/pkg/packetHooks/OpenDoor/openDoor.src
+===================================================================
+--- trunk/096/pkg/packetHooks/OpenDoor/openDoor.src	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/OpenDoor/openDoor.src	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,73 @@
++////////////////////////////////////////////////////////////////////////////////////////////////////
++//
++//  name:    OpenDoor Action Hook
++//  version: 1.0
++//  author:  MuadDib
++//
++//  Purpose: The OpenDoor Client macro is never used on freeshards for lack of support. However,
++//           those familiar with OSI know and use this a lot. This hook was made to show the purpose
++//           of the macro and for learning a bit on packets.
++//
++//  Notes:   The script will check for doors the player can access. However, it will check them and
++//           open them only if the player is 1 tile away, and facing the door. As per the OSI method
++//
++//  To Do:   Integrate ability to use this to &quot;close&quot; the door also. To tired to do so now.
++//
++//  Const Settings:
++//  DOOR_TIMER = # The value in seconds, that the player must wait before the macro will work again.
++//
++////////////////////////////////////////////////////////////////////////////////////////////////////
++use uo;
++use os;
++
++program openDoor()
++	Print( &quot;INSTALLING: OpenDoor Action Macro PH...&quot; );
++	return 1;
++endprogram
++
++CONST DOOR_TIMER := 5;
++
++exported function HandleOpenDoorMacro( character, byref packet )
++
++ 	// Done to stop the &quot;unused variable&quot; report in ecompile.
++ 	packet := packet;
++ 	// To stop mad spamming of the macro, we check a temp cprop for the timer. If the timer is not
++ 	// set to a time less than the current Game Clock, it exits now.
++ 	if(GetObjProperty(character, &quot;#DoorMacro&quot;) &gt; ReadGameClock())
++ 		return 0;
++ 	endif
++ 	// Set the Temp Cprop to the Game Clock + the timer for the wait period.
++ 	SetObjProperty(character, &quot;#DoorMacro&quot;, ReadGameClock() + DOOR_TIMER);
++ 	// Record the player's direction. This is used to look ONLY in the direction the player is facing.
++ 	var direction := character.facing;
++ 	var item := 0;
++ 	// Facing is always 0-7 for a player, so let's just do this in a case.
++ 	// The only exception is while they are running, which who cares about
++ 	// those trying to run non-stop through a door eh? ;)
++ 	case(direction)
++ 		0: item := ListItemsNearLocationWithFlag((character.x),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR);
++ 		1: item := ListItemsNearLocationWithFlag((character.x+1),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR);
++ 		2: item := ListItemsNearLocationWithFlag((character.x+1),(character.y),(character.z),0,TILEDATA_FLAG_DOOR);
++ 		3: item := ListItemsNearLocationWithFlag((character.x+1),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR);
++ 		4: item := ListItemsNearLocationWithFlag((character.x),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR);
++ 		5: item := ListItemsNearLocationWithFlag((character.x-1),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR);
++ 		6: item := ListItemsNearLocationWithFlag((character.x-1),(character.y),(character.z),0,TILEDATA_FLAG_DOOR);
++ 		7: item := ListItemsNearLocationWithFlag((character.x-1),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR);
++ 	endcase
++ 	// See if item found is a Door. Check if the player has Line Of Sight to the door. Make sure they
++ 	// Are ALIVE!
++ 	if(item[1].isA(POLCLASS_DOOR))
++ 		if(!CheckLineOfSight(character,item[1]))
++ 			return 1;
++ 		elseif(character.dead)
++ 			return 1;
++ 		endif
++ 		// THis needs to be upgraded to use a new command that will fire the script as though it was
++ 		// fired by the item it belongs to being double clicked. Was added in recent Test Cores.
++ 		UseItem(item[1], character);
++ 	endif
++
++  // Since the core ignores this packet, might as well block it from the core anyway.
++  return 1;
++
++endfunction
+
+Added: trunk/096/pkg/packetHooks/OpenDoor/pkg.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/OpenDoor/pkg.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/OpenDoor/pkg.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,9 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled		1
++Name		opendoor
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++CoreRequired	96
++Version		1.0
+
+Added: trunk/096/pkg/packetHooks/OpenDoor/uopacket.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/OpenDoor/uopacket.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/OpenDoor/uopacket.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,12 @@
++Packet 0x12
++{
++  Length variable
++  SubCommandOffset 3
++  SubCommandLength 1
++}
++
++SubPacket 0x12
++{
++  SubCommandID 0x58
++  ReceiveFunction openDoor:HandleOpenDoorMacro
++}
+
+Added: trunk/096/pkg/packetHooks/RequestAttack/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/RequestAttack/config/icp.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/RequestAttack/config/icp.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,19 @@
++# $Id: icp.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++ICP Register
++{
++	Name		Request Attack
++	Version		1.0
++	Description	PacketHook for handling Request Attack (dbl click in war mode).
++
++	Creator		MuadDib
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	#Script	cmdlevel path
++
++	#TextCmd	cmdlevel path
++}
+
+Added: trunk/096/pkg/packetHooks/RequestAttack/pkg.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/RequestAttack/pkg.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/RequestAttack/pkg.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,9 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled         1
++Name		requestattack
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++CoreRequired	96
++Version		1.0
+
+Added: trunk/096/pkg/packetHooks/RequestAttack/requestAttack.src
+===================================================================
+--- trunk/096/pkg/packetHooks/RequestAttack/requestAttack.src	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/RequestAttack/requestAttack.src	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,40 @@
++/* $Id: requestAttack.src 677 2005-10-27 04:44:34Z muaddiblsd $
++ *
++ */
++////////////////////////////////////////////////////////////////////////////////////////////////////
++//
++//  name:    Request Attack Packet Hook
++//  version: 1.0
++//  author:  MuadDib
++//
++//  Purpose: This hook will allow you to check LOS, Distance, or whatever you wish, when someone
++//		DoubleClicks another mob while in war mode.
++//
++// Const settings:
++// BYTE_DEFENDER = 1  Position in the packet for the Defender's Serial.
++//
++////////////////////////////////////////////////////////////////////////////////////////////////////
++use uo;
++use polsys;
++
++CONST BYTE_DEFENDER := 1;
++
++program requestAttack()
++	Print( &quot;INSTALLING: Request Attack PH...&quot; );
++	return 1;
++endprogram
++
++
++exported function HandleAttackRequest( who, byref packet )
++
++	var defender := SystemFindObjectBySerial(packet.GetInt32(BYTE_DEFENDER));
++
++	if( distance(who, defender) &gt;= 20 )
++		return 1;
++	elseif( !CheckLineOfSight(who, defender) )
++		return 1;
++	endif
++
++	return 0;
++
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/RequestAttack/uopacket.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/RequestAttack/uopacket.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/RequestAttack/uopacket.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,5 @@
++Packet 0x05
++{
++  Length 0x5
++  ReceiveFunction requestAttack:HandleAttackRequest
++}
+
+Added: trunk/096/pkg/packetHooks/WarAndPeace/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/WarAndPeace/config/icp.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/WarAndPeace/config/icp.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,19 @@
++# $Id: icp.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++ICP Register
++{
++	Name		War And Peace Handler
++	Version		1.0
++	Description	PacketHook for handling Toggle of War Mode.
++
++	Creator		MuadDib
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	#Script	cmdlevel path
++
++	#TextCmd	cmdlevel path
++}
+
+Added: trunk/096/pkg/packetHooks/WarAndPeace/pkg.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/WarAndPeace/pkg.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/WarAndPeace/pkg.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,9 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled         1
++Name		handlewarmode
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++CoreRequired	96
++Version		1.0
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/WarAndPeace/readme.txt
+===================================================================
+--- trunk/096/pkg/packetHooks/WarAndPeace/readme.txt	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/WarAndPeace/readme.txt	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,40 @@
++===================================
++  War Request Packet Hook
++  Written By MuadDib
++===================================
++
++  1) Requirements
++  2) How to Install
++  3) Thanks To...
++
++===================================
++    Requirements
++===================================
++  To use these scripts, you will need the following:
++    A working and installed copy of POL v.096 or newer
++
++===================================
++    How To Install
++===================================
++  1) Extract the zip to somewhere in your pkg directory in POL
++  2) Making sure pkg.cfg has Enabled set to 1.
++  3) Compile the package with eCompile.
++  4) Start POL and begin using it.
++
++===================================
++    Notes
++===================================
++  1) If you want to block entering war mode in certain areas, or
++     if any circumstances exist, simply modify the ProcessWarMode(who)
++     function. If it returns 0, it will block entering war mode. If
++     it returns 1, it will allow it. 
++
++	For Example. In the ProcessWarMode(who) function, you can check
++        X and Y, to see if they are in a certain area (box), and if so,
++        return 0, and they will not be able to enter mode.
++
++===================================
++    Thanks To...
++===================================
++  Thanks to the POL dev team for continually developing the best 
++    Ultima Online server emulator around.
+
+Added: trunk/096/pkg/packetHooks/WarAndPeace/requestWar.src
+===================================================================
+--- trunk/096/pkg/packetHooks/WarAndPeace/requestWar.src	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/WarAndPeace/requestWar.src	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,79 @@
++/* $Id: requestWar.src 688 2005-10-28 13:04:01Z panosl $
++ *
++ */
++////////////////////////////////////////////////////////////////////////////////////////////////////
++//
++//  name:    Request War Mode Packet Hook
++//  version: 1.0
++//  author:  MuadDib
++//
++//  Purpose: This can allow you to disable entering war mode based on criteria set forth in this
++//           hook. Like for example, if they are in town, cannot enter war mode, or in certain
++//           areas, if they are mounted, whatever you like.
++//
++// Const settings:
++// BYTE_FLAG = 1  Position in the packet for the Status Flag. Can be 0x0 (in peace mode) or
++//                0x1 (in war mode, trying to leave war mode).
++//
++////////////////////////////////////////////////////////////////////////////////////////////////////
++use uo;
++use polsys;
++
++include &quot;include/client&quot;;
++
++CONST BYTE_FLAG := 1;
++
++program requestWar()
++	Print( &quot;INSTALLING: Request War Mode Change PH...&quot; );
++	return 1;
++endprogram
++
++
++exported function HandleWarRequest( who, byref packet )
++
++	// Let's see which mode the are requesting.
++	var flag := CInt(packet.GetInt8(BYTE_FLAG));
++	var allowWar := 1;
++
++	case(flag)
++		// Requesting Peace Mode. Should never block this in my opinion.
++		0: return 0;
++		// Let's call the function that will decide to block entering
++		// war mode or not.
++		1: allowWar := ProcessWarMode(who);
++		default: return 0;
++	endcase
++
++	// If allowWar is 1 or higher, allow the core to handle this
++	// packet. Else, create a denial packet, send it, and then block
++	// the request from the core.
++	if(allowWar)
++		return 0;
++	else
++		var denyPacket := CreatePacket(0x72, 5);
++		denyPacket.SetInt8(BYTE_FLAG, 0);
++		denyPacket.SetInt8(3, 0x32);
++		denyPacket.SendPacket(who);
++		return 1;
++	endif
++
++	return 0;
++
++endfunction
++
++
++// By returning 1 in this function, it means &quot;Allow them to
++// enter war mode&quot;. If you return 0, it will BLOCK and deny them
++// entering war mode. The packet will NOT be sent to the core to
++// let the core decide if they can, and they will be sent a packet
++// to let the client know it was not allowed.
++function ProcessWarMode(who)
++
++	// Used to stop ecompile error messages for unused variables
++	who := who;
++	if( CInt(GetObjProperty(who, &quot;#Peaced&quot;)) &gt; ReadGameClock() )
++		return 0;
++	endif
++	return 1;
++
++endfunction
+
+Added: trunk/096/pkg/packetHooks/WarAndPeace/uopacket.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/WarAndPeace/uopacket.cfg	2005-11-03 07:03:10 UTC (rev 876)
++++ trunk/096/pkg/packetHooks/WarAndPeace/uopacket.cfg	2005-11-03 07:33:13 UTC (rev 877)
+@@ -0,0 +1,5 @@
++Packet 0x72
++{
++	Length 0x5
++	ReceiveFunction requestWar:HandleWarRequest
++}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000849.html">[Poldistro-svn] r876 - trunk/096/pkg/skills/tailoring
+</A></li>
+	<LI>Next message: <A HREF="000851.html">[Poldistro-svn] r878 - in trunk/096/pkg/packetHooks: . BFCommand BFCommand/config StatHook StatHook/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#850">[ date ]</a>
+              <a href="thread.html#850">[ thread ]</a>
+              <a href="subject.html#850">[ subject ]</a>
+              <a href="author.html#850">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

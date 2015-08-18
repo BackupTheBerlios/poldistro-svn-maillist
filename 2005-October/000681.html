@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r707 - trunk/096/scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r707%20-%20trunk/096/scripts/misc&In-Reply-To=%3C200510300825.j9U8PxFw007320%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000680.html">
+   <LINK REL="Next"  HREF="000682.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r707 - trunk/096/scripts/misc</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r707%20-%20trunk/096/scripts/misc&In-Reply-To=%3C200510300825.j9U8PxFw007320%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r707 - trunk/096/scripts/misc">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct 30 09:25:59 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000680.html">[Poldistro-svn] r706 - trunk/096/pkg/mobiles/brainAI/include
+</A></li>
+        <LI>Next message: <A HREF="000682.html">[Poldistro-svn] r708 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#681">[ date ]</a>
+              <a href="thread.html#681">[ thread ]</a>
+              <a href="subject.html#681">[ subject ]</a>
+              <a href="author.html#681">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-30 09:25:58 +0100 (Sun, 30 Oct 2005)
+New Revision: 707
+
+Modified:
+   trunk/096/scripts/misc/dblclickother.src
+Log:
+Set to support paper doll graphics.
+
+Modified: trunk/096/scripts/misc/dblclickother.src
+===================================================================
+--- trunk/096/scripts/misc/dblclickother.src	2005-10-30 08:23:18 UTC (rev 706)
++++ trunk/096/scripts/misc/dblclickother.src	2005-10-30 08:25:58 UTC (rev 707)
+@@ -9,22 +9,21 @@
+ use npc;
+ 
+ program core_dblClickSelf(who, clicked)
+-	PrintTextAbove(who, &quot;I clicked.&quot;);
+-	PrintTextAbove(clicked, &quot;I got clicked.&quot;);
+-	
+ 	if ( HasPDGraphic(clicked) )
+-		OPenPaperDoll(who, clicked);
++		return OPenPaperDoll(who, clicked);
+ 	endif
++	
++	return 0;
+ endprogram
+ 
+ function HasPDGraphic(clicked)
+-	if ( clicked.graphic == 401 ) // Male
+-		return 1;
+-	elseif ( clicked.graphic == 402 ) // Female
+-		return 1;
+-	elseif ( clicked.graphic == 403 ) // Ghost
+-		return 1;
+-	endif
++	case ( clicked.graphic )
++		400:	return 1; break; // Male
++		401:	return 1; break; // Female
++		402:	return 1; break; // Male ghost
++		403:	return 1; break; // Female ghost
++		987:	return 1; break; // GM robe
++	endcase
+ 	
+ 	return 0;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000680.html">[Poldistro-svn] r706 - trunk/096/pkg/mobiles/brainAI/include
+</A></li>
+	<LI>Next message: <A HREF="000682.html">[Poldistro-svn] r708 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#681">[ date ]</a>
+              <a href="thread.html#681">[ thread ]</a>
+              <a href="subject.html#681">[ subject ]</a>
+              <a href="author.html#681">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

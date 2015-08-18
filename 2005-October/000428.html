@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r453 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r453%20-%20trunk/096/scripts/include&In-Reply-To=%3C200510081357.j98Dv4Mv011955%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000427.html">
+   <LINK REL="Next"  HREF="000591.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r453 - trunk/096/scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r453%20-%20trunk/096/scripts/include&In-Reply-To=%3C200510081357.j98Dv4Mv011955%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r453 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Sat Oct  8 15:57:04 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000427.html">[Poldistro-svn] r452 - trunk/096/pkg/items/containers/include
+</A></li>
+        <LI>Next message: <A HREF="000591.html">[Poldistro-svn] r454 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#428">[ date ]</a>
+              <a href="thread.html#428">[ thread ]</a>
+              <a href="subject.html#428">[ subject ]</a>
+              <a href="author.html#428">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-08 15:57:04 +0200 (Sat, 08 Oct 2005)
+New Revision: 453
+
+Removed:
+   trunk/096/scripts/include/insertSound.inc
+Log:
+
+
+Deleted: trunk/096/scripts/include/insertSound.inc
+===================================================================
+--- trunk/096/scripts/include/insertSound.inc	2005-10-08 13:56:38 UTC (rev 452)
++++ trunk/096/scripts/include/insertSound.inc	2005-10-08 13:57:04 UTC (rev 453)
+@@ -1,142 +0,0 @@
+-/////////////////////////////////////////////////////////////////
+-//
+-// insertsound.inc v 1.0
+-//
+-//  This is the general control script to determine what sound is played
+-//    when items are inserted into a container.  The order of precedence is:
+-//      highest - item inserted by amount
+-//              - item inserted
+-//      lowest  - container item inserted into
+-//
+-//  Dependencies
+-//    Basic sounds for containers and inserted items are mapped in itemdesc.cfg
+-//    Names of sounds are included included in insertsound.cfg
+-//    Default sounds and complex sound assignments are included in insertsound.cfg
+-//
+-// Author: Valkyrie &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Valkyrie at GatheringOrder.com</A>&gt;
+-// Creation date: 02 June 2003
+-//
+-//==To Do==
+-//
+-//
+-// See Sourceforge for complete revision history
+-//       
+-/////////////////////////////////////////////////////////////////
+-
+-use cfgfile;
+-
+-function inNoise(who, box, item)
+-	// Purpose: to determine a sound to play for insert and play it.
+-	// called by: insert scripts
+-	// returns: nothing
+-	
+-
+-        var noise := &quot;sound_defaultin&quot;;
+-        
+-        // the soundfile contains all the special config entries as well as the sound mappings.
+-        var soundfile := ReadConfigFile(&quot;::insertsound&quot;);
+-        
+-        //start with the objectdesc.cfg entry for the container
+-        var itemconfig := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-        var boxnoise := itemconfig[box.objtype].OnInsertNoise;
+-        if ( boxnoise )
+-                noise := boxnoise;
+-        endif
+-        
+-        // next check to see if there's an itemdesc.cfg entry for the item
+-        var itemnoise:= itemconfig[item.objtype].InsertNoise;
+-        if ( itemnoise )
+-                noise := itemnoise;
+-        endif
+-        
+-        // last, check to see if there's a special config entry for this item
+-        var listing := FindConfigElem( soundfile, item.objtype );
+-        if ( listing )
+-                var breakpoints := GetConfigStringArray( listing, &quot;inLevel&quot; );
+-                foreach level in breakpoints
+-                level := SplitWords(level);
+-                        if ( item.amount &gt;= cint(level[1]) )
+-                                noise := level[2];
+-                        else
+-                                break;
+-                        endif
+-                endforeach
+-        endif
+-        
+-        // Once the noise is determined, we need to play it.
+-        makeNoise(who, noise, soundfile);
+-        
+-        return;
+-endfunction
+-
+-function outNoise(who, box, item)
+-	// Purpose: to determine a sound to play for removal and play it.
+-	// called by: remove scripts
+-	// returns: nothing
+-	
+-        var noise := &quot;sound_defaultout&quot;;
+-
+-        // the soundfile contains all the special config entries as well as the sound mappings.
+-        var soundfile := ReadConfigFile(&quot;::insertsound&quot;);
+-        
+-        //start with the objectdesc.cfg entry for the container
+-        var itemconfig := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-        var boxnoise := itemconfig[box.objtype].OnRemoveNoise;
+-        if ( boxnoise )
+-                noise := boxnoise;
+-        endif
+-        
+-        // next check to see if there's an itemdesc.cfg entry for the item
+-        var itemnoise:= itemconfig[item.objtype].RemoveNoise;
+-        if ( itemnoise )
+-                noise := itemnoise;
+-        endif
+-        
+-        // last, check to see if there's a special config entry for this item
+-        var listing := FindConfigElem( soundfile, item.objtype );
+-        if ( listing )
+-                var breakpoints := GetConfigStringArray( listing, &quot;outLevel&quot; );
+-                foreach level in breakpoints
+-                level := SplitWords(level);
+-                        if ( item.amount &gt;= cint(level[1]) )
+-                                noise := level[2];
+-                        else
+-                                break;
+-                        endif
+-                endforeach
+-        endif
+-        
+-        // Once the noise is determined, we need to play it.
+-        makeNoise(who, noise, soundfile);
+-        
+-        return;
+-        
+-endfunction
+-
+-function makeNoise(who, noise, soundfile)
+-	// Purpose: to play a the sound as defined in soundfile by the string noise
+-	// called by: functions inNoise and outNoise
+-	// returns: nothing
+-	
+-        var playnoise;
+-
+-        // figure out what noise will be played, by mapping the name to the config entry
+-        var noisedef := FindConfigElem(soundfile, &quot;noisedefs&quot;);
+-        var arrayofnoises := GetConfigStringArray(noisedef, &quot;sound&quot;);
+-        foreach sound in arrayofnoises
+-                var entry := SplitWords(sound);
+-                if ( noise == entry[1] )
+-                        playnoise := entry[2];
+-                endif
+-        endforeach
+-
+-        // play it!  Well, if we know what it is...
+-        if (playnoise)
+-                playnoise := cint(playnoise);
+-                PlaySoundEffect(who, playnoise);
+-        else
+-                SendSysMessage(who, &quot;noise &quot; + noise + &quot; not defined&quot; );
+-        endif
+-        
+-        return;
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000427.html">[Poldistro-svn] r452 - trunk/096/pkg/items/containers/include
+</A></li>
+	<LI>Next message: <A HREF="000591.html">[Poldistro-svn] r454 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#428">[ date ]</a>
+              <a href="thread.html#428">[ thread ]</a>
+              <a href="subject.html#428">[ subject ]</a>
+              <a href="author.html#428">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

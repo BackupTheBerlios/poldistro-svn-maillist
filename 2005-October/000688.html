@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r714 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r714%20-%20trunk/096/pkg/mobiles/brainAI/complete/exampleNPC&In-Reply-To=%3C200510300937.j9U9b8ji017574%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000687.html">
+   <LINK REL="Next"  HREF="000689.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r714 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r714%20-%20trunk/096/pkg/mobiles/brainAI/complete/exampleNPC&In-Reply-To=%3C200510300937.j9U9b8ji017574%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r714 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct 30 10:37:08 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000687.html">[Poldistro-svn] r713 - trunk/096/pkg/commands/seer
+</A></li>
+        <LI>Next message: <A HREF="000689.html">[Poldistro-svn] r715 - trunk/096/pkg/mobiles/brainAI/scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#688">[ date ]</a>
+              <a href="thread.html#688">[ thread ]</a>
+              <a href="subject.html#688">[ subject ]</a>
+              <a href="author.html#688">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-30 10:37:07 +0100 (Sun, 30 Oct 2005)
+New Revision: 714
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/endFight.src
+Removed:
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/wonFight.src
+Modified:
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/combat.src
+Log:
+Renaming &quot;WonFight&quot; to &quot;EndFight&quot;
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/combat.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/combat.src	2005-10-30 09:28:45 UTC (rev 713)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/combat.src	2005-10-30 09:37:07 UTC (rev 714)
+@@ -30,9 +30,9 @@
+ 			AI_WarMode(npc, 0);
+ 			AI_Move(npc, opponent, NEMOVE_AWAY, NEMOVE_RUN, WAKEUP, 100);
+ 		elseif ( DoneFighting(npc, opponent, dist) )
+-			if ( scripts.Exists(&quot;WonFight&quot;) )
++			if ( scripts.Exists(&quot;EndFight&quot;) )
+ 				params := array{opponent, settings, scripts};
+-				AI_StartNerve(npc, &quot;WonFight&quot;, scripts[&quot;WonFight&quot;].script, params);
++				AI_StartNerve(npc, &quot;EndFight&quot;, scripts[&quot;EndFight&quot;].script, params);
+ 			else
+ 				AI_WarMode(npc, 0);
+ 			endif
+
+Copied: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/endFight.src (from rev 702, trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/wonFight.src)
+
+Deleted: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/wonFight.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/wonFight.src	2005-10-30 09:28:45 UTC (rev 713)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/wonFight.src	2005-10-30 09:37:07 UTC (rev 714)
+@@ -1,43 +0,0 @@
+-// $Id$
+-
+-use uo;
+-use os;
+-
+-include &quot;:brainAI:npcNerves&quot;;
+-include &quot;:brainAI:npcCommands&quot;;
+-include &quot;:attributes:attributes&quot;;
+-
+-program BrainNerve(params)
+-	var npc		:= params[1];
+-	var nerve_name	:= params[2];
+-	var opponent	:= params[3];
+-	//var settings	:= params[4];
+-	//var scripts	:= params[5];
+-	params := 0; // Not needed anymore.
+-	
+-	AI_WarMode(npc, 0);
+-	
+-	var corpse := opponent.GetCorpse();
+-	do
+-		var dist := Distance(npc, corpse);
+-		AI_Move(npc, corpse, NEMOVE_TOWARD, NEMOVE_WALK, dist);
+-		sleep(dist-1);
+-	dowhile( ShouldApproach(npc, opponent, corpse) );
+-	
+-	AI_Speak(npc, &quot;Killed ya, neener!&quot;);
+-	AI_EndNerve(npc, nerve_name);
+-endprogram
+-
+-function ShouldApproach(npc, opponent, corpse)
+-	if ( !opponent )
+-		return 0;
+-	elseif ( !corpse )
+-		return 0;
+-	endif
+-	
+-	if ( Distance(npc, corpse) &gt; 1 )
+-		return 1;
+-	endif
+-	
+-	return 0;
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000687.html">[Poldistro-svn] r713 - trunk/096/pkg/commands/seer
+</A></li>
+	<LI>Next message: <A HREF="000689.html">[Poldistro-svn] r715 - trunk/096/pkg/mobiles/brainAI/scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#688">[ date ]</a>
+              <a href="thread.html#688">[ thread ]</a>
+              <a href="subject.html#688">[ subject ]</a>
+              <a href="author.html#688">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

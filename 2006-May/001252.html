@@ -1,0 +1,325 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1280 - trunk/096/pkg/systems/spawnSystem/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1280%20-%20trunk/096/pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200605060616.k466GvXv001627%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001251.html">
+   <LINK REL="Next"  HREF="001253.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1280 - trunk/096/pkg/systems/spawnSystem/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1280%20-%20trunk/096/pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200605060616.k466GvXv001627%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1280 - trunk/096/pkg/systems/spawnSystem/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sat May  6 08:16:57 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001251.html">[Poldistro-svn] r1279 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001253.html">[Poldistro-svn] r1281 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1252">[ date ]</a>
+              <a href="thread.html#1252">[ thread ]</a>
+              <a href="subject.html#1252">[ subject ]</a>
+              <a href="author.html#1252">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-06 08:16:52 +0200 (Sat, 06 May 2006)
+New Revision: 1280
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+Log:
+Starting to make adding and editing groups fully work.
+
+Modified: trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-06 05:01:03 UTC (rev 1279)
++++ trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-06 06:16:52 UTC (rev 1280)
+@@ -14,10 +14,13 @@
+ unload_scripts(&quot;&quot;);
+ 
+ // Used for button ranges
+-const REALM_START	:= 0xA0000;
+-const REGION_START	:= 0xB0000;
+-const GROUP_START	:= 0xC0000;
++const REALM_START	:= 0x1000;
++const REGION_START	:= 0x2000;
++const GROUP_START	:= 0x3000;
++const ENGINE_START	:= 0x4000;
++const ENTRY_START	:= 0x5000;
+ 
++// Arbitrary buttons
+ const CLOSE_BTN		:= 0xA4;
+ const ADD_REALM_BTN	:= 0xA5;
+ const ADD_REGION_BTN	:= 0xA6;
+@@ -29,11 +32,13 @@
+ const SHOW_REGIONS_BTN	:= 0xAC;
+ const SHOW_THIS_REGION	:= 0xAD;
+ const SHOW_GROUPS_BTN	:= 0xAE;
+-const SEARCH_BTN	:= 0xAF;
+-const VISIT_REGION_BTN	:= 0xB0;
+-const APPLY_BTN		:= 0xB1;
+-const REGION_GROUPS_BTN	:= 0xB2;
++const SHOW_THIS_GROUP	:= 0xAF;
++const SEARCH_BTN	:= 0xB0;
++const VISIT_REGION_BTN	:= 0xB1;
++const APPLY_BTN		:= 0xB2;
++const REGION_GROUPS_BTN	:= 0xB3;
+ 
++// Text entry locations
+ const X1_TEXT_POS	:= 0xF00;
+ const Y1_TEXT_POS	:= 0xF01;
+ const X2_TEXT_POS	:= 0xF02;
+@@ -63,6 +68,8 @@
+ 				input := BuildGroupsListGump(who);
+ 			elseif ( cur_menu == ADD_GROUP_BTN )
+ 				input := BuildAddGroupGump(who);
++			elseif ( cur_menu == SHOW_THIS_GROUP )
++				input := BuildGroupInfoGump(who, cur_group);
+ 			endif
+ 		endif
+ 
+@@ -84,6 +91,10 @@
+ 			cur_menu := SHOW_GROUPS_BTN;
+ 		elseif ( input == ADD_GROUP_BTN )
+ 			cur_menu := ADD_GROUP_BTN;
++		elseif ( input &gt;= GROUP_START ) // Button next to a realm name was clicked.
++			cur_menu := SHOW_THIS_GROUP;
++			var group_list := SS_GetGroupNames();
++			cur_group := group_list[input-GROUP_START];
+ 		elseif ( input &gt;= REGION_START ) // Button next to a region name was clicked.
+ 			cur_menu := SHOW_THIS_REGION;
+ 			var region_list := SS_GetRegionsInRealm(cur_realm).keys();
+@@ -195,7 +206,7 @@
+ 	GFTextLine(gump, 155, 50, 2100, &quot;Region Name&quot;);
+ 	GFResizePic(gump, 230, 46, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 245, 28);
+ 	GFTextLine(gump, 236, 50, 1000, region_name);
+-	
++
+ 	var coords := SS_GetRegionCoordinates(region_name);
+ 	GFTextLine(gump, 155, 80, 2100, &quot;Coordinates&quot;);
+ 	GFTextLine(gump, 245, 80, 2100, &quot;X1&quot;);
+@@ -210,27 +221,27 @@
+ 	GFTextLine(gump, 375, 80, 2100, &quot;Y2&quot;);
+ 	GFResizePic(gump, 360, 100, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 45, 28);
+ 	GFTextEntry(gump, 366, 104, 35, 20, 2100, coords.y2, Y2_TEXT_POS);
+-	
++
+ 	GFTextLine(gump, 500, 80, 2100, &quot;Spawn Wait (Sec.)&quot;);
+ 	GFResizePic(gump, 525, 100, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 65, 28);
+ 	GFTextEntry(gump, 531, 104, 55, 20, 2100, SS_GetRegionSpawnWait(region_name), WAIT_TEXT_POS);
+-	
++
+ 	GFAddButton(gump, 354, 174, 0x84C, 0x84B, GF_CLOSE_BTN, APPLY_BTN);
+-	
++
+ 	GFGumpPic(gump, 165, 175, 0x5F);
+ 	GFGumpPic(gump, 174, 184, 0x60);
+ 	GFGumpPic(gump, 411, 184, 0x60);
+ 	GFGumpPic(gump, 590, 175, 0x61);
+-		
++
+ 	GFAddButton(gump, 155, 203, 2117, 2118, GF_CLOSE_BTN, REGION_GROUPS_BTN);
+ 	GFTextLine(gump, 175, 200, 2100, &quot;Manage region groups.&quot;);
+-	
++
+ 	GFAddButton(gump, 155, 223, 2117, 2118, GF_CLOSE_BTN, VISIT_REGION_BTN);
+ 	GFTextLine(gump, 175, 220, 2100, &quot;Goto region center.&quot;);
+-	
++
+ 	GFAddButton(gump, 155, 303, 2117, 2118, GF_CLOSE_BTN, REMOVE_REGION_BTN);
+ 	GFTextLine(gump, 175, 300, 2100, &quot;Delete region.&quot;);
+-	
++
+ 	var input := GFSendGump(who, gump);
+ 	if ( input[APPLY_BTN] )
+ 		var x1 := GFExtractData(input, X1_TEXT_POS);
+@@ -247,7 +258,7 @@
+ 			return SHOW_REGIONS_BTN;
+ 		endif
+ 	endif
+-	
++
+ 	return input[0];
+ endfunction
+ 
+@@ -309,7 +320,7 @@
+ 	GFTextLine(gump, 155, 50, 2100, &quot;Region Name&quot;);
+ 	GFResizePic(gump, 230, 46, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 245, 28);
+ 	GFTextEntry(gump, 236, 50, 235, 20, 2100, &quot;&quot;, NAME_TEXT_POS);
+-	
++
+ 	GFTextLine(gump, 155, 80, 2100, &quot;Coordinates&quot;);
+ 	GFTextLine(gump, 245, 80, 2100, &quot;X1&quot;);
+ 	GFResizePic(gump, 230, 100, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 45, 28);
+@@ -323,19 +334,19 @@
+ 	GFTextLine(gump, 375, 80, 2100, &quot;Y2&quot;);
+ 	GFResizePic(gump, 360, 100, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 45, 28);
+ 	GFTextEntry(gump, 366, 104, 35, 20, 2100, &quot;&quot;, Y2_TEXT_POS);
+-	
++
+ 	GFTextLine(gump, 500, 80, 2100, &quot;Spawn Wait (Sec.)&quot;);
+ 	GFResizePic(gump, 525, 100, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 65, 28);
+ 	GFTextEntry(gump, 531, 104, 55, 20, 2100, &quot;&quot;, WAIT_TEXT_POS);
+-	
++
+ 	GFGumpPic(gump, 165, 175, 0x5F);
+ 	GFGumpPic(gump, 174, 184, 0x60);
+ 	GFGumpPic(gump, 411, 184, 0x60);
+ 	GFGumpPic(gump, 590, 175, 0x61);
+-	
++
+ 	GFAddButton(gump, 366, 174, 0x482, 0x483, GF_CLOSE_BTN, APPLY_BTN);
+ 	GFTextLine(gump, 345, 200, 2100, &quot;Create Region.&quot;);
+-	
++
+ 	var input := GFSendGump(who, gump);
+ 	if ( input[APPLY_BTN] )
+ 		var region_name := GFExtractData(input, NAME_TEXT_POS);
+@@ -354,7 +365,7 @@
+ 			GumpPrompt(who, &quot;Region added.&quot;);
+ 		endif
+ 	endif
+-	
++
+ 	return input[0];
+ endfunction
+ 
+@@ -366,23 +377,90 @@
+ 	GFTextLine(gump, 155, 50, 2100, &quot;Group Name&quot;);
+ 	GFResizePic(gump, 230, 46, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 245, 28);
+ 	GFTextEntry(gump, 236, 50, 235, 20, 2100, &quot;&quot;, NAME_TEXT_POS);
+-	
++
++	GFAddButton(gump, 555, 70, 0x482, 0x483, GF_CLOSE_BTN, APPLY_BTN);
++	GFTextLine(gump, 525, 50, 2100, &quot;Create Group.&quot;);
++
+ 	GFTextLine(gump, 155, 80, 2100, &quot;Spawn Engine&quot;);
++	GFPage(gump, 1);
+ 	var engines := SS_GetEnginesList();
+ 	var y_pos := 100;
++	var counter := 0;
+ 	foreach engine_name in ( engines )
+-		GFRadioButton(gump, 155, y_pos, 0xD2, 0xD3, 0, 3);
+-		GFTextLine(gump, 185, y_pos, 2100, engine_name);
++		GFRadioButton(gump, 185, y_pos, 0xD2, 0xD3, 0, ENGINE_START+_engine_name_iter);
++		GFTextLine(gump, 215, y_pos, 2100, engine_name);
+ 		y_pos := y_pos+20;
+-	endforeach	
++		counter := counter+1;
++		if ( counter &gt;= 16 )
++			GFAddButton(gump, 155, 435, 0xA56, 0xA57, GF_PAGE_BTN, gump.cur_page+1);
++			GFPage(gump, gump.cur_page+1);
++			GFAddButton(gump, 155, 100, 0xA5A, 0xA5B, GF_PAGE_BTN, gump.cur_page-1);
++			counter := 0;
++			y_pos := 100;
++		endif
++	endforeach
++
++	var input := GFSendGump(who, gump);
++	if ( input[APPLY_BTN] )
++		var group_name := GFExtractData(input, NAME_TEXT_POS);
++		var engine_name;
++		foreach key in ( input.keys )
++			BroadCast(&quot;*** &quot;+key+&quot;  (&quot;+hex(key)+&quot;)&quot;);
++			if ( key &gt;= ENGINE_START &amp;&amp; key &lt; ENTRY_START )
++				engine_name := engines[key-ENGINE_START];
++			endif
++			sleepms(2);
++		endforeach
++		if ( !engine_name )
++			GumpPrompt(who, &quot;Error Creating Group [P] No engine selected.&quot;);
++			return SHOW_GROUPS_BTN;
++		endif
+ 		
+-	GFAddButton(gump, 555, 70, 0x482, 0x483, GF_CLOSE_BTN, APPLY_BTN);
+-	GFTextLine(gump, 525, 50, 2100, &quot;Create Group.&quot;);
++		var result := SS_AddGroup(group_name, engine_name);
++		if ( result.errortext )
++			GumpPrompt(who, &quot;Error Creating Group [P] &quot;+result.errortext);
++		else
++			GumpPrompt(who, &quot;Group added.&quot;);
++		endif
++	endif
++
++	return input[0];
++endfunction
++
++function BuildGroupInfoGump(who, group_name)
++	var gump := BuildGumpTemplate(group_name);
++
++	GFTextMid(gump, 145, 20, 485, 2100, &quot;Edit Group&quot;);
++
++	GFTextLine(gump, 155, 50, 2100, &quot;Group Name&quot;);
++	GFResizePic(gump, 230, 46, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 245, 28);
++	GFTextLine(gump, 236, 50, 1000, group_name);
++
++	GFAddButton(gump, 525, 50, 0x84C, 0x84B, GF_CLOSE_BTN, APPLY_BTN);
+ 	
++	GFTextLine(gump, 155, 80, 2100, &quot;Spawn Engine&quot;);
++	GFPage(gump, 1);
++	var engines := SS_GetEnginesList();
++	var y_pos := 100;
++	var counter := 0;
++	foreach engine_name in ( engines )
++		GFRadioButton(gump, 185, y_pos, 0xD2, 0xD3, 0, 3);
++		GFTextLine(gump, 215, y_pos, 2100, engine_name);
++		y_pos := y_pos+20;
++		counter := counter+1;
++		if ( counter &gt;= 16 )
++			GFAddButton(gump, 155, 435, 0xA56, 0xA57, GF_PAGE_BTN, gump.cur_page+1);
++			GFPage(gump, gump.cur_page+1);
++			GFAddButton(gump, 155, 100, 0xA5A, 0xA5B, GF_PAGE_BTN, gump.cur_page-1);
++			counter := 0;
++			y_pos := 100;
++		endif
++	endforeach
++
+ 	var input := GFSendGump(who, gump);
+ 	if ( input[APPLY_BTN] )
+ 		//
+ 	endif
+-	
++
+ 	return input[0];
+-endfunction
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001251.html">[Poldistro-svn] r1279 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001253.html">[Poldistro-svn] r1281 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1252">[ date ]</a>
+              <a href="thread.html#1252">[ thread ]</a>
+              <a href="subject.html#1252">[ subject ]</a>
+              <a href="author.html#1252">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,454 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r459 - in trunk/096/pkg/systems/daynight: . include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r459%20-%20in%20trunk/096/pkg/systems/daynight%3A%20.%20include&In-Reply-To=%3C200510081436.j98Eagpt014867%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000432.html">
+   <LINK REL="Next"  HREF="000434.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r459 - in trunk/096/pkg/systems/daynight: . include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r459%20-%20in%20trunk/096/pkg/systems/daynight%3A%20.%20include&In-Reply-To=%3C200510081436.j98Eagpt014867%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r459 - in trunk/096/pkg/systems/daynight: . include">austin at berlios.de
+       </A><BR>
+    <I>Sat Oct  8 16:36:42 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000432.html">[Poldistro-svn] r458 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000434.html">[Poldistro-svn] r460 - in trunk/096/pkg/commands: include seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#433">[ date ]</a>
+              <a href="thread.html#433">[ thread ]</a>
+              <a href="subject.html#433">[ subject ]</a>
+              <a href="author.html#433">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-08 16:36:42 +0200 (Sat, 08 Oct 2005)
+New Revision: 459
+
+Added:
+   trunk/096/pkg/systems/daynight/include/
+   trunk/096/pkg/systems/daynight/include/moonlight.inc
+   trunk/096/pkg/systems/daynight/include/weather.inc
+Removed:
+   trunk/096/pkg/systems/daynight/moonlight.inc
+   trunk/096/pkg/systems/daynight/weather.inc
+Modified:
+   trunk/096/pkg/systems/daynight/dayNight.src
+   trunk/096/pkg/systems/daynight/weather.src
+Log:
+
+
+Modified: trunk/096/pkg/systems/daynight/dayNight.src
+===================================================================
+--- trunk/096/pkg/systems/daynight/dayNight.src	2005-10-08 14:36:24 UTC (rev 458)
++++ trunk/096/pkg/systems/daynight/dayNight.src	2005-10-08 14:36:42 UTC (rev 459)
+@@ -4,7 +4,7 @@
+ set_critical( 1);
+ 
+ include &quot;include/clock&quot;;
+-include &quot;moonlight&quot;;
++include &quot;:daynight:moonlight&quot;;
+ 
+ const NIGHT_NUMERATOR := 1.0;
+ const DENOMINATOR := 4;
+
+Added: trunk/096/pkg/systems/daynight/include/moonlight.inc
+===================================================================
+--- trunk/096/pkg/systems/daynight/include/moonlight.inc	2005-10-08 14:36:24 UTC (rev 458)
++++ trunk/096/pkg/systems/daynight/include/moonlight.inc	2005-10-08 14:36:42 UTC (rev 459)
+@@ -0,0 +1,72 @@
++function DoMoons(wstuff)
++  var fphase := wstuff[1];
++  var tphase := wstuff[2];
++  var season := wstuff[8];
++  fphase := fphase + 1;
++  if (fphase == 8)
++	fphase := 0;
++	tphase := tphase +1;
++  endif
++  wstuff[1] := fphase;
++  if (tphase == 8)
++	tphase := 0;
++	season := season + 1;
++	if (season == 4)
++		season := 0;
++	endif
++	wstuff[2] := tphase;
++	wstuff[8] := season;
++    SetGlobalProperty(&quot;Weather&quot;, wstuff);
++  endif
++endfunction
++
++function ChangeMoonLightSet(wstuff)
++  var tlight := FindLight(wstuff[2]);
++  var flight := FindLight(wstuff[1]);
++  var mlight := (tlight + flight);
++  var moonlight := (mlight / 2);
++  wstuff[5] := (18 - moonlight);
++endfunction
++
++function DuskTransition(wstuff)
++  var dlight := wstuff[4];
++  var mlight := wstuff[5];
++  var inter_level_time := (CInt(transtime / (mlight - dlight)));
++  var lightamt := dlight;
++  while( lightamt &lt;= mlight )
++	wstuff := GetGlobalProperty(&quot;Weather&quot;);
++	lightamt := lightamt + 1;
++	SetRegionLightLevel(&quot;Background&quot;, lightamt);
++	wstuff[6] := lightamt;
++	SetGlobalProperty(&quot;Weather&quot;, wstuff);
++    sleep(inter_level_time);
++  endwhile
++endfunction
++
++function DawnTransition(wstuff)
++  var dlight := wstuff[4];
++  var mlight := wstuff[5];
++  var inter_level_time := (CInt(transtime / (mlight - dlight)));
++  var lightamt := mlight;
++  while( lightamt &gt;= dlight )
++	wstuff := GetGlobalProperty(&quot;Weather&quot;);
++	lightamt := lightamt - 1;
++	SetRegionLightLevel(&quot;Background&quot;, lightamt);
++	wstuff[6] := lightamt;
++	SetGlobalProperty(&quot;Weather&quot;, wstuff);
++    sleep(inter_level_time);
++  endwhile
++endfunction
++
++function FindLight(phase)
++  case(phase)
++	0: return 0;
++	1: return 1;
++	2: return 2;
++	3: return 3;
++	4: return 4;
++	5: return 3;
++	6: return 2;
++	7: return 1;
++  endcase
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/daynight/include/weather.inc
+===================================================================
+--- trunk/096/pkg/systems/daynight/include/weather.inc	2005-10-08 14:36:24 UTC (rev 458)
++++ trunk/096/pkg/systems/daynight/include/weather.inc	2005-10-08 14:36:42 UTC (rev 459)
+@@ -0,0 +1,88 @@
++function ChangeWeather()
++  wstuff := GetGlobalProperty(&quot;Weather&quot;);
++  var pweather := wstuff[7];
++  var season := wstuff[8];
++  var incdec := RandomInt(4);
++  case(season)
++    0: incdec := incdec - 1;
++    1: incdec := incdec;
++    2: incdec := incdec + 1;
++    3: incdec := incdec;
++  endcase
++  if (incdec &lt;= 1)
++    pweather := pweather - 1;
++    if (pweather &lt; 0)
++      pweather := 0;
++    endif
++  endif
++  if (incdec == 2)
++    return;
++  endif
++  if (incdec &gt;= 3)
++    pweather := pweather + 1;
++    if (pweather &gt;4)
++      pweather := 4;
++    endif
++  endif
++  var pweathercheck := wstuff[7];
++  if (pweathercheck == pweather)
++    if (doonce == 1)
++      return;
++    endif
++  endif
++  doonce := 1;
++  wstuff[7] := pweather;
++  case(pweather)
++    0: SetSunny();
++    1: SetOvercast();
++    2: SetCloudy();
++    3: SetRain();
++    4: SetThunder();
++  endcase
++  SetGlobalProperty(&quot;Weather&quot;, wstuff);
++endfunction
++
++function SetSunny()
++  wstuff[4] := 0;
++  if (day == 1)
++    SetRegionLightLevel( &quot;Background&quot;, 0);
++    wstuff[6] := 0;
++  endif
++endfunction
++
++function SetOvercast()
++  wstuff[4] := 2;
++  if (day == 1)
++    SetRegionLightLevel( &quot;Background&quot;, 2);
++    wstuff[6] := 2;
++  endif
++endfunction
++
++function SetCloudy()
++  wstuff[4] := 4;
++  SetRegionWeatherLevel( &quot;Background&quot;, 0, 0, 1, -1);
++  if (day == 1)
++    SetRegionLightLevel( &quot;Background&quot;, 4);
++    wstuff[4] := 4;
++  endif
++endfunction
++
++function SetRain()
++  wstuff[4] := 6;
++  if (day == 1)
++    SetRegionLightLevel(&quot;Background&quot;, 6);
++    wstuff[6] := 6;
++  endif
++  start_script( &quot;snowRain&quot;, 15);
++endfunction
++
++function SetThunder()
++  wstuff[4] := 8;
++  if (day == 1)
++    SetRegionLightLevel(&quot;Background&quot;, 8);
++    wstuff[6] := 8;
++  endif
++  start_script( &quot;wEffect&quot; );
++  start_script( &quot;snowRain&quot;, 30);
++endfunction
++   
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/systems/daynight/moonlight.inc
+===================================================================
+--- trunk/096/pkg/systems/daynight/moonlight.inc	2005-10-08 14:36:24 UTC (rev 458)
++++ trunk/096/pkg/systems/daynight/moonlight.inc	2005-10-08 14:36:42 UTC (rev 459)
+@@ -1,72 +0,0 @@
+-function DoMoons(wstuff)
+-  var fphase := wstuff[1];
+-  var tphase := wstuff[2];
+-  var season := wstuff[8];
+-  fphase := fphase + 1;
+-  if (fphase == 8)
+-	fphase := 0;
+-	tphase := tphase +1;
+-  endif
+-  wstuff[1] := fphase;
+-  if (tphase == 8)
+-	tphase := 0;
+-	season := season + 1;
+-	if (season == 4)
+-		season := 0;
+-	endif
+-	wstuff[2] := tphase;
+-	wstuff[8] := season;
+-    SetGlobalProperty(&quot;Weather&quot;, wstuff);
+-  endif
+-endfunction
+-
+-function ChangeMoonLightSet(wstuff)
+-  var tlight := FindLight(wstuff[2]);
+-  var flight := FindLight(wstuff[1]);
+-  var mlight := (tlight + flight);
+-  var moonlight := (mlight / 2);
+-  wstuff[5] := (18 - moonlight);
+-endfunction
+-
+-function DuskTransition(wstuff)
+-  var dlight := wstuff[4];
+-  var mlight := wstuff[5];
+-  var inter_level_time := (CInt(transtime / (mlight - dlight)));
+-  var lightamt := dlight;
+-  while( lightamt &lt;= mlight )
+-	wstuff := GetGlobalProperty(&quot;Weather&quot;);
+-	lightamt := lightamt + 1;
+-	SetRegionLightLevel(&quot;Background&quot;, lightamt);
+-	wstuff[6] := lightamt;
+-	SetGlobalProperty(&quot;Weather&quot;, wstuff);
+-    sleep(inter_level_time);
+-  endwhile
+-endfunction
+-
+-function DawnTransition(wstuff)
+-  var dlight := wstuff[4];
+-  var mlight := wstuff[5];
+-  var inter_level_time := (CInt(transtime / (mlight - dlight)));
+-  var lightamt := mlight;
+-  while( lightamt &gt;= dlight )
+-	wstuff := GetGlobalProperty(&quot;Weather&quot;);
+-	lightamt := lightamt - 1;
+-	SetRegionLightLevel(&quot;Background&quot;, lightamt);
+-	wstuff[6] := lightamt;
+-	SetGlobalProperty(&quot;Weather&quot;, wstuff);
+-    sleep(inter_level_time);
+-  endwhile
+-endfunction
+-
+-function FindLight(phase)
+-  case(phase)
+-	0: return 0;
+-	1: return 1;
+-	2: return 2;
+-	3: return 3;
+-	4: return 4;
+-	5: return 3;
+-	6: return 2;
+-	7: return 1;
+-  endcase
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/systems/daynight/weather.inc
+===================================================================
+--- trunk/096/pkg/systems/daynight/weather.inc	2005-10-08 14:36:24 UTC (rev 458)
++++ trunk/096/pkg/systems/daynight/weather.inc	2005-10-08 14:36:42 UTC (rev 459)
+@@ -1,88 +0,0 @@
+-function ChangeWeather()
+-  wstuff := GetGlobalProperty(&quot;Weather&quot;);
+-  var pweather := wstuff[7];
+-  var season := wstuff[8];
+-  var incdec := RandomInt(4);
+-  case(season)
+-    0: incdec := incdec - 1;
+-    1: incdec := incdec;
+-    2: incdec := incdec + 1;
+-    3: incdec := incdec;
+-  endcase
+-  if (incdec &lt;= 1)
+-    pweather := pweather - 1;
+-    if (pweather &lt; 0)
+-      pweather := 0;
+-    endif
+-  endif
+-  if (incdec == 2)
+-    return;
+-  endif
+-  if (incdec &gt;= 3)
+-    pweather := pweather + 1;
+-    if (pweather &gt;4)
+-      pweather := 4;
+-    endif
+-  endif
+-  var pweathercheck := wstuff[7];
+-  if (pweathercheck == pweather)
+-    if (doonce == 1)
+-      return;
+-    endif
+-  endif
+-  doonce := 1;
+-  wstuff[7] := pweather;
+-  case(pweather)
+-    0: SetSunny();
+-    1: SetOvercast();
+-    2: SetCloudy();
+-    3: SetRain();
+-    4: SetThunder();
+-  endcase
+-  SetGlobalProperty(&quot;Weather&quot;, wstuff);
+-endfunction
+-
+-function SetSunny()
+-  wstuff[4] := 0;
+-  if (day == 1)
+-    SetRegionLightLevel( &quot;Background&quot;, 0);
+-    wstuff[6] := 0;
+-  endif
+-endfunction
+-
+-function SetOvercast()
+-  wstuff[4] := 2;
+-  if (day == 1)
+-    SetRegionLightLevel( &quot;Background&quot;, 2);
+-    wstuff[6] := 2;
+-  endif
+-endfunction
+-
+-function SetCloudy()
+-  wstuff[4] := 4;
+-  SetRegionWeatherLevel( &quot;Background&quot;, 0, 0, 1, -1);
+-  if (day == 1)
+-    SetRegionLightLevel( &quot;Background&quot;, 4);
+-    wstuff[4] := 4;
+-  endif
+-endfunction
+-
+-function SetRain()
+-  wstuff[4] := 6;
+-  if (day == 1)
+-    SetRegionLightLevel(&quot;Background&quot;, 6);
+-    wstuff[6] := 6;
+-  endif
+-  start_script( &quot;snowRain&quot;, 15);
+-endfunction
+-
+-function SetThunder()
+-  wstuff[4] := 8;
+-  if (day == 1)
+-    SetRegionLightLevel(&quot;Background&quot;, 8);
+-    wstuff[6] := 8;
+-  endif
+-  start_script( &quot;wEffect&quot; );
+-  start_script( &quot;snowRain&quot;, 30);
+-endfunction
+-   
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/daynight/weather.src
+===================================================================
+--- trunk/096/pkg/systems/daynight/weather.src	2005-10-08 14:36:24 UTC (rev 458)
++++ trunk/096/pkg/systems/daynight/weather.src	2005-10-08 14:36:42 UTC (rev 459)
+@@ -4,7 +4,7 @@
+ 
+ set_critical( 1 );
+ 
+-include &quot;weather&quot;;
++include &quot;:daynight:weather&quot;;
+ 
+ var wstuff := GetGlobalProperty(&quot;Weather&quot;);
+ var day := wstuff[3];
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000432.html">[Poldistro-svn] r458 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000434.html">[Poldistro-svn] r460 - in trunk/096/pkg/commands: include seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#433">[ date ]</a>
+              <a href="thread.html#433">[ thread ]</a>
+              <a href="subject.html#433">[ subject ]</a>
+              <a href="author.html#433">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r20 - in trunk/096/pkg/utils/control: . config docs textcmd textcmd/coun
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-August/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r20%20-%20in%20trunk/096/pkg/utils/control%3A%20.%20config%20docs%20textcmd%20textcmd/coun&In-Reply-To=%3C200508312123.j7VLNn82006336%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000001.html">
+   <LINK REL="Next"  HREF="000005.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r20 - in trunk/096/pkg/utils/control: . config docs textcmd textcmd/coun</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r20%20-%20in%20trunk/096/pkg/utils/control%3A%20.%20config%20docs%20textcmd%20textcmd/coun&In-Reply-To=%3C200508312123.j7VLNn82006336%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r20 - in trunk/096/pkg/utils/control: . config docs textcmd textcmd/coun">austin at berlios.de
+       </A><BR>
+    <I>Wed Aug 31 23:23:49 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000001.html">[Poldistro-svn] r19 - trunk/096/scripts
+</A></li>
+        <LI>Next message: <A HREF="000005.html">[Poldistro-svn] r21 - trunk/096/pkg/utils/control/docs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-08-31 23:23:48 +0200 (Wed, 31 Aug 2005)
+New Revision: 20
+
+Added:
+   trunk/096/pkg/utils/control/textcmd/
+   trunk/096/pkg/utils/control/textcmd/coun/
+   trunk/096/pkg/utils/control/textcmd/coun/control.src
+Modified:
+   trunk/096/pkg/utils/control/checkpackages.src
+   trunk/096/pkg/utils/control/config/icp.cfg
+   trunk/096/pkg/utils/control/docs/changes.txt
+   trunk/096/pkg/utils/control/docs/readme.txt
+   trunk/096/pkg/utils/control/pkg.cfg
+Log:
+
+
+Modified: trunk/096/pkg/utils/control/checkpackages.src
+===================================================================
+--- trunk/096/pkg/utils/control/checkpackages.src	2005-08-31 13:12:12 UTC (rev 19)
++++ trunk/096/pkg/utils/control/checkpackages.src	2005-08-31 21:23:48 UTC (rev 20)
+@@ -2,19 +2,17 @@
+ use os;
+ use cfgfile;
+ 
+-include &quot;:datafile:datafile&quot;;
+ include &quot;include/string&quot;;
++include &quot;:datafile:include/datafile&quot;;
+ 
+-
+ // Run 255 lines before going to the next script.
+ // Its as close as it gets to critical without the console whining about it.
+ set_priority(255);
+ set_script_option(SCRIPTOPT_NO_RUNAWAY, 1);
+ 
+-var pkg_info := DFOpenDataFile(&quot;:control:packages&quot;, DF_CREATE);
+-var pkg_gumps := DFOpenDataFile(&quot;:control:gumps&quot;, DF_CREATE);
+-
+ program CheckPackages()
++	var pkg_info := DFOpenDataFile(&quot;:control:packages&quot;, DF_CREATE);
++	var pkg_gumps := DFOpenDataFile(&quot;:control:gumps&quot;, DF_CREATE);
+ 
+ 	// This foreach loop is here until DeleteDataFile() in datafile.em works.
+ 	// Its purpose is to wipe the datafile so its updated for the new package settings.
+@@ -25,10 +23,10 @@
+ 	
+ 	DF_DEBUG_MODE := 0;
+ 
+-	// Run through each package
+-	// If it has an ICP.cfg in its 'configs' folder, get the settings we want from it.
+-	// If not, itll go on the gump as packagename [No ICP support]
+-	foreach package in (polcore().packages);
++	// Run through each package -
++	// If it has an icp.cfg in its 'config' folder, get the settings we want from it.
++	// If not, it'll go on the gump as packagename [Not ICP compliant]
++	foreach package in (polcore().packages)
+ 		var temp_info := struct;
+ 
+ 		var data_elem := DFFindElement(pkg_info, package, DF_CREATE);
+@@ -64,12 +62,13 @@
+ 	Print(&quot;[CONTROL] Finished setting up packages.&quot;);
+ endprogram
+ 
+-// * GetCfgValue(byref cfg_elem, value)
+-//
+-// Used to get values from the config file.
+-// Makes sure that the value returned is &quot;clean&quot;
+-// so &lt;uninitialized object&gt; is not seen on the gump.
+-//
++/*
++ * GetCfgValue(byref cfg_elem, value)
++ *
++ * Used to get values from the config file.
++ * Makes sure that the value returned is &quot;clean&quot;
++ * so &lt;uninitialized object&gt; is not seen on the gump.
++ */
+ function GetCfgValue(byref cfg_elem, value)
+ 	value := GetConfigString(cfg_elem, value);
+ 	if ( !value )
+
+Modified: trunk/096/pkg/utils/control/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/utils/control/config/icp.cfg	2005-08-31 13:12:12 UTC (rev 19)
++++ trunk/096/pkg/utils/control/config/icp.cfg	2005-08-31 21:23:48 UTC (rev 20)
+@@ -1,7 +1,7 @@
+ ICP Register
+ {
+ 	Name		Interface Controller Package (ICP)
+-	Version		2.1
++	Version		2.3
+ 	Description	Gump based package manager. Lists scripts, text commands and itemdesc.cfg objects belonging to a package.
+ 	
+ 	Creator		Austin
+
+Modified: trunk/096/pkg/utils/control/docs/changes.txt
+===================================================================
+--- trunk/096/pkg/utils/control/docs/changes.txt	2005-08-31 13:12:12 UTC (rev 19)
++++ trunk/096/pkg/utils/control/docs/changes.txt	2005-08-31 21:23:48 UTC (rev 20)
+@@ -1,3 +1,12 @@
++-=[ 6:32PM Jul. 07, 2005 (Austin)]=---------
++Changed:
++	* Renamed folder 'configs' to 'config'
++	* Renamed folder 'includes' to 'include'
++	
++	* ICP will now look for icp.cfg in a package's 'config' folder
++	* Updated scripts to match folder name changes
++	* Updated scripts to use datafile.inc from its package
++
+ -=[ 8:30PM Jul. 01, 2005 (Austin)]=---------
+ 
+ Added:
+
+Modified: trunk/096/pkg/utils/control/docs/readme.txt
+===================================================================
+--- trunk/096/pkg/utils/control/docs/readme.txt	2005-08-31 13:12:12 UTC (rev 19)
++++ trunk/096/pkg/utils/control/docs/readme.txt	2005-08-31 21:23:48 UTC (rev 20)
+@@ -15,11 +15,11 @@
+ If you're using the distro, my recommendation would be to put it over the existing
+ control package which can be found under foundations (As of the .94 distro)
+ 
+-You will need to have my datafile.inc as well. It can be found in the includes section
+-of the POL Script Forum. It should go on your pol/scripts folder so that checkpackages.src
+-can compile. It should be included with future distros.
++You will need to have my datafile package as well. It can be found in the includes section
++of the POL Script Forum. The datafile package is needed so that checkpackages.src
++can compile.
+ 
+-You will also need to make sure you have the latest gump system. This requires gumps 1.2
++You will also need to make sure you have the latest gump system. This requires gumps 1.5
+ by Melanius and myself.
+ 
+ This new ICP system no longer uses the critical scripts. It instead uses a config
+@@ -27,7 +27,7 @@
+ remove them. 
+ 
+ The ICP.cfg files belong in a folder called &quot;configs&quot; within the package.
+-Example: X:/pol/pkg/control/configs/icp.cfg
++Example: X:/pol/pkg/control/config/icp.cfg
+ 
+ The current format for an icp.cfg file is:
+ 
+
+Modified: trunk/096/pkg/utils/control/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/control/pkg.cfg	2005-08-31 13:12:12 UTC (rev 19)
++++ trunk/096/pkg/utils/control/pkg.cfg	2005-08-31 21:23:48 UTC (rev 20)
+@@ -1,10 +1,11 @@
+ Enabled		1
+ Name		control
+ 
+-Version		2.1
++Version		2.3
+ 
+-CoreRequired	92
+-Requires	gumps 1.2
++CoreRequired	95
++Requires	gumps 1.5
++Requires	datafile 2.0
+ 
+ Creator		Austin Heilman
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
+
+Added: trunk/096/pkg/utils/control/textcmd/coun/control.src
+===================================================================
+--- trunk/096/pkg/utils/control/textcmd/coun/control.src	2005-08-31 13:12:12 UTC (rev 19)
++++ trunk/096/pkg/utils/control/textcmd/coun/control.src	2005-08-31 21:23:48 UTC (rev 20)
+@@ -0,0 +1,48 @@
++use uo;
++use os;
++
++include &quot;:gumps:include/gumpprompt&quot;;
++include &quot;:gumps:include/gumps&quot;;
++include &quot;:gumps:include/gumps_ex&quot;;
++include &quot;:gumps:include/yesno&quot;;
++include &quot;:control:include/icp-commands&quot;;
++include &quot;:control:include/icp-generalinfo&quot;;
++include &quot;:control:include/icp-gumps&quot;;
++include &quot;:control:include/icp-index&quot;;
++include &quot;:control:include/icp-itemdesc&quot;;
++include &quot;:control:include/icp-pkgpanel&quot;;
++include &quot;:control:include/icp-scripts&quot;;
++include &quot;:control:include/icp-util&quot;;
++include &quot;:datafile:include/datafile&quot;;
++
++
++// Arbitrary button return (id) values.
++const START_ID		:= 0xA00000; // Anything above this value is a button.
++const BACK_BTN		:= 0xA00002;
++const UNCACHE_BTN	:= 0xA00003;
++const GENERAL_BTN	:= 0xA00004;
++const SCRIPTS_BTN	:= 0xA00005;
++const COMMANDS_BTN	:= 0xA00006;
++const ITEMDESC_BTN	:= 0xA00007;
++
++// So much easier to use the datafiles as globals in this script.
++var pkg_info := DFOpenDataFile(&quot;:control:packages&quot;, DF_CREATE);
++var pkg_gumps := DFOpenDataFile(&quot;:control:gumps&quot;, DF_CREATE);
++
++program ICPSystem(who, pkg_name)
++	while ( 1 )
++		if ( pkg_name )
++			var input := ICP_PackagePanels(who, pkg_name);
++			if ( !input )
++				break;
++			endif
++		endif
++
++		//Show a list of all packages
++		pkg_name := ICP_PackageIndex(who);
++		if ( !pkg_name )
++			break;
++		endif
++	endwhile
++	SendSysMessage(who, &quot;Done&quot;);
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000001.html">[Poldistro-svn] r19 - trunk/096/scripts
+</A></li>
+	<LI>Next message: <A HREF="000005.html">[Poldistro-svn] r21 - trunk/096/pkg/utils/control/docs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

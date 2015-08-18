@@ -1,0 +1,399 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r498 - trunk/096/pkg/utils/gumps/include/old
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r498%20-%20trunk/096/pkg/utils/gumps/include/old&In-Reply-To=%3C200510092215.j99MFgMw019320%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000470.html">
+   <LINK REL="Next"  HREF="000472.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r498 - trunk/096/pkg/utils/gumps/include/old</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r498%20-%20trunk/096/pkg/utils/gumps/include/old&In-Reply-To=%3C200510092215.j99MFgMw019320%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r498 - trunk/096/pkg/utils/gumps/include/old">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 00:15:42 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000470.html">[Poldistro-svn] r497 - trunk/096/pkg/items/moongates
+</A></li>
+        <LI>Next message: <A HREF="000472.html">[Poldistro-svn] r499 - trunk/096/pkg/systems/housing
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#471">[ date ]</a>
+              <a href="thread.html#471">[ thread ]</a>
+              <a href="subject.html#471">[ subject ]</a>
+              <a href="author.html#471">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 00:15:42 +0200 (Mon, 10 Oct 2005)
+New Revision: 498
+
+Modified:
+   trunk/096/pkg/utils/gumps/include/old/old-gumps.inc
+Log:
+
+
+Modified: trunk/096/pkg/utils/gumps/include/old/old-gumps.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/old/old-gumps.inc	2005-10-09 22:15:00 UTC (rev 497)
++++ trunk/096/pkg/utils/gumps/include/old/old-gumps.inc	2005-10-09 22:15:42 UTC (rev 498)
+@@ -262,7 +262,7 @@
+ //
+ // Returns: A structure {x,y} containing the old origin
+ //
+-function GFSetRef( x := 0, y := 0 )
++function OldGFSetRef( x := 0, y := 0 )
+ 	var oldref := GFref;
+ 	GFref.x := CInt(x);
+ 	GFref.y := CInt(y);
+@@ -273,7 +273,7 @@
+ //
+ // Returns: A structure {x,y} containing the old origin
+ //
+-function GFSetRefRel( dx, dy )
++function OldGFSetRefRel( dx, dy )
+ 	var oldref := GFref;
+ 	GFref.x := GFref.x + CInt(dx);
+ 	GFref.y := GFref.y + CInt(dy);
+@@ -282,11 +282,11 @@
+ 
+ // Initialises this include file's global variables
+ //
+-function GFInitGump( sx := 0, sy := 0 )
++function OldGFInitGump( sx := 0, sy := 0 )
+ 	XGFReset();
+-	GFSetRef( sx, sy );
+-	GFPage( 0 );
+-	GFNoDispose();
++	OldGFSetRef( sx, sy );
++	OldGFPage( 0 );
++	OldGFNoDispose();
+ endfunction
+ 
+ // Gump page #x - start of definition
+@@ -295,7 +295,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.keyid  = Page number
+ //
+-function GFPage( page )
++function OldGFPage( page )
+ 	page := CInt(page);
+ 	GFlayout.append( &quot;page &quot; + CStr(page) );
+ 	return XGFRetVal( GFlayout.size(), -1, page );
+@@ -306,7 +306,7 @@
+ // Returns: A structure...
+ //	.lytidx = Layout-array index changed
+ //
+-function GFNoClose()
++function OldGFNoClose()
+ 	GFlayout.append( &quot;noclose&quot; );
+ 	return XGFRetVal( GFlayout.size() );
+ endfunction
+@@ -316,7 +316,7 @@
+ // Returns: A structure...
+ //	.lytidx = Layout-array index changed
+ //
+-function GFNoDispose()
++function OldGFNoDispose()
+ 	GFlayout.append( &quot;nodispose&quot; );
+ 	return XGFRetVal( GFlayout.size() );
+ endfunction
+@@ -326,7 +326,7 @@
+ // Returns: A structure...
+ //	.lytidx = Layout-array index changed
+ //
+-function GFNoMove()
++function OldGFNoMove()
+ 	GFlayout.append( &quot;nomove&quot; );
+ 	return XGFRetVal( GFlayout.size() );
+ endfunction
+@@ -336,7 +336,7 @@
+ // Returns: A structure...
+ //	.lytidx = Layout-array index changed
+ //
+-function GFUser1( l_line )
++function OldGFUser1( l_line )
+ 	GFlayout.append( l_line );
+ 	return XGFRetVal( GFlayout.size() );
+ endfunction
+@@ -348,7 +348,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.dtidx  = Data-array index changed
+ //
+-function GFUser2( l_line, d_pos, d_line )
++function OldGFUser2( l_line, d_pos, d_line )
+ 	GFlayout.append( l_line );
+ 	GFdata[CInt(d_pos)] := d_line;
+ 	return XGFRetVal( GFlayout.size(), d_pos );
+@@ -360,7 +360,7 @@
+ // Returns: A structure...
+ //	.lytidx = Layout-array index changed
+ //
+-function GFGumpPic( x, y, gumpid, hue:=0 )
++function OldGFGumpPic( x, y, gumpid, hue:=0 )
+ 	var line := &quot;gumppic &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+ 	line := line + &quot; &quot; + CStr(CInt(gumpid));
+ 	line := line + &quot; hue=&quot;+CStr(CInt(hue));
+@@ -374,7 +374,7 @@
+ // Returns: A structure...
+ //	.lytidx = Layout-array index changed
+ //
+-function GFResizePic( x, y, gumpid, w, h )
++function OldGFResizePic( x, y, gumpid, w, h )
+ 	var line := &quot;resizepic &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+ 	line := line + &quot; &quot; + CStr(CInt(gumpid)) + &quot; &quot; + CStr(CInt(w)) + &quot; &quot; + CStr(CInt(h));
+ 	GFlayout.append( line );
+@@ -388,7 +388,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.dtidx  = Data-array index changed (0-based index)
+ //
+-function GFHTMLArea(x, y, width, height, background, scroll_bar, text:=&quot;&quot;)
++function OldGFHTMLArea(x, y, width, height, background, scroll_bar, text:=&quot;&quot;)
+ 	//x y w h l# bg sb
+ 	//&quot;htmlgump 52 79 276 348 1 0 1&quot;,
+ 	var line := &quot;htmlgump &quot;+CStr(GFref.x+CInt(x))+&quot; &quot;+CStr(GFref.y+CInt(y));
+@@ -409,7 +409,7 @@
+ // Returns: A structure...
+ //	.lytidx = Layout-array index changed
+ //
+-function GFTilePic( x, y, tileid )
++function OldGFTilePic( x, y, tileid )
+ 	var line := &quot;tilepic &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+ 	line := line + &quot; &quot; + CStr(CInt(tileid));
+ 	GFlayout.append( line );
+@@ -422,7 +422,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.dtidx  = Data-array index changed (0-based index)
+ //
+-function GFTextLine(x, y, colour, text)
++function OldGFTextLine(x, y, colour, text)
+ 	text := CStr(text);
+ 	var line := &quot;text &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+ 	line := line + &quot; &quot; + CStr(CInt(colour)) + &quot; &quot; + CStr(GFdtidx);
+@@ -438,7 +438,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.dtidx  = Data-array index changed (0-based index)
+ //
+-function GFTextMid(x, y, w, colour, text )
++function OldGFTextMid(x, y, w, colour, text )
+ 	text := CStr(text);
+ 	x := XGFTextMid( text, CInt(x), w );
+ 	var line := &quot;text &quot; + CStr(GFref.x + x) + &quot; &quot; + CStr(GFref.y + CInt(y));
+@@ -455,7 +455,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.dtidx  = Data-array index changed (0-based index)
+ //
+-function GFTextRight( rx, y, colour, text )
++function OldGFTextRight( rx, y, colour, text )
+ 	text := CStr(text);
+ 	rx := XGFTextRight( text, CInt(rx) );
+ 	var line := &quot;text &quot; + CStr(GFref.x + rx) + &quot; &quot; + CStr(GFref.y + CInt(y));
+@@ -476,7 +476,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.dtidx  = Data-array index changed (0-based index)
+ //
+-function GFTextCrop( x, y, w, h, colour, text )
++function OldGFTextCrop( x, y, w, h, colour, text )
+ 	text := CStr(text);
+ 	var line := &quot;croppedtext &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+ 	line := line + &quot; &quot; + CStr(CInt(w)) + &quot; &quot; + CStr(CInt(h)) + &quot; &quot; + CStr(CInt(colour));
+@@ -499,7 +499,7 @@
+ //	          (This method is DAFT! But hey, I didn't write it! :-P&quot; )
+ //              (Returns eg:  &quot;Key=2024, Value=2024: This is the text&quot; )
+ //
+-function GFTextEntry( x, y, w, h, colour, text := &quot;&quot; )
++function OldGFTextEntry( x, y, w, h, colour, text := &quot;&quot; )
+ 	if ( text == error )
+ 		text := &quot;&quot;;
+ 	else
+@@ -528,7 +528,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.keyid  = Page number that the button changes to
+ //
+-function GFButtonPage( x, y, release, press, page )
++function OldGFButtonPage( x, y, release, press, page )
+ 	// &quot;button x y release press 0 page&quot;
+ 	var line := &quot;button &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+ 	line := line + &quot; &quot; + CStr(CInt(release)) + &quot; &quot; + CStr(CInt(press));
+@@ -547,7 +547,7 @@
+ //	.keyid  = KeyID allocated to the button - returned from Gump if pressed
+ //	          (butid)
+ //
+-function GFButtonID( x, y, release, press, close, id := 0 )
++function OldGFButtonID( x, y, release, press, close, id := 0 )
+ 	// &quot;button x y release press close 0 key&quot;
+ 	var line := &quot;button &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+ 	line := line + &quot; &quot; + CStr(CInt(release)) + &quot; &quot; + CStr(CInt(press)) + &quot; &quot;;
+@@ -574,7 +574,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.keyid  = KeyID allocated to the checkbox (cbxid)
+ //
+-function GFCheckBox( x, y, off, on, state, id := 0)
++function OldGFCheckBox( x, y, off, on, state, id := 0)
+ 	var line := &quot;checkbox &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+ 	line := line + &quot; &quot; + CStr(CInt(off)) + &quot; &quot; + CStr(CInt(on)) + &quot; &quot;;
+ 	if ( state == 0 )
+@@ -601,7 +601,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.keyid  = KeyID allocated to the radio-button (radid)
+ //
+-function GFRadioButton( x, y, off, on, state, id := 0)
++function OldGFRadioButton( x, y, off, on, state, id := 0)
+ 	if (state == error)
+ 		state := 0;
+ 	endif
+@@ -629,7 +629,7 @@
+ //	.lytidx = Layout-array index changed
+ //	.keyid  = The group number (integer form)
+ //
+-function GFSetRadioGroup( group )
++function OldGFSetRadioGroup( group )
+ 	group := CInt(group);
+ 	GFlayout.append( &quot;group &quot; + CStr(group) );
+ 	return XGFRetVal( GFlayout.size(), -1, group );
+@@ -639,7 +639,7 @@
+ //
+ // Returns: The text string
+ //
+-function GFExtractData( keyid, keyarray )
++function OldGFExtractData( keyid, keyarray )
+ 	var keystr := CStr(keyid)+&quot;: &quot;;
+ 	var datstr := keyarray[CInt(keyid)];
+ 	var retval := datstr[len(keystr)+1,len(datstr)];
+@@ -649,7 +649,7 @@
+ 
+ // Returns: Value of the next index to be used
+ //
+-function GFGetNextIndex( type )
++function OldGFGetNextIndex( type )
+ 	sleepms(2);
+ 	case ( type )
+ 		GFIDX_TEXT:
+@@ -672,7 +672,7 @@
+ //
+ // Returns: The old index value
+ //
+-function GFSetNextIndex( type, value )
++function OldGFSetNextIndex( type, value )
+ 	var oldidx;
+ 	value := CInt(value);
+ 	sleepms(2);
+@@ -703,8 +703,8 @@
+ //
+ // Returns: The new index value
+ //
+-function GFIncIndex( type )
+-	var oldidx := GFSetNextIndex( type, GFGetNextIndex( type ) + 1 );
++function OldGFIncIndex( type )
++	var oldidx := OldGFSetNextIndex( type, OldGFGetNextIndex( type ) + 1 );
+ 	return (oldidx + 1); // Because it's just been incremented! :P&quot;
+ endfunction
+ 
+@@ -712,7 +712,7 @@
+ //
+ // Returns: the text
+ //
+-function GFGetData( index )
++function OldGFGetData( index )
+ 	// Internally, the gump uses 0-based indexing...
+ 	// Take that into account when altering the 1-based array
+ 	return GFdata[index+1];
+@@ -724,7 +724,7 @@
+ //
+ // Returns: Index changed
+ //
+-function GFSetData( index, text )
++function OldGFSetData( index, text )
+ 	// Internally, the gump uses 0-based indexing...
+ 	// Take that into account when altering the 1-based array
+ 	GFdata[index+1] := text;
+@@ -735,7 +735,7 @@
+ //
+ // Returns: the text
+ //
+-function GFGetLayout( index )
++function OldGFGetLayout( index )
+ 	return GFlayout[index];
+ endfunction
+ 
+@@ -745,7 +745,7 @@
+ //
+ // Returns: Index changed
+ //
+-function GFSetLayout( index, text )
++function OldGFSetLayout( index, text )
+ 	GFlayout[index] := text;
+ 	return index;
+ endfunction
+@@ -762,7 +762,7 @@
+ //		.cbx	= Copy of GFcbxid
+ //		.rad	= Copy of GFradid
+ //
+-function GFStoreGump()
++function OldGFStoreGump()
+ 	var idx := struct;
+ 	idx.+dt := GFdtidx;
+ 	idx.+txt := GFtxtid;
+@@ -784,7 +784,7 @@
+ //	0 = Failure
+ //	1 = Success
+ //
+-function GFRestoreGump( gumpvar )
++function OldGFRestoreGump( gumpvar )
+ 	if ( !(gumpvar.layout) or !(gumpvar.data) or !(gumpvar.indexes) )
+ 		print(&quot;GFRG(): missing one of .layout/.data/.indexes&quot;);
+ 		return 0;
+@@ -812,7 +812,7 @@
+ //
+ // NOTE: This WILL crash the client if you've created duff arrays!!
+ //
+-function GFSendGump( who )
++function OldGFSendGump( who )
+ 	return SendDialogGump( who, GFlayout, GFdata );
+ endfunction
+ 
+@@ -823,7 +823,7 @@
+ //
+ // NOTE: This WILL crash the client if you've corrupted the array!
+ //
+-function GFSendGumpV( who, gumpvar )
++function OldGFSendGumpV( who, gumpvar )
+ 	if ( !(gumpvar.layout) or !(gumpvar.data) )
+ 		return;
+ 	endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000470.html">[Poldistro-svn] r497 - trunk/096/pkg/items/moongates
+</A></li>
+	<LI>Next message: <A HREF="000472.html">[Poldistro-svn] r499 - trunk/096/pkg/systems/housing
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#471">[ date ]</a>
+              <a href="thread.html#471">[ thread ]</a>
+              <a href="subject.html#471">[ subject ]</a>
+              <a href="author.html#471">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r742 - trunk/096/pkg/mobiles/timedScripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r742%20-%20trunk/096/pkg/mobiles/timedScripts/include&In-Reply-To=%3C200510311524.j9VFOxHs014978%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000715.html">
+   <LINK REL="Next"  HREF="000717.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r742 - trunk/096/pkg/mobiles/timedScripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r742%20-%20trunk/096/pkg/mobiles/timedScripts/include&In-Reply-To=%3C200510311524.j9VFOxHs014978%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r742 - trunk/096/pkg/mobiles/timedScripts/include">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 31 16:24:59 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000715.html">[Poldistro-svn] r741 - trunk/096/pkg/items/blood/include
+</A></li>
+        <LI>Next message: <A HREF="000717.html">[Poldistro-svn] r743 - trunk/096/pkg/mobiles/timedScripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#716">[ date ]</a>
+              <a href="thread.html#716">[ thread ]</a>
+              <a href="subject.html#716">[ subject ]</a>
+              <a href="author.html#716">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-31 16:24:58 +0100 (Mon, 31 Oct 2005)
+New Revision: 742
+
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc
+Log:
+Added TS_GetTimerNames() to replace the old GetAllPoisons() and ListPoisonsByType() functions. So.. I can compile oldAI to start POL :-P
+
+Modified: trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc	2005-10-31 14:35:14 UTC (rev 741)
++++ trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc	2005-10-31 15:24:58 UTC (rev 742)
+@@ -152,3 +152,36 @@
+ 	return SetObjProperty(mobile, &quot;%TimerList%&quot;, timer_list);
+ endfunction
+ 
++/* 
++ * TS_GetTimerNames(mobile, type:=&quot;&quot;)
++ *
++ * Purpose
++ * Retrieves a list of names of timed scripts running on a mobile.
++ * 
++ * Parameters
++ * mobile:	Mobile to get the list from.
++ * type:	Optional parameter - Will only list timers of a certain type.
++ *		If left unset, all will be retuned.
++ *
++ * Return value
++ * Array of strings
++ *
++ */
++function TS_GetTimerNames(mobile, type:=&quot;&quot;)
++	type := Lower(type);
++	var timer_list := TS_GetTimerList(mobile);
++	var name_list := array{};
++	
++	foreach timer_name in ( timer_list.keys() )
++		if ( type )
++			var elem_info := TS_GetCfgElem(timer_name);
++			if ( Lower(elem_info.Type) == type )
++				name_list.Append(type);
++			endif
++		else
++			name_list.Append(type);
++		endif
++		sleepms(2);
++	endforeach
++endfunction
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000715.html">[Poldistro-svn] r741 - trunk/096/pkg/items/blood/include
+</A></li>
+	<LI>Next message: <A HREF="000717.html">[Poldistro-svn] r743 - trunk/096/pkg/mobiles/timedScripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#716">[ date ]</a>
+              <a href="thread.html#716">[ thread ]</a>
+              <a href="subject.html#716">[ subject ]</a>
+              <a href="author.html#716">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,860 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r129 - in trunk/096/pkg/utils: . servperf servperf/www
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r129%20-%20in%20trunk/096/pkg/utils%3A%20.%20servperf%20servperf/www&In-Reply-To=%3C200509150159.j8F1xgXq009168%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000110.html">
+   <LINK REL="Next"  HREF="000112.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r129 - in trunk/096/pkg/utils: . servperf servperf/www</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r129%20-%20in%20trunk/096/pkg/utils%3A%20.%20servperf%20servperf/www&In-Reply-To=%3C200509150159.j8F1xgXq009168%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r129 - in trunk/096/pkg/utils: . servperf servperf/www">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep 15 03:59:42 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000110.html">[Poldistro-svn] r128 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000112.html">[Poldistro-svn] r130 - trunk/096/pkg/utils/servperf/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#111">[ date ]</a>
+              <a href="thread.html#111">[ thread ]</a>
+              <a href="subject.html#111">[ subject ]</a>
+              <a href="author.html#111">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-15 03:59:37 +0200 (Thu, 15 Sep 2005)
+New Revision: 129
+
+Added:
+   trunk/096/pkg/utils/servperf/
+   trunk/096/pkg/utils/servperf/pkg.cfg
+   trunk/096/pkg/utils/servperf/recbandwidth.src
+   trunk/096/pkg/utils/servperf/start.src
+   trunk/096/pkg/utils/servperf/www/
+   trunk/096/pkg/utils/servperf/www/all_scripts.asp
+   trunk/096/pkg/utils/servperf/www/bandwidth.asp
+   trunk/096/pkg/utils/servperf/www/header.inc
+   trunk/096/pkg/utils/servperf/www/index.asp
+   trunk/096/pkg/utils/servperf/www/iostats.asp
+   trunk/096/pkg/utils/servperf/www/long_running_scripts.asp
+   trunk/096/pkg/utils/servperf/www/npcgroup.asp
+   trunk/096/pkg/utils/servperf/www/running_scripts.asp
+   trunk/096/pkg/utils/servperf/www/script_profiles.asp
+   trunk/096/pkg/utils/servperf/www/scriptex.asp
+   trunk/096/pkg/utils/servperf/www/storage.asp
+   trunk/096/pkg/utils/servperf/www/storagearea.asp
+Log:
+Sygygy's server performance package - its like a web debugger. Amazed it wasn't already in the distro.
+
+Added: trunk/096/pkg/utils/servperf/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/servperf/pkg.cfg	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/pkg.cfg	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,6 @@
++Enabled 1
++CoreRequired 84
++Name servperf
++Maintainer Syzygy
++Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">syzygy at pobox.com</A>
++Version 1.1
+\ No newline at end of file
+
+Added: trunk/096/pkg/utils/servperf/recbandwidth.src
+===================================================================
+--- trunk/096/pkg/utils/servperf/recbandwidth.src	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/recbandwidth.src	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,29 @@
++use os;
++use uo;
++
++// This program records the bandwidth used per minute
++// Samples are stored for the last HISTORY_MINUTES minutes 
++// each element contains { bytes_received, bytes_sent } for that minute
++
++const HISTORY_MINUTES := 10;
++
++program record_bandwidth_used()
++    var results := { {0,0} };
++    var system := polcore();
++    var last_received := system.bytes_received;
++    var last_sent := system.bytes_sent;
++    var this_received, this_sent;
++
++    set_critical(1);
++    while (1)
++        sleep( 60 );
++        this_received := system.bytes_received;
++        this_sent := system.bytes_sent;    
++        results.insert( 1, { this_received-last_received,this_sent-last_sent } );
++        // print( &quot;results: &quot; + results );
++        results.erase( HISTORY_MINUTES+1 );
++        last_received := this_received;
++        last_sent := this_sent;
++        SetGlobalProperty( &quot;#:servperf:bandwidth&quot;, results );
++    endwhile     
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/utils/servperf/start.src
+===================================================================
+--- trunk/096/pkg/utils/servperf/start.src	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/start.src	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,3 @@
++use os;
++
++start_script( &quot;recbandwidth&quot; );
+
+Added: trunk/096/pkg/utils/servperf/www/all_scripts.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/all_scripts.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/all_scripts.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,56 @@
++&lt;%
++use uo;
++use os;
++%&gt;
++
++&lt;html&gt;
++&lt;head&gt;
++&lt;title&gt;All Scripts&lt;/title&gt;
++&lt;/head&gt;
++
++&lt;body&gt;
++&lt;% 
++  include header; 
++  PrintHeader( &quot;All Scripts&quot; );
++%&gt;
++
++&lt;div align=center&gt;
++&lt;table border=1 cellspacing=0 cellpadding=5&gt;
++  &lt;tr bgcolor=#99CCFF&gt;
++	&lt;td&gt;PID&lt;/td&gt;
++    &lt;td&gt;Script Name&lt;/td&gt;
++    &lt;td&gt;Cycles&lt;/td&gt;
++	&lt;!--&lt;td&gt;Sleep Cycles&lt;/td&gt;--&gt;
++    &lt;td&gt;Cycles since Sleep&lt;/td&gt;
++    &lt;td&gt;Prog Counter&lt;/td&gt;
++	&lt;td&gt;Call Depth&lt;/td&gt;
++	&lt;td&gt;Globals&lt;/td&gt;
++	&lt;td&gt;Var Size&lt;/td&gt;
++	&lt;td&gt;State&lt;/td&gt;
++  &lt;/tr&gt;
++
++&lt;%
++  foreach script in (polcore().all_scripts)
++%&gt;
++  &lt;tr&gt;
++    &lt;td&gt;&lt;a href=&quot;scriptex.ecl?pid=&lt;%=script.pid%&gt;&quot;&gt;&lt;%=script.pid%&gt;&lt;/a&gt;&lt;/td&gt;
++    &lt;td&gt;&lt;%=script.name%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.instr_cycles%&gt;&lt;/td&gt;
++	&lt;!--&lt;td&gt;&lt;%=script.sleep_cycles%&gt;&lt;/td&gt;--&gt;
++    &lt;td&gt;&lt;%=script.consec_cycles%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.PC%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.call_depth%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.num_globals%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.var_size%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.state%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;%
++    sleepms(1);
++  endforeach
++%&gt;
++
++&lt;/table&gt;
++&lt;/div&gt;
++
++&lt;/BODY&gt;
++&lt;/HTML&gt;
+
+Added: trunk/096/pkg/utils/servperf/www/bandwidth.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/bandwidth.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/bandwidth.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,32 @@
++&lt;%
++use os;
++use uo;
++%&gt;
++
++&lt;HTML&gt;
++&lt;BODY&gt;
++&lt;% 
++  include header; 
++  PrintHeader( &quot;Bandwidth Usage&quot; );
++%&gt;
++
++&lt;table border=1 cellspacing=0 cellpadding=5&gt;
++  &lt;tr bgcolor=#99CCFF&gt;
++    &lt;td&gt;Bytes Sent&lt;/td&gt;
++    &lt;td&gt;bps out&lt;/td&gt;
++    &lt;td&gt;Received&lt;/td&gt;
++    &lt;td&gt;bps in&lt;/td&gt;
++  &lt;/tr&gt;
++
++&lt;% foreach elem in (GetGlobalProperty( &quot;#:servperf:bandwidth&quot; )) %&gt;
++  &lt;tr&gt;
++    &lt;td&gt;&lt;%=elem[2]%&gt;&lt;/td&gt;
++    &lt;td&gt;&lt;%=elem[2]/6%&gt;&lt;/td&gt;
++    &lt;td&gt;&lt;%=elem[1]%&gt;&lt;/td&gt;
++    &lt;td&gt;&lt;%=elem[1]/6%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;% endforeach %&gt;
++&lt;/table&gt;
++
++&lt;/body&gt;
++&lt;/html&gt;
+
+Added: trunk/096/pkg/utils/servperf/www/header.inc
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/header.inc	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/header.inc	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,9 @@
++function PrintHeader( name )
++  WriteHtmlRaw( &quot;&lt;table border=0 width=\&quot;100%\&quot;&quot; 
++      +&quot;&lt;tr&gt;&quot;
++      +&quot;&lt;td valign=\&quot;top\&quot; width=\&quot;100%\&quot;&gt;&lt;strong&gt;&lt;big&gt;&quot; + name + &quot;&lt;/big&gt;&lt;/strong&gt;&lt;/td&gt;&quot;
++      +&quot;&lt;td width=\&quot;50%\&quot; valign=\&quot;top\&quot; align=\&quot;right\&quot; nowrap&gt;&lt;a href=\&quot;index.ecl\&quot;&gt;&lt;small&gt;Performance&lt;br&gt;&quot;
++      +&quot;Home&lt;/small&gt;&lt;/a&gt;&lt;/td&gt;&quot;
++      +&quot;&lt;/tr&gt;&quot;
++      +&quot;&lt;/table&gt;&quot; );
++endfunction
+
+Added: trunk/096/pkg/utils/servperf/www/index.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/index.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/index.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,103 @@
++&lt;%
++use uo;
++use polsys;
++%&gt;
++&lt;html&gt;
++
++&lt;head&gt;
++&lt;title&gt;POL Server Performance Center&lt;/title&gt;
++&lt;/head&gt;
++
++&lt;%
++if (QueryParam( &quot;PriDiv&quot; ))
++    polcore().set_priority_divide( CInt(QueryParam(&quot;PriDiv&quot;)) );
++endif
++%&gt;
++
++&lt;body&gt;
++
++&lt;p&gt;POL Server Performance Center&lt;/p&gt;
++&lt;p&gt;Server Vitals:&lt;/p&gt;
++
++&lt;table border=&quot;1&quot; width=&quot;100%&quot;&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;System Load:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=polcore().sysload%&gt;&nbsp;(&lt;%=polcore().sysload_severity%&gt;)&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Mobiles:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=polcore().mobilecount%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Toplevel Items:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=polcore().itemcount%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Online Players:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=EnumerateOnlineCharacters().size()%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td&gt;Storage Areas:&lt;/td&gt;
++	&lt;td&gt;&lt;a href=&quot;storage.ecl&quot;&gt;&lt;%=StorageAreas().count%&gt;&lt;/a&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Events per Minute:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=polcore().events_per_min%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Error creations per Minute:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=polcore().error_creations_per_min%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Skill Checks per Minute:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=polcore().skill_checks_per_min%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Combat Operations per Minute:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=polcore().combat_operations_per_min%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Task scheduler deadlines met:&lt;/td&gt;
++&lt;% 
++   var tasks_ontime := polcore().tasks_ontime_per_min;
++   var tasks_late := polcore().tasks_late_per_min;
++   var tasks_late_ticks := polcore().tasks_late_ticks_per_min;
++%&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=tasks_ontime%&gt;/&lt;%=tasks_ontime+tasks_late%&gt; (&lt;%=tasks_late_ticks%&gt; ticks)&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Script scheduler deadlines met:&lt;/td&gt;
++&lt;%
++   var scripts_ontime := polcore().scripts_ontime_per_min;
++   var scripts_late := polcore().scripts_late_per_min;
++%&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=scripts_ontime%&gt;/&lt;%=scripts_ontime+scripts_late%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Script Instructions per Minute:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=polcore().instr_per_min%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Bytes Sent:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=polcore().bytes_sent%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Bytes Received:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;%=polcore().bytes_received%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;Priority Divider:&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;&lt;form&gt;&lt;input type=text name=PriDiv value=&quot;&lt;%=polcore().priority_divide%&gt;&quot;&gt;&lt;/form&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;/table&gt;
++
++&lt;ul&gt;
++&lt;li&gt;&lt;a href=&quot;npcgroup.ecl&quot;&gt;NPC Grouping&lt;/a&gt;
++&lt;li&gt;&lt;a href=&quot;script_profiles.ecl&quot;&gt;Script Profiles&lt;/a&gt;
++&lt;li&gt;&lt;a href=&quot;running_scripts.ecl&quot;&gt;Running Scripts&lt;/a&gt;
++&lt;li&gt;&lt;a href=&quot;long_running_scripts.ecl&quot;&gt;Long Running Scripts&lt;/a&gt;
++&lt;li&gt;&lt;a href=&quot;all_scripts.ecl&quot;&gt;All Scripts&lt;/a&gt;
++&lt;li&gt;&lt;a href=&quot;bandwidth.ecl&quot;&gt;Bandwidth Usage&lt;/a&gt;
++&lt;/ul&gt;
++&lt;/body&gt;
++&lt;/html&gt;
+
+Added: trunk/096/pkg/utils/servperf/www/iostats.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/iostats.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/iostats.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,49 @@
++&lt;%
++use uo;
++use os;
++%&gt;
++
++&lt;html&gt;
++&lt;head&gt;
++&lt;title&gt;Script Profiles&lt;/title&gt;
++&lt;/head&gt;
++
++&lt;body&gt;
++
++&lt;% 
++  include header; 
++  PrintHeader( &quot;Script Profiles&quot; );
++%&gt;
++
++&lt;div align=center&gt;
++&lt;table border=1 cellspacing=0 cellpadding=5&gt;
++  &lt;tr bgcolor=#99CCFF&gt;
++    &lt;td colspan=3&gt;Packets Sent&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr bgcolor=#99CCFF&gt;
++    &lt;td&gt;Message Type&lt;/td&gt;
++    &lt;td&gt;Count&lt;/td&gt;
++    &lt;td&gt;Bytes&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;%
++  var iostats;
++
++  iostats := polcore().iostats;
++  for msgtype := 0 to 255
++    if (iostats.sent[msgtype+1].count)
++%&gt;
++  &lt;tr&gt;
++	&lt;td&gt;&lt;%=msgtype%&gt;&lt;/td&gt;
++    &lt;td&gt;&lt;%=iostats.sent[msgtype+1].count%&gt;&lt;/td&gt;
++    &lt;td&gt;&lt;%=iostats.sent[msgtype+1].bytes%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;%
++    endif
++  endfor
++%&gt;
++
++&lt;/table&gt;
++&lt;/div&gt;
++
++&lt;/BODY&gt;
++&lt;/HTML&gt;
+
+Added: trunk/096/pkg/utils/servperf/www/long_running_scripts.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/long_running_scripts.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/long_running_scripts.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,54 @@
++&lt;%
++use uo;
++use os;
++%&gt;
++
++&lt;html&gt;
++&lt;head&gt;
++&lt;title&gt;Long Running Scripts&lt;/title&gt;
++&lt;/head&gt;
++
++&lt;body&gt;
++&lt;% 
++  include header; 
++  PrintHeader( &quot;Long-running Scripts&quot; );
++%&gt;
++
++&lt;div align=center&gt;
++&lt;table border=1 cellspacing=0 cellpadding=5&gt;
++  &lt;tr bgcolor=#99CCFF&gt;
++    &lt;td&gt;Script Name&lt;/td&gt;
++    &lt;td&gt;Cycles&lt;/td&gt;
++	&lt;!--&lt;td&gt;Sleep Cycles&lt;/td&gt;--&gt;
++    &lt;td&gt;Cycles since Sleep&lt;/td&gt;
++    &lt;td&gt;Prog Counter&lt;/td&gt;
++	&lt;td&gt;Call Depth&lt;/td&gt;
++	&lt;td&gt;Globals&lt;/td&gt;
++	&lt;td&gt;Var Size&lt;/td&gt;
++  &lt;/tr&gt;
++
++&lt;%
++  foreach script in (polcore().running_scripts)
++    if (script.consec_cycles &gt;= 50)
++%&gt;
++  &lt;tr&gt;
++    &lt;td&gt;&lt;%=script.name%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.instr_cycles%&gt;&lt;/td&gt;
++	&lt;!--&lt;td&gt;&lt;%=script.sleep_cycles%&gt;&lt;/td&gt;--&gt;
++    &lt;td&gt;&lt;%=script.consec_cycles%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.PC%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.call_depth%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.num_globals%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.var_size%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;%
++    endif
++    sleepms(1);
++  endforeach
++%&gt;
++
++&lt;/table&gt;
++&lt;/div&gt;
++
++&lt;/BODY&gt;
++&lt;/HTML&gt;
+
+Added: trunk/096/pkg/utils/servperf/www/npcgroup.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/npcgroup.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/npcgroup.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,88 @@
++&lt;% 
++   use uo;
++   use os; 
++   set_priority(200);
++%&gt;
++&lt;html&gt;
++
++&lt;head&gt;
++&lt;title&gt;POL Server Performance Center - NPC Grouping&lt;/title&gt;
++&lt;meta name=&quot;GENERATOR&quot; content=&quot;Microsoft FrontPage 3.0&quot;&gt;
++&lt;/head&gt;
++
++&lt;body&gt;
++
++&lt;% 
++  include header; 
++  PrintHeader( &quot;NPC Grouping&quot; );
++%&gt;
++
++&lt;table border=&quot;1&quot; width=&quot;100%&quot;&gt;
++  &lt;tr&gt;
++    &lt;td width=&quot;50%&quot;&gt;(x,y) center&lt;/td&gt;
++    &lt;td width=&quot;50%&quot;&gt;NPC Count&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;% foreach zone in (top_ten_npc_zones()) %&gt;
++  &lt;tr&gt;
++    &lt;td&gt;&lt;%=zone.xmid%&gt;,&lt;%=zone.ymid%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=zone.npc_count%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;% endforeach %&gt;
++&lt;/table&gt;
++&lt;/body&gt;
++&lt;/html&gt;
++
++&lt;%
++use os;
++
++function top_ten_npc_zones()
++    var zones := {};
++	var zone := {};
++	zone.+xmid := 0;
++	zone.+ymid := 0;
++	zone.+npc_count := 0;
++	zones[11] := zone;
++	foreach z in zones
++	    z := zone;
++	endforeach;
++
++	var xmid, ymid, lowest;
++	lowest := 0;
++	for( xmid := 31; xmid &lt; 6144; xmid := xmid + 64 )
++	    // print( CStr(xmid) );
++	    for( ymid := 31; ymid &lt; 4096; ymid := ymid + 64 )
++			var npc_count := GetNpcCount( xmid, ymid, 32 );
++			if (npc_count &gt; lowest)
++			    var i;
++				for( i := 1; i &lt;= 10; i := i + 1)
++				    if (npc_count &gt; zones[i].npc_count)
++				        // print( &quot;npc count for zone index &quot; + i + &quot; is &quot; + npc_count );
++						zone.xmid := xmid;
++						zone.ymid := ymid;
++						zone.npc_count := npc_count;
++						zones.insert( i, zone );
++						zones.erase( 11 );
++						// print( zones );
++						break;
++					endif
++				endfor
++				lowest := zones[10].npc_count;
++			endif
++         	sleepms(1);
++		endfor
++	endfor
++	zones.erase( 11 );
++	return zones;
++endfunction
++
++function GetNpcCount( xmid, ymid, range )
++    var count := 0;
++	foreach obj in ListObjectsInBox( xmid-range, ymid-range, -128,
++	                                 xmid+range, ymid+range, +127 )
++	    if (obj.npctemplate)
++		    count := count + 1;
++		endif
++	endforeach
++	return count;
++endfunction
++%&gt;
+
+Added: trunk/096/pkg/utils/servperf/www/running_scripts.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/running_scripts.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/running_scripts.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,52 @@
++&lt;%
++use uo;
++use os;
++%&gt;
++
++&lt;html&gt;
++&lt;head&gt;
++&lt;title&gt;Running Scripts&lt;/title&gt;
++&lt;/head&gt;
++
++&lt;body&gt;
++&lt;% 
++  include header; 
++  PrintHeader( &quot;Running Scripts&quot; );
++%&gt;
++
++&lt;div align=center&gt;
++&lt;table border=1 cellspacing=0 cellpadding=5&gt;
++  &lt;tr bgcolor=#99CCFF&gt;
++    &lt;td&gt;Script Name&lt;/td&gt;
++    &lt;td&gt;Cycles&lt;/td&gt;
++	&lt;!--&lt;td&gt;Sleep Cycles&lt;/td&gt;--&gt;
++    &lt;td&gt;Cycles since Sleep&lt;/td&gt;
++    &lt;td&gt;Prog Counter&lt;/td&gt;
++	&lt;td&gt;Call Depth&lt;/td&gt;
++	&lt;td&gt;Globals&lt;/td&gt;
++	&lt;td&gt;Var Size&lt;/td&gt;
++  &lt;/tr&gt;
++
++&lt;%
++  foreach script in (polcore().running_scripts)
++%&gt;
++  &lt;tr&gt;
++    &lt;td&gt;&lt;%=script.name%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.instr_cycles%&gt;&lt;/td&gt;
++	&lt;!--&lt;td&gt;&lt;%=script.sleep_cycles%&gt;&lt;/td&gt;--&gt;
++    &lt;td&gt;&lt;%=script.consec_cycles%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.PC%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.call_depth%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.num_globals%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.var_size%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;%
++    sleepms(1);
++  endforeach
++%&gt;
++
++&lt;/table&gt;
++&lt;/div&gt;
++
++&lt;/BODY&gt;
++&lt;/HTML&gt;
+
+Added: trunk/096/pkg/utils/servperf/www/script_profiles.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/script_profiles.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/script_profiles.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,58 @@
++&lt;%
++use uo;
++use os;
++%&gt;
++
++&lt;html&gt;
++&lt;head&gt;
++&lt;title&gt;Script Profiles&lt;/title&gt;
++&lt;/head&gt;
++
++&lt;body&gt;
++
++&lt;% 
++  include header; 
++  PrintHeader( &quot;Script Profiles&quot; );
++%&gt;
++
++&lt;% 
++  
++  if (QueryParam( &quot;Action&quot; ) = &quot;Clear Counters&quot;) 
++      polcore().clear_script_profile_counters();
++	    // even better would be to redirect, but we can't.
++%&gt;
++&lt;p&gt;&lt;center&gt;&lt;strong&gt;&lt;a href=&quot;script_profiles.ecl&quot;&gt;Reload this page without clearing&lt;/a&gt;&lt;/strong&gt;&lt;/center&gt;&lt;/p&gt;
++&lt;%
++  endif 
++%&gt;
++&lt;div align=center&gt;
++&lt;table border=1 cellspacing=0 cellpadding=5&gt;
++  &lt;tr bgcolor=#99CCFF&gt;
++    &lt;td&gt;Script Name&lt;/td&gt;
++    &lt;td&gt;Cycles&lt;/td&gt;
++    &lt;td&gt;Invocations&lt;/td&gt;
++    &lt;td&gt;Instr/Invoc&lt;/td&gt;
++	&lt;td&gt;%&lt;/td&gt;
++  &lt;/tr&gt;
++
++&lt;%
++  foreach script in (polcore().script_profiles)
++%&gt;
++  &lt;tr&gt;
++    &lt;td&gt;&lt;%=script.name%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.instr%&gt;&lt;/td&gt;
++    &lt;td&gt;&lt;%=script.invocations%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.instr_per_invoc%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=script.instr_percent%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;%
++    sleepms(1);
++  endforeach
++%&gt;
++
++&lt;/table&gt;
++&lt;/div&gt;
++
++&lt;center&gt;&lt;form&gt;&lt;input type=submit name=Action Value=&quot;Clear Counters&quot;&gt;&lt;/form&gt;&lt;/center&gt;
++&lt;/BODY&gt;
++&lt;/HTML&gt;
+
+Added: trunk/096/pkg/utils/servperf/www/scriptex.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/scriptex.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/scriptex.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,65 @@
++&lt;%
++use uo;
++use os;
++%&gt;
++
++&lt;html&gt;
++&lt;head&gt;
++&lt;title&gt;Executing Script&lt;/title&gt;
++&lt;/head&gt;
++
++&lt;body&gt;
++&lt;% 
++  include header; 
++  PrintHeader( &quot;Executing Script&quot; );
++
++  var pid := CInt(QueryParam( &quot;pid&quot; ));
++  var script := getprocess( pid );
++%&gt;
++
++&lt;div align=center&gt;
++&lt;table border=1 cellspacing=0 cellpadding=5&gt;
++  &lt;tr bgcolor=#99CCFF&gt;
++	&lt;td colspan=2&gt;Script Status&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr&gt;  &lt;td&gt;Script Name:&lt;/td&gt;		&lt;td&gt;&lt;%=script.name%&gt;&lt;/td&gt;			&lt;/tr&gt;
++  &lt;tr&gt;	&lt;td&gt;PID:&lt;/td&gt;				&lt;td&gt;&lt;%=script.pid%&gt;&lt;/td&gt;			&lt;/tr&gt;
++  &lt;tr&gt;	&lt;td&gt;Cycles:&lt;/td&gt;			&lt;td&gt;&lt;%=script.instr_cycles%&gt;&lt;/td&gt;	&lt;/tr&gt;
++  &lt;tr&gt;	&lt;td&gt;State&lt;/td&gt;				&lt;td&gt;&lt;%=script.state%&gt;&lt;/td&gt;			&lt;/tr&gt;
++  &lt;tr&gt;	&lt;td&gt;Cycles since Sleep&lt;/td&gt;	&lt;td&gt;&lt;%=script.consec_cycles%&gt;&lt;/td&gt;	&lt;/tr&gt;
++  &lt;tr&gt;	&lt;td&gt;Prog Counter&lt;/td&gt;		&lt;td&gt;&lt;%=script.PC%&gt;&lt;/td&gt;				&lt;/tr&gt;
++  &lt;tr&gt;	&lt;td&gt;Call Depth&lt;/td&gt;			&lt;td&gt;&lt;%=script.call_depth%&gt;&lt;/td&gt;		&lt;/tr&gt;
++  &lt;tr&gt;	&lt;td&gt;Variable Size:&lt;/td&gt;		&lt;td&gt;&lt;%=script.var_size%&gt;&lt;/td&gt;		&lt;/tr&gt;
++  &lt;tr&gt;  &lt;td&gt;Actions:&lt;/td&gt;           &lt;td&gt;&lt;form action=&quot;/pkg/wwwdebug/debug.ecl&quot;&gt;
++                                        &lt;input type=hidden name=pid value=&lt;%=script.pid%&gt;&gt;
++			                            &lt;input type=submit value=&quot;Debug&quot;&gt;
++			                            &lt;/form&gt;  &lt;/td&gt;                  &lt;/tr&gt;
++&lt;/table&gt;
++
++&lt;table border=1 cellspacing=0 cellpadding=5&gt;
++  &lt;tr bgcolor=#99CCFF&gt;
++    &lt;td colspan=4&gt;Global Variables&lt;/td&gt;
++  &lt;/tr&gt;
++  &lt;tr bgcolor=#99CCFF&gt;
++    &lt;td&gt;Name&lt;/td&gt; &lt;td&gt;Type&lt;/td&gt; &lt;td&gt;Size&lt;/td&gt; &lt;td&gt;Value&lt;/td&gt;
++  &lt;/tr&gt;
++
++&lt;% 
++  var globals := script.globals;
++  foreach key in (globals.keys())
++%&gt;
++  &lt;tr&gt;
++    &lt;td&gt;&lt;%=key%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=TypeOf(globals[key])%&gt;&lt;/td&gt;
++	&lt;td&gt;&lt;%=SizeOf(globals[key])%&gt;&lt;/td&gt;
++    &lt;td&gt;&lt;%=globals[key]%&gt;&lt;/td&gt;
++  &lt;/tr&gt;
++&lt;% 
++  endforeach 
++%&gt; 	  
++
++&lt;/table&gt;
++&lt;/div&gt;
++
++&lt;/BODY&gt;
++&lt;/HTML&gt;
+
+Added: trunk/096/pkg/utils/servperf/www/storage.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/storage.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/storage.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,36 @@
++&lt;%
++use uo;
++use polsys;
++%&gt;
++&lt;html&gt;
++
++&lt;head&gt;
++&lt;title&gt;POL Server Performance Center&lt;/title&gt;
++&lt;/head&gt;
++
++&lt;body&gt;
++
++&lt;p&gt;POL Server Performance Center&lt;/p&gt;
++&lt;p&gt;Storage Areas:&lt;/p&gt;
++
++&lt;table&gt;
++&lt;tr&gt;
++  &lt;td&gt;Storage Area&lt;/td&gt;
++  &lt;td&gt;Root Items&lt;/td&gt;
++  &lt;td&gt;Total Items&lt;/td&gt;
++&lt;/tr&gt;
++&lt;%
++foreach sa in StorageAreas()
++%&gt;
++&lt;tr&gt;
++  &lt;td&gt;&lt;a href=&quot;storagearea.ecl?Area=&lt;%=sa%&gt;&quot;&gt;&lt;%=sa%&gt;&lt;/a&gt;&lt;/td&gt;
++  &lt;td&gt;&lt;%=sa.count%&gt;&lt;/a&gt;&lt;/td&gt;
++  &lt;td&gt;&lt;%=sa.totalcount%&gt;&lt;/td&gt;
++&lt;/tr&gt;
++&lt;%
++endforeach
++%&gt;
++&lt;/table&gt;
++
++&lt;/body&gt;
++&lt;/html&gt;
+
+Added: trunk/096/pkg/utils/servperf/www/storagearea.asp
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/storagearea.asp	2005-09-14 13:16:11 UTC (rev 128)
++++ trunk/096/pkg/utils/servperf/www/storagearea.asp	2005-09-15 01:59:37 UTC (rev 129)
+@@ -0,0 +1,42 @@
++&lt;%
++use uo;
++use polsys;
++%&gt;
++&lt;html&gt;
++
++&lt;head&gt;
++&lt;title&gt;POL Server Performance Center&lt;/title&gt;
++&lt;/head&gt;
++
++&lt;body&gt;
++
++&lt;%
++    var areaname := QueryParam( &quot;Area&quot; );
++	var areas := StorageAreas();
++	var area := areas[ areaname ];
++
++%&gt;
++&lt;p&gt;POL Server Performance Center&lt;/p&gt;
++&lt;p&gt;Storage Area: &lt;%=area%&gt;&lt;/p&gt;
++&lt;p&gt;Root Items: &lt;%=area.count%&gt;&lt;/p&gt;
++&lt;p&gt;Total Items: &lt;%=area.totalcount%&gt;&lt;/p&gt;
++
++&lt;table&gt;
++&lt;tr&gt;
++  &lt;td&gt;Item Name&lt;/td&gt;
++  &lt;td&gt;Total Items&lt;/td&gt;
++&lt;/tr&gt;
++&lt;%
++foreach item in area
++%&gt;
++&lt;tr&gt;
++  &lt;td&gt;&lt;%=item.name%&gt;&lt;/td&gt;
++  &lt;td&gt;&lt;%=item.item_count%&gt;&lt;/td&gt;
++&lt;/tr&gt;
++&lt;%
++endforeach
++%&gt;
++&lt;/table&gt;
++
++&lt;/body&gt;
++&lt;/html&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000110.html">[Poldistro-svn] r128 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000112.html">[Poldistro-svn] r130 - trunk/096/pkg/utils/servperf/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#111">[ date ]</a>
+              <a href="thread.html#111">[ thread ]</a>
+              <a href="subject.html#111">[ subject ]</a>
+              <a href="author.html#111">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

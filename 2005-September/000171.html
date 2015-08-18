@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r189 - trunk/096/pkg/systems/attributes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r189%20-%20trunk/096/pkg/systems/attributes&In-Reply-To=%3C200509202027.j8KKRxkJ005736%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000170.html">
+   <LINK REL="Next"  HREF="000172.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r189 - trunk/096/pkg/systems/attributes</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r189%20-%20trunk/096/pkg/systems/attributes&In-Reply-To=%3C200509202027.j8KKRxkJ005736%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r189 - trunk/096/pkg/systems/attributes">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep 20 22:27:59 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000170.html">[Poldistro-svn] r188 - in trunk/096/pkg: expansions/aos/skills/chivalry expansions/aos/skills/focus expansions/aos/skills/necromancy skills/anatomy skills/animallore skills/armslore skills/begging skills/blacksmithy skills/bowcraft skills/carpentry skills/cartography skills/detecthidden skills/evalint skills/fishing skills/forensicevaluation skills/hiding skills/inscription skills/itemid skills/magery skills/meditation skills/musicianship skills/poisoning skills/removetrap skills/spiritspeak skills/stealing skills/stealth skills/taming skills/tasteid skills/tinkering skills/tracking systems/attributes
+</A></li>
+        <LI>Next message: <A HREF="000172.html">[Poldistro-svn] r190 - in trunk/096/pkg/systems/attributes: . hooks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#171">[ date ]</a>
+              <a href="thread.html#171">[ thread ]</a>
+              <a href="subject.html#171">[ subject ]</a>
+              <a href="author.html#171">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-20 22:27:58 +0200 (Tue, 20 Sep 2005)
+New Revision: 189
+
+Removed:
+   trunk/096/pkg/systems/attributes/regenRate.src
+Log:
+Moved to /hooks/
+
+Deleted: trunk/096/pkg/systems/attributes/regenRate.src
+===================================================================
+--- trunk/096/pkg/systems/attributes/regenRate.src	2005-09-20 20:23:06 UTC (rev 188)
++++ trunk/096/pkg/systems/attributes/regenRate.src	2005-09-20 20:27:58 UTC (rev 189)
+@@ -1,55 +0,0 @@
+-/* $Id: regenRate.src,v 1.1 2004/03/16 14:05:46 folko Exp $
+- *
+- * Purpose
+- * This functions return the regen rate and the maximum value of a stat.
+- * RegenRateFunction should return value from -30000 to 30000.
+- * Regen rates are in 'hundredths of points per minute.'
+- * A current regen rate of 100 (1 point per 5 seconds) would therefore be 1200 (12 points per minute).
+- * MaximumFunction should return the maximum value for this vital, an integer in 'hundreths'
+- * between 100 and 10000000 (1-100,000)
+- *
+- * These functions are called during loading and when RecalcVitals() is called.
+- *
+- */
+-use uo;
+-
+-include &quot;:config:include/config&quot;;
+-include &quot;:attributes:include/attributes&quot;;
+-
+-
+-program Regen()
+-	return(1);
+-endprogram
+-
+-
+-exported function GetHitsRegenRate(who)
+-	who := 0;
+-	return(GetDefaultRegenRate(REGEN_HITS) * 100);
+-endfunction
+-
+-
+-exported function GetHitsMaximumValue(who)
+-	return(GetAttribute(who, ATTRIBUTE_STRENGTH) * 100);
+-endfunction
+-
+-
+-exported function GetStaminaRegenRate(who)
+-	who := 0;
+-	return(GetDefaultRegenRate(REGEN_STAM) * 100);
+-endfunction
+-
+-
+-exported function GetStaminaMaximumValue(who)
+-    return(GetAttribute(who, ATTRIBUTE_DEXTERITY) * 100);
+-endfunction
+-
+-
+-exported function GetManaRegenRate(who)
+-	who := 0;
+-	return(GetDefaultRegenRate(REGEN_MANA) * 100);
+-endfunction
+-
+-
+-exported function GetManaMaximumValue(who)
+-	return(GetAttribute(who, ATTRIBUTE_INTELLIGENCE) * 100);
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000170.html">[Poldistro-svn] r188 - in trunk/096/pkg: expansions/aos/skills/chivalry expansions/aos/skills/focus expansions/aos/skills/necromancy skills/anatomy skills/animallore skills/armslore skills/begging skills/blacksmithy skills/bowcraft skills/carpentry skills/cartography skills/detecthidden skills/evalint skills/fishing skills/forensicevaluation skills/hiding skills/inscription skills/itemid skills/magery skills/meditation skills/musicianship skills/poisoning skills/removetrap skills/spiritspeak skills/stealing skills/stealth skills/taming skills/tasteid skills/tinkering skills/tracking systems/attributes
+</A></li>
+	<LI>Next message: <A HREF="000172.html">[Poldistro-svn] r190 - in trunk/096/pkg/systems/attributes: . hooks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#171">[ date ]</a>
+              <a href="thread.html#171">[ thread ]</a>
+              <a href="subject.html#171">[ subject ]</a>
+              <a href="author.html#171">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

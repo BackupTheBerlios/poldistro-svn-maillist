@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r650 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r650%20-%20trunk/096/scripts/include&In-Reply-To=%3C200510241811.j9OIBCw7032471%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000623.html">
+   <LINK REL="Next"  HREF="000625.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r650 - trunk/096/scripts/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r650%20-%20trunk/096/scripts/include&In-Reply-To=%3C200510241811.j9OIBCw7032471%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r650 - trunk/096/scripts/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon Oct 24 20:11:12 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000623.html">[Poldistro-svn] r649 - trunk/096/pkg/commands/seer
+</A></li>
+        <LI>Next message: <A HREF="000625.html">[Poldistro-svn] r651 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#624">[ date ]</a>
+              <a href="thread.html#624">[ thread ]</a>
+              <a href="subject.html#624">[ subject ]</a>
+              <a href="author.html#624">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-24 20:10:51 +0200 (Mon, 24 Oct 2005)
+New Revision: 650
+
+Modified:
+   trunk/096/scripts/include/messages.inc
+Log:
+SendHTMLMessage formatted for distro style gumps
+
+Modified: trunk/096/scripts/include/messages.inc
+===================================================================
+--- trunk/096/scripts/include/messages.inc	2005-10-24 17:27:35 UTC (rev 649)
++++ trunk/096/scripts/include/messages.inc	2005-10-24 18:10:51 UTC (rev 650)
+@@ -1,4 +1,4 @@
+-/* $$
++/* $Id$
+  *
+  * Purpose
+  * Provide various functions and constants for system messages.
+@@ -8,7 +8,8 @@
+ use polsys;
+ use basic;
+ 
+-include &quot;:gumps:include/gumps&quot;;
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
+ include &quot;include/localization&quot;;
+ include &quot;include/packets&quot;;
+ include &quot;include/client&quot;;
+@@ -21,6 +22,8 @@
+ 	MSG_SKILL	:= 4
+ endenum
+ 
++var BKGND_SILVERTRIM := GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;);
++var BKGND_DARK_STONE := GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;);
+ 
+ /*
+  * SendMessage(who, id, type)
+@@ -86,7 +89,7 @@
+  * SendHTMLMessage(who, text)
+  *
+  * Author: Folko
+- * Last-Edit: Melanius
++ * Last-Edit: MuadDib
+  *
+  * Purpose
+  * Sends a HTML gump containing the text to the character.
+@@ -100,10 +103,11 @@
+  *
+  */
+ function SendHTMLMessage(who, text)
+-	var msgGump := GFCreateGump(100, 100, 500, 200);
+-	GFAddAlphaRegion(msgGump, 0, 0, 500, 200);
++	var msgGump := GFCreateGump(100, 100, 510, 230);
++	GFAddAlphaRegion(msgGump, 0, 0, 510, 230);
+ 	GFPage(msgGump, 0);
+-	GFHTMLArea(msgGump, 0, 0, 500, 200, text, 1, 1);
++	GFResizePic(msgGump, 0, 0, BKGND_SILVERTRIM, 510, 230);
++	GFHTMLArea(msgGump, 10, 10, 490, 210, text, 1, 1);
+ 	GFSendGump(who, msgGump);
+ 
+ 	return;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000623.html">[Poldistro-svn] r649 - trunk/096/pkg/commands/seer
+</A></li>
+	<LI>Next message: <A HREF="000625.html">[Poldistro-svn] r651 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#624">[ date ]</a>
+              <a href="thread.html#624">[ thread ]</a>
+              <a href="subject.html#624">[ subject ]</a>
+              <a href="author.html#624">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,491 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r218 - in trunk/096/pkg/systems/spawnsystem: . include initializer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r218%20-%20in%20trunk/096/pkg/systems/spawnsystem%3A%20.%20include%20initializer&In-Reply-To=%3C200509230534.j8N5YUK4019678%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000199.html">
+   <LINK REL="Next"  HREF="000201.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r218 - in trunk/096/pkg/systems/spawnsystem: . include initializer</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r218%20-%20in%20trunk/096/pkg/systems/spawnsystem%3A%20.%20include%20initializer&In-Reply-To=%3C200509230534.j8N5YUK4019678%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r218 - in trunk/096/pkg/systems/spawnsystem: . include initializer">austin at berlios.de
+       </A><BR>
+    <I>Fri Sep 23 07:34:30 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000199.html">[Poldistro-svn] r217 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc
+</A></li>
+        <LI>Next message: <A HREF="000201.html">[Poldistro-svn] r219 - trunk/096/scripts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#200">[ date ]</a>
+              <a href="thread.html#200">[ thread ]</a>
+              <a href="subject.html#200">[ subject ]</a>
+              <a href="author.html#200">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-23 07:34:25 +0200 (Fri, 23 Sep 2005)
+New Revision: 218
+
+Added:
+   trunk/096/pkg/systems/spawnsystem/include/spawnerUtil.inc
+   trunk/096/pkg/systems/spawnsystem/initializer/
+   trunk/096/pkg/systems/spawnsystem/initializer/firstrun.src
+Removed:
+   trunk/096/pkg/systems/spawnsystem/firstrun.src
+   trunk/096/pkg/systems/spawnsystem/include/spawner.inc
+Modified:
+   trunk/096/pkg/systems/spawnsystem/include/errors.inc
+   trunk/096/pkg/systems/spawnsystem/include/settings.inc
+Log:
+
+
+Deleted: trunk/096/pkg/systems/spawnsystem/firstrun.src
+===================================================================
+--- trunk/096/pkg/systems/spawnsystem/firstrun.src	2005-09-22 13:55:40 UTC (rev 217)
++++ trunk/096/pkg/systems/spawnsystem/firstrun.src	2005-09-23 05:34:25 UTC (rev 218)
+@@ -1,152 +0,0 @@
+-use uo;
+-use os;
+-
+-include &quot;:spawnsystem:include/groups&quot;;
+-include &quot;:spawnsystem:include/realms&quot;;
+-include &quot;:spawnsystem:include/regions&quot;;
+-include &quot;:spawnsystem:include/errors&quot;;
+-
+-program FirstRun()
+-	var start_cfg := ReadConfigFile(&quot;:spawnsystem:config/firstrun&quot;);
+-	if ( start_cfg.errortext )
+-		SSErrorReport(start_cfg.errortext, SPAWN_ERROR_SYSLOG);
+-		return 0;
+-	endif
+-
+-	var realm_list := start_cfg[&quot;Realms&quot;];
+-	if ( realm_list.errortext)
+-		SSErrorReport(start_cfg.errortext, SPAWN_ERROR_SYSLOG);
+-		return 0;
+-	endif
+-
+-	foreach realm_name in (GetConfigStringArray(realm_list, &quot;Realm&quot;))
+-		SysLog(&quot;Setting up spawner realm (&quot;+realm_name+&quot;)&quot;);
+-		var success := SetupRealm(realm_name, start_cfg);
+-		
+-		if ( success )
+-			SysLog(&quot;Spawn realm (&quot;+realm_name+&quot;) setup... okay.&quot;);
+-		else
+-			SysLog(&quot;Spawn realm (&quot;+realm_name+&quot;) setup... failed!&quot;);
+-		endif
+-		
+-		sleepms(2);
+-	endforeach
+-	
+-	UnloadConfigFile(&quot;:spawnsystem:config/firstrun&quot;);
+-
+-	return 1;
+-endprogram
+-
+-function SetupRealm(realm_name, start_cfg)
+-	var realm_info := start_cfg[realm_name];
+-	if ( realm_info.errortext )
+-		SSErrorReport(&quot;No cfg elem for realm (&quot;+realm_name+&quot;) -&gt; &quot;+realm_info.errortext, SPAWN_ERROR_SYSLOG);
+-		return 0;
+-	endif
+-	
+-	SSAddRealm(realm_name);
+-
+-	foreach region_name in (GetConfigStringArray(realm_info, &quot;Region&quot;))
+-		SysLog(&quot;Setting up spawn region (&quot;+region_name+&quot;)&quot;);
+-		var success := SetupRegion(region_name, realm_name, start_cfg);
+-		
+-		if ( success )
+-			SSAddRegionToRealm(realm_name, region_name);
+-		endif
+-		
+-		if ( success )
+-			SysLog(&quot;Spawn region (&quot;+region_name+&quot;) setup... okay.&quot;);
+-		else
+-			SysLog(&quot;Spawn region (&quot;+region_name+&quot;) setup... failed!&quot;);
+-		endif
+-		
+-		sleepms(2);
+-	endforeach
+-
+-	return 1;
+-endfunction
+-
+-function SetupRegion(region_name, realm_name, start_cfg)
+-	var region_info := start_cfg[region_name];
+-	if ( region_info.errortext )
+-		SSErrorReport(&quot;No cfg elem for region (&quot;+region_name+&quot;) -&gt; &quot;+region_info.errortext, SPAWN_ERROR_SYSLOG);
+-		return 0;
+-	endif
+-
+-	
+-	SSAddRegion(region_name, realm_name);
+-	var coords := SplitWords(region_info.Coordinates);
+-	SSSetRegionCoordinates(region_name, coords[1], coords[2], coords[3], coords[4]);
+-
+-	foreach group_name in (GetConfigStringArray(region_info, &quot;Group&quot;))
+-		group_name := SplitWords(group_name);
+-		var max_amt := CInt(group_name[2]);
+-		var spawn_wait := CInt(group_name[3]);
+-		group_name := group_name[1];
+-		
+-		var success := SetupGroup(group_name, start_cfg);
+-		
+-		if ( success )
+-			success := SSAddGroupToRegion(region_name, group_name, max_amt, spawn_wait, 1);
+-		endif
+-		if ( success )
+-			SysLog(&quot;Adding group (&quot;+group_name+&quot;) to region (&quot;+region_name+&quot;)... okay.&quot;);
+-		else
+-			SysLog(&quot;Adding group (&quot;+group_name+&quot;) to region (&quot;+region_name+&quot;)... failed!&quot;);
+-		endif
+-		
+-		sleepms(2);
+-	endforeach
+-
+-	return 1;
+-endfunction
+-
+-function SetupGroup(group_name, start_cfg)
+-	if ( SSGetGroupDataElem(group_name) )
+-		//Group has already been set up.
+-		return 1;
+-	endif
+-	
+-	SysLog(&quot;Setting up spawner group (&quot;+group_name+&quot;)&quot;);
+-	
+-	var group_info := start_cfg[group_name];
+-	if ( group_info.errortext )
+-		SSErrorReport(&quot;No cfg elem for group (&quot;+group_name+&quot;) -&gt; &quot;+group_info.errortext, SPAWN_ERROR_SYSLOG);
+-		return 0;
+-	elseif ( !group_info.Engine )
+-		SSErrorReport(&quot;No valid engine name was set for group (&quot;+group_name+&quot;)&quot;, SPAWN_ERROR_SYSLOG);
+-		return 0;
+-	endif
+-	
+-	SSAddGroup(group_name, group_info.Engine);
+-	
+-	foreach entry in (GetConfigStringArray(group_info, &quot;Entry&quot;))
+-		SSAddEntryToGroup(group_name, entry);
+-		sleepms(2);
+-	endforeach
+-	
+-	return 1;
+-endfunction
+-
+-/*
+-function Test_WipeSpawner()
+-	foreach realm_name in SSGetRealmNames()
+-		Print(&quot;* Erasing Realm (&quot;+realm_name+&quot;) [&quot;+SSRemoveRealm(realm_name)+&quot;]&quot;);
+-		sleepms(2);
+-	endforeach
+-	
+-	foreach region_name in SSGetRegionNames()
+-		Print(&quot;* Erasing Region (&quot;+region_name+&quot;) [&quot;+SSRemoveRegion(region_name)+&quot;]&quot;);
+-		sleepms(2);
+-	endforeach
+-	
+-	foreach group_name in SSGetGroupNames()
+-		Print(&quot;* Erasing Group (&quot;+group_name+&quot;) [&quot;+SSRemoveGroup(group_name)+&quot;]&quot;);
+-		sleepms(2);
+-	endforeach
+-	
+-	sleep(1);
+-	
+-	return 1;
+-endfunction
+-*/
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/spawnsystem/include/errors.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnsystem/include/errors.inc	2005-09-22 13:55:40 UTC (rev 217)
++++ trunk/096/pkg/systems/spawnsystem/include/errors.inc	2005-09-23 05:34:25 UTC (rev 218)
+@@ -7,22 +7,18 @@
+ CONST SPAWN_ERROR_BROADCAST	:= 4;
+ 
+ function SSErrorReport(error_text, err_report:=SPAWN_ERROR_DISABLE)
+-	var do_print := err_report &amp; SPAWN_ERROR_PRINT;
+-	var do_syslog := err_report &amp; SPAWN_ERROR_SYSLOG;
+-	var do_broadcast := err_report &amp; SPAWN_ERROR_BROADCAST;
+-	
+-	if ( do_print )
+-		Print(&quot;Error - Spawn System [&quot;+error_text+&quot;]&quot;);
++		if ( err_report &amp; SPAWN_ERROR_PRINT )
++		Print(&quot;&quot;+error_text);
+ 	endif
+ 	
+-	if ( do_syslog )
+-		SysLog(&quot;Error - Spawn System [&quot;+error_text+&quot;]&quot;);
++	if ( err_report &amp; SPAWN_ERROR_SYSLOG )
++		SysLog(&quot;&quot;+error_text);
+ 	endif
+ 	
+-	if ( do_broadcast )
++	if ( err_report &amp; SPAWN_ERROR_BROADCAST )
+ 		foreach mobile in EnumerateOnlineCharacters()
+ 			if ( mobile.cmdlevel )
+-				SendSysMessage(mobile, &quot;Error - Spawn System [&quot;+error_text+&quot;]&quot;);
++				SendSysMessage(mobile, &quot;&quot;+error_text);
+ 			endif
+ 			sleepms(5);
+ 		endforeach
+
+Modified: trunk/096/pkg/systems/spawnsystem/include/settings.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnsystem/include/settings.inc	2005-09-22 13:55:40 UTC (rev 217)
++++ trunk/096/pkg/systems/spawnsystem/include/settings.inc	2005-09-23 05:34:25 UTC (rev 218)
+@@ -24,7 +24,7 @@
+ 	var cfg := ReadConfigFile(&quot;:spawnsystem:config/settings&quot;);
+ 
+ 	if ( cfg.errortext )
+-		SysLog(&quot;Error - Unable to open &quot;+cfg_path+&quot;.cfg -&gt;&quot;+cfg.errortext);
++		SysLog(&quot;Error::SSGetSettingsCfgFile() - Unable to open &quot;+cfg_path+&quot;.cfg -&gt;&quot;+cfg.errortext);
+ 	endif
+ 
+ 	return cfg;
+@@ -49,7 +49,7 @@
+ 	var elem := cfg[elem_name];
+ 
+ 	if ( elem.errortext )
+-		SysLog(&quot;Error - Unable to find elem [&quot;+elem_name+&quot;] in &quot;+cfg_file.name+&quot; -&gt;&quot;+elem.errortext);
++		SysLog(&quot;Error::SSGetSettingsCfgElem() - Unable to find elem [&quot;+elem_name+&quot;] in &quot;+cfg_file.name+&quot; -&gt;&quot;+elem.errortext);
+ 	endif
+ 
+ 	return elem;
+
+Deleted: trunk/096/pkg/systems/spawnsystem/include/spawner.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnsystem/include/spawner.inc	2005-09-22 13:55:40 UTC (rev 217)
++++ trunk/096/pkg/systems/spawnsystem/include/spawner.inc	2005-09-23 05:34:25 UTC (rev 218)
+@@ -1,30 +0,0 @@
+-use uo;
+-use os;
+-use util;
+-
+-include &quot;:datafile:include/datafile&quot;;
+-
+-/*
+- * SSSelectCoordsInArea(x1, y1, x2, y2)
+- *
+- * Purpose
+- * Takes in four numbers (two coordinates) and
+- * picks a random coordinate within the area they create.
+- *
+- * Parameters
+- * x1:	The top-left spot of the X axis.
+- * y1:	The top-left spot of the Y axis.
+- * x2:	The bottom-right spot of the X axis.
+- * y2:	The bottom-right spot of the Y axis.
+- *
+- * Return value
+- * A structure containing an X and Y property.
+- *
+- */
+-function SSSelectCoordsInArea(x1, y1, x2, y2)
+-	var coord := struct;
+-	coord.+x := RandomInt(x2-x1)+x1;
+-	coord.+y := RandomInt(y2-y1)+y1;
+-
+-	return coord;
+-endfunction
+
+Copied: trunk/096/pkg/systems/spawnsystem/include/spawnerUtil.inc (from rev 213, trunk/096/pkg/systems/spawnsystem/include/spawner.inc)
+
+Added: trunk/096/pkg/systems/spawnsystem/initializer/firstrun.src
+===================================================================
+--- trunk/096/pkg/systems/spawnsystem/initializer/firstrun.src	2005-09-22 13:55:40 UTC (rev 217)
++++ trunk/096/pkg/systems/spawnsystem/initializer/firstrun.src	2005-09-23 05:34:25 UTC (rev 218)
+@@ -0,0 +1,152 @@
++use uo;
++use os;
++
++include &quot;:spawnsystem:include/groups&quot;;
++include &quot;:spawnsystem:include/realms&quot;;
++include &quot;:spawnsystem:include/regions&quot;;
++include &quot;:spawnsystem:include/errors&quot;;
++
++program FirstRun()
++	var start_cfg := ReadConfigFile(&quot;:spawnsystem:config/firstrun&quot;);
++	if ( start_cfg.errortext )
++		SSErrorReport(start_cfg.errortext, SPAWN_ERROR_SYSLOG);
++		return 0;
++	endif
++
++	var realm_list := start_cfg[&quot;Realms&quot;];
++	if ( realm_list.errortext)
++		SSErrorReport(start_cfg.errortext, SPAWN_ERROR_SYSLOG);
++		return 0;
++	endif
++
++	foreach realm_name in (GetConfigStringArray(realm_list, &quot;Realm&quot;))
++		SysLog(&quot;Setting up spawner realm (&quot;+realm_name+&quot;)&quot;);
++		var success := SetupRealm(realm_name, start_cfg);
++		
++		if ( success )
++			SysLog(&quot;Spawn realm (&quot;+realm_name+&quot;) setup... okay.&quot;);
++		else
++			SysLog(&quot;Spawn realm (&quot;+realm_name+&quot;) setup... failed!&quot;);
++		endif
++		
++		sleepms(2);
++	endforeach
++	
++	UnloadConfigFile(&quot;:spawnsystem:config/firstrun&quot;);
++
++	return 1;
++endprogram
++
++function SetupRealm(realm_name, start_cfg)
++	var realm_info := start_cfg[realm_name];
++	if ( realm_info.errortext )
++		SSErrorReport(&quot;No cfg elem for realm (&quot;+realm_name+&quot;) -&gt; &quot;+realm_info.errortext, SPAWN_ERROR_SYSLOG);
++		return 0;
++	endif
++	
++	SSAddRealm(realm_name);
++
++	foreach region_name in (GetConfigStringArray(realm_info, &quot;Region&quot;))
++		SysLog(&quot;Setting up spawn region (&quot;+region_name+&quot;)&quot;);
++		var success := SetupRegion(region_name, realm_name, start_cfg);
++		
++		if ( success )
++			SSAddRegionToRealm(realm_name, region_name);
++		endif
++		
++		if ( success )
++			SysLog(&quot;Spawn region (&quot;+region_name+&quot;) setup... okay.&quot;);
++		else
++			SysLog(&quot;Spawn region (&quot;+region_name+&quot;) setup... failed!&quot;);
++		endif
++		
++		sleepms(2);
++	endforeach
++
++	return 1;
++endfunction
++
++function SetupRegion(region_name, realm_name, start_cfg)
++	var region_info := start_cfg[region_name];
++	if ( region_info.errortext )
++		SSErrorReport(&quot;No cfg elem for region (&quot;+region_name+&quot;) -&gt; &quot;+region_info.errortext, SPAWN_ERROR_SYSLOG);
++		return 0;
++	endif
++
++	
++	SSAddRegion(region_name, realm_name);
++	var coords := SplitWords(region_info.Coordinates);
++	SSSetRegionCoordinates(region_name, coords[1], coords[2], coords[3], coords[4]);
++
++	foreach group_name in (GetConfigStringArray(region_info, &quot;Group&quot;))
++		group_name := SplitWords(group_name);
++		var max_amt := CInt(group_name[2]);
++		var spawn_wait := CInt(group_name[3]);
++		group_name := group_name[1];
++		
++		var success := SetupGroup(group_name, start_cfg);
++		
++		if ( success )
++			success := SSAddGroupToRegion(region_name, group_name, max_amt, spawn_wait, 1);
++		endif
++		if ( success )
++			SysLog(&quot;Adding group (&quot;+group_name+&quot;) to region (&quot;+region_name+&quot;)... okay.&quot;);
++		else
++			SysLog(&quot;Adding group (&quot;+group_name+&quot;) to region (&quot;+region_name+&quot;)... failed!&quot;);
++		endif
++		
++		sleepms(2);
++	endforeach
++
++	return 1;
++endfunction
++
++function SetupGroup(group_name, start_cfg)
++	if ( SSGetGroupDataElem(group_name) )
++		//Group has already been set up.
++		return 1;
++	endif
++	
++	SysLog(&quot;Setting up spawner group (&quot;+group_name+&quot;)&quot;);
++	
++	var group_info := start_cfg[group_name];
++	if ( group_info.errortext )
++		SSErrorReport(&quot;No cfg elem for group (&quot;+group_name+&quot;) -&gt; &quot;+group_info.errortext, SPAWN_ERROR_SYSLOG);
++		return 0;
++	elseif ( !group_info.Engine )
++		SSErrorReport(&quot;No valid engine name was set for group (&quot;+group_name+&quot;)&quot;, SPAWN_ERROR_SYSLOG);
++		return 0;
++	endif
++	
++	SSAddGroup(group_name, group_info.Engine);
++	
++	foreach entry in (GetConfigStringArray(group_info, &quot;Entry&quot;))
++		SSAddEntryToGroup(group_name, entry);
++		sleepms(2);
++	endforeach
++	
++	return 1;
++endfunction
++
++/*
++function Test_WipeSpawner()
++	foreach realm_name in SSGetRealmNames()
++		Print(&quot;* Erasing Realm (&quot;+realm_name+&quot;) [&quot;+SSRemoveRealm(realm_name)+&quot;]&quot;);
++		sleepms(2);
++	endforeach
++	
++	foreach region_name in SSGetRegionNames()
++		Print(&quot;* Erasing Region (&quot;+region_name+&quot;) [&quot;+SSRemoveRegion(region_name)+&quot;]&quot;);
++		sleepms(2);
++	endforeach
++	
++	foreach group_name in SSGetGroupNames()
++		Print(&quot;* Erasing Group (&quot;+group_name+&quot;) [&quot;+SSRemoveGroup(group_name)+&quot;]&quot;);
++		sleepms(2);
++	endforeach
++	
++	sleep(1);
++	
++	return 1;
++endfunction
++*/
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000199.html">[Poldistro-svn] r217 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc
+</A></li>
+	<LI>Next message: <A HREF="000201.html">[Poldistro-svn] r219 - trunk/096/scripts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#200">[ date ]</a>
+              <a href="thread.html#200">[ thread ]</a>
+              <a href="subject.html#200">[ subject ]</a>
+              <a href="author.html#200">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

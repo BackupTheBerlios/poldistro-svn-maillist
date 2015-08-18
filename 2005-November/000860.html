@@ -1,0 +1,779 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r887 - trunk/096/scripts/include/OLD
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r887%20-%20trunk/096/scripts/include/OLD&In-Reply-To=%3C200511040221.jA42LEUB018910%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000873.html">
+   <LINK REL="Next"  HREF="000861.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r887 - trunk/096/scripts/include/OLD</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r887%20-%20trunk/096/scripts/include/OLD&In-Reply-To=%3C200511040221.jA42LEUB018910%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r887 - trunk/096/scripts/include/OLD">austin at berlios.de
+       </A><BR>
+    <I>Fri Nov  4 03:21:14 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000873.html">[Poldistro-svn] r886 - in trunk/096/scripts/include: . OLD
+</A></li>
+        <LI>Next message: <A HREF="000861.html">[Poldistro-svn] r888 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#860">[ date ]</a>
+              <a href="thread.html#860">[ thread ]</a>
+              <a href="subject.html#860">[ subject ]</a>
+              <a href="author.html#860">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-04 03:21:01 +0100 (Fri, 04 Nov 2005)
+New Revision: 887
+
+Added:
+   trunk/096/scripts/include/OLD/math.inc
+   trunk/096/scripts/include/OLD/properties.inc
+Log:
+Odd... tortoiseSVN didnt mark these for adding to /OLD
+
+Added: trunk/096/scripts/include/OLD/math.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/math.inc	2005-11-04 02:19:06 UTC (rev 886)
++++ trunk/096/scripts/include/OLD/math.inc	2005-11-04 02:21:01 UTC (rev 887)
+@@ -0,0 +1,608 @@
++////////////////////////////////////////////////////////////
++////////////////////////////////////////////////////////////
++//
++//
++// math.inc
++//
++// Siggy's Improved Math Include, v2.0
++// Revision Date:  8/01/03
++//
++// Questions, comments, flames?   Send to:
++// EMail: <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">cjtdennis at comcast.net</A>
++// ICQ: 10520050
++//
++////////////////////////////////////////////////////////////
++////////////////////////////////////////////////////////////
++//
++// History:
++//
++// v2.0:
++//	- Added Min and Max functions.
++//	- Added Bounded function.
++//	- Added SplitLog function.
++// 
++// v1.5:
++//	- Factorial(x) now returns 1 if x==0.
++//	- Log(x, y) now uses Log10 instead of successive
++//	  approximation.
++//
++// v1.4:
++//	- Fixed errors in Mean and StdDev.
++//	- Minor code cleanup across include.
++//
++// v1.3:
++//	- Removed items duplicated in math.em.
++//
++////////////////////////////////////////////////////////////
++////////////////////////////////////////////////////////////
++
++use math;
++
++
++const CONST_E := 2.718282;
++const CONST_PI := 3.141592;
++
++
++
++function Log(b, x)
++
++// Finds the logarithm to base &lt;b&gt; of &lt;x&gt;.
++
++	if (x&lt;=0)
++		return 0;
++	endif
++	return (Log10(x) / Log10(b));
++
++endfunction
++
++
++function SplitLog(x)
++// Returns array of {characteristic, mantissa} for x.
++// (If x==1.12345, the characteristic is &quot;1&quot;, and the 
++// mantissa is (0.12345)
++
++	return { (CInt(x)), (x - CInt(x)) };
++endfunction
++
++
++function Bounded(x, i, y, inclusive := 1)
++// Checks to see if a number &quot;i&quot; falls between the two
++// bounds &quot;x&quot; and &quot;y&quot;.  If inclusive is set to nonzero,
++// the function will return true if (i=x) || (i=y).
++	if (inclusive)
++		if ( (i &gt;= Min({x, y})) &amp;&amp; (i &lt;= Max({x, y})) )
++			return 1;
++		else
++			return 0;
++		endif
++	else
++		if ( (i &gt; Min({x, y})) &amp;&amp; (i &lt; Max({x, y})) )
++			return 1;
++		else
++			return 0;
++		endif
++	endif
++endfunction
++
++
++function Min(byref x)
++// returns the least value of array &quot;x&quot;
++	x.sort();
++	return x[1];
++endfunction
++
++
++function Max(byref x)
++// returns the greatest value of array &quot;x&quot;
++	x.sort();
++	return x[(len(x))];
++endfunction
++
++
++function Mod(Numerator, Denominator)
++
++// Returns the modulus of the fraction:
++//
++//		 Numerator
++//		-----------
++//		Denominator
++
++
++	return (Numerator - (CInt(Numerator/Denominator) * Denominator));
++	
++endfunction
++
++
++
++
++function Remainder(numerator, denominator)
++
++// Use this to get the remainder for non-integers.
++// Returns the remainder of the fraction:
++//
++//		 Numerator
++//		-----------
++//		Denominator
++
++	while (numerator &gt;= denominator)
++		numerator := numerator - denominator;
++	endwhile
++
++	return numerator;
++
++endfunction
++
++
++function Trunc(number, places)
++
++// Truncates a dbl to a fixed amount of decimal places.
++
++	var base := Pow(10, places);
++
++	number := CDbl(CInt(number * Pow(10, places)));
++	number := number / base;
++
++	return number;
++
++endfunction
++
++
++function Fac(factorial);
++
++// Returns the factorial of a number:
++// Fac(10) = 10 * 9 * 8 * 7 * 6 * 5 * 4 * 3 * 2 * 1
++
++	factorial := CInt(factorial);
++	var x := 1
++
++	while (factorial &gt; 0)
++		x := x * factorial;
++		factorial := factorial - 1;
++	endwhile
++	return x;
++
++endfunction
++
++
++function Exp(base, power)
++
++// Obsolete: math.em has Pow(b, p)
++
++	return Pow(base, power);
++
++endfunction
++
++
++function YRoot(x, y)
++
++// Returns the &lt;y&gt; root of a number &lt;x&gt;:
++	
++	var i := 0.000;
++	var n := 0.000;
++	var root := 2.000;
++	var a := CInt(Sqr(x));
++
++	if (a &lt; 4)
++		a := 4;
++	endif
++
++	var success := 0;
++	while (!success)		
++		n := Pow(root, y);
++		i := x - n;
++		i := i / (a * root);
++		i := Trunc(i, 3);
++		root := root + i;
++		if (i = 0)
++			success := 1;
++			if ( Pow(Root, y) &gt; x )
++				root := root - 0.001;
++			endif
++			if ( Pow((root + 0.001), y) = x)
++				root := root + 0.001;
++			endif
++		endif
++	endwhile
++
++	return root;
++
++endfunction
++
++
++function Inc(a)
++// Increments an integer by one.
++	return (a + 1);
++
++endfunction
++
++
++function Dec(a)
++// Decrements an integer by one.
++	return a - 1;
++
++endfunction
++
++
++function Mean(ArrayX)
++
++// Returns the arithmatic mean (average) of an array of numbers.
++
++	var n, i:=0.000;
++
++	foreach n in ArrayX
++		i := i + n;
++	endforeach
++
++	return (i / Len(ArrayX));
++
++endfunction
++
++
++function StdDev(ArrayX)
++// Returns the Standard Deviation of an array of numbers.
++
++	var m, n, i := 0.000;
++	var ArrayMean := Mean(ArrayX);
++	var ArrayLen := Len(ArrayX);
++
++	foreach m in ArrayX
++		n := m - ArrayMean;
++		n := Pow(n, 2);
++		i := i + n;
++	endforeach
++
++	i := i / (ArrayLen - 1);
++	n := Sqr (i);
++
++	return n;
++
++endfunction
++
++
++function ZTest(ArrayX, mu, sigma)
++// Returns the test statistic for a ZTest.   This is used to show
++// the likelihood that a sample is drawn from the population.  The 
++// mean and standard deviation for the population must be known.
++// The z-statistic is computed as follows:
++//
++//	z = (mean - mu) / (sigma / (Sqr(n))
++//
++// mean = the mean of the ArrayX data
++// mu = the mean of the entire population
++// sigma = the standard deviation of the population
++// n = the number of samples in the data
++
++	var i, n;
++	var z:= 0.000;
++	var ArrayMean := Mean(ArrayX);
++	var ArrayLen := Len(ArrayX);
++
++	i := ArrayMean - mu;
++	n := sigma / Sqr(ArrayLen);
++
++	z := i/n;
++
++	return := z;
++
++endfunction
++
++
++function TTest(ArrayX, mu)
++
++// Returns the test statistic for a TTest.   This is used to show
++// the likelihood that a sample is drawn from the population, when 
++// the mean and standard deviation for the entire population are
++// unknown.  The t-statistic is computed as follows:
++//
++//	t = (mean - mu) / (s / (Sqr(n))
++//
++// mean = the mean of the ArrayX data
++// mu = the estimated mean of the entire population
++// s = the standard deviation of the samples
++// n = the number of samples in the data
++
++
++	var i, n, s;
++	var t:= 0.000;
++	var ArrayMean := Mean(ArrayX);
++	var ArrayLen := Len(ArrayX);
++	var s := StdDev(ArrayX);
++
++	i := ArrayMean - mu;
++	n := s / Sqr(ArrayLen);
++
++	t := i/n;
++
++	return := t;
++
++endfunction
++
++
++
++//
++// BITWISE FUNCTIONS: These are very old, and not very efficient.
++// Use the standard $$, ||, etc. for bitwise comparisons.
++// Left intact to support any legacy code.
++
++
++function BitIn(ArrayX)
++
++// Takes an array of 8 bits and converts them into an integer.
++// This is used for the flag support.  IMPORTANT: bit positon is
++// *NOT* the same thing as the array position!   The first bit in 
++// the flag is the 8th bit in the array, and vice versa.  This is
++// because it processes the bit values in the following order:
++// 128, 64, 32, 16, 8, 4, 2, 1.
++
++	local i := 8;
++	local n;
++	local loop := 1;
++	local bitvalue := 0;
++
++	While (i &gt;= 0)
++
++		n := 8 - i;
++		if (ArrayX[i] = 1)
++			bitvalue := bitvalue + Pow(2, n);
++		endif
++		i := i - 1;
++
++	endwhile
++
++	return bitvalue;
++
++endfunction
++
++
++function BitOut(x)
++
++// This function takes an unsigned, short integer (0-255) and returns
++// an array containing the individual bit values.   IMPORTANT: the 
++// first element of the array is NOT the first bit, it is the 8th
++// bit, and so on down.   See the desc for BitIn for the details.
++
++	x := Cint(x);
++	local loop := 1;
++	local bitvalue := 0;
++	local ArrayX := {0,0,0,0,0,0,0,0};
++	local n;
++
++	while (loop &lt;= 8)
++
++		n := 8 - loop;
++		bitvalue := Pow(2, n);
++		if ( (x - bitvalue) &gt;= 0)
++			ArrayX[loop] := 1;
++			x := x - bitvalue;
++		endif
++		loop := loop + 1;
++
++	endwhile
++
++	return ArrayX;
++
++endfunction
++
++
++function BitAnd(x, y)
++
++// Performs a bitwise logical conjunction for two unsigned, short
++// integers (0-255).  If both values for a position are set, then
++// that position in the result is set.   If either are reset, then
++// the position in the result is reset.
++
++	local ArrayX := BitOut(x);
++	local ArrayY := BitOut(y);
++	local z := 0;
++	local loop := 1;
++	local n;
++
++	while (loop &lt;= 8)
++	
++		n := loop - 1;
++		if ( (ArrayX[loop] = 1) AND (ArrayY[loop] = 1) )
++			z := z + Pow(2, n);
++		endif
++		loop := loop + 1;
++
++	endwhile
++
++	return z;
++
++endfunction
++
++
++function BitOr(x, y)
++
++// Performs a bitwise logical disjunction for two unsigned, short
++// integers (0-255).  If either value (or both values) for a 
++// position are set, then that position in the result is set.   If 
++// both are reset, then the position in the result is reset.
++
++	local ArrayX := BitOut(x);
++	local ArrayY := BitOut(y);
++	local z := 0;
++	local loop := 1;
++	locan n;
++
++	while (loop &lt;= 8)
++
++		n := loop - 1;
++		if ( (ArrayX[loop] = 1) OR (ArrayY[loop] = 1) )
++			z := z + Pow(2, n);
++		endif
++		loop := loop + 1;
++
++	endwhile
++
++	return z;
++
++endfunction
++
++
++function BitXor(x, y)
++
++// Performs a bitwise logical exclusion for two unsigned, short
++// integers (0-255).  If one and ONLY one value for a position is
++// set, then that position in the result is set.   If both are 
++// either set or reset, then the position in the result is reset.
++
++	local ArrayX := BitOut(x);
++	local ArrayY := BitOut(y);
++	local z := 0;
++	local loop := 1;
++	local n;
++
++	while (loop &lt;= 8)
++
++		n := loop - 1;
++		if (ArrayX[loop] - ArrayY[loop] &lt;&gt; 0)
++			z := z + Pow(2, n);
++		endif
++		loop := loop + 1;
++
++	endwhile
++
++	return z;
++
++endfunction
++
++
++function BitEqv(x, y)
++
++// Performs a bitwise logical equivalence for two unsigned, short
++// integers (0-255).  If one and ONLY one value for a position is
++// set, then that position in the result is reset.   If both are 
++// either set or reset, then the position in the result is set.
++
++	local ArrayX := BitOut(x);
++	local ArrayY := BitOut(y);
++	local z := 0;
++	local loop := 1;
++	local n;
++
++	while (loop &lt;= 8)
++
++		n := loop - 1;
++		if (ArrayX[loop] - ArrayY[loop] = 0)
++			z := z + Pow(2, n);
++		endif
++		loop := loop + 1;
++
++	endwhile
++
++	return z;
++
++endfunction
++
++
++function BitImp(x, y)
++
++// Performs a bitwise logical implication for two unsigned, short
++// integers (0-255).  If the a position in the first integer is set,
++// and the corresponding position for the second integer is reset,
++// then that position in the result is reset.  All other combinations
++// will result in the value being set.
++
++	local ArrayX := BitOut(x);
++	local ArrayY := BitOut(y);
++	local z := 0;
++	local loop := 1;
++	local n;
++
++	while (loop &lt;= 8)
++
++		n := loop - 1;
++		if (ArrayX[loop] - ArrayY[loop] &lt; 1)
++			z := z + Pow(2, n);
++		endif
++		loop := loop + 1;
++
++	endwhile
++
++	return z;
++
++endfunction
++
++
++function BitNot(x)
++
++// Performs a logical negation on a short, unsigned integer (0-255).
++// If a position in the integer is set, then that position in the
++// result is reset.  Conversely, if a position in the integer is 
++// reset, then that position in the result is set.
++
++	local ArrayX := BitOut(x);
++	local z := 0;
++	local loop := 1;
++	local n;
++
++	while (loop &lt;= 8)
++
++		n := loop - 1;
++		if (ArrayX[loop] = 0)
++			ArrayX[loop] := 1;
++			z := z + Pow(2, n);
++		else
++			ArrayX[loop] := 0;
++		endif
++
++		loop := loop + 1;
++
++	endwhile
++
++	return z;
++
++endfunction
++
++
++function FlagSet(flag, bit);
++
++// This function will set the &lt;bit&gt; position in the &lt;flag&gt; register.
++// Both &lt;flag&gt; and &lt;bit&gt; are integers.
++
++	bit := 9 - bit;
++	
++	local FlagArray := BitOut(flag);
++	FlagArray[bit] := 1;
++
++	bit := BitIn(FlagArray);
++
++	return bit;
++
++endfunction
++
++
++function FlagReset(flag, bit);
++
++// This function will reset the &lt;bit&gt; position in the &lt;flag&gt; register.
++// Both &lt;flag&gt; and &lt;bit&gt; are integers.
++
++	bit := 9 - bit;
++	
++	local FlagArray := BitOut(flag);
++	FlagArray[bit] := 0;
++
++	bit := BitIn(FlagArray);
++
++	return bit;
++
++endfunction
++
++
++function FlagCheck(flag, bit);
++
++// This function will check the flag in the &lt;bit&gt; position of the
++// &lt;flag&gt; register.  It will return a 1 if the flag is set, and a 0
++// if the flag is reset.  Both &lt;flag&gt; and &lt;bit&gt; are integers.
++
++	local FlagArray := BitOut(flag);
++	bit := 9 - bit;
++
++	if (FlagArray[bit] = 1)
++		return 1;
++	else
++		return 0;
++	endif
++
++endfunction
+
+Added: trunk/096/scripts/include/OLD/properties.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/properties.inc	2005-11-04 02:19:06 UTC (rev 886)
++++ trunk/096/scripts/include/OLD/properties.inc	2005-11-04 02:21:01 UTC (rev 887)
+@@ -0,0 +1,88 @@
++/* $Id: properties.inc 236 2005-09-25 09:06:19Z panosl $
++ *
++ * Purpose
++ * Provide property names and functions. Properties starting with &quot;+&quot; are to be protected.
++ *
++ */
++use uo;
++
++include &quot;include/log&quot;;
++
++const SECURE_MAGIC          := 0xBADC0DE;
++
++enum MOB_PROPS
++    PROP_STAFF_LEVEL        := &quot;+StaffLevel&quot;,        // Text command access level
++    PROP_CREATION_TIME      := &quot;CreationTime&quot;,       // Character creation time (UNIX timestamp)
++    MOB_CPROPS_END          := 0
++endenum
++
++enum ITEM_PROPS
++    ITEM_CPROPS_END         := 0
++endenum
++
++enum WORLD_PROPS
++    PROP_PID                := &quot;#PID&quot;,              // Array with all resistent scripts
++    PROP_TIMESTAMP          := &quot;TimeStamp&quot;,         // Struct describing the time
++    WORLD_PROPS_END         := 0
++endenum
++
++
++// These properties only exist for a short time
++enum TEMP_PROPS
++    TEMPPROP_JUST_CREATED   := &quot;#JustCreated&quot;,      // Character was just created
++    TEMPPROP_SCHED_PID      := &quot;#SchedPID&quot;,         // PID of script scheduler
++    TEMP_PROPS_END          := 0
++endenum
++
++
++/*
++ * The following functions replace the default ObjProperty functions. Use these instead to avoid
++ * changing secured properies. If your script is safe, pass SECURE_MAGIC as magic.
++ *
++ */
++function SetProperty(what, property, value, magic := 0)
++    if(property[1] == &quot;+&quot;)
++        if(magic == SECURE_MAGIC)
++            Log(LOG_WARNING, &quot;Overwrote secure property '&quot; + property + &quot;' with '&quot; + CStr(value) + &quot;' on '&quot; +
++                GetLogInfo(what) + &quot;'&quot;);
++        else
++            Log(LOG_ERROR, &quot;Failed to overwrite secure property '&quot; + property + &quot;' with '&quot; + CStr(value) + &quot;' on '&quot; +
++                GetLogInfo(what) + &quot;'&quot;);
++            return(error);
++        endif
++    endif
++    return(SetObjProperty(what, property, value));
++endfunction
++
++function GetProperty(what, property, magic := 0)
++    if(property[1] == &quot;+&quot; &amp;&amp; magic != SECURE_MAGIC)
++        Log(LOG_ERROR, &quot;Refused to GetProperty on secure property '&quot; + property + &quot;' on '&quot; + GetLogInfo(what) + &quot;'&quot;);
++        return(error);
++    endif
++    return(GetObjProperty(what, property));
++endfunction
++
++function EraseProperty(what, property, magic := 0)
++    if(property[1] == &quot;+&quot; &amp;&amp; magic != SECURE_MAGIC)
++        Log(LOG_ERROR, &quot;Refused to erase secure property '&quot; + property + &quot;' on '&quot; + GetLogInfo(what) + &quot;'&quot;);
++        return(error);
++    endif
++    return(EraseObjProperty(what, property));
++endfunction
++
++function GetPropertyNames(what, magic := 0)
++    var props, i;
++
++    if(magic == SECURE_MAGIC)
++        return(GetObjPropertyNames(what));
++    endif
++    
++    props := GetObjPropertyNames(what);
++    for(i := 1; i &lt;= props.size(); i := i + 1)
++        if(props[i][1] == &quot;+&quot;)
++            props.erase(i);
++            i := i - 1;
++        endif
++    endfor
++    return(props);
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000873.html">[Poldistro-svn] r886 - in trunk/096/scripts/include: . OLD
+</A></li>
+	<LI>Next message: <A HREF="000861.html">[Poldistro-svn] r888 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#860">[ date ]</a>
+              <a href="thread.html#860">[ thread ]</a>
+              <a href="subject.html#860">[ subject ]</a>
+              <a href="author.html#860">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

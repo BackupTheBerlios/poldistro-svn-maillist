@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r909 - in trunk/096/pkg/skills/magery: . include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r909%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20include&In-Reply-To=%3C200511052257.jA5Mv0lO011872%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000882.html">
+   <LINK REL="Next"  HREF="000884.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r909 - in trunk/096/pkg/skills/magery: . include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r909%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20include&In-Reply-To=%3C200511052257.jA5Mv0lO011872%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r909 - in trunk/096/pkg/skills/magery: . include">austin at berlios.de
+       </A><BR>
+    <I>Sat Nov  5 23:57:00 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000882.html">[Poldistro-svn] r908 - in trunk/096/pkg/mobiles/timedScripts: commands/gm config
+</A></li>
+        <LI>Next message: <A HREF="000884.html">[Poldistro-svn] r910 - in trunk/096: pkg/items/repaircontract pkg/mobiles/oldAI pkg/mobiles/oldAI/combat pkg/mobiles/oldAI/main pkg/skills/healing pkg/skills/lockpicking pkg/skills/mining pkg/skills/tailoring pkg/skills/tinkering pkg/skills/veterinary pkg/systems/combat/old pkg/systems/combat/useScripts pkg/systems/merchantnodes pkg/systems/spellcasting scripts/include/OLD scripts/util
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#883">[ date ]</a>
+              <a href="thread.html#883">[ thread ]</a>
+              <a href="subject.html#883">[ subject ]</a>
+              <a href="author.html#883">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-05 23:56:59 +0100 (Sat, 05 Nov 2005)
+New Revision: 909
+
+Modified:
+   trunk/096/pkg/skills/magery/include/spells.inc
+   trunk/096/pkg/skills/magery/spellStarter.src
+Log:
+
+
+Modified: trunk/096/pkg/skills/magery/include/spells.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/include/spells.inc	2005-11-05 12:21:46 UTC (rev 908)
++++ trunk/096/pkg/skills/magery/include/spells.inc	2005-11-05 22:56:59 UTC (rev 909)
+@@ -34,7 +34,7 @@
+  * MS_GetSpellsCfgElem(elem_name, cfg_file)
+  *
+  * Purpose
+- * Retrieves an elem from a config file. 
++ * Retrieves an elem from a config file.
+  *
+  * Parameters
+  * elem_name:	A string matching the elem name to be retrieved.
+@@ -48,7 +48,7 @@
+ 	if ( !cfg_file )
+ 		cfg_file := MS_GetSpellsCfgFile();
+ 	endif
+-	
++
+ 	var elem := cfg_file[elem_name];
+ 
+ 	if ( elem.errortext )
+@@ -58,7 +58,7 @@
+ 	return elem;
+ endfunction
+ 
+-/* 
++/*
+  * MS_SpellDebug(who, text)
+  *
+  * Purpose
+@@ -86,10 +86,10 @@
+ 	// Apply some of spell_strength to target if reflected.
+ 	// Lower spell_strength by how much was not reflected.
+ 	// Start the spell again and point it at who from targ.
+-	
++
+ endfunction
+ 
+-/* 
++/*
+  * MS_Target(who, targ, prompt, flags)
+  *
+  * Purpose
+@@ -107,18 +107,18 @@
+  */
+ function MS_Target(byref who, byref targ:=0, byref prompt := &quot;Select a target.&quot;, byref flags:=TGTOPT_CHECK_LOS+TGTOPT_NEUTRAL)
+ 	who.hidden := 0;
+-	
++
+ 	if ( targ.IsA(POLCLASS_UOBJECT) )
+ 		return targ;
+ 	elseif ( who.npctemplate )
+ 		return 0;
+ 	endif
+-	
++
+ 	var orig_x := who.x;
+ 	var orig_y := who.y;
+-	
++
+ 	SendSysMessage(who, prompt);
+-	
++
+ 	targ := Target(who, flags);
+ 	if ( Distance(who, targ) &gt; MAX_RANGE )
+ 		SendSysMessage(who, &quot;That is too far away.&quot;);
+@@ -131,7 +131,7 @@
+ 	endif
+ endfunction
+ 
+-/* 
++/*
+  * MS_TargetCoordinates(who, targ, prompt)
+  *
+  * Purpose
+@@ -148,19 +148,19 @@
+  */
+ function MS_TargetCoordinates(byref who, byref targ:=0, byref prompt := &quot;Select a target.&quot;)
+ 	who.hidden := 0;
+-	
++
+ 	if ( targ )
+ 		return targ;
+ 	elseif ( who.npctemplate )
+ 		return 0;
+ 	endif
+-	
++
+ 	var orig_x := who.x;
+ 	var orig_y := who.y;
+-	
++
+ 	SendSysMessage(who, prompt);
+ 	targ := TargetCoordinates(who);
+-	
++
+ 	if ( !targ )
+ 		SendSysMessage(who, &quot;Cancelled.&quot;);
+ 		return 0;
+@@ -195,7 +195,7 @@
+ 	var defense := AP_GetSkill(targ, RESISTING_SPELLS);
+ 
+ 	// Failed MR check results in only half your resistance being used!
+-	if ( SkillCheck(targ, &quot;Magic_Resistance&quot;, -1) &lt; 0 )
++	if ( SkillCheck(targ, RESISTING_SPELLS, -1) &lt; 0 )
+ 		defense := CInt(defense / 2);
+ 	endif
+ 
+@@ -223,6 +223,6 @@
+ function ReleaseScript(pid)
+ 	var process := GetProcess(pid);
+ 	process.SendEvent(&quot;done&quot;);
+-	
++
+ 	return 1;
+ endfunction
+
+Modified: trunk/096/pkg/skills/magery/spellStarter.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellStarter.src	2005-11-05 12:21:46 UTC (rev 908)
++++ trunk/096/pkg/skills/magery/spellStarter.src	2005-11-05 22:56:59 UTC (rev 909)
+@@ -10,7 +10,7 @@
+ include &quot;:attributes:attributes&quot;;
+ include &quot;:magery:spells&quot;;
+ include &quot;:containers:containers&quot;;
+-include &quot;include/itemdesc&quot;;
++include &quot;:itemutils:itemdesc&quot;;
+ include &quot;include/client&quot;;
+ 
+ program SpellStarter(params)
+@@ -36,14 +36,6 @@
+ 		return 0;
+ 	endif
+ 
+-	var attribute		:= spell_elem.Attribute;
+-	var delay		:= spell_elem.BaseDelay;
+-	var difficulty		:= spell_elem.Difficulty;
+-	var mana_cost		:= spell_elem.ManaCost;
+-	if ( !attribute )
+-		attribute := MAGERY;
+-	endif
+-
+ 	if ( GetObjProperty(who, &quot;#medding&quot;) )
+ 		SendSysMessage(who, &quot;You can not cast right now.&quot;);
+ 		return 0;
+@@ -55,7 +47,7 @@
+ 		SendSysMessage(who, &quot;Something prevents you from casting.&quot;);
+ 		FailSpell(who);
+ 		return 0;
+-	elseif ( !ConsumeVital(who, MANA, mana_cost) )
++	elseif ( !ConsumeVital(who, MANA, spell_elem.ManaCost) )
+ 		SendSysMessage(who, &quot;You are too tired to cast.&quot;);
+ 		FailSpell(who);
+ 		return 0;
+@@ -65,12 +57,21 @@
+ 	elseif ( !EquipmentCheck(who) )
+ 		FailSpell(who);
+ 		return 0;
+-	elseif ( !CheckDelay(who, attribute, difficulty, delay) )
++	elseif ( !CheckDelay(who, spell_elem) )
+ 		FailSpell(who);
+ 		SendSysMessage(who, &quot;Your concentration has been broken.&quot;);
+ 		return 0;
+ 	else
+-		var skill_check := SkillCheck(who, attribute, difficulty);
++		var attribute		:= spell_elem.Attribute;
++		if ( !attribute )
++			attribute := MAGERY;
++		endif
++		
++		var difficulty		:= spell_elem.Difficulty;
++		if ( !difficulty )
++			difficulty := -1;
++		endif
++		var skill_check 	:= SkillCheck(who, attribute, difficulty);
+ 		if ( skill_check &gt; 0 )
+ 			var info := struct;
+ 			info.+script		:= spell_elem.script;
+@@ -97,73 +98,34 @@
+ 	EraseObjProperty(who, &quot;#medding&quot;);
+ endprogram
+ 
+-function CheckDelay(who, attribute, difficulty, base_delay)
+-	if ( who.npctemplate )
+-		// NPCs are allowed to move.
+-		return 1;
+-	endif
++function CheckDelay(who, spell_elem)
+ 	
+ 	SendSysMessage(who, &quot;You begin building the concentration needed to cast.&quot;);
+-	var equip_delay := GetEquipmentDelay(who);
+-		
+-	var my_x := who.x;
+-	var my_y := who.y;
+ 	
+-	var skill := AP_GetSkill(who, attribute);
+-	var delay := CInt(CDbl(base_delay) * (CDbl(difficulty) / CDbl(skill)));
+-	delay := delay+equip_delay;
++	var script := start_script(&quot;movementCheck&quot;, {who, GetPid()});
+ 	
+-	if ( delay &lt; 50 )
+-		delay := 50;
+-	endif
+-	var script := start_script(&quot;movementCheck&quot;, {who, GetPid(), my_x, my_y});
+-	
++	var delay := spell_elem.Delay;
+ 	MS_SpellDebug(who, &quot;Cast delay -&gt;&quot;+delay);
+-	
+ 	sleepms(delay);
+ 	
+-	// Delay is over, stop the movement checker.
+ 	script.kill();
+-	
+-	if ( Events_Waiting() &gt; 0 )
+-		// movementCheck.ecl sent a &quot;moved&quot; event.
+-		return 0;
+-	else
+-		// Player stood still and can move on.
+-		return 1;
+-	endif
++	return ( Events_Waiting() &gt; 0 );
+ endfunction
+ 
+-function GetEquipmentDelay(who)
+-	/*
+-	var weight := 0;
+-	var ar := 0;
+-	foreach item in EnumeratePhysicalItems(who)
+-		weight := weight+item.weight;
+-		ar := ar+item.ar;
+-	endforeach
+-	
+-	return {weight, ar};
+-	*/
+-	
+-	var cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-	var delay := 0;
+-	foreach item in ListEquippedItems(who)
+-		delay := delay+CInt(cfg[item.objtype].CastDelay);
+-		sleepms(2);
+-	endforeach
+-	
+-	return delay;
+-endfunction
+-
+ function EquipmentCheck(who)
+-	var item_cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-	foreach item in ListEquippedItems(who)
+-		if ( item_cfg[item.objtype].BlocksCastingIfInHand ) // God thats long!
++	var hand_1 := GetEquipmentByLayer(who, LAYER_HAND1);
++	if ( hand_1 )
++		if ( !hand_1.IsA(POLCLASS_SPELLBOOK) )
+ 			return 0;
+ 		endif
+-		sleepms(2);
+-	endforeach
++	endif
++	var hand_2 := GetEquipmentByLayer(who, LAYER_HAND2);
++	if ( hand_2 )
++		if ( !hand_2.IsA(POLCLASS_SPELLBOOK) )
++			return 0;
++		endif
++	endif
++	
+ 	return 1;
+ endfunction
+ 
+@@ -207,4 +169,6 @@
+ 	EraseObjProperty(who, &quot;#medding&quot;);
+ 	PlayObjectCenteredEffect(who, GFX_SPELL_FAIL, 5, 50);
+ 	PlaySoundEffect(who, SFX_SPELL_FAIL);
++	
++	return 1;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000882.html">[Poldistro-svn] r908 - in trunk/096/pkg/mobiles/timedScripts: commands/gm config
+</A></li>
+	<LI>Next message: <A HREF="000884.html">[Poldistro-svn] r910 - in trunk/096: pkg/items/repaircontract pkg/mobiles/oldAI pkg/mobiles/oldAI/combat pkg/mobiles/oldAI/main pkg/skills/healing pkg/skills/lockpicking pkg/skills/mining pkg/skills/tailoring pkg/skills/tinkering pkg/skills/veterinary pkg/systems/combat/old pkg/systems/combat/useScripts pkg/systems/merchantnodes pkg/systems/spellcasting scripts/include/OLD scripts/util
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#883">[ date ]</a>
+              <a href="thread.html#883">[ thread ]</a>
+              <a href="subject.html#883">[ subject ]</a>
+              <a href="author.html#883">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

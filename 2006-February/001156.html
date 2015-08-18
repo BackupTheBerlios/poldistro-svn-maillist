@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1185 - in trunk/096/pkg/items/keys: include key keyring
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1185%20-%20in%20trunk/096/pkg/items/keys%3A%20include%20key%20keyring&In-Reply-To=%3C200602101937.k1AJbTJW025318%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001155.html">
+   <LINK REL="Next"  HREF="001157.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1185 - in trunk/096/pkg/items/keys: include key keyring</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1185%20-%20in%20trunk/096/pkg/items/keys%3A%20include%20key%20keyring&In-Reply-To=%3C200602101937.k1AJbTJW025318%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1185 - in trunk/096/pkg/items/keys: include key keyring">austin at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 20:37:29 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001155.html">[Poldistro-svn] r1184 - trunk/096/pkg/items/doors/door
+</A></li>
+        <LI>Next message: <A HREF="001157.html">[Poldistro-svn] r1186 - trunk/096/pkg/items/keys/keyring
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1156">[ date ]</a>
+              <a href="thread.html#1156">[ thread ]</a>
+              <a href="subject.html#1156">[ subject ]</a>
+              <a href="author.html#1156">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-10 20:37:12 +0100 (Fri, 10 Feb 2006)
+New Revision: 1185
+
+Modified:
+   trunk/096/pkg/items/keys/include/key.inc
+   trunk/096/pkg/items/keys/key/methods.src
+   trunk/096/pkg/items/keys/keyring/use.src
+Log:
+Added KP_HasKeyForLock(container, lock_id) to key.inc
+Updated keyring to make use of it. Updated method script to be more efficient with lock and key matching.
+
+Modified: trunk/096/pkg/items/keys/include/key.inc
+===================================================================
+--- trunk/096/pkg/items/keys/include/key.inc	2006-02-10 18:03:59 UTC (rev 1184)
++++ trunk/096/pkg/items/keys/include/key.inc	2006-02-10 19:37:12 UTC (rev 1185)
+@@ -53,4 +53,39 @@
+ 	endif
+ 	
+ 	return GetItemDescInfo(object).Lockable;
++endfunction
++
++/*
++ * KP_HasKeyForLock(container, lock_id)
++ *
++ * Purpose
++ * Determines if a container has a key that matches a lock_id
++ *
++ * Parameters
++ * container:	Container to search for keys in.
++ * lock_id:	Lock ID to match.
++ *
++ * Return value
++ * Returns 1 if a match was found.
++ * Returns 0 if no keys match the lock.
++ *
++ */
++function KP_HasKeyForLock(container, lock_id)
++	if ( container.IsA(POLCLASS_MOBILE) )
++		container := container.backpack;
++	endif
++	if ( lock_id.IsA(POLCLASS_ITEM) )
++		lock_id := GetObjProperty(lock_id, &quot;LockId&quot;);
++	endif
++	
++	foreach item in ( container )
++		if ( item.IsKey() )
++			if ( item.KeyMatchesLock(lock_id) )
++				return 1;
++			endif
++		endif
++		sleepms(2);
++	endforeach
++	
++	return 0;
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/keys/key/methods.src
+===================================================================
+--- trunk/096/pkg/items/keys/key/methods.src	2006-02-10 18:03:59 UTC (rev 1184)
++++ trunk/096/pkg/items/keys/key/methods.src	2006-02-10 19:37:12 UTC (rev 1185)
+@@ -22,21 +22,9 @@
+ 	SetObjProperty(key, &quot;LockId&quot;, CStr(lock_id));
+ endfunction
+ 
+-exported function KeyMatchesLock(key, lock)
+-	if ( lock == error )
+-		return 0;
+-	endif
+-	
+-	var lock_id := error;
+-	if ( lock.GetLockId() )
+-		lock_id := lock.GetLockId();
+-	elseif ( TypeOf(lock) == &quot;String&quot; )
+-		lock_id := lock;
+-	else
++exported function KeyMatchesLock(key, lock_id)
++	if ( lock_id.IsA(POLCLASS_ITEM) )
+ 		lock_id := GetObjProperty(lock, &quot;LockId&quot;);
+-		if ( lock_id == error )
+-			return 0;
+-		endif
+ 	endif
+ 	
+ 	var key_id := GetLockId(key);
+
+Modified: trunk/096/pkg/items/keys/keyring/use.src
+===================================================================
+--- trunk/096/pkg/items/keys/keyring/use.src	2006-02-10 18:03:59 UTC (rev 1184)
++++ trunk/096/pkg/items/keys/keyring/use.src	2006-02-10 19:37:12 UTC (rev 1185)
+@@ -22,22 +22,12 @@
+ 		SendSysMessage(who, &quot;That is not lockable.&quot;);
+ 		return 0;
+ 	endif
+-	
+-	var matched := 0;
+-	foreach key in ( EnumerateItemsInContainer(keyring) )
+-		if ( key.KeyMatchesLock(targ) )
+-			KP_ToggleLock(targ, who);
+-			matched := 1;
+-			break;
+-		endif
+-		sleepms(2);
+-	endforeach
+-	
+-	if ( !matched )
++
++	if ( KP_HasKeyForLock(keyring, targ) )
++		return 1;
++	else
+ 		SendSysMessage(who, &quot;You do not have a key for that lock.&quot;);
+ 		return 0;
+-	else
+-		return 1;
+ 	endif
+ endprogram
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001155.html">[Poldistro-svn] r1184 - trunk/096/pkg/items/doors/door
+</A></li>
+	<LI>Next message: <A HREF="001157.html">[Poldistro-svn] r1186 - trunk/096/pkg/items/keys/keyring
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1156">[ date ]</a>
+              <a href="thread.html#1156">[ thread ]</a>
+              <a href="subject.html#1156">[ subject ]</a>
+              <a href="author.html#1156">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

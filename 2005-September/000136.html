@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r156 - trunk/096/pkg/utils/datafile/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r156%20-%20trunk/096/pkg/utils/datafile/include&In-Reply-To=%3C200509171205.j8HC5I1P012499%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000135.html">
+   <LINK REL="Next"  HREF="000137.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r156 - trunk/096/pkg/utils/datafile/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r156%20-%20trunk/096/pkg/utils/datafile/include&In-Reply-To=%3C200509171205.j8HC5I1P012499%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r156 - trunk/096/pkg/utils/datafile/include">austin at berlios.de
+       </A><BR>
+    <I>Sat Sep 17 14:05:18 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000135.html">[Poldistro-svn] r155 - trunk/096/pkg/commands/player
+</A></li>
+        <LI>Next message: <A HREF="000137.html">[Poldistro-svn] r157 - trunk/096/pkg/commands/player
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#136">[ date ]</a>
+              <a href="thread.html#136">[ thread ]</a>
+              <a href="subject.html#136">[ subject ]</a>
+              <a href="author.html#136">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-17 14:05:18 +0200 (Sat, 17 Sep 2005)
+New Revision: 156
+
+Modified:
+   trunk/096/pkg/utils/datafile/include/datafile.inc
+Log:
+Updated error format to error{&quot;errortext&quot;:=&quot;xxx&quot;} 
+
+Modified: trunk/096/pkg/utils/datafile/include/datafile.inc
+===================================================================
+--- trunk/096/pkg/utils/datafile/include/datafile.inc	2005-09-17 11:53:29 UTC (rev 155)
++++ trunk/096/pkg/utils/datafile/include/datafile.inc	2005-09-17 12:05:18 UTC (rev 156)
+@@ -7,6 +7,8 @@
+ /*===============================================================
+ * Current Version
+ * DATAFILE.INC - v2.0
++* Updated 9/17/2005 5:04AM
++*
+ * include &quot;:datafile:include/datafile&quot;;
+ *
+ * -- Revision v2.0 --
+@@ -86,7 +88,7 @@
+ function DFOpenDataFile(file_name, create:=DF_NO_CREATE, flags:=DF_KEYTYPE_STRING)
+ 	var data_file := OpenDataFile(file_name);
+ 	if ( (!data_file) &amp;&amp; (create) )
+-		DF_OutPut(&quot;Creating data file: &quot; + file_name);
++		DF_OutPut(&quot;Debug::DFOpenDataFile() - Creating data file: &quot;+file_name);
+ 		CreateDataFile(file_name, flags);
+ 		data_file := OpenDataFile(file_name);
+ 	endif
+@@ -94,8 +96,7 @@
+ 	if ( data_file )
+ 		return data_file;
+ 	elseif ( create )
+-		var errmsg := error;
+-		errmsg.+errortext := &quot;Could not open &quot; + file_name + &quot;:&quot; + data_file.errortext;
++		var errmsg := error{&quot;errortext&quot;:=&quot;Error::DFOpenDataFile() - Could not open &quot;+file_name+&quot; : &quot;+data_file.errortext};
+ 		DF_OutPut(errmsg.errortext);
+ 		return errmsg;
+ 	endif
+@@ -117,8 +118,7 @@
+ function DFGetElemNames(byref file_ref)
+ 	var elem_keys := file_ref.keys();
+ 	if ( elem_keys == error )
+-		var errmsg := error;
+-		errmsg.+errortext := &quot;Could not return elem keys :&quot;+elem_keys.errortext;
++		var errmsg := error{&quot;errortext&quot;:=&quot;Error::DFGetElemNames() - Could not return elem keys :&quot;+elem_keys.errortext};
+ 		DF_OutPut(errmsg.errortext);
+ 		return errmsg;
+ 	else
+@@ -144,18 +144,17 @@
+  *
+  */
+ function DFFindElement(byref file_ref, elem_name, create:=DF_NO_CREATE)
+-	var temp := file_ref.FindElement( cstr(elem_name) );
+-	if (!temp &amp;&amp; create)
+-		DF_OutPut(&quot;Creating elem: &quot; +  cstr(elem_name) );
+-		file_ref.CreateElement( cstr(elem_name) );
+-		temp := file_ref.FindElement( cstr(elem_name) );
++	var temp := file_ref.FindElement(CStr(elem_name));
++	if ( !temp &amp;&amp; create )
++		DF_OutPut(&quot;Debug::DFFindElement() - Creating elem: &quot;+CStr(elem_name));
++		file_ref.CreateElement(CStr(elem_name));
++		temp := file_ref.FindElement(CStr(elem_name));
+ 	endif
+ 
+ 	if ( temp )
+ 		return temp;
+ 	elseif (create)
+-		var errmsg := error;
+-		errmsg.+errortext := &quot;Could not open data elem &quot; + elem_name + &quot;:&quot; + temp.errortext;
++		var errmsg := error{&quot;errortext&quot;:=&quot;Error::DFFindElement() - Could not open data elem [&quot;+elem_name+&quot;] - &quot;+temp.errortext};
+ 		DF_OutPut(errmsg.errortext);
+ 		return errmsg;
+ 	endif
+@@ -177,8 +176,7 @@
+ function DFGetElemProps(elem_ref)
+ 	var prop_names := elem_ref.PropNames();
+ 	if ( prop_names == error )
+-		var errmsg := error;
+-		errmsg.+errortext := &quot;Could not return prop names :&quot;+prop_names.errortext;
++		var errmsg := error{&quot;errortext&quot;:=&quot;Error::DFGetElemProps() - Could not return prop names :&quot;+prop_names.errortext};
+ 		DF_OutPut(errmsg.errortext);
+ 		return errmsg;
+ 	else
+@@ -217,9 +215,8 @@
+ 		// what ever you get. Used for cases where the
+ 		// value is '0' but not an error.
+ 		return temp;
+-	elseif (create)
+-		var errmsg := error;
+-		errmsg.+errortext := &quot;Could not read data file property &quot; + prop_name + &quot;:&quot; + temp.errortext;
++	elseif ( create )
++		var errmsg := error{&quot;errortext&quot;:=&quot;Error::DFGetProp() - Could not read data file property &quot;+prop_name+&quot;:&quot;+temp.errortext};
+ 		DF_OutPut(errmsg.errortext);
+ 		return errmsg;
+ 	endif
+@@ -245,12 +242,11 @@
+ //
+ */
+ function DFToCfg(df_name, cfg_name)
+-	if ( lower(TypeOf(df_name))[&quot;string&quot;] )
++	if ( Lower(TypeOf(df_name))[&quot;string&quot;] )
+ 		df_name := DFOpenDataFile(df_name, DF_CREATE);
+ 	endif
+-	if ( lower(TypeOf(cfg_name)) != &quot;string&quot; )
+-		var errmsg := error;
+-		errmsg.+errortext := &quot;DFToCfg() cfg_name parameter passed was not a string.&quot;;
++	if ( Lower(TypeOf(cfg_name)) != &quot;string&quot; )
++		var errmsg := error{&quot;errortext&quot;:=&quot;Error::DFToCfg() - cfg_name parameter passed was not a string.&quot;};
+ 		DF_OutPut(errmsg.errortext);
+ 		return errmsg;
+ 	endif
+@@ -298,15 +294,14 @@
+ */
+ function CfgToDF(cfg_name, df_name, propnames)
+ 	if ( propnames.size() &lt; 1 )
+-		var errmsg := error;
+-		errmsg.+errortext := &quot;CfgToDF() Size of linenames array is &lt; 0&quot;;
++		var errmsg := error{&quot;errortext&quot;:=&quot;Error::CfgToDF() - Size of propnames array is &lt; 0&quot;};
+ 		DF_OutPut(errmsg.errortext);
+ 		return errmsg;
+ 	endif
+-	if ( lower(TypeOf(cfg_name))[&quot;string&quot;] )
++	if ( Lower(TypeOf(cfg_name))[&quot;string&quot;] )
+ 		cfg_name := ReadConfigFile(cfg_name);
+ 	endif
+-	if ( lower(TypeOf(df_name))[&quot;string&quot;] )
++	if ( Lower(TypeOf(df_name))[&quot;string&quot;] )
+ 		df_name := DFOpenDataFile(df_name, DF_CREATE);
+ 	endif
+ 
+@@ -322,6 +317,7 @@
+ 				prop_value := array;
+ 				foreach line in GetConfigStringArray(elem, prop_name)
+ 					prop_value.Append(line);
++					sleepms(2);
+ 				endforeach
+ 			else
+ 				prop_value := entries[1];
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000135.html">[Poldistro-svn] r155 - trunk/096/pkg/commands/player
+</A></li>
+	<LI>Next message: <A HREF="000137.html">[Poldistro-svn] r157 - trunk/096/pkg/commands/player
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#136">[ date ]</a>
+              <a href="thread.html#136">[ thread ]</a>
+              <a href="subject.html#136">[ subject ]</a>
+              <a href="author.html#136">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

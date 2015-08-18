@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1220 - in trunk/096/pkg/mobiles/brainAI: . include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1220%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20include&In-Reply-To=%3C200602142220.k1EMKawv018989%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001190.html">
+   <LINK REL="Next"  HREF="001192.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1220 - in trunk/096/pkg/mobiles/brainAI: . include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1220%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20include&In-Reply-To=%3C200602142220.k1EMKawv018989%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1220 - in trunk/096/pkg/mobiles/brainAI: . include">austin at berlios.de
+       </A><BR>
+    <I>Tue Feb 14 23:20:36 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001190.html">[Poldistro-svn] r1219 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+        <LI>Next message: <A HREF="001192.html">[Poldistro-svn] r1221 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1191">[ date ]</a>
+              <a href="thread.html#1191">[ thread ]</a>
+              <a href="subject.html#1191">[ subject ]</a>
+              <a href="author.html#1191">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-14 23:20:34 +0100 (Tue, 14 Feb 2006)
+New Revision: 1220
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/include/npcInit.inc
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcInit.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcInit.inc	2006-02-14 22:15:36 UTC (rev 1219)
++++ trunk/096/pkg/mobiles/brainAI/include/npcInit.inc	2006-02-14 22:20:34 UTC (rev 1220)
+@@ -132,9 +132,7 @@
+ 	if ( !elem_name )
+ 		return NPC_SetupBackPack(mobile);
+ 	elseif ( !equip_cfg[elem_name] )
+-		var errmsg := error{&quot;errortext&quot;:=&quot;Error::NPC_SetupEquipment() - There is no elem [&quot;+elem_name+&quot;] in '::equip.cfg'&quot;};
+-		PrintTextAbove(mobile, errmsg);
+-		return errmsg;
++		return error{&quot;errortext&quot;:=&quot;Error::NPC_SetupEquipment() - There is no elem [&quot;+elem_name+&quot;] in '::equip.cfg'&quot;};
+ 	else
+ 		return EquipFromTemplate(mobile, elem_name);
+ 	endif
+@@ -242,21 +240,12 @@
+ 
+ 	var npc_names := ReadConfigFile(&quot;::names&quot;);
+ 	if ( !npc_names[name_elem] )
+-		var temp := error{&quot;errortext&quot; := &quot;There is no elem [&quot;+name_elem+&quot;] in NAMES.CFG&quot;};
+-
+-		NPC_ErrorSysLog(mobile, &quot;Error::NPC_SetupName() - &quot;+temp.errortext);
+-		PrintTextAbove(mobile, temp.errortext);
+-		return temp;
++		return error{&quot;errortext&quot; := &quot;There is no elem [&quot;+name_elem+&quot;] in NAMES.CFG&quot;};
+ 	endif
+ 
+ 	var name_list := GetConfigStringArray(npc_names[name_elem], &quot;Name&quot;);
+ 	if ( name_list.Size() &lt; 1 )
+-		var temp := error{&quot;errortext&quot;:=&quot;No names were found in the [&quot;+name_elem+&quot;] elem for names.cfg&quot;};
+-
+-		SysLog(&quot;Error::NPC_SetupName() - &quot;+temp.errortext);
+-		PrintTextAbove(mobile, temp.errortext);
+-
+-		return temp;
++		return error{&quot;errortext&quot;:=&quot;No names were found in the [&quot;+name_elem+&quot;] elem for names.cfg&quot;};
+ 	endif
+ 
+ 	var my_name := mobile.name;
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-02-14 22:15:36 UTC (rev 1219)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-02-14 22:20:34 UTC (rev 1220)
+@@ -644,7 +644,6 @@
+ 	// Brain AI Nerves
+ 	AIScript	Combat		:brainAI:scripts/combat/genericCombat
+ 	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
+-	AIScript	Init		:brainAI:scripts/init/generic
+ 	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
+ 	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
+ 	AIScript	Sleep		:brainAI:scripts/sleep/generic
+@@ -711,7 +710,6 @@
+ 	// Brain AI Nerves
+ 	AIScript	Combat		:brainAI:scripts/combat/genericCombat
+ 	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
+-	AIScript	Init		:brainAI:scripts/init/generic
+ 	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
+ 	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
+ 	AIScript	Sleep		:brainAI:scripts/sleep/generic
+@@ -1680,7 +1678,6 @@
+ 	// Brain AI Nerves
+ 	AIScript	Combat		:brainAI:scripts/combat/genericCombat
+ 	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
+-	AIScript	Init		:brainAI:scripts/init/generic
+ 	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
+ 	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
+ 	AIScript	Sleep		:brainAI:scripts/sleep/generic
+@@ -1746,7 +1743,6 @@
+ 	// Brain AI Nerves
+ 	AIScript	Combat		:brainAI:scripts/combat/genericCombat
+ 	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
+-	AIScript	Init		:brainAI:scripts/init/generic
+ 	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
+ 	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
+ 	AIScript	Sleep		:brainAI:scripts/sleep/generic
+@@ -1812,7 +1808,6 @@
+ 	// Brain AI Nerves
+ 	AIScript	Combat		:brainAI:scripts/combat/genericCombat
+ 	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
+-	AIScript	Init		:brainAI:scripts/init/generic
+ 	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
+ 	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
+ 	AIScript	Sleep		:brainAI:scripts/sleep/generic
+@@ -1824,4 +1819,4 @@
+ 	// Settings other scripts use...
+ 	
+ 	// CProps (eww!)
+-}
+\ No newline at end of file
++}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001190.html">[Poldistro-svn] r1219 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+	<LI>Next message: <A HREF="001192.html">[Poldistro-svn] r1221 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1191">[ date ]</a>
+              <a href="thread.html#1191">[ thread ]</a>
+              <a href="subject.html#1191">[ subject ]</a>
+              <a href="author.html#1191">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

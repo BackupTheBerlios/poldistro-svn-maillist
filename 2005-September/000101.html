@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r119 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r119%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200509140046.j8E0kT7M016053%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000100.html">
+   <LINK REL="Next"  HREF="000102.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r119 - trunk/096/pkg/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r119%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200509140046.j8E0kT7M016053%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r119 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 14 02:46:29 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000100.html">[Poldistro-svn] r118 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="000102.html">[Poldistro-svn] r120 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#101">[ date ]</a>
+              <a href="thread.html#101">[ thread ]</a>
+              <a href="subject.html#101">[ subject ]</a>
+              <a href="author.html#101">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-14 02:46:28 +0200 (Wed, 14 Sep 2005)
+New Revision: 119
+
+Modified:
+   trunk/096/pkg/commands/gm/setprop.src
+Log:
+One of the most uber setprops.
+
+Modified: trunk/096/pkg/commands/gm/setprop.src
+===================================================================
+--- trunk/096/pkg/commands/gm/setprop.src	2005-09-14 00:20:33 UTC (rev 118)
++++ trunk/096/pkg/commands/gm/setprop.src	2005-09-14 00:46:28 UTC (rev 119)
+@@ -31,51 +31,76 @@
+ 	if ( value == &quot;NULL&quot; )
+ 		value := &quot;&quot;;
+ 	endif
+-
+ 	var old_val := targ.get_member(property);
+ 	var old_type := Lower(TypeOf(old_val));
+ 	case ( old_type )
+-		&quot;integer&quot;	: value := CInt(value);
+-		&quot;string&quot;	: value := CStr(value);
+-		&quot;double&quot;	: value := CDbl(value);
++		&quot;integer&quot;	: value := CInt(value); break;
++		&quot;string&quot;	: value := CStr(value); break;
++		&quot;double&quot;	: value := CDbl(value); break;
++		default:
++			SendSysMessage(who, &quot;Original data-type '&quot;+old_type+&quot;' not supported. No changes can be made.&quot;);
++			return 0;
+ 	endcase
+ 	SendSysMessage(who, &quot;Old Value-&gt;&quot;+old_val);
+-	
+-	ProcessInput(who, targ, property, value);
+-	
++
++	ProcessInput(who, targ,property, value);
++
+ 	SendSysMessage(who, &quot;New Value-&gt;&quot;+targ.get_member(property));
+ endprogram
+ 
+-function ProcessInput(who, targ, property, value)
+-	
++function ProcessInput(who, targ, byref property, byref value)
+ 	//Works on items and mobiles, so do this first.
+-	if ( property in array{&quot;x&quot;, &quot;y&quot;, &quot;z&quot;, &quot;realm&quot;} ) 
+-		DoMovement(targ, property, value);
++	if ( property in array{&quot;x&quot;, &quot;y&quot;, &quot;z&quot;, &quot;realm&quot;} )
++		DoMovement(targ,property, value);
+ 		return 1;
+-	elseif ( targ.IsA(POLCLASS_MOBILE) )
+-		return MobileStuff(who, targ, property, value);
+-	elseif ( targ.IsA(POLCLASS_ITEM) )
+-		return ItemStuff(who, targ, property, value);
+-	if ( 
++	elseif ( MobileProperties(who, targ,property, value) == 1 )
++		// Special mobile methods/functions were used.
++		// 1 is checked implicitly - could be 0, 1 or error
++		return 1;
++	else
++		// Nothing special was needed to be done, just an ordinary member to change.
++		targ.set_member(property, value);
++		return 1;
++	endif
++endfunction
++
++function MobileProperties(who, targ, byref property, byref value)
++	if ( !targ.IsA(POLCLASS_MOBILE) )
++		return error;
++	endif
++	
++	case ( property )
+ 		&quot;concealed&quot;:
+-			DoConceal(who, targ, value);
+-			break;
++			if ( value &gt; who.cmdlevel )
++				SendSysMessage(who, &quot;You can not conceal something higher than your cmdlevel.&quot;);
++				return error;
++			else
++				targ.concealed := value; return 1;
++			endif
+ 		&quot;cmdlevel&quot;:
+-			DoCmdLevel(who, targ, value);
+-			break;
++			if ( value &gt; who.cmdlevel )
++				SendSysMessage(who, &quot;You can not set a command level higher than your own.&quot;);
++				return error;
++			else
++				targ.cmdlevel := value; return 1;
++			endif
+ 		&quot;criminal&quot;:
+-			targ.SetCriminal(value);
+-			break;
++			targ.SetCriminal(value); return 1;
+ 		&quot;murderer&quot;:
+-			targ.SetMurderer(value);
+-			break;
+-		default:
+-			targ.set_member(property, value);
+-			break;
+-	endcase	
++			targ.SetMurderer(value); return 1;
++		&quot;poisoned&quot;:
++			targ.SetPoisoned(value); return 1;
++		&quot;squelch&quot;:
++			targ.Squelch(value); return 1;
++		&quot;warmode&quot;:
++			targ.SetWarMode(value); return 1;
++	endcase
++	
++	// Nothing was done here.
++	return 0;
+ endfunction
+ 
+-function DoMovement(targ, property, value)
++function DoMovement(targ, byref property, byref value)
+ 	var x := targ.x;
+ 	var y := targ.y;
+ 	var z := targ.z;
+@@ -97,21 +122,3 @@
+ 		endif
+ 	endif
+ endfunction
+-
+-function DoCmdLevel(who, targ, value)
+-	if ( value &gt; who.cmdlevel )
+-		value := who.cmdlevel;
+-		SendSysMessage(who, &quot;You can not set a command level higher than your own.&quot;);
+-	endif
+-
+-	targ.cmdlevel := value;
+-endfunction
+-
+-function DoConceal(who, targ, value)
+-	if ( value &gt; who.cmdlevel )
+-		value := who.cmdlevel;
+-		SendSysMessage(who, &quot;You can not conceal something higher than your cmdlevel.&quot;);
+-	endif
+-
+-	targ.concealed := value;
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000100.html">[Poldistro-svn] r118 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="000102.html">[Poldistro-svn] r120 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#101">[ date ]</a>
+              <a href="thread.html#101">[ thread ]</a>
+              <a href="subject.html#101">[ subject ]</a>
+              <a href="author.html#101">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,1730 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r852 - trunk/096/config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r852%20-%20trunk/096/config&In-Reply-To=%3C200511030303.jA333QxO020246%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000825.html">
+   <LINK REL="Next"  HREF="000827.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r852 - trunk/096/config</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r852%20-%20trunk/096/config&In-Reply-To=%3C200511030303.jA333QxO020246%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r852 - trunk/096/config">austin at berlios.de
+       </A><BR>
+    <I>Thu Nov  3 04:03:26 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000825.html">[Poldistro-svn] r851 - trunk/096/pkg/systems/combat
+</A></li>
+        <LI>Next message: <A HREF="000827.html">[Poldistro-svn] r853 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#826">[ date ]</a>
+              <a href="thread.html#826">[ thread ]</a>
+              <a href="subject.html#826">[ subject ]</a>
+              <a href="author.html#826">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-03 04:03:22 +0100 (Thu, 03 Nov 2005)
+New Revision: 852
+
+Modified:
+   trunk/096/config/npcdesc.cfg
+Log:
+Updated to use mainHitScript rather than wrestleHit
+
+Modified: trunk/096/config/npcdesc.cfg
+===================================================================
+--- trunk/096/config/npcdesc.cfg	2005-11-03 02:46:57 UTC (rev 851)
++++ trunk/096/config/npcdesc.cfg	2005-11-03 03:03:22 UTC (rev 852)
+@@ -30,7 +30,7 @@
+ 	CProp MerchantType	sbarber
+ 	CProp Equipt		sPeasant1
+ 	NameTemplate		Human
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	playervendor
+@@ -59,7 +59,7 @@
+ 	CProp  MerchantType	sNone
+ 	CProp  Equipt		sPlayerVendor
+ 	NameTemplate		Human
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ 
+@@ -89,7 +89,7 @@
+ 	CProp  MerchantType	sNone
+ 	CProp  Equipt		sPlayerVendor
+ 	NameTemplate		Human
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	peasant2
+@@ -122,7 +122,7 @@
+ 	CProp  Equipt		speasant2
+ 	CProp  Karma		i5
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	NameTemplate		Human
+ }
+ 
+@@ -156,7 +156,7 @@
+ 	CProp  Equipt		speasant1
+ 	CProp  Karma		i50
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	NameTemplate		Human
+ }
+ 
+@@ -189,7 +189,7 @@
+ 	Wealth			upper
+ 	CProp  Karma		i50
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	NameTemplate		Human
+ }
+ 
+@@ -235,7 +235,7 @@
+ 	Wealth			upper
+ 	CProp  Karma		i50
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	NameTemplate		Human
+ }
+ 
+@@ -274,7 +274,7 @@
+ 	CProp  Equipt		sPaladin
+ 	CProp  Karma		i150
+ 	CProp  Fame		i150
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	NameTemplate		Human
+ }
+ 
+@@ -308,7 +308,7 @@
+ 	CProp  Equipt		speasant1
+ 	CProp  Karma		i50
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -344,7 +344,7 @@
+ 	CProp  Equipt		speasant2
+ 	CProp  Karma		i50
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -381,7 +381,7 @@
+ 	CProp  Equipt		sFullPlate
+ 	CProp  Karma		i500
+ 	CProp  Fame		i500
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -419,7 +419,7 @@
+ 	CProp  Equipt		sEvilMage
+ 	CProp  Karma		i500
+ 	CProp  Fame		i500
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -451,7 +451,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	shealer
+ 	CProp  Equipt		sHealer
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -483,7 +483,7 @@
+ 	Wealth			poor
+ 	CProp  MerchantType	shealer
+ 	CProp  Equipt		sHealer
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -517,7 +517,7 @@
+ 	CProp  Equipt		sHealer
+ 	CProp  Karma		i50
+ 	CProp  Fame		i5
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -552,7 +552,7 @@
+ 	Wealth			poor
+ 	CProp  Equipt		sStableMaster
+ 	CProp  MerchantType	sstable
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -586,7 +586,7 @@
+ 	Wealth			upper
+ 	CProp  MerchantType	sshipwright
+ 	CProp  Equipt		sShipWright
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -620,7 +620,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	smapmaker
+ 	CProp  Equipt		sShipWright
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -654,7 +654,7 @@
+ 	Wealth			poor
+ 	CProp MerchantType	sfisherman
+ 	CProp Equipt		sfisherman
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -687,7 +687,7 @@
+ 	Wealth			poor
+ 	CProp  MerchantType	sinnkeeper
+ 	CProp  Equipt		sclothes
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -720,7 +720,7 @@
+ 	Wealth			poor
+ 	CProp  MerchantType	sfarmer
+ 	CProp  Equipt		speasant1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -752,7 +752,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sWeaponsmith
+ 	CProp  Equipt		sBlacksmith
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -784,7 +784,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sBlacksmith
+ 	CProp  Equipt		sBlacksmith
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -815,7 +815,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sArmorer
+ 	CProp  Equipt		sBlacksmith
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -846,7 +846,7 @@
+ 	Wealth			poor
+ 	CProp  MerchantType	sbarkeep
+ 	CProp  Equipt		sbarkeep
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -877,7 +877,7 @@
+ 	Wealth			poor
+ 	CProp  MerchantType	sbarmaid
+ 	CProp  Equipt		sBarmaid
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -908,7 +908,7 @@
+ 	Wealth			poor
+ 	CProp  MerchantType	sbaker
+ 	CProp  Equipt		sbaker
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -939,7 +939,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	stinker
+ 	CProp  Equipt		stinker
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -970,7 +970,7 @@
+ 	Wealth			upper
+ 	CProp  MerchantType	sbard
+ 	CProp  Equipt		sPeasant2
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	NameTemplate		Human
+ 	OpensDoors		1
+ }
+@@ -1001,7 +1001,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sbutcher
+ 	CProp  Equipt		sbutcher
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1032,7 +1032,7 @@
+ 	Wealth			poor
+ 	CProp  MerchantType	scobbler
+ 	CProp  Equipt		sclothes
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1063,7 +1063,7 @@
+ 	Wealth			upper
+ 	CProp  MerchantType	sjeweler
+ 	CProp  Equipt		stinker
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1094,7 +1094,7 @@
+ 	Wealth			upper
+ 	CProp  MerchantType	sMage
+ 	CProp  Equipt		sMage
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1125,7 +1125,7 @@
+ 	Wealth			upper
+ 	CProp  MerchantType	sAlchemist
+ 	CProp  Equipt		sMage
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }	NameTemplate		Human
+ 
+@@ -1156,7 +1156,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sHerbalist
+ 	CProp  Equipt		sMage
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1187,7 +1187,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sTailor
+ 	CProp  Equipt		sTailor
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1218,7 +1218,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sWeaver
+ 	CProp  Equipt		sTailor
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1249,7 +1249,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sLeatherworker
+ 	CProp  Equipt		sLeatherworker
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1280,7 +1280,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sProvisioner
+ 	CProp  Equipt		sProvisioner
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1311,7 +1311,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sCarpenter
+ 	CProp  Equipt		sCarpenter
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1342,7 +1342,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sBowyer
+ 	CProp  Equipt		sBowyer
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1373,7 +1373,7 @@
+ 	Wealth			upper
+ 	CProp  MerchantType	sArchitect
+ 	CProp  Equipt		sArchitect
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1404,7 +1404,7 @@
+ 	Wealth			middle
+ 	CProp  MerchantType	sScribe
+ 	CProp  Equipt		sScribe
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1434,7 +1434,7 @@
+ 	Alignment		good
+ 	Wealth			poor
+ 	CProp  Equipt		scrier
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1464,7 +1464,7 @@
+ 	Alignment		good
+ 	Wealth			poor
+ 	CProp  Equipt		sbanker
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1494,7 +1494,7 @@
+ 	Alignment		good
+ 	Wealth			poor
+ 	CProp  Equipt		sbanker
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -1541,7 +1541,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i5
+ 	CProp  Fame		i5
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	walrus
+@@ -1587,7 +1587,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i5
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	rabbit
+@@ -1630,7 +1630,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	deer
+@@ -1673,7 +1673,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i2
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	ettin
+@@ -1721,7 +1721,7 @@
+ 	CProp  Karma		i-18
+ 	CProp  Fame		i18
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -1771,7 +1771,7 @@
+ 	CProp  Fame		i18
+ 	CProp  Equipt		settinmace
+ 	CProp  OnHit		a1:S15::combat:maceHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -1816,7 +1816,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i2
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	blackbear
+@@ -1859,7 +1859,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i2
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	bird
+@@ -1906,7 +1906,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	NameTemplate		Bird_Small
+ }
+ 
+@@ -1951,7 +1951,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i-1
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	pig
+@@ -1996,7 +1996,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	eagle
+@@ -2041,7 +2041,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	dog
+@@ -2087,7 +2087,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i1
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	bull
+@@ -2132,7 +2132,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i3
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	chicken
+@@ -2177,7 +2177,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	cat
+@@ -2223,7 +2223,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i1
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	horse
+@@ -2268,7 +2268,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i5
+ 	CProp  Fame		i4
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	horse2
+@@ -2313,7 +2313,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i5
+ 	CProp  Fame		i4
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	horse3
+@@ -2357,7 +2357,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i5
+ 	CProp  Fame		i4
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	horse4
+@@ -2402,7 +2402,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i5
+ 	CProp  Fame		i4
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	horsepack
+@@ -2443,7 +2443,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i5
+ 	CProp  Fame		i4
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	Llamapack
+@@ -2482,7 +2482,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i5
+ 	CProp  Fame		i4
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	gorilla
+@@ -2524,7 +2524,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	alligator
+@@ -2566,7 +2566,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i-4
+ 	CProp  Fame		i4
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ 
+@@ -2608,7 +2608,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	goat
+@@ -2650,7 +2650,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	grizzly
+@@ -2691,7 +2691,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i-1
+ 	CProp  Fame		i5
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	polar
+@@ -2732,7 +2732,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i-5
+ 	CProp  Fame		i5
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	panther
+@@ -2772,7 +2772,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i2
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	grat
+@@ -2813,7 +2813,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i-2
+ 	CProp  Fame		i2
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	ghart
+@@ -2851,7 +2851,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i3
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	llama
+@@ -2891,7 +2891,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i3
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	ogrelord
+@@ -2932,7 +2932,7 @@
+ 	CProp  Karma		i-39
+ 	CProp  Fame		i39
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Ogre
+ }
+@@ -2974,7 +2974,7 @@
+ 	CProp  Karma		i-18
+ 	CProp  Fame		i18
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Ogre
+ }
+@@ -3021,7 +3021,7 @@
+ 	CProp  Karma		i-19
+ 	CProp  Fame		i19
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	direwolf
+@@ -3062,7 +3062,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i-17
+ 	CProp  Fame		i17
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	frostwolf
+@@ -3104,7 +3104,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i7
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	whitewolf
+@@ -3145,7 +3145,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i7
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	greywolf
+@@ -3185,7 +3185,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i3
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	wolf
+@@ -3225,7 +3225,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i2
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	fireelemental
+@@ -3278,7 +3278,7 @@
+ 	CProp  Karma		i-26
+ 	CProp  Fame		i26
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -3336,7 +3336,7 @@
+ 	CProp  Karma		i-26
+ 	CProp  Fame		i26
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -3376,7 +3376,7 @@
+ 	CProp  Fame		i18
+ 	CProp  Equipt		sbackpack
+ 	CProp  OnHit		a1:S22::combat:earthElemental
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -3433,7 +3433,7 @@
+ 	CProp  Karma		i-26
+ 	CProp  Fame		i26
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -3493,7 +3493,7 @@
+ 	CProp  Karma		i-700
+ 	CProp  Fame		i700
+ 	CProp  Equipt		sdaemonsword
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Daemon
+ }
+@@ -3530,7 +3530,7 @@
+ 	CProp  Karma		i0
+ 	CProp  Fame		i0
+ 	CProp  OnHit		a1:S22::combat:bladeSpiritHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	vortex
+@@ -3566,7 +3566,7 @@
+ 	CProp  Karma		i0
+ 	CProp  Fame		i0
+ 	CProp  OnHit		a1:S17::combat:vortexHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -3606,7 +3606,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i-26
+ 	CProp  Fame		i26
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	ratman1
+@@ -3645,7 +3645,7 @@
+ 	CProp  Karma		i-7
+ 	CProp  Fame		i7
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Ratman
+ }
+@@ -3686,7 +3686,7 @@
+ 	CProp  Karma		i-7
+ 	CProp  Fame		i7
+ 	CProp  Equipt		sratmanaxe
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Ratman
+ }
+@@ -3727,7 +3727,7 @@
+ 	CProp  Karma		i-7
+ 	CProp  Fame		i7
+ 	CProp  Equipt		sratmansword
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Ratman
+ }
+@@ -3768,7 +3768,7 @@
+ 	CProp  Karma		i-7
+ 	CProp  Fame		i7
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	eldergazer
+@@ -3824,7 +3824,7 @@
+ 	CProp  Karma		i-35
+ 	CProp  Fame		i35
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -3876,7 +3876,7 @@
+ 	CProp  Karma		i-21
+ 	CProp  Fame		i21
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -3916,7 +3916,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i-1
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	slime
+@@ -3955,7 +3955,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i-1
+ 	CProp  Fame		i1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	corpser
+@@ -3993,7 +3993,7 @@
+ 	CProp  Karma		i-1
+ 	CProp  Fame		i1
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	mongbat
+@@ -4033,7 +4033,7 @@
+ 	CProp  Karma		i-1
+ 	CProp  Fame		i1
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	reaper
+@@ -4085,7 +4085,7 @@
+ 	CProp  Karma		i-21
+ 	CProp  Fame		i21
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	wisp
+@@ -4139,7 +4139,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i50
+ 	CProp  Fame		i70
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -4203,7 +4203,7 @@
+ 	CProp  Karma		i-60
+ 	CProp  Fame		i60
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -4266,7 +4266,7 @@
+ 	CProp  Karma		i-42
+ 	CProp  Fame		i42
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -4329,7 +4329,7 @@
+ 	CProp  Karma		i-42
+ 	CProp  Fame		i42
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -4377,7 +4377,7 @@
+ 	CProp  Karma		i-26
+ 	CProp  Fame		i26
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	drake2
+@@ -4424,7 +4424,7 @@
+ 	CProp  Karma		i-26
+ 	CProp  Fame		i26
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	gargoyle
+@@ -4479,7 +4479,7 @@
+ 	CProp  Karma		i-21
+ 	CProp  Fame		i21
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -4522,7 +4522,7 @@
+ 	CProp  Fame		i7
+ 	Cprop  poison_strength i3
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	dreadspider
+@@ -4577,7 +4577,7 @@
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+ 	Cprop  poison_strength i5
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	giantspider
+@@ -4621,7 +4621,7 @@
+ 	CProp  Fame		i3
+ 	Cprop  poison_strength i2
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	headless
+@@ -4661,7 +4661,7 @@
+ 	CProp  Karma		i-2
+ 	CProp  Fame		i2
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -4704,7 +4704,7 @@
+ 	CProp  Fame		i17
+ 	Cprop  poison_strength  i3
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	snake
+@@ -4746,7 +4746,7 @@
+ 	CProp  Fame		i1
+ 	Cprop  poison_strength i1
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	lavalizard
+@@ -4789,7 +4789,7 @@
+ 	CProp  Karma		i-17
+ 	CProp  Fame		i17
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ 
+@@ -4832,7 +4832,7 @@
+ 	CProp  Karma		i-16
+ 	CProp  Fame		i16
+ 	CProp  Equipt		strollaxe
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -4872,7 +4872,7 @@
+ 	CProp  Karma		i-16
+ 	CProp  Fame		i16
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -4913,7 +4913,7 @@
+ 	CProp  Fame		i16
+ 	CProp  Equipt		strollmace
+ 	CProp  OnHit		a1:S15::combat:maceHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ ###########################
+@@ -4969,7 +4969,7 @@
+ 	CProp  Equipt		sEvilMage
+ 	CProp  Karma		i-35
+ 	CProp  Fame		i35
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human_Evil_Mage
+ }
+@@ -5022,7 +5022,7 @@
+ 	CProp  Equipt		sEvilMage
+ 	CProp  Karma		i-17
+ 	CProp  Fame		i17
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human_Evil_Mage
+ }
+@@ -5089,7 +5089,7 @@
+ 	CProp  Karma		i-47
+ 	CProp  Fame		i47
+ 	CProp  Equipt		sliche
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -5150,7 +5150,7 @@
+ 	CProp  Karma		i-30
+ 	CProp  Fame		i30
+ 	CProp  Equipt		sliche
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -5193,7 +5193,7 @@
+ 	CProp  Karma		i-20
+ 	CProp  Fame		i20
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	spectre
+@@ -5248,7 +5248,7 @@
+ 	CProp  Karma		i-18
+ 	CProp  Fame		i18
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	skeletalmage
+@@ -5304,7 +5304,7 @@
+ 	CProp  Karma		i-20
+ 	CProp  Fame		i20
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	bonemage
+@@ -5361,7 +5361,7 @@
+ 	CProp  Karma		i-17
+ 	CProp  Fame		i17
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	boneknight
+@@ -5403,7 +5403,7 @@
+ 	CProp  Karma		i-16
+ 	CProp  Fame		i16
+ 	CProp  Equipt		sboneknight
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	skeletonknight
+@@ -5445,7 +5445,7 @@
+ 	CProp  Karma		i-18
+ 	CProp  Fame		i18
+ 	CProp  Equipt		sboneknight
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	shade
+@@ -5486,7 +5486,7 @@
+ 	CProp  Karma		i-16
+ 	CProp  Fame		i16
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	ghoul
+@@ -5541,7 +5541,7 @@
+ 	CProp  Karma		i-80
+ 	CProp  Fame		i80
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	skeleton
+@@ -5583,7 +5583,7 @@
+ 	CProp  Karma		i-2
+ 	CProp  Fame		i2
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	zombie
+@@ -5624,7 +5624,7 @@
+ 	CProp  Karma		i-1
+ 	CProp  Fame		i1
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ ###########################
+ #				Orcs				#
+@@ -5666,7 +5666,7 @@
+ 	CProp  Karma		i-16
+ 	CProp  Fame		i16
+ 	CProp  Equipt		sorclord
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Orc
+ }
+@@ -5724,7 +5724,7 @@
+ 	CProp  Karma		i-19
+ 	CProp  Fame		i19
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Orc
+ }
+@@ -5765,7 +5765,7 @@
+ 	CProp  Karma		i-7
+ 	CProp  Fame		i7
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Orc
+ }
+@@ -5808,7 +5808,7 @@
+ 	CProp  Fame		i7
+ 	CProp  Equipt		sorcclub
+ 	CProp  OnHit		a1:S15::combat:maceHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Orc
+ }
+@@ -5846,7 +5846,7 @@
+ 	CProp  Equipt		sBrigand
+ 	CProp  Karma		i-6
+ 	CProp  Fame		i6
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Human
+ }
+@@ -5890,7 +5890,7 @@
+ 	CProp  Karma		i-7
+ 	CProp  Fame		i7
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Lizardman
+ }
+@@ -5931,7 +5931,7 @@
+ 	CProp  Karma		i-7
+ 	CProp  Fame		i7
+ 	CProp  Equipt		slizspear
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Lizardman
+ }
+@@ -5973,7 +5973,7 @@
+ 	CProp  Fame		i7
+ 	CProp  Equipt		slizmace
+ 	CProp  OnHit		a1:S15::combat:maceHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 	NameTemplate		Lizardman
+ }
+@@ -6032,7 +6032,7 @@
+ 	CProp  Equipt		sbackpack
+ 	Cprop  poison_strength i5
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -6099,7 +6099,7 @@
+ 	CProp  Karma		i-55
+ 	CProp  Fame		i55
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -6160,7 +6160,7 @@
+ 	CProp  Karma		i-37
+ 	CProp  Fame		i37
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -6219,7 +6219,7 @@
+ 	Cprop  guardkill	i1
+ 	CProp  Karma		i0
+ 	CProp  Fame		i0
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ ############################
+@@ -6265,7 +6265,7 @@
+ 	CProp  Karma		i-1
+ 	CProp  Fame		i1
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	cyclopse
+@@ -6306,7 +6306,7 @@
+ 	CProp  Fame		i26
+ 	CProp  Equipt		sbackpack
+ 	CProp  OnHit		a1:S15::combat:maceHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -6363,7 +6363,7 @@
+ 	CProp  Karma		i-35
+ 	CProp  Fame		i35
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -6418,7 +6418,7 @@
+ 	CProp  Karma		i-35
+ 	CProp  Fame		i35
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -6456,7 +6456,7 @@
+ 	CProp  Karma		i-18
+ 	CProp  Fame		i18
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -6495,7 +6495,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i-2
+ 	CProp  Fame		i2
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	frostspider
+@@ -6536,7 +6536,7 @@
+ 	CProp  Karma		i-5
+ 	CProp  Fame		i5
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ 
+@@ -6576,7 +6576,7 @@
+ 	CProp  Fame		i16
+ 	Cprop  poison_strength i3
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	gianttoad
+@@ -6619,7 +6619,7 @@
+ 	CProp  Karma		i-3
+ 	CProp  Fame		i3
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	iceelemental
+@@ -6667,7 +6667,7 @@
+ 	CProp  Karma		i-24
+ 	CProp  Fame		i24
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -6729,7 +6729,7 @@
+ 	CProp  Karma		i-47
+ 	CProp  Fame		i47
+ 	CProp  Equipt		sdaemonsword
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -6770,7 +6770,7 @@
+ 	CProp  Fame		i3
+ 	Cprop  poison_strength i1
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	imp
+@@ -6826,7 +6826,7 @@
+ 	CProp  Karma		i-16
+ 	CProp  Fame		i16
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -6870,7 +6870,7 @@
+ 	CProp  Karma		i-21
+ 	CProp  Fame		i21
+ 	CProp  Equipt		sboneknight
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	nightmare
+@@ -6933,7 +6933,7 @@
+ 	CProp  Karma		i-43
+ 	CProp  Fame		i43
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	desertostard
+@@ -6974,7 +6974,7 @@
+ 	NoLoot			1
+ 	CProp  Karma		i5
+ 	CProp  Fame		i4
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	forestostard
+@@ -7013,7 +7013,7 @@
+ 	CorpseItm		rawribs
+ 	CorpseAmt		1
+ 	NoLoot			1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	frenziedostard
+@@ -7052,7 +7052,7 @@
+ 	CorpseItm		rawribs
+ 	CorpseAmt		1
+ 	NoLoot			1
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ ###########################
+ #			Ophidians				#
+@@ -7116,7 +7116,7 @@
+ 	CProp  Karma		i-45
+ 	CProp  Fame		i45
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7161,7 +7161,7 @@
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+ 	Cprop  poison_strength i5
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ 
+ }
+@@ -7206,7 +7206,7 @@
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+ 	Cprop  poison_strength i5
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7264,7 +7264,7 @@
+ 	CProp  Karma		i-19
+ 	CProp  Fame		i19
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7320,7 +7320,7 @@
+ 	CProp			Karma i-19
+ 	CProp			Fame  i19
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7362,7 +7362,7 @@
+ 	CProp  Karma		i-17
+ 	CProp  Fame		i17
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7404,7 +7404,7 @@
+ 	CProp  Karma		i-16
+ 	CProp  Fame		i16
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7445,7 +7445,7 @@
+ 	CProp  Karma		i-28
+ 	CProp  Fame		i28
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7487,7 +7487,7 @@
+ 	CProp  Karma		i-22
+ 	CProp  Fame		i22
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7527,7 +7527,7 @@
+ 	CProp  Karma		i-26
+ 	CProp  Fame		i26
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	swamptentacle
+@@ -7565,7 +7565,7 @@
+ 	CProp  Karma		i-18
+ 	CProp  Fame		i18
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ ###########################
+ #			Terathans
+@@ -7624,7 +7624,7 @@
+ 	CProp  Karma		i-45
+ 	CProp  Fame		i45
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7680,7 +7680,7 @@
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+ 	Cprop  poison_strength i5
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7722,7 +7722,7 @@
+ 	CProp  Karma		i-16
+ 	CProp  Fame		i16
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7764,7 +7764,7 @@
+ 	CProp  Karma		i-8
+ 	CProp  Fame		i8
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ ###########################
+@@ -7827,7 +7827,7 @@
+ 	CProp  Karma		i-44
+ 	CProp  Fame		i44
+ 	CProp  Equipt		sbackpack
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+ 
+@@ -7876,7 +7876,7 @@
+ 	CProp  Equipt		sbackpack
+ 	Cprop  poison_strength i4
+ 	CProp  OnHit		a1:S20::combat:mobPoisonHit
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ }
+ 
+ NPCTemplate	blackliche
+@@ -7935,6 +7935,6 @@
+ 	CProp  Karma		i-1750
+ 	CProp  Fame		i950
+ 	CProp  Equipt		sliche
+-	AttackHitScript		:combat:wrestlingHitScript
++	AttackHitScript		:combat:mainHitScript
+ 	OpensDoors		1
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000825.html">[Poldistro-svn] r851 - trunk/096/pkg/systems/combat
+</A></li>
+	<LI>Next message: <A HREF="000827.html">[Poldistro-svn] r853 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#826">[ date ]</a>
+              <a href="thread.html#826">[ thread ]</a>
+              <a href="subject.html#826">[ subject ]</a>
+              <a href="author.html#826">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r95 - in trunk/096/pkg/mobiles/ai_brain: . include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r95%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20include&In-Reply-To=%3C200509081224.j88COMvn016558%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000076.html">
+   <LINK REL="Next"  HREF="000078.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r95 - in trunk/096/pkg/mobiles/ai_brain: . include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r95%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20include&In-Reply-To=%3C200509081224.j88COMvn016558%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r95 - in trunk/096/pkg/mobiles/ai_brain: . include">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep  8 14:24:22 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000076.html">[Poldistro-svn] r94 - in trunk/096/pkg/mobiles/ai_brain: . assembed assembed/testnpc include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000078.html">[Poldistro-svn] r96 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#77">[ date ]</a>
+              <a href="thread.html#77">[ thread ]</a>
+              <a href="subject.html#77">[ subject ]</a>
+              <a href="author.html#77">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-08 14:24:22 +0200 (Thu, 08 Sep 2005)
+New Revision: 95
+
+Added:
+   trunk/096/pkg/mobiles/ai_brain/complete/
+Removed:
+   trunk/096/pkg/mobiles/ai_brain/assembed/
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc
+   trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+Log:
+
+
+Copied: trunk/096/pkg/mobiles/ai_brain/complete (from rev 94, trunk/096/pkg/mobiles/ai_brain/assembed)
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc	2005-09-08 12:16:52 UTC (rev 94)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc	2005-09-08 12:24:22 UTC (rev 95)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * NPC_SETTINGS.INC - v1.0
+-* Updated 8/30/2005 7:28AM
++* Updated 9/8/2005 5:21AM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+@@ -37,13 +37,13 @@
+ 	endif
+ 
+ 	if ( CInt(settings.exists(&quot;cycle_wait&quot;)) &lt;= 0 )
+-		settings[&quot;cycle_wait&quot;] := 10;
++		settings[&quot;CycleWait&quot;] := 10;
+ 	endif
+ 	if ( CInt(settings.exists(&quot;sleep_wait&quot;)) &lt;= 0 )
+-		settings[&quot;sleep_wait&quot;] := 1024;
++		settings[&quot;SleepWait&quot;] := 1024;
+ 	endif
+ 	if ( CInt(settings.exists(&quot;idle_ticks&quot;)) &lt;= 0 )
+-		settings[&quot;idle_ticks&quot;] := 5;
++		settings[&quot;IdleTicks&quot;] := 5;
+ 	endif
+ 
+ 	return settings;
+
+Modified: trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-08 12:16:52 UTC (rev 94)
++++ trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-08 12:24:22 UTC (rev 95)
+@@ -16,10 +16,24 @@
+ 	AR		1
+ 	RunSpeed	255
+ 	
+-	AISetting	cycle_wait	10
+-	AISetting	idle_ticks	5
+-	AISetting	sleep_wait	1000	
++	AISetting	CycleWait	i10
++	AISetting	IdleTicks	i5
++	AISetting	SleepWait	i1000
++	AISetting	ListenRange	i10
++	AISetting	AreaSize	i5
++	AISetting	HearSpeech	i1
++	AISetting	HearGhosts	i1
+ 	
++	AIScript	Listen		:ai_brain:complete/testNPC/listen
++	AIScript	EnterArea	:ai_brain:complete/testNPC/enterArea
++	AIScript	LeftArea	:ai_brain:complete/testNPC/leftArea
++	AIScript	GoneCriminal	:ai_brain:complete/testNPC/goneCriminal
++	AIScript	DblClick	:ai_brain:complete/testNPC/doubleClick
++	AIScript	ItemGiven	:ai_brain:complete/testNPC/itemGiven
++	AIScript	Disengaged	:ai_brain:complete/testNPC/disengaged
++	AIScript	Combat		:ai_brain:complete/testNPC/combat
++		
++	
+ 	TameDifficulty		1
+ 	GuardIgnore		1
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000076.html">[Poldistro-svn] r94 - in trunk/096/pkg/mobiles/ai_brain: . assembed assembed/testnpc include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000078.html">[Poldistro-svn] r96 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#77">[ date ]</a>
+              <a href="thread.html#77">[ thread ]</a>
+              <a href="subject.html#77">[ subject ]</a>
+              <a href="author.html#77">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

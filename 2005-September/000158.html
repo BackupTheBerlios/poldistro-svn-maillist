@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r176 - in trunk/096/pkg/items: . repaircontract
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r176%20-%20in%20trunk/096/pkg/items%3A%20.%20repaircontract&In-Reply-To=%3C200509201819.j8KIJkbZ017484%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000157.html">
+   <LINK REL="Next"  HREF="000159.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r176 - in trunk/096/pkg/items: . repaircontract</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r176%20-%20in%20trunk/096/pkg/items%3A%20.%20repaircontract&In-Reply-To=%3C200509201819.j8KIJkbZ017484%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r176 - in trunk/096/pkg/items: . repaircontract">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Sep 20 20:19:46 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000157.html">[Poldistro-svn] r175 - in trunk/096: config pkg/skills/blacksmithy pkg/skills/carpentry pkg/skills/tailoring scripts/include scripts/util
+</A></li>
+        <LI>Next message: <A HREF="000159.html">[Poldistro-svn] r177 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#158">[ date ]</a>
+              <a href="thread.html#158">[ thread ]</a>
+              <a href="subject.html#158">[ subject ]</a>
+              <a href="author.html#158">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-20 20:19:44 +0200 (Tue, 20 Sep 2005)
+New Revision: 176
+
+Added:
+   trunk/096/pkg/items/repaircontract/
+   trunk/096/pkg/items/repaircontract/itemdesc.cfg
+   trunk/096/pkg/items/repaircontract/pkg.cfg
+   trunk/096/pkg/items/repaircontract/repairDeed.src
+Log:
+
+
+Added: trunk/096/pkg/items/repaircontract/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/repaircontract/itemdesc.cfg	2005-09-20 18:12:19 UTC (rev 175)
++++ trunk/096/pkg/items/repaircontract/itemdesc.cfg	2005-09-20 18:19:44 UTC (rev 176)
+@@ -0,0 +1,11 @@
++Item 0xee09
++{
++    name 		repairdeed
++    desc 		repair deed
++    script              repairDeed
++    Graphic             0x14EF
++    Newbie              1
++    VendorSellsFor      0
++    VendorBuysFor 	0
++}
++
+
+Added: trunk/096/pkg/items/repaircontract/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/repaircontract/pkg.cfg	2005-09-20 18:12:19 UTC (rev 175)
++++ trunk/096/pkg/items/repaircontract/pkg.cfg	2005-09-20 18:19:44 UTC (rev 176)
+@@ -0,0 +1,5 @@
++Enabled         1
++Name            repaircontract
++Version         1.0
++Maintainer      Distro Team
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+
+Added: trunk/096/pkg/items/repaircontract/repairDeed.src
+===================================================================
+--- trunk/096/pkg/items/repaircontract/repairDeed.src	2005-09-20 18:12:19 UTC (rev 175)
++++ trunk/096/pkg/items/repaircontract/repairDeed.src	2005-09-20 18:19:44 UTC (rev 176)
+@@ -0,0 +1,149 @@
++use uo;
++use cfgfile;
++
++include &quot;include/canAccess&quot;;
++include &quot;include/attributes&quot;;
++include &quot;include/dist&quot;;
++
++program usescript_repairDeed(who, deed)
++
++  if(!can_access(who, deed, &quot;reserve&quot;))
++    return;
++  endif
++
++  if(deed.container.serial != who.backpack.serial)
++    SendSysMessage(who, &quot;The contract must be in your backpack to use it.&quot;);
++    return;
++  endif
++
++  if(NearNPC(who, (GetObjProperty(deed, &quot;type&quot;))))
++    if(RepairFromDeed(who, deed))
++      DestroyItem(deed);
++    endif
++  else
++    SendSysMessage(who, &quot;You must be near a &quot;+(GetObjProperty(deed, &quot;type&quot;))+&quot; shop to use this contract.&quot;);
++    return;
++  endif
++
++endprogram
++
++function NearNPC(who, type)
++
++  var MOBS_Near := ListMobilesNearLocation(who.x, who.y, who.z, 10);
++  foreach mobile in MOBS_Near
++    if( lower(GetObjProperty(mobile, &quot;MerchantType&quot;)) == type)
++      return 1;
++    endif
++  endforeach
++  return 0;
++
++endfunction
++
++function RepairFromDeed(who, deed)
++
++  var skillid := GetObjProperty(deed, &quot;skillid&quot;);
++  var what := SelectiveRepair(who, skillid);
++  if(!what)
++    return 0;
++  endif
++  var maxhp := what.maxhp;
++  maxhp := CInt(maxhp * what.quality);
++  var thehp := what.hp;
++  var damaged := maxhp - thehp;
++  var hisskill := GetObjProperty(deed, &quot;ramt&quot;);
++  var damageamount := 0.0;
++  damageamount := (125 -  hisskill)/3000.0;
++  if(what.hp == what.maxhp)
++    SendSysMessage(who, &quot;That is already in full repair.&quot;);
++    return 0;
++  endif
++  if((what.hp &lt;= 0) || (what.quality &lt;= 0.1) || (!what.quality))
++    SendSysMessage(who, &quot;You destroyed the item.&quot;);
++    DestroyItem(what);
++    return 1;
++  endif
++  if(what.quality &lt;= damageamount)
++    SendSysMessage(who, &quot;That item has been repaired many times, and will break if repairs are attempted again.&quot;);
++    return 0;
++  endif
++  if((what.hp &lt;= 0) || (what.quality &lt;= 0.1) || (!what.quality))
++    SendSysMessage(who, &quot;You destroyed the item.&quot;);
++    DestroyItem(what);
++    return 1;
++  endif
++  var repaired_amount := CInt(((randomint(hisskill) + 1))/2);
++  print(&quot;repair: &quot; + repaired_amount + &quot; / &quot; + (maxhp / 3));
++  if(repaired_amount &lt; (maxhp / 3))
++    SendSysMessage(who, &quot;You fail to repair the item and the repair contract is destroyed.&quot;);
++    return 1;
++  endif
++  if(damaged == 1)
++    repaired_amount := 1;
++  endif
++  what.quality := what.quality - damageamount;
++  if (thehp + repaired_amount &gt; what.maxhp)
++    what.hp := what.maxhp;
++    EraseObjProperty(what, &quot;swings&quot;);
++    SendSysMessage(who, &quot;You repair the item.&quot;);
++  else
++    what.hp := thehp + repaired_amount;
++    SendSysMessage(who, &quot;You repair the item&quot;);
++  endif
++
++  return 1;
++  
++endfunction
++
++function SelectiveRepair(who, skillid)
++
++  SendSysMessage(who, &quot;Select item to repair.&quot;);
++  var use_on := Target(who);
++  if(!can_access(who, use_on, &quot;reserve&quot;))
++    return;
++  endif
++  if(use_on.movable == 0)
++    SendSysMessage(who, &quot;You cannot repair that&quot;);
++    return;
++  endif
++  if((!Accessible(who, use_on)) or (dist(who, use_on) &gt; 2))
++    SendSysMessage(who, &quot;You cannot reach that&quot;);
++    return;
++  endif
++  if(use_on.container.serial != who.backpack.serial)
++    SendSysMessage(who, &quot;The item must be in your backpack to repair it.&quot;);
++    return;
++  endif
++  if(is_repairable(who, use_on.objtype, skillid))
++    return use_on;
++  else
++    return 0;
++  endif
++
++endfunction
++
++function is_repairable(who, what, skillid)
++
++  var skill_cfg;
++  case(CInt(skillid))
++     7: skill_cfg := ReadConfigFile(&quot;:blacksmithy:blacksmithy&quot;);
++     8: skill_cfg := ReadConfigFile(&quot;:bowcraft:bowcraft&quot;);
++    11: skill_cfg := ReadConfigFile(&quot;:carpentry:carpentry&quot;);
++    34: skill_cfg := ReadConfigFile(&quot;:tailoring:tailoring&quot;);
++  endcase
++  var itemcfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
++  var elem := FindConfigElem(itemcfg, what);
++  var skillref := FindConfigElem(skill_cfg, what);
++  var repairable := GetConfigInt(elem,&quot;repairable&quot;);
++  if(skillref)
++    if(repairable == 1)
++      return 1;
++    else
++      SendSysMessage(who, &quot;The item cannot be repaired&quot;);
++      return 0;
++    endif
++  else
++    SendSysMessage(who, &quot;You cannot repair that item with this type of repair contract.&quot;);
++    return 0;
++  endif
++
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000157.html">[Poldistro-svn] r175 - in trunk/096: config pkg/skills/blacksmithy pkg/skills/carpentry pkg/skills/tailoring scripts/include scripts/util
+</A></li>
+	<LI>Next message: <A HREF="000159.html">[Poldistro-svn] r177 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#158">[ date ]</a>
+              <a href="thread.html#158">[ thread ]</a>
+              <a href="subject.html#158">[ subject ]</a>
+              <a href="author.html#158">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

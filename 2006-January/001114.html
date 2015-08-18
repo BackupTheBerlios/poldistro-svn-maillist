@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1143 - trunk/096/pkg/packetHooks/CharProfile
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1143%20-%20trunk/096/pkg/packetHooks/CharProfile&In-Reply-To=%3C200601150540.k0F5eIGl005144%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001113.html">
+   <LINK REL="Next"  HREF="001115.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1143 - trunk/096/pkg/packetHooks/CharProfile</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1143%20-%20trunk/096/pkg/packetHooks/CharProfile&In-Reply-To=%3C200601150540.k0F5eIGl005144%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1143 - trunk/096/pkg/packetHooks/CharProfile">austin at berlios.de
+       </A><BR>
+    <I>Sun Jan 15 06:40:18 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001113.html">[Poldistro-svn] r1142 - in trunk/096/pkg/commands: config gm
+</A></li>
+        <LI>Next message: <A HREF="001115.html">[Poldistro-svn] r1144 - trunk/096/pkg/packetHooks/CharProfile
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1114">[ date ]</a>
+              <a href="thread.html#1114">[ thread ]</a>
+              <a href="subject.html#1114">[ subject ]</a>
+              <a href="author.html#1114">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-15 06:40:15 +0100 (Sun, 15 Jan 2006)
+New Revision: 1143
+
+Modified:
+   trunk/096/pkg/packetHooks/CharProfile/parseCharProfile.src
+Log:
+Contains fix mentioned by OldnGrey on polserver.com forums.
+
+Modified: trunk/096/pkg/packetHooks/CharProfile/parseCharProfile.src
+===================================================================
+--- trunk/096/pkg/packetHooks/CharProfile/parseCharProfile.src	2006-01-15 03:04:32 UTC (rev 1142)
++++ trunk/096/pkg/packetHooks/CharProfile/parseCharProfile.src	2006-01-15 05:40:15 UTC (rev 1143)
+@@ -1,4 +1,4 @@
+-/* $Id: parseCharProfile.src 661 2005-10-26 15:39:23Z muaddiblsd $
++/* $Id$
+  *
+  */
+ use uo;
+@@ -27,7 +27,10 @@
+ CONST OFFSET_NEW_PROFILE_TEXTLEN := 10;
+ CONST OFFSET_NEW_PROFILE := 12;
+ 
+-program runScript_CharProfileRequest( who, packet )
++program runScript_CharProfileRequest( params )
++	var who := params[1];
++	var packet := params[2];
++	params := 0; // Not needed anymore.
+ 
+ 	var mode := packet.GetInt8(OFFSET_MODE); //mode 0 for request, 1 for update
+ 	var id := packet.GetInt32(OFFSET_SERIAL_IN);  //serial of requested profile
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001113.html">[Poldistro-svn] r1142 - in trunk/096/pkg/commands: config gm
+</A></li>
+	<LI>Next message: <A HREF="001115.html">[Poldistro-svn] r1144 - trunk/096/pkg/packetHooks/CharProfile
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1114">[ date ]</a>
+              <a href="thread.html#1114">[ thread ]</a>
+              <a href="subject.html#1114">[ subject ]</a>
+              <a href="author.html#1114">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

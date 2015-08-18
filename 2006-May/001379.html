@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1410 - in trunk/096/pkg: OLD/skills skills skills/evalint skills/evalint/config systems/attributes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1410%20-%20in%20trunk/096/pkg%3A%20OLD/skills%20skills%20skills/evalint%20skills/evalint/config%20systems/attributes&In-Reply-To=%3C200605140456.k4E4uDGr001681%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001378.html">
+   <LINK REL="Next"  HREF="001380.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1410 - in trunk/096/pkg: OLD/skills skills skills/evalint skills/evalint/config systems/attributes</H1>
+    <B>muaddiblsd at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1410%20-%20in%20trunk/096/pkg%3A%20OLD/skills%20skills%20skills/evalint%20skills/evalint/config%20systems/attributes&In-Reply-To=%3C200605140456.k4E4uDGr001681%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1410 - in trunk/096/pkg: OLD/skills skills skills/evalint skills/evalint/config systems/attributes">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sun May 14 06:56:13 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001378.html">[Poldistro-svn] r1409 - trunk/096/pkg/systems/attributes
+</A></li>
+        <LI>Next message: <A HREF="001380.html">[Poldistro-svn] r1411 - trunk/096/pkg/skills/evalint
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1379">[ date ]</a>
+              <a href="thread.html#1379">[ thread ]</a>
+              <a href="subject.html#1379">[ subject ]</a>
+              <a href="author.html#1379">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2006-05-14 06:56:12 +0200 (Sun, 14 May 2006)
+New Revision: 1410
+
+Added:
+   trunk/096/pkg/skills/evalint/
+   trunk/096/pkg/skills/evalint/config/
+   trunk/096/pkg/skills/evalint/config/icp.cfg
+   trunk/096/pkg/skills/evalint/evalInt.src
+   trunk/096/pkg/skills/evalint/pkg.cfg
+Removed:
+   trunk/096/pkg/OLD/skills/evalint/
+Modified:
+   trunk/096/pkg/systems/attributes/skills.cfg
+Log:
+Reintroduction of evalint pkg for common skills.
+
+Added: trunk/096/pkg/skills/evalint/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/skills/evalint/config/icp.cfg	2006-05-14 04:16:08 UTC (rev 1409)
++++ trunk/096/pkg/skills/evalint/config/icp.cfg	2006-05-14 04:56:12 UTC (rev 1410)
+@@ -0,0 +1,12 @@
++ICP Register
++{
++        Name            Evaluating Intelligence
++        Version         1.1
++        Description     Evaluating Intelligence Skill
++
++        Creator         Distro Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+
+Added: trunk/096/pkg/skills/evalint/evalInt.src
+===================================================================
+--- trunk/096/pkg/skills/evalint/evalInt.src	2006-05-14 04:16:08 UTC (rev 1409)
++++ trunk/096/pkg/skills/evalint/evalInt.src	2006-05-14 04:56:12 UTC (rev 1410)
+@@ -0,0 +1,133 @@
++// //$Id: evalInt.src 834 2005-11-02 14:09:50Z austin $
++
++use uo;
++
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
++
++program skill_EvaluatingIntelligence(who)
++
++	EraseObjProperty(who, &quot;#IsMeditating&quot;);
++	EraseObjProperty(who, &quot;#HealTimer&quot;);
++
++	SendSysMessage(who, &quot;What do you wish to evaluate?&quot;);
++	var subject := Target(who);
++	// target checks begin here
++	if(!subject)
++		return 0;
++	elseif(subject.serial == who.serial)
++		PrintTextAbovePrivate(who, &quot;You know your mental capabilities quite well enough already.&quot;, who);
++		return 0;
++	elseif(subject.graphic == 0x2006)
++		SendSysMessage(who, &quot;Looks pretty dead to you.&quot;);
++		return 0;
++	elseif(!subject.isA(POLCLASS_MOBILE))
++		SendSysMessage(who, &quot;That cannot be evaluated.&quot;);
++		return 0;
++	endif
++
++	// variables for sys messages
++	var intell := getIntell(AP_GetStat(subject, &quot;Intelligence&quot;), subject.graphic, subject.gender);
++	var mental_percentage := CInt(CInt(AP_GetVital(subject, &quot;Mana&quot;))/CDbl(AP_GetVitalMaximumValue(subject, &quot;Mana&quot;))*100);
++	var mentalStrength := getMentalStrength(mental_percentage);
++
++	// adjust succeed and fail msgs here
++	var strMsg, strFail;
++	if(subject.graphic != 0x190 &amp;&amp; subject.graphic != 0x191)
++		strMsg := &quot;That creature&quot;;
++		strFail := &quot;that creature's mental abilities.&quot;;
++	else
++		strMsg := subject.name;
++		if(upper(subject.name[len(subject.name)]) != &quot;S&quot; || lower(subject.name[len(subject.name)]) != &quot;s&quot; )
++			strFail := subject.name + &quot;'s mental abilities.&quot;;
++		else
++			strFail := subject.name + &quot;' mental abilities.&quot;;
++		endif
++	endif
++	if(SkillCheck(who, EVALUATING_INTELLIGENCE, -1) &gt; 0)
++		PrintTextAbovePrivate(subject, strMsg + &quot; looks &quot; + intell + &quot;.&quot;, who);
++		// player's evalint skill equal/greater than 76 can get mental strength info
++		var skill := AP_GetSkill(who, EVALUATING_INTELLIGENCE);
++		if(skill &gt;= 76)
++			PrintTextAbovePrivate(subject, strMsg + &quot; is at &quot; + mentalStrength + &quot; mental strength.&quot;, who);
++		endif
++		return 1;
++	else
++		PrintTextAbovePrivate(subject, &quot;You cannot judge &quot; + strFail, who);
++		return 0;
++	endif
++
++endprogram
++
++
++function getIntell(subject, graphic, gender)
++
++	var strSuper, strGender;
++	if(graphic != 0x190 &amp;&amp; graphic != 0x191)
++		strSuper := &quot;supernaturally&quot;;
++		strGender := &quot;it&quot;;
++	else
++		strSuper := &quot;superhumanly&quot;;
++		if(gender == 0)
++			strGender := &quot;he&quot;;
++		elseif(gender == 1)
++			strGender := &quot;she&quot;;
++		endif
++	endif
++	if(subject &gt;= 100)
++		return strSuper + &quot; intelligent in a manner you cannot comprehend&quot;;
++	elseif(subject &gt;= 99)
++		return &quot;like a definite genius&quot;;
++	elseif(subject &gt;= 89)
++		return &quot;like a formidable intellect, well beyond even the extraordinary&quot;;
++	elseif(subject &gt;= 79)
++		return &quot;extraordinarily intelligent&quot;;
++	elseif(subject &gt;= 69)
++		return &quot;extremely intelligent&quot;;
++	elseif(subject &gt;= 59)
++		return &quot;very intelligent&quot;;
++	elseif(subject &gt;= 49)
++		return &quot;moderately intelligent&quot;;
++	elseif(subject &gt;= 39)
++		return &quot;about average&quot;;
++	elseif(subject &gt;= 29)
++		return &quot;not the brightest&quot;;
++	elseif(subject &gt;= 19)
++		return &quot;fairly stupid&quot;;
++	elseif(subject &gt;= 9)
++		return &quot;slightly less intelligent than a rock&quot;;
++	else
++		return &quot;smarter than a rock, but dumber than a piece of wood&quot;;
++	endif
++
++endfunction
++
++
++function getMentalStrength(subject)
++
++	if(subject &gt;= 100)
++		return &quot;one-hundred percent&quot;;
++	elseif(subject &gt;= 90)
++		return &quot;ninety percent&quot;;
++	elseif(subject &gt;= 80)
++		return &quot;eighty percent&quot;;
++	elseif(subject &gt;= 70)
++		return &quot;seventy percent&quot;;
++	elseif(subject &gt;= 60)
++		return &quot;sixty percent&quot;;
++	elseif(subject &gt;= 50)
++		return &quot;fifty percent&quot;;
++	elseif(subject &gt;= 40)
++		return &quot;forty percent&quot;;
++	elseif(subject &gt;= 30)
++		return &quot;thirty percent&quot;;
++	elseif(subject &gt;= 20)
++		return &quot;twenty percent&quot;;
++	elseif(subject &gt;= 10)
++		return &quot;low&quot;;
++	else
++		return &quot;very low&quot;;
++	endif
++
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/evalint/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/evalint/pkg.cfg	2006-05-14 04:16:08 UTC (rev 1409)
++++ trunk/096/pkg/skills/evalint/pkg.cfg	2006-05-14 04:56:12 UTC (rev 1410)
+@@ -0,0 +1,8 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled         0
++Name		evalint
++Maintainer      Distro Team
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version         1.1
+
+Modified: trunk/096/pkg/systems/attributes/skills.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/skills.cfg	2006-05-14 04:16:08 UTC (rev 1409)
++++ trunk/096/pkg/systems/attributes/skills.cfg	2006-05-14 04:56:12 UTC (rev 1410)
+@@ -197,7 +197,7 @@
+ {
+ 	Name		EvaluatingIntelligence
+ 	SkillId		16
+-	//Script		:evalint:evalInt
++	Script		:evalint:evalInt
+ 	Delay		10
+ 
+ 	Unhides		0
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001378.html">[Poldistro-svn] r1409 - trunk/096/pkg/systems/attributes
+</A></li>
+	<LI>Next message: <A HREF="001380.html">[Poldistro-svn] r1411 - trunk/096/pkg/skills/evalint
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1379">[ date ]</a>
+              <a href="thread.html#1379">[ thread ]</a>
+              <a href="subject.html#1379">[ subject ]</a>
+              <a href="author.html#1379">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

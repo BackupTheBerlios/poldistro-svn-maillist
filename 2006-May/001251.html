@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1279 - trunk/096/pkg/systems/spawnSystem/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1279%20-%20trunk/096/pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200605060501.k4651GI3007648%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001250.html">
+   <LINK REL="Next"  HREF="001252.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1279 - trunk/096/pkg/systems/spawnSystem/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1279%20-%20trunk/096/pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200605060501.k4651GI3007648%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1279 - trunk/096/pkg/systems/spawnSystem/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sat May  6 07:01:16 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001250.html">[Poldistro-svn] r1278 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001252.html">[Poldistro-svn] r1280 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1251">[ date ]</a>
+              <a href="thread.html#1251">[ thread ]</a>
+              <a href="subject.html#1251">[ subject ]</a>
+              <a href="author.html#1251">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-06 07:01:03 +0200 (Sat, 06 May 2006)
+New Revision: 1279
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+Log:
+Check boxes for engine listing..
+
+Modified: trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-06 04:50:43 UTC (rev 1278)
++++ trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-06 05:01:03 UTC (rev 1279)
+@@ -6,6 +6,7 @@
+ include &quot;:gumps:include/gumpprompt&quot;;
+ include &quot;:gumps:include/yesno&quot;;
+ include &quot;:gumps:include/requestgump&quot;;
++include &quot;:spawnsystem:include/engines&quot;;
+ include &quot;:spawnsystem:include/realms&quot;;
+ include &quot;:spawnsystem:include/regions&quot;;
+ include &quot;:spawnsystem:include/groups&quot;;
+@@ -365,9 +366,18 @@
+ 	GFTextLine(gump, 155, 50, 2100, &quot;Group Name&quot;);
+ 	GFResizePic(gump, 230, 46, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 245, 28);
+ 	GFTextEntry(gump, 236, 50, 235, 20, 2100, &quot;&quot;, NAME_TEXT_POS);
++	
++	GFTextLine(gump, 155, 80, 2100, &quot;Spawn Engine&quot;);
++	var engines := SS_GetEnginesList();
++	var y_pos := 100;
++	foreach engine_name in ( engines )
++		GFRadioButton(gump, 155, y_pos, 0xD2, 0xD3, 0, 3);
++		GFTextLine(gump, 185, y_pos, 2100, engine_name);
++		y_pos := y_pos+20;
++	endforeach	
+ 		
+-	GFAddButton(gump, 366, 174, 0x482, 0x483, GF_CLOSE_BTN, APPLY_BTN);
+-	GFTextLine(gump, 345, 200, 2100, &quot;Create Group.&quot;);
++	GFAddButton(gump, 555, 70, 0x482, 0x483, GF_CLOSE_BTN, APPLY_BTN);
++	GFTextLine(gump, 525, 50, 2100, &quot;Create Group.&quot;);
+ 	
+ 	var input := GFSendGump(who, gump);
+ 	if ( input[APPLY_BTN] )
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001250.html">[Poldistro-svn] r1278 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001252.html">[Poldistro-svn] r1280 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1251">[ date ]</a>
+              <a href="thread.html#1251">[ thread ]</a>
+              <a href="subject.html#1251">[ subject ]</a>
+              <a href="author.html#1251">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1288 - trunk/096/pkg/systems/spawnSystem/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1288%20-%20trunk/096/pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200605061618.k46GI90r032218%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001259.html">
+   <LINK REL="Next"  HREF="001261.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1288 - trunk/096/pkg/systems/spawnSystem/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1288%20-%20trunk/096/pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200605061618.k46GI90r032218%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1288 - trunk/096/pkg/systems/spawnSystem/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sat May  6 18:18:09 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001259.html">[Poldistro-svn] r1287 - trunk/096/pkg/systems/spawnSystem/initializer
+</A></li>
+        <LI>Next message: <A HREF="001261.html">[Poldistro-svn] r1289 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1260">[ date ]</a>
+              <a href="thread.html#1260">[ thread ]</a>
+              <a href="subject.html#1260">[ subject ]</a>
+              <a href="author.html#1260">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-06 18:18:08 +0200 (Sat, 06 May 2006)
+New Revision: 1288
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+Log:
+Starting to add group management to regions.
+
+Modified: trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-06 10:25:24 UTC (rev 1287)
++++ trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-06 16:18:08 UTC (rev 1288)
+@@ -34,7 +34,6 @@
+ const SEARCH_BTN	:= 0xAE;
+ const VISIT_REGION_BTN	:= 0xAF;
+ const APPLY_BTN		:= 0xB0;
+-const REGION_GROUPS_BTN	:= 0xB1;
+ 
+ // Text entry locations
+ const X1_TEXT_POS	:= 0xF00;
+@@ -48,8 +47,7 @@
+ 	var input := SHOW_REALMS_BTN;
+ 	var cur_menu := SHOW_REALMS_BTN;
+ 	var cur_realm, cur_region, cur_group;
+-	var gump;
+-
++	
+ 	while ( who.connected )
+ 		if ( input )
+ 			if ( cur_menu == SHOW_REALMS_BTN )
+@@ -230,8 +228,9 @@
+ 	GFGumpPic(gump, 174, 184, 0x60);
+ 	GFGumpPic(gump, 411, 184, 0x60);
+ 	GFGumpPic(gump, 590, 175, 0x61);
+-
+-	GFAddButton(gump, 155, 203, 2117, 2118, GF_CLOSE_BTN, REGION_GROUPS_BTN);
++	
++	GFPage(gump, 1);
++	GFAddButton(gump, 155, 203, 2117, 2118, GF_PAGE_BTN, 200);
+ 	GFTextLine(gump, 175, 200, 2100, &quot;Manage region groups.&quot;);
+ 
+ 	GFAddButton(gump, 155, 223, 2117, 2118, GF_CLOSE_BTN, VISIT_REGION_BTN);
+@@ -239,6 +238,15 @@
+ 
+ 	GFAddButton(gump, 155, 303, 2117, 2118, GF_CLOSE_BTN, DELETE_BTN);
+ 	GFTextLine(gump, 175, 300, 2100, &quot;Delete region.&quot;);
++	
++	GFPage(gump, 200);
++	var y_pos := 200;
++	var group_list := SS_GetGroupsInRegion(region_name);
++	foreach group_name in ( group_list )
++		GFTextLine(gump, 175, y_pos, 2100, group_name);
++		y_pos := y_pos+20;
++		sleepms(2);
++	endforeach
+ 
+ 	var input := GFSendGump(who, gump);
+ 	if ( input[APPLY_BTN] )
+@@ -385,14 +393,14 @@
+ 	
+ 	GFTextLine(gump, 175, 80, 2100, &quot;Spawn Engine&quot;);
+ 	GFTextLine(gump, 375, 80, 2100, &quot;Group Entries&quot;);
++			
++	GFPage(gump, 1);
++	GFAddButton(gump, 155, 82, 0xA96, 0xA97, GF_PAGE_BTN, 200);
++	GFAddButton(gump, 355, 82, 0xA96, 0xA97, GF_PAGE_BTN, 300);
+ 	
+ 	GFAddButton(gump, 155, 203, 2117, 2118, GF_CLOSE_BTN, DELETE_BTN);
+ 	GFTextLine(gump, 175, 200, 2100, &quot;Delete Group&quot;);
+ 	
+-	GFPage(gump, 1);
+-	GFAddButton(gump, 155, 82, 0xA96, 0xA97, GF_PAGE_BTN, 200);
+-	GFAddButton(gump, 355, 82, 0xA96, 0xA97, GF_PAGE_BTN, 300);
+-	
+ 	GFPage(gump, 200);
+ 	GFAddButton(gump, 155, 82, 0xA97, 0xA96, GF_PAGE_BTN, 1);
+ 	GFAddButton(gump, 355, 82, 0xA96, 0xA97, GF_PAGE_BTN, 300);
+@@ -413,6 +421,7 @@
+ 			counter := 0;
+ 			y_pos := 100;
+ 		endif
++		sleepms(2);
+ 	endforeach
+ 	GFPage(gump, 300);
+ 	GFAddButton(gump, 155, 82, 0xA96, 0xA97, GF_PAGE_BTN, 200);
+@@ -422,7 +431,6 @@
+ 	y_pos := 120;
+ 	var cur_entries := SS_GetEntriesInGroup(group_name);
+ 	cur_entries := cur_entries.Keys();
+-	var cur_entry;
+ 	for ( lines; lines &gt; 0; lines:=lines-1 )
+ 		GFResizePic(gump, 155, y_pos-4, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 210, 28);
+ 		GFTextEntry(gump, 161, y_pos, 200, 20, 2100, SS_GetEntryByNumber(group_name, counter), ENTRY_START+counter);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001259.html">[Poldistro-svn] r1287 - trunk/096/pkg/systems/spawnSystem/initializer
+</A></li>
+	<LI>Next message: <A HREF="001261.html">[Poldistro-svn] r1289 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1260">[ date ]</a>
+              <a href="thread.html#1260">[ thread ]</a>
+              <a href="subject.html#1260">[ subject ]</a>
+              <a href="author.html#1260">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

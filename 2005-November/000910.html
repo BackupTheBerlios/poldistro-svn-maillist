@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r936 - in trunk/096: pkg/mobiles/brainAI/scripts/combat pkg/mobiles/oldAI pkg/mobiles/oldAI/combat pkg/systems/combat pkg/systems/combat/config scripts/items
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r936%20-%20in%20trunk/096%3A%20pkg/mobiles/brainAI/scripts/combat%20pkg/mobiles/oldAI%20pkg/mobiles/oldAI/combat%20pkg/systems/combat%20pkg/systems/combat/config%20scripts/items&In-Reply-To=%3C200511070043.jA70hZvt017519%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000909.html">
+   <LINK REL="Next"  HREF="000911.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r936 - in trunk/096: pkg/mobiles/brainAI/scripts/combat pkg/mobiles/oldAI pkg/mobiles/oldAI/combat pkg/systems/combat pkg/systems/combat/config scripts/items</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r936%20-%20in%20trunk/096%3A%20pkg/mobiles/brainAI/scripts/combat%20pkg/mobiles/oldAI%20pkg/mobiles/oldAI/combat%20pkg/systems/combat%20pkg/systems/combat/config%20scripts/items&In-Reply-To=%3C200511070043.jA70hZvt017519%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r936 - in trunk/096: pkg/mobiles/brainAI/scripts/combat pkg/mobiles/oldAI pkg/mobiles/oldAI/combat pkg/systems/combat pkg/systems/combat/config scripts/items">austin at berlios.de
+       </A><BR>
+    <I>Mon Nov  7 01:43:35 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000909.html">[Poldistro-svn] r935 - in trunk/096: pkg/items/walkOn pkg/items/walkOn/energyField pkg/items/walkOn/fireField pkg/items/walkOn/paraField pkg/items/walkOn/poisonField pkg/items/walkOn/spiderWeb pkg/mobiles/timedScripts/subScripts/poison scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000911.html">[Poldistro-svn] r937 - in trunk/096: pkg/commands/seer pkg/items/bountyboard pkg/mobiles/death pkg/mobiles/oldAI pkg/skills/magery pkg/systems/boat pkg/systems/stafflist scripts scripts/include/OLD scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#910">[ date ]</a>
+              <a href="thread.html#910">[ thread ]</a>
+              <a href="subject.html#910">[ subject ]</a>
+              <a href="author.html#910">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-07 01:43:25 +0100 (Mon, 07 Nov 2005)
+New Revision: 936
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src
+   trunk/096/pkg/mobiles/oldAI/bladeSpirit.src
+   trunk/096/pkg/mobiles/oldAI/combat/fireCombatEvent.inc
+   trunk/096/pkg/systems/combat/config/settings.cfg
+   trunk/096/pkg/systems/combat/mainHitScript.src
+   trunk/096/scripts/items/fireTrap.src
+Log:
+Used damage.inc where it could be used.
+
+Added facing support in the combat system (If enabled in settings.cfg forces attacker to face defender on attack)
+
+Modified: trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src	2005-11-07 00:34:53 UTC (rev 935)
++++ trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src	2005-11-07 00:43:25 UTC (rev 936)
+@@ -13,6 +13,7 @@
+ include &quot;include/client&quot;;
+ include &quot;include/sounds&quot;;
+ include &quot;include/facings&quot;;
++include &quot;include/damage&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+@@ -121,7 +122,7 @@
+ 	endforeach
+ 
+ 	PlaySoundEffect(opponent, 0x208);
+-	ApplyRawDamage(opponent, RandomDiceRoll(&quot;3d7&quot;));
++	ApplyRawDamageEX(opponent, RandomDiceRoll(&quot;3d7&quot;), DMG_FIRE, npc);
+ 
+ 	foreach coord in GetCoordsInSquare(opponent.x, opponent.y, 3)
+ 		if ( RandomInt(2) != 1 ) // Don't place a fire field
+
+Modified: trunk/096/pkg/mobiles/oldAI/bladeSpirit.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/bladeSpirit.src	2005-11-07 00:34:53 UTC (rev 935)
++++ trunk/096/pkg/mobiles/oldAI/bladeSpirit.src	2005-11-07 00:43:25 UTC (rev 936)
+@@ -13,8 +13,8 @@
+ include &quot;:oldAI:main/setup&quot;;
+ include &quot;:oldAI:main/sleepMode&quot;;
+ include &quot;:npcutils:animal&quot;;
++include &quot;include/damage&quot;;
+ 
+-
+ const HALT_THRESHOLD := 10;
+ var npccfgfile := ReadConfigFile(&quot;::npcdesc&quot;);
+ var idlesnd1 := CInt(npccfgfile[me.npctemplate].idlesound1);
+@@ -135,7 +135,7 @@
+     elseif(dmg &lt; 2)
+       dmg := 2;
+     endif
+-	ApplyRawDamage(opponent, RandomInt(dmg));
++	ApplyRawDamageEX(opponent, RandomInt(dmg), DMG_DEFAULT);
+   endif
+ endfunction
+ 
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/fireCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/fireCombatEvent.inc	2005-11-07 00:34:53 UTC (rev 935)
++++ trunk/096/pkg/mobiles/oldAI/combat/fireCombatEvent.inc	2005-11-07 00:43:25 UTC (rev 936)
+@@ -1,4 +1,6 @@
+ include &quot;:attributes:attributes&quot;;
++include &quot;include/damage&quot;;
++
+ function process_combat_event(opponent)
+   if((AP_GetVital(me, &quot;Hits&quot;) * 100/AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+     EraseObjProperty(me,&quot;#flees&quot;);
+@@ -23,7 +25,7 @@
+     var base := Cint(((FLAME_STRENGTH * AP_GetVital(me, &quot;Hits&quot;)) / AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) / 2);
+     var dmg :=  RandomInt(base) + base;
+     PlayMovingEffect(me, opponent, 0x36d4, 10, 1, 1);
+-    ApplyRawDamage(opponent, dmg);
++    ApplyRawDamageEX(opponent, dmg, DMG_FIRE);
+   endif
+ endfunction
+ 
+
+Modified: trunk/096/pkg/systems/combat/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/config/settings.cfg	2005-11-07 00:34:53 UTC (rev 935)
++++ trunk/096/pkg/systems/combat/config/settings.cfg	2005-11-07 00:43:25 UTC (rev 936)
+@@ -2,6 +2,8 @@
+ {
+ 	GainWait	25	// Seconds between gain checks.
+ 	PvPGains	1	// Players can gain from PvP. 0 - No. 1 - Yes.
++	
++	ForceFacing	1	// Forces opponents to face each other when attacking.
+ }
+ 
+ Elem	Weapons
+
+Modified: trunk/096/pkg/systems/combat/mainHitScript.src
+===================================================================
+--- trunk/096/pkg/systems/combat/mainHitScript.src	2005-11-07 00:34:53 UTC (rev 935)
++++ trunk/096/pkg/systems/combat/mainHitScript.src	2005-11-07 00:43:25 UTC (rev 936)
+@@ -12,6 +12,8 @@
+ include &quot;:combat:settings&quot;;
+ include &quot;:timedscripts:timedScripts&quot;;
+ include &quot;include/client&quot;;
++include &quot;include/facings&quot;;
++include &quot;include/damage&quot;;
+ 
+ var item_cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+ 
+@@ -30,6 +32,7 @@
+ 		endif
+ 	endif
+ 	
++	FacingChecks(attacker, defender);	
+ 	PlayHitSounds(defender);
+ 	SkillChecks(attacker, defender, weapon, rawdamage);
+ 	ArrowRecovery(defender, weapon);
+@@ -50,11 +53,24 @@
+ 	// Raw = post armor
+ 	//
+ 	if ( rawdamage &gt; 0 )
+-		ApplyRawDamage(defender, CInt(rawdamage));
++		ApplyRawDamageEX(defender, CInt(rawdamage), DMG_DEFAULT);
+ 		MakeBleed(defender);
+ 	endif
+ endprogram
+ 
++function FacingChecks(attacker, defender)
++	if ( !CS_GetSettingsCfgElem(&quot;General&quot;).ForceFacing )
++		return 0;
++	endif
++	
++	var facing := GetFacing(attacker.x, attacker.y, defender.x, defender.y);
++	if ( attacker.facing != facing )
++		attacker.facing := facing;
++	endif
++	
++	return 1;
++endfunction
++
+ function PlayHitSounds(defender)
+ 	if ( defender.IsA(POLCLASS_NPC) )
+ 		var damaged_sound := NPC_GetNPCConfig(defender).DamagedSound;
+
+Modified: trunk/096/scripts/items/fireTrap.src
+===================================================================
+--- trunk/096/scripts/items/fireTrap.src	2005-11-07 00:34:53 UTC (rev 935)
++++ trunk/096/scripts/items/fireTrap.src	2005-11-07 00:43:25 UTC (rev 936)
+@@ -2,6 +2,8 @@
+ use os;
+ use util;
+ 
++include &quot;include/damage&quot;;
++
+ program flamestriketrap(who, item)
+   Detach();
+   if (who.dead || who.cmdlevel &gt;0)
+@@ -10,5 +12,5 @@
+   PlayStationaryEffect(item.x, item.y, item.z, 0x3709, 0x0a, 0x1e, 0, who.realm);
+   PlaySoundEffect(item, 0x226);
+   var dmg := RandomInt(20) + 30;
+-  ApplyRawDamage(who, dmg);
++  ApplyRawDamageEX(who, dmg, DMG_FIRE, item);
+ endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000909.html">[Poldistro-svn] r935 - in trunk/096: pkg/items/walkOn pkg/items/walkOn/energyField pkg/items/walkOn/fireField pkg/items/walkOn/paraField pkg/items/walkOn/poisonField pkg/items/walkOn/spiderWeb pkg/mobiles/timedScripts/subScripts/poison scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000911.html">[Poldistro-svn] r937 - in trunk/096: pkg/commands/seer pkg/items/bountyboard pkg/mobiles/death pkg/mobiles/oldAI pkg/skills/magery pkg/systems/boat pkg/systems/stafflist scripts scripts/include/OLD scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#910">[ date ]</a>
+              <a href="thread.html#910">[ thread ]</a>
+              <a href="subject.html#910">[ subject ]</a>
+              <a href="author.html#910">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

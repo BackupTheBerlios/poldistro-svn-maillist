@@ -1,0 +1,507 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r52 - in trunk/096/pkg: systems/storage/include utils/gumps/docs utils/gumps/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r52%20-%20in%20trunk/096/pkg%3A%20systems/storage/include%20utils/gumps/docs%20utils/gumps/include&In-Reply-To=%3C200509041345.j84Djahq018644%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000038.html">
+   <LINK REL="Next"  HREF="000034.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r52 - in trunk/096/pkg: systems/storage/include utils/gumps/docs utils/gumps/include</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r52%20-%20in%20trunk/096/pkg%3A%20systems/storage/include%20utils/gumps/docs%20utils/gumps/include&In-Reply-To=%3C200509041345.j84Djahq018644%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r52 - in trunk/096/pkg: systems/storage/include utils/gumps/docs utils/gumps/include">panosl at berlios.de
+       </A><BR>
+    <I>Sun Sep  4 15:45:36 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000038.html">[Poldistro-svn] r51 - in trunk/096: data pkg/systems/storage
+</A></li>
+        <LI>Next message: <A HREF="000034.html">[Poldistro-svn] r53 - trunk/096/pkg/mobiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#33">[ date ]</a>
+              <a href="thread.html#33">[ thread ]</a>
+              <a href="subject.html#33">[ subject ]</a>
+              <a href="author.html#33">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-09-04 15:45:35 +0200 (Sun, 04 Sep 2005)
+New Revision: 52
+
+Modified:
+   trunk/096/pkg/systems/storage/include/storage.inc
+   trunk/096/pkg/utils/gumps/docs/changes.txt
+   trunk/096/pkg/utils/gumps/include/gumps.inc
+Log:
+
+
+Modified: trunk/096/pkg/systems/storage/include/storage.inc
+===================================================================
+--- trunk/096/pkg/systems/storage/include/storage.inc	2005-09-04 13:15:12 UTC (rev 51)
++++ trunk/096/pkg/systems/storage/include/storage.inc	2005-09-04 13:45:35 UTC (rev 52)
+@@ -26,19 +26,23 @@
+ //Toggles the bank related debug messages on and off.
+ var storage_debug_mode	:= 1;
+ 
+-// * GetBox(mobile, string)
+-//
+-// Returns the bank box of 'who' for the bank_name passed.
+-// bank_name defaults to  &quot;Global&quot;
+-//
+-// When a new bank box is made, its stored in a global
+-// property called &quot;banks&quot; through the RegisterBank() function
+-//
+-// Use SendOpenSpecialContainer(who, GetBox(who, bank_name));
+-// to show someone their bank box.
++
++
++/*
++ * GetBox(who, string)
++ *
++ * Purpose
++ *
++ * Parameters
++ * who: reference to the mobile whos container we want to view
++ * bank_name: the container that belongs to the mobile referenced.
++ *
++ * Return Value
++ * The bank box of who, for the bank_name passed.
++ */
+ function GetBox(who, bank_name)
+ 
+-	if ( (!bank_name) || (bank_name == error) )
++	if ((!bank_name) || (bank_name == error))
+ 		bank_name := &quot;Global&quot;;
+ 	endif
+ 
+@@ -78,6 +82,7 @@
+ 	return bank_box;
+ endfunction
+ 
++
+ function HasBankBox(who, bank_name)
+ 	if ( (!bank_name) || (bank_name == error) )
+ 		bank_name := &quot;Global&quot;;
+@@ -94,6 +99,7 @@
+ 	endif
+ endfunction
+ 
++
+ // *DestroyBox(mobile, string)
+ //
+ // Used to remove a mobile's bank box and everything inside of it.
+@@ -113,6 +119,7 @@
+ 	return DestroyRootItemInStorageArea(bank, box_name);
+ endfunction
+ 
++
+ // * RegisterBank(string)
+ //
+ // Registers the bank name in a global property called &quot;banks&quot;.
+@@ -137,6 +144,7 @@
+ 	set_critical(0);
+ endfunction
+ 
++
+ // * GetBankNames()
+ //
+ // Returns an array of all storage area names.
+@@ -171,6 +179,7 @@
+ 	return temp;
+ endfunction
+ 
++
+ function BankDbgMsg(text)
+ 	if ( storage_debug_mode )
+ 		SysLog(text);
+
+Modified: trunk/096/pkg/utils/gumps/docs/changes.txt
+===================================================================
+--- trunk/096/pkg/utils/gumps/docs/changes.txt	2005-09-04 13:15:12 UTC (rev 51)
++++ trunk/096/pkg/utils/gumps/docs/changes.txt	2005-09-04 13:45:35 UTC (rev 52)
+@@ -1,3 +1,50 @@
++/*===============================================================
++* Current Version
++* GUMPS.INC - v0.3
++* include &quot;:gumps:includes/gumps&quot;;
++*
++* -- Revision v0.3 --
++* Austin
++*  Added:
++*      Support for setting arbitrary data locations for GFTextEntry()
++*
++* -- Revision v0.2 --
++* Austin
++*  Added:
++*	Support for setting arbitrary button ID's and automatic assignments.
++*	Ability to change a gumps 'NoMove' 'NoClose' 'NoDispose' settings multiple times.
++*	XGFError()
++*  Changed:
++*	Function names and prototypes to better match the old gumps.inc for faster migration time.
++*	Rewrote various functions for improved error checking and utility. Will document better later
++	on as a lot of code was changed (Sorry, Melanius!)
++*
++* -- Revision v0.1 --
++* Melanius
++*  First version created to handle gumps as an object rather than as a global variable.
++*  This new include now allows multiple gumps to be handled in a single script as well
++*  as allowing easier saving of them.
++*  Added:
++*	AddCheckBox()
++*	AddGumpButton()
++*	AddGumpPic()
++*	AddHTML()
++*	AddHTMLLocalized()
++*	AddLabel()
++*	AddLabelCropped()
++*	AddPage()
++*	AddRadioButton()
++*	AddRadioGroup()
++*	AddTextInput()
++*	AddTilePic()
++*	CreateGump()
++*	Disposable()
++*	Movable()
++*	ResizePic()
++*	SendGump()
++*
++===============================================================*/
++
+ -=[ 4:55PM Jul. 07, 2005 (Austin)]=---------
+ Changed:
+ 	* Renamed &quot;configs&quot; to &quot;config&quot;
+
+Modified: trunk/096/pkg/utils/gumps/include/gumps.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/gumps.inc	2005-09-04 13:15:12 UTC (rev 51)
++++ trunk/096/pkg/utils/gumps/include/gumps.inc	2005-09-04 13:45:35 UTC (rev 52)
+@@ -1,3 +1,33 @@
++/* gumps v0.3
++ *
++ * Purpose
++ * Provide various functions for creating and managing gumps as an object.
++ * Allow multiple gumps to handled in a single script.
++ *
++ * Function List
++ * GFAddButton(byref gump, x, y, off_id, on_id, btn_type:=GF_PAGE_BTN, btn_value:=0)
++ * GFAddHTMLLocalized(byref gump, x, y, width, height, cliloc, background, scrollbar, hue := 0)
++ * GFCheckBox(byref gump, x, y, unc_id, che_id, status:=0, btn_value:=0)
++ * GFCreateGump(x:=0, y:=0, width:=0, height:=0)
++ * GFDisposable(byref gump, bool)
++ * GFExtractData(input, data_id)
++ * GFGumpPic(byref gump, x, y, gump_id, hue := 0)
++ * GFHTMLArea(byref gump, x, y, width, height, text, background:=0, scrollbar:=0)
++ * GFMovable(byref gump, bool)
++ * GFPage(byref gump, page)
++ * GFRadioButton(byref gump, x, y, unp_id, pres_id, status:=0, btn_value:=0)
++ * GFResizePic(byref gump, x, y, gump_id, width:=0, height:=0)
++ * GFSendGump(who, byref gump)
++ * GFSetRadioGroup(byref gump, group_id)
++ * GFTextCrop(byref gump, x, y, width, height, hue:=0, text:=&quot;&quot;)
++ * GFTextEntry(byref gump, x, y, width, height, txt_color, ini_text:=&quot;&quot;)
++ * GFTextLine(byref gump, x, y, hue:=0, text:=&quot;&quot;)
++ * GFTilePic(byref gump, x, y, tile_id, hue := 0)
++ *
++ * Internal/Private Function List
++ * XGFError(text)
++ */
++
+ use uo;
+ use os;
+ use basic;
+@@ -2,85 +32,8 @@
+ 
+-/*===============================================================
+-* Current Version
+-* GUMPS.INC - v0.3
+-* include &quot;:gumps:includes/gumps&quot;;
+-*
+-* -- Revision v0.3 --
+-* Austin
+-*  Added:
+-*      Support for setting arbitrary data locations for GFTextEntry()
+-*
+-* -- Revision v0.2 --
+-* Austin
+-*  Added:
+-*	Support for setting arbitrary button ID's and automatic assignments.
+-*	Ability to change a gumps 'NoMove' 'NoClose' 'NoDispose' settings multiple times.
+-*	XGFError()
+-*  Changed:
+-*	Function names and prototypes to better match the old gumps.inc for faster migration time.
+-*	Rewrote various functions for improved error checking and utility. Will document better later
+-	on as a lot of code was changed (Sorry, Melanius!)
+-*
+-* -- Revision v0.1 --
+-* Melanius
+-*  First version created to handle gumps as an object rather than as a global variable.
+-*  This new include now allows multiple gumps to be handled in a single script as well
+-*  as allowing easier saving of them.
+-*  Added:
+-*	AddCheckBox()
+-*	AddGumpButton()
+-*	AddGumpPic()
+-*	AddHTML()
+-*	AddHTMLLocalized()
+-*	AddLabel()
+-*	AddLabelCropped()
+-*	AddPage()
+-*	AddRadioButton()
+-*	AddRadioGroup()
+-*	AddTextInput()
+-*	AddTilePic()
+-*	CreateGump()
+-*	Disposable()
+-*	Movable()
+-*	ResizePic()
+-*	SendGump()
+-*
+-===============================================================*/
+-
+-/////////////////////////////////////////////////////////////////
+-// * Function List *
+-//
+-// GFAddButton(byref gump, x, y, off_id, on_id, btn_type:=GF_PAGE_BTN, btn_value:=0)
+-// GFAddHTMLLocalized(byref gump, x, y, width, height, cliloc, background, scrollbar, hue := 0)
+-// GFCheckBox(byref gump, x, y, unc_id, che_id, status:=0, btn_value:=0)
+-// GFCreateGump(x:=0, y:=0, width:=0, height:=0)
+-// GFDisposable(byref gump, bool)
+-// GFExtractData(input, data_id)
+-// GFGumpPic(byref gump, x, y, gump_id, hue := 0)
+-// GFHTMLArea(byref gump, x, y, width, height, text, background:=0, scrollbar:=0)
+-// GFMovable(byref gump, bool)
+-// GFPage(byref gump, page)
+-// GFRadioButton(byref gump, x, y, unp_id, pres_id, status:=0, btn_value:=0)
+-// GFResizePic(byref gump, x, y, gump_id, width:=0, height:=0)
+-// GFSendGump(who, byref gump)
+-// GFSetRadioGroup(byref gump, group_id)
+-// GFTextCrop(byref gump, x, y, width, height, hue:=0, text:=&quot;&quot;)
+-// GFTextEntry(byref gump, x, y, width, height, txt_color, ini_text:=&quot;&quot;)
+-// GFTextLine(byref gump, x, y, hue:=0, text:=&quot;&quot;)
+-// GFTilePic(byref gump, x, y, tile_id, hue := 0)
+-//
+-/////////////////////////////////////////////////////////////////
+-// * Internal/Private Function List *
+-//
+-// XGFError(text)
+-/////////////////////////////////////////////////////////////////
+-// * Global Variables *
+-//
+-// Constants for the GFAddButton() function
++//Constants for the GFAddButton() function
+ const GF_PAGE_BTN	:= 0x0;
+ const GF_CLOSE_BTN	:= 0x1;
+ const GF_DUMMY_BTN	:= 0x2;
+-//
+-/////////////////////////////////////////////////////////////////
+ 
++
+ /*
+@@ -130,6 +83,7 @@
+ 	return(gump);
+ endfunction
+ 
++
+ /*
+  * GFClosable(byref gump, bool)
+  *
+@@ -145,7 +99,7 @@
+  * Returns 1 on success, error on failure.
+  *
+  */
+- function GFClosable(byref gump, bool)
++function GFClosable(byref gump, bool)
+ 	case(bool)
+ 		0:
+ 			if ( gump.base.CloseLoc )
+@@ -167,8 +121,9 @@
+ 			return XGFError(&quot;gumps::Closable: Invalid bool value '&quot;+bool+&quot;'&quot;);
+ 	endcase
+ 	return 1;
+- endfunction
++endfunction
+ 
++
+ /*
+  * GFDisposable(byref gump, bool)
+  *
+@@ -212,6 +167,7 @@
+ 	return 1;
+  endfunction
+ 
++
+ /*
+  * GFMovable(byref gump, bool)
+  *
+@@ -251,6 +207,7 @@
+ 	return 1;
+  endfunction
+ 
++
+ /*
+  * GFPage(byref gump, page)
+  *
+@@ -272,6 +229,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFResizePic(byref gump, x, y, gump_id, width, height)
+  *
+@@ -305,6 +263,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFAddAlphaRegion(byref gump, x, y, width, height)
+  *
+@@ -328,6 +287,7 @@
+ 	return 1;
+  endfunction
+ 
++
+ /*
+  * GFAddButton(byref gump, x, y, off_id, on_id, btn_type, btn_value)
+  *
+@@ -352,7 +312,6 @@
+  * Return value is the button value.
+  *
+  */
+-
+ function GFAddButton(byref gump, x, y, off_id, on_id, btn_type:=GF_PAGE_BTN, btn_value:=0)
+ 	var line := &quot;Button &quot; + CStr(gump.base.x + x) + &quot; &quot; + CStr(gump.base.y + y) + &quot; &quot; + CStr(off_id) + &quot; &quot; + CStr(on_id);
+ 
+@@ -375,6 +334,7 @@
+ 	return (btn_value);
+ endfunction
+ 
++
+ /*
+  * GFCheckBox(byref gump, x, y, unc_id, che_id, status, btn_value)
+  *
+@@ -422,6 +382,7 @@
+ 	return (btn_value);
+ endfunction
+ 
++
+ /*
+  * GFSetRadioGroup(byref gump, group_id)
+  *
+@@ -444,6 +405,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFHTMLArea(byref gump, x, y, width, height, text, background, scrollbar)
+  *
+@@ -476,6 +438,7 @@
+ 	return (index);
+ endfunction
+ 
++
+ /*
+  * GFAddHTMLLocalized(byref gump, x, y, width, height, cliloc, background, scrollbar, hue)
+  *
+@@ -511,6 +474,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFGumpPic(byref gump, x, y, gump_id, hue)
+  *
+@@ -543,6 +507,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFTilePic(byref gump, x, y, tile_id, hue)
+  *
+@@ -575,6 +540,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFTextLine(byref gump, x, y, hue, text)
+  *
+@@ -601,6 +567,7 @@
+ 	return (index);
+ endfunction
+ 
++
+ /*
+  * GFTextCrop(byref gump, x, y, width, height, hue, text)
+  *
+@@ -631,6 +598,7 @@
+ 	return (index);
+ endfunction
+ 
++
+ /*
+  * GFRadioButton(byref gump, x, y, unp_id, pres_id, status, btn_value)
+  *
+@@ -676,6 +644,7 @@
+ 	return (btn_value);
+ endfunction
+ 
++
+ /*
+  * GFTextEntry(byref gump, x, y, width, height, txt_color, ini_text)
+  *
+@@ -717,6 +686,7 @@
+ 	return (txt_id);
+ endfunction
+ 
++
+ /*
+  * GFSendGump(who, gump)
+  *
+@@ -742,6 +712,7 @@
+ 	return ret_val;
+ endfunction
+ 
++
+ /*
+  * XGFErrorSetup(who, gump)
+  *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000038.html">[Poldistro-svn] r51 - in trunk/096: data pkg/systems/storage
+</A></li>
+	<LI>Next message: <A HREF="000034.html">[Poldistro-svn] r53 - trunk/096/pkg/mobiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#33">[ date ]</a>
+              <a href="thread.html#33">[ thread ]</a>
+              <a href="subject.html#33">[ subject ]</a>
+              <a href="author.html#33">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1300 - in trunk/096/pkg/systems/accounts: . auxsvc config www
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1300%20-%20in%20trunk/096/pkg/systems/accounts%3A%20.%20auxsvc%20config%20www&In-Reply-To=%3C200605110524.k4B5OKlZ023113%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001271.html">
+   <LINK REL="Next"  HREF="001273.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1300 - in trunk/096/pkg/systems/accounts: . auxsvc config www</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1300%20-%20in%20trunk/096/pkg/systems/accounts%3A%20.%20auxsvc%20config%20www&In-Reply-To=%3C200605110524.k4B5OKlZ023113%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1300 - in trunk/096/pkg/systems/accounts: . auxsvc config www">austin at berlios.de
+       </A><BR>
+    <I>Thu May 11 07:24:20 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001271.html">[Poldistro-svn] r1299 - in trunk/096/pkg/systems/accounts: . commands/admin config include
+</A></li>
+        <LI>Next message: <A HREF="001273.html">[Poldistro-svn] r1301 - trunk/096/pkg/systems/accounts/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1272">[ date ]</a>
+              <a href="thread.html#1272">[ thread ]</a>
+              <a href="subject.html#1272">[ subject ]</a>
+              <a href="author.html#1272">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-11 07:24:03 +0200 (Thu, 11 May 2006)
+New Revision: 1300
+
+Added:
+   trunk/096/pkg/systems/accounts/auxsvc.cfg
+   trunk/096/pkg/systems/accounts/auxsvc/
+   trunk/096/pkg/systems/accounts/auxsvc/newAccount.src
+   trunk/096/pkg/systems/accounts/www/newAccount.src
+Modified:
+   trunk/096/pkg/systems/accounts/config/settings.cfg
+Log:
+Added aux service (not tested)
+
+Added: trunk/096/pkg/systems/accounts/auxsvc/newAccount.src
+===================================================================
+--- trunk/096/pkg/systems/accounts/auxsvc/newAccount.src	2006-05-11 04:31:01 UTC (rev 1299)
++++ trunk/096/pkg/systems/accounts/auxsvc/newAccount.src	2006-05-11 05:24:03 UTC (rev 1300)
+@@ -0,0 +1,57 @@
++/* $Id$
++ *
++ */
++use uo;
++use os;
++
++include &quot;:accounts:accounts&quot;;
++include &quot;:accounts:settings&quot;;
++
++/* NOTES:
++ *
++ * Expects a packed array:
++ * 1 - username (string)
++ * 2 - password (string)
++ * 3 - default command level (integer)
++ * 4 - expansion (string)
++ * 5 - email ( string) 
++ * 6 - creation password (string) - if set in settings.cfg
++ *
++ */
++program AuxService(connection)
++	var report;
++	while ( connection )
++		var event := Wait_For_Event(5);
++		if ( event ) // New account to be made?
++			var username := event[1];
++			var password := event[2];
++			var cmd_lvl := event[3];
++			var expansion := event[4];
++			var email := event[5];
++			var admin_pw := event[6];
++			
++			var settings := ACCT_GetSettingsCfgElem(&quot;Settings&quot;);
++			if ( settings.AuxWebPassword )
++				if ( settings.AuxWebPassword != admin_pw )
++					 connection.Transmit(&quot;Invalid administration password.&quot;);
++					 return 0;
++				endif
++			endif
++			
++			var result := CreateNewAccount(username, password, cmd_lvl, expansion, email);
++			if ( result.errortext )
++				report := array{&quot;Error&quot;, result.errortext};
++			else
++				report := array{&quot;Success&quot;, &quot;The acount was created successfully.&quot;};
++			endif
++			
++			connection.Transmit(report);
++			
++			return 1;
++		else
++			report := array{&quot;Error&quot;, &quot;Connection timed out.&quot;};
++			connection.Transmit(report);
++			return 0;
++		endif
++	endwhile
++endprogram
+
+Added: trunk/096/pkg/systems/accounts/auxsvc.cfg
+===================================================================
+--- trunk/096/pkg/systems/accounts/auxsvc.cfg	2006-05-11 04:31:01 UTC (rev 1299)
++++ trunk/096/pkg/systems/accounts/auxsvc.cfg	2006-05-11 05:24:03 UTC (rev 1300)
+@@ -0,0 +1,9 @@
++# $Id$
++#
++#
++
++AuxService
++{
++	Port	5666
++	Script	:accounts:auxsvc/newAccount
++}
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/accounts/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/accounts/config/settings.cfg	2006-05-11 04:31:01 UTC (rev 1299)
++++ trunk/096/pkg/systems/accounts/config/settings.cfg	2006-05-11 05:24:03 UTC (rev 1300)
+@@ -4,6 +4,14 @@
+ 
+ Elem Settings
+ {
++	// AllowAutoAccounts - If a client logs in and the account does not exist, it will be created.
++	AllowAutoAccounts	0
++	
++	// If set, the password must be sent to the aux and web script to allow them to make an account.
++	// Make sure to not use weird special characters that can't be converted by POL in a URL string.
++	AuxWebPassword		
++	
++	// Default UO expansion to set on an account when it is created.
+ 	DefaultExpansion	T2A
+ }
+ 
+
+Added: trunk/096/pkg/systems/accounts/www/newAccount.src
+===================================================================
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001271.html">[Poldistro-svn] r1299 - in trunk/096/pkg/systems/accounts: . commands/admin config include
+</A></li>
+	<LI>Next message: <A HREF="001273.html">[Poldistro-svn] r1301 - trunk/096/pkg/systems/accounts/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1272">[ date ]</a>
+              <a href="thread.html#1272">[ thread ]</a>
+              <a href="subject.html#1272">[ subject ]</a>
+              <a href="author.html#1272">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

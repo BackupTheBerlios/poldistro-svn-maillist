@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r968 - trunk/096/pkg/mobiles/brainAI/bundled/banker
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r968%20-%20trunk/096/pkg/mobiles/brainAI/bundled/banker&In-Reply-To=%3C200511131454.jADEsabn008218%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000941.html">
+   <LINK REL="Next"  HREF="000943.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r968 - trunk/096/pkg/mobiles/brainAI/bundled/banker</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r968%20-%20trunk/096/pkg/mobiles/brainAI/bundled/banker&In-Reply-To=%3C200511131454.jADEsabn008218%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r968 - trunk/096/pkg/mobiles/brainAI/bundled/banker">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 13 15:54:36 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000941.html">[Poldistro-svn] r967 - in trunk/096/pkg: items/containers items/hair/cuthair mobiles/brainAI/bundled/banker mobiles/brainAI/config mobiles/brainAI/include skills/tailoring
+</A></li>
+        <LI>Next message: <A HREF="000943.html">[Poldistro-svn] r969 - in trunk/096/pkg/items/hair: . config hairdye
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#942">[ date ]</a>
+              <a href="thread.html#942">[ thread ]</a>
+              <a href="subject.html#942">[ subject ]</a>
+              <a href="author.html#942">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-13 15:54:31 +0100 (Sun, 13 Nov 2005)
+New Revision: 968
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/bundled/banker/init.src
+Log:
+Banker init script completed
+Assigns random equipment and colors.
+
+Modified: trunk/096/pkg/mobiles/brainAI/bundled/banker/init.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/banker/init.src	2005-11-13 14:48:30 UTC (rev 967)
++++ trunk/096/pkg/mobiles/brainAI/bundled/banker/init.src	2005-11-13 14:54:31 UTC (rev 968)
+@@ -9,6 +9,7 @@
+ include &quot;:brainAI:npcNerves&quot;;
+ include &quot;:brainAI:npcInit&quot;;
+ include &quot;:brainAI:npcCommands&quot;;
++include &quot;:dyes:dyes&quot;;
+ 
+ program BrainCriticalScript(params)
+ 	var npc		:= params[1];
+@@ -19,5 +20,10 @@
+ 	NPC_SetupName(npc);
+ 	NPC_SetupRandomEquipment(npc);
+ 	
++	foreach item in ( ListEquippedItems(npc) )
++		item.color := RandomDyeColor();
++		sleepms(2);
++	endforeach
++	
+ 	return 1;
+ endprogram 
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000941.html">[Poldistro-svn] r967 - in trunk/096/pkg: items/containers items/hair/cuthair mobiles/brainAI/bundled/banker mobiles/brainAI/config mobiles/brainAI/include skills/tailoring
+</A></li>
+	<LI>Next message: <A HREF="000943.html">[Poldistro-svn] r969 - in trunk/096/pkg/items/hair: . config hairdye
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#942">[ date ]</a>
+              <a href="thread.html#942">[ thread ]</a>
+              <a href="subject.html#942">[ subject ]</a>
+              <a href="author.html#942">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

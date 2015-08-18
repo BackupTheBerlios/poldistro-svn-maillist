@@ -1,0 +1,2596 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1006 - in trunk/096/pkg: items/runebook skills/magery skills/magery/config skills/magery/include skills/magery/spellScripts/circle4 skills/magery/spellScripts/circle6 skills/magery/spellScripts/circle7
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1006%20-%20in%20trunk/096/pkg%3A%20items/runebook%20skills/magery%20skills/magery/config%20skills/magery/include%20skills/magery/spellScripts/circle4%20skills/magery/spellScripts/circle6%20skills/magery/spellScripts/circle7&In-Reply-To=%3C200511151158.jAFBwDxu004862%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000978.html">
+   <LINK REL="Next"  HREF="000980.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1006 - in trunk/096/pkg: items/runebook skills/magery skills/magery/config skills/magery/include skills/magery/spellScripts/circle4 skills/magery/spellScripts/circle6 skills/magery/spellScripts/circle7</H1>
+    <B>muaddiblsd at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1006%20-%20in%20trunk/096/pkg%3A%20items/runebook%20skills/magery%20skills/magery/config%20skills/magery/include%20skills/magery/spellScripts/circle4%20skills/magery/spellScripts/circle6%20skills/magery/spellScripts/circle7&In-Reply-To=%3C200511151158.jAFBwDxu004862%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1006 - in trunk/096/pkg: items/runebook skills/magery skills/magery/config skills/magery/include skills/magery/spellScripts/circle4 skills/magery/spellScripts/circle6 skills/magery/spellScripts/circle7">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Nov 15 12:58:13 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000978.html">[Poldistro-svn] r1005 - in trunk/096/pkg: commands/coun items/bountyboard items/bountyboard/config items/containers items/guildstone/config items/hair items/hair/config items/hair/cuthair items/hair/hairdye items/keys items/keys/config items/keys/include items/keys/key items/keys/keyring items/moongates/config items/moongates/systemMoonGate items/mounts/config mobiles/brainAI/bundled/banker mobiles/newCharacter mobiles/newCharacter/config mobiles/newCharacter/include skills/lumberjacking skills/magery/config skills/magery/recallRune skills/magery/spellScripts/circle4 skills/magery/spellScripts/circle7 systems/combat/config utils/saver/config utils/scheduler utils/scheduler/config
+</A></li>
+        <LI>Next message: <A HREF="000980.html">[Poldistro-svn] r1007 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#979">[ date ]</a>
+              <a href="thread.html#979">[ thread ]</a>
+              <a href="subject.html#979">[ subject ]</a>
+              <a href="author.html#979">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-15 12:58:06 +0100 (Tue, 15 Nov 2005)
+New Revision: 1006
+
+Added:
+   trunk/096/pkg/items/runebook/runebookFunctions.inc
+   trunk/096/pkg/skills/magery/include/spellSounds.inc
+   trunk/096/pkg/skills/magery/spellScripts/circle6/mark.src
+Modified:
+   trunk/096/pkg/items/runebook/customSpells.inc
+   trunk/096/pkg/items/runebook/itemdesc.cfg
+   trunk/096/pkg/items/runebook/runeInsert.src
+   trunk/096/pkg/items/runebook/runebook.src
+   trunk/096/pkg/skills/magery/config/settings.cfg
+   trunk/096/pkg/skills/magery/include/spells.inc
+   trunk/096/pkg/skills/magery/spellScripts/circle4/recall.src
+   trunk/096/pkg/skills/magery/spellScripts/circle7/gate.src
+   trunk/096/pkg/skills/magery/spellStarter.src
+   trunk/096/pkg/skills/magery/spells.cfg
+Log:
+Runebook and spell stuff.
+
+Spellstarter modified to freeze during cast/delay. Target won't check if they move. If scroll is passed as INT 1, it overrides reg and scroll and casts without scroll consumption or requiring reagents. Added for runebooks, wands, and so on.
+
+Gate/Mark/Recall added with compatibility to new runebook system.
+
+Still need to make up all the rune colors for the config.
+
+Added ability to check if austin wears little girl's undies.
+
+Added a timebomb for every time Austin mentions polygons and UO in the same sentece.
+
+Modified: trunk/096/pkg/items/runebook/customSpells.inc
+===================================================================
+--- trunk/096/pkg/items/runebook/customSpells.inc	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/items/runebook/customSpells.inc	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -1,145 +1,29 @@
+ use uo;
+ use os;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/OLD/sound&quot;;
+-include &quot;:itemutils:objtype&quot;;
+-include &quot;include/spellRestrictions&quot;;
+-include &quot;:attributes:attributes&quot;;
++function runebookRecall(who, parms, book, charges, use_charge:=0)
++	var runebook_info := array{ book, parms };
++	var script := Start_Script(&quot;:magery:spellStarter&quot;, {who, 32, 1, runebook_info});
++	if ( script.errortext )
++		SendSysMessage(who, &quot;Error - Could not start spell starter -&gt;&quot;+script.errortext);
++		return 0;
++	endif
++	if( use_charge )
++		charges := charges - 1;
++		SetCharges(book, who, charges);
++	endif
+ 
+-function custom_recall(caster, parms, book)
+-  book := book; // stops ecompile &quot;not used&quot; warning
+-  caster.hidden := 0;
+-  if(AP_GetVital(caster, &quot;Mana&quot;) &lt; 11)
+-    caster.frozen :=1;
+-	PerformAction(caster,ANIM_CAST_DIR);
+-    sleepms(1200);
+-    caster.frozen :=0;
+-    SendSysMessage(caster,&quot;You do not have enough mana to cast that.&quot;);
+-    PlaySoundEffect(caster,0x005d);
+-    PlayObjectCenteredEffect(caster, 0x3735,0x0a, 0x1e);
+-    return 0;
+-  endif
+-  var failure := 0;
+-  var circle := 4;
+-  var tox := parms[2];
+-  var toy := parms[3];
+-  var toz := parms[4];
+-  SpeakPowerWords( caster, 32 );
+-  var delivery := &quot;notarget&quot;;
+-  var noto := &quot;neutral&quot;;
+-  var result := maincast(caster, delivery, circle, noto, 32);
+-  if(result[1] == 0)
+-    return;
+-  endif
+-  var multicheck := CreateItemAtLocation(tox, toy, toz, 0xeed, 1, caster.realm);
+-  multicheck.hidden := 1;
+-  if(multicheck.multi.serial)
+-    SendSysMessage(caster, &quot;Something is interfering with this spell.&quot;);
+-    DestroyItem(multicheck);
+-    return;
+-  endif
+-  DestroyItem(multicheck);
+-  var signs := ListItemsNearLocationOfType( tox, toy, toz, 30, 0x7060, caster.realm);
+-  foreach item in signs
+-      var infoarr := GetObjProperty( item, &quot;homeinfo&quot; );
+-    if (infoarr)
+-      if ((tox &gt;= infoarr[2]) &amp;&amp; (tox &lt;= infoarr[4]) &amp;&amp; (toy &gt;= infoarr[3]) &amp;&amp; (toy &lt;= infoarr[5]))
+-        failure := 1;
+-      endif
+-    endif
+-  endforeach
+-  if (failure == 0);
+-    MoveCharacterToLocation(caster, tox, toy, toz);
+-  else
+-    SendSysMessage(caster, &quot;Something is interfering with this spell.&quot;);
+-    return 0;
+-  endif
+-  PlaySoundEffect(caster, 0x1fd);
+-  return 1;
++	return 1;
+ endfunction
+ 
+-function custom_gate(caster, parms, book)
+-  book := book; // stops ecompile &quot;not used&quot; warning
+-  caster.hidden := 0;
+-  if(AP_GetVital(caster, &quot;Mana&quot;) &lt; 40)
+-    caster.frozen :=1;
+-	PerformAction(caster,ANIM_CAST_DIR);
+-    sleepms(1200);
+-    caster.frozen :=0;
+-    SendSysMessage(caster,&quot;You do not have enough mana to cast that.&quot;);
+-    PlaySoundEffect(caster,0x005d);
+-    PlayObjectCenteredEffect(caster, 0x3735,0x0a, 0x1e);
+-    return 0;
+-  endif
+-  var circle := 7;
+-  var tox := parms[2];
+-  var toy := parms[3];
+-  var toz := parms[4];
+-  SpeakPowerWords( caster, 52 );
+-  var delivery := &quot;notarget&quot;;
+-  var noto := &quot;neutral&quot;;
+-  var result := maincast(caster, delivery, circle, noto, 52);
+-  if(result == 0)
+-    return;
+-  endif
+-  var multicheck := CreateItemAtLocation(tox, toy, toz, 0xeed, 1, caster.realm);
+-  multicheck.hidden := 1;
+-  if(multicheck.multi.serial)
+-    DestroyItem(multicheck);
+-    return;
+-  endif
+-  DestroyItem(multicheck);
+-  var signs := ListItemsNearLocationOfType( tox, toy, toz, 30, 0x7060, caster.realm);
+-  var chk := 0;
+-  foreach item in signs
+-    var infoarr := GetObjProperty(item, &quot;homeinfo&quot;);
+-    if(infoarr)
+-      if((tox &gt;= infoarr[2]) &amp;&amp; (tox &lt;= infoarr[4]) &amp;&amp; (toy &gt;= infoarr[3]) &amp;&amp; (toy &lt;= infoarr[5]))
+-        chk := 1;
+-        break;
+-      endif
+-    endif
+-  endforeach
+-  if(chk == 1)
+-    return;
+-  endif
+-  set_critical( 1 );
+-  var wx := caster.x;
+-  var wy := caster.y;
+-  var wz := caster.z;
+-  PlayStationaryEffect( wx, wy, wz, 6899, 1, 30, 0, caster.realm );
+-  PlayStationaryEffect( tox, toy, toz, 6899, 1, 30, 0, caster.realm );
+-  sleepms(2800);
+-  set_critical( 1 );
+-  var gate1 := CreateItemAtLocation( wx, wy, wz, UOBJ_BLUE_MOONGATE, 1, caster.realm );
+-  gate1.movable := 0;
+-  var gate2 := CreateItemAtLocation( tox, toy, toz, UOBJ_BLUE_MOONGATE, 1, caster.realm );
+-  gate2.movable := 0;
+-  if(!gate1)
+-    DestroyItem(gate2);
+-    SendSysMessage(caster, &quot;Something is interfering with the spell.&quot;);
+-    return;
+-  endif
+-  if (!gate2)
+-    DestroyItem(gate1);
+-    SendSysMessage(caster, &quot;Something is interfering with the spell.&quot;);
+-    return;
+-  endif
+-  SetObjProperty( gate1, &quot;GateDestX&quot;, gate2.x );
+-  SetObjProperty( gate1, &quot;GateDestY&quot;, gate2.y );
+-  SetObjProperty( gate1, &quot;GateDestZ&quot;, gate2.z );
+-  SetObjProperty( gate2, &quot;GateDestX&quot;, gate1.x );
+-  SetObjProperty( gate2, &quot;GateDestY&quot;, gate1.y );
+-  SetObjProperty( gate2, &quot;GateDestZ&quot;, gate1.z );
+-  Detach();
+-  set_critical( 0 );
+-  PlaySoundEffect( caster, SFX_SPELL_GATE_TRAVEL );
+-  detach();
+-  sleep(30);
+-  set_critical(1);
+-  DestroyItem( gate1 );
+-  DestroyItem( gate2 );
+-  set_critical(0);
+-  return(1);
++
++function runebookGate(who, parms, book)
++	var runebook_info := array{ book, parms };
++	var script := Start_Script(&quot;:magery:spellStarter&quot;, {who, 52, 1, runebook_info});
++	if ( script.errortext )
++		SendSysMessage(who, &quot;Error - Could not start spell starter -&gt;&quot;+script.errortext);
++		return 0;
++	endif
++
++	return 1;
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/runebook/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/runebook/itemdesc.cfg	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/items/runebook/itemdesc.cfg	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -1,18 +1,18 @@
+ Container 0x6100
+ {
+-    Name             runebook
+-    Desc             runebook
+-    script           runebook
+-    OnInsertScript   runeInsert
+-    Graphic          0x0EFA
+-    color            542
+-    newbie           0
+-    movable          1
+-    weight           1
+-    Gump             0x003E
+-    MinX             40
+-    MaxX             60
+-    MinY             20
+-    MaxY             80
+-    RequiresAttention 1
++	Name			runebook
++	Desc			runebook
++	Script			runebook
++	OnInsertScript		runeInsert
++	Graphic          	0x0EFA
++	Color			542
++	newbie			0
++	movable			1
++	weight			1
++	Gump			0x003E
++	MinX			40
++	MaxX			60
++	MinY			20
++	MaxY			80
++	RequiresAttention	1
+ }
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/runebook/runeInsert.src
+===================================================================
+--- trunk/096/pkg/items/runebook/runeInsert.src	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/items/runebook/runeInsert.src	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -1,124 +1,124 @@
+-// //$Id$
+-
++/* $Id$
++ *
++ */
+ use uo;
+ use os;
+ 
+ include &quot;:itemutils:canAccess&quot;;
++include &quot;:runebook:runebookFunctions&quot;;
+ 
+ program on_insert(who, book, movetype, inserttype, item, existing_stack, amt);
+ 
+ 	// Next 4 lines used to fix the &quot;unused variable&quot; report
+-	amt := amt;
++	amt            := amt;
+ 	existing_stack := existing_stack;
+-	movetype := movetype;
+-	inserttype := inserttype;
++	movetype       := movetype;
++	inserttype     := inserttype;
+ 
+ 	var vendorserial := GetObjProperty(book,&quot;Vendor&quot;);
+-	if(vendorserial)
++	if( vendorserial )
+ 		SendSysMessage(who, &quot;You cannot insert runes while that is on a vendor.&quot;);
+ 		MoveItemToContainer(item, who.backpack);
+ 		return;
+ 	endif
+-	if(book.movable == 0)
++	if( book.movable == 0 )
+ 		SendSysMessage(who, &quot;You cannot do that while the book is locked down.&quot;);
+ 		MoveItemToContainer(item, who.backpack);
+ 		return 0;
+-	elseif (!can_access(who, book) || !can_access(who, item))
++	elseif( !can_access(who, book) || !can_access(who, item) )
+ 		MoveItemToContainer(item, who.backpack);
+ 		SendSysMessage(who, &quot;You can't add that when the book is in use.&quot;);
+-		return;
++		return 0;
+ 	else
+-		if(item.objtype == 0x1f14)
+-			AddRune(who, book, item);
+-		elseif(item.objtype == 0x1f4c);
+-			rechargebook(who, book, item);
++		if( item.objtype == 0x1f14 )
++			return addRune(who, book, item);
++		elseif( item.objtype == 0x1f4c );
++			return recharge_book(who, book, item);
+ 		else
+ 			SendSysMessage(who, &quot;You can't put that in a runebook.&quot;);
+ 			MoveItemToContainer(item, who.backpack);
++			return 0;
+ 		endif
+ 	endif
+ 
++	return 1;
+ endprogram
+ 
+ 
+-function rechargebook(who, book, scrolls)
+-
+-	var charges    := CInt(GetObjProperty(book, &quot;charges&quot;));
+-	var maxcharges := CInt(GetObjProperty(book, &quot;maxcharges&quot;));
+-	var maxamount  := CInt(maxcharges - charges);
+-	var amount     := CInt(scrolls.amount);
+-	if(maxamount &lt;= 0)
+-		SendSysMessage(who, &quot;This runebook is full.&quot;);
++function recharge_book(who, book, scrolls)
++	var charge_prop := GetObjProperty(book, &quot;%Charges%&quot;);
++	var charges := charge_prop[&quot;charges&quot;];
++	if( !charges )
++		charges := 0;
++	endif
++	var max_charges := charge_prop[&quot;max_charges&quot;];
++	if( !max_charges )
++		max_charges := 5;
++	endif
++	var max_amount  := CInt(max_charges - charges);
++	var amount      := CInt(scrolls.amount);
++	if( max_amount &lt;= 0 )
++		SendSysMessage(who, &quot;This runebook is fully charged.&quot;);
+ 		MoveItemToContainer(scrolls, who.backpack);
+-		return;
+-	elseif(amount &gt;= maxamount)
+-		var to_substract := maxamount;
+-		if(SubtractAmount(scrolls, to_substract))
+-			charges := maxcharges;
++		return 0;
++	elseif( amount &gt;= max_amount )
++		var to_substract := max_amount;
++		if( SubtractAmount(scrolls, to_substract) )
++			charges := max_charges;
+ 		endif
+-	elseif(DestroyItem(scrolls))
++	elseif( DestroyItem(scrolls) )
+ 		charges := charges + amount;
+ 	endif
+ 	if(scrolls &amp;&amp; scrolls.amount)
+ 		MoveItemToContainer(scrolls, who.backpack);
+ 	endif
+-	PlaySoundEffect(who, 0x1f1);
+-	PlayObjectCenteredEffect(who, 0x375a, 7, 0x10);
+-	SetObjProperty(book, &quot;charges&quot;, charges);
++	PlaySoundEffect(who, 0x1F1);
++	PlayObjectCenteredEffect(who, 0x375A, 7, 0x10);
++	SetCharges(book, who, charges);
+ 	SendSysMessage(who, &quot;There's now &quot; + charges + &quot; charges in this runebook.&quot;);
+-	UpdateName(book, charges);
++	SetBookName(book, who, 1);
+ 
++	return 1;
+ endfunction
+ 
+ 
+-function AddRune(who, book, rune)
+-
+-	var runedefs := GetObjProperty(book, &quot;runedefs&quot;);
+-	if(len(runedefs) &gt;= 16)
++function addRune(who, book, rune)
++	var rune_list := GetRuneList(book);
++	if( rune_list.size() &gt; 15 )
+ 		SendSysMessage(who,&quot;This book cannot hold any more runes.&quot;);
+ 		MoveItemToContainer(rune, who.backpack);
+-		return;
++		return 0;
+ 	endif
+-	if(!ReserveItem(rune))
++	if( !ReserveItem(rune) )
+ 		SendSysMessage(who,&quot;cancelled&quot;);
+ 		MoveItemToContainer(rune, who.backpack);
+ 		return;
+ 	endif
+-	if(!GetObjProperty(rune, &quot;x&quot;))
++	if( !GetObjProperty(rune, &quot;x&quot;) )
+ 		SendSysMessage(who,&quot;You can only add marked runes.&quot;);
+ 		MoveItemToContainer(rune, who.backpack);
+ 		return;
+ 	endif
+ 	set_critical(1);
+-	var x := GetObjProperty(rune, &quot;x&quot;);
+-	var y := GetObjProperty(rune, &quot;y&quot;);
+-	var z := GetObjProperty(rune, &quot;z&quot;);
+-	var rname := rune.desc - &quot;A recall rune for&quot;;
+-	var new_rune_struct := { rname, x, y, z };
+-	if(!runedefs)
+-		var new_runedefs := {new_rune_struct};
+-		SetObjProperty(book, &quot;runedefs&quot;, new_runedefs);
+-	elseif(runedefs.size() == 32)
+-		SendSysMessage(who, &quot;That rune book is full.&quot;);
+-		MoveItemToContainer(rune, who.backpack);
+-		return;
++
++	var temp := dictionary;
++	temp[&quot;Name&quot;]  := rune.desc - &quot;A recall rune for&quot;;
++	temp[&quot;Realm&quot;] := GetObjProperty(rune, &quot;realm&quot;);
++	temp[&quot;X&quot;] := GetObjProperty(rune, &quot;x&quot;);
++	temp[&quot;Y&quot;] := GetObjProperty(rune, &quot;y&quot;);
++	temp[&quot;Z&quot;] := GetObjProperty(rune, &quot;z&quot;);
++	if( !rune.color )
++		temp[&quot;Color&quot;] := 10;
+ 	else
+-		runedefs.append(new_rune_struct);
+-		SetObjProperty(book, &quot;runedefs&quot;, runedefs);
++		temp[&quot;Color&quot;] := rune.color;
+ 	endif
++	rune_list.append(temp);
++
++	SetObjProperty(book, &quot;%RuneList%&quot;, rune_list);
++
+ 	SendSysMessage(who, &quot;You add the rune to the runebook.&quot;);
+ 	DestroyItem(rune);
+ 	set_critical(0);
+ 
+-endfunction
+-
+-
+-function UpdateName(runebook, charges)
+-
+-	var name := GetObjProperty(runebook, &quot;name&quot;);
+-	if(!name)
+-		name := &quot;Runebook&quot;;
+-	endif
+-	runebook.name := name + &quot; [charges: &quot; + charges + &quot;]&quot;;
+-
++	return 1;
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/runebook/runebook.src
+===================================================================
+--- trunk/096/pkg/items/runebook/runebook.src	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/items/runebook/runebook.src	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -2,395 +2,100 @@
+ use os;
+ use math;
+ 
+-include &quot;customSpells&quot;;
+-include &quot;include/math&quot;;
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
++//include &quot;include/math&quot;;
+ include &quot;include/client&quot;;
+-include &quot;:coords:coords&quot;;
+-include &quot;:itemutils:canAccess&quot;;
++include &quot;:itemUtils:canAccess&quot;;
++include &quot;:runebook:runebookFunctions&quot;;
++include &quot;:runebook:customSpells&quot;;
+ 
+-const OBJTYPE_RUNE := 0x1f14;
+-const X1 := 28;
+-const X2 := 210;
+-const Y1 := 40;
+-const Y2 := 115;
+-const TILE_OFFSET_X := 42;
+-const TEXT_OFFSET_X := 25;
+-const TEXT1_OFFSET_Y := 40;
+-const TEXT2_OFFSET_Y := 20;
+-const BUTTON_OFFSET_X := 100;
+-const GATE_OFFSET_Y := 43;
+-var critical_runes := { 3,5,7,9,11,13,15};
+-var runecount := 0;
+-var pagecount := 1;
+-var layout := {
+-&quot;page 0&quot;,
+-&quot;gumppic 0   0 2220               &quot;,
++program use_Runebook(who, book)
+ 
+-&quot;page 1&quot;,
+-&quot;button   55  10 2472 2473 1 0 900&quot;,
+-&quot;text     85  12    0    0        &quot;,
+-&quot;text    260  12    0    6        &quot;,
+-&quot;text     85  38    0    1        &quot;,
+-&quot;text    150  38    0    3        &quot;,
+-&quot;text    230  38    0    2        &quot;,
+-&quot;text    333  38    0    4        &quot;,
+-&quot;gumppic  50  50   57             &quot;,
+-&quot;gumppic  70  50   58             &quot;,
+-&quot;gumppic  85  50   58             &quot;,
+-&quot;gumppic 100  50   58             &quot;,
+-&quot;gumppic 115  50   58             &quot;,
+-&quot;gumppic 130  50   58             &quot;,
+-&quot;gumppic 145  50   58             &quot;,
+-&quot;gumppic 160  50   59             &quot;,
+-&quot;gumppic 218  50   57             &quot;,
+-&quot;gumppic 233  50   58             &quot;,
+-&quot;gumppic 248  50   58             &quot;,
+-&quot;gumppic 263  50   58             &quot;,
+-&quot;gumppic 278  50   58             &quot;,
+-&quot;gumppic 293  50   58             &quot;,
+-&quot;gumppic 308  50   58             &quot;,
+-&quot;gumppic 323  50   59             &quot;
+-};
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
+ 
+-var data := {
+-&quot;Rename Book&quot;,
+-&quot;Charges:&quot;,
+-&quot;Max Charges:&quot;,
+-&quot;&quot;,
+-&quot;&quot;,
+-&quot;Set Default&quot;,
+-&quot;&quot;
+-};
++	if( !can_access(who, book, &quot;unmovable&quot;) )
++		return 0;
++	endif
++	if( !ReserveItem(book) )
++		return 0;
++	endif
+ 
+-program runebook(who, book)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  if(!can_access(who, book))
+-    return;
+-  endif
+-  if(!ReserveItem(book))
+-    return;
+-  endif
+-  var charges := GetObjProperty(book, &quot;charges&quot;);
+-  if(!charges)
+-    charges := 0;
+-    SetObjProperty(book,&quot;charges&quot;, charges);
+-  endif
+-  var maxcharges := GetObjProperty(book, &quot;maxcharges&quot;);
+-  if(!maxcharges)
+-    maxcharges := 5;
+-    SetObjProperty(book,&quot;maxcharges&quot;, maxcharges);
+-  endif
+-  data[4] := charges;
+-  data[5] := maxcharges;
+-  var selected_rune_struct;
+-  var ret;
+-  FillInArrays(book);
+-  var result := SendDialogGump( who, layout, data );
+-  if( result[0] == 0 )
+-    return;
+-  elseif(result[0] == 900)
+-    if(book.movable == 0)
+-      SendSysMessage(who, &quot;You cannot do that while the book is locked down.&quot;);
+-      return;
+-    else
+-      renamebook(who, book);
+-      return;
+-    endif
+-  endif
+-  if(result[0] &gt;= 600)
+-    if(charges &lt; 1)
+-      SendSysMessage(who,&quot;Your book is out of charges.&quot;);
+-      return;
+-    endif
+-    var d := (result[0] - 600);
+-    var defs := GetObjProperty( book, &quot;runedefs&quot; );
+-    var runeinfo := defs[d];
+-    ret := custom_recall(who, runeinfo, book);
+-    charges := GetObjProperty(book,&quot;charges&quot;) - 1;
+-    SetObjProperty(book,&quot;charges&quot;, charges);
+-    bookname(book);
+-    if( ret == 0 )
+-      SendSysMessage( who, &quot;Recall failed.&quot; );
+-    endif
+-    return;
+-  elseif(result[0] &gt;= 500)
+-    if(book.movable == 0)
+-      SendSysMessage(who, &quot;You cannot do that while the book is locked down.&quot;);
+-      return;
+-    else
+-      var d := (result[0] - 500);
+-      var defs := GetObjProperty( book, &quot;runedefs&quot; );
+-      var runeinfo := defs[d];
+-      SetObjProperty(book,&quot;x&quot;, runeinfo[2]);
+-      SetObjProperty(book,&quot;y&quot;, runeinfo[3]);
+-      SetObjProperty(book,&quot;z&quot;, runeinfo[4]);
+-      return;
+-    endif
+-  elseif (result[0] &gt;= 81)
+-    if(book.movable == 0)
+-      SendSysMessage(who, &quot;You cannot do that while the book is locked down.&quot;);
+-      return;
+-    else
+-      var d := (result[0] - 80);
+-      var defs := GetObjProperty( book, &quot;runedefs&quot; );
+-      var runeinfo := defs[d];
+-      if(!runeinfo)
+-        SendSysMessage(who, &quot;That rune no longer exists.&quot;);
+-        return;
+-      endif
+-      var rune := CreateItemInBackpack(who, 0x1f14);
+-      SetName(rune, runeinfo[1]);
+-      SetObjProperty(rune,&quot;x&quot;, runeinfo[2]);
+-      SetObjProperty(rune,&quot;y&quot;, runeinfo[3]);
+-      SetObjProperty(rune,&quot;z&quot;, runeinfo[4]);
+-      defs.erase(d);
+-      SetObjProperty(book,&quot;runedefs&quot;, defs);
+-      return;
+-    endif
+-  endif
+-  var funct := NormalizeReturnValue( result[0] );
+-  var newval := result[0];
+-  if(newval != 1 )
+-    selected_rune_struct := FindThatRune( book, newval);
+-  endif
+-  case (funct)
+-    0: return;
+-    2: if(!ConsumeReagents(who, 32 ))
+-         SendSysMessage(who,&quot;You do not have enough reagents.&quot;);
+-	     PerformAction(who,ANIM_CAST_DIR);
+-         PlaySoundEffect(who,0x005d);
+-         PlayObjectCenteredEffect(who, 0x3735,0x0a, 0x1e);
+-         return;
+-       endif
+-       ret := custom_recall(who, selected_rune_struct, book);
+-       if( ret == 0 )
+-         SendSysMessage(who, &quot;Recall failed.&quot;);
+-       endif
+-    3: if(!ConsumeReagents(who, 52 ))
+-         SendSysMessage(who,&quot;You do not have enough reagents.&quot;);
+-	     PerformAction(who,ANIM_CAST_DIR);
+-         PlaySoundEffect(who,0x005d);
+-         PlayObjectCenteredEffect(who, 0x3735,0x0a, 0x1e);
+-         return;
+-       endif
+-       ret := custom_gate(who, selected_rune_struct, book);
+-       if( ret == 0 )
+-         SendSysMessage(who, &quot;Gate failed.&quot;);
+-       endif
+-    default:
+-  endcase
+-endprogram
++	var charge_prop := GetObjProperty(book, &quot;%Charges%&quot;);
++	if( TypeOf(charge_prop) != &quot;Dictionary&quot; )
++		charge_prop := dictionary { &quot;charges&quot; -&gt; 0, &quot;max_charges&quot; -&gt; 5 };
++		SetObjProperty(book, &quot;%Charges%&quot;, charge_prop);
++	endif
++	var charges := charge_prop[&quot;charges&quot;];
++	if( !charges )
++		charges := 0;
++	endif
+ 
+-function bookname(book)
+-  var name := GetObjProperty(book,&quot;name&quot;);
+-  if(!name)
+-    name := &quot;a runebook&quot;;
+-  endif
+-  var charges := GetObjProperty(book,&quot;charges&quot;);
+-  var newname := (name + &quot; [charges: &quot; + charges + &quot;]&quot;);
+-  book.name := newname;
+-endfunction
++	var max_charges := charge_prop[&quot;max_charges&quot;];
++	if( !max_charges )
++		max_charges := 5;
++	endif
+ 
+-function renamebook(who, book)
+-  var charges := GetObjProperty(book, &quot;charges&quot;);
+-  if(!charges)
+-    charges := 0;
+-  endif
+-  var name := SendTextEntryGump( who, &quot;Enter the new name of the runebook. &quot;, TE_CANCEL_ENABLE, TE_STYLE_NORMAL);
+-  if((!name) || (name == &quot;&quot;))
+-    name := &quot;a runebook&quot;;
+-  endif
+-  SetObjProperty(book, &quot;name&quot;, name);
+-  bookname(book);
+-endfunction
++	var book_gump := CreateRunebookGump(book);
+ 
+-function FillInArrays(book)
+-  var r := 1;
+-  var desc;
+-  var i := 5;
+-  var datalen;
+-  var layoutlen;
+-  var line1;
+-  var line2;
+-  var page_rune_num;
+-  var buttonret := 2;
+-  var val := 10;
+-  var runedefs;
+-  if( runedefs != &quot;error&quot; )
+-    layout.append( &quot;page &quot; + CStr(pagecount));
+-    pagecount := pagecount + 1;
+-    layout.append( &quot;button 320   8 2236 2236 0 &quot; + CStr(pagecount));
+-    runedefs := GetObjProperty( book, &quot;runedefs&quot; );
+-    foreach runed in runedefs
+-      var txt := runed[1];
+-      if( len(txt) &lt;= 12 )
+-        desc := txt;
+-      else
+-        desc := txt[1,12];
+-      endif
+-      if (!desc)
+-        desc := &quot;&quot;;
+-      endif
+-      datalen := data.size();
+-      data.append(desc);
+-      case(r)
+-         1: layout.append(&quot;text    76  60    0 &quot; + datalen);
+-            layout.append(&quot;button  56  62 2118 2117 1 0 &quot; + (r+600));
+-         2: layout.append(&quot;text    76  75    0 &quot; + datalen);
+-            layout.append(&quot;button  56  77 2118 2117 1 0 &quot; + (r+600));
+-         3: layout.append(&quot;text    76  90    0 &quot; + datalen);
+-            layout.append(&quot;button  56  92 2118 2117 1 0 &quot; + (r+600));
+-         4: layout.append(&quot;text    76 105    0 &quot; + datalen);
+-            layout.append(&quot;button  56 107 2118 2117 1 0 &quot; + (r+600));
+-         5: layout.append(&quot;text    76 120    0 &quot; + datalen);
+-            layout.append(&quot;button  56 122 2118 2117 1 0 &quot; + (r+600));
+-         6: layout.append(&quot;text    76 135    0 &quot; + datalen);
+-            layout.append(&quot;button  56 137 2118 2117 1 0 &quot; + (r+600));
+-         7: layout.append(&quot;text    76 150    0 &quot; + datalen);
+-            layout.append(&quot;button  56 152 2118 2117 1 0 &quot; + (r+600));
+-         8: layout.append(&quot;text    76 165    0 &quot; + datalen);
+-            layout.append(&quot;button  56 167 2118 2117 1 0 &quot; + (r+600));
+-         9: layout.append(&quot;text   226  60    0 &quot; + datalen);
+-            layout.append(&quot;button 206  62 2118 2117 1 0 &quot; + (r+600));
+-        10: layout.append(&quot;text   226  75    0 &quot; + datalen);
+-            layout.append(&quot;button 206  77 2118 2117 1 0 &quot; + (r+600));
+-        11: layout.append(&quot;text   226  90    0 &quot; + datalen);
+-            layout.append(&quot;button 206  92 2118 2117 1 0 &quot; + (r+600));
+-        12: layout.append(&quot;text   226 105    0 &quot; + datalen);
+-            layout.append(&quot;button 206 107 2118 2117 1 0 &quot; + (r+600));
+-        13: layout.append(&quot;text   226 120    0 &quot; + datalen);
+-            layout.append(&quot;button 206 122 2118 2117 1 0 &quot; + (r+600));
+-        14: layout.append(&quot;text   226 135    0 &quot; + datalen);
+-            layout.append(&quot;button 206 137 2118 2117 1 0 &quot; + (r+600));
+-        15: layout.append(&quot;text   226 150    0 &quot; + datalen);
+-            layout.append(&quot;button 206 152 2118 2117 1 0 &quot; + (r+600));
+-        16: layout.append(&quot;text   226 165    0 &quot; + datalen);
+-            layout.append(&quot;button 206 167 2118 2117 1 0 &quot; + (r+600));
+-      endcase
+-      r := r + 1;
+-    endforeach
+-    layout.append( &quot;page &quot; + CStr(pagecount) );
+-    runedefs := GetObjProperty( book, &quot;runedefs&quot; );
+-    layout.append( &quot;button 50 8 2235 2235 0 &quot; + CStr(pagecount - 1) );
+-    r := 1;
+-    var counters := 0;
+-    foreach runedef in runedefs
+-      var txt := runedef[1];
+-      runecount := runecount + 1;
+-      datalen := data.size();
+-      layoutlen := layout.size();
+-      var runename := txt;
+-      if (!runename)
+-        runename := &quot;&quot;;
+-      endif
+-      var split := SplitWords( runename );
+-      var j;
+-      for( j := 1; j &lt;= 10; j := j + 1 )
+-        if( !split[j] )
+-          split[j] := &quot;&quot;;
+-        endif
+-      endfor
+-      if( len(runename) &lt;= 16 )
+-        line1 := runename;
+-        line2 := &quot;&quot;;
+-      elseif( (len(split[1]) + len(split[2]) + len(split[3]) + 2) &lt;= 16 )
+-        line1 := split[1] + &quot; &quot; + split[2] + &quot; &quot; + split[3];
+-        line2 := split[4] + &quot; &quot; + split[5];
+-      elseif( len(split[1]) + len(split[2]) + 1 &lt;= 12 )
+-        line1 := split[1] + &quot; &quot; + split[2];
+-        line2 := split[3] + &quot; &quot; + split[4] + &quot; &quot; + split[5];
+-      elseif( len(split[1]) &lt;= 12 )
+-        line1 := split[1];
+-        line2 := split[2] + &quot; &quot; + split[3] + &quot; &quot; + split[4] + &quot; &quot; + split[5];
+-      endif
+-      data.append(line1);
+-      data.append(line2);
+-      data.append(ToSextant(runedef[2], runedef[3]));
+-      data.append(&quot;Drop Rune&quot;);
+-      if(runecount in critical_runes)
+-        pagecount := pagecount + 1;
+-        layout.append(&quot;page &quot; + (pagecount));
+-        layout.append(&quot;button 50 8 2235 2235 0 &quot; + CStr(pagecount - 1));
+-      endif
+-      page_rune_num := CurrentPageRuneNum( pagecount + 1, i );
+-      case(page_rune_num)
+-        1: layout.append(&quot;gumppic  50  40   57             &quot;);
+-           layout.append(&quot;gumppic  70  40   58             &quot;);
+-           layout.append(&quot;gumppic  85  40   58             &quot;);
+-           layout.append(&quot;gumppic 100  40   58             &quot;);
+-           layout.append(&quot;gumppic 115  40   58             &quot;);
+-           layout.append(&quot;gumppic 130  40   58             &quot;);
+-           layout.append(&quot;gumppic 145  40   58             &quot;);
+-           layout.append(&quot;gumppic 160  40   59             &quot;);
+-           layout.append(&quot;gumppic 218  40   57             &quot;);
+-           layout.append(&quot;gumppic 233  40   58             &quot;);
+-           layout.append(&quot;gumppic 248  40   58             &quot;);
+-           layout.append(&quot;gumppic 263  40   58             &quot;);
+-           layout.append(&quot;gumppic 278  40   58             &quot;);
+-           layout.append(&quot;gumppic 293  40   58             &quot;);
+-           layout.append(&quot;gumppic 308  40   58             &quot;);
+-           layout.append(&quot;gumppic 323  40   59             &quot;);
+-           layout.append(&quot;text     85  28    0    1        &quot;);
+-           layout.append(&quot;text    228  28    0    2        &quot;);
+-           layout.append(&quot;text    150  30    0    3        &quot;);
+-           layout.append(&quot;text    333  28    0    4        &quot;);
+-           layout.append(&quot;button   85  15 2361 2362 1 0    &quot; + (r+ 500)       );
+-           layout.append(&quot;button   50  54 2118 2118 1 0    &quot; + (r+ 600)       );
+-           layout.append(&quot;button   62 129 2438 2437 1 0    &quot; + (val + 71)     );
+-           layout.append(&quot;button   65 150 2271 2271 1 0    &quot; + buttonret      );
+-           layout.append(&quot;button  125 150 2291 2291 1 0    &quot; + (buttonret + 1)  );
+-           layout.append(&quot;text    100  12    0    5        &quot;                  );
+-           layout.append(&quot;text     66  52    0             &quot; + datalen        );
+-           layout.append(&quot;text     66  72    0             &quot; + CStr(datalen+1));
+-           layout.append(&quot;text     60 100    0             &quot; + CStr(datalen+2));
+-           layout.append(&quot;text     82 125    0             &quot; + CStr(datalen+3));
+-           buttonret := buttonret + 1;
+-           val := val + 1;
+-           r := r + 1;
+-        2: layout.append(&quot;button  220  15 2361 2362 1 0    &quot; + (r+ 500)       );
+-           layout.append(&quot;button  209  54 2118 2118 1 0    &quot; + (r+ 600)       );
+-           layout.append(&quot;button  227 129 2438 2437 1 0    &quot; + (val + 71)     );
+-           layout.append(&quot;button  230 150 2271 2271 1 0    &quot; + buttonret      );
+-           layout.append(&quot;button  290 150 2291 2291 1 0    &quot; + (buttonret + 1)  );
+-           layout.append(&quot;text    226  52    0             &quot; + datalen        );
+-           layout.append(&quot;text    226  72    0             &quot; + CStr(datalen+1));
+-           layout.append(&quot;text    212 100    0             &quot; + CStr(datalen+2));
+-           layout.append(&quot;text    247 125    0             &quot; + CStr(datalen+3));
+-           layout.append(&quot;text    235  12    0    5        &quot;);
+-           if((counters + 1) &lt; len(runedefs))
+-             layout.append(&quot;button  320 8 2236 2236 0 &quot;  + CStr(pagecount + 1));
+-           endif
+-           layout.append(&quot;text    333  28    0    4        &quot;);
+-           buttonret := buttonret + 1;
+-           val := val + 1;
+-           r := r + 1;
+-      endcase
+-      buttonret := buttonret + 1;
+-      counters := counters + 1;
+-      i := i + 1;
+-    endforeach
+-  endif
+-endfunction
++	var result := GFSendGump(who, book_gump);
+ 
+-function CurrentPageRuneNum( pagecount, rune_number )
+-  return( rune_number - ( (pagecount-1) * 2));
+-endfunction
++	if( result[0] == 0 )
++		return 0;
++	elseif( result[0] == 50 )
++		if(book.movable == 0)
++			SendSysMessage(who, &quot;You cannot do that while the book is locked down.&quot;);
++			return 0;
++		else
++			SetBookName(book, who, 0);
++			return 1;
++		endif
++	endif
+ 
+-function NormalizeReturnValue( button_num )
+-  if( button_num == 1 )
+-    return 1;
+-  elseif( button_num == 2 )
+-    return 2;
+-  endif
+-  var mod_ret := Mod( button_num, 2);
+-  return (mod_ret + 2);
+-endfunction
+-
+-function FindThatRune(book, button_num )
+-  var runedefs := GetObjProperty( book, &quot;runedefs&quot; );
+-  var rune_num := CInt( button_num / 2);
+-  runedefs[rune_num].append(rune_num);
+-  return( runedefs[rune_num]);
+-endfunction
+-
++	if( result[0] &gt;= 101 &amp;&amp; result[0] &lt;= 120)
++		if(charges &lt; 1)
++			SendSysMessage(who,&quot;Your book is out of charges.&quot;);
++			return 0;
++		endif
++		var rune_info := GetRuneDetails(book, (result[0]-100));
++		if( !rune_info )
++			return 0;
++		endif
++		runebookRecall(who, rune_info, book, charges, 1);
++		return 1;
++	elseif( result[0] &gt;= 201 &amp;&amp; result[0] &lt;= 220)
++		var rune_info := GetRuneDetails(book, (result[0]-200));
++		runebookRecall(who, rune_info, book, charges);
++		return 1;
++	elseif( result[0] &gt;= 301 &amp;&amp; result[0] &lt;= 320 )
++		var rune_info := GetRuneDetails(book, (result[0]-300));
++		runebookGate(who, rune_info, book);
++		return 1;
++	elseif( result[0] &gt;= 401 &amp;&amp; result[0] &lt;= 420 )
++		if( book.movable == 0 )
++			SendSysMessage(who, &quot;You cannot do that while the book is locked down.&quot;);
++			return 0;
++		else
++			var rune_info := GetRuneDetails(book, (result[0]-400));
++			var rune := CreateItemInBackpack(who, 0x1F14);
++			SetName(rune, rune_info.Name);
++			SetObjProperty(rune, &quot;x&quot;, rune_info.X);
++			SetObjProperty(rune, &quot;y&quot;, rune_info.Y);
++			SetObjProperty(rune, &quot;z&quot;, rune_info.Z);
++			SetObjProperty(rune, &quot;realm&quot;, rune_info.Realm);
++			rune.color := rune_info.Color;
++			DeleteRune(book, (result[0]-400));
++			return 1;
++		endif
++	elseif( result[0] &gt;= 501 &amp;&amp; result[0] &lt;= 520 )
++		if( book.movable == 0 )
++			SendSysMessage(who, &quot;You cannot do that while the book is locked down.&quot;);
++			return 0;
++		else
++			SetDefault(book, who, (result[0]-500));
++			return 1;
++		endif
++	endif
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/runebook/runebookFunctions.inc
+===================================================================
+--- trunk/096/pkg/items/runebook/runebookFunctions.inc	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/items/runebook/runebookFunctions.inc	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -0,0 +1,344 @@
++function CreateRunebookGump(book)
++	var rune_list := GetRuneList(book);
++	if( TypeOf(rune_list) != &quot;Array&quot; )
++		rune_list := array{};
++		SetObjProperty(book, &quot;%RuneList%&quot;, rune_list);
++	endif
++
++	var charge_prop := GetObjProperty(book, &quot;%Charges%&quot;);
++	var charges := charge_prop[&quot;charges&quot;];
++	if( !charges )
++		charges := 0;
++	endif
++	var max_charges := charge_prop[&quot;max_charges&quot;];
++	if( !max_charges )
++		max_charges := 5;
++	endif
++
++	var book_gump := GFCreateGump();
++// Begin Page 0 Setup
++	GFGumpPic(book_gump, 100, 10, 2200);
++	GFGumpPic(book_gump, 125, 50, 57);
++	GFGumpPic(book_gump, 145, 50, 58);
++	GFGumpPic(book_gump, 160, 50, 58);
++	GFGumpPic(book_gump, 175, 50, 58);
++	GFGumpPic(book_gump, 190, 50, 58);
++	GFGumpPic(book_gump, 205, 50, 58);
++	GFGumpPic(book_gump, 220, 50, 58);
++	GFGumpPic(book_gump, 230, 50, 59);
++	GFGumpPic(book_gump, 290, 50, 57);
++	GFGumpPic(book_gump, 310, 50, 58);
++	GFGumpPic(book_gump, 325, 50, 58);
++	GFGumpPic(book_gump, 340, 50, 58);
++	GFGumpPic(book_gump, 355, 50, 58);
++	GFGumpPic(book_gump, 370, 50, 58);
++	GFGumpPic(book_gump, 385, 50, 58);
++	GFGumpPic(book_gump, 395, 50, 59);
++
++	GFAddButton(book_gump, 130, 187, 2225, 2225, GF_PAGE_BTN, 2);
++	GFAddButton(book_gump, 165, 187, 2226, 2226, GF_PAGE_BTN, 3);
++	GFAddButton(book_gump, 200, 187, 2227, 2227, GF_PAGE_BTN, 4);
++	GFAddButton(book_gump, 235, 187, 2228, 2228, GF_PAGE_BTN, 5);
++	GFAddButton(book_gump, 300, 187, 2229, 2229, GF_PAGE_BTN, 6);
++	GFAddButton(book_gump, 335, 187, 2230, 2230, GF_PAGE_BTN, 7);
++	GFAddButton(book_gump, 370, 187, 2231, 2231, GF_PAGE_BTN, 8);
++	GFAddButton(book_gump, 405, 187, 2232, 2232, GF_PAGE_BTN, 9);
++	GFHTMLArea(book_gump,  140, 40, 80, 18, &quot;Charges:&quot;);
++	GFHTMLArea(book_gump,  300, 40, 100, 18, &quot;Max Charges:&quot;);
++	GFHTMLArea(book_gump,  220, 40, 80, 18, charges);
++	GFHTMLArea(book_gump,  400, 40, 100, 18, max_charges);
++// End Page 0 Setup
++
++// Begin Page 1 Setup
++	GFPage(book_gump, 1);
++	GFAddButton(book_gump, 125, 15, 2472, 2473, GF_CLOSE_BTN, 50);
++	GFHTMLArea(book_gump, 158, 22, 100, 18, &quot;Rename Book&quot;);
++	GFAddButton(book_gump, 393, 14, 2206, 2206, GF_PAGE_BTN, 2);
++
++	GFAddButton(book_gump, 130, 65,  2103, 2104, GF_CLOSE_BTN, 101);
++	GFAddButton(book_gump, 130, 80,  2103, 2104, GF_CLOSE_BTN, 102);
++	GFAddButton(book_gump, 130, 95,  2103, 2104, GF_CLOSE_BTN, 103);
++	GFAddButton(book_gump, 130, 110, 2103, 2104, GF_CLOSE_BTN, 104);
++	GFAddButton(book_gump, 130, 125, 2103, 2104, GF_CLOSE_BTN, 105);
++	GFAddButton(book_gump, 130, 140, 2103, 2104, GF_CLOSE_BTN, 106);
++	GFAddButton(book_gump, 130, 155, 2103, 2104, GF_CLOSE_BTN, 107);
++	GFAddButton(book_gump, 130, 170, 2103, 2104, GF_CLOSE_BTN, 108);
++
++	GFAddButton(book_gump, 290, 65,  2103, 2104, GF_CLOSE_BTN, 119);
++	GFAddButton(book_gump, 290, 80,  2103, 2104, GF_CLOSE_BTN, 120);
++	GFAddButton(book_gump, 290, 95,  2103, 2104, GF_CLOSE_BTN, 121);
++	GFAddButton(book_gump, 290, 110, 2103, 2104, GF_CLOSE_BTN, 122);
++	GFAddButton(book_gump, 290, 125, 2103, 2104, GF_CLOSE_BTN, 123);
++	GFAddButton(book_gump, 290, 140, 2103, 2104, GF_CLOSE_BTN, 124);
++	GFAddButton(book_gump, 290, 155, 2103, 2104, GF_CLOSE_BTN, 125);
++	GFAddButton(book_gump, 290, 170, 2103, 2104, GF_CLOSE_BTN, 126);
++// End Page 1 Setup
++
++// Below you will notice in the loop, there are entries put BACK into page
++// 1. Do not worry, we run an Optimize function on the gump to put all
++// of those BACK into the initial Page 1 section we just made to keep our
++// gump's arrays looking nice and clean.
++
++	var pOX := 145;
++	var pOY := 60;
++	var charge_button    := 101;
++	var recall_button    := 201;
++	var gate_button      := 301;
++	var drop_rune_button := 401;
++	var set_default_rune := 501;
++	var rune_pos         := 1;
++
++	for i := 2 to 9
++		GFPage(book_gump, i);
++		GFAddButton(book_gump, 125, 14, 2205, 2205, GF_PAGE_BTN, (i-1));
++		if(i != 9)
++			GFAddButton(book_gump, 393, 14, 2206, 2206, GF_PAGE_BTN, (i+1));
++		endif
++
++		var rune_entry := rune_list[rune_pos];
++		if( TypeOf(rune_entry) == &quot;Dictionary&quot; )
++			if( rune_entry.Name )
++				// Fixes any error with the text color.
++				if( TypeOf(rune_entry.Color) != &quot;Integer&quot; || rune_entry.Color &lt; 0 )
++					rune_entry.Color := 10;
++				endif
++				// This puts the rune in page 1's list.
++				GFPage(book_gump, 1);
++				GFTextCrop(book_gump, pOX,  pOY, 115, 17, rune_entry.Color, rune_entry.Name);
++				GFPage(book_gump, i);
++
++				GFAddButton(book_gump, 130, 65, 2103, 2104, GF_CLOSE_BTN, charge_button);
++				GFTextCrop(book_gump, 145, 60, 115, 17, rune_entry.Color, rune_entry.Name);
++				GFTextLine(book_gump, 135, 80, 0, ConvertLatLong(rune_entry.X, rune_entry.Y, 1));
++				GFTextLine(book_gump, 135, 95, 0, ConvertLatLong(rune_entry.X, rune_entry.Y, 2));
++
++				GFAddButton(book_gump, 135, 115, 2437, 2438, GF_CLOSE_BTN, drop_rune_button);
++				GFHTMLArea(book_gump, 150, 115, 100, 18, &quot;Drop Rune&quot;);
++				GFAddButton(book_gump, 160, 20, 2361, 2361, GF_CLOSE_BTN, set_default_rune);
++				GFHTMLArea(book_gump, 175, 15, 100, 18, &quot;Set Default&quot;);
++
++				GFAddButton(book_gump, 135, 140, 2271, 2271, GF_CLOSE_BTN, recall_button);
++				GFAddButton(book_gump, 205, 140, 2291, 2291, GF_CLOSE_BTN, gate_button);
++
++				charge_button := charge_button + 1;
++				drop_rune_button := drop_rune_button + 1;
++				set_default_rune := set_default_rune + 1;
++				recall_button := recall_button + 1;
++				gate_button := gate_button + 1;
++			endif
++		else
++			GenerateEmptySide(book_gump, 1, pOX, pOY, i);
++		endif
++                rune_pos := rune_pos + 1;
++		pOY := pOY + 15;
++		if( pOY &gt; 165 )
++			pOY := 60;
++			pOX := 305;
++		endif
++
++		rune_entry := rune_list[rune_pos];
++		if( TypeOf(rune_entry) == &quot;Dictionary&quot; )
++			if( rune_entry.Name )
++				// Fixes any error with the text color.
++				if( TypeOf(rune_entry.Color) != &quot;Integer&quot; || rune_entry.Color &lt; 0 )
++					rune_entry.Color := 10;
++				endif
++				// This puts the rune in page 1's list.
++				GFPage(book_gump, 1);
++				GFTextCrop(book_gump, pOX,  pOY, 115, 17, rune_entry.Color, rune_entry.Name);
++				GFPage(book_gump, i);
++
++				GFAddButton(book_gump, 290, 65, 2103, 2104, GF_CLOSE_BTN, charge_button);
++				GFTextCrop(book_gump, 305, 60, 115, 17, rune_entry.Color, rune_entry.Name);
++				GFTextLine(book_gump, 295, 80, 0, ConvertLatLong(rune_entry.X, rune_entry.Y, 1));
++				GFTextLine(book_gump, 295, 95, 0, ConvertLatLong(rune_entry.X, rune_entry.Y, 2));
++
++				GFAddButton(book_gump, 295, 115, 2437, 2438, GF_CLOSE_BTN, drop_rune_button);
++				GFHTMLArea(book_gump, 310, 115, 100, 18, &quot;Drop Rune&quot;);
++				GFAddButton(book_gump, 300, 20, 2361, 2361, GF_CLOSE_BTN, set_default_rune);
++				GFHTMLArea(book_gump, 315, 15, 100, 18, &quot;Set Default&quot;);
++
++				GFAddButton(book_gump, 295, 140, 2271, 2271, GF_CLOSE_BTN, recall_button);
++				GFAddButton(book_gump, 365, 140, 2291, 2291, GF_CLOSE_BTN, gate_button);
++
++				charge_button := charge_button + 1;
++				drop_rune_button := drop_rune_button + 1;
++				set_default_rune := set_default_rune + 1;
++				recall_button := recall_button + 1;
++				gate_button := gate_button + 1;
++			endif
++		else
++			GenerateEmptySide(book_gump, 2, pOX, pOY, i);
++		endif
++
++                rune_pos := rune_pos + 1;
++		pOY := pOY + 15;
++		if( pOY &gt; 165 )
++			pOY := 60;
++			pOX := 305;
++		endif
++
++		sleepms(2);
++	endfor
++
++//	GFOptimizeGump(book_gump);
++
++	return book_gump;
++endfunction
++
++
++function GenerateEmptySide(byref book_gump, side, pOX, pOY, page_num)
++
++	if( side == 1)
++		// This puts the rune in page 1's list.
++		GFPage(book_gump, 1);
++		GFTextCrop(book_gump, pOX,  pOY, 115, 17, 10, &quot;Empty&quot;);
++		GFPage(book_gump, page_num);
++		GFTextCrop(book_gump, 145, 60, 115, 17, 10, &quot;Empty&quot;);
++	else
++		// This puts the rune in page 1's list.
++		GFPage(book_gump, 1);
++		GFTextCrop(book_gump, pOX,  pOY, 115, 17, 10, &quot;Empty&quot;);
++		GFPage(book_gump, page_num);
++		GFTextCrop(book_gump, 305, 60, 115, 17, 10, &quot;Empty&quot;);
++	endif
++
++endfunction
++
++
++function SetBookName(book, who, auto:=0)
++	var charge_prop := GetObjProperty(book, &quot;%Charges%&quot;);
++	var charges := charge_prop[&quot;charges&quot;];
++	if( !charges )
++		charges := 0;
++	endif
++
++	var name := GetObjProperty(book, &quot;%Name%&quot;);
++	if( !auto )
++		name := SendTextEntryGump( who, &quot;Enter the new name of the runebook. &quot;, TE_CANCEL_ENABLE, TE_STYLE_NORMAL);
++		if( (!name) || (name == &quot;&quot;) )
++			name := GetObjProperty(book, &quot;%Name%&quot;);
++			if( !name )
++				name := &quot;a runebook&quot;;
++			endif
++		endif
++	endif
++
++	SetObjProperty(book, &quot;%Name%&quot;, name);
++	name := (name + &quot; [charges: &quot; + charges + &quot;]&quot;);
++	SetName(book, name);
++
++	return 1;
++endfunction
++
++
++function SetCharges(book, who, charges)
++	var charge_prop := GetObjProperty(book, &quot;%Charges%&quot;);
++	charge_prop[&quot;charges&quot;] := charges;
++	SetObjProperty(book, &quot;%Charges%&quot;, charge_prop);
++	SetBookName(book, who, 1);
++	return 1;
++endfunction
++
++
++function GetRuneList(book)
++	var rune_list := GetObjProperty(book, &quot;%RuneList%&quot;);
++	if( TypeOf(rune_list) != &quot;Array&quot; )
++		rune_list := array{};
++		SetObjProperty(book, &quot;%RuneList%&quot;, rune_list);
++	endif
++
++	return rune_list;
++endfunction
++
++
++function GetRuneDetails(book, rune_pos)
++	var rune_list := GetRuneList(book);
++	if( TypeOf(rune_list) != &quot;Array&quot; )
++		rune_list := array{};
++		SetObjProperty(book, &quot;%RuneList%&quot;, rune_list);
++	endif
++
++	return rune_list[rune_pos];
++endfunction
++
++function ConvertLatLong(x, y, pos)
++	var workit := ToSextant(x, y);
++	var j, newtemp := &quot;&quot;;
++	for(j:=1; j&lt;=len(workit); j:=j+1)
++		if(workit[j] == &quot; &quot;)
++			workit[j] := &quot;_&quot;;
++		elseif(workit[j] == &quot;,&quot;)
++			workit[j] := &quot; &quot;;
++			workit[j+1] := &quot;&quot;;
++		endif
++	endfor
++
++	newtemp := SplitWords(workit);
++	if(pos == 1)
++		newtemp := newtemp[1];
++		for(j:=1; j&lt;=len(newtemp); j:=j+1)
++			if(newtemp[j] == &quot;_&quot;)
++				newtemp[j] := &quot; &quot;;
++			endif
++		endfor
++		return newtemp;
++	else
++		newtemp := newtemp[2];
++		for(j:=1; j&lt;=len(newtemp); j:=j+1)
++			if(newtemp[j] == &quot;_&quot;)
++				newtemp[j] := &quot; &quot;;
++			endif
++		endfor
++		return newtemp;
++	endif
++endfunction
++
++
++function DeleteRune(book, rune_pos)
++	var rune_list := GetRuneList(book);
++	if( TypeOf(rune_list) != &quot;Array&quot; )
++		rune_list := array{};
++		SetObjProperty(book, &quot;%RuneList%&quot;, rune_list);
++	endif
++	if( rune_list[rune_pos] )
++		rune_list.Erase(rune_pos);
++		SetObjProperty(book, &quot;%RuneList%&quot;, rune_list);
++	endif
++	return 1;
++endfunction
++
++
++function SetDefault(book, who, rune_pos)
++	var rune_info := GetRuneDetails(book, rune_pos);
++	SetObjProperty(book, &quot;x&quot;, rune_info.X);
++	SetObjProperty(book, &quot;y&quot;, rune_info.Y);
++	SetObjProperty(book, &quot;z&quot;, rune_info.Z);
++	SetObjProperty(book, &quot;realm&quot;, rune_info.Realm);
++	SendSysMessage(who, &quot;Default rune set to: &quot; + rune_info.Name);
++	return 1;
++endfunction
++
++
++function ToSextant(x, y)
++	var latitude_direction, longitude_direction;
++	var latitude_degrees, longitude_degrees;
++	var latitude_minutes, longitude_minutes;
++	latitude_degrees := (y-1624)*0.087890625;
++	longitude_degrees := (x-1323)*0.0703125;
++	if(latitude_degrees &lt; 0)
++		latitude_direction := &quot;N&quot;;
++	else
++		latitude_direction := &quot;S&quot;;
++	endif
++	if(longitude_degrees &lt; 0)
++		longitude_direction := &quot;W&quot;;
++	else
++		longitude_direction := &quot;E&quot;;
++	endif
++	latitude_degrees := Abs(latitude_degrees);
++	longitude_degrees := Abs(longitude_degrees);
++	latitude_minutes := CInt((CInt((latitude_degrees-Floor(latitude_degrees))*100)*60)/100);
++	longitude_minutes := CInt((CInt((longitude_degrees-Floor(longitude_degrees))*100)*60)/100);
++	return(Floor(latitude_degrees) + &quot;o &quot; + latitude_minutes + &quot;'&quot; + latitude_direction + &quot;, &quot; + Floor(longitude_degrees) + &quot;o &quot; + longitude_minutes + &quot;'&quot; + longitude_direction);
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/items/runebook/runebookFunctions.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/skills/magery/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/config/settings.cfg	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/skills/magery/config/settings.cfg	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -2,7 +2,9 @@
+ {
+ 	// Maximum distance a spell can be cast
+ 	MaxRange	16
+-	
++
+ 	// Does MuadDib wear little girl undies?
+-	MuadDibUndies	1
++	MuadDibUndies	0
++	// Does Austin?
++	AustinUndies	1
+ }
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/magery/include/spellSounds.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/include/spellSounds.inc	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/skills/magery/include/spellSounds.inc	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -0,0 +1,61 @@
++CONST SFX_SPELL_CLUMSY              :=  0x1E0;
++CONST SFX_SPELL_CREATE_FOOD         :=  0x1E3;
++CONST SFX_SPELL_FEEBLEMIND          :=  0x1E5;
++CONST SFX_SPELL_HEAL                :=  0x1F3;
++CONST SFX_SPELL_MAGIC_ARROW         :=  0x1E6;
++CONST SFX_SPELL_NIGHT_SIGHT         :=  0x1E4;
++CONST SFX_SPELL_REACTIVE_ARMOR      :=  0x1F3;
++CONST SFX_SPELL_WEAKEN              :=  0x1E7;
++CONST SFX_SPELL_AGILITY             :=  0x1E8;
++CONST SFX_SPELL_CUNNING             :=  0x1EC;
++CONST SFX_SPELL_CURE                :=  0x1E1;
++CONST SFX_SPELL_HARM                :=  0x1F2;
++CONST SFX_SPELL_MAGIC_TRAP          :=  0x1F0;
++CONST SFX_SPELL_MAGIC_UNTRAP        :=  0x1F1;
++CONST SFX_SPELL_PROTECTION          :=  0x1EE;
++CONST SFX_SPELL_STRENGTH            :=  0x1EF;
++CONST SFX_SPELL_BLESS               :=  0x1EB;
++CONST SFX_SPELL_FIREBALL            :=  0x160;
++CONST SFX_SPELL_MAGIC_LOCK          :=  0x1F5;
++CONST SFX_SPELL_TELEKINESIS         :=  0x1F6;
++CONST SFX_SPELL_TELEPORT            :=  0x1FF;
++CONST SFX_SPELL_POISON              :=  0x247;
++CONST SFX_SPELL_UNLOCK              :=  0x200;
++CONST SFX_SPELL_WALL_OF_STONE       :=  0x1F7;
++CONST SFX_SPELL_ARCH_CURE           :=  0x1E9;
++CONST SFX_SPELL_ARCH_PROTECTION     :=  0x1F8;
++CONST SFX_SPELL_CURSE               :=  0x1E2;
++CONST SFX_SPELL_FIRE_FIELD          :=  0x226;
++CONST SFX_SPELL_GREATER_HEAL        :=  0x203;
++CONST SFX_SPELL_LIGHTNING           :=  0x2A;
++CONST SFX_SPELL_MANA_DRAIN          :=  0x1F9;
++CONST SFX_SPELL_RECALL              :=  0x1FD;
++CONST SFX_SPELL_BLADE_SPIRITS       :=  0x213;
++CONST SFX_SPELL_ENERGY_FIELD        :=  0x211; // used to say dispel field?
++CONST SFX_SPELL_INCOGNITO           :=  0x1ED;
++CONST SFX_SPELL_MAGIC_REFLECTION    :=  0x1E8;
++CONST SFX_SPELL_MIND_BLAST          :=  0x214;
++CONST SFX_SPELL_PARALYZE            :=  0x205;
++CONST SFX_SPELL_POISON_FIELD        :=  0x20D; // was 227 (??)
++CONST SFX_SPELL_SUMMON_CREATURE     :=  0x216;
++CONST SFX_SPELL_DISPEL              :=  0x202;
++CONST SFX_SPELL_ENERGY_BOLT         :=  0x20B;
++CONST SFX_SPELL_EXPLOSION           :=  0x208;
++CONST SFX_SPELL_INVISIBILITY        :=  0x204;
++CONST SFX_SPELL_MARK                :=  0x1FB;
++CONST SFX_SPELL_MASS_CURSE          :=  0x1FC;
++CONST SFX_SPELL_PARALYZE_FIELD      :=  0x212;
++CONST SFX_SPELL_REVEAL              :=  0x1FE;
++CONST SFX_SPELL_CHAIN_LIGHTNING     :=  0x30;
++CONST SFX_SPELL_PARA_FIELD          :=  0x20C;
++CONST SFX_SPELL_FLAME_STRIKE        :=  0x209;
++CONST SFX_SPELL_GATE_TRAVEL         :=  0x20F;
++CONST SFX_SPELL_MANA_VAMPIRE        :=  0x1FA;
++CONST SFX_SPELL_MASS_DISPEL         :=  0x20A;
++CONST SFX_SPELL_METEOR_SWARM        :=  0x161;
++CONST SFX_SPELL_POLYMORPH           :=  0x20A;
++CONST SFX_SPELL_EARTHQUAKE          :=  0x20E;
++CONST SFX_SPELL_ENERGY_VORTEX       :=  0x213;
++CONST SFX_SPELL_RESSURECTION        :=  0x215;
++CONST SFX_SPELL_SUMMON_ELEMENTAL    :=  0x218;
++CONST SFX_SPELL_SUMMON_DAEMON       :=  0x217;
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/skills/magery/include/spellSounds.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/skills/magery/include/spells.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/include/spells.inc	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/skills/magery/include/spells.inc	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -114,8 +114,8 @@
+ 		return 0;
+ 	endif
+ 
+-	var orig_x := who.x;
+-	var orig_y := who.y;
++//	var orig_x := who.x;
++//	var orig_y := who.y;
+ 
+ 	SendSysMessage(who, prompt);
+ 
+@@ -123,9 +123,9 @@
+ 	if ( Distance(who, targ) &gt; MAX_RANGE )
+ 		SendSysMessage(who, &quot;That is too far away.&quot;);
+ 		return 0;
+-	elseif ( who.x != orig_x || who.y != orig_y )
+-		SendSysMessage(who, &quot;You break your concentration.&quot;);
+-		return 0;
++//	elseif ( who.x != orig_x || who.y != orig_y )
++//		SendSysMessage(who, &quot;You break your concentration.&quot;);
++//		return 0;
+ 	else
+ 		return targ;
+ 	endif
+
+Modified: trunk/096/pkg/skills/magery/spellScripts/circle4/recall.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellScripts/circle4/recall.src	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/skills/magery/spellScripts/circle4/recall.src	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -9,10 +9,13 @@
+ include &quot;:itemutils:objtype&quot;;
+ include &quot;:coords:isValidLoc&quot;;
+ include &quot;:runebook:runebookFunctions&quot;;
++include &quot;:containers:containers&quot;;
++include &quot;:itemutils:itemdesc&quot;;
++include &quot;include/sounds&quot;;
+ 
+ program SpellScript(params)
+ 	var who := params[1];
+-	var runebook_info := params[4];
++	var runebook_info := params[2].targ;
+ 	//var info := params[2];
+ 	params := 0; // No longer needed
+ 
+@@ -156,6 +159,12 @@
+ 	var runebook := runebook_info[1];
+ 	var rune_info := runebook_info[2];
+ 
++	var spell_elem := MS_GetSpellsCfgElem(32);
++	if ( !CheckReagents(who, spell_elem, 0) )
++		FailSpell(who);
++		return 0;
++	endif
++
+ 	if( !ReserveItem(runebook) )
+ 		return 0;
+ 	endif
+@@ -217,4 +226,54 @@
+ 	MoveObjectToLocation( who, tox, toy, toz, torealm );
+ 	PlaySoundEffect(who, 0x1fd);
+ 	return 1;
+-endfunction
+\ No newline at end of file
++endfunction
++
++function CheckReagents(who, byref spell_elem, scroll)
++	if ( who.npctemplate )
++		// NPCs don't need reagents to cast.
++		return 1;
++	elseif ( scroll.isA(POLCLASS_ITEM) )
++		return SubtractAmount(scroll, 1);
++	elseif ( scroll == 1 )
++		// Added scroll/1 check for passing 1 to override reg
++		// and scroll check. IE: runebooks, wands, etc.
++		return 1;
++	endif
++
++	var reagent_costs := GetConfigStringDictionary(spell_elem, &quot;RegCost&quot;);
++
++	// Before consuming, verify that there is enough of everything.
++	foreach amount in ( reagent_costs )
++		amount := CInt(amount);
++		if ( !amount )
++			amount := 1;
++		endif
++		var objtype := GetObjTypeByName(_amount_iter);
++
++		if ( AmountInContainer(who.backpack, objtype) &lt; amount )
++			SendSysMessage(who, &quot;You do not have enough &quot;+GetObjTypeDesc(objtype, (amount&gt;1)));
++			return 0;
++		endif
++		sleepms(2);
++	endforeach
++	// Consume reagents - CInt() and &lt; 1 checks already done in previous loop.
++	// Foreach is a pointer!
++	foreach amount in ( reagent_costs )
++		ConsumeSubstance(who.backpack, GetObjTypeByName(_amount_iter), amount);
++		sleepms(2);
++	endforeach
++
++	return 1;
++endfunction
++
++
++function FailSpell(who)
++	// Simple function for handling effects when a caster
++	// fails the casting.
++	who.frozen := 0;
++	EraseObjProperty(who, &quot;#medding&quot;);
++	PlayObjectCenteredEffect(who, GFX_SPELL_FAIL, 5, 50);
++	PlaySoundEffect(who, SFX_SPELL_FAIL);
++
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/skills/magery/spellScripts/circle6/mark.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellScripts/circle6/mark.src	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/skills/magery/spellScripts/circle6/mark.src	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -0,0 +1,188 @@
++/* $Id$
++ *
++ */
++use uo;
++use os;
++
++include &quot;:magery:spells&quot;;
++include &quot;:magery:spellSounds&quot;;
++include &quot;:itemutils:objtype&quot;;
++include &quot;:coords:isValidLoc&quot;;
++include &quot;:runebook:runebookFunctions&quot;;
++include &quot;include/tileEffects&quot;;
++
++program SpellScript(params)
++	var who := params[1];
++	//var info := params[2];
++	params := 0; // No longer needed
++
++	var prompt := &quot;Select a recall rune to mark.&quot;;
++	var recall_rune := MS_Target(who, 0, prompt, TGTOPT_CHECK_LOS+TGTOPT_NEUTRAL);
++
++	if( recall_rune.objtype != UOBJ_RUNE )
++		SendSysMessage(who, &quot;You can only cast that on a recall rune!&quot;);
++		return 0;
++	endif
++	if( !Accessible(who, recall_rune) )
++		SendSysMessage(who, &quot;You can't reach that!&quot;);
++		return 0;
++	endif
++	if( !ReserveItem(recall_rune) )
++		SendSysMessage(who, &quot;Your spell fizzles.&quot;);
++		return 0;
++	endif
++	if( GetObjProperty(recall_rune, &quot;Vendored&quot;) )
++		SendSysMessage(who, &quot;You cannot mark runes on a vendor.&quot;);
++		return 0;
++	endif
++
++	if( who.multi )
++		SendSysMessage(who, &quot;You cannot mark runes here.&quot;);
++		PlaySoundEffect(who, 0x005d);
++		PlayObjectCenteredEffect(who, 0x3735, 0x0a, 0x1e);
++		return 0;
++	endif
++
++	if( ((who.x &gt;= 5120) &amp;&amp; (who.x &lt;= 5375) &amp;&amp; (who.y &gt;= 0) &amp;&amp; (who.y &lt;= 255)) || (who.multi) )
++		SendSysMessage(who, &quot;You cannot mark runes here.&quot;);
++		return 0;
++	endif
++
++	var signs := ListItemsNearLocationOfType( who.x, who.y, who.z, 30, 0x7060, who.realm);
++	foreach sign in signs
++		var infoarr := GetObjProperty(sign, &quot;homeinfo&quot;);
++		if( infoarr )
++			if( (who.x &gt;= infoarr[2]) &amp;&amp; (who.x &lt;= infoarr[4]) &amp;&amp; (who.y &gt;= infoarr[3]) &amp;&amp; (who.y &lt;= infoarr[5]) )
++				SendSysMessage(who, &quot;You cannot mark runes here.&quot;);
++				return 0;
++				break;
++			endif
++		endif
++	endforeach
++
++	PlayObjectCenteredEffect(who, FX_MARK_EFFECT, 10, 10);
++	PlaySoundEffect(who, SFX_SPELL_MARK);
++	SetObjProperty(recall_rune, &quot;x&quot;, who.x);
++	SetObjProperty(recall_rune, &quot;y&quot;, who.y);
++	SetObjProperty(recall_rune, &quot;z&quot;, who.z);
++	SetObjProperty(recall_rune, &quot;realm&quot;, who.realm);
++
++	var color_cfg := ReadConfigFile(&quot;:magery:config/runeColor&quot;);
++	var realm_elem := color_cfg[who.realm];
++	recall_rune.color := CInt(realm_elem.RuneColor);
++
++	SetName(recall_rune, &quot;a marked recall rune&quot;);
++
++	return 1;
++endprogram
++
++function RemoveRunebookDefault(runebook)
++	var tox := CInt(GetObjProperty( runebook, &quot;x&quot; ));
++	var toy := CInt(GetObjProperty( runebook, &quot;y&quot; ));
++	var toz := CInt(GetObjProperty( runebook, &quot;z&quot; ));
++	var torealm := GetObjProperty( runebook, &quot;realm&quot; );
++	var rune_list := GetRuneList(runebook);
++
++	foreach rune_entry in rune_list
++		if( (Cint(rune_list.X) == tox) &amp;&amp; (Cint(rune_list.Y) == toy) &amp;&amp; (Cint(rune_list.Z) == toz) &amp;&amp; (Cint(rune_list.Realm) == torealm) )
++			rune_list.Erase(rune_entry);
++		endif
++	endforeach
++
++	SetObjProperty(runebook, &quot;%RuneList%&quot;, rune_list);
++	EraseObjProperty(runebook, &quot;x&quot;);
++	EraseObjProperty(runebook, &quot;y&quot;);
++	EraseObjProperty(runebook, &quot;z&quot;);
++	EraseObjProperty(runebook, &quot;realm&quot;);
++	return 1;
++endfunction
++
++
++function RemoveRunebookEntry(runebook, rune_info)
++	var tox := CInt(rune_info.X);
++	var toy := CInt(rune_info.Y);
++	var toz := CInt(rune_info.Z);
++	var torealm :=  rune_info.Realm;
++	var rune_list := GetRuneList(runebook);
++
++	foreach rune_entry in rune_list
++		if( (Cint(rune_list.X) == tox) &amp;&amp; (Cint(rune_list.Y) == toy) &amp;&amp; (Cint(rune_list.Z) == toz) &amp;&amp; (Cint(rune_list.Realm) == torealm) )
++			rune_list.Erase(rune_entry);
++		endif
++	endforeach
++
++	SetObjProperty(runebook, &quot;%RuneList%&quot;, rune_list);
++	EraseObjProperty(runebook, &quot;x&quot;);
++	EraseObjProperty(runebook, &quot;y&quot;);
++	EraseObjProperty(runebook, &quot;z&quot;);
++	EraseObjProperty(runebook, &quot;realm&quot;);
++	return 1;
++endfunction
++
++
++function RunebookRecall(who, runebook_info)
++	var runebook := runebook_info[1];
++	var rune_info := runebook_info[2];
++
++	if( !ReserveItem(runebook) )
++		return 0;
++	endif
++
++	if( GetObjProperty(runebook, &quot;Vendored&quot;) )
++		SendSysMessage(who, &quot;You cannot recall off of runebooks on a vendor.&quot;);
++		return 0;
++	endif
++	var tox := CInt(rune_info.X);
++	var toy := CInt(rune_info.Y);
++	var toz := CInt(rune_info.Z);
++	var torealm :=  rune_info.Realm;
++	if(!tox)
++		SendSysMessage(who, &quot;That is an invalid location.&quot;);
++		return 0;
++	endif
++	if(!torealm)
++		torealm := &quot;britannia&quot;;
++	endif
++
++	if( !isValidLoc(tox,toy,torealm) )
++		SendSysMessage(who, &quot;Invalid recall location.&quot;);
++		RemoveRunebookEntry(runebook, rune_info);
++		return 0;
++	endif
++
++	PlaySoundEffect(who, 0x210);
++
++	if( (who.x &gt;= 5120) &amp;&amp; (who.x &lt;= 5375) &amp;&amp; (who.y &gt;= 0) &amp;&amp; (who.y &lt;= 255) )
++		SendSysMessage(who, &quot;Your spell fails and consumes the rune!&quot;);
++		RemoveRunebookEntry(runebook, rune_info);
++		return 0;
++	endif
++
++	var signs := ListItemsNearLocationOfType( tox, toy, toz, 30, 0x7060, torealm);
++	foreach sign in signs
++		var infoarr := GetObjProperty(sign, &quot;homeinfo&quot;);
++		if( infoarr )
++			if( (tox &gt;= infoarr[2]) &amp;&amp; (tox &lt;= infoarr[4]) &amp;&amp; (toy &gt;= infoarr[3]) &amp;&amp; (toy &lt;= infoarr[5]) )
++				SendSysMessage(who, &quot;Something is blocking the location.&quot;);
++				return 0;
++				break;
++			endif
++		endif
++	endforeach
++
++	var multicheck := CreateItemAtLocation(1, 1, 0, 0xeed, 1, torealm);
++	multicheck.invisible := 1;
++	if( !MoveItemToLocation(multicheck, tox, toy, toz, MOVEITEM_NORMAL) )
++		SendSysMessage(who, &quot;Something is blocking the location.&quot;);
++		return 0;
++	endif
++	if(multicheck.multi)
++		SendSysMessage(who,&quot;A house is blocking the location.&quot;);
++		RemoveRunebookEntry(runebook, rune_info);
++		return 0;
++	endif
++	DestroyItem(multicheck);
++	MoveObjectToLocation( who, tox, toy, toz, torealm );
++	PlaySoundEffect(who, 0x1fd);
++	return 1;
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/skills/magery/spellScripts/circle6/mark.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/skills/magery/spellScripts/circle7/gate.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellScripts/circle7/gate.src	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/skills/magery/spellScripts/circle7/gate.src	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -9,6 +9,9 @@
+ include &quot;:itemutils:objtype&quot;;
+ include &quot;:coords:isValidLoc&quot;;
+ include &quot;:runebook:runebookFunctions&quot;;
++include &quot;:containers:containers&quot;;
++include &quot;:itemutils:itemdesc&quot;;
++include &quot;include/sounds&quot;;
+ 
+ program SpellScript(params)
+ 	var who := params[1];
+@@ -191,6 +194,12 @@
+ 		return 0;
+ 	endif
+ 
++	var spell_elem := MS_GetSpellsCfgElem(52);
++	if ( !CheckReagents(who, spell_elem, 0) )
++		FailSpell(who);
++		return 0;
++	endif
++
+ 	if( GetObjProperty(runebook, &quot;Vendored&quot;) )
+ 		SendSysMessage(who, &quot;You cannot recall off of runebooks on a vendor.&quot;);
+ 		return 0;
+@@ -279,4 +288,55 @@
+ 	DestroyItem( gate2 );
+ 	set_critical(0);
+ 	return 1;
+-endfunction
+\ No newline at end of file
++endfunction
++
++
++function CheckReagents(who, byref spell_elem, scroll)
++	if ( who.npctemplate )
++		// NPCs don't need reagents to cast.
++		return 1;
++	elseif ( scroll.isA(POLCLASS_ITEM) )
++		return SubtractAmount(scroll, 1);
++	elseif ( scroll == 1 )
++		// Added scroll/1 check for passing 1 to override reg
++		// and scroll check. IE: runebooks, wands, etc.
++		return 1;
++	endif
++
++	var reagent_costs := GetConfigStringDictionary(spell_elem, &quot;RegCost&quot;);
++
++	// Before consuming, verify that there is enough of everything.
++	foreach amount in ( reagent_costs )
++		amount := CInt(amount);
++		if ( !amount )
++			amount := 1;
++		endif
++		var objtype := GetObjTypeByName(_amount_iter);
++
++		if ( AmountInContainer(who.backpack, objtype) &lt; amount )
++			SendSysMessage(who, &quot;You do not have enough &quot;+GetObjTypeDesc(objtype, (amount&gt;1)));
++			return 0;
++		endif
++		sleepms(2);
++	endforeach
++	// Consume reagents - CInt() and &lt; 1 checks already done in previous loop.
++	// Foreach is a pointer!
++	foreach amount in ( reagent_costs )
++		ConsumeSubstance(who.backpack, GetObjTypeByName(_amount_iter), amount);
++		sleepms(2);
++	endforeach
++
++	return 1;
++endfunction
++
++
++function FailSpell(who)
++	// Simple function for handling effects when a caster
++	// fails the casting.
++	who.frozen := 0;
++	EraseObjProperty(who, &quot;#medding&quot;);
++	PlayObjectCenteredEffect(who, GFX_SPELL_FAIL, 5, 50);
++	PlaySoundEffect(who, SFX_SPELL_FAIL);
++
++	return 1;
++endfunction
+
+Modified: trunk/096/pkg/skills/magery/spellStarter.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellStarter.src	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/skills/magery/spellStarter.src	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -45,6 +45,7 @@
+ 		return 0;
+ 	else
+ 		SetObjProperty(who, &quot;#medding&quot;, 1);
++		who.frozen := 1;
+ 	endif
+ 
+ 	if ( !who.squelched )
+@@ -79,6 +80,7 @@
+ 			difficulty := -1;
+ 		endif
+ 		var skill_check := SkillCheck(who, attribute, difficulty);
++		who.frozen := 0;
+ 		if ( skill_check &gt; 0 )
+ 			var info := struct;
+ 			info.+script		:= spell_elem.script;
+@@ -144,12 +146,17 @@
+ 	return 1;
+ endfunction
+ 
++
+ function CheckReagents(who, byref spell_elem, scroll)
+ 	if ( who.npctemplate )
+ 		// NPCs don't need reagents to cast.
+ 		return 1;
+-	elseif ( scroll )
++	elseif ( scroll.isA(POLCLASS_ITEM) )
+ 		return SubtractAmount(scroll, 1);
++	elseif ( scroll == 1 )
++		// Added scroll/1 check for passing 1 to override reg
++		// and scroll check. IE: runebooks, wands, etc.
++		return 1;
+ 	endif
+ 
+ 	var reagent_costs := GetConfigStringDictionary(spell_elem, &quot;RegCost&quot;);
+@@ -181,6 +188,7 @@
+ function FailSpell(who)
+ 	// Simple function for handling effects when a caster
+ 	// fails the casting.
++	who.frozen := 0;
+ 	EraseObjProperty(who, &quot;#medding&quot;);
+ 	PlayObjectCenteredEffect(who, GFX_SPELL_FAIL, 5, 50);
+ 	PlaySoundEffect(who, SFX_SPELL_FAIL);
+
+Modified: trunk/096/pkg/skills/magery/spells.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/spells.cfg	2005-11-15 09:20:06 UTC (rev 1005)
++++ trunk/096/pkg/skills/magery/spells.cfg	2005-11-15 11:58:06 UTC (rev 1006)
+@@ -6,8 +6,8 @@
+ 	SpellScript	spellScripts/circle1/clumsy
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	4
++	Delay		1000
+ 
+ 	PowerWords	Uus Jux
+ 	Circle		1
+@@ -25,7 +25,7 @@
+ 
+ 	Difficulty	1
+ 	ManaCost	4
+-	Delay		1
++	Delay		1000
+ 
+ 	Circle		1
+ 	PowerWords	In Mani Ylem
+@@ -43,8 +43,8 @@
+ 	SpellScript	spellScripts/circle1/feebleMind
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	4
++	Delay		1000
+ 
+ 	PowerWords	Rel Wis
+ 	Circle		1
+@@ -61,8 +61,8 @@
+ 	SpellScript	spellScripts/circle1/heal
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	4
++	Delay		1000
+ 
+ 	PowerWords	In Mani
+ 	Circle		1
+@@ -80,8 +80,8 @@
+ 	SpellScript	spellScripts/circle1/magicArrow
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	4
++	Delay		1000
+ 
+ 	PowerWords	In Por Ylem
+ 	Circle		1
+@@ -98,8 +98,8 @@
+ 	SpellScript	spellScripts/circle1/nightSight
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	4
++	Delay		1000
+ 
+ 	PowerWords	In Lor
+ 	Circle		1
+@@ -116,8 +116,8 @@
+ 	SpellScript	spellScripts/circle1/reactiveArmor
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	4
++	Delay		1000
+ 
+ 	PowerWords	Flam Sanct
+ 	Circle		1
+@@ -135,8 +135,8 @@
+ 	SpellScript	spellScripts/circle1/weaken
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	4
++	Delay		1000
+ 
+ 	PowerWords	Des Mani
+ 	Circle		1
+@@ -153,8 +153,8 @@
+ 	SpellScript	spellScripts/circle2/agility
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	6
++	Delay		2000
+ 
+ 	PowerWords	Ex Uus
+ 	Circle		2
+@@ -171,8 +171,8 @@
+ 	SpellScript	spellScripts/circle2/cunning
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	6
++	Delay		2000
+ 
+ 	PowerWords	Uus Wis
+ 	Circle		2
+@@ -189,8 +189,8 @@
+ 	SpellScript	spellScripts/circle2/cure
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	6
++	Delay		2000
+ 
+ 	PowerWords	An Nox
+ 	Circle		2
+@@ -207,8 +207,8 @@
+ 	SpellScript	spellScripts/circle2/harm
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	6
++	Delay		2000
+ 
+ 	PowerWords	An Mani
+ 	Circle		2
+@@ -225,8 +225,8 @@
+ 	SpellScript	spellScripts/circle2/magicTrap
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	6
++	Delay		2000
+ 
+ 	PowerWords	In Jux
+ 	Circle		2
+@@ -244,8 +244,8 @@
+ 	SpellScript	spellScripts/circle2/magicUntrap
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	6
++	Delay		2000
+ 
+ 	PowerWords	An Jux
+ 	Circle		2
+@@ -263,8 +263,8 @@
+ 	SpellScript	spellScripts/circle2/protection
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	6
++	Delay		2000
+ 
+ 	PowerWords	Uus Sanct
+ 	Circle		2
+@@ -282,8 +282,8 @@
+ 	SpellScript	spellScripts/circle2/strength
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	6
++	Delay		2000
+ 
+ 	PowerWords	Uus Mani
+ 	Circle		2
+@@ -300,8 +300,8 @@
+ 	SpellScript	spellScripts/circle3/bless
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	9
++	Delay		3000
+ 
+ 	PowerWords	Rel Sanct
+ 	Circle		3
+@@ -318,8 +318,8 @@
+ 	SpellScript	spellScripts/circle23/fireBall
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	9
++	Delay		3000
+ 
+ 	PowerWords	Vas Flam
+ 	Circle		3
+@@ -336,8 +336,8 @@
+ 	SpellScript	spellScripts/circle3/magicLock
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	9
++	Delay		3000
+ 
+ 	PowerWords	An Por
+ 	Circle		3
+@@ -355,8 +355,8 @@
+ 	SpellScript	spellScripts/circle3/magicUnlock
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	9
++	Delay		3000
+ 
+ 	PowerWords	In Nox
+ 	Circle		3
+@@ -372,8 +372,8 @@
+ 	SpellScript	spellScripts/circle3/telekinesis
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	9
++	Delay		3000
+ 
+ 	PowerWords	Ort Por Ylem
+ 	Circle		3
+@@ -390,8 +390,8 @@
+ 	SpellScript	spellScripts/circle3/teleport
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	9
++	Delay		3000
+ 
+ 	PowerWords	Rel Por
+ 	Circle		3
+@@ -408,8 +408,8 @@
+ 	SpellScript	spellScripts/circle3/unlock
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	9
++	Delay		3000
+ 
+ 	PowerWords	Ex Por
+ 	Circle		3
+@@ -426,8 +426,8 @@
+ 	SpellScript	spellScripts/circle3/wallofStone
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	9
++	Delay		3000
+ 
+ 	PowerWords	In Sanct Ylem
+ 	Circle		3
+@@ -444,8 +444,8 @@
+ 	SpellScript	spellScripts/circle4/archCure
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	11
++	Delay		4000
+ 
+ 	PowerWords	Vas An Nox
+ 	Circle		4
+@@ -463,8 +463,8 @@
+ 	SpellScript	spellScripts/circle4/archProtection
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	11
++	Delay		4000
+ 
+ 	PowerWords	Vas Uus Sanct
+ 	Circle		4
+@@ -483,8 +483,8 @@
+ 	SpellScript	spellScripts/circle4/curse
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	11
++	Delay		4000
+ 
+ 	PowerWords	Des Sanct
+ 	Circle		4
+@@ -502,8 +502,8 @@
+ 	SpellScript	spellScripts/circle4/fireField
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	11
++	Delay		4000
+ 
+ 	PowerWords	In Flam Grav
+ 	Circle		4
+@@ -521,8 +521,8 @@
+ 	SpellScript	spellScripts/circle4/greaterHeal
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	11
++	Delay		4000
+ 
+ 	PowerWords	In Vas Mani
+ 	Circle		4
+@@ -541,8 +541,8 @@
+ 	SpellScript	spellScripts/circle4/lightning
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	11
++	Delay		4000
+ 
+ 	PowerWords	Por Ort Grav
+ 	Circle		4
+@@ -560,8 +560,8 @@
+ 	SpellScript	spellScripts/circle4/manaDrain
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	11
++	Delay		4000
+ 
+ 	PowerWords	Ort Rel
+ 	Circle		4
+@@ -580,7 +580,7 @@
+ 
+ 	Difficulty	1
+ 	ManaCost	11
+-	Delay		4
++	Delay		4000
+ 
+ 	PowerWords	Kal Ort Por
+ 	Circle		4
+@@ -598,8 +598,8 @@
+ 	SpellScript	spellScripts/circle5/bladeSpirit
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	14
++	Delay		5000
+ 
+ 	PowerWords	In Jux Hur Ylem
+ 	Circle		5
+@@ -617,8 +617,8 @@
+ 	SpellScript	spellScripts/circle5/dispelField
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	14
++	Delay		5000
+ 
+ 	PowerWords	An Grav
+ 	Circle		5
+@@ -637,8 +637,8 @@
+ 	SpellScript	spellScripts/circle5/incognito
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	14
++	Delay		5000
+ 
+ 	PowerWords	Kal In Ex
+ 	Circle		5
+@@ -656,8 +656,8 @@
+ 	SpellScript	spellScripts/circle5/spellReflection
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	14
++	Delay		5000
+ 
+ 	PowerWords	In Jux Sanct
+ 	Circle		5
+@@ -675,8 +675,8 @@
+ 	SpellScript	spellScripts/circle5/mindBlast
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	14
++	Delay		5000
+ 
+ 	PowerWords	Por Corp Wis
+ 	Circle		5
+@@ -695,8 +695,8 @@
+ 	SpellScript	spellScripts/circle5/paralyze
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	14
++	Delay		5000
+ 
+ 	PowerWords	An Ex Por
+ 	Circle		5
+@@ -714,8 +714,8 @@
+ 	SpellScript	spellScripts/circle5/poisonField
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	14
++	Delay		5000
+ 
+ 	PowerWords	In Nox Grav
+ 	Circle		5
+@@ -733,8 +733,8 @@
+ 	SpellScript	spellScripts/circle5/summonCreature
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	14
++	Delay		5000
+ 
+ 	PowerWords	Kal Xen
+ 	Circle		5
+@@ -752,8 +752,8 @@
+ 	SpellScript	spellScripts/circle6/dispel
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	20
++	Delay		6000
+ 
+ 	PowerWords	An Ort
+ 	Circle		6
+@@ -771,8 +771,8 @@
+ 	SpellScript	spellScripts/circle6/energyBolt
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	20
++	Delay		6000
+ 
+ 	PowerWords	Corp Por
+ 	Circle		6
+@@ -789,8 +789,8 @@
+ 	SpellScript	spellScripts/circle6/explosion
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	20
++	Delay		6000
+ 
+ 	PowerWords	Vas Ort Flam
+ 	Circle		6
+@@ -808,8 +808,8 @@
+ 	SpellScript	spellScripts/circle6/invisibility
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	20
++	Delay		6000
+ 
+ 	PowerWords	An Lor Xen
+ 	Circle		6
+@@ -826,8 +826,8 @@
+ 	SpellScript	spellScripts/circle6/mark
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	20
++	Delay		6000
+ 
+ 	PowerWords	Kal Por Ylem
+ 	Circle		6
+@@ -845,8 +845,8 @@
+ 	SpellScript	spellScripts/circle6/massCurse
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	20
++	Delay		6000
+ 
+ 	PowerWords	Vas Des Sanct
+ 	Circle		6
+@@ -865,8 +865,8 @@
+ 	SpellScript	spellScripts/circle6/paralyzeField
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	20
++	Delay		6000
+ 
+ 	PowerWords	In Ex Grav
+ 	Circle		6
+@@ -884,8 +884,8 @@
+ 	SpellScript	spellScripts/circle6/reveal
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	20
++	Delay		6000
+ 
+ 	PowerWords	Wis  Quas
+ 	Circle		6
+@@ -902,8 +902,8 @@
+ 	SpellScript	spellScripts/circle7/chainLightning
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	40
++	Delay		7000
+ 
+ 	PowerWords	Vas Ort Grav
+ 	Circle		7
+@@ -922,8 +922,8 @@
+ 	SpellScript	spellScripts/circle7/energyField
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	40
++	Delay		7000
+ 
+ 	PowerWords	In Sanct Grav
+ 	Circle		7
+@@ -942,8 +942,8 @@
+ 	SpellScript	spellScripts/circle7/flameStrike
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	40
++	Delay		7000
+ 
+ 	PowerWords	Kal Vas Flam
+ 	Circle		7
+@@ -961,7 +961,7 @@
+ 
+ 	Difficulty	1
+ 	ManaCost	40
+-	Delay		7
++	Delay		7000
+ 
+ 	PowerWords	Vas Rel Por
+ 	Circle		7
+@@ -979,8 +979,8 @@
+ 	SpellScript	spellScripts/circle7/manaVampire
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	40
++	Delay		7000
+ 
+ 	PowerWords	Ort Sanct
+ 	Circle		7
+@@ -999,8 +999,8 @@
+ 	SpellScript	spellScripts/circle7/massDispel
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	40
++	Delay		7000
+ 
+ 	PowerWords	Vas An Ort
+ 	Circle		7
+@@ -1019,8 +1019,8 @@
+ 	SpellScript	spellScripts/circle7/meteorSwarm
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	40
++	Delay		7000
+ 
+ 	PowerWords	Kal Des Flam Ylem
+ 	Circle		7
+@@ -1039,8 +1039,8 @@
+ 	SpellScript	spellScripts/circle7/polymorph
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	40
++	Delay		7000
+ 
+ 	PowerWords	Vas Ylem Rel
+ 	Circle		7
+@@ -1058,8 +1058,8 @@
+ 	SpellScript	spellScripts/circle8/earthquake
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	50
++	Delay		8000
+ 
+ 	PowerWords	In Vas Por
+ 	Circle		8
+@@ -1078,8 +1078,8 @@
+ 	SpellScript	spellScripts/circle8/energyVortex
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	50
++	Delay		8000
+ 
+ 	PowerWords	Vas Corp Por
+ 	Animation	0x11
+@@ -1099,8 +1099,8 @@
+ 	SpellScript	spellScripts/circle8/resurrection
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	50
++	Delay		8000
+ 
+ 	PowerWords	An Corp
+ 	Circle		8
+@@ -1118,8 +1118,8 @@
+ 	SpellScript	spellScripts/circle8/summonAirElemental
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	50
++	Delay		8000
+ 
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Hur
+@@ -1138,8 +1138,8 @@
+ 	SpellScript	spellScripts/circle8/summonDeamon
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	50
++	Delay		8000
+ 
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Corp
+@@ -1159,8 +1159,8 @@
+ 	SpellScript	spellScripts/circle8/summonEarthElemental
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	50
++	Delay		8000
+ 
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Ylem
+@@ -1179,8 +1179,8 @@
+ 	SpellScript	spellScripts/circle8/summonFireElemental
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	50
++	Delay		8000
+ 
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Flam
+@@ -1200,8 +1200,8 @@
+ 	SpellScript	spellScripts/circle8/summonWaterElemental
+ 
+ 	Difficulty	1
+-	ManaCost	0
+-	Delay		0
++	ManaCost	50
++	Delay		8000
+ 
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen An Flam
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000978.html">[Poldistro-svn] r1005 - in trunk/096/pkg: commands/coun items/bountyboard items/bountyboard/config items/containers items/guildstone/config items/hair items/hair/config items/hair/cuthair items/hair/hairdye items/keys items/keys/config items/keys/include items/keys/key items/keys/keyring items/moongates/config items/moongates/systemMoonGate items/mounts/config mobiles/brainAI/bundled/banker mobiles/newCharacter mobiles/newCharacter/config mobiles/newCharacter/include skills/lumberjacking skills/magery/config skills/magery/recallRune skills/magery/spellScripts/circle4 skills/magery/spellScripts/circle7 systems/combat/config utils/saver/config utils/scheduler utils/scheduler/config
+</A></li>
+	<LI>Next message: <A HREF="000980.html">[Poldistro-svn] r1007 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#979">[ date ]</a>
+              <a href="thread.html#979">[ thread ]</a>
+              <a href="subject.html#979">[ subject ]</a>
+              <a href="author.html#979">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

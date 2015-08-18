@@ -1,0 +1,312 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r88 - in trunk/096/pkg/mobiles/ai_brain/include: . braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r88%20-%20in%20trunk/096/pkg/mobiles/ai_brain/include%3A%20.%20braincore&In-Reply-To=%3C200509061442.j86EgbHs015479%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000069.html">
+   <LINK REL="Next"  HREF="000071.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r88 - in trunk/096/pkg/mobiles/ai_brain/include: . braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r88%20-%20in%20trunk/096/pkg/mobiles/ai_brain/include%3A%20.%20braincore&In-Reply-To=%3C200509061442.j86EgbHs015479%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r88 - in trunk/096/pkg/mobiles/ai_brain/include: . braincore">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep  6 16:42:37 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000069.html">[Poldistro-svn] r87 - trunk/096/pkg/mobiles/ai_brain
+</A></li>
+        <LI>Next message: <A HREF="000071.html">[Poldistro-svn] r89 - in trunk/096: . batchfiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#70">[ date ]</a>
+              <a href="thread.html#70">[ thread ]</a>
+              <a href="subject.html#70">[ subject ]</a>
+              <a href="author.html#70">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-06 16:42:34 +0200 (Tue, 06 Sep 2005)
+New Revision: 88
+
+Added:
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/sleepMode.inc
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc
+Log:
+Cyclescript support, sleep mode support. Array{} properly formatted in StartNerve() calls.
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc	2005-09-06 14:41:23 UTC (rev 87)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc	2005-09-06 14:42:34 UTC (rev 88)
+@@ -0,0 +1,33 @@
++/*===============================================================
++* Current Version
++* CYCLESCRIPT.INC - v1.0
++* Updated 9/6/2005 7:13AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++/*
++ * RunCycleScript()
++ *
++ * Purpose
++ * Runs the cycle script if one is present.
++ *
++ * Parameters
++  *
++ * Return value
++ * Always returns 1
++ *
++ */
++function RunCycleScript()
++	if ( g_scripts[&quot;Cycle&quot;] )
++		var script := Run_Script_To_Completion(g_scripts[&quot;Cycle&quot;], array{npc, g_settings, g_scripts, g_nerves});
++		
++		if ( script.errortext )
++			NPC_ErrorSysLog(npc, &quot;Error - RunCycleScript() :: &quot;+script.errortext);
++		endif
++	endif
++	
++	return 1;
++endfunction
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-06 14:41:23 UTC (rev 87)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-06 14:42:34 UTC (rev 88)
+@@ -50,7 +50,7 @@
+ 			if ( g_scripts.Exists(&quot;EnterArea&quot;) )
+ 				var process := GetNerveProcess(npc, &quot;EnterArea&quot;, g_nerves);
+ 				if ( !process )
+-					StartNerve(npc, &quot;EnterArea&quot;, g_scripts[&quot;EnterArea&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;EnterArea&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;EnterArea&quot;, g_scripts[&quot;EnterArea&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;EnterArea&quot;].flags, g_nerves);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -63,7 +63,7 @@
+ 			if ( g_scripts.Exists(&quot;LeftArea&quot;) )
+ 				var process := GetNerveProcess(npc, &quot;LeftArea&quot;, g_nerves);
+ 				if ( !process )
+-					StartNerve(npc, &quot;LeftArea&quot;, g_scripts[&quot;LeftArea&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;LeftArea&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;LeftArea&quot;, g_scripts[&quot;LeftArea&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;LeftArea&quot;].flags, g_nerves);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -76,7 +76,7 @@
+ 			if ( g_scripts.Exists(&quot;ItemGiven&quot;) )
+ 				var process := GetNerveProcess(npc, &quot;ItemGiven&quot;, g_nerves);
+ 				if ( !process )
+-					StartNerve(npc, &quot;ItemGiven&quot;, g_scripts[&quot;ItemGiven&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;ItemGiven&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;ItemGiven&quot;, g_scripts[&quot;ItemGiven&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;ItemGiven&quot;].flags, g_nerves);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -94,7 +94,7 @@
+ 				if ( (event.source).ISA(POLCLASS_MOBILE) )
+ 					var process := GetNerveProcess(npc, &quot;Combat&quot;, g_nerves);
+ 					if ( !process )
+-						StartNerve(npc, &quot;Combat&quot;, g_scripts[&quot;Combat&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;Combat&quot;].flags, g_nerves);
++						StartNerve(npc, &quot;Combat&quot;, g_scripts[&quot;Combat&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Combat&quot;].flags, g_nerves);
+ 					else
+ 						process.SendEvent(event);
+ 					endif
+@@ -109,7 +109,7 @@
+ 			if ( g_scripts.Exists(&quot;Disengaged&quot;) )
+ 				var process := GetNerveProcess(npc, &quot;Disengaged&quot;, g_nerves);
+ 				if ( !process )
+-					StartNerve(npc, &quot;Disengaged&quot;, g_scripts[&quot;Disengaged&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;Disengaged&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;Disengaged&quot;, g_scripts[&quot;Disengaged&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Disengaged&quot;].flags, g_nerves);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -127,7 +127,7 @@
+ 			if( g_scripts.Exists(&quot;Listen&quot;) )
+ 				var process := GetNerveProcess(npc, &quot;Listen&quot;, g_nerves);
+ 				if ( !process )
+-					StartNerve(npc, &quot;Listen&quot;, g_scripts[&quot;Listen&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;Listen&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;Listen&quot;, g_scripts[&quot;Listen&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Listen&quot;].flags, g_nerves);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -142,7 +142,7 @@
+ 				if ( Distance(event.source, npc) &lt;= g_settings[&quot;dbl_click_range&quot;] )
+ 					var process := GetNerveProcess(npc, &quot;DblClick&quot;, g_nerves);
+ 					if ( !process )
+-						StartNerve(npc, &quot;DblClick&quot;, g_scripts[&quot;DblClick&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;DblClick&quot;].flags, g_nerves);
++						StartNerve(npc, &quot;DblClick&quot;, g_scripts[&quot;DblClick&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;DblClick&quot;].flags, g_nerves);
+ 					else
+ 						process.SendEvent(event);
+ 					endif
+@@ -164,7 +164,7 @@
+ 			if ( g_scripts.Exists(&quot;Merchant&quot;) )
+ 				var process := GetNerveProcess(npc, &quot;Merchant&quot;, g_nerves);
+ 				if ( !process )
+-					StartNerve(npc, &quot;Merchant&quot;, g_scripts[&quot;Merchant&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;Merchant&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;Merchant&quot;, g_scripts[&quot;Merchant&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Merchant&quot;].flags, g_nerves);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -178,7 +178,7 @@
+ 			if ( g_scripts.Exists(&quot;ItemGiven&quot;) )
+ 				var process := GetNerveProcess(npc, &quot;ItemGiven&quot;, g_nerves);
+ 				if ( !process )
+-					StartNerve(npc, &quot;ItemGiven&quot;, g_scripts[&quot;ItemGiven&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;ItemGiven&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;ItemGiven&quot;, g_scripts[&quot;ItemGiven&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;ItemGiven&quot;].flags, g_nerves);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -279,7 +279,7 @@
+ 			if ( g_scripts.Exists(&quot;Virtual&quot;) )
+ 				var process := GetNerveProcess(npc, &quot;Virtual&quot;, g_nerves);
+ 				if ( !process )
+-					StartNerve(npc, &quot;Virtual&quot;, g_scripts[&quot;Virtual&quot;].script, {event, g_settings, g_scripts}, g_scripts[&quot;Virtual&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;Virtual&quot;, g_scripts[&quot;Virtual&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Virtual&quot;].flags, g_nerves);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/braincore/sleepMode.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/sleepMode.inc	2005-09-06 14:41:23 UTC (rev 87)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/sleepMode.inc	2005-09-06 14:42:34 UTC (rev 88)
+@@ -0,0 +1,82 @@
++/*===============================================================
++* Current Version
++* SLEEPMODE.INC - v1.0
++* Updated 9/6/2005 6:35AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++/*
++ * EnterSleepMode()
++ *
++ * Purpose
++ * Starts the sleep script if the npc has one.
++ *
++ * Parameters
++  *
++ * Return value
++ * Always returns 1
++ *
++ */
++function EnterSleepMode()
++	if ( !sleep_mode )
++		if ( g_scripts[&quot;Sleep&quot;] )
++			var process := GetNerveProcess(npc, &quot;Sleep&quot;, g_nerves);
++			if ( !process )
++				StartNerve(npc, &quot;Sleep&quot;, g_scripts[&quot;Sleep&quot;].script, array{g_settings, g_scripts, g_nerves}, g_scripts[&quot;Sleep&quot;].flags, g_nerves);
++			endif
++		endif
++					
++		//The brain is now in sleep mode, isnt it cute?
++		sleep_mode := 1;
++	endif
++	
++	return 1;
++endfunction
++
++/*
++ * LeaveSleepMode()
++ *
++ * Purpose
++ * Brings the npc out of sleep mode.
++ *
++ * Parameters
++  *
++ * Return value
++ * Always returns 1
++ *
++ */
++function LeaveSleepMode()
++	StopNerve(npc, &quot;Sleep&quot;, g_nerves);
++	idle_ticks := 0;
++	sleep_mode := 1;
++endfunction
++
++/*
++ * ShouldSleep()
++ *
++ * Purpose
++ * Determines if it is time to sleep
++ *
++ * Parameters
++ *
++ * Return Value
++ * Returns 0 or 1
++ *
++ */
++function ShouldSleep()
++	if ( sleep_mode )
++		//Already asleep
++		return 0;
++	elseif ( Events_Waiting() )
++		//Events are waiting to process.
++		return 0;
++	elseif ( idle_ticks &lt; g_settings[&quot;idle_ticks&quot;] )
++		//Not enough idle ticks have gone by yet.
++		return 0;
++	endif
++	
++	return 1;
++endfunction
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc	2005-09-06 14:41:23 UTC (rev 87)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc	2005-09-06 14:42:34 UTC (rev 88)
+@@ -39,8 +39,8 @@
+ 	if ( CInt(settings.exists(&quot;cycle_wait&quot;)) &lt;= 0 )
+ 		settings[&quot;cycle_wait&quot;] := 10;
+ 	endif
+-	if ( CInt(settings.exists(&quot;sleep_time&quot;)) &lt;= 0 )
+-		settings[&quot;sleep_time&quot;] := 1024;
++	if ( CInt(settings.exists(&quot;sleep_wait&quot;)) &lt;= 0 )
++		settings[&quot;sleep_wait&quot;] := 1024;
+ 	endif
+ 	if ( CInt(settings.exists(&quot;idle_ticks&quot;)) &lt;= 0 )
+ 		settings[&quot;idle_ticks&quot;] := 5;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000069.html">[Poldistro-svn] r87 - trunk/096/pkg/mobiles/ai_brain
+</A></li>
+	<LI>Next message: <A HREF="000071.html">[Poldistro-svn] r89 - in trunk/096: . batchfiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#70">[ date ]</a>
+              <a href="thread.html#70">[ thread ]</a>
+              <a href="subject.html#70">[ subject ]</a>
+              <a href="author.html#70">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

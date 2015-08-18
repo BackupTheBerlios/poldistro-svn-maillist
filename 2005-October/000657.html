@@ -1,0 +1,1285 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r683 - in trunk/096/pkg: commands/config expansions/aos expansions/aos/config expansions/aos/skills/chivalry expansions/aos/skills/chivalry/config expansions/aos/skills/focus expansions/aos/skills/focus/config expansions/aos/skills/necromancy expansions/aos/skills/necromancy/config expansions/lbr expansions/lbr/config expansions/uor expansions/uor/config items/bountyboard/config items/commcrystals items/commcrystals/config items/containers/config items/decorations items/decorations/config items/doors items/doors/config items/dyes items/dyes/config items/food items/food/config items/guildstone items/lighting items/magic items/moongates items/mounts items/repaircontract items/runebook items/sysbook items/sysbook/config items/training items/traps items/trash items/treasuremap items/usestuff items/walkOn items/walkOn/config items/wands mobiles/animaltrainer mobiles/barber mobiles/death mobiles/death/config mobiles/npcutils mobiles/oldAI mobiles/playervendor other/gmtool! s other/hooks other/motd other/motd/config systems/attributes/config systems/boat systems/combat systems/crafting systems/crafting/config systems/daynight systems/housing systems/merchantnodes systems/poisonwatcher/config systems/pushthrough systems/spellcasting systems/stafflist systems/timer utils/servperf/config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r683%20-%20in%20trunk/096/pkg%3A%20commands/config%20expansions/aos%20expansions/aos/config%20expansions/aos/skills/chivalry%20expansions/aos/skills/chivalry/config%20expansions/aos/skills/focus%20expansions/aos/skills/focus/config%20expansions/aos/skills/necromancy%20expansions/aos/skills/necromancy/config%20expansions/lbr%20expansions/lbr/config%20expansions/uor%20expansions/uor/config%20items/bountyboard/config%20items/commcrystals%20items/commcrystals/config%20items/containers/config%20items/decorations%20items/decorations/config%20items/doors%20items/doors/config%20items/dyes%20items/dyes/config%20items/food%20items/food/config%20items/guildstone%20items/lighting%20items/magic%20items/moongates%20items/mounts%20items/repaircontract%20items/runebook%20items/sysbook%20items/sysbook/config%20items/training%20items/traps%20items/trash%20items/treasuremap%20items/usestuff%20items/walkOn%20items/walkOn/config%20items/wands%20mobiles/animaltrainer%20mobiles/barber%20mobiles/death%20mobiles/death/config%20mobiles/npcutils%20mobiles/oldAI%20mobiles/playervendor%20other/gmtool%21%0A%20s%20other/hooks%20other/motd%20other/motd/config%20systems/attributes/config%20systems/boat%20systems/combat%20systems/crafting%20systems/crafting/config%20systems/daynight%20systems/housing%20systems/merchantnodes%20systems/poisonwatcher/config%20systems/pushthrough%20systems/spellcasting%20systems/stafflist%20systems/timer%20utils/servperf/config&In-Reply-To=%3C200510271811.j9RIBudH030141%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000656.html">
+   <LINK REL="Next"  HREF="000658.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r683 - in trunk/096/pkg: commands/config expansions/aos expansions/aos/config expansions/aos/skills/chivalry expansions/aos/skills/chivalry/config expansions/aos/skills/focus expansions/aos/skills/focus/config expansions/aos/skills/necromancy expansions/aos/skills/necromancy/config expansions/lbr expansions/lbr/config expansions/uor expansions/uor/config items/bountyboard/config items/commcrystals items/commcrystals/config items/containers/config items/decorations items/decorations/config items/doors items/doors/config items/dyes items/dyes/config items/food items/food/config items/guildstone items/lighting items/magic items/moongates items/mounts items/repaircontract items/runebook items/sysbook items/sysbook/config items/training items/traps items/trash items/treasuremap items/usestuff items/walkOn items/walkOn/config items/wands mobiles/animaltrainer mobiles/barber mobiles/death mobiles/death/config mobiles/npcutils mobiles/oldAI mobiles/playervendor other/gmtool! s other/hooks other/motd other/motd/config systems/attributes/config systems/boat systems/combat systems/crafting systems/crafting/config systems/daynight systems/housing systems/merchantnodes systems/poisonwatcher/config systems/pushthrough systems/spellcasting systems/stafflist systems/timer utils/servperf/config</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r683%20-%20in%20trunk/096/pkg%3A%20commands/config%20expansions/aos%20expansions/aos/config%20expansions/aos/skills/chivalry%20expansions/aos/skills/chivalry/config%20expansions/aos/skills/focus%20expansions/aos/skills/focus/config%20expansions/aos/skills/necromancy%20expansions/aos/skills/necromancy/config%20expansions/lbr%20expansions/lbr/config%20expansions/uor%20expansions/uor/config%20items/bountyboard/config%20items/commcrystals%20items/commcrystals/config%20items/containers/config%20items/decorations%20items/decorations/config%20items/doors%20items/doors/config%20items/dyes%20items/dyes/config%20items/food%20items/food/config%20items/guildstone%20items/lighting%20items/magic%20items/moongates%20items/mounts%20items/repaircontract%20items/runebook%20items/sysbook%20items/sysbook/config%20items/training%20items/traps%20items/trash%20items/treasuremap%20items/usestuff%20items/walkOn%20items/walkOn/config%20items/wands%20mobiles/animaltrainer%20mobiles/barber%20mobiles/death%20mobiles/death/config%20mobiles/npcutils%20mobiles/oldAI%20mobiles/playervendor%20other/gmtool%21%0A%20s%20other/hooks%20other/motd%20other/motd/config%20systems/attributes/config%20systems/boat%20systems/combat%20systems/crafting%20systems/crafting/config%20systems/daynight%20systems/housing%20systems/merchantnodes%20systems/poisonwatcher/config%20systems/pushthrough%20systems/spellcasting%20systems/stafflist%20systems/timer%20utils/servperf/config&In-Reply-To=%3C200510271811.j9RIBudH030141%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r683 - in trunk/096/pkg: commands/config expansions/aos expansions/aos/config expansions/aos/skills/chivalry expansions/aos/skills/chivalry/config expansions/aos/skills/focus expansions/aos/skills/focus/config expansions/aos/skills/necromancy expansions/aos/skills/necromancy/config expansions/lbr expansions/lbr/config expansions/uor expansions/uor/config items/bountyboard/config items/commcrystals items/commcrystals/config items/containers/config items/decorations items/decorations/config items/doors items/doors/config items/dyes items/dyes/config items/food items/food/config items/guildstone items/lighting items/magic items/moongates items/mounts items/repaircontract items/runebook items/sysbook items/sysbook/config items/training items/traps items/trash items/treasuremap items/usestuff items/walkOn items/walkOn/config items/wands mobiles/animaltrainer mobiles/barber mobiles/death mobiles/death/config mobiles/npcutils mobiles/oldAI mobiles/playervendor other/gmtool! s other/hooks other/motd other/motd/config systems/attributes/config systems/boat systems/combat systems/crafting systems/crafting/config systems/daynight systems/housing systems/merchantnodes systems/poisonwatcher/config systems/pushthrough systems/spellcasting systems/stafflist systems/timer utils/servperf/config">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Thu Oct 27 20:11:56 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000656.html">[Poldistro-svn] r682 - trunk/096/pkg/utils/scheduler
+</A></li>
+        <LI>Next message: <A HREF="000658.html">[Poldistro-svn] r684 - in trunk/096: config pkg/commands pkg/commands/config pkg/config pkg/expansions/aos pkg/expansions/aos/skills/chivalry pkg/expansions/aos/skills/focus pkg/expansions/aos/skills/necromancy pkg/expansions/lbr pkg/expansions/uor pkg/items/bountyboard pkg/items/bulletinboard pkg/items/bulletinboard/config pkg/items/commcrystals pkg/items/containers pkg/items/containers/config pkg/items/decorations pkg/items/doors pkg/items/dyes pkg/items/food pkg/items/guildstone pkg/items/interiordecoratortool pkg/items/lighting pkg/items/magic pkg/items/moongates pkg/items/mounts pkg/items/repaircontract pkg/items/runebook pkg/items/sysbook pkg/items/sysbook/config pkg/items/training pkg/items/traps pkg/items/trash pkg/items/treasuremap pkg/items/usestuff pkg/items/walkOn pkg/items/walkOn/config pkg/items/wands pkg/mobiles/animaltrainer pkg/mobiles/barber pkg/mobiles/brainAI pkg/mobiles/brainAI/config pkg/mobiles/death pkg/mobiles/death/config pkg/mobiles/npcutils pkg/mobiles/o! ldAI pkg/mobiles/playervendor pkg/other/gmtools pkg/other/hooks pkg/other/motd pkg/other/motd/config pkg/other/packetHooks/CharProfile pkg/other/packetHooks/CharProfile/config pkg/other/packetHooks/OpenDoor pkg/other/packetHooks/OpenDoor/config pkg/other/packetHooks/RequestAttack pkg/other/packetHooks/RequestAttack/config pkg/other/packetHooks/WarAndPeace pkg/other/packetHooks/WarAndPeace/config pkg/skills/alchemy pkg/skills/anatomy pkg/skills/animallore pkg/skills/animallore/docs pkg/skills/armslore pkg/skills/begging pkg/skills/blacksmithy pkg/skills/bowcraft pkg/skills/camping pkg/skills/carpentry pkg/skills/cartography pkg/skills/cooking pkg/skills/detecthidden pkg/skills/evalint pkg/skills/fishing pkg/skills/forensicevaluation pkg/skills/healing pkg/skills/herding pkg/skills/hiding pkg/skills/inscription pkg/skills/itemid pkg/skills/lockpicking pkg/skills/lumberjacking pkg/skills/magery pkg/skills/meditation pkg/skills/mining pkg/skills/musicianship pkg/skills/poisonin! g pkg/skills/removetrap pkg/skills/spiritspeak pkg/skills/stea! ling pkg
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#657">[ date ]</a>
+              <a href="thread.html#657">[ thread ]</a>
+              <a href="subject.html#657">[ subject ]</a>
+              <a href="author.html#657">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-27 20:11:35 +0200 (Thu, 27 Oct 2005)
+New Revision: 683
+
+Added:
+   trunk/096/pkg/items/doors/config/
+   trunk/096/pkg/items/doors/config/icp.cfg
+   trunk/096/pkg/items/food/config/
+   trunk/096/pkg/items/food/config/icp.cfg
+Modified:
+   trunk/096/pkg/commands/config/icp.cfg
+   trunk/096/pkg/expansions/aos/config/icp.cfg
+   trunk/096/pkg/expansions/aos/pkg.cfg
+   trunk/096/pkg/expansions/aos/skills/chivalry/config/icp.cfg
+   trunk/096/pkg/expansions/aos/skills/chivalry/pkg.cfg
+   trunk/096/pkg/expansions/aos/skills/focus/config/icp.cfg
+   trunk/096/pkg/expansions/aos/skills/focus/pkg.cfg
+   trunk/096/pkg/expansions/aos/skills/necromancy/config/icp.cfg
+   trunk/096/pkg/expansions/aos/skills/necromancy/pkg.cfg
+   trunk/096/pkg/expansions/lbr/config/icp.cfg
+   trunk/096/pkg/expansions/lbr/pkg.cfg
+   trunk/096/pkg/expansions/uor/config/icp.cfg
+   trunk/096/pkg/expansions/uor/pkg.cfg
+   trunk/096/pkg/items/bountyboard/config/icp.cfg
+   trunk/096/pkg/items/commcrystals/config/icp.cfg
+   trunk/096/pkg/items/commcrystals/pkg.cfg
+   trunk/096/pkg/items/containers/config/icp.cfg
+   trunk/096/pkg/items/decorations/config/icp.cfg
+   trunk/096/pkg/items/decorations/pkg.cfg
+   trunk/096/pkg/items/doors/pkg.cfg
+   trunk/096/pkg/items/dyes/config/icp.cfg
+   trunk/096/pkg/items/dyes/pkg.cfg
+   trunk/096/pkg/items/food/pkg.cfg
+   trunk/096/pkg/items/guildstone/pkg.cfg
+   trunk/096/pkg/items/lighting/pkg.cfg
+   trunk/096/pkg/items/magic/pkg.cfg
+   trunk/096/pkg/items/moongates/pkg.cfg
+   trunk/096/pkg/items/mounts/pkg.cfg
+   trunk/096/pkg/items/repaircontract/pkg.cfg
+   trunk/096/pkg/items/runebook/pkg.cfg
+   trunk/096/pkg/items/sysbook/config/icp.cfg
+   trunk/096/pkg/items/sysbook/pkg.cfg
+   trunk/096/pkg/items/training/pkg.cfg
+   trunk/096/pkg/items/traps/pkg.cfg
+   trunk/096/pkg/items/trash/pkg.cfg
+   trunk/096/pkg/items/treasuremap/pkg.cfg
+   trunk/096/pkg/items/usestuff/pkg.cfg
+   trunk/096/pkg/items/walkOn/config/icp.cfg
+   trunk/096/pkg/items/walkOn/pkg.cfg
+   trunk/096/pkg/items/wands/pkg.cfg
+   trunk/096/pkg/mobiles/animaltrainer/pkg.cfg
+   trunk/096/pkg/mobiles/barber/pkg.cfg
+   trunk/096/pkg/mobiles/death/config/icp.cfg
+   trunk/096/pkg/mobiles/death/pkg.cfg
+   trunk/096/pkg/mobiles/npcutils/pkg.cfg
+   trunk/096/pkg/mobiles/oldAI/pkg.cfg
+   trunk/096/pkg/mobiles/playervendor/pkg.cfg
+   trunk/096/pkg/other/gmtools/pkg.cfg
+   trunk/096/pkg/other/hooks/pkg.cfg
+   trunk/096/pkg/other/motd/config/icp.cfg
+   trunk/096/pkg/other/motd/pkg.cfg
+   trunk/096/pkg/systems/attributes/config/icp.cfg
+   trunk/096/pkg/systems/boat/pkg.cfg
+   trunk/096/pkg/systems/combat/pkg.cfg
+   trunk/096/pkg/systems/crafting/config/icp.cfg
+   trunk/096/pkg/systems/crafting/pkg.cfg
+   trunk/096/pkg/systems/daynight/pkg.cfg
+   trunk/096/pkg/systems/housing/pkg.cfg
+   trunk/096/pkg/systems/merchantnodes/pkg.cfg
+   trunk/096/pkg/systems/poisonwatcher/config/icp.cfg
+   trunk/096/pkg/systems/pushthrough/pkg.cfg
+   trunk/096/pkg/systems/spellcasting/pkg.cfg
+   trunk/096/pkg/systems/stafflist/pkg.cfg
+   trunk/096/pkg/systems/timer/pkg.cfg
+   trunk/096/pkg/utils/servperf/config/icp.cfg
+Log:
+Updates for removing <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A> and replacing it with <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+
+Modified: trunk/096/pkg/commands/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/commands/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/commands/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -10,10 +10,10 @@
+ 	Description     Main Package for Text Commands.
+ 
+ 	Creator         Distro Team
+-	C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++	C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ 	Maintainer      Distro Team
+-	M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++	M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ 	//TextCmd       cmdlevel path
+ 	TextCmd         2 :commands:seer/go
+
+Modified: trunk/096/pkg/expansions/aos/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/expansions/aos/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/aos/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -5,8 +5,8 @@
+         Description     Package section for the files pertaining to AOS specific versions of scripts.
+ 
+         Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+         Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+
+Modified: trunk/096/pkg/expansions/aos/pkg.cfg
+===================================================================
+--- trunk/096/pkg/expansions/aos/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/aos/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,7 +1,7 @@
+ Enabled         1
+-Name            AOS
++Name		AOS
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.0
+ CoreRequired    96
+ Conflicts       uor
+
+Modified: trunk/096/pkg/expansions/aos/skills/chivalry/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/expansions/aos/skills/chivalry/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/aos/skills/chivalry/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -5,8 +5,8 @@
+         Description     Chivalry Skill
+ 
+         Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+         Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+
+Modified: trunk/096/pkg/expansions/aos/skills/chivalry/pkg.cfg
+===================================================================
+--- trunk/096/pkg/expansions/aos/skills/chivalry/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/aos/skills/chivalry/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+ Enabled         1
+-Name            chivalry
++Name		chivalry
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.0
+ CoreRequired    96
+\ No newline at end of file
+
+Modified: trunk/096/pkg/expansions/aos/skills/focus/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/expansions/aos/skills/focus/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/aos/skills/focus/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -5,8 +5,8 @@
+         Description     Focus Skill
+ 
+         Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+         Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+
+Modified: trunk/096/pkg/expansions/aos/skills/focus/pkg.cfg
+===================================================================
+--- trunk/096/pkg/expansions/aos/skills/focus/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/aos/skills/focus/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+ Enabled         1
+-Name            focus
++Name		focus
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.0
+ CoreRequired    96
+\ No newline at end of file
+
+Modified: trunk/096/pkg/expansions/aos/skills/necromancy/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/expansions/aos/skills/necromancy/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/aos/skills/necromancy/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -5,8 +5,8 @@
+         Description     Necromancy skill
+ 
+         Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+         Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+
+Modified: trunk/096/pkg/expansions/aos/skills/necromancy/pkg.cfg
+===================================================================
+--- trunk/096/pkg/expansions/aos/skills/necromancy/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/aos/skills/necromancy/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+ Enabled         1
+-Name            necromancy
++Name		necromancy
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.0
+ CoreRequired    96
+\ No newline at end of file
+
+Modified: trunk/096/pkg/expansions/lbr/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/expansions/lbr/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/lbr/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -5,8 +5,8 @@
+         Description     Package section for the files pertaining to LBR specific versions of scripts.
+ 
+         Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+         Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+
+Modified: trunk/096/pkg/expansions/lbr/pkg.cfg
+===================================================================
+--- trunk/096/pkg/expansions/lbr/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/lbr/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,7 +1,7 @@
+ Enabled         0
+-Name            lbr
++Name		lbr
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.0
+ CoreRequired    96
+ Conflicts       uor
+
+Modified: trunk/096/pkg/expansions/uor/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/expansions/uor/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/uor/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -5,8 +5,8 @@
+         Description     Package section for the files pertaining to UOR specific versions of scripts.
+ 
+         Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+         Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+
+Modified: trunk/096/pkg/expansions/uor/pkg.cfg
+===================================================================
+--- trunk/096/pkg/expansions/uor/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/expansions/uor/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,7 +1,7 @@
+ Enabled         0
+-Name            uor
++Name		uor
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.0
+ CoreRequired    96
+ Conflicts       LBR
+
+Modified: trunk/096/pkg/items/bountyboard/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/bountyboard/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/bountyboard/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -8,5 +8,5 @@
+         C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">bishop_ebonhand at cfl.rr.com</A>
+ 
+         Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+
+Modified: trunk/096/pkg/items/commcrystals/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/commcrystals/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/commcrystals/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -5,8 +5,8 @@
+         Description     CommCrystal Control Package
+ 
+         Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+         Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+
+Modified: trunk/096/pkg/items/commcrystals/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/commcrystals/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/commcrystals/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+ Enabled	 	1
+-Name 		commcrystals
++Name		commcrystals
+ Maintainer 	Distro Team
+-Email 		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email 		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version 	1.0
+ 
+
+Modified: trunk/096/pkg/items/containers/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/containers/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/containers/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -3,15 +3,15 @@
+ 	Name		Containers
+ 	Version		1.0
+ 	Description	Handles generic and core container items.
+-	
++
+ 	Creator		Austin
+ 	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+-	
++
+ 	Maintainer	Distro Team
+-	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-	
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
+ 	//Script	cmdlevel path
+-			
++
+ 	//TextCmd	cmdlevel path
+ 	TextCmd		4	:attributes:commands/admin/openStorage
+ 	TextCmd		4	:attributes:commands/admin/storageAreas
+
+Modified: trunk/096/pkg/items/decorations/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/decorations/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/decorations/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -5,8 +5,8 @@
+         Description     Decorations package. Contains items solely for decoration and their scripts if any required.
+ 
+         Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+         Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+
+Modified: trunk/096/pkg/items/decorations/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/decorations/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/decorations/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+ Enabled         1
+-Name            decorations
++Name		decorations
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.0a
+
+Added: trunk/096/pkg/items/doors/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/doors/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/doors/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -0,0 +1,12 @@
++ICP Register
++{
++        Name            Doors Control
++        Version         1.5
++        Description     Control package for Doors.
++
++        Creator         Distro Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+
+Modified: trunk/096/pkg/items/doors/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/doors/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/doors/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name doors
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.5
+\ No newline at end of file
++Enabled		1
++Name		doors
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.5
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/dyes/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/dyes/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/dyes/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -2,12 +2,12 @@
+ {
+ 	Name		Dyes
+ 	Version		1.0
+-	
++
+ 	Description	Package that handles dyes and dye tubs.
+-	
++
+ 	Creator		Austin
+ 	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+-	
++
+ 	Maintainer	Distro Team
+-	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/dyes/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/dyes/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/dyes/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -8,7 +8,7 @@
+ Creator		Austin Heilman
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+ Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Requires none
+ #Conflicts none
+
+Added: trunk/096/pkg/items/food/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/food/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/food/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -0,0 +1,12 @@
++ICP Register
++{
++        Name            Food &amp; Drink
++        Version         1.0
++        Description     Food &amp; Drink package.
++
++        Creator         Distro Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+
+Modified: trunk/096/pkg/items/food/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/food/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/food/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name food&amp;drink
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+\ No newline at end of file
++Enabled		1
++Name		food&amp;drink
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/guildstone/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/guildstone/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/guildstone/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,5 @@
+-Enabled 1
+-Name guildstone
+-mantainer Bishop Ebonhand / Distro Team
+-email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">bishop-ebonhand at cfl.rr.com</A>
+-version 1.0
+\ No newline at end of file
++Enabled		1
++Name		guildstone
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/lighting/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/lighting/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/lighting/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name lighting
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+\ No newline at end of file
++Enabled		1
++Name		lighting
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/magic/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/magic/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/magic/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name magic
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+\ No newline at end of file
++Enabled		1
++Name		magic
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/moongates/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/moongates/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/moongates/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,5 @@
+-Enabled 1
+-Name    moongates
+-
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		moongates
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/items/mounts/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/mounts/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/mounts/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -8,7 +8,7 @@
+ Creator		Austin Heilman
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+ Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Requires none
+ #Conflicts none
+
+Modified: trunk/096/pkg/items/repaircontract/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/repaircontract/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/repaircontract/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+ Enabled         1
+-Name            repaircontract
++Name		repaircontract
+ Version         1.0
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+
+Modified: trunk/096/pkg/items/runebook/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/runebook/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/runebook/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name runebook
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		runebook
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/items/sysbook/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/sysbook/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/sysbook/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -5,15 +5,15 @@
+ 	Name		System Books
+ 	Version		1.0
+ 	Description	System books... uhhh you read them and write in them?
+-	
++
+ 	Creator		Austin
+ 	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+-	
++
+ 	Maintainer	Distro Team
+-	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-	
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
+ 	//Script	cmdlevel path
+-			
++
+ 	//TextCmd	cmdlevel path
+ 	TextCmd		3	:sysbook:commands/gm/zulubooks
+ }
+
+Modified: trunk/096/pkg/items/sysbook/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/sysbook/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/sysbook/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -8,6 +8,6 @@
+ Creator		Austin Heilman
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+ Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Conflicts none
+
+Modified: trunk/096/pkg/items/training/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/training/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/training/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name training
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0 
++Enabled		1
++Name		training
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/items/traps/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/traps/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/traps/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name traps
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		traps
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/items/trash/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/trash/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/trash/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name trash
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+\ No newline at end of file
++Enabled		1
++Name		trash
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/treasuremap/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/treasuremap/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/treasuremap/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name treasuremap
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		treasuremap
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/items/usestuff/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/usestuff/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/usestuff/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name usestuff
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+\ No newline at end of file
++Enabled		1
++Name		usestuff
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/walkOn/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/walkOn/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/walkOn/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -2,18 +2,18 @@
+ {
+ 	Name		Walkon Tiles
+ 	Version		1.0
+-	
++
+ 	Description	Tiles with walkon scripts. [P]
+ 	Description	Telepad, resurrection tile, poison field, fire field, etc.
+-	
++
+ 	Creator		Austin
+ 	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+-	
++
+ 	Maintainer	Distro Team
+-	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-	
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
+ 	//Script	cmdlevel path
+-			
++
+ 	//TextCmd	cmdlevel path
+ 	TextCmd		2 :walkon:commands/seer/makeTele
+ }
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/walkOn/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/walkOn/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/walkOn/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -8,7 +8,7 @@
+ Creator		Austin Heilman
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+ Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Requires none
+ #Conflicts none
+
+Modified: trunk/096/pkg/items/wands/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/wands/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/items/wands/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name wands
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		wands
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/mobiles/animaltrainer/pkg.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/animaltrainer/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/mobiles/animaltrainer/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-enabled 1
+-name animaltrainer
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+\ No newline at end of file
++Enabled		1
++Name		animaltrainer
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/barber/pkg.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/barber/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/mobiles/barber/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name barber
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		barber
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/mobiles/death/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/death/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/mobiles/death/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -3,15 +3,15 @@
+ 	Name		Death
+ 	Version		1.0
+ 	Description	Handles the scripts for player and npc deaths.
+-	
++
+ 	Creator		Austin
+ 	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+-	
++
+ 	Maintainer	Distro Team
+-	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-	
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
+ 	//Script	cmdlevel path
+-			
++
+ 	//TextCmd	cmdlevel path
+ 	TextCmd		2	:death:commands/seer/resurrect
+ }
+
+Modified: trunk/096/pkg/mobiles/death/pkg.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/death/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/mobiles/death/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -8,7 +8,7 @@
+ Creator		Austin Heilman
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+ Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Requires none
+ #Conflicts none
+
+Modified: trunk/096/pkg/mobiles/npcutils/pkg.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/npcutils/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/mobiles/npcutils/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-enabled 1
+-name npcutils
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+\ No newline at end of file
++Enabled		1
++Name		npcutils
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/oldAI/pkg.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/mobiles/oldAI/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -6,7 +6,7 @@
+ CoreRequired	96
+ 
+ Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Requires none
+ #Conflicts none
+
+Modified: trunk/096/pkg/mobiles/playervendor/pkg.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/playervendor/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/mobiles/playervendor/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name playervendor
+-Version 0.1
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+\ No newline at end of file
++Enabled		1
++Name		playervendor
++Version		0.1
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+\ No newline at end of file
+
+Modified: trunk/096/pkg/other/gmtools/pkg.cfg
+===================================================================
+--- trunk/096/pkg/other/gmtools/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/other/gmtools/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-enabled 1
+-Name gmtools
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		gmtools
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/other/hooks/pkg.cfg
+===================================================================
+--- trunk/096/pkg/other/hooks/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/other/hooks/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+ Enabled		0
+ Name		hooks
+ Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ CoreRequired	94
+ Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/other/motd/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/other/motd/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/other/motd/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -3,15 +3,15 @@
+ 	Name		Message Of The Day
+ 	Version		1.0
+ 	Description	Message of the day system.
+-		
++
+ 	Creator		Austin
+ 	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+-	
++
+ 	Maintainer	Distro Team
+-	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-	
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
+ 	//Script	cmdlevel path
+-	
+-	//TextCmd	cmdlevel path	
++
++	//TextCmd	cmdlevel path
+ 	TextCmd		0	:motd:commands/player/motd
+ }
+
+Modified: trunk/096/pkg/other/motd/pkg.cfg
+===================================================================
+--- trunk/096/pkg/other/motd/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/other/motd/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -9,7 +9,7 @@
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+ 
+ Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Requires none
+ #Conflicts none
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/attributes/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/attributes/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -3,15 +3,15 @@
+ 	Name		Attributes
+ 	Version		1.0
+ 	Description	Handles all attribute and vital related functions in POL.
+-	
++
+ 	Creator		Austin
+ 	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+-	
++
+ 	Maintainer	Distro Team
+-	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-	
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
+ 	//Script	cmdlevel path
+-			
++
+ 	//TextCmd	cmdlevel path
+ 	TextCmd		2	:attributes:commands/seer/powerup
+ 	TextCmd		2	:attributes:commands/seer/refresh
+
+Modified: trunk/096/pkg/systems/boat/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/boat/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/boat/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+-Enabled 1
+-Name boat
+-Maintainer Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		boat
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+ 
+
+Modified: trunk/096/pkg/systems/combat/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/combat/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name combat
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+\ No newline at end of file
++Enabled		1
++Name		combat
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/crafting/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/systems/crafting/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/crafting/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -8,7 +8,7 @@
+         C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
+ 
+         Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+         //TextCmd       cmdlevel path
+ }
+
+Modified: trunk/096/pkg/systems/crafting/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/crafting/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/crafting/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -8,6 +8,6 @@
+ Creator		MuadDib
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
+ Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Conflicts none
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/daynight/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/daynight/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/daynight/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+-Enabled 1
+-Name daynight
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		daynight
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+ 
+
+Modified: trunk/096/pkg/systems/housing/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/housing/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/housing/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+-Enabled 1
+-Name housing
+-CoreRequired 92
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.1
++Enabled		1
++Name		housing
++CoreRequired	92
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.1
+
+Modified: trunk/096/pkg/systems/merchantnodes/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/merchantnodes/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/merchantnodes/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+-Enabled     1
+-Name        merchantnodes
+-Version     0.1
+-Creator     Bishop Ebonhand
+-Maintainer  Distro Team
+-Email       <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+\ No newline at end of file
++Enabled		1
++Name		merchantnodes
++Version		0.1
++Creator		Bishop Ebonhand
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/poisonwatcher/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/systems/poisonwatcher/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/poisonwatcher/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -8,7 +8,7 @@
+ 	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+ 
+ 	Maintainer	Distro Team
+-	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ 	//Script	cmdlevel path
+ 
+
+Modified: trunk/096/pkg/systems/pushthrough/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/pushthrough/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/pushthrough/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+-Enabled 1
+-Name pushthrough
+-CoreRequired 95
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		pushthrough
++CoreRequired	95
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/systems/spellcasting/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/spellcasting/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/spellcasting/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,6 +1,6 @@
+-Enabled 1
+-Name spellcasting
+-CoreRequired 96
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		spellcasting
++CoreRequired	96
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/systems/stafflist/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/stafflist/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/stafflist/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name stafflist
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		stafflist
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/timer/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/timer/pkg.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/systems/timer/pkg.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name timer
+-Maintainer  Distro Team
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled		1
++Name		timer
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Modified: trunk/096/pkg/utils/servperf/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/utils/servperf/config/icp.cfg	2005-10-27 17:37:02 UTC (rev 682)
++++ trunk/096/pkg/utils/servperf/config/icp.cfg	2005-10-27 18:11:35 UTC (rev 683)
+@@ -8,7 +8,7 @@
+ 	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">syzygy at pobox.com</A>
+ 
+ 	Maintainer	Distro Team
+-	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ 	//Script	cmdlevel path
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000656.html">[Poldistro-svn] r682 - trunk/096/pkg/utils/scheduler
+</A></li>
+	<LI>Next message: <A HREF="000658.html">[Poldistro-svn] r684 - in trunk/096: config pkg/commands pkg/commands/config pkg/config pkg/expansions/aos pkg/expansions/aos/skills/chivalry pkg/expansions/aos/skills/focus pkg/expansions/aos/skills/necromancy pkg/expansions/lbr pkg/expansions/uor pkg/items/bountyboard pkg/items/bulletinboard pkg/items/bulletinboard/config pkg/items/commcrystals pkg/items/containers pkg/items/containers/config pkg/items/decorations pkg/items/doors pkg/items/dyes pkg/items/food pkg/items/guildstone pkg/items/interiordecoratortool pkg/items/lighting pkg/items/magic pkg/items/moongates pkg/items/mounts pkg/items/repaircontract pkg/items/runebook pkg/items/sysbook pkg/items/sysbook/config pkg/items/training pkg/items/traps pkg/items/trash pkg/items/treasuremap pkg/items/usestuff pkg/items/walkOn pkg/items/walkOn/config pkg/items/wands pkg/mobiles/animaltrainer pkg/mobiles/barber pkg/mobiles/brainAI pkg/mobiles/brainAI/config pkg/mobiles/death pkg/mobiles/death/config pkg/mobiles/npcutils pkg/mobiles/o! ldAI pkg/mobiles/playervendor pkg/other/gmtools pkg/other/hooks pkg/other/motd pkg/other/motd/config pkg/other/packetHooks/CharProfile pkg/other/packetHooks/CharProfile/config pkg/other/packetHooks/OpenDoor pkg/other/packetHooks/OpenDoor/config pkg/other/packetHooks/RequestAttack pkg/other/packetHooks/RequestAttack/config pkg/other/packetHooks/WarAndPeace pkg/other/packetHooks/WarAndPeace/config pkg/skills/alchemy pkg/skills/anatomy pkg/skills/animallore pkg/skills/animallore/docs pkg/skills/armslore pkg/skills/begging pkg/skills/blacksmithy pkg/skills/bowcraft pkg/skills/camping pkg/skills/carpentry pkg/skills/cartography pkg/skills/cooking pkg/skills/detecthidden pkg/skills/evalint pkg/skills/fishing pkg/skills/forensicevaluation pkg/skills/healing pkg/skills/herding pkg/skills/hiding pkg/skills/inscription pkg/skills/itemid pkg/skills/lockpicking pkg/skills/lumberjacking pkg/skills/magery pkg/skills/meditation pkg/skills/mining pkg/skills/musicianship pkg/skills/poisonin! g pkg/skills/removetrap pkg/skills/spiritspeak pkg/skills/stea! ling pkg
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#657">[ date ]</a>
+              <a href="thread.html#657">[ thread ]</a>
+              <a href="subject.html#657">[ subject ]</a>
+              <a href="author.html#657">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

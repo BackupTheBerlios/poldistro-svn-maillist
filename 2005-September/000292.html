@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r314 - trunk/096/pkg/items/sysbook/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r314%20-%20trunk/096/pkg/items/sysbook/include&In-Reply-To=%3C200509292305.j8TN5hR2009662%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000291.html">
+   <LINK REL="Next"  HREF="000293.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r314 - trunk/096/pkg/items/sysbook/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r314%20-%20trunk/096/pkg/items/sysbook/include&In-Reply-To=%3C200509292305.j8TN5hR2009662%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r314 - trunk/096/pkg/items/sysbook/include">austin at berlios.de
+       </A><BR>
+    <I>Fri Sep 30 01:05:43 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000291.html">[Poldistro-svn] r313 - in trunk/096/pkg/items/sysbook: . book config www
+</A></li>
+        <LI>Next message: <A HREF="000293.html">[Poldistro-svn] r315 - trunk/096/pkg/items/sysbook/book
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#292">[ date ]</a>
+              <a href="thread.html#292">[ thread ]</a>
+              <a href="subject.html#292">[ subject ]</a>
+              <a href="author.html#292">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-30 01:05:41 +0200 (Fri, 30 Sep 2005)
+New Revision: 314
+
+Added:
+   trunk/096/pkg/items/sysbook/include/zuluBooks.inc
+Log:
+Will be used to parse zulubooks.cfg 
+
+Added: trunk/096/pkg/items/sysbook/include/zuluBooks.inc
+===================================================================
+--- trunk/096/pkg/items/sysbook/include/zuluBooks.inc	2005-09-29 22:53:45 UTC (rev 313)
++++ trunk/096/pkg/items/sysbook/include/zuluBooks.inc	2005-09-29 23:05:41 UTC (rev 314)
+@@ -0,0 +1,61 @@
++//$Id$
++
++/*===============================================================
++* Current Version
++* ZULUBOOKS.INC - v1.0
++* Updated 9/29/2005 4:00PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use os;
++use cfgfile;
++
++/* SysBook_GetZuluBooksCfgFile()
++ * 
++ * Purpose
++ * Loads zulubooks.cfg
++ *
++ * Parameters
++ *
++ * Return value
++ * Config file
++ *
++ */
++function SysBook_GetZuluBooksCfgFile()
++	var cfg_file := ReadConfigFile(&quot;:sysbooks:config/zulubooks&quot;);
++	if ( cfg_file.errortext )
++		SysLog(&quot;Error::SysBook_GetZuluBooksCfgFile() - Unable to open zulubooks.cfg -&gt;&quot;+cfg_file.errortext);
++	endif
++
++	return cfg_file;
++endfunction
++
++/*
++ * SysBook_GetZuluCfgElem(elem_name, cfg_file)
++ *
++ * Purpose
++ * Retrieves a config elem for a book in zulubooks.cfg
++ *
++ * Parameters
++ * elem_name:		Name of the book elem to retrieve.
++ * cfg_file:		Optional parameter - reference to a config already read in.
++ *
++ * Return value
++ * Returns a config file elem.
++ *
++ */
++function SysBook_GetZuluCfgElem(elem_name, byref cfg_file:=0)
++	if ( !cfg_file )
++		cfg_file := SysBook_GetZuluBooksCfgFile();
++	endif
++	
++	var cfg_elem := cfg_file[elem_name];
++	if ( cfg_elem.errortext )
++		SysLog(&quot;Error::SysBook_GetZuluCfgElem() - unable to find cfg elem [&quot;+elem_name+&quot;] -&gt;&quot;+cfg_elem.errortext);
++	endif
++	
++	return cfg_elem;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000291.html">[Poldistro-svn] r313 - in trunk/096/pkg/items/sysbook: . book config www
+</A></li>
+	<LI>Next message: <A HREF="000293.html">[Poldistro-svn] r315 - trunk/096/pkg/items/sysbook/book
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#292">[ date ]</a>
+              <a href="thread.html#292">[ thread ]</a>
+              <a href="subject.html#292">[ subject ]</a>
+              <a href="author.html#292">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

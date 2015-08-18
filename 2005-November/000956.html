@@ -1,0 +1,975 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r983 - in trunk/096: config pkg/utils pkg/utils/inns pkg/utils/inns/config pkg/utils/inns/include scripts/include/OLD scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r983%20-%20in%20trunk/096%3A%20config%20pkg/utils%20pkg/utils/inns%20pkg/utils/inns/config%20pkg/utils/inns/include%20scripts/include/OLD%20scripts/misc&In-Reply-To=%3C200511140649.jAE6nQnL010264%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000955.html">
+   <LINK REL="Next"  HREF="000957.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r983 - in trunk/096: config pkg/utils pkg/utils/inns pkg/utils/inns/config pkg/utils/inns/include scripts/include/OLD scripts/misc</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r983%20-%20in%20trunk/096%3A%20config%20pkg/utils%20pkg/utils/inns%20pkg/utils/inns/config%20pkg/utils/inns/include%20scripts/include/OLD%20scripts/misc&In-Reply-To=%3C200511140649.jAE6nQnL010264%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r983 - in trunk/096: config pkg/utils pkg/utils/inns pkg/utils/inns/config pkg/utils/inns/include scripts/include/OLD scripts/misc">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon Nov 14 07:49:26 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000955.html">[Poldistro-svn] r982 - trunk/096/config
+</A></li>
+        <LI>Next message: <A HREF="000957.html">[Poldistro-svn] r984 - in trunk/096: pkg/items pkg/items/acid pkg/items/acid/acid pkg/items/acid/config pkg/items/acid/include scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#956">[ date ]</a>
+              <a href="thread.html#956">[ thread ]</a>
+              <a href="subject.html#956">[ subject ]</a>
+              <a href="author.html#956">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-14 07:49:18 +0100 (Mon, 14 Nov 2005)
+New Revision: 983
+
+Added:
+   trunk/096/pkg/utils/inns/
+   trunk/096/pkg/utils/inns/config/
+   trunk/096/pkg/utils/inns/config/icp.cfg
+   trunk/096/pkg/utils/inns/config/inns-britannia.cfg
+   trunk/096/pkg/utils/inns/config/inns-britannia_alt.cfg
+   trunk/096/pkg/utils/inns/include/
+   trunk/096/pkg/utils/inns/include/innFunctions.inc
+   trunk/096/pkg/utils/inns/pkg.cfg
+Removed:
+   trunk/096/config/innlocation.cfg
+   trunk/096/scripts/include/OLD/innCheck.inc
+Modified:
+   trunk/096/scripts/misc/logofftest.src
+Log:
+Packaged inn location checks to use in logofftest.src.
+Updated logofftest.src for camping and inn checks.
+Made default inn files for britannia and britannia_alt.
+
+
+Deleted: trunk/096/config/innlocation.cfg
+===================================================================
+--- trunk/096/config/innlocation.cfg	2005-11-14 04:22:31 UTC (rev 982)
++++ trunk/096/config/innlocation.cfg	2005-11-14 06:49:18 UTC (rev 983)
+@@ -1,365 +0,0 @@
+-# $Id$
+-#
+-#
+-# Britain
+-
+-region Northside Inn 1
+-{
+-rect 1455 1511 1473 1529
+-}
+-
+-region Northside Inn 2
+-{
+-rect 1473 1511 1481 1521
+-}
+-
+-region Wayfarers Inn
+-{
+-rect 1575 1583 1601 1601
+-}
+-
+-region Sweet Dreams Inn 1
+-{
+-rect 1491 1601 1500 1626
+-}
+-
+-region Sweet Dreams Inn 2
+-{
+-rect 1500 1609 1508 1626
+-}
+-
+-region The Cats Lair 1
+-{
+-rect 1424 1712 1430 1734
+-}
+-
+-region The Cats Lair 2
+-{
+-rect 1431 1712 1438 1722
+-}
+-
+-region The Blue Boar 1
+-{
+-rect 1486 1684 1493 1690
+-}
+-
+-region The Blue Boar 2
+-{
+-rect 1494 1676 1500 1698
+-}
+-
+-region The Salty Dog 1
+-{
+-rect 1616 1576 1622 1583
+-}
+-
+-region The Salty Dog 2
+-{
+-rect 1608 1584 1630 1590
+-}
+-
+-region The Unicorn's Horn 1
+-{
+-rect 1544 1760 1566 1766
+-}
+-
+-region The Unicorn's Horn 2
+-{
+-rect 1544 1767 1558 1774
+-}
+-
+-# Moonglow
+-
+-region Student Hostel 1
+-{
+-rect 4475 1059 4493 1069
+-}
+-
+-region Student Hostel 2
+-{
+-rect 4479 1069 4489 1073
+-}
+-
+-region Student Hostel 3
+-{
+-rect 4479 1055 4489 1059
+-}
+-
+-region The Scholar's Inn 1
+-{
+-rect 4383 1151 4393 1177
+-}
+-
+-region The Scholar's Inn 2
+-{
+-rect 4393 1159 4399 1169
+-}
+-
+-region The Scholar's Inn 3
+-{
+-rect 4399 1151 4409 1169
+-}
+-
+-# Nujel'm
+-
+-region Restful Slumber
+-{
+-rect 3727 1287 3753 1344
+-
+-region The Silver Bow 1
+-{
+-rect 3728 1248 3742 1262
+-}
+-
+-region The Silver Bow 2
+-{
+-rect 3728 1263 3750 1270
+-}
+-
+-region The Silver Bow 3
+-{
+-rect 3744 1247 3750 1254
+-}
+-
+-region Mystical Spirits 1
+-{
+-rect 3760 1216 3770 1238
+-}
+-
+-region Mystical Spirits 2
+-{
+-rect 3771 1220 3774 1234
+-}
+-
+-region Mystical Spirits 3
+-{
+-rect 3775 1223 3783 1230
+-}
+-
+-# Skara Brae
+-
+-region The Falconer's Inn 1
+-{
+-rect 590 2238 626 2257
+-}
+-
+-region The Falconer's Inn 2
+-{
+-rect 599 2230 617 2239
+-}
+-
+-region The Shattered Skull 1
+-{
+-rect 552 2168 566 2190
+-}
+-
+-region The Shattered Skull 2
+-{
+-rect 568 2168 574 2174
+-}
+-
+-# Trinsic
+-
+-region The Traveller's Inn
+-{
+-rect 1833 2727 1857 2745
+-}
+-
+-region The Rusty Anchor
+-{
+-rect 2023 2783 2040 2813
+-}
+-
+-region The Keg and Anchor 1
+-{
+-rect 1923 2786 1933 2806
+-}
+-
+-region The Keg and Anchor 2
+-{
+-rect 1933 2786 1940 2799
+-}
+-
+-# Vesper
+-# The Ironwood Inn
+-
+-region The Ironwood Inn 1
+-{
+-rect 2775 951 2793 985
+-}
+-
+-region The Ironwood Inn 2
+-{
+-rect 2767 959 2775 977
+-}
+-
+-region Vesper Youth Hostel 1
+-{
+-rect 2952 863 2969 897
+-}
+-
+-region Vesper Youth Hostel 2
+-{
+-rect 2969 871 2977 889
+-}
+-
+-region The Marsh Hall 1
+-{
+-rect 2892 901 2906 918
+-}
+-
+-region
+-{
+-rect 2908 904 2914 910
+-}
+-
+-# Wind
+-
+-region Seeker's Inn
+-{
+-rect 5303 28 5319 43
+-}
+-
+-region Wind Inn
+-{
+-rect 5159 15 5184 40
+-}
+-
+-region Bunkhouse
+-{
+-rect 5304 295317 41
+-}
+-
+-# Papua
+-
+-region The Just Inn
+-{
+-rect 5756 3148 5787 3175
+-}
+-
+-# Delucia
+-
+-region Abandoned Inn
+-{
+-rect 5184 4054 5203 4072
+-}
+-
+-# Bucaneer's Den
+-# The Peg Leg Inn
+-
+-region The Peg Leg Inn 1
+-{
+-rect 2711 2079 2729 2097
+-}
+-
+-region The Peg Leg Inn 2
+-{
+-rect 2711 2097 2721 2105
+-}
+-
+-region The Pirate's Plunder 1
+-{
+-rect 2664 2232 2686 2239
+-}
+-
+-region The Pirate's Plunder 2
+-{
+-rect 2672 2240 2686 2246
+-}
+-
+-# Magincia
+-
+-region The Stag &amp; Lion Inn 1
+-{
+-rect 3679 2151 3704 2160
+-}
+-
+-region The Stag &amp; Lion Inn 2
+-{
+-rect 3687 2160 3704 2172
+-}
+-
+-region The Stag &amp; Lion Inn 3
+-{
+-rect 3695 2172 3704 2176
+-}
+-
+-region The Great Horns Tavern
+-{
+-rect 3720 22163735 2230
+-}
+-
+-# Serpent's Hold
+-
+-region Broken Arrow Inn
+-{
+-rect 2959 3399 2976 3416
+-}
+-
+-region The Dog and Lion Pub
+-{
+-rect 2968 3416 2974 3430
+-}
+-
+-# Jhelom
+-
+-region Morning Star Inn 1
+-{
+-rect 1351 3799 1369 3833
+-}
+-
+-region Morning Star Inn 2
+-{
+-rect 1369 3807 1377 3825
+-}
+-
+-region The Horse's Head 1
+-{
+-rect 1432 3768 1439 3774
+-}
+-
+-region The Horse's Head 2
+-{
+-rect 1440 3768 1462 3782
+-}
+-
+-# Delucia
+-
+-region The Barley Inn
+-{
+-rect 5194 4060 5204 4073
+-}
+-
+-# Minoc
+-
+-region The Barnacle Tavern 1
+-{
+-RECT 2456 396 2498 406
+-}
+-
+-region The Barnacle Tavern 2
+-{
+-RECT 2464 406 2474 414
+-}
+-
+-region The Barnacle Tavern 3
+-{
+-RECT 2480 406 2490 414
+-}
+-
+-# Ocllo
+-
+-region Bountiful Harvest Inn
+-{
+-RECT 3662 2608 3681 2625
+-}
+-
+-region The Albatross 1
+-{
+-rect 3664 2640 3671 2654
+-}
+-
+-region The Albatross 2
+-{
+-rect
+-} 3671 2648 3678 2654
+\ No newline at end of file
+
+Added: trunk/096/pkg/utils/inns/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/utils/inns/config/icp.cfg	2005-11-14 04:22:31 UTC (rev 982)
++++ trunk/096/pkg/utils/inns/config/icp.cfg	2005-11-14 06:49:18 UTC (rev 983)
+@@ -0,0 +1,19 @@
++# $Id$
++#
++#
++ICP Register
++{
++	Name		Inns
++	Version		1.0
++	Description	Inn Location Package
++
++	Creator		MuadDib
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++	Maintainer	Distro
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	#Script	cmdlevel path
++
++	#TextCmd	cmdlevel path
++
++}
+
+
+Property changes on: trunk/096/pkg/utils/inns/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/inns/config/inns-britannia.cfg
+===================================================================
+--- trunk/096/pkg/utils/inns/config/inns-britannia.cfg	2005-11-14 04:22:31 UTC (rev 982)
++++ trunk/096/pkg/utils/inns/config/inns-britannia.cfg	2005-11-14 06:49:18 UTC (rev 983)
+@@ -0,0 +1,163 @@
++# $Id$
++#
++#
++
++Region Britain_Northside_Inn_1
++{
++	Rect	1455 1511 1471 1527
++}
++
++Region Britain_Northside_Inn_2
++{
++	Rect	1470 1511 1479 1519
++}
++
++Region Britain_Wayfarers_Inn
++{
++	Rect	1575 1583 1599 1599
++}
++
++Region Britain_Sweet_Dreams_Inn
++{
++	Rect	1491 1601 1507 1625
++}
++
++Region Moonglow_Student_Hostel_1
++{
++	Rect	4475 1059 4491 1067
++}
++
++Region Moonglow_Student_Hostel_2
++{
++	Rect	4479 1055 4487 1071
++}
++
++Region Moonglow_The_Scholars_Inn_1
++{
++	Rect	4383 1151 4391 1175
++}
++
++Region Moonglow_The_Scholars_Inn_2
++{
++	Rect	4391 1159 4407 1167
++}
++
++Region Moonglow_The_Scholars_Inn_3
++{
++	Rect	4399 1151 4407 1159
++}
++
++Region Nujelm_Restful_Slumber_1
++{
++	Rect	3727 1287 3743 1343
++}
++
++Region Nujelm_Restful_Slumber_2
++{
++	Rect	3743 1287 3751 1303
++}
++
++Region Nujelm_Restful_Slumber_3
++{
++	Rect	3743 1327 3751 1343
++}
++
++Region Skara_Brae_The_Falconers_Inn_1
++{
++	Rect	590 2238 623 2255
++}
++
++Region Skara_Brae_The_Falconers_Inn_2
++{
++	Rect	599 2231 615 2239
++}
++
++Region Trinsic_The_Travellers_Inn
++{
++	Rect	1833 2727 1855 2743
++}
++
++Region Trinsic_The_Rusty_Anchor
++{
++	Rect	2023 2783 2039 2812
++}
++
++Region Vesper_The_Ironwood_Inn_1
++{
++	Rect	2775 951 2791 983
++}
++
++Region Vesper_The Ironwood Inn 2
++{
++	Rect	2767 959 2775 977
++}
++
++Region Vesper_Youth_Hostel_1
++{
++	Rect	2952 863 2967 895
++}
++
++Region Vesper_Youth_Hostel_2
++{
++	Rect	2967 871 2975 887
++}
++
++Region Wind_Inn
++{
++	Rect	5159 15 5184 40
++}
++
++Region Wind_Bunkhouse
++{
++	Rect	5303 28 5318 40
++}
++
++Region Papua_The_Just_Inn
++{
++	Rect	5756 3149 5783 3168
++}
++
++Region Delucia_Abandoned_Inn
++{
++	Rect	5184 4054 5203 4072
++}
++
++Region Bucs_The_Peg_Leg_Inn_1
++{
++	Rect	2711 2079 2727 2095
++}
++
++Region Bucs_The_Peg_Leg_Inn_2
++{
++	Rect	2711 2095 2720 2104
++}
++
++Region Magincia_The_Stag_and_Lion_Inn_1
++{
++	Rect	3679 2151 3703 2175
++}
++
++Region Serpents_Hold_Broken_Arrow_Inn
++{
++	Rect	2959 3399 2975 3415
++}
++
++Region Jhelom_Morning_Star_Inn_1
++{
++	Rect	1351 3799 1367 3831
++}
++
++Region Jhelom_Morning_Star_Inn_2
++{
++	Rect	1367 3807 1375 3823
++}
++
++Region Minoc_The_Barnacle_Tavern
++{
++	Rect	2456 396 2496 413
++}
++
++Region Ocllo_Bountiful_Harvest_Inn
++{
++	Rect	3662 2608 3679 2623
++}
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/inns/config/inns-britannia.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/inns/config/inns-britannia_alt.cfg
+===================================================================
+--- trunk/096/pkg/utils/inns/config/inns-britannia_alt.cfg	2005-11-14 04:22:31 UTC (rev 982)
++++ trunk/096/pkg/utils/inns/config/inns-britannia_alt.cfg	2005-11-14 06:49:18 UTC (rev 983)
+@@ -0,0 +1,163 @@
++# $Id$
++#
++#
++
++Region Britain_Northside_Inn_1
++{
++	Rect	1455 1511 1471 1527
++}
++
++Region Britain_Northside_Inn_2
++{
++	Rect	1470 1511 1479 1519
++}
++
++Region Britain_Wayfarers_Inn
++{
++	Rect	1575 1583 1599 1599
++}
++
++Region Britain_Sweet_Dreams_Inn
++{
++	Rect	1491 1601 1507 1625
++}
++
++Region Moonglow_Student_Hostel_1
++{
++	Rect	4475 1059 4491 1067
++}
++
++Region Moonglow_Student_Hostel_2
++{
++	Rect	4479 1055 4487 1071
++}
++
++Region Moonglow_The_Scholars_Inn_1
++{
++	Rect	4383 1151 4391 1175
++}
++
++Region Moonglow_The_Scholars_Inn_2
++{
++	Rect	4391 1159 4407 1167
++}
++
++Region Moonglow_The_Scholars_Inn_3
++{
++	Rect	4399 1151 4407 1159
++}
++
++Region Nujelm_Restful_Slumber_1
++{
++	Rect	3727 1287 3743 1343
++}
++
++Region Nujelm_Restful_Slumber_2
++{
++	Rect	3743 1287 3751 1303
++}
++
++Region Nujelm_Restful_Slumber_3
++{
++	Rect	3743 1327 3751 1343
++}
++
++Region Skara_Brae_The_Falconers_Inn_1
++{
++	Rect	590 2238 623 2255
++}
++
++Region Skara_Brae_The_Falconers_Inn_2
++{
++	Rect	599 2231 615 2239
++}
++
++Region Trinsic_The_Travellers_Inn
++{
++	Rect	1833 2727 1855 2743
++}
++
++Region Trinsic_The_Rusty_Anchor
++{
++	Rect	2023 2783 2039 2812
++}
++
++Region Vesper_The_Ironwood_Inn_1
++{
++	Rect	2775 951 2791 983
++}
++
++Region Vesper_The Ironwood Inn 2
++{
++	Rect	2767 959 2775 977
++}
++
++Region Vesper_Youth_Hostel_1
++{
++	Rect	2952 863 2967 895
++}
++
++Region Vesper_Youth_Hostel_2
++{
++	Rect	2967 871 2975 887
++}
++
++Region Wind_Inn
++{
++	Rect	5159 15 5184 40
++}
++
++Region Wind_Bunkhouse
++{
++	Rect	5303 28 5318 40
++}
++
++Region Papua_The_Just_Inn
++{
++	Rect	5756 3149 5783 3168
++}
++
++Region Delucia_Abandoned_Inn
++{
++	Rect	5184 4054 5203 4072
++}
++
++Region Bucs_The_Peg_Leg_Inn_1
++{
++	Rect	2711 2079 2727 2095
++}
++
++Region Bucs_The_Peg_Leg_Inn_2
++{
++	Rect	2711 2095 2720 2104
++}
++
++Region Magincia_The_Stag_and_Lion_Inn_1
++{
++	Rect	3679 2151 3703 2175
++}
++
++Region Serpents_Hold_Broken_Arrow_Inn
++{
++	Rect	2959 3399 2975 3415
++}
++
++Region Jhelom_Morning_Star_Inn_1
++{
++	Rect	1351 3799 1367 3831
++}
++
++Region Jhelom_Morning_Star_Inn_2
++{
++	Rect	1367 3807 1375 3823
++}
++
++Region Minoc_The_Barnacle_Tavern
++{
++	Rect	2456 396 2496 413
++}
++
++Region Ocllo_Bountiful_Harvest_Inn
++{
++	Rect	3662 2608 3679 2623
++}
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/inns/config/inns-britannia_alt.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/inns/include/innFunctions.inc
+===================================================================
+--- trunk/096/pkg/utils/inns/include/innFunctions.inc	2005-11-14 04:22:31 UTC (rev 982)
++++ trunk/096/pkg/utils/inns/include/innFunctions.inc	2005-11-14 06:49:18 UTC (rev 983)
+@@ -0,0 +1,18 @@
++use uo;
++use cfgfile;
++
++function isInInn(who)
++	var inn_config := ReadConfigFile(&quot;:inns:inns-&quot;+who.realm);
++	var inn_locations := GetConfigStringKeys(inn_config);
++	foreach inn in inn_locations
++		var element :=  inn_config[inn];
++		var rect := element.rect;
++		rect := SplitWords(rect);
++		if( (who.x &gt;= CInt(rect[1])) &amp;&amp; (who.x &lt;= CInt(rect[3])) &amp;&amp; (who.y &gt;= CInt(rect[2])) &amp;&amp; (who.y &lt;= CInt(rect[4])) )
++			return 1;
++			break;
++		endif
++	endforeach
++
++	return 0;
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/inns/include/innFunctions.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/inns/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/inns/pkg.cfg	2005-11-14 04:22:31 UTC (rev 982)
++++ trunk/096/pkg/utils/inns/pkg.cfg	2005-11-14 06:49:18 UTC (rev 983)
+@@ -0,0 +1,17 @@
++# $Id$
++#
++#
++Enabled		1
++Name		inns
++Version		1.0
++
++CoreRequired	92
++
++Creator		MuadDib
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires none
++#conflicts	none
+
+
+Property changes on: trunk/096/pkg/utils/inns/pkg.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Deleted: trunk/096/scripts/include/OLD/innCheck.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/innCheck.inc	2005-11-14 04:22:31 UTC (rev 982)
++++ trunk/096/scripts/include/OLD/innCheck.inc	2005-11-14 06:49:18 UTC (rev 983)
+@@ -1,22 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-use util;
+-
+-function Inncheck(character)
+-
+-  var element, rect;
+-  var cfgfile := ReadConfigFile(&quot;::innlocation&quot;);
+-  var entries := GetConfigStringKeys(cfgfile);
+-  foreach listing in entries
+-    element :=  cfgfile[listing];
+-    rect := element.rect;
+-    rect := SplitWords(rect);
+-    if((character.x &gt;= CInt(rect[1])) &amp;&amp; (character.x &lt;= CInt(rect[3])) &amp;&amp; (character.y &gt;= CInt(rect[2])) &amp;&amp; (character.y &lt;= CInt(rect[4])))
+-      return 1;
+-      break;
+-    endif
+-  endforeach
+-  return 0;
+-
+-endfunction 
+\ No newline at end of file
+
+Modified: trunk/096/scripts/misc/logofftest.src
+===================================================================
+--- trunk/096/scripts/misc/logofftest.src	2005-11-14 04:22:31 UTC (rev 982)
++++ trunk/096/scripts/misc/logofftest.src	2005-11-14 06:49:18 UTC (rev 983)
+@@ -8,29 +8,31 @@
+ use uo;
+ 
+ include &quot;include/time&quot;;
++include &quot;:inns:innFunctions&quot;;
+ include &quot;:timedscripts:timedScripts&quot;;
+ 
+ program core_logoffTest(who)
+ 	// Send event to the 'timed scripts' package to run log off scripts.
+ 	TS_LogOff(who);
+-		
++
+ 	if ( (who.cmdlevel &gt; 1) || (GetObjProperty(who,&quot;Delete&quot;)) )
+ 		// Let staff or characters being deleted/banned logout immediately.
+ 		return 0;
+ 	endif
+-	
++
+ 	var logout_delay := SECONDS_IN_MINUTE * 5;
+-	
++
+ 	// Check if player is camping
+-	// if ( IsCamping(who) )
+-	
++	if( CInt(GetObjProperty(who, &quot;#camped&quot;)) == 1 )
++		EraseObjProperty(who, &quot;#camped&quot;);
++		logout_delay := 0;
+ 	// Check if player is in an inn
+-	// elseif ( IsInInn(who) )
+-		
++	elseif( isInInn(who) )
++		logout_delay := 0;
+ 	// Check if player is in a house
+ 	// Then check if player is the owner or  friend of the owner.
+ 	// elseif ( IsInHouse(who) )
+-	
+-	
++	endif
++
+ 	return logout_delay;
+ endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000955.html">[Poldistro-svn] r982 - trunk/096/config
+</A></li>
+	<LI>Next message: <A HREF="000957.html">[Poldistro-svn] r984 - in trunk/096: pkg/items pkg/items/acid pkg/items/acid/acid pkg/items/acid/config pkg/items/acid/include scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#956">[ date ]</a>
+              <a href="thread.html#956">[ thread ]</a>
+              <a href="subject.html#956">[ subject ]</a>
+              <a href="author.html#956">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

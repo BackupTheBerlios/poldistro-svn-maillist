@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1099 - in trunk/096: config pkg/mobiles/oldAI pkg/skills/lockpicking
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1099%20-%20in%20trunk/096%3A%20config%20pkg/mobiles/oldAI%20pkg/skills/lockpicking&In-Reply-To=%3C200601051536.k05Fa4cO000317%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001069.html">
+   <LINK REL="Next"  HREF="001071.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1099 - in trunk/096: config pkg/mobiles/oldAI pkg/skills/lockpicking</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1099%20-%20in%20trunk/096%3A%20config%20pkg/mobiles/oldAI%20pkg/skills/lockpicking&In-Reply-To=%3C200601051536.k05Fa4cO000317%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1099 - in trunk/096: config pkg/mobiles/oldAI pkg/skills/lockpicking">austin at berlios.de
+       </A><BR>
+    <I>Thu Jan  5 16:36:04 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001069.html">[Poldistro-svn] r1098 - in trunk/096: config pkg/items/moongates
+</A></li>
+        <LI>Next message: <A HREF="001071.html">[Poldistro-svn] r1100 - in trunk/096: config pkg/items/traps
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1070">[ date ]</a>
+              <a href="thread.html#1070">[ thread ]</a>
+              <a href="subject.html#1070">[ subject ]</a>
+              <a href="author.html#1070">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-05 16:36:04 +0100 (Thu, 05 Jan 2006)
+New Revision: 1099
+
+Modified:
+   trunk/096/config/itemdesc.cfg
+   trunk/096/pkg/mobiles/oldAI/pirate.src
+   trunk/096/pkg/skills/lockpicking/itemdesc.cfg
+Log:
+
+
+Modified: trunk/096/config/itemdesc.cfg
+===================================================================
+--- trunk/096/config/itemdesc.cfg	2006-01-05 15:34:13 UTC (rev 1098)
++++ trunk/096/config/itemdesc.cfg	2006-01-05 15:36:04 UTC (rev 1099)
+@@ -240,16 +240,6 @@
+ 	VendorBuysFor		3
+ }
+ 
+-Item 0x14fb
+-{
+-	Name			lockpick
+-	Desc			lockpick%s%
+-	Script			pickLock
+-	VendorSellsFor		12
+-	VendorBuysFor		4
+-}
+-
+-
+ Item 0x3946
+ {
+ 	Name			energyfield
+
+Modified: trunk/096/pkg/mobiles/oldAI/pirate.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/pirate.src	2006-01-05 15:34:13 UTC (rev 1098)
++++ trunk/096/pkg/mobiles/oldAI/pirate.src	2006-01-05 15:36:04 UTC (rev 1099)
+@@ -17,7 +17,6 @@
+ var me         := npc::Self();
+ const aggression  := 250;
+ 
+-include &quot;util/conflicts&quot;;
+ include &quot;include/OLD/eventID&quot;;
+ include &quot;include/sysEvent&quot;;
+ include &quot;:npcutils:names&quot;;
+@@ -33,10 +32,7 @@
+ 		me.frozen := 1;
+ 	endif
+     while (1)
+-      if( badguy )
+-           co_fight();
+-        endif
+-        var ev;
++       var ev;
+         ev := os::wait_for_event( 120 );
+         case (ev.type)
+ 
+
+Modified: trunk/096/pkg/skills/lockpicking/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/lockpicking/itemdesc.cfg	2006-01-05 15:34:13 UTC (rev 1098)
++++ trunk/096/pkg/skills/lockpicking/itemdesc.cfg	2006-01-05 15:36:04 UTC (rev 1099)
+@@ -0,0 +1,10 @@
++Item 0x14FB
++{
++	Name			lockpick
++	Desc			lockpick%s%
++
++	VendorSellsFor		12
++	VendorBuysFor		4
++	
++	Script			lockPicking
++}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001069.html">[Poldistro-svn] r1098 - in trunk/096: config pkg/items/moongates
+</A></li>
+	<LI>Next message: <A HREF="001071.html">[Poldistro-svn] r1100 - in trunk/096: config pkg/items/traps
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1070">[ date ]</a>
+              <a href="thread.html#1070">[ thread ]</a>
+              <a href="subject.html#1070">[ subject ]</a>
+              <a href="author.html#1070">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

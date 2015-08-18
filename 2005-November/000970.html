@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r997 - trunk/096/pkg/items/acid/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r997%20-%20trunk/096/pkg/items/acid/include&In-Reply-To=%3C200511141923.jAEJN8N7032353%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000969.html">
+   <LINK REL="Next"  HREF="000971.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r997 - trunk/096/pkg/items/acid/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r997%20-%20trunk/096/pkg/items/acid/include&In-Reply-To=%3C200511141923.jAEJN8N7032353%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r997 - trunk/096/pkg/items/acid/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon Nov 14 20:23:08 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000969.html">[Poldistro-svn] r996 - trunk/096/pkg/mobiles/brainAI/docs
+</A></li>
+        <LI>Next message: <A HREF="000971.html">[Poldistro-svn] r998 - in trunk/096/pkg/items/acid: . include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#970">[ date ]</a>
+              <a href="thread.html#970">[ thread ]</a>
+              <a href="subject.html#970">[ subject ]</a>
+              <a href="author.html#970">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-14 20:23:04 +0100 (Mon, 14 Nov 2005)
+New Revision: 997
+
+Modified:
+   trunk/096/pkg/items/acid/include/acid.inc
+Log:
+Updated acid.inc for new DealAcidDamage function. Is used by the SpitAcid function, but can now be used seperately by hitscripts, traps, etc.
+
+DealAcidDamage deals damage based on the AcidDamage still, and has random chance to deal hp damage to randomly selected armor/weapon.
+
+Modified: trunk/096/pkg/items/acid/include/acid.inc
+===================================================================
+--- trunk/096/pkg/items/acid/include/acid.inc	2005-11-14 18:41:02 UTC (rev 996)
++++ trunk/096/pkg/items/acid/include/acid.inc	2005-11-14 19:23:04 UTC (rev 997)
+@@ -9,14 +9,15 @@
+ include &quot;include/packets&quot;;
+ 
+ /*
+- * MakeBleed(object, blood_color)
++ * SpitAced(spitter, spit_on)
+  *
+  * Purpose
+- * Creates a blood tile where the object is and sets the blood to the appropriate color.
++ * Creates an acid tile where the spit_on is and handles dealing initial
++ * damage to the spit_on and affects armor if applicable.
+  *
+  * Parameters
+- * object:	The object to create the blood for.
+- * blood_color:	Optional parameter. Will force the blood to be this color.
++ * spitter:	The npc spitting the acid
++ * spit_on:	The mobile the npc is spitting on.
+  *
+  * Return value
+  * Returns an item reference to the tile created.
+@@ -26,7 +27,30 @@
+ 	if( !CheckLineOfSight(spitter, spit_on) )
+ 		return 0;
+ 	endif
+-	var npc_info := NPC_GetNPCConfig(spitter.npctemplate);
++	PlayMovingEffectXYZHued(spitter, spit_on, 0x36d4, 5, 1, 1, 0x47, 0);
++	var acid_pool := CreateItemAtLocation(spit_on.x, spit_on.y, GetMapInfo(spit_on.x, spit_on.y).z, &quot;acid&quot;,  1, spit_on.realm);
++	DealAcidDamage(spitter, spit_on);
++	return acid_pool;
++endfunction
++
++
++/*
++ * DealAcidDamage(npc, mobile)
++ *
++ * Purpose
++ * Deals damage to a mob based on an npc's AcidDamage entry in it's npctemplate.
++ * Also deals damage randomly to the mobile's armor or weapon.
++ *
++ * Parameters
++ * npc:		The npc spitting the acid
++ * mobile:	The mobile the npc is spitting on.
++ *
++ * Return value
++ * Returns 1 if armor damaged, 0 elsewise.
++ *
++ */
++function DealAcidDamage(npc, mobile)
++	var npc_info := NPC_GetNPCConfig(npc.npctemplate);
+ 	var acid_damage := 0;
+ 	if( !npc_info.AcidDamage )
+ 		// NPC doesn't Spit Acid
+@@ -34,9 +58,20 @@
+ 	else
+ 		acid_damage := RandomDiceRoll(npc_info.AcidDamage);
+ 	endif
+-
+-	PlayMovingEffectXYZHued(spitter, spit_on, 0x36d4, 5, 1, 1, 0x47, 0);
+-	var acid_pool := CreateItemAtLocation(spit_on.x, spit_on.y, GetMapInfo(spit_on.x, spit_on.y).z, &quot;acid&quot;,  1, spit_on.realm);
+-	ApplyRawDamage(spit_on, acid_damage);
+-	return acid_pool;
+-endfunction
++	ApplyRawDamage(mobile, acid_damage);
++	var equipped_items := ListEquippedItems(mobile);
++	if( RandomInt(10) &gt; 5 )
++		var acid_burned := equipped_items[RandomInt(equipped_items.size())+1];
++		if( acid_burned.isA(POLCLASS_WEAPON) || acid_burned.isA(POLCLASS_ARMOR) )
++			var armor_damage := RandomInt(4) + 1;
++			if( acid_burned.hp &gt; armor_damage )
++				acid_burned.hp := acid_burned.hp - armor_damage;
++				PrintTextAbovePrivate( mobile, &quot;*Acid damages your equipment*&quot;, mobile, _DEFAULT_TEXT_FONT, 72);
++			else
++				DestroyItem(acid_burned);
++			endif
++			return 1;
++		endif
++	endif
++	return 0;
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000969.html">[Poldistro-svn] r996 - trunk/096/pkg/mobiles/brainAI/docs
+</A></li>
+	<LI>Next message: <A HREF="000971.html">[Poldistro-svn] r998 - in trunk/096/pkg/items/acid: . include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#970">[ date ]</a>
+              <a href="thread.html#970">[ thread ]</a>
+              <a href="subject.html#970">[ subject ]</a>
+              <a href="author.html#970">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

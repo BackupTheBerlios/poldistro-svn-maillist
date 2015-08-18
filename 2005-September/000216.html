@@ -1,0 +1,350 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r234 - in trunk/096/scripts: . include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r234%20-%20in%20trunk/096/scripts%3A%20.%20include&In-Reply-To=%3C200509250834.j8P8Y4DM031885%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000215.html">
+   <LINK REL="Next"  HREF="000217.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r234 - in trunk/096/scripts: . include</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r234%20-%20in%20trunk/096/scripts%3A%20.%20include&In-Reply-To=%3C200509250834.j8P8Y4DM031885%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r234 - in trunk/096/scripts: . include">panosl at berlios.de
+       </A><BR>
+    <I>Sun Sep 25 10:34:04 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000215.html">[Poldistro-svn] r233 - in trunk/096/pkg/skills: hiding stealth
+</A></li>
+        <LI>Next message: <A HREF="000217.html">[Poldistro-svn] r235 - in trunk/096/pkg/commands: config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#216">[ date ]</a>
+              <a href="thread.html#216">[ thread ]</a>
+              <a href="subject.html#216">[ subject ]</a>
+              <a href="author.html#216">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-09-25 10:34:03 +0200 (Sun, 25 Sep 2005)
+New Revision: 234
+
+Modified:
+   trunk/096/scripts/ecompile.cfg
+   trunk/096/scripts/include/arrays.inc
+   trunk/096/scripts/include/sound.inc
+   trunk/096/scripts/include/time.inc
+   trunk/096/scripts/start.src
+Log:
+Testing keywords system for SVN
+
+Modified: trunk/096/scripts/ecompile.cfg
+===================================================================
+--- trunk/096/scripts/ecompile.cfg	2005-09-25 05:35:23 UTC (rev 233)
++++ trunk/096/scripts/ecompile.cfg	2005-09-25 08:34:03 UTC (rev 234)
+@@ -1,6 +1,7 @@
+-##
+-## ecompile.cfg: must be in the same directory as ecompile.exe
+-##
++# $Id$
++#
++# ecompile.cfg: must be in the same directory as ecompile.exe
++#
+ 
+ #
+ # ModuleDirectory: Location of *.em files
+
+Modified: trunk/096/scripts/include/arrays.inc
+===================================================================
+--- trunk/096/scripts/include/arrays.inc	2005-09-25 05:35:23 UTC (rev 233)
++++ trunk/096/scripts/include/arrays.inc	2005-09-25 08:34:03 UTC (rev 234)
+@@ -1,28 +1,27 @@
+-//////////////////////////////////////////////////////////////////////////
+-//
+-// Arrays.inc
+-//
+-// Contains some useful functions for arrays.
+-//
+-// Originally uploaded by Shilohen.
+-// One function added by Madman Across the Water.
+-//
+-//////////////////////////////////////////////////////////////////////////
+-
++/** $Id$
++ *
++ * Purpose
++ * Provide various functions for array handling.
++ *
++ */
+ use basic;
+ use os;
+ use uo;
+ 
+ 
+-////////////////////////////////////////////////////////////////
+-// Function	GetIndex(byref the_array, byref to_find)
+-// Parameters	the_array containing the element
+-//		what to find
+-// Return	the element's index if found, error otherwise.
+-// Errortext	&lt;Element not found&gt;
+-////////////////////////////////////////////////////////////////
+-function GetIndex( byref the_array, byref to_find )
+-
++/**
++ * GetIndex(byref the_array, byref to_find)
++ *
++ * Parameters	the_array containing the element
++ *		what to find
++ * 
++ * Errortext	&lt;Element not found&gt;.
++ *
++ * Return
++ * the element's index if found, error otherwise
++ *
++ */
++function GetIndex(byref the_array, byref to_find)
+ 	var max := the_array.Size();
+ 	if( !max )
+ 		var ret := error;
+@@ -67,16 +66,21 @@
+ endfunction
+ 
+ 
+-////////////////////////////////////////////////////////////////
+-// Function	InsertElementInSortedArray(byref the_array, byref to_find)
+-// Parameters	the_array containing the element
+-//		what to insert
+-// Return	non-zero if the element could be insert, error otherwise.
+-// Errortext	&lt;Element &lt;element&gt; already exist in the array&gt;
+-//		&lt;Couldn't insert element &lt;element&gt;&gt;
+-// Goal		Insert an element at the good index, must be the only one
+-//		instance of that element in the array, no dupe allowed.
+-////////////////////////////////////////////////////////////////
++/**
++ * InsertElementInSortedArray(byref the_array, byref to_find)
++ *
++ * Parameters	the_array containing the element
++ *		what to insert
++ * Errortext	&lt;Element &lt;element&gt; already exist in the array&gt;
++ *		&lt;Couldn't insert element &lt;element&gt;&gt;
++ * Purpose
++ * Insert an element at the good index, must be the only one
++ * instance of that element in the array, no dupe allowed.
++ *
++ * Return
++ * non-zero if the element could be insert, error otherwise.
++ *
++ */
+ function InsertInSortedArray( byref the_array, byref element )
+ 
+ 	var max := the_array.Size();
+@@ -119,13 +123,18 @@
+ endfunction
+ 
+ 
+-////////////////////////////////////////////////////////////////
+-// Function	RemoveElement(byref the_array, byref element)
+-// Parameters	the_array containing the element
+-//		the element to remove
+-// Return	1 is the elment was successfully removed
+-//		An error otherwise
+-////////////////////////////////////////////////////////////////
++/**
++ * RemoveElement(byref the_array, byref element)
++ *
++ * Parameters
++ * the_array:	containing the element
++ * element:	the element to remove
++ *
++ * Return
++ * 1 is the elment was successfully removed
++ * An error otherwise
++ *
++ */
+ function RemoveElement( byref the_array, byref element )
+ 
+ 	var index := GetIndex( the_array, element );
+@@ -138,12 +147,19 @@
+ endfunction
+ 
+ 
+-////////////////////////////////////////////////////////////////
+-// Function	SortArray(byref the_array)
+-// Parameters	the_array to sort
+-// Return	1 if the sorting was success, 0 otherwise.
+-// Goal		Sort the array, even array of uobject.
+-////////////////////////////////////////////////////////////////
++/**
++ * SortArray(byref the_array)
++ *
++ * Purpose
++ * Sort the array, even array of uobject.
++ *
++ * Parameters
++ * the_array:	to sort
++ *
++ * Return
++ * 1 if the sorting was success, 0 otherwise.
++ *
++ */
+ function SortArray( byref the_array )
+ 
+ 	var length := the_array.Size();
+@@ -172,13 +188,17 @@
+ 	
+ endfunction
+ 
+-//Fill_array
+-// you don't want to send this non-integers. Error checking isn't at the moment.
+-// This function is handed start and end numbers, and increments. If you send it
+-// (1,5,1), for instance, it will return an array {1,2,3,4,5}. (5,1,-2) will return
+-// {5,3,1}. (1,5,3) will return {1,4}.
+-// Added by Madman Across the Water
+ 
++/**
++ * fill_array(starts, ends, incr := 1)
++ *
++ * you don't want to send this non-integers. Error checking isn't at the moment.
++ * This function is handed start and end numbers, and increments. If you send it
++ * (1,5,1), for instance, it will return an array {1,2,3,4,5}. (5,1,-2) will return
++ * {5,3,1}. (1,5,3) will return {1,4}.
++ * Added by Madman Across the Water
++ *
++ */
+ function fill_array(starts, ends, incr := 1)
+ 
+ 	var newarray := array;
+@@ -208,4 +228,3 @@
+ 	
+ 	return 0;
+ endfunction
+-
+
+Modified: trunk/096/scripts/include/sound.inc
+===================================================================
+--- trunk/096/scripts/include/sound.inc	2005-09-25 05:35:23 UTC (rev 233)
++++ trunk/096/scripts/include/sound.inc	2005-09-25 08:34:03 UTC (rev 234)
+@@ -1,3 +1,7 @@
++/* $Id$
++ *
++ */
++
+ enum SFX_BASE
+ 	SFX_1     :=  0x0001, // forest
+ 	SFX_2     :=  0x0002, // forest
+
+Modified: trunk/096/scripts/include/time.inc
+===================================================================
+--- trunk/096/scripts/include/time.inc	2005-09-25 05:35:23 UTC (rev 233)
++++ trunk/096/scripts/include/time.inc	2005-09-25 08:34:03 UTC (rev 234)
+@@ -36,8 +36,6 @@
+ /*
+  * GetMonthName(month)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Returns the name of the month
+  *
+@@ -61,8 +59,6 @@
+ /*
+  * GetMonthLength(month, year)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Returns the length of the month in days
+  *
+@@ -90,8 +86,6 @@
+ /*
+  * IsLeap(year)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Returns whether a year is a leap year or not.
+  *
+@@ -111,8 +105,6 @@
+ /*
+  * GetTime()
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Returns current UNIX time stamp.
+  *
+@@ -131,8 +123,6 @@
+ /*
+  * GetTimeStruct(time)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Returns current time as struct.
+  *
+@@ -219,8 +209,6 @@
+ /*
+  * FormatTime(ts, format)
+  *
+- * Author:  Folko
+- *
+  * Purpose
+  * Returns a formatted time string.
+  *
+@@ -259,8 +247,6 @@
+ /*
+  * AddTimeStamp(what)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Adds a timestamp to a string.
+  *
+
+Modified: trunk/096/scripts/start.src
+===================================================================
+--- trunk/096/scripts/start.src	2005-09-25 05:35:23 UTC (rev 233)
++++ trunk/096/scripts/start.src	2005-09-25 08:34:03 UTC (rev 234)
+@@ -17,6 +17,7 @@
+ include &quot;include/utility&quot;;
+ include &quot;include/teleporters&quot;;
+ 
++
+ program StartServer()
+ 	Log(LOG_MAIN, &quot;Server started.&quot;);
+ 	if (!start_script(&quot;:scheduler:scheduler&quot;))
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000215.html">[Poldistro-svn] r233 - in trunk/096/pkg/skills: hiding stealth
+</A></li>
+	<LI>Next message: <A HREF="000217.html">[Poldistro-svn] r235 - in trunk/096/pkg/commands: config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#216">[ date ]</a>
+              <a href="thread.html#216">[ thread ]</a>
+              <a href="subject.html#216">[ subject ]</a>
+              <a href="author.html#216">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r724 - in trunk/096/pkg/items: . blood blood/blood blood/config blood/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r724%20-%20in%20trunk/096/pkg/items%3A%20.%20blood%20blood/blood%20blood/config%20blood/include&In-Reply-To=%3C200510301448.j9UEmWPj002515%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000696.html">
+   <LINK REL="Next"  HREF="000698.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r724 - in trunk/096/pkg/items: . blood blood/blood blood/config blood/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r724%20-%20in%20trunk/096/pkg/items%3A%20.%20blood%20blood/blood%20blood/config%20blood/include&In-Reply-To=%3C200510301448.j9UEmWPj002515%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r724 - in trunk/096/pkg/items: . blood blood/blood blood/config blood/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct 30 15:48:32 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000696.html">[Poldistro-svn] r723 - trunk/096/config
+</A></li>
+        <LI>Next message: <A HREF="000698.html">[Poldistro-svn] r725 - in trunk/096/pkg/items: . vomit vomit/config vomit/vomit
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#697">[ date ]</a>
+              <a href="thread.html#697">[ thread ]</a>
+              <a href="subject.html#697">[ subject ]</a>
+              <a href="author.html#697">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-30 15:48:32 +0100 (Sun, 30 Oct 2005)
+New Revision: 724
+
+Added:
+   trunk/096/pkg/items/blood/
+   trunk/096/pkg/items/blood/blood/
+   trunk/096/pkg/items/blood/blood/control.src
+   trunk/096/pkg/items/blood/blood/onCreate.src
+   trunk/096/pkg/items/blood/config/
+   trunk/096/pkg/items/blood/config/bloodtiles.cfg
+   trunk/096/pkg/items/blood/config/icp.cfg
+   trunk/096/pkg/items/blood/include/
+   trunk/096/pkg/items/blood/include/blood.inc
+   trunk/096/pkg/items/blood/itemdesc.cfg
+   trunk/096/pkg/items/blood/pkg.cfg
+Log:
+Use blood.inc to make something bleed.
+Will allow us to give NPCs custom blood colors as well as players and such.
+Manages the duration of blood. Removes it after 60 seconds.
+
+When blood is created, it gives it a random graphic from bloodtiles.cfg
+
+
+Added: trunk/096/pkg/items/blood/blood/control.src
+===================================================================
+--- trunk/096/pkg/items/blood/blood/control.src	2005-10-30 14:47:21 UTC (rev 723)
++++ trunk/096/pkg/items/blood/blood/control.src	2005-10-30 14:48:32 UTC (rev 724)
+@@ -0,0 +1,12 @@
++/*
++ * $Id
++ *
++ */
++
++use uo;
++use os;
++
++program ControlScript(blood)
++	sleep(60);
++	DestroyItem(blood);
++endprogram
+
+Added: trunk/096/pkg/items/blood/blood/onCreate.src
+===================================================================
+--- trunk/096/pkg/items/blood/blood/onCreate.src	2005-10-30 14:47:21 UTC (rev 723)
++++ trunk/096/pkg/items/blood/blood/onCreate.src	2005-10-30 14:48:32 UTC (rev 724)
+@@ -0,0 +1,20 @@
++/*
++ * $Id
++ *
++ */
++
++use uo;
++use util;
++use cfgfile;
++
++program OnCreate(blood)
++	var blood_cfg := ReadConfigFile(&quot;:blood:config/bloodtiles&quot;);
++	var graphic_elem := blood_cfg[&quot;Graphics&quot;];
++	var graphics := GetConfigStringArray(graphic_elem, &quot;Graphic&quot;);
++	
++	if ( graphics.size() &gt; 0 )
++		blood.graphic := graphics[RandomInt(graphics.size())+1];
++	endif
++	
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/items/blood/config/bloodtiles.cfg
+===================================================================
+--- trunk/096/pkg/items/blood/config/bloodtiles.cfg	2005-10-30 14:47:21 UTC (rev 723)
++++ trunk/096/pkg/items/blood/config/bloodtiles.cfg	2005-10-30 14:48:32 UTC (rev 724)
+@@ -0,0 +1,12 @@
++#
++# $Id
++#
++
++Elem Graphics
++{
++	Graphic	4650
++	Graphic	4651
++	Graphic	4652
++	Graphic	4653
++	Graphic	4654
++}
+
+Added: trunk/096/pkg/items/blood/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/blood/config/icp.cfg	2005-10-30 14:47:21 UTC (rev 723)
++++ trunk/096/pkg/items/blood/config/icp.cfg	2005-10-30 14:48:32 UTC (rev 724)
+@@ -0,0 +1,17 @@
++ICP Register
++{
++	Name		Blood
++	Version		1.0
++	
++	Description	Manages creation and removal of blood in the game.
++	
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
++	
++	Maintainer	
++	M_Email	
++	
++	//Script	cmdlevel path
++	
++	//TextCmd	cmdlevel path	
++}
+
+Added: trunk/096/pkg/items/blood/include/blood.inc
+===================================================================
+--- trunk/096/pkg/items/blood/include/blood.inc	2005-10-30 14:47:21 UTC (rev 723)
++++ trunk/096/pkg/items/blood/include/blood.inc	2005-10-30 14:48:32 UTC (rev 724)
+@@ -0,0 +1,68 @@
++/*
++ * $Id
++ *
++ */
++
++use uo;
++use cfgfile;
++
++include &quot;:brainAI:npcUtil&quot;;
++
++/*
++ * MakeBleed(object, blood_color)
++ *
++ * Purpose
++ * Creates a blood tile where the object is and sets the blood to the appropriate color.
++ *
++ * Parameters
++ * object:	The object to create the blood for.
++ * blood_color:	Optional parameter. Will force the blood to be this color.
++ *
++ * Return value
++ * Returns an item reference to the tile created.
++ *
++ */
++function MakeBleed(object, blood_color:=0)
++	// These checks are for players or individual NPCs.
++	if ( GetObjProperty(object, &quot;NoBlood&quot;) )
++		return 0;
++	elseif ( !blood_color )
++		blood_color := CInt(GetObjProperty(object, &quot;BloodColor&quot;));
++	endif
++	
++	if ( object.npctemplate )
++		// Living NPC
++		var npc_info := NPC_GetNPCConfig(object.npctemplate);
++		if ( npc_info.NoBlood )
++			// NPC is set to not bleed.
++			return 0;
++		else
++			if ( !blood_color )
++				// If no blood color is set - retrieve NPC's template blood color.
++				blood_color := CInt(npc_info.BloodColor);
++			endif
++		endif
++	elseif ( object.IsA(POLCLASS_CORPSE) )
++		// If it is a player corpse, then the CProp checks at the begining
++		// of this function have taken care of what is needed. 
++		// However, if it is an NPC corpse - the color needs to be retrieved from the npcdesc.cfg
++		var template := object.NPCTemplate();
++		if ( template )
++			var npc_info := NPC_GetNPCConfig(template);
++			
++			if ( npc_info.NoBlood )
++				//Does this npc bleed?
++				return 0;
++			else
++				if ( !blood_color )
++					//Does this npc have a special blood color?
++					blood_color := CInt(npc_info.BloodColor);
++				endif
++			endif
++		endif
++	endif
++	
++	var blood := CreateItemAtLocation(object.x, object.y, object.z, &quot;blood&quot;, 1);
++	blood.color := blood_color;
++	return blood;
++endfunction
+
+Added: trunk/096/pkg/items/blood/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/blood/itemdesc.cfg	2005-10-30 14:47:21 UTC (rev 723)
++++ trunk/096/pkg/items/blood/itemdesc.cfg	2005-10-30 14:48:32 UTC (rev 724)
+@@ -0,0 +1,11 @@
++Item 0x122A
++{
++	Name		blood
++	Desc		blood%%
++	
++	Movable		0
++	SaveOnExit	0
++	
++	ControlScript	blood/control
++	CreateScript	blood/onCreate
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/blood/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/blood/pkg.cfg	2005-10-30 14:47:21 UTC (rev 723)
++++ trunk/096/pkg/items/blood/pkg.cfg	2005-10-30 14:48:32 UTC (rev 724)
+@@ -0,0 +1,18 @@
++# $Id$
++#
++#
++
++Enabled		1
++Name		blood
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires none
++#conflicts	none
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000696.html">[Poldistro-svn] r723 - trunk/096/config
+</A></li>
+	<LI>Next message: <A HREF="000698.html">[Poldistro-svn] r725 - in trunk/096/pkg/items: . vomit vomit/config vomit/vomit
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#697">[ date ]</a>
+              <a href="thread.html#697">[ thread ]</a>
+              <a href="subject.html#697">[ subject ]</a>
+              <a href="author.html#697">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

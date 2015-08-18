@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r153 - trunk/096/pkg/commands/player
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r153%20-%20trunk/096/pkg/commands/player&In-Reply-To=%3C200509171151.j8HBpsWB011568%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000132.html">
+   <LINK REL="Next"  HREF="000134.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r153 - trunk/096/pkg/commands/player</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r153%20-%20trunk/096/pkg/commands/player&In-Reply-To=%3C200509171151.j8HBpsWB011568%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r153 - trunk/096/pkg/commands/player">austin at berlios.de
+       </A><BR>
+    <I>Sat Sep 17 13:51:54 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000132.html">[Poldistro-svn] r152 - trunk/096/pkg/commands/coun
+</A></li>
+        <LI>Next message: <A HREF="000134.html">[Poldistro-svn] r154 - trunk/096/pkg/commands/player
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#133">[ date ]</a>
+              <a href="thread.html#133">[ thread ]</a>
+              <a href="subject.html#133">[ subject ]</a>
+              <a href="author.html#133">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-17 13:51:54 +0200 (Sat, 17 Sep 2005)
+New Revision: 153
+
+Added:
+   trunk/096/pkg/commands/player/msg.src
+Log:
+
+
+Added: trunk/096/pkg/commands/player/msg.src
+===================================================================
+--- trunk/096/pkg/commands/player/msg.src	2005-09-17 10:19:33 UTC (rev 152)
++++ trunk/096/pkg/commands/player/msg.src	2005-09-17 11:51:54 UTC (rev 153)
+@@ -0,0 +1,212 @@
++/*===============================================================
++* Current Version
++* MSG.SRC - v0.1
++* Updated 9/17/2005 3:20AM
++*
++* -- Revision v0.1 --
++* Austin
++*  Created command
++*
++===============================================================*/
++
++use uo;
++use os;
++use util;
++
++include &quot;:gumps:include/gumps&quot;;
++include &quot;:gumps:include/gumps_ex&quot;;
++include &quot;:datafile:datafile&quot;;
++
++unload_scripts(&quot;&quot;);
++
++program command_Message(who, text)
++	if ( CommandIssued(who, text) )
++		return 1;
++	else
++		MessageGump(who);
++	endif
++endprogram
++
++function MessageGump(who)
++	var gump := GFCreateGump();
++	
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 310, 420);
++	GFResizePic(gump, 10, 10, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 290, 400);
++	
++	GFTextLine(gump, 25, 15, 2100, &quot;Player Name&quot;);
++	GFTextLine(gump, 255, 15, 2100, &quot;Send&quot;);
++	
++	var names_list := GetNamesList(who);
++	var num_players := names_list.size();
++	var counter := 0;
++	var page_num := 1;
++	var y_pos := 40;
++	
++	GFPage(gump, 1);
++	foreach name in (names_list.keys())
++		GFTextLine(gump, 25, y_pos, 2100, name);
++		GFAddButton(gump, 261, y_pos+3, 2117, 2118, GF_CLOSE_BTN, _name_iter);
++
++		y_pos := y_pos+20;
++		counter := counter+1;
++
++		if ( counter &gt;= 18 &amp;&amp; _name_iter &lt; num_players )
++			GFAddButton(gump, 283, 385, 0xA92, 0xA93, GF_PAGE_BTN, page_num+1);
++			page_num := page_num+1;
++			GFPage(gump, page_num);
++			GFAddButton(gump, 283, 40, 0xA90, 0xA91, GF_PAGE_BTN, page_num-1);
++			counter := 0;
++			y_pos := 40;
++		endif
++		sleepms(2);
++	endforeach
++	
++	var input := GFSendGump(who, gump);
++	input := input[0];
++	
++	if ( !input )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	else
++		names_list := names_list.keys();
++		SendMessage(who, names_list[input]);
++	endif
++endfunction
++
++function GetNamesList(who)
++	var the_list := dictionary; // Used to store names in ABC order
++	foreach person in EnumerateOnlineCharacters();
++		var msg_settings := GetMessageSettings(person);
++
++		if ( (msg_settings.disable) &amp;&amp; (!who.cmdlevel) )
++			//If messages are off, and 'who' is a player, dont add the name.
++			//If 'who' has a command level, then he/she can see any name.
++			continue;
++		elseif ( (!msg_settings.visible) &amp;&amp; (person.concealed &gt; who.cmdlevel) );
++			//If the person is not in visible mode, and concealed is
++			//higher than who's command level, don't add that person.
++			continue;
++		else
++			the_list.Insert(person.name, 0);
++		endif
++		
++		sleepms(2);
++	endforeach
++	
++	var i:=0;
++	for ( i:=0; i&lt;=100; i:=i+1 )
++		var filler := &quot;Z&quot;+RandomFloat(50000);
++		the_list.Insert(filler, 0);
++		sleepms(2);
++	endfor
++
++	return the_list;
++endfunction
++
++function SendMessage(who, name_text, is_reply:=0)
++	var can_msg := 0;
++	if ( is_reply )
++		can_msg := 1;
++	elseif ( name_text in (GetNamesList(who).keys()) )
++		can_msg := 1;
++	endif
++	
++	if ( !can_msg )
++		SendSysMessage(who, name_text+&quot; is not online.&quot;);
++		return 0;
++	endif
++	
++	var message_txt := RequestInput(who, who.backpack, &quot;What message would you like to send to &quot;+name_text+&quot;? (hit escape to cancel)&quot;);
++	if ( !message_txt )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	var sndr_settings := GetMessageSettings(who);
++	sndr_settings[&quot;last&quot;] := name_text;
++	SetObjProperty(who, &quot;.msg&quot;, sndr_settings);
++	
++	foreach player in EnumerateOnlineCharacters()
++		if ( player.name == name_text )
++			SendSysMessage(player, &quot;Message from &quot;+who.name+&quot; : &quot;+message_txt);
++			SendSysMessage(who, &quot;You sent a message to [&quot;+who.name+&quot;]: &quot;+message_txt);
++
++			var rcvr_settings := GetMessageSettings(player);
++			rcvr_settings[&quot;reply&quot;] := who.name;
++			SetObjProperty(player, &quot;.msg&quot;, rcvr_settings);
++
++			if( sndr_settings.Exists(&quot;disabled&quot;) )
++				SendSysMessage(who, &quot;Reminder: You have messages off.&quot;);
++				SendSysMessage(player, &quot;Note: &quot;+who.name+&quot; has messages off. Use .msg reply.&quot;);
++			endif
++		elseif ( player.cmdlevel )
++			var rcvr_settings := GetMessageSettings(player);
++			if ( rcvr_settings.Exists(&quot;spy&quot;) )
++				SendSysMessage(player, &quot;[MSG SpyMode] From:&quot;+who.name+&quot; To:&quot;+name_text+&quot;: &quot;+message_txt);
++			endif
++		endif
++		
++		sleepms(2);
++	endforeach		
++endfunction
++
++function CommandIssued(who, text)
++	var msg_settings := GetMessageSettings(who);
++	
++	if ( text == &quot;off&quot; )
++		msg_settings[&quot;disabled&quot;] := 1;
++		SetObjProperty(who, &quot;.msg&quot;, msg_settings);
++		SendSysMessage(who, &quot;Your name has been removed from the .msg list.&quot;);
++		return 1;
++	elseif ( text == &quot;on&quot; )
++		msg_settings.Erase(&quot;disabled&quot;);
++		SetObjProperty(who, &quot;.msg&quot;, msg_settings);
++		SendSysMessage(who, &quot;Your name has been put back on from the .msg list.&quot;);
++		return 1;
++	elseif ( text == &quot;reply&quot; )
++		SendMessage(who, msg_settings[&quot;reply&quot;], 1);
++		return 1;
++	elseif ( text == &quot;last&quot; )
++		SendMessage(who, msg_settings[&quot;last&quot;], 1);
++		return 1;
++	elseif ( text )
++		SendMessage(who, text);
++		return 1;
++	endif
++	
++	if ( !who.cmdlevel )
++		return 0;
++	elseif ( text == &quot;spy on&quot; )
++		msg_settings[&quot;spy&quot;] := 1;
++		SendSysMessage(who, &quot;Private message viewing is enabled.&quot;);
++		SetObjProperty(who, &quot;.msg&quot;, msg_settings);
++		return 1;
++	elseif ( text == &quot;spy off&quot; )
++		msg_settings.Erase(&quot;spy&quot;);
++		SendSysMessage(who, &quot;Private message viewing is disabled.&quot;);
++		SetObjProperty(who, &quot;.msg&quot;, msg_settings);
++		return 1;
++	elseif ( text == &quot;visible on&quot; )
++		msg_settings[&quot;visible&quot;] := 1;
++		msg_settings.Erase(&quot;visible&quot;);
++		SendSysMessage(who, &quot;Players can now message you while concealed.&quot;);
++		SetObjProperty(who, &quot;.msg&quot;, msg_settings);
++		return 1;
++	elseif ( text == &quot;visible off&quot; )
++		msg_settings.Erase(&quot;visible&quot;);
++		SendSysMessage(who, &quot;Players can no longer message you while concealed.&quot;);
++		SetObjProperty(who, &quot;.msg&quot;, msg_settings);
++		return 1;
++	else
++		return 0;
++	endif
++endfunction
++
++function GetMessageSettings(mobile)
++	var msg_settings := GetObjProperty(mobile, &quot;.msg&quot;);
++	if ( Lower(TypeOf(msg_settings)) != &quot;dictionary&quot;  )
++		msg_settings := dictionary;
++	endif
++	
++	return msg_settings;
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000132.html">[Poldistro-svn] r152 - trunk/096/pkg/commands/coun
+</A></li>
+	<LI>Next message: <A HREF="000134.html">[Poldistro-svn] r154 - trunk/096/pkg/commands/player
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#133">[ date ]</a>
+              <a href="thread.html#133">[ thread ]</a>
+              <a href="subject.html#133">[ subject ]</a>
+              <a href="author.html#133">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

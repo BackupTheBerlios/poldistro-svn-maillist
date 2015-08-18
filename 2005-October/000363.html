@@ -1,0 +1,764 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r385 - in trunk/096/pkg/commands: gm seer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r385%20-%20in%20trunk/096/pkg/commands%3A%20gm%20seer&In-Reply-To=%3C200510021831.j92IVH6C008289%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000362.html">
+   <LINK REL="Next"  HREF="000364.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r385 - in trunk/096/pkg/commands: gm seer</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r385%20-%20in%20trunk/096/pkg/commands%3A%20gm%20seer&In-Reply-To=%3C200510021831.j92IVH6C008289%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r385 - in trunk/096/pkg/commands: gm seer">panosl at berlios.de
+       </A><BR>
+    <I>Sun Oct  2 20:31:17 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000362.html">[Poldistro-svn] r384 - trunk/096/data
+</A></li>
+        <LI>Next message: <A HREF="000364.html">[Poldistro-svn] r386 - in trunk/096/pkg: items/containers items/containers/bookshelf items/containers/commands/admin items/containers/config items/containers/container items/containers/corpse items/containers/include items/dyes/config items/dyes/dyeTub items/dyes/dyes items/dyes/furnitureTub items/dyes/include items/sysbook items/sysbook/book items/sysbook/commands/gm items/sysbook/config items/sysbook/include items/sysbook/www mobiles/brainAI/config mobiles/oldAI mobiles/oldAI/combat mobiles/oldAI/main mobiles/oldAI/setup skills/blacksmithy skills/blacksmithy/tongs skills/bowcraft skills/spiritspeak systems/attributes systems/attributes/config systems/attributes/include systems/attributes/startup systems/crafting systems/crafting/config systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#363">[ date ]</a>
+              <a href="thread.html#363">[ thread ]</a>
+              <a href="subject.html#363">[ subject ]</a>
+              <a href="author.html#363">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-10-02 20:31:15 +0200 (Sun, 02 Oct 2005)
+New Revision: 385
+
+Added:
+   trunk/096/pkg/commands/seer/refresh.src
+Removed:
+   trunk/096/pkg/commands/gm/setobjproperty.src
+   trunk/096/pkg/commands/seer/refreshme.src
+Modified:
+   trunk/096/pkg/commands/gm/destroy.src
+   trunk/096/pkg/commands/gm/freeze.src
+   trunk/096/pkg/commands/gm/ip.src
+   trunk/096/pkg/commands/gm/kick.src
+   trunk/096/pkg/commands/gm/lock.src
+   trunk/096/pkg/commands/gm/setprop.src
+   trunk/096/pkg/commands/gm/shave.src
+   trunk/096/pkg/commands/gm/squelch.src
+   trunk/096/pkg/commands/gm/strip.src
+   trunk/096/pkg/commands/gm/tile.src
+   trunk/096/pkg/commands/gm/unlock.src
+   trunk/096/pkg/commands/seer/bcast.src
+   trunk/096/pkg/commands/seer/bcastas.src
+Log:
+
+
+Modified: trunk/096/pkg/commands/gm/destroy.src
+===================================================================
+--- trunk/096/pkg/commands/gm/destroy.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/destroy.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,18 +1,22 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;include/log&quot;;
++include &quot;include/messages&quot;;
++include &quot;include/localization&quot;;
+ 
+ 
+ program command_destroy(who)
+ 	var item;
+-	SendSysMessage(who, &quot;Please target something to destroy.&quot;);
++	SendMessage(who, MSG_TARGET_OBJ, array{}, MSG_COMMAND);
+ 
+-	item := Target(who, TGTOPT_NOCHECK_LOS);
+-	if (item)
++	if ((item := Target(who, TGTOPT_NOCHECK_LOS)) == 0)
++		SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
++	else
+ 		Log(LOG_COMMAND, GetLogInfo(who) + &quot; invoking 'destroy' command on &quot; + GetLogInfo(item));
+ 		DestroyItem(item);
+-	else
+-		SendSysMessage(who, &quot;You can only destroy items.&quot;);
+ 	endif
+ 
+ 	return;
+
+Modified: trunk/096/pkg/commands/gm/freeze.src
+===================================================================
+--- trunk/096/pkg/commands/gm/freeze.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/freeze.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;include/messages&quot;;
+
+Modified: trunk/096/pkg/commands/gm/ip.src
+===================================================================
+--- trunk/096/pkg/commands/gm/ip.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/ip.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;include/messages&quot;;
+
+Modified: trunk/096/pkg/commands/gm/kick.src
+===================================================================
+--- trunk/096/pkg/commands/gm/kick.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/kick.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;include/log&quot;;
+@@ -10,18 +13,20 @@
+ 
+ 	SendMessage(who, MSG_TARGET_MOB, {}, MSG_COMMAND);
+ 
+-	mobile := Target(who, TGTOPT_NOCHECK_LOS);
+-
+-	if (!mobile.isA(POLCLASS_MOBILE) || mobile.isA(POLCLASS_NPC))
+-		SendMessage(who, MSG_NO_CHAR, {}, MSG_COMMAND);
++	if ((mobile := Target(who, TGTOPT_NOCHECK_LOS)) == 0)
++		SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
+ 	else
+-		if (mobile == who)
+-			SendSysMessage(who, &quot;You cannot kick yourself.&quot;);
++		if (!mobile.isA(POLCLASS_MOBILE) || mobile.isA(POLCLASS_NPC))
++			SendMessage(who, MSG_NO_CHAR, {}, MSG_COMMAND);
+ 		else
+-			Log(LOG_COMMAND, GetLogInfo(who) + &quot;invoking 'kick' command on: &quot; + GetLogInfo(mobile));
+-			DisconnectClient(mobile);
+-			SendMessage(who, MSG_DONE, {}, MSG_COMMAND);
+-		endif
++			if (mobile == who)
++				SendSysMessage(who, &quot;You cannot kick yourself.&quot;);
++			else
++				Log(LOG_COMMAND, GetLogInfo(who) + &quot;invoking 'kick' command on: &quot;
++					+ GetLogInfo(mobile));
++				DisconnectClient(mobile);
++				SendMessage(who, MSG_DONE, {}, MSG_COMMAND);
++			endif
+ 	endif
+ 
+ 	return;
+
+Modified: trunk/096/pkg/commands/gm/lock.src
+===================================================================
+--- trunk/096/pkg/commands/gm/lock.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/lock.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,11 +1,26 @@
++/* $Id
++ *
++ */
+ use os;
+ use uo;
+ 
+-program textcmd_lock( speaker )
+-    SendSysMessage( speaker, &quot;What do you wish to lock?&quot; );
++include &quot;include/messages&quot;;
++include &quot;include/localization&quot;;
+ 
+-    var what := Target( speaker,TGTOPT_NOCHECK_LOS );
+-    if (what)
+-        what.locked := 1;
+-    endif
++
++program command_lock(who)
++	var what;
++
++	SendMessage(who, MSG_TARGET_OBJ, array{}, MSG_COMMAND);
++	if ((what := Target(who, TGTOPT_NOCHECK_LOS)) == 0)
++		SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
++	else
++		if (what.locked == 1)
++			SendSysMessage(who, &quot;Already locked.&quot;);
++		else
++			what.locked := 1;
++		endif
++	endif
++
++	return;
+ endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/gm/setobjproperty.src
+===================================================================
+--- trunk/096/pkg/commands/gm/setobjproperty.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/setobjproperty.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,11 +0,0 @@
+-use uo;
+-
+-program addobjproperty( who, text )
+-	var params := SplitWords( text );
+-	var item := Target( who );
+-	SetObjProperty( item, params[1], CStr(params[2]) );
+-
+-	print(&quot;objprop: &quot; + GetObjProperty( item, params[1] ) );
+-
+-        
+-endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/commands/gm/setprop.src
+===================================================================
+--- trunk/096/pkg/commands/gm/setprop.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/setprop.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,15 +1,9 @@
+-/*===============================================================
+-* Current Version
+-* SETPROP.SRC - v1.0
+-* Updated 9/13/2005 7:15AM
+-*
+-* -- Revision v1.0 --
+-* Austin:
+-*  Created include file
+-===============================================================*/
+-
++/* $Id$
++ *
++ */
+ use uo;
+ 
++
+ program SetProperties(who, text)
+ 	var param := SplitWords(text);
+ 	if ( param.size() &lt; 2 )
+@@ -48,6 +42,7 @@
+ 	SendSysMessage(who, &quot;New Value-&gt;&quot;+targ.get_member(property));
+ endprogram
+ 
++
+ function ProcessInput(who, targ, byref property, byref value)
+ 	//Works on items and mobiles, so do this first.
+ 	if ( property in array{&quot;x&quot;, &quot;y&quot;, &quot;z&quot;, &quot;realm&quot;} )
+@@ -63,6 +58,7 @@
+ 	endif
+ endfunction
+ 
++
+ function MobileProperties(who, targ, byref property, byref value)
+ 	if ( !targ.IsA(POLCLASS_MOBILE) )
+ 		return error;
+@@ -99,6 +95,7 @@
+ 	return 0;
+ endfunction
+ 
++
+ function DoMovement(targ, byref property, byref value)
+ 	var x := targ.x;
+ 	var y := targ.y;
+
+Modified: trunk/096/pkg/commands/gm/shave.src
+===================================================================
+--- trunk/096/pkg/commands/gm/shave.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/shave.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;include/client&quot;;
+@@ -2,4 +5,4 @@
+ include &quot;include/messages&quot;;
++include &quot;include/localization&quot;;
+ include &quot;include/log&quot;;
+-include &quot;include/localization&quot;;
+ 
+
+Modified: trunk/096/pkg/commands/gm/squelch.src
+===================================================================
+--- trunk/096/pkg/commands/gm/squelch.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/squelch.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,5 +1,10 @@
+-// TODO: fix the integer only input
+-
++/* $Id$
++ *
++ * Purpose
++ *
++ * TODO
++ * Fix the integer only input.
++ */
+ use uo;
+ use basic;
+ 
+
+Modified: trunk/096/pkg/commands/gm/strip.src
+===================================================================
+--- trunk/096/pkg/commands/gm/strip.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/strip.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;include/messages&quot;;
+
+Modified: trunk/096/pkg/commands/gm/tile.src
+===================================================================
+--- trunk/096/pkg/commands/gm/tile.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/tile.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,213 +1,95 @@
+-////////////////////////////////////////////////////////////////////////////
+-
+-//////////////////////////////////////////////
+-
+-//
+-
+-//  TILE.SRC - ingame command
+-
+-//
+-
+-//  This is a &quot;fastbuild&quot; command you supply itemnumber and Z height as
+-
+-//  arguments. If Z is left out it takes the first coordinates Z as
+-
+-//  the Z to be built on. This command is great for putting down floors
+-
+-//  etc.
+-
+-//
+-
+-//  Todo:
+-
+-//   Clean up the code when abs() is avail. and C-style for loops
+-
+-//   don't require initialization.
+-
+-//
+-
+-//  Author: ens 1999/01/02
+-
+-//
+-
+-//  Recent Modifications:
+-
+-//      1999/01/25 Ignatius Created the command.
+-
+-//
+-
+-////////////////////////////////////////////////////////////////////////////
+-
+-/////////////////////////////////////////////
+-
+-
+-
++/* $Id$
++ *
++ * Purpose
++ * This is a &quot;fastbuild&quot; command you supply itemnumber and Z height as
++ * arguments. If Z is left out it takes the first coordinates Z as
++ * the Z to be built on. This command is great for putting down floors
++ * etc.
++ *
++ * TODO
++ * Clean up the code when abs() is avail. and C-style for loops
++ * don't require initialization.
++ *
++ */
+ use uo;
+ 
+ 
++program command_tile(who, params)
++	if (!params)
++		SendSysMessage( who, &quot;No arguments supplied. Usage: .tile [item] ([z]).&quot; );
++		return;
++	endif
+ 
+-program textcmd_tile( who, input )
++	var argarray := SplitWords( params ); // split the arguments.
++	var tileitem  := CInt( argarray[ 1 ] );
++	var tilez     := CInt( argarray[ 2 ] );
++	var zvalid := 1;  // assume z is correct for now.
+ 
++	if (!tilez)
++		SendSysMessage( who, &quot;No Z supplied. Using target #1 Z instead.&quot; );
++		zvalid := 0;
++	else
++		if ((tilez &lt; -127) || (tilez &gt; 128)) // check the bounds.
++			SendSysMessage(who, &quot;Z is out of bounds. Using target #1 Z instead.&quot;);
++			zvalid := 0;
++		endif
++	endif
+ 
++	SendSysMessage( who, &quot;Select coordinate #1&quot; );
++	var coordstructone := TargetCoordinates( who );
++	SendSysMessage( who, &quot;Select coordinate #2&quot; );
++	var coordstructtwo := TargetCoordinates( who );
+ 
+-    if ( ! input )
++	if ((!coordstructonu) || (!coordstructtwo)) // check that we got two valid coordstructs.
++		SendSysMessage( who, &quot;Missing coordinate. Aborting.&quot; );
++		return;
++	endif
+ 
+-        SendSysMessage( who, &quot;No arguments supplied. Usage: .tile [item] ([z]).&quot; );
++	if (!zvalid) // if we are to use the coord #1 Z, check it out.
++		if (coordstructone.z &lt; -127 || coordstructone.z &gt; 128)
++			SendSysMessage(who, &quot;Z is out of bounds. Aborting.&quot;);
++			return;
++		endif
++	endif
+ 
+-        return;
++	if (!zvalid)
++		tilez := coordstructone.z;
++	endif
+ 
+-    endif
++	// dummy variables, won't be needed after rewrite of command.
++	var startx;
++	var starty;
++	var endx;
++	var endy;
+ 
++	if (coordstructone.x &lt;= coordstructtwo.x)
++		startx  := coordstructone.x;
++		endx    := coordstructtwo.x;
++	else
++		startx  := coordstructtwo.x;
++		endx    := coordstructone.x;
++	endif
+ 
++	if (coordstructone.y &lt;= coordstructtwo.y)
++		starty  := coordstructone.y;
++		endy    := coordstructtwo.y;
++	else
++		starty  := coordstructtwo.y;
++		endy    := coordstructone.y;
++	endif
+ 
+-    var argarray := SplitWords( input ); // split the arguments.
++	var fooy := starty; // store the original startY for use after each iteration.
+ 
++	while (startx &lt;= endx)
++		while ( starty &lt;= endy )
++			CreateItemAtLocation(startx, starty, tilez, tileitem, 1, who.realm);
++			starty := starty + 1;
++		endwhile
++		starty := fooy;
++		startx := startx + 1;
++	endwhile
+ 
++	SendSysMessage(who, &quot;Command completed.&quot;);
+ 
+-    var tileitem  := CInt( argarray[ 1 ] );
+-
+-    var tilez     := CInt( argarray[ 2 ] );
+-
+-
+-
+-    var zvalid := 1;  // assume z is correct for now.
+-
+-
+-
+-    if ( ! tilez )
+-
+-        SendSysMessage( who, &quot;No Z supplied. Using target #1 Z instead.&quot; );
+-
+-        zvalid := 0;
+-
+-    else
+-
+-        if ( ( tilez  &lt; -127 ) || ( tilez &gt; 128 ) ) // check the bounds.
+-
+-            SendSysMessage( who, &quot;Z is out of bounds. Using target #1 Z instead.&quot; );
+-
+-            zvalid := 0;
+-
+-        endif
+-
+-    endif
+-
+-
+-
+-    SendSysMessage( who, &quot;Select coordinate #1&quot; );
+-
+-    var coordstructone := TargetCoordinates( who );
+-
+-   
+-
+-    SendSysMessage( who, &quot;Select coordinate #2&quot; );
+-
+-    var coordstructtwo := TargetCoordinates( who );
+-
+-
+-
+-    if ( ( ! coordstructone ) || ( ! coordstructtwo ) ) // check that we got two valid coordstructs.
+-
+-        SendSysMessage( who, &quot;Missing coordinate. Aborting.&quot; );
+-
+-        return;
+-
+-    endif
+-
+-
+-
+-    if ( ! zvalid ) // if we are to use the coord #1 Z, check it out.
+-
+-        if ( coordstructone.z &lt; -127 || coordstructone.z &gt; 128 )
+-
+-            SendSysMessage( who, &quot;Z is out of bounds. Aborting.&quot; );
+-
+-            return;
+-
+-        endif
+-
+-    endif
+-
+-
+-
+-    if ( ! zvalid )
+-
+-        tilez := coordstructone.z;
+-
+-    endif
+-
+-
+-
+-    // dummy variables, won't be needed after rewrite of command.
+-
+-    var startx;
+-
+-    var starty;
+-
+-    var endx;
+-
+-    var endy;
+-
+-
+-
+-    if ( coordstructone.x &lt;= coordstructtwo.x )
+-
+-        startx  := coordstructone.x;
+-
+-        endx    := coordstructtwo.x;
+-
+-    else
+-
+-        startx  := coordstructtwo.x;
+-
+-        endx    := coordstructone.x;
+-
+-    endif
+-
+-
+-
+-    if ( coordstructone.y &lt;= coordstructtwo.y )
+-
+-        starty  := coordstructone.y;
+-
+-        endy    := coordstructtwo.y;
+-
+-    else
+-
+-        starty  := coordstructtwo.y;
+-
+-        endy    := coordstructone.y;
+-
+-    endif
+-
+-
+-
+-    var fooy := starty; // store the original startY for use after each iteration.
+-
+-
+-
+-    while ( startx &lt;= endx )
+-
+-        while ( starty &lt;= endy )
+-
+-           CreateItemAtLocation( startx, starty, tilez, tileitem, 1, who.realm );
+-
+-           starty := starty + 1;
+-
+-        endwhile
+-
+-        starty := fooy;
+-
+-        startx := startx + 1;
+-
+-    endwhile
+-
+-
+-
+-    SendSysMessage( who, &quot;Command completed.&quot; );
+-
++	return;
+ endprogram
+-
+-
+-
+-
+
+Modified: trunk/096/pkg/commands/gm/unlock.src
+===================================================================
+--- trunk/096/pkg/commands/gm/unlock.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/gm/unlock.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,12 +1,16 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+-program textcmd_unlock( who )
+ 
+-    SendSysMessage( who, &quot;What do you wish to unlock?&quot; );
++program command_unlock(who)
++    SendSysMessage(who, &quot;What do you wish to unlock?&quot;);
+ 
+-    var what := Target( who );
+-    if (what)
+-        what.locked := 0;
+-    endif
++	var what := Target(who, TGTOPT_NOCHECK_LOS);
++	if (what)
++		what.locked := 0;
++	endif
+ 
+-endprogram
+\ No newline at end of file
++	return;
++endprogram
+
+Modified: trunk/096/pkg/commands/seer/bcast.src
+===================================================================
+--- trunk/096/pkg/commands/seer/bcast.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/seer/bcast.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;include/client&quot;;
+
+Modified: trunk/096/pkg/commands/seer/bcastas.src
+===================================================================
+--- trunk/096/pkg/commands/seer/bcastas.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/seer/bcastas.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,11 +1,24 @@
+ use uo;
++use basic;
+ 
+ 
+-program bcastas(who, msg)
++program bcastas(who, params)
++	var name;
+ 
+-  who := who;
+-  if (msg)
+-    Broadcast(msg);
+-  endif
++	if (!params)
++		//TODO
++		return;
++	endif
+ 
++	params := SplitWords(params);
++	
++	if (params.size() &lt;= 1)
++		return;
++	elseif (params.size() &gt;= 2)
++		name :=params[1];
++		Broadcast(name + &quot;: &quot;);
++		//TODO
++	endif
++
++	return;
+ endprogram
+
+Copied: trunk/096/pkg/commands/seer/refresh.src (from rev 359, trunk/096/pkg/commands/seer/refreshme.src)
+===================================================================
+--- trunk/096/pkg/commands/seer/refreshme.src	2005-10-02 10:39:25 UTC (rev 359)
++++ trunk/096/pkg/commands/seer/refresh.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -0,0 +1,22 @@
++/* $Id$
++ *
++ * Purpose
++ * Restore Hits, Mana, Stamina
++ *
++ */
++include &quot;include/attributes&quot;;
++
++
++program command_refresh(who, params)
++	if (!params)
++		//TODO
++	elseif (params == &quot;me&quot;)
++		SetHp(who, GetMaxHp(who));
++		SetMana(who, GetMaxMana(who));
++		SetStamina(who, GetMaxStamina(who));
++	else
++		//TODO
++	endif
++
++	return;
++endprogram
+
+Deleted: trunk/096/pkg/commands/seer/refreshme.src
+===================================================================
+--- trunk/096/pkg/commands/seer/refreshme.src	2005-10-02 14:44:10 UTC (rev 384)
++++ trunk/096/pkg/commands/seer/refreshme.src	2005-10-02 18:31:15 UTC (rev 385)
+@@ -1,14 +0,0 @@
+-/////////////////////////////////////////////////////////////////////////////
+-//
+-//  &quot;.refreshme&quot; - Restore Hits, Mana, Stamina
+-//
+-//  Thanks to The Writer, from our Dev Board, for this one.
+-//
+-/////////////////////////////////////////////////////////////////////////////
+-
+-include &quot;include/attributes&quot;;
+-program textcmd_refreshme( who )
+-    SetHp(who, GetMaxHp(who));
+-    SetMana(who, GetMaxMana(who));
+-    SetStamina(who, GetMaxStamina(who));
+-endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000362.html">[Poldistro-svn] r384 - trunk/096/data
+</A></li>
+	<LI>Next message: <A HREF="000364.html">[Poldistro-svn] r386 - in trunk/096/pkg: items/containers items/containers/bookshelf items/containers/commands/admin items/containers/config items/containers/container items/containers/corpse items/containers/include items/dyes/config items/dyes/dyeTub items/dyes/dyes items/dyes/furnitureTub items/dyes/include items/sysbook items/sysbook/book items/sysbook/commands/gm items/sysbook/config items/sysbook/include items/sysbook/www mobiles/brainAI/config mobiles/oldAI mobiles/oldAI/combat mobiles/oldAI/main mobiles/oldAI/setup skills/blacksmithy skills/blacksmithy/tongs skills/bowcraft skills/spiritspeak systems/attributes systems/attributes/config systems/attributes/include systems/attributes/startup systems/crafting systems/crafting/config systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#363">[ date ]</a>
+              <a href="thread.html#363">[ thread ]</a>
+              <a href="subject.html#363">[ subject ]</a>
+              <a href="author.html#363">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

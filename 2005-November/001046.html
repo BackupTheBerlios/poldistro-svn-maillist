@@ -1,0 +1,268 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1075 - in trunk/096/pkg/commands: config gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1075%20-%20in%20trunk/096/pkg/commands%3A%20config%20gm&In-Reply-To=%3C200511291041.jATAfltO019504%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001045.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1075 - in trunk/096/pkg/commands: config gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1075%20-%20in%20trunk/096/pkg/commands%3A%20config%20gm&In-Reply-To=%3C200511291041.jATAfltO019504%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1075 - in trunk/096/pkg/commands: config gm">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov 29 11:41:47 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001045.html">[Poldistro-svn] r1074 - in trunk/096/pkg/commands: config gm
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1046">[ date ]</a>
+              <a href="thread.html#1046">[ thread ]</a>
+              <a href="subject.html#1046">[ subject ]</a>
+              <a href="author.html#1046">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-29 11:41:42 +0100 (Tue, 29 Nov 2005)
+New Revision: 1075
+
+Modified:
+   trunk/096/pkg/commands/config/info.cfg
+   trunk/096/pkg/commands/gm/info.src
+Log:
+.info appearance is done.. now to make the buttons work!
+Ill add support for &quot;squiggily-doos&quot; maybe too.
+
+Modified: trunk/096/pkg/commands/config/info.cfg
+===================================================================
+--- trunk/096/pkg/commands/config/info.cfg	2005-11-27 15:45:59 UTC (rev 1074)
++++ trunk/096/pkg/commands/config/info.cfg	2005-11-29 10:41:42 UTC (rev 1075)
+@@ -137,9 +137,13 @@
+ 	Group	Storage
+ }
+ 
++Elem	Index-Miscellaneous
++{
++	AutoBox	1
++	Entry	Blank
++	Entry	Blank
++}
+ 
+-
+-
+ Group	NameAndTitles
+ {
+ 	AutoBox	1
+@@ -169,7 +173,7 @@
+ Group	Client
+ {
+ 	AutoBox	1
+-	Entry	member	Connected	connected
++	Entry	member	Connected	connected	0	Disconnect
+ 	Entry	member	IP_Address	ip
+ 	Entry	member	Client_Version	clientversion
+ }
+@@ -251,7 +255,7 @@
+ 	AutoBox	1
+ 	Entry	member	Serial_Number	serial		Hex
+ 	Entry	member	Poisoned	poisoned
+-	Entry	member	Squelched	squelched
++	Entry	member	Squelched	squelched	0	PropEdit
+ 	Entry	member	Dead		dead
+ 	Entry	member	Height		height
+ 	Entry	member	Weight		weight
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-11-27 15:45:59 UTC (rev 1074)
++++ trunk/096/pkg/commands/gm/info.src	2005-11-29 10:41:42 UTC (rev 1075)
+@@ -86,7 +86,7 @@
+ 	if ( entries.Size() &lt; 1 )
+ 		return 0;
+ 	endif
+-	
++
+ 	if ( cfg_elem.AutoBox )
+ 		var num_entries := entries.Size();
+ 		GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, (num_entries*20));
+@@ -106,7 +106,7 @@
+ 				break;
+ 			&quot;privileges&quot;:
+ 				DisplayPrivileges(targ, gump, y_pos);
+-				break;	
++				break;
+ 			&quot;text&quot;:
+ 				GFTextLine(gump, 175, y_pos, 2100, entry);
+ 				y_pos := y_pos+20;
+@@ -132,7 +132,7 @@
+ 		sleepms(2);
+ 	endforeach
+ 	y_pos := y_pos+5;
+-		
++
+ 	return 1;
+ endfunction
+ 
+@@ -152,7 +152,7 @@
+ 	if ( value == error )
+ 		value := &quot;None&quot;;
+ 	endif
+-	
++
+ 	case ( Lower(entry[4]) )
+ 		&quot;hex&quot;:
+ 			value := Hex(value);
+@@ -198,7 +198,7 @@
+ 	// With this in mind, the array must be broken once for the first page.
+ 	// Then broken again for the remaining pages. Not the most 'efficient' way I suppose.
+ 	//
+-	
++
+ 	var y_space := (END_Y-y_pos)+START_Y;
+ 	var available_lines := CInt(y_space / 20);
+ 	var num_attribs := attributes.Size();
+@@ -210,14 +210,21 @@
+ 		attributes := BreakArray(rest, 20);
+ 		attributes.Insert(1, page_1);
+ 	endif
+-		
++
++	var num_groups := attributes.Size();
+ 	foreach group in ( attributes )
+ 		num_attribs := group.Size();
+-		GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, num_attribs*20);
++
++		var y_stretch := num_attribs * 20;
++		if ( _group_iter &lt; num_groups )
++			y_stretch := y_stretch + 10;
++		endif
++		
++		GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, y_stretch);
+ 		if ( _group_iter &gt; 1 )
+ 			GFAddButton(gump, 460, START_Y+5, 2650, 2651, GF_PAGE_BTN, gump.cur_page-1);
+ 		endif
+-		
++
+ 		foreach attrib_name in ( group )
+ 			GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+ 			GFTextLine(gump, 175, y_pos, 2100, attrib_name);
+@@ -228,7 +235,7 @@
+ 			sleepms(2);
+ 		endforeach
+ 
+-		if ( _group_iter &lt; attributes.Size() )
++		if ( _group_iter &lt; num_groups )
+ 			GFAddButton(gump, 460, 430, 2648, 2649, GF_PAGE_BTN, gump.cur_page+1);
+ 			GFPage(gump, gump.cur_page+1);
+ 			y_pos := START_Y;
+@@ -243,13 +250,19 @@
+ function DisplayPrivileges(targ, byref gump, byref y_pos)
+ 	var privs := info_cfg[&quot;PrivList&quot;];
+ 	privs := GetConfigStringArray(privs, &quot;Priv&quot;);
+-	
++
+ 	var num_privs := privs.Size();
+ 	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, (num_privs*20));
+ 	foreach priv_name in ( privs )
+ 		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+ 		GFTextLine(gump, 175, y_pos, 2100, priv_name);
+-		GFTextRight(gump, 480, y_pos, 2100, targ.Enabled(priv_name));
++		
++		var status := &quot;Disabled&quot;;
++		if ( targ.Enabled(priv_name) )
++			status := &quot;Enabled&quot;;
++		endif
++		
++		GFTextRight(gump, 480, y_pos, 2100, status);
+ 		y_pos := y_pos+20;
+ 		sleepms(2);
+ 	endforeach
+@@ -258,9 +271,9 @@
+ endfunction
+ 
+ function DisplayStorageAreas(targ, byref gump, byref y_pos)
+-	
++
+ 	var storage_areas := CP_GetStorageAreaNames();
+-	
++
+ 	var num_areas := storage_areas.Size();
+ 	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, (num_areas*20));
+ 	foreach area_name in ( storage_areas )
+@@ -284,17 +297,17 @@
+ 		sleepms(2);
+ 	endforeach
+ 	GFHTMLArea(gump, 155, y_pos+7, 325, 186, lines, 0, 1);
+-	
+-	y_pos := y_pos+340;	
++
++	y_pos := y_pos+340;
+ 	return 1;
+ endfunction
+ 
+ function DisplayWeaponInfo(targ, byref gump, byref entry, byref y_pos)
+ 	var weapon := targ.weapon;
+-	
++
+ 	case ( Lower(entry[1]) )
+-		&quot;weaponspeed&quot;: 
+-		&quot;damagedice&quot;: 
++		&quot;weaponspeed&quot;:
++		&quot;damagedice&quot;:
+ 		&quot;averagedamage&quot;:
+ 	endcase
+ 	y_pos := y_pos+20;
+@@ -328,7 +341,7 @@
+ 
+ function GetCustom(targ, property)
+ 	case ( Lower(property) )
+-		&quot;weapon_speed&quot;: 
++		&quot;weapon_speed&quot;:
+ 			return CS_GetWeaponInfo(targ.weapon, &quot;Speed&quot;);
+ 		&quot;damage_dice&quot;:
+ 			return CS_GetWeaponInfo(targ.weapon, &quot;Damage&quot;);
+@@ -339,7 +352,7 @@
+ 		&quot;gotten_item_serial&quot;:
+ 			return targ.GetGottenItem().serial;
+ 	endcase
+-	
++
+ 	return &quot;Unknown custom type!&quot;;
+ endfunction
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001045.html">[Poldistro-svn] r1074 - in trunk/096/pkg/commands: config gm
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1046">[ date ]</a>
+              <a href="thread.html#1046">[ thread ]</a>
+              <a href="subject.html#1046">[ subject ]</a>
+              <a href="author.html#1046">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

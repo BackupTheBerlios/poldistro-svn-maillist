@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r358 - in trunk/096/scripts: control misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r358%20-%20in%20trunk/096/scripts%3A%20control%20misc&In-Reply-To=%3C200510020939.j929dQGG002612%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000335.html">
+   <LINK REL="Next"  HREF="000359.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r358 - in trunk/096/scripts: control misc</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r358%20-%20in%20trunk/096/scripts%3A%20control%20misc&In-Reply-To=%3C200510020939.j929dQGG002612%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r358 - in trunk/096/scripts: control misc">panosl at berlios.de
+       </A><BR>
+    <I>Sun Oct  2 11:39:26 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000335.html">[Poldistro-svn] r357 - in trunk/096/pkg/items/containers: commands/admin include
+</A></li>
+        <LI>Next message: <A HREF="000359.html">[Poldistro-svn] r359 - in trunk/096/pkg/mobiles: . oldAI oldAI/combat oldAI/main oldAI/setup
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#336">[ date ]</a>
+              <a href="thread.html#336">[ thread ]</a>
+              <a href="subject.html#336">[ subject ]</a>
+              <a href="author.html#336">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-10-02 11:39:20 +0200 (Sun, 02 Oct 2005)
+New Revision: 358
+
+Modified:
+   trunk/096/scripts/control/canRemove.src
+   trunk/096/scripts/misc/dblclickself.src
+   trunk/096/scripts/misc/death.src
+   trunk/096/scripts/misc/reconnect.src
+   trunk/096/scripts/misc/skillwin.src
+Log:
+
+
+Modified: trunk/096/scripts/control/canRemove.src
+===================================================================
+--- trunk/096/scripts/control/canRemove.src	2005-10-01 23:39:22 UTC (rev 357)
++++ trunk/096/scripts/control/canRemove.src	2005-10-02 09:39:20 UTC (rev 358)
+@@ -1,34 +1,34 @@
+ use uo;
+ use os;
+ 
+-program can_remove(who, backpack, item, movetype)
+ 
+-  movetype := movetype;
+-  item := item;
+-  set_critical(1);
+-  var vendorserial := GetObjProperty(backpack,&quot;Vendored&quot;);
+-  if(!vendorserial)
+-    var ownerserial := GetObjProperty(backpack, &quot;Owner&quot;);
+-    if(ownerserial)
+-      if(who.serial != ownerserial)
+-        if(who.cmdlevel &gt;= 3)
+-          return 1;
+-        endif
+-        SendSysMessage(who, &quot;You cannot move that.&quot;);
+-        return 0;
+-      else
+-        return 1;
+-      endif
+-    else
+-      return 1;
+-    endif
+-  endif
+-  var vendor := SystemFindObjectBySerial(vendorserial);
+-  if(GetObjProperty(backpack, &quot;Master&quot;) == who.serial)
+-    return 1;
+-  else
+-    PrintTextAbovePrivate(vendor, &quot;If you want to buy something, just say so.&quot;, who);
+-    return 0;
+-  endif
+-  set_critical(0);
++program canRemove(who, backpack, item, movetype)
++	movetype := movetype;
++	item := item;
++	set_critical(1);
++	var vendorserial := GetObjProperty(backpack,&quot;Vendored&quot;);
++	if (!vendorserial)
++		var ownerserial := GetObjProperty(backpack, &quot;Owner&quot;);
++		if (ownerserial)
++			if (who.serial != ownerserial)
++				if (who.cmdlevel &gt;= 3)
++					return 1;
++				endif
++				SendSysMessage(who, &quot;You cannot move that.&quot;);
++				return 0;
++			else
++				return 1;
++			endif
++		else
++			return 1;
++		endif
++	endif
++	var vendor := SystemFindObjectBySerial(vendorserial);
++	if (GetObjProperty(backpack, &quot;Master&quot;) == who.serial)
++		return 1;
++	else
++		PrintTextAbovePrivate(vendor, &quot;If you want to buy something, just say so.&quot;, who);
++		return 0;
++	endif
++	set_critical(0);
+ endprogram
+
+Modified: trunk/096/scripts/misc/dblclickself.src
+===================================================================
+--- trunk/096/scripts/misc/dblclickself.src	2005-10-01 23:39:22 UTC (rev 357)
++++ trunk/096/scripts/misc/dblclickself.src	2005-10-02 09:39:20 UTC (rev 358)
+@@ -6,13 +6,13 @@
+ include &quot;include/client&quot;;
+ 
+ 
+-program dblclickself(who)
++program dblClickSelf(who)
+ 	var mount := GetEquipmentByLayer(who, LAYER_MOUNT);
+ 	if (!mount)
+ 		OpenPaperdoll(who, who);
+ 		return;
+ 	endif
+-	if (me.warmode)
++	if (who.warmode)
+ 		OpenPaperdoll(who, who);
+ 		return;
+ 	endif
+@@ -22,12 +22,12 @@
+ 	EraseObjProperty(animal,&quot;serial&quot;);
+ 	EraseObjProperty(animal,&quot;mounted&quot;);
+ 	EraseObjProperty(animal,&quot;mounted_on&quot;);
+-	animal.facing := me.facing;
++	animal.facing := who.facing;
+ 	var ev := array;
+ 	ev.+ type;
+ 	ev.+ source;
+ 	ev.type := EVID_WAKEUP;
+-	ev.source := me;
++	ev.source := who;
+ 	SendEvent(animal, ev);
+ 	MoveCharacterToLocation(animal, who.x, who.y, who.z, MOVECHAR_FORCELOCATION);
+ 	RestartScript(animal);
+
+Modified: trunk/096/scripts/misc/death.src
+===================================================================
+--- trunk/096/scripts/misc/death.src	2005-10-01 23:39:22 UTC (rev 357)
++++ trunk/096/scripts/misc/death.src	2005-10-02 09:39:20 UTC (rev 358)
+@@ -8,10 +8,10 @@
+ include &quot;:npcutils:NPCBackpacks&quot;;
+ include &quot;include/noto&quot;;
+ 
+-var cfg := ReadConfigFile( &quot;npcdesc&quot; );
++var cfg := ReadConfigFile(&quot;npcdesc&quot;);
+ 
+ 
+-program npcdeath(corpse)
++program npcDeath(corpse)
+ 
+   // if he had things to restock, destroy them, he's dead now.
+   if(GetObjProperty(corpse, &quot;restockserial&quot;))
+
+Modified: trunk/096/scripts/misc/reconnect.src
+===================================================================
+--- trunk/096/scripts/misc/reconnect.src	2005-10-01 23:39:22 UTC (rev 357)
++++ trunk/096/scripts/misc/reconnect.src	2005-10-02 09:39:20 UTC (rev 358)
+@@ -3,19 +3,21 @@
+ 
+ 
+ program reconnect(who)
+-  var mount := GetEquipmentByLayer(who, 25 );
+-  if (mount)
+-    var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
+-    EraseObjProperty(animal,&quot;onhold&quot;);
+-  endif
+-  run_script_to_completion( &quot;:motd:textcmd/player/motd&quot;, who );
+-  var ppl := EnumerateOnlineCharacters();
+-  if (GetObjProperty(who, &quot;StealthLogin&quot;) )
+-    return;
+-  endif
+-  foreach staff in ppl
+-    if((staff.cmdlevel &gt; 0) &amp;&amp; (CInt(GetObjProperty(staff, &quot;LogNotify&quot;) ) == 1) )
+-      SendSysMessage(staff, CStr(who.name) + &quot; (Account name: &quot; + CStr(who.acctname) + &quot;) has reconnected.  IP: &quot; + CStr(who.ip) );
+-    endif
+-  endforeach
+-endprogram
+\ No newline at end of file
++	var mount := GetEquipmentByLayer(who, 25 );
++	if (mount)
++		var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
++		EraseObjProperty(animal,&quot;onhold&quot;);
++	endif
++	run_script_to_completion( &quot;:motd:textcmd/player/motd&quot;, who );
++	var ppl := EnumerateOnlineCharacters();
++	if (GetObjProperty(who, &quot;StealthLogin&quot;) )
++		return;
++	endif
++	foreach staff in ppl
++		if ((staff.cmdlevel &gt; 0) &amp;&amp; (CInt(GetObjProperty(staff, &quot;LogNotify&quot;)) == 1))
++			SendSysMessage(staff, CStr(who.name) + &quot; (Account name: &quot;
++			+ CStr(who.acctname) + &quot;) has reconnected.  IP: &quot; + CStr(who.ip));
++		endif
++	endforeach
++
++endprogram
+
+Modified: trunk/096/scripts/misc/skillwin.src
+===================================================================
+--- trunk/096/scripts/misc/skillwin.src	2005-10-01 23:39:22 UTC (rev 357)
++++ trunk/096/scripts/misc/skillwin.src	2005-10-02 09:39:20 UTC (rev 358)
+@@ -12,7 +12,7 @@
+ use uo;
+ 
+ 
+-program core_skillwin(who)
++program core_skillWin(who)
+ 	SendSkillWindow(who, who);
+ 
+ 	return;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000335.html">[Poldistro-svn] r357 - in trunk/096/pkg/items/containers: commands/admin include
+</A></li>
+	<LI>Next message: <A HREF="000359.html">[Poldistro-svn] r359 - in trunk/096/pkg/mobiles: . oldAI oldAI/combat oldAI/main oldAI/setup
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#336">[ date ]</a>
+              <a href="thread.html#336">[ thread ]</a>
+              <a href="subject.html#336">[ subject ]</a>
+              <a href="author.html#336">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

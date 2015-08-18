@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r302 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r302%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509290331.j8T3V5Gn012151%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000279.html">
+   <LINK REL="Next"  HREF="000281.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r302 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r302%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509290331.j8T3V5Gn012151%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r302 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep 29 05:31:05 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000279.html">[Poldistro-svn] r301 - trunk/096/pkg/systems/attributes/config
+</A></li>
+        <LI>Next message: <A HREF="000281.html">[Poldistro-svn] r303 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#280">[ date ]</a>
+              <a href="thread.html#280">[ thread ]</a>
+              <a href="subject.html#280">[ subject ]</a>
+              <a href="author.html#280">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-29 05:31:02 +0200 (Thu, 29 Sep 2005)
+New Revision: 302
+
+Modified:
+   trunk/096/pkg/systems/attributes/include/advanceCheck.inc
+   trunk/096/pkg/systems/attributes/include/skillCheck.inc
+Log:
+
+
+Modified: trunk/096/pkg/systems/attributes/include/advanceCheck.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/advanceCheck.inc	2005-09-29 02:58:41 UTC (rev 301)
++++ trunk/096/pkg/systems/attributes/include/advanceCheck.inc	2005-09-29 03:31:02 UTC (rev 302)
+@@ -2,8 +2,8 @@
+ 
+ /*===============================================================
+ * Current Version
+-* SKILLCHECK.INC - v1.0
+-* Updated 9/24/2005 6:52PM
++* ADVANCECHECK.INC - v1.0
++* Updated 9/28/2005 8:29PM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+@@ -12,14 +12,111 @@
+ 
+ use uo;
+ use os;
++use util;
+ 
+ include &quot;:attributes:attributes&quot;;
+-/*
+-function CheckStatAdvancement(mobile, stat_name)
+-	return 1;
++
++//function CheckStatAdvancement(mobile, stat_name)
++//	return 1;
++//endfunction
++
++function CheckSkillAdvance(mobile, skill_name, award_diff, pass_chance, pass_success)
++	if ( pass_success &lt; 0 )
++		SkillDbgMsg(mobile, &quot;No skill advancement - skill check was not successful.&quot;);
++		return 0;
++	elseif ( AP_CheckSkillCap(mobile, skill_name) )
++		SkillDbgMsg(mobile, &quot;Skill cap for attribute '&quot;+skill_name+&quot;' already reached.&quot;);
++		return 0;
++	elseif ( AP_CheckSkillCap(mobile) )
++		SkillDbgMsg(mobile, &quot;Total skill cap already reached.&quot;);
++		return 0;
++	endif
++	
++	var skill_cap := AP_GetSkillCap(skill_name);
++	var true_skill := AP_GetTrueSkill(mobile, skill_name);
++	var limit_left := CDbl(skill_cap - true_skill);
++	var adv_check := RandomInt(100)+1;
++	
++	var settings := AP_GetSettingsCfgElem(&quot;Skills&quot;);
++	var multiplier := CDbl(settings.GainSpeed);
++			
++	if ( true_skill &lt; CDbl(settings.FreeGainUntil) )
++		SkillDbgMsg(mobile, &quot;Skill is &lt; &quot;+CDbl(settings.FreeGainUntil)+&quot;. Allowing for advancement&quot;);
++	elseif ( true_skill+Cdbl(settings.TooEasy) &gt; award_diff )
++		// Was it too easy? If so, return.
++		SkillDbgMsg(mobile, &quot;No challenge. No advance. True skill (&quot;+true_skill+&quot;-20) &gt; &quot;+award_diff);
++		return 0;
++	elseif ( adv_check &lt;= pass_chance )
++		SkillDbgMsg(mobile, &quot;Passed advance check: +&quot;+CStr(pass_chance - adv_check)+&quot;%&quot;);
++	else
++		SkillDbgMsg(mobile, &quot;Did not pass skill advance check.&quot;);
++		return 0;
++	endif
++	
++	SkillDbgMsg(mobile, &quot;Skill Cap: &quot;+CStr(skill_cap)+&quot;%&quot;);
++	SkillDbgMsg(mobile, &quot;Left to cap: &quot;+CStr(limit_left)+&quot; -&gt;&quot;+skill_cap+&quot;-&quot;+true_skill);
++	SkillDbgMsg(mobile, &quot;Multiplier: &quot;+CStr(multiplier));
++	
++	var int_chance := AP_GetStat(mobile, &quot;Intelligence&quot;) / 2.0;
++	var task_chance := (100.0 - award_diff) / 2.0;
++	var chance := CInt((int_chance + task_chance) * multiplier);
++
++	SkillDbgMsg(mobile, &quot;INT gives &quot;+CStr(int_chance)+&quot;%&quot;);
++	SkillDbgMsg(mobile, &quot;Task gives &quot;+CStr(task_chance)+&quot;%&quot;);
++	SkillDbgMsg(mobile, &quot;Multiplier on &quot;+CStr(int_chance+task_chance)+&quot; gives &quot;+CStr(chance));
++	SkillDbgMsg(mobile, &quot;---&quot;);
++	
++	var check_roll := RandomInt(100);
++	SkillDbgMsg(mobile, &quot;Check %age: &quot;+CStr(check_roll));
++	if ( check_roll &lt; chance )
++		var advance := 0.1;
++		if ( award_diff &gt; true_skill )
++			advance := CDbl(0.1 * (1.0 + CInt((award_diff - true_skill) / 5.0)));
++		endif
++		if ( advance &gt; limit_left )
++			advance := limit_left;
++		elseif ( advance &lt; 0.1 )
++			advance := 0.1;
++		endif
++		
++		SkillDbgMsg(mobile, &quot;Passed. Advance &quot;+skill_name+&quot;: &quot; + CStr(advance));
++		
++		var temp := true_skill+advance;
++		while ( CInt(temp*10.0) == CInt(GetAttributeBaseValue(mobile, skill_name)) )
++			// Kludge for an old core precision bug.
++			// Makes sure it always goes up atleast 0.1.
++			temp := temp+0.1;
++			sleepms(10);
++		endwhile
++		AP_SetTrueSkill(mobile, skill_name, temp);
++		
++		return 1;
++	endif
++	
++	SkillDbgMsg(mobile, &quot;Failed advancement check. No advance.&quot;);
++	
++	return 0;
+ endfunction
+ 
+-function CheckSkillAdvance(mobile, skill_name, award_difficulty, pass_chance, pass_success)
++/*
++function CheckSkillAdvance(mobile, attribute, award_points)
++	if ( AP_CheckSkillCap(mobile, attribute) )
++		return error{&quot;errortext&quot;:=&quot;Skill cap for attribute '&quot;+attribute+&quot;' already reached.&quot;};
++	elseif ( AP_CheckSkillCap(mobile) )
++		return error{&quot;errortext&quot;:=&quot;Total skill cap already reached.&quot;};
++	endif
++	
++	var skill_amt := AP_GetTrueSkill(mobile, attribute);
++	var free_gain := CDbl(AP_GetSettingsCfgElem(&quot;Skills&quot;).FreeGainUntil);
++	if ( skill_amt &lt; free_gain )
++		//Increase 0.1 if &lt; free gain
++		AP_SetTrueSkill(mobile, attribute, skill_amt+0.1);
++	endif
++	
++	if(points != 0)
++      		points  := points * ((1000-temp_chance) / 1000);
++    	endif
++    	
+ 	return 1;
+ endfunction
+ */
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/attributes/include/skillCheck.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skillCheck.inc	2005-09-29 02:58:41 UTC (rev 301)
++++ trunk/096/pkg/systems/attributes/include/skillCheck.inc	2005-09-29 03:31:02 UTC (rev 302)
+@@ -25,7 +25,6 @@
+ 
+ var g_skill_debug	:= 0;
+ 
+-
+ /*
+  * SkillCheck(mobile, attrib_name, difficulty, award_points, advance_flags)
+  *
+@@ -90,7 +89,7 @@
+ 	if ( !(advance_flags &amp; ADV_SKILL) )
+ 		SkillDbgMsg(mobile, &quot;Skill advance disabled.&quot;);
+ 	else
+-		//CheckSkillAdvance();
++		CheckSkillAdvance(mobile, attrib_name, award_diff, pass_chance, pass_success);
+ 	endif
+ 		
+ 	if ( !(advance_flags &amp; ADV_STATS) )
+@@ -153,29 +152,3 @@
+ 	
+ 	return 1;
+ endfunction
+-
+-/*
+-
+-function CheckSkillAdvance(mobile, attribute, award_points)
+-	if ( AP_CheckSkillCap(mobile, attribute) )
+-		return error{&quot;errortext&quot;:=&quot;Skill cap for attribute '&quot;+attribute+&quot;' already reached.&quot;};
+-	elseif ( AP_CheckSkillCap(mobile) )
+-		return error{&quot;errortext&quot;:=&quot;Total skill cap already reached.&quot;};
+-	endif
+-	
+-	var skill_amt := AP_GetTrueSkill(mobile, attribute);
+-	var free_gain := CDbl(AP_GetSettingsCfgElem(&quot;Skills&quot;).FreeGainUntil);
+-	if ( skill_amt &lt; free_gain )
+-		//Increase 0.1 if &lt; free gain
+-		AP_SetTrueSkill(mobile, attribute, skill_amt+0.1);
+-	endif
+-	
+-	if(points != 0)
+-      		points  := points * ((1000-temp_chance) / 1000);
+-    	endif
+-    	
+-	return 1;
+-endfunction
+-		
+-//Cdbl(Pow(2.0, Cint(basevalue/100))* 10.24);
+-*/
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000279.html">[Poldistro-svn] r301 - trunk/096/pkg/systems/attributes/config
+</A></li>
+	<LI>Next message: <A HREF="000281.html">[Poldistro-svn] r303 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#280">[ date ]</a>
+              <a href="thread.html#280">[ thread ]</a>
+              <a href="subject.html#280">[ subject ]</a>
+              <a href="author.html#280">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

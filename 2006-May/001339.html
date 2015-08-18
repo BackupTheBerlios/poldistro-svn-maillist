@@ -1,0 +1,726 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1371 - in trunk/096: config pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/include pkg/packetHooks/StatHook pkg/systems/accounts pkg/utils/gumps/include scripts/include scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1371%20-%20in%20trunk/096%3A%20config%20pkg/commands/admin%20pkg/commands/coun%20pkg/commands/gm%20pkg/commands/player%20pkg/packetHooks/PacketConfig%20pkg/packetHooks/PacketConfig/include%20pkg/packetHooks/StatHook%20pkg/systems/accounts%20pkg/utils/gumps/include%20scripts/include%20scripts/misc&In-Reply-To=%3C200605122356.k4CNuF8O027283%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001338.html">
+   <LINK REL="Next"  HREF="001340.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1371 - in trunk/096: config pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/include pkg/packetHooks/StatHook pkg/systems/accounts pkg/utils/gumps/include scripts/include scripts/misc</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1371%20-%20in%20trunk/096%3A%20config%20pkg/commands/admin%20pkg/commands/coun%20pkg/commands/gm%20pkg/commands/player%20pkg/packetHooks/PacketConfig%20pkg/packetHooks/PacketConfig/include%20pkg/packetHooks/StatHook%20pkg/systems/accounts%20pkg/utils/gumps/include%20scripts/include%20scripts/misc&In-Reply-To=%3C200605122356.k4CNuF8O027283%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1371 - in trunk/096: config pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/include pkg/packetHooks/StatHook pkg/systems/accounts pkg/utils/gumps/include scripts/include scripts/misc">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 01:56:15 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001338.html">[Poldistro-svn] r1370 - in trunk/096/pkg/OLD/utils: . logger logger/config logger/include
+</A></li>
+        <LI>Next message: <A HREF="001340.html">[Poldistro-svn] r1372 - in trunk/096/pkg/commands: player props seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1339">[ date ]</a>
+              <a href="thread.html#1339">[ thread ]</a>
+              <a href="subject.html#1339">[ subject ]</a>
+              <a href="author.html#1339">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 01:55:57 +0200 (Sat, 13 May 2006)
+New Revision: 1371
+
+Added:
+   trunk/096/pkg/packetHooks/PacketConfig/include/
+   trunk/096/pkg/packetHooks/PacketConfig/include/settings.inc
+   trunk/096/pkg/systems/accounts/uoclient.cfg
+   trunk/096/pkg/utils/gumps/include/htmlgump.inc
+Removed:
+   trunk/096/config/uoclient.cfg
+   trunk/096/pkg/commands/gm/kick.src
+   trunk/096/pkg/commands/gm/lock.src
+   trunk/096/pkg/commands/gm/shave.src
+   trunk/096/pkg/commands/gm/squelch.src
+Modified:
+   trunk/096/pkg/commands/admin/unloadcfg.src
+   trunk/096/pkg/commands/coun/tele.src
+   trunk/096/pkg/commands/gm/strip.src
+   trunk/096/pkg/commands/player/help.src
+   trunk/096/pkg/packetHooks/StatHook/sendStats.src
+   trunk/096/scripts/include/uo_extend.inc
+   trunk/096/scripts/misc/logofftest.src
+   trunk/096/scripts/misc/ondelete.src
+Log:
+
+
+Deleted: trunk/096/config/uoclient.cfg
+===================================================================
+--- trunk/096/config/uoclient.cfg	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/config/uoclient.cfg	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -1,47 +0,0 @@
+-# Protocol
+-# {
+-#   # EnableFlowControlPackets: use the 0x33 (0x00 / 0x01) pause/restart packets.
+-#   # Though OSI seems to no longer send these packets, they seem to help with smoothness,
+-#   # particularly with boat movement.
+-#   # NOTE: causes clients 4.0.0e and newer to fail login
+-#   EnableFlowControlPackets    1
+-# }
+-#
+-# Listener
+-# {
+-#   Port (int port number 1024..65535)
+-#   Encryption (string encryption type)
+-# }
+-#
+-# Explanation:
+-# The left-hand-side &quot;Strength&quot;, &quot;Intelligence&quot;, and &quot;Dexterity&quot; are Attribute names that
+-# MUST be defined in attributes.cfg.
+-# The right-hand-side &quot;Life&quot;, &quot;Mana&quot;, and &quot;Stamina&quot; are Vital names that
+-# MUST be defined in vitals.cfg.
+-# MaxSkillID allows you to use new client skills, but setting it too high can crash older clients.
+-# You must define skills.cfg entries for each skillID up to MaxSkillID (default 51).
+-# The Protocol and Listener sections are optional.
+-# Each Listener section allows you to listen for different client encryption types on different ports.
+-# This means you can listen for &quot;1.26.4&quot; clients on port 5003 and &quot;ignition&quot; clients on port 5555.
+-# Valid encryption types are found in the pol.cfg section. If you use Listeners set ListenPort
+-# in pol.cfg to 0.
+-
+-Protocol Protocol
+-{
+-	EnableFlowControlPackets 0
+-}
+-
+-
+-Listener 2.0.0
+-{
+-	#
+-	# Enabled mostly for development purposes
+-	# Will be removed when distro goes final
+-	Port		5002
+-	Encryption	2.0.0
+-}
+-Listener None
+-{
+-	Port		5003
+-	Encryption	none
+-}
+
+Modified: trunk/096/pkg/commands/admin/unloadcfg.src
+===================================================================
+--- trunk/096/pkg/commands/admin/unloadcfg.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/commands/admin/unloadcfg.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -1,9 +1,6 @@
+ use cfgfile;
+ use uo;
+ 
+-include &quot;:logger:log&quot;;
+-
+-
+ program command_unloadCFG(who, filename)
+ 	var res := UnloadConfigFile(filename);
+ 
+@@ -12,7 +9,6 @@
+ 	elseif (res &lt; 0)
+ 		SendSysMessage(who, &quot;That config file is not loaded.&quot;);
+ 	else
+-		Log(LOG_COMMAND, GetLogInfo(who) + &quot; invoking 'onloadcfg' command for file &quot; + filename);
+ 		SendSysMessage(who, &quot;Config file unloaded.  &quot; + res + &quot; reference(s) to config file exist.&quot;);
+ 	endif
+ 
+
+Modified: trunk/096/pkg/commands/coun/tele.src
+===================================================================
+--- trunk/096/pkg/commands/coun/tele.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/commands/coun/tele.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -5,25 +5,20 @@
+  */
+ use uo;
+ 
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
+-include &quot;include/tileEffects&quot;;
++include &quot;include/client&quot;;
+ include &quot;include/sounds&quot;;
+ 
+-
+-program command_tele(who)
+-	var where, result;
+-
+-	SendMessage(who, MSG_TARGET_LOC, {}, MSG_COMMAND); 
+-
+-	if ((where := TargetCoordinates(who)) == 0)
+-		SendMessage(who, MSG_CANCELLED, {}, MSG_COMMAND);
+-	else
+-		PlaySoundEffectPrivate(who, SFX_TELEPORT, who);
+-		result := MoveCharacterToLocation(who, where.x, where.y, where.z, MOVECHAR_FORCELOCATION);
+-		PlayObjectCenteredEffect(who, GFX_SMOKE, 0, 5);
++program command_Tele(who)
++	var targ := TargetCoordinates(who);
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
+ 	endif
+-
+-	return;
++	
++	PlaySoundEffectPrivate(who, SFX_TELEPORT, who);
++	MoveObjectToLocation(who, targ.x, targ.y, targ.z, who.realm, MOVECHAR_FORCELOCATION);
++	PlayObjectCenteredEffect(who, GFX_SMOKE, 0, 5);
++	
++	return 1;
+ endprogram
+ 
+
+Deleted: trunk/096/pkg/commands/gm/kick.src
+===================================================================
+--- trunk/096/pkg/commands/gm/kick.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/commands/gm/kick.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -1,31 +0,0 @@
+-/* $Id$
+- *
+- */
+-use uo;
+-
+-include &quot;:logger:log&quot;;
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
+-
+-
+-program command_kick(who)
+-
+-	SendMessage(who, MSG_TARGET_MOB, {}, MSG_COMMAND);
+-	var mobile := Target(who, TGTOPT_NOCHECK_LOS);
+-
+-	if( !mobile.acctname || mobile.isA(POLCLASS_NPC) )
+-		SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
+-	else
+-		if (mobile == who)
+-			SendSysMessage(who, &quot;You cannot kick yourself.&quot;);
+-		else
+-			Log(LOG_COMMAND, GetLogInfo(who) + &quot;invoking 'kick' command on: &quot;
+-				+ GetLogInfo(mobile));
+-			DisconnectClient(mobile);
+-			SendMessage(who, MSG_DONE, {}, MSG_COMMAND);
+-		endif
+-	endif
+-
+-	return 1;
+-
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/gm/lock.src
+===================================================================
+--- trunk/096/pkg/commands/gm/lock.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/commands/gm/lock.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -1,26 +0,0 @@
+-/* $Id
+- *
+- */
+-use os;
+-use uo;
+-
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
+-
+-
+-program command_lock(who)
+-	var what;
+-
+-	SendMessage(who, MSG_TARGET_OBJ, array{}, MSG_COMMAND);
+-	if ((what := Target(who, TGTOPT_NOCHECK_LOS)) == 0)
+-		SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
+-	else
+-		if (what.locked == 1)
+-			SendSysMessage(who, &quot;Already locked.&quot;);
+-		else
+-			what.locked := 1;
+-		endif
+-	endif
+-
+-	return;
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/gm/shave.src
+===================================================================
+--- trunk/096/pkg/commands/gm/shave.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/commands/gm/shave.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -1,45 +0,0 @@
+-/* $Id$
+- *
+- */
+-use uo;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
+-include &quot;:logger:log&quot;;
+-
+-
+-program command_shave(who, area)
+-	var mobile, hair;
+-	var areas := dictionary
+-	{
+-		&quot;head&quot; -&gt; LAYER_HAIR,
+-		&quot;beard&quot; -&gt; LAYER_BEARD
+-	};
+-
+-	if (!areas[area])
+-		SendMessage(who, MSG_SHAVE_INVALID_AREA, {}, MSG_COMMAND);
+-		foreach entry in areas
+-			SendMessage(who, _entry_iter, {}, MSG_COMMAND);
+-			entry := entry; // Compiler warning...
+-		endforeach
+-		return;
+-	endif
+-
+-	SendMessage(who, MSG_TARGET_OBJ, {}, MSG_COMMAND);
+-	mobile := Target(who, TGTOPT_NOCHECK_LOS);
+-	if (!mobile.isA(POLCLASS_MOBILE))
+-		SendMessage(who, MSG_NO_MOB, {}, MSG_COMMAND);
+-		return;
+-	endif
+-
+-	Log(LOG_COMMAND, GetLogInfo(who) + &quot; invoking shave &quot; + area);
+-	hair := GetEquipmentByLayer(mobile, areas[area]);
+-	if (!hair)
+-		SendMessage(who, MSG_NOTHING_DELETE, {}, MSG_COMMAND);
+-		return;
+-	endif
+-	DestroyItem(hair);
+-
+-	return;
+-endprogram
+
+Deleted: trunk/096/pkg/commands/gm/squelch.src
+===================================================================
+--- trunk/096/pkg/commands/gm/squelch.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/commands/gm/squelch.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -1,42 +0,0 @@
+-/* $Id$
+- *
+- * Purpose
+- *
+- * TODO
+- * Fix the integer only input.
+- */
+-use uo;
+-use basic;
+-
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
+-
+-
+-program command_squelch(who, duration)
+-	var mobile;
+-
+-	if (TypeOf(duration) != &quot;Integer&quot;)
+-		SendMessage(who, MSG_CANCELLED, {}, MSG_COMMAND);
+-		return;
+-	endif
+-
+-	SendMessage(who, MSG_TARGET_MOB, {}, MSG_COMMAND);
+-	mobile := Target(who, TGTOPT_NOCHECK_LOS);
+-	if (!mobile)
+-		SendMessage(who, MSG_CANCELLED, {}, MSG_COMMAND);
+-		return;
+-	endif
+-	if (mobile.isA(POLCLASS_MOBILE))
+-		if (mobile.squelched == 1 || mobile == who)
+-			SendMessage(who, MSG_CANCELLED, {}, MSG_COMMAND);
+-			return;
+-		endif
+-		if (!duration)
+-			mobile.squelch(-1);
+-		else
+-			mobile.squelch(CInt(duration));
+-		endif
+-	endif
+-
+-	return;
+-endprogram
+
+Modified: trunk/096/pkg/commands/gm/strip.src
+===================================================================
+--- trunk/096/pkg/commands/gm/strip.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/commands/gm/strip.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -3,37 +3,24 @@
+  */
+ use uo;
+ 
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
++include &quot;include/uo_extend&quot;;
+ 
+-
+-program command_strip(who)
+-	var mobile, nbpack;
+-	var x, i;
+-
+-	SendMessage(who, MSG_TARGET_MOB, {}, MSG_COMMAND);
+-	mobile := Target(who);
+-
+-	if ((mobile := Target(who, TGTOPT_NOCHECK_LOS)) == 0)
+-		SendMessage(who, MSG_CANCELLED, {}, MSG_COMMAND);
+-		return;
++program command_Strip(who)
++	SendSysMessage(who, &quot;Select a mobile.&quot;);
++	var targ := Target(who);
++	if ( !targ.IsA(POLCLASS_MOBILE) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
+ 	endif
+-	if (!mobile.isA(POLCLASS_MOBILE))
+-		SendMessage(who, MSG_NO_MOB, {}, MSG_COMMAND);
+-		return;
+-	endif
+-
+-	nbpack := CreateItemAtLocation(mobile.x, mobile.y, mobile.z, 0xE75, 1, mobile.realm);
+-
+-	for (i := 1; i &lt;= 24; i := i + 1)
+-		if ((i == 0x0b) || (i == 0x10) || (i == 0x15))
+-			x := { };	// Do nothing.
+-		else
+-			x := GetEquipmentByLayer(mobile, i);
+-			MoveItemToContainer(x, nbpack);
+-		endif
+-	endfor
+-
+-	return;
++	
++	var container := CreateItemAtLocation(targ.x, targ.y, targ.z, &quot;backpack&quot;, 1, targ.realm);
++	foreach item in ( EnumeratePhysicalItems(targ) )
++		MoveItemToContainer(item, container);
++		sleepms(2);
++	endforeach
++	
++	SendSysMessage(who, &quot;Done.&quot;);
++		
++	return 1;
+ endprogram
+ 
+
+Modified: trunk/096/pkg/commands/player/help.src
+===================================================================
+--- trunk/096/pkg/commands/player/help.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/commands/player/help.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -6,20 +6,15 @@
+  */
+ use uo;
+ 
+-include &quot;:logger:log&quot;;
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
+-
+-
+ program command_help(who, command)
+ 	var help;
+ 
+ 	help := GetCommandHelp(who, command);
+-	if (help)
+-		SendHTMLMessage(who, help);
++	if ( help )
++		//SendHTMLMessage(who, help);
++		return 1;
+ 	else
+-		SendMessage(who, MSG_NO_HELP, {}, MSG_COMMAND);
++		SendSysMessage(who, &quot;No help available for that command.&quot;);
++		return 0;
+ 	endif
+-
+-	return;
+ endprogram
+
+Added: trunk/096/pkg/packetHooks/PacketConfig/include/settings.inc
+===================================================================
+--- trunk/096/pkg/packetHooks/PacketConfig/include/settings.inc	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/packetHooks/PacketConfig/include/settings.inc	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -0,0 +1,60 @@
++/* $Id: config.inc 896 2005-11-04 07:03:59Z muaddiblsd $
++ *
++ * Purpose
++ * Provide various functions and constants for the shard's behaviour.
++ *
++ */
++use cfgfile;
++use os;
++
++/*
++ * QueryConfigString(what)
++ *
++ * Purpose
++ * Returns a config string from the config file passed. If no
++ * config file, or elem name, is passed, it uses the defaults.
++ * shardconfig.cfg is the default config file, Main is the
++ * default elem name.
++ *
++ * Parameters
++ * what:	The name of the config elem to return
++ * cfg_file:	Optional. Packaged name of the config file.
++ * elem_name:	Optional. Elem name to look up in the config.
++ *
++ * Return value
++ * The config file's value for the desired elem.
++ *
++ */
++function QueryConfigString(what, cfg_file, elem_name)
++	var ret_value := GetConfigString(FindConfigElem(ReadConfigFile(cfg_file), elem_name), what);
++	if( ret_value.errortext )
++		SysLog(&quot;Error::QueryConfigString() - Unable to open [&quot;+cfg_file+&quot;] -&gt;&quot;+ret_value.errortext);
++	endif
++	return ret_value;
++endfunction
++
++
++/*
++ * QueryConfigInt(what)
++ *
++ * Returns a config integer from the config file passed. If no
++ * config file, or elem name, is passed, it uses the defaults.
++ * shardconfig.cfg is the default config file, Main is the
++ * default elem name.
++ *
++ * Parameters
++ * what:	The name of the config elem to return
++ * cfg_file:	Optional. Packaged name of the config file.
++ * elem_name:	Optional. Elem name to look up in the config.
++ *
++ * Return value
++ * The config file's value for the desired elem.
++ *
++ */
++function QueryConfigInt(what, cfg_file, elem_name)
++	var ret_value := GetConfigInt(FindConfigElem(ReadConfigFile(cfg_file), elem_name), what);
++	if( ret_value.errortext )
++		SysLog(&quot;Error::QueryConfigInt() - Unable to open [&quot;+cfg_file+&quot;] -&gt;&quot;+ret_value.errortext);
++	endif
++	return ret_value;
++endfunction
+
+Modified: trunk/096/pkg/packetHooks/StatHook/sendStats.src
+===================================================================
+--- trunk/096/pkg/packetHooks/StatHook/sendStats.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/packetHooks/StatHook/sendStats.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -27,7 +27,7 @@
+ 
+ include &quot;:attributes:attributeConstants&quot;;
+ include &quot;:attributes:attributes&quot;;
+-include &quot;:config:config&quot;;
++include &quot;:packetconfig:settings&quot;;
+ 
+ program sendStats()
+ 	Print( &quot;INSTALLING: Outgoing Status PH...&quot; );
+
+Added: trunk/096/pkg/systems/accounts/uoclient.cfg
+===================================================================
+--- trunk/096/pkg/systems/accounts/uoclient.cfg	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/systems/accounts/uoclient.cfg	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -0,0 +1,47 @@
++# Protocol
++# {
++#   # EnableFlowControlPackets: use the 0x33 (0x00 / 0x01) pause/restart packets.
++#   # Though OSI seems to no longer send these packets, they seem to help with smoothness,
++#   # particularly with boat movement.
++#   # NOTE: causes clients 4.0.0e and newer to fail login
++#   EnableFlowControlPackets    1
++# }
++#
++# Listener
++# {
++#   Port (int port number 1024..65535)
++#   Encryption (string encryption type)
++# }
++#
++# Explanation:
++# The left-hand-side &quot;Strength&quot;, &quot;Intelligence&quot;, and &quot;Dexterity&quot; are Attribute names that
++# MUST be defined in attributes.cfg.
++# The right-hand-side &quot;Life&quot;, &quot;Mana&quot;, and &quot;Stamina&quot; are Vital names that
++# MUST be defined in vitals.cfg.
++# MaxSkillID allows you to use new client skills, but setting it too high can crash older clients.
++# You must define skills.cfg entries for each skillID up to MaxSkillID (default 51).
++# The Protocol and Listener sections are optional.
++# Each Listener section allows you to listen for different client encryption types on different ports.
++# This means you can listen for &quot;1.26.4&quot; clients on port 5003 and &quot;ignition&quot; clients on port 5555.
++# Valid encryption types are found in the pol.cfg section. If you use Listeners set ListenPort
++# in pol.cfg to 0.
++
++Protocol Protocol
++{
++	EnableFlowControlPackets 0
++}
++
++
++Listener 2.0.0
++{
++	#
++	# Enabled mostly for development purposes
++	# Will be removed when distro goes final
++	Port		5002
++	Encryption	2.0.0
++}
++Listener None
++{
++	Port		5003
++	Encryption	none
++}
+
+Added: trunk/096/pkg/utils/gumps/include/htmlgump.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/htmlgump.inc	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/pkg/utils/gumps/include/htmlgump.inc	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -0,0 +1,45 @@
++/*===============================================================
++* Current Version
++* HTMLGUMP.INC - v1.0
++* Updated 9/14/2005 9:24PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
++
++/*
++ * SendHTMLMessage(who, text)
++ *
++ * Purpose
++ * Sends a HTML gump containing the text to the character.
++ *
++ * Parameters
++ * who:     Reference to the character which should receive the gump
++ * text:    The text to send, may contain HTML tags
++ *
++ * Return value
++ * The gump's return value
++ *
++ */
++function SendHTMLGump(mobile, title, text)
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 360, 480);
++
++	GFResizePic(gump, 15, 12, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 330, 30);
++	GFTextMid(gump, 15, 17, 330, 2100, title);
++
++	GFResizePic(gump, 15, 45, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 330, 390);
++	GFHTMLArea(gump, 22, 53, 322, 375, text, 0, 1);
++	
++	GFResizePic(gump, 15, 438, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 330, 30);
++	GFAddButton(gump, 150, 443, 2128, 2129, GF_CLOSE_BTN);
++	
++	return GFSendGump(mobile, gump);
++endfunction
+
+Modified: trunk/096/scripts/include/uo_extend.inc
+===================================================================
+--- trunk/096/scripts/include/uo_extend.inc	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/scripts/include/uo_extend.inc	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -55,6 +55,40 @@
+ endfunction
+ 
+ /*
++ * EnumeratePhysicalItems(mobile)
++ *
++ * Purpose
++ * Builds a list of equipped items on a mobile that are safe to access.
++ *
++ * Parameters
++ * mobile:	Mobile to get the equipment on.
++ *
++ * Return Value:
++ * Returns an array of item references.
++ *
++ */
++function EnumeratePhysicalItems(mobile)
++	var equip_list := array{};
++
++	var skip_layers := {11, 16, 21, 25};
++	var i;
++
++	for ( i:=0; i&lt;=25; i:=i+1 )
++		if ( i in skip_layers ) 
++			continue;
++		else
++			var item := GetEquipmentByLayer(mobile, i);
++			if ( item )
++				equip_list.Append(item);
++			endif
++		endif
++		sleepms(2);
++	endfor
++
++	return equip_list;
++endfunction
++
++/*
+  * Just a development function to test lists..
+  * Dont get many people online on my computer, but wanna make stuff work
+  * on other shards!
+
+Modified: trunk/096/scripts/misc/logofftest.src
+===================================================================
+--- trunk/096/scripts/misc/logofftest.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/scripts/misc/logofftest.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -7,7 +7,7 @@
+  */
+ use uo;
+ 
+-include &quot;include/time&quot;;
++include &quot;:timeutils:time&quot;;
+ include &quot;:coords:innFunctions&quot;;
+ include &quot;:timedscripts:timedScripts&quot;;
+ 
+
+Modified: trunk/096/scripts/misc/ondelete.src
+===================================================================
+--- trunk/096/scripts/misc/ondelete.src	2006-05-12 22:57:52 UTC (rev 1370)
++++ trunk/096/scripts/misc/ondelete.src	2006-05-12 23:55:57 UTC (rev 1371)
+@@ -7,7 +7,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;include/time&quot;;
++include &quot;:timeutils:time&quot;;
+ 
+ program core_onDelete(who)
+ 	var create_time := who.createdat;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001338.html">[Poldistro-svn] r1370 - in trunk/096/pkg/OLD/utils: . logger logger/config logger/include
+</A></li>
+	<LI>Next message: <A HREF="001340.html">[Poldistro-svn] r1372 - in trunk/096/pkg/commands: player props seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1339">[ date ]</a>
+              <a href="thread.html#1339">[ thread ]</a>
+              <a href="subject.html#1339">[ subject ]</a>
+              <a href="author.html#1339">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

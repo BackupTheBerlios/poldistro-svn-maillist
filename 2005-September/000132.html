@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r152 - trunk/096/pkg/commands/coun
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r152%20-%20trunk/096/pkg/commands/coun&In-Reply-To=%3C200509171019.j8HAJXiS022231%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000131.html">
+   <LINK REL="Next"  HREF="000133.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r152 - trunk/096/pkg/commands/coun</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r152%20-%20trunk/096/pkg/commands/coun&In-Reply-To=%3C200509171019.j8HAJXiS022231%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r152 - trunk/096/pkg/commands/coun">austin at berlios.de
+       </A><BR>
+    <I>Sat Sep 17 12:19:33 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000131.html">[Poldistro-svn] r151 - trunk/096/pkg/mobiles/ai_brain/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="000133.html">[Poldistro-svn] r153 - trunk/096/pkg/commands/player
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#132">[ date ]</a>
+              <a href="thread.html#132">[ thread ]</a>
+              <a href="subject.html#132">[ subject ]</a>
+              <a href="author.html#132">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-17 12:19:33 +0200 (Sat, 17 Sep 2005)
+New Revision: 152
+
+Removed:
+   trunk/096/pkg/commands/coun/msg.src
+Log:
+Rewriting and moving to player level.
+
+Deleted: trunk/096/pkg/commands/coun/msg.src
+===================================================================
+--- trunk/096/pkg/commands/coun/msg.src	2005-09-17 10:16:35 UTC (rev 151)
++++ trunk/096/pkg/commands/coun/msg.src	2005-09-17 10:19:33 UTC (rev 152)
+@@ -1,119 +0,0 @@
+-//////////////////////////////////////
+-// goto.src -- go to an online player
+-//
+-// Usage: .goto [playername]
+-//        if playername is not given,
+-//        a menu will open and prompt
+-//        you to choose one.
+-//
+-// Author: Racalac
+-//////////////////////////////////////
+-
+-use uo;
+-
+-var playercount := 0;
+-var pagecount := 1;
+-
+-var layout := array(
+-
+-&quot;page 0&quot;,
+-&quot;gumppic 0 50 2620&quot;,
+-&quot;gumppic 20 50 2621&quot;,
+-&quot;gumppic 290 50 2622&quot;,
+-&quot;gumppic 0 68 2623&quot;,
+-&quot;gumppic 22 68 2624&quot;,
+-&quot;gumppic 288 68 2625&quot;,
+-&quot;gumppic 0 272 2623&quot;,
+-&quot;gumppic 22 272 2624&quot;,
+-&quot;gumppic 288 272 2625&quot;,
+-&quot;gumppic 0 476 2626&quot;,
+-&quot;gumppic 20 476 2627&quot;,
+-&quot;gumppic 290 476 2628&quot;,
+-&quot;gumppic 20 80 2621&quot;,
+-
+-&quot;text 20 59 40 0&quot;,
+-&quot;text 260 59 40 1&quot;
+-);
+-
+-var data := array(
+-       &quot;Player Name&quot;,         //0
+-       &quot;Message&quot;
+-);
+-
+-program textcmd_goto( character, whom )
+-  if(!whom)
+-    FillInArrays();
+-    var result := SendDialogGump( character, layout, data );
+-    var name := data[result[0]+2];
+-    foreach onlinechr in EnumerateOnlineCharacters()
+-        if (onlinechr.name == name)
+-            SendTheMessage(character, onlinechr);
+-            break;
+-        endif
+-    endforeach
+-  else
+-    whom := upper(whom);
+-    foreach onlinechr in EnumerateOnlineCharacters()
+-        if (upper(onlinechr.name) == whom)
+-             SendTheMessage(character, onlinechr);
+-            break;
+-        endif
+-    endforeach
+-  endif
+-endprogram
+-
+-function FillInArrays()
+-    var players := EnumerateOnlineCharacters();
+-    var datalen;
+-    var layoutlen;
+-    var prev_y := CInt(80);
+-    var datindx;
+-    var buttonret := 1;
+-    layout[GetLayoutLength()+1] := &quot;page &quot; + pagecount;
+-    if( len(EnumerateOnlineCharacters()) &gt; 19)
+-        layout[GetLayoutLength()+1] := &quot;button 285 465 2648 2647 0 &quot; + (pagecount + 1);
+-    endif
+-    foreach player in players
+-        if (!player.concealed)
+-        playercount := playercount + 1;
+-        datalen := GetDataLength();
+-        layoutlen := GetLayoutLength();
+-        datindx := datalen+1;
+-        data[datindx] := player.name;
+-        if( playercount == 20 || playercount == 39 || playercount == 58 || playercount == 77 || playercount == 96)
+-            pagecount := pagecount + 1;
+-            layout[GetLayoutLength()+1] := &quot;page &quot; + pagecount;
+-            prev_y := 80;
+-            layout[GetLayoutLength()+1] := &quot;button 285 85 2650 2651 0 &quot; + (pagecount - 1);
+-            if( len(EnumerateOnlineCharacters()) &gt; playercount + 19)
+-                layout[GetLayoutLength()+1] := &quot;button 285 465 2648 2647 0 &quot; + (pagecount + 1);
+-            endif
+-        endif
+-        layout[GetLayoutLength()+1] := (&quot;text 20 &quot; + CStr(prev_y + 20) + &quot; 40 &quot; + datalen);
+-        layout[GetLayoutLength()+1] := (&quot;button 260 &quot; + CStr(prev_y + 20) + &quot; 2640 2641 1 0 &quot; + buttonret);
+-        prev_y := prev_y + 20;
+-        buttonret := buttonret + 1;
+-        endif
+-    endforeach
+-endfunction
+-
+-function GetLayoutLength();
+-    return (len(layout));
+-endfunction
+-
+-function GetDataLength();
+-    return (len(data));
+-endfunction
+-
+-function SendTheMessage(who, whom)
+-var themessage := RequestInput(who, who.backpack, &quot;What message would you like to send to &quot; + whom.name + &quot;?&quot;);
+-if (!themessage)
+-        return;
+-endif
+-SendSysMessage(whom, who.name + &quot; : &quot; + themessage);
+-	foreach char in EnumerateOnlineCharacters()
+-		if ( (char.cmdlevel == 5) &amp;&amp; (GetObjProperty(char, &quot;HearMsgs&quot;) ) )
+-			SendSysMessage( char, &quot;Msg from &quot; + who.name + &quot; to &quot; + whom.name + &quot;: &quot; + themessage);
+-		endif
+-	endforeach
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000131.html">[Poldistro-svn] r151 - trunk/096/pkg/mobiles/ai_brain/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="000133.html">[Poldistro-svn] r153 - trunk/096/pkg/commands/player
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#132">[ date ]</a>
+              <a href="thread.html#132">[ thread ]</a>
+              <a href="subject.html#132">[ subject ]</a>
+              <a href="author.html#132">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r892 - in trunk/096: pkg/packetHooks/OpenDoor scripts/include scripts/include/OLD
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r892%20-%20in%20trunk/096%3A%20pkg/packetHooks/OpenDoor%20scripts/include%20scripts/include/OLD&In-Reply-To=%3C200511040651.jA46p4HJ016082%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000864.html">
+   <LINK REL="Next"  HREF="000866.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r892 - in trunk/096: pkg/packetHooks/OpenDoor scripts/include scripts/include/OLD</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r892%20-%20in%20trunk/096%3A%20pkg/packetHooks/OpenDoor%20scripts/include%20scripts/include/OLD&In-Reply-To=%3C200511040651.jA46p4HJ016082%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r892 - in trunk/096: pkg/packetHooks/OpenDoor scripts/include scripts/include/OLD">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Fri Nov  4 07:51:04 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000864.html">[Poldistro-svn] r891 - in trunk/096: pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/commands/props pkg/commands/seer pkg/config/include pkg/items/blood pkg/items/blood/blood pkg/items/blood/config pkg/items/blood/include pkg/items/containers/include pkg/items/dyes/dyeTub pkg/items/dyes/dyes pkg/items/dyes/furnitureTub pkg/items/dyes/include pkg/items/feces pkg/items/feces/config pkg/items/feces/poop pkg/items/training pkg/items/training/archeryButte pkg/items/training/config pkg/items/training/include pkg/items/training/pocketDip pkg/items/training/trainingDummy pkg/items/vomit pkg/items/vomit/config pkg/items/vomit/vomit pkg/items/walkOn/spiderWeb pkg/mobiles/brainAI/docs pkg/mobiles/brainAI/include pkg/mobiles/brainAI/scripts/combat pkg/mobiles/brainAI/scripts/doubleClick pkg/mobiles/brainAI/scripts/endFight pkg/mobiles/brainAI/scripts/enterArea pkg/mobiles/brainAI/scripts/leftArea pkg/mobiles/brainAI/scripts/lookAround pkg/mobiles/brainAI/scripts/sh! ouldWatch pkg/mobiles/brainAI/scripts/sleep pkg/mobiles/timedScripts pkg/mobiles/timedScripts/commands/gm pkg/mobiles/timedScripts/config pkg/mobiles/timedScripts/include pkg/mobiles/timedScripts/subScripts/food pkg/mobiles/timedScripts/subScripts/odors pkg/mobiles/timedScripts/subScripts/paralysis pkg/mobiles/timedScripts/subScripts/poison pkg/packetHooks pkg/packetHooks/CharProfile pkg/packetHooks/CharProfile/config pkg/packetHooks/OpenDoor pkg/packetHooks/OpenDoor/config pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/config pkg/packetHooks/RequestAttack pkg/packetHooks/RequestAttack/config pkg/packetHooks/StatHook pkg/packetHooks/Target pkg/packetHooks/Target/config pkg/packetHooks/WarAndPeace pkg/packetHooks/WarAndPeace/config pkg/skills/lumberjacking pkg/skills/lumberjacking/config pkg/skills/lumberjacking/include pkg/skills/lumberjacking/treeRegen pkg/skills/magery pkg/skills/magery/OLD pkg/skills/magery/OLD/config pkg/skills/magery/config pkg/skills/magery! /include pkg/skills/magery/spellScroll pkg/systems/attributes/! config p
+</A></li>
+        <LI>Next message: <A HREF="000866.html">[Poldistro-svn] r893 - trunk/096/pkg/config/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#865">[ date ]</a>
+              <a href="thread.html#865">[ thread ]</a>
+              <a href="subject.html#865">[ subject ]</a>
+              <a href="author.html#865">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-04 07:51:00 +0100 (Fri, 04 Nov 2005)
+New Revision: 892
+
+Added:
+   trunk/096/scripts/include/properties.inc
+Removed:
+   trunk/096/scripts/include/OLD/properties.inc
+Modified:
+   trunk/096/pkg/packetHooks/OpenDoor/openDoor.src
+Log:
+Moved properties.inc back into /scripts/include for now. Could this get packaged somewhere??
+
+Added break; to the case in OpenDoor. Maybe Austin will bitch less about using break; now. I doubt it.
+
+Modified: trunk/096/pkg/packetHooks/OpenDoor/openDoor.src
+===================================================================
+--- trunk/096/pkg/packetHooks/OpenDoor/openDoor.src	2005-11-04 06:29:43 UTC (rev 891)
++++ trunk/096/pkg/packetHooks/OpenDoor/openDoor.src	2005-11-04 06:51:00 UTC (rev 892)
+@@ -45,14 +45,14 @@
+  	// The only exception is while they are running, which who cares about
+  	// those trying to run non-stop through a door eh? ;)
+  	case(direction)
+- 		0: item := ListItemsNearLocationWithFlag((character.x),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR);
+- 		1: item := ListItemsNearLocationWithFlag((character.x+1),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR);
+- 		2: item := ListItemsNearLocationWithFlag((character.x+1),(character.y),(character.z),0,TILEDATA_FLAG_DOOR);
+- 		3: item := ListItemsNearLocationWithFlag((character.x+1),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR);
+- 		4: item := ListItemsNearLocationWithFlag((character.x),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR);
+- 		5: item := ListItemsNearLocationWithFlag((character.x-1),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR);
+- 		6: item := ListItemsNearLocationWithFlag((character.x-1),(character.y),(character.z),0,TILEDATA_FLAG_DOOR);
+- 		7: item := ListItemsNearLocationWithFlag((character.x-1),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR);
++ 		0: item := ListItemsNearLocationWithFlag((character.x),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR); break;
++ 		1: item := ListItemsNearLocationWithFlag((character.x+1),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR); break;
++ 		2: item := ListItemsNearLocationWithFlag((character.x+1),(character.y),(character.z),0,TILEDATA_FLAG_DOOR); break;
++ 		3: item := ListItemsNearLocationWithFlag((character.x+1),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR); break;
++ 		4: item := ListItemsNearLocationWithFlag((character.x),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR); break;
++ 		5: item := ListItemsNearLocationWithFlag((character.x-1),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR); break;
++ 		6: item := ListItemsNearLocationWithFlag((character.x-1),(character.y),(character.z),0,TILEDATA_FLAG_DOOR); break;
++ 		7: item := ListItemsNearLocationWithFlag((character.x-1),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR); break;
+  	endcase
+  	// See if item found is a Door. Check if the player has Line Of Sight to the door. Make sure they
+  	// Are ALIVE!
+
+Deleted: trunk/096/scripts/include/OLD/properties.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/properties.inc	2005-11-04 06:29:43 UTC (rev 891)
++++ trunk/096/scripts/include/OLD/properties.inc	2005-11-04 06:51:00 UTC (rev 892)
+@@ -1,88 +0,0 @@
+-/* $Id: properties.inc 236 2005-09-25 09:06:19Z panosl $
+- *
+- * Purpose
+- * Provide property names and functions. Properties starting with &quot;+&quot; are to be protected.
+- *
+- */
+-use uo;
+-
+-include &quot;:logger:log&quot;;
+-
+-const SECURE_MAGIC          := 0xBADC0DE;
+-
+-enum MOB_PROPS
+-    PROP_STAFF_LEVEL        := &quot;+StaffLevel&quot;,        // Text command access level
+-    PROP_CREATION_TIME      := &quot;CreationTime&quot;,       // Character creation time (UNIX timestamp)
+-    MOB_CPROPS_END          := 0
+-endenum
+-
+-enum ITEM_PROPS
+-    ITEM_CPROPS_END         := 0
+-endenum
+-
+-enum WORLD_PROPS
+-    PROP_PID                := &quot;#PID&quot;,              // Array with all resistent scripts
+-    PROP_TIMESTAMP          := &quot;TimeStamp&quot;,         // Struct describing the time
+-    WORLD_PROPS_END         := 0
+-endenum
+-
+-
+-// These properties only exist for a short time
+-enum TEMP_PROPS
+-    TEMPPROP_JUST_CREATED   := &quot;#JustCreated&quot;,      // Character was just created
+-    TEMPPROP_SCHED_PID      := &quot;#SchedPID&quot;,         // PID of script scheduler
+-    TEMP_PROPS_END          := 0
+-endenum
+-
+-
+-/*
+- * The following functions replace the default ObjProperty functions. Use these instead to avoid
+- * changing secured properies. If your script is safe, pass SECURE_MAGIC as magic.
+- *
+- */
+-function SetProperty(what, property, value, magic := 0)
+-    if(property[1] == &quot;+&quot;)
+-        if(magic == SECURE_MAGIC)
+-            Log(LOG_WARNING, &quot;Overwrote secure property '&quot; + property + &quot;' with '&quot; + CStr(value) + &quot;' on '&quot; +
+-                GetLogInfo(what) + &quot;'&quot;);
+-        else
+-            Log(LOG_ERROR, &quot;Failed to overwrite secure property '&quot; + property + &quot;' with '&quot; + CStr(value) + &quot;' on '&quot; +
+-                GetLogInfo(what) + &quot;'&quot;);
+-            return(error);
+-        endif
+-    endif
+-    return(SetObjProperty(what, property, value));
+-endfunction
+-
+-function GetProperty(what, property, magic := 0)
+-    if(property[1] == &quot;+&quot; &amp;&amp; magic != SECURE_MAGIC)
+-        Log(LOG_ERROR, &quot;Refused to GetProperty on secure property '&quot; + property + &quot;' on '&quot; + GetLogInfo(what) + &quot;'&quot;);
+-        return(error);
+-    endif
+-    return(GetObjProperty(what, property));
+-endfunction
+-
+-function EraseProperty(what, property, magic := 0)
+-    if(property[1] == &quot;+&quot; &amp;&amp; magic != SECURE_MAGIC)
+-        Log(LOG_ERROR, &quot;Refused to erase secure property '&quot; + property + &quot;' on '&quot; + GetLogInfo(what) + &quot;'&quot;);
+-        return(error);
+-    endif
+-    return(EraseObjProperty(what, property));
+-endfunction
+-
+-function GetPropertyNames(what, magic := 0)
+-    var props, i;
+-
+-    if(magic == SECURE_MAGIC)
+-        return(GetObjPropertyNames(what));
+-    endif
+-
+-    props := GetObjPropertyNames(what);
+-    for(i := 1; i &lt;= props.size(); i := i + 1)
+-        if(props[i][1] == &quot;+&quot;)
+-            props.erase(i);
+-            i := i - 1;
+-        endif
+-    endfor
+-    return(props);
+-endfunction
+
+Added: trunk/096/scripts/include/properties.inc
+===================================================================
+--- trunk/096/scripts/include/properties.inc	2005-11-04 06:29:43 UTC (rev 891)
++++ trunk/096/scripts/include/properties.inc	2005-11-04 06:51:00 UTC (rev 892)
+@@ -0,0 +1,88 @@
++/* $Id$
++ *
++ * Purpose
++ * Provide property names and functions. Properties starting with &quot;+&quot; are to be protected.
++ *
++ */
++use uo;
++
++include &quot;:logger:log&quot;;
++
++const SECURE_MAGIC          := 0xBADC0DE;
++
++enum MOB_PROPS
++    PROP_STAFF_LEVEL        := &quot;+StaffLevel&quot;,        // Text command access level
++    PROP_CREATION_TIME      := &quot;CreationTime&quot;,       // Character creation time (UNIX timestamp)
++    MOB_CPROPS_END          := 0
++endenum
++
++enum ITEM_PROPS
++    ITEM_CPROPS_END         := 0
++endenum
++
++enum WORLD_PROPS
++    PROP_PID                := &quot;#PID&quot;,              // Array with all resistent scripts
++    PROP_TIMESTAMP          := &quot;TimeStamp&quot;,         // Struct describing the time
++    WORLD_PROPS_END         := 0
++endenum
++
++
++// These properties only exist for a short time
++enum TEMP_PROPS
++    TEMPPROP_JUST_CREATED   := &quot;#JustCreated&quot;,      // Character was just created
++    TEMPPROP_SCHED_PID      := &quot;#SchedPID&quot;,         // PID of script scheduler
++    TEMP_PROPS_END          := 0
++endenum
++
++
++/*
++ * The following functions replace the default ObjProperty functions. Use these instead to avoid
++ * changing secured properies. If your script is safe, pass SECURE_MAGIC as magic.
++ *
++ */
++function SetProperty(what, property, value, magic := 0)
++    if(property[1] == &quot;+&quot;)
++        if(magic == SECURE_MAGIC)
++            Log(LOG_WARNING, &quot;Overwrote secure property '&quot; + property + &quot;' with '&quot; + CStr(value) + &quot;' on '&quot; +
++                GetLogInfo(what) + &quot;'&quot;);
++        else
++            Log(LOG_ERROR, &quot;Failed to overwrite secure property '&quot; + property + &quot;' with '&quot; + CStr(value) + &quot;' on '&quot; +
++                GetLogInfo(what) + &quot;'&quot;);
++            return(error);
++        endif
++    endif
++    return(SetObjProperty(what, property, value));
++endfunction
++
++function GetProperty(what, property, magic := 0)
++    if(property[1] == &quot;+&quot; &amp;&amp; magic != SECURE_MAGIC)
++        Log(LOG_ERROR, &quot;Refused to GetProperty on secure property '&quot; + property + &quot;' on '&quot; + GetLogInfo(what) + &quot;'&quot;);
++        return(error);
++    endif
++    return(GetObjProperty(what, property));
++endfunction
++
++function EraseProperty(what, property, magic := 0)
++    if(property[1] == &quot;+&quot; &amp;&amp; magic != SECURE_MAGIC)
++        Log(LOG_ERROR, &quot;Refused to erase secure property '&quot; + property + &quot;' on '&quot; + GetLogInfo(what) + &quot;'&quot;);
++        return(error);
++    endif
++    return(EraseObjProperty(what, property));
++endfunction
++
++function GetPropertyNames(what, magic := 0)
++    var props, i;
++
++    if(magic == SECURE_MAGIC)
++        return(GetObjPropertyNames(what));
++    endif
++
++    props := GetObjPropertyNames(what);
++    for(i := 1; i &lt;= props.size(); i := i + 1)
++        if(props[i][1] == &quot;+&quot;)
++            props.erase(i);
++            i := i - 1;
++        endif
++    endfor
++    return(props);
++endfunction
+
+
+Property changes on: trunk/096/scripts/include/properties.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000864.html">[Poldistro-svn] r891 - in trunk/096: pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/commands/props pkg/commands/seer pkg/config/include pkg/items/blood pkg/items/blood/blood pkg/items/blood/config pkg/items/blood/include pkg/items/containers/include pkg/items/dyes/dyeTub pkg/items/dyes/dyes pkg/items/dyes/furnitureTub pkg/items/dyes/include pkg/items/feces pkg/items/feces/config pkg/items/feces/poop pkg/items/training pkg/items/training/archeryButte pkg/items/training/config pkg/items/training/include pkg/items/training/pocketDip pkg/items/training/trainingDummy pkg/items/vomit pkg/items/vomit/config pkg/items/vomit/vomit pkg/items/walkOn/spiderWeb pkg/mobiles/brainAI/docs pkg/mobiles/brainAI/include pkg/mobiles/brainAI/scripts/combat pkg/mobiles/brainAI/scripts/doubleClick pkg/mobiles/brainAI/scripts/endFight pkg/mobiles/brainAI/scripts/enterArea pkg/mobiles/brainAI/scripts/leftArea pkg/mobiles/brainAI/scripts/lookAround pkg/mobiles/brainAI/scripts/sh! ouldWatch pkg/mobiles/brainAI/scripts/sleep pkg/mobiles/timedScripts pkg/mobiles/timedScripts/commands/gm pkg/mobiles/timedScripts/config pkg/mobiles/timedScripts/include pkg/mobiles/timedScripts/subScripts/food pkg/mobiles/timedScripts/subScripts/odors pkg/mobiles/timedScripts/subScripts/paralysis pkg/mobiles/timedScripts/subScripts/poison pkg/packetHooks pkg/packetHooks/CharProfile pkg/packetHooks/CharProfile/config pkg/packetHooks/OpenDoor pkg/packetHooks/OpenDoor/config pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/config pkg/packetHooks/RequestAttack pkg/packetHooks/RequestAttack/config pkg/packetHooks/StatHook pkg/packetHooks/Target pkg/packetHooks/Target/config pkg/packetHooks/WarAndPeace pkg/packetHooks/WarAndPeace/config pkg/skills/lumberjacking pkg/skills/lumberjacking/config pkg/skills/lumberjacking/include pkg/skills/lumberjacking/treeRegen pkg/skills/magery pkg/skills/magery/OLD pkg/skills/magery/OLD/config pkg/skills/magery/config pkg/skills/magery! /include pkg/skills/magery/spellScroll pkg/systems/attributes/! config p
+</A></li>
+	<LI>Next message: <A HREF="000866.html">[Poldistro-svn] r893 - trunk/096/pkg/config/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#865">[ date ]</a>
+              <a href="thread.html#865">[ thread ]</a>
+              <a href="subject.html#865">[ subject ]</a>
+              <a href="author.html#865">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

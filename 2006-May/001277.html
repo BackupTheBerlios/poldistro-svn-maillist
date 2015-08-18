@@ -1,0 +1,475 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1305 - in trunk/096/pkg: commands/gm systems/accounts/commands/gm systems/accounts/config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1305%20-%20in%20trunk/096/pkg%3A%20commands/gm%20systems/accounts/commands/gm%20systems/accounts/config&In-Reply-To=%3C200605110856.k4B8uVtk003759%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001276.html">
+   <LINK REL="Next"  HREF="001278.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1305 - in trunk/096/pkg: commands/gm systems/accounts/commands/gm systems/accounts/config</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1305%20-%20in%20trunk/096/pkg%3A%20commands/gm%20systems/accounts/commands/gm%20systems/accounts/config&In-Reply-To=%3C200605110856.k4B8uVtk003759%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1305 - in trunk/096/pkg: commands/gm systems/accounts/commands/gm systems/accounts/config">austin at berlios.de
+       </A><BR>
+    <I>Thu May 11 10:56:31 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001276.html">[Poldistro-svn] r1304 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+        <LI>Next message: <A HREF="001278.html">[Poldistro-svn] r1306 - trunk/096/pkg/systems/accounts/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1277">[ date ]</a>
+              <a href="thread.html#1277">[ thread ]</a>
+              <a href="subject.html#1277">[ subject ]</a>
+              <a href="author.html#1277">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-11 10:56:30 +0200 (Thu, 11 May 2006)
+New Revision: 1305
+
+Added:
+   trunk/096/pkg/systems/accounts/commands/gm/acctinfo.src
+Modified:
+   trunk/096/pkg/commands/gm/info.src
+   trunk/096/pkg/systems/accounts/config/icp.cfg
+Log:
+.acctinfo is just a conversion of the one I did on TSSE.. but im lazy. Bite me!
+
+Updated .info to support the .acctinfo script.
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2006-05-11 06:55:40 UTC (rev 1304)
++++ trunk/096/pkg/commands/gm/info.src	2006-05-11 08:56:30 UTC (rev 1305)
+@@ -33,6 +33,11 @@
+ var btn_info := struct{&quot;editFunc&quot;, &quot;name&quot;}; // Individual button tracking that goes into the btn_list array.
+ 
+ program textcmd_Info(who, serial)
++	if ( Lower(TypeOf(who)) == &quot;array&quot; )
++		serial := who[2];
++		who := who[1];
++	endif
++	
+ 	info_cfg := ReadConfigFile(&quot;:commands:config/info&quot;);
+ 	if ( !info_cfg )
+ 		SendSysMessage(who, &quot;Error reading in info.cfg -&gt;&quot;+info_cfg);
+
+Added: trunk/096/pkg/systems/accounts/commands/gm/acctinfo.src
+===================================================================
+--- trunk/096/pkg/systems/accounts/commands/gm/acctinfo.src	2006-05-11 06:55:40 UTC (rev 1304)
++++ trunk/096/pkg/systems/accounts/commands/gm/acctinfo.src	2006-05-11 08:56:30 UTC (rev 1305)
+@@ -0,0 +1,362 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;include/time&quot;;
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
++include &quot;:gumps:gumpprompt&quot;;
++include &quot;:gumps:requestgump&quot;;
++include &quot;:gumps:yesno&quot;;
++
++unload_scripts(&quot;&quot;);
++
++const CHAR_INFO_BTN	:= 0xE0000;
++const BAN_BTN		:= 0xA0000;
++const DISABLE_BTN	:= 0xA0001;
++const UPDATE_NOTES_BTN	:= 0xA0002;
++const EXPANSION_BTN	:= 0xA0003;
++const DEF_CMDLEVEL_BTN	:= 0xA0004;
++const CHANGE_EMAIL	:= 0xA0005;
++const CHANGE_ACCTNAME	:= 0xA0006;
++
++var msg_array := array{};
++
++program textcmd_AccountInfo(who, acctname)
++	if ( !acctname )
++		SendSysMessage(who, &quot;Select a player.&quot;);
++		var targ := Target(who);
++		if ( !targ.acctname )
++			SendSysMessage(who, &quot;Cancelled.&quot;);
++			return 0;
++		else
++			acctname := targ.acctname;
++		endif
++	endif
++	if ( !acctname )
++		acctname := RequestGump(who, &quot;Enter the account name you want to look up.&quot;, &quot;&quot;, &quot;&quot;, CANCEL_BTN_ON);
++		if ( !acctname )
++			SendSysMessage(who, &quot;Cancelled.&quot;);
++			return 0;
++		endif
++	endif
++	
++	var account := FindAccount(acctname);
++	if ( account.errortext )
++		GumpPrompt(who, &quot;Error with account name &quot;+acctname+&quot; [P] &quot;+acctname.errortext);
++		return 0;
++	endif
++	
++	var input;
++	repeat
++		input := AcctGump(who, account);
++	until ( !ProcessInput(who, account, input) );
++endprogram
++
++function AcctGump(who, account)
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 640, 480);
++	GFResizePic(gump, 15, 15, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 610, 30);
++	
++	GFTextLine(gump, 20, 20, 2100, &quot;Account Name:  &quot;+account.name);
++	var status;
++	if ( account.banned )
++		status := &quot;Banned&quot;;
++	elseif ( !account.enabled )
++		status := &quot;Disabled&quot;;
++	else
++		status := &quot;Active&quot;;
++	endif
++	GFTextRight(gump, 605, 20, 2100, &quot;Account Status:  &quot;+status);
++	
++	GFPage(gump, 1);
++	CharListGump(account, gump);
++	GeneralInfoGump(account, gump);
++	GFPage(gump, 2);
++	NotesGump(account, gump);
++	
++	var input := GFSendGump(who, gump);
++	return input;
++endfunction
++
++function CharListGump(account, byref gump)
++	GFResizePic(gump, 15, 50, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 270, 140);
++	var y_pos := 55;
++	var i := 1;
++	for ( i; i&lt;=5; i:=i+1 )
++		GFTextLine(gump, 20, y_pos+6, 2100, &quot;Character &quot;+i);
++		var name := account.GetCharacter(i).name;
++		if ( name )
++			GFAddButton(gump, 110, y_pos+3, 2440, 2440, GF_CLOSE_BTN, CHAR_INFO_BTN+i);
++			GFTextLine(gump, 115, y_pos+5, 2100, CStr(name));
++		else
++			GFGumpPic(gump, 110, y_pos+3, 2440);
++		endif
++		y_pos := y_pos+25;
++	endfor
++endfunction
++
++function GeneralInfoGump(account, byref gump)
++	//////
++	// Top Right Buttons
++	/////
++	GFResizePic(gump, 290, 50, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 335, 140);
++	if ( !account.banned )
++		GFAddButton(gump, 295, 55, 4017, 4018, GF_CLOSE_BTN, BAN_BTN);
++		GFTextLine(gump, 330, 55, 32, &quot;Ban Account&quot;);
++	else
++		GFAddButton(gump, 295, 55, 4017, 4018, GF_CLOSE_BTN, BAN_BTN);
++		GFTextLine(gump, 330, 55, 32, &quot;Lift Account Ban&quot;);
++	endif
++
++	if ( !account.GetProp(&quot;ReleaseTime&quot;) )
++		GFAddButton(gump, 295, 85, 4020, 4021, GF_CLOSE_BTN, DISABLE_BTN);
++		GFTextLine(gump, 330, 85, 2100, &quot;Disable/Jail Account&quot;);
++	else
++		GFTextLine(gump, 295, 85, 2100, &quot;Account is disabled for&quot;);
++		GFAddButton(gump, 465, 85, 4020, 4021, GF_CLOSE_BTN, DISABLE_BTN);
++		GFResizePic(gump, 460, 80, 2620, 40, 30);
++		GFTextMid(gump, 460, 85, 40, 2100, CStr(GetNumJailDays(account)));
++		GFTextLine(gump, 505, 85, 2100, &quot;days.&quot;);
++	endif
++	GFAddButton(gump, 295, 130, 4005, 4006, GF_PAGE_BTN, 2);
++	GFTextLine(gump, 330, 130, 2100, &quot;Account Notes&quot;);
++
++	//////
++	// Lower Left Buttons
++	/////
++	GFResizePic(gump, 15, 195, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 185, 270);
++	GFTextLine(gump, 25, 205, 2100, &quot;Default CmdLevel:&quot;);
++	GFAddButton(gump, 155, 205, 4023, 4024, GF_CLOSE_BTN, DEF_CMDLEVEL_BTN);
++	GFResizePic(gump, 155, 201, 2620, 30, 30);
++	GFTextLine(gump, 165, 206, 2100, account.defaultcmdlevel);
++
++	GFTextLine(gump, 25, 240, 2100, &quot;Expansion:&quot;);
++	GFAddButton(gump, 150, 240, 4023, 4024, GF_CLOSE_BTN, EXPANSION_BTN);
++	GFResizePic(gump, 140, 236, 2620, 50, 30);
++	GFTextMid(gump, 140, 241, 60, 2100, account.uo_expansion);
++
++	//////
++	// Mid-Right Buttons
++	/////
++	GFResizePic(gump, 205, 195, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 420, 90);
++	var email := account.GetProp(&quot;Email&quot;);
++	if ( !email )
++		email := &quot;Not Set&quot;;
++	endif
++	GFTextRight(gump, 345, 208, 2100, &quot;Email&quot;);
++	GFAddButton(gump, 350, 205, 0x476, 0x476, GF_CLOSE_BTN, CHANGE_EMAIL);
++	GFTextMid(gump, 350, 208, 260, 2100, email);
++
++	var ip := account.GetProp(&quot;IP&quot;);
++	if ( !ip )
++		ip := &quot;&quot;;
++	endif
++	GFTextLine(gump, 220, 238, 2100, &quot;Signup IP: &quot;+ip);
++	var host := account.GetProp(&quot;Host&quot;);
++	if ( !host )
++		host := &quot;&quot;;
++	endif
++	GFTextLine(gump, 220, 258, 2100, &quot;Signup Host: &quot;+host);
++	
++	//////
++	// Lower-Right Buttons
++	/////
++	GFResizePic(gump, 205, 290, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 420, 175);
++	GFAddButton(gump, 210, 298, 2117, 2118, GF_CLOSE_BTN, CHANGE_ACCTNAME);
++	GFTextLine(gump, 230, 295, 2100, &quot;Change Account Name&quot;);
++	
++	return 1;
++endfunction
++
++function NotesGump(account, byref gump)
++	msg_array.Shrink(0);
++	
++	GFResizePic(gump, 15, 50, 2620, 610, 380);
++	var acct_notes := account.GetProp(&quot;notes&quot;);
++	
++	var num_lines := acct_notes.size();
++	if ( num_lines &lt; 19 )
++		//Makes sure that 'off the gump' notes dont get removed.
++		num_lines := 19;
++	endif
++	
++	var y_pos := 55;
++	var i;
++	for ( i:=1; i&lt;=num_lines; i:=i+1 )
++		var line := acct_notes[i];
++		if ( line == error )
++			line := &quot;&quot;;
++		endif
++		msg_array.Append(GFTextEntry(gump, 20, y_pos, 595, 20, 2100, line));
++		y_pos := y_pos+19;
++	endfor
++
++	GFResizePic(gump, 15, 435, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 610, 30);
++
++	GFAddButton(gump, 20, 440, 4014, 4015, GF_PAGE_BTN, 1);
++	GFTextLine(gump, 55, 440, 2100, &quot;Back&quot;);
++
++	GFAddButton(gump, 585, 440, 4011, 4030, GF_CLOSE_BTN, UPDATE_NOTES_BTN);
++	GFTextLine(gump, 425, 440, 2100, &quot;Update Account Notes&quot;);
++	
++	return 1;
++endfunction
++
++
++function AccountBanner(who, account)
++	if ( account.banned )
++		if ( YesNo(who, &quot;Are you sure you want to unban this account?&quot;) )
++			account.UnBan();
++			return 1;
++		endif
++	else
++		if ( YesNo(who, &quot;Are you sure you want to ban this account?&quot;) )
++			account.Ban();
++			return 1;
++		endif
++	endif
++
++	SendSysMessage(who, &quot;Cancelled&quot;);
++	return 0;
++endfunction
++
++function SuspendAccount(who, account)
++	var jail_time := RequestGump(who, &quot;How many days do you want to disable this account?&quot;,&quot;&quot;, CStr(GetNumJailDays(account)), 1);
++	if ( jail_time == error )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	else
++		jail_time := CInt(jail_time);
++	endif
++
++	if ( jail_time == 0 )
++		account.EraseProp(&quot;ReleaseTime&quot;);
++		account.Enable();
++	else
++		if ( jail_time &gt; 0 )
++			jail_time := jail_time * SECONDS_IN_DAY;
++			account.SetProp(&quot;ReleaseTime&quot;, polcore().systime+jail_time);
++		endif
++		account.Disable();
++	endif
++	
++	return 1;
++endfunction
++
++function GetNumJailDays(account)
++	var seconds := account.GetProp(&quot;ReleaseTime&quot;);
++	if ( !seconds )
++		return 0;
++	endif
++	var num_days := CInt((seconds-polcore().systime) / SECONDS_IN_DAY)+1;
++	return num_days;
++endfunction
++
++function UpdateNotes(who, account, input)
++	var i;
++	for ( i:=1; i&lt;=msg_array.Size(); i:=i+1 )
++		var line := GFExtractData(input, msg_array[i]);
++		if ( line )
++			msg_array[i] := line;
++		else
++			msg_array[i] := &quot;&quot;;
++		endif
++	endfor
++	
++	//Clear off empty lines.
++	for ( i:=msg_array.Size(); i&gt;=1; i:=i-1 )
++		if ( Len(msg_array[i]) &lt;= 0 )
++			msg_array.Erase(i);
++		endif
++		sleepms(2);
++	endfor
++	if ( msg_array.Size() &lt; 1 )
++		account.EraseProp(&quot;notes&quot;);
++	else
++		account.SetProp(&quot;notes&quot;, msg_array);
++	endif
++	
++	SendSysMessage(who, &quot;Writing to account notes... done!&quot;);
++	
++	return 1;
++endfunction
++
++function SetDefaultCmdLevel(who, account)
++	var cmd_lvl := account.GetProp(&quot;CMDLEVEL&quot;);
++	if ( !cmd_lvl )
++		cmd_lvl := 0;
++	endif
++
++	var input := CInt(RequestGump(who, &quot;What do you want to sent this account's default cmdlevel to?&quot;,&quot;(0-3)&quot;, CStr(cmd_lvl), 1));
++	if ( input != error )
++		if ( input &gt;= who.cmdlevel )
++			cmd_lvl := who.cmdlevel;
++		endif
++		
++		account.SetDefaultCmdLevel(input);
++	else
++		SendSysMessage(who, &quot;Cancelled&quot;);
++	endif
++	
++	return 1;
++endfunction
++
++function ChangeEmail(who, account)
++	var email := account.GetProp(&quot;Email&quot;);
++	
++	var input := RequestGump(who, &quot;What do you want to set the new email address for this account to?&quot;,&quot;&quot;, CStr(email), 1);
++	if ( input == error )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return;
++	else
++		account.SetProp(&quot;Email&quot;, input);
++	endif
++	
++	return 1;
++endfunction
++
++function ChangeAcctName(who, account)
++	var name := account.name;
++	
++	var input := RequestGump(who, &quot;What do you want to change this account's name to?&quot;, &quot;&quot;, CStr(name), 1);
++	if ( input == error )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return;
++	else
++		var res := account.SetName(input);
++		if ( res.errortext )
++			SendSysMessage(who, &quot;Error: Could not set new account name -&gt;&quot;+res.errortext);
++		endif
++	endif
++	
++	return 1;
++endfunction
++
++function ProcessInput(who, account, input)
++	if ( input[0] &gt; CHAR_INFO_BTN )
++		input := (input[0] - CHAR_INFO_BTN);
++		var char := account.GetCharacter(input);
++		start_script(&quot;:commands:gm/info&quot;, {who, char});
++	elseif ( input[BAN_BTN] )
++		AccountBanner(who, account);
++	elseif ( input[DISABLE_BTN] )
++		SuspendAccount(who, account);
++	elseif ( input[UPDATE_NOTES_BTN] )
++		UpdateNotes(who, account, input);
++	elseif ( input[DEF_CMDLEVEL_BTN] )
++		SetDefaultCmdLevel(who, account);
++	elseif ( input[CHANGE_EMAIL] )
++		ChangeEmail(who, account);
++	elseif ( input[CHANGE_ACCTNAME] )
++		ChangeAcctName(who, account);
++	else
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/accounts/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/systems/accounts/config/icp.cfg	2006-05-11 06:55:40 UTC (rev 1304)
++++ trunk/096/pkg/systems/accounts/config/icp.cfg	2006-05-11 08:56:30 UTC (rev 1305)
+@@ -16,5 +16,7 @@
+ 
+ 	#Script	cmdlevel path
+ 
+-	#TextCmd	cmdlevel path
++	#TextCmd	cmdlevel	path
++	TextCmd		3 		:accounts:commands/GM/acctinfo
++	TextCmd		4 		:accounts:commands/admin/newaccount
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001276.html">[Poldistro-svn] r1304 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+	<LI>Next message: <A HREF="001278.html">[Poldistro-svn] r1306 - trunk/096/pkg/systems/accounts/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1277">[ date ]</a>
+              <a href="thread.html#1277">[ thread ]</a>
+              <a href="subject.html#1277">[ subject ]</a>
+              <a href="author.html#1277">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

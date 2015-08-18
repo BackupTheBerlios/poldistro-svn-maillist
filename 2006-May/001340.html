@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1372 - in trunk/096/pkg/commands: player props seer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1372%20-%20in%20trunk/096/pkg/commands%3A%20player%20props%20seer&In-Reply-To=%3C200605130006.k4D06g28028334%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001339.html">
+   <LINK REL="Next"  HREF="001342.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1372 - in trunk/096/pkg/commands: player props seer</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1372%20-%20in%20trunk/096/pkg/commands%3A%20player%20props%20seer&In-Reply-To=%3C200605130006.k4D06g28028334%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1372 - in trunk/096/pkg/commands: player props seer">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 02:06:42 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001339.html">[Poldistro-svn] r1371 - in trunk/096: config pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/include pkg/packetHooks/StatHook pkg/systems/accounts pkg/utils/gumps/include scripts/include scripts/misc
+</A></li>
+        <LI>Next message: <A HREF="001342.html">[Poldistro-svn] r1373 - trunk/096/pkg/systems/accounts/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1340">[ date ]</a>
+              <a href="thread.html#1340">[ thread ]</a>
+              <a href="subject.html#1340">[ subject ]</a>
+              <a href="author.html#1340">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 02:05:28 +0200 (Sat, 13 May 2006)
+New Revision: 1372
+
+Modified:
+   trunk/096/pkg/commands/player/help.src
+   trunk/096/pkg/commands/props/props.src
+   trunk/096/pkg/commands/seer/rename.src
+   trunk/096/pkg/commands/seer/shape.src
+Log:
+
+
+Modified: trunk/096/pkg/commands/player/help.src
+===================================================================
+--- trunk/096/pkg/commands/player/help.src	2006-05-12 23:55:57 UTC (rev 1371)
++++ trunk/096/pkg/commands/player/help.src	2006-05-13 00:05:28 UTC (rev 1372)
+@@ -6,12 +6,14 @@
+  */
+ use uo;
+ 
++include &quot;:gumps:htmlgump&quot;;
++
+ program command_help(who, command)
+ 	var help;
+ 
+ 	help := GetCommandHelp(who, command);
+ 	if ( help )
+-		//SendHTMLMessage(who, help);
++		SendHTMLGump(who, command+&quot; Help Text&quot;, help);
+ 		return 1;
+ 	else
+ 		SendSysMessage(who, &quot;No help available for that command.&quot;);
+
+Modified: trunk/096/pkg/commands/props/props.src
+===================================================================
+--- trunk/096/pkg/commands/props/props.src	2006-05-12 23:55:57 UTC (rev 1371)
++++ trunk/096/pkg/commands/props/props.src	2006-05-13 00:05:28 UTC (rev 1372)
+@@ -1,16 +1,29 @@
++/* $Id$
++ *
++ */
++
+ use uo;
++use os;
+ 
+-program dot_props( who )
+-    var what := Target( who );
+-    if (what)
+-        var names := what.propnames();
+-        if (names.size() != 0)
+-            foreach propname in names
+-                SendSysMessage( who, propname + &quot;: &quot; + what.getprop( propname ) );
+-            endforeach
+-        else
+-            SendSysMessage( who, &quot;No properties.&quot; );
+-        endif
+-    endif
++program textcmd_Props( who )
++	SendSysMessage(who, &quot;Target an object.&quot;);
++	var targ := Target(who);
++	
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	var prop_names := targ.PropNames();
++	if ( prop_names.Size() &gt; 0 )
++		foreach prop_name in prop_names
++			SendSysMessage(who, prop_name+&quot;: &quot;+Pack(targ.GetProp(prop_name)));
++        		sleepms(2);
++	        endforeach
++	else
++		SendSysMessage(who, &quot;No properties.&quot;);
++	endif
++	
++	return 1;
+ 
+ endprogram
+
+Modified: trunk/096/pkg/commands/seer/rename.src
+===================================================================
+--- trunk/096/pkg/commands/seer/rename.src	2006-05-12 23:55:57 UTC (rev 1371)
++++ trunk/096/pkg/commands/seer/rename.src	2006-05-13 00:05:28 UTC (rev 1372)
+@@ -1,26 +1,28 @@
++/* $Id$
++ *
++ */
++ 
+ use os;
+ use uo;
+ 
+-include &quot;:logger:log&quot;;
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
++include &quot;:gumps:requestgump&quot;;
+ 
+-
+ program command_rename(who, text)
+-	var what;
+-
+-	if (!text)
+-		SendMessage(who, MSG_NO_PARAM, {}, MSG_IMPORTANT);
+-	else
+-		SendMessage(who, MSG_TARGET_OBJ, {}, MSG_COMMAND);
+-		if ((what := Target(who, TGTOPT_NOCHECK_LOS)) == 0)
+-			SendMessage(who, MSG_CANCELLED, {}, MSG_COMMAND);
+-		else
+-			Log(LOG_COMMAND, GetLogInfo(who) + &quot; invoking 'rename' command on &quot; + GetLogInfo(what));
+-			SetName(what, text);
+-			SendMessage(who, MSG_DONE, {}, MSG_COMMAND);
++	var targ := Target(who);
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	if ( !text )
++		text := RequestGump(who, &quot;New Name&quot;, &quot;&quot;, &quot;&quot;, CANCEL_BTN_ON);
++		if ( !text || Len(text) &lt; 1 )
++			SendSysMessage(who, &quot;Cancelled.&quot;);
++			return 0;
+ 		endif
+ 	endif
+-
+-	return;
++	
++	SetName(targ, text);
++	
++	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/commands/seer/shape.src
+===================================================================
+--- trunk/096/pkg/commands/seer/shape.src	2006-05-12 23:55:57 UTC (rev 1371)
++++ trunk/096/pkg/commands/seer/shape.src	2006-05-13 00:05:28 UTC (rev 1372)
+@@ -6,10 +6,7 @@
+ use uo;
+ 
+ include &quot;include/mobileID&quot;;
+-include &quot;include/localization&quot;;
+-include &quot;include/messages&quot;;
+ 
+-
+ program command_shape(who, params)
+ 	case (params)
+ 		&quot;male&quot;:
+@@ -22,10 +19,10 @@
+ 			who.graphic := MOB_GM;
+ 			break;
+ 		default:
+-			SendMessage(who, MSG_USE_HELP, array{&quot;.shape&quot;}, MSG_COMMAND);
++			SendSysMessage(who, &quot;Please see .help shape&quot;);
+ 			break;
+ 	endcase
+ 
+-	return;
++	return 1;
+ endprogram
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001339.html">[Poldistro-svn] r1371 - in trunk/096: config pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/include pkg/packetHooks/StatHook pkg/systems/accounts pkg/utils/gumps/include scripts/include scripts/misc
+</A></li>
+	<LI>Next message: <A HREF="001342.html">[Poldistro-svn] r1373 - trunk/096/pkg/systems/accounts/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1340">[ date ]</a>
+              <a href="thread.html#1340">[ thread ]</a>
+              <a href="subject.html#1340">[ subject ]</a>
+              <a href="author.html#1340">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1313 - in trunk/096/pkg: mobiles/brainAI mobiles/brainAI/bundled/trogdor skills/magery/spellScripts/circle1
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1313%20-%20in%20trunk/096/pkg%3A%20mobiles/brainAI%20mobiles/brainAI/bundled/trogdor%20skills/magery/spellScripts/circle1&In-Reply-To=%3C200605112248.k4BMmIHx014627%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001309.html">
+   <LINK REL="Next"  HREF="001280.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1313 - in trunk/096/pkg: mobiles/brainAI mobiles/brainAI/bundled/trogdor skills/magery/spellScripts/circle1</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1313%20-%20in%20trunk/096/pkg%3A%20mobiles/brainAI%20mobiles/brainAI/bundled/trogdor%20skills/magery/spellScripts/circle1&In-Reply-To=%3C200605112248.k4BMmIHx014627%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1313 - in trunk/096/pkg: mobiles/brainAI mobiles/brainAI/bundled/trogdor skills/magery/spellScripts/circle1">austin at berlios.de
+       </A><BR>
+    <I>Fri May 12 00:48:18 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001309.html">[Poldistro-svn] r1312 - in trunk/096/pkg/commands: admin building coun gm test
+</A></li>
+        <LI>Next message: <A HREF="001280.html">[Poldistro-svn] r1314 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1283">[ date ]</a>
+              <a href="thread.html#1283">[ thread ]</a>
+              <a href="subject.html#1283">[ subject ]</a>
+              <a href="author.html#1283">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-12 00:48:16 +0200 (Fri, 12 May 2006)
+New Revision: 1313
+
+Removed:
+   trunk/096/pkg/skills/magery/spellScripts/circle1/heal.ecl
+Modified:
+   trunk/096/pkg/mobiles/brainAI/bundled/trogdor/combat.src
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+Had a .ecl file in the svn, doh!
+Uploading trogdor updates too..
+
+Modified: trunk/096/pkg/mobiles/brainAI/bundled/trogdor/combat.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/trogdor/combat.src	2006-05-11 22:46:42 UTC (rev 1312)
++++ trunk/096/pkg/mobiles/brainAI/bundled/trogdor/combat.src	2006-05-11 22:48:16 UTC (rev 1313)
+@@ -91,21 +91,39 @@
+ 
+ function SpecialAttacks(npc, opponent, byref dist)
+ 	AI_Turn(npc, opponent, NETURN_TOWARD);
+-	npc.frozen := 1;
+-	if ( dist &lt; 2 )
+-		BlowFire(npc, opponent);
+-	else
++	//npc.frozen := 1;
++	if ( dist &lt;= 5 )
++		BlowFire(npc, opponent, dist);
++	elseif ( dist &lt;= 10 )
+ 		SpitFireBall(npc, opponent);
+ 	endif
+-	npc.frozen := 0;
++	//npc.frozen := 0;
+ 	
+-	SetObjProperty(npc, &quot;#NextAttack&quot;, ReadGameClock()+15);
++	//SetObjProperty(npc, &quot;#NextAttack&quot;, ReadGameClock()+15);
+ 	
+ 	return 1;
+ endfunction
+ 
+-function BlowFire(npc, opponent)
+-	//
++function BlowFire(npc, opponent, byref dist)
++	var facing := GetFacing(npc.x, npc.y, opponent.x, opponent.y);
++	var coordinates := GetPointsByFacing(npc.x, npc.y, facing, dist);
++	PerformAction(npc, 5);
++	//AI_Speak(npc, &quot;*BURNINNATES*&quot;);
++	foreach coord in ( coordinates )
++		/*
++		PlayStationaryEffect(coord.x, coord.y, npc.z+(15-(RandomInt(3)+3)), SelectRandomExplosion(), 15, 15, 1);
++		if ( RandomInt(3) == 1 )
++			PlayStationaryEffect(coord.x, coord.y, npc.z+(15-(RandomInt(3)+3)), GFX_SMOKE, 5, 5, 0);
++		endif
++		
++		foreach player in ListMobilesNearLocationEX(coord.x, coord.y, coord.z, 0, LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN, npc.realm)
++			ApplyRawDamageEX(player, RandomDiceRoll(&quot;5d15&quot;), DMG_FIRE, npc);
++			sleepms(2);
++		endforeach
++		*/
++		sleepms(2);
++	endforeach
++	
+ 	return 1;
+ endfunction
+ 
+@@ -133,21 +151,20 @@
+ 		if ( RandomInt(2) != 1 ) // Don't place a fire field
+ 			continue;
+ 		endif
+-		case( RandomInt(3) )
+-			default:
+-				PlayStationaryEffect(coord.x, coord.y, npc.z, GFX_EXPLODE_1, 10, 10, 0);
+-				break;
+-			1:
+-				PlayStationaryEffect(coord.x, coord.y, npc.z, GFX_EXPLODE_2, 10, 10, 0);
+-				break;
+-			2:
+-				PlayStationaryEffect(coord.x, coord.y, npc.z, GFX_EXPLODE_3, 10, 10, 0);
+-				break;
+-		endcase
++		PlayStationaryEffect(coord.x, coord.y, npc.z, SelectRandomExplosion(), 10, 10, 0);
+ 		var field := CreateItemAtLocation(coord.x, coord.y, opponent.z, &quot;FireFieldNS&quot;, 1);
+ 		field.SetDuration(5);
+ 		sleepms(5);
+ 	endforeach
+ 	
+ 	return 1;
+-endfunction
+\ No newline at end of file
++endfunction
++
++function SelectRandomExplosion()
++	case ( RandomInt(3) )
++		1: return GFX_EXPLODE_2; break;
++		2: return GFX_EXPLODE_3; break;
++		default: return GFX_EXPLODE_1; break;
++	endcase
++endfunction
++		
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-05-11 22:46:42 UTC (rev 1312)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-05-11 22:48:16 UTC (rev 1313)
+@@ -372,7 +372,7 @@
+ 	IdleSound		364
+ 
+ 	// Brain AI Settings
+-	AISetting	AreaSize	i8
++	AISetting	AreaSize	i15
+ 	AISetting	CycleWait	i10
+ 	AISetting	DblClickRange	i10
+ 	AISetting	FleeLevel	i10 // 10%
+
+Deleted: trunk/096/pkg/skills/magery/spellScripts/circle1/heal.ecl
+===================================================================
+(Binary files differ)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001309.html">[Poldistro-svn] r1312 - in trunk/096/pkg/commands: admin building coun gm test
+</A></li>
+	<LI>Next message: <A HREF="001280.html">[Poldistro-svn] r1314 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1283">[ date ]</a>
+              <a href="thread.html#1283">[ thread ]</a>
+              <a href="subject.html#1283">[ subject ]</a>
+              <a href="author.html#1283">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

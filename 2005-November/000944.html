@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r970 - trunk/096/pkg/items/hair/hairdye
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r970%20-%20trunk/096/pkg/items/hair/hairdye&In-Reply-To=%3C200511132149.jADLndKk030443%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000943.html">
+   <LINK REL="Next"  HREF="000945.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r970 - trunk/096/pkg/items/hair/hairdye</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r970%20-%20trunk/096/pkg/items/hair/hairdye&In-Reply-To=%3C200511132149.jADLndKk030443%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r970 - trunk/096/pkg/items/hair/hairdye">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 13 22:49:39 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000943.html">[Poldistro-svn] r969 - in trunk/096/pkg/items/hair: . config hairdye
+</A></li>
+        <LI>Next message: <A HREF="000945.html">[Poldistro-svn] r971 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#944">[ date ]</a>
+              <a href="thread.html#944">[ thread ]</a>
+              <a href="subject.html#944">[ subject ]</a>
+              <a href="author.html#944">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-13 22:49:34 +0100 (Sun, 13 Nov 2005)
+New Revision: 970
+
+Modified:
+   trunk/096/pkg/items/hair/hairdye/use.src
+Log:
+
+
+Modified: trunk/096/pkg/items/hair/hairdye/use.src
+===================================================================
+--- trunk/096/pkg/items/hair/hairdye/use.src	2005-11-13 15:18:16 UTC (rev 969)
++++ trunk/096/pkg/items/hair/hairdye/use.src	2005-11-13 21:49:34 UTC (rev 970)
+@@ -9,7 +9,43 @@
+ 
+ include &quot;:gumps:gumps&quot;;
+ include &quot;:gumps:gumps_ex&quot;;
++include &quot;include/arrays&quot;;
+ 
+ program UseDyes(who, dyes)
++	var gump := BuildHairDyeGump();
++	GFSendGump(who, gump);
++	
+ 	return 1;
+ endprogram
++
++//GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 310, 420);
++//GFResizePic(gump, 10, 10, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 290, 400);
++
++function BuildHairDyeGump()
++	var gump := GFCreateGump();
++	
++	GFPage(0);
++	GFClosable(gump, 0);
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 400, 450);
++	GFResizePic(gump, 15, 15, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 120, 420);
++	GFResizePic(gump, 140, 15, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 245, 380);
++	
++	var color_cfg := ReadConfigFile(&quot;:hair:config/hairColors&quot;);
++	var index_elem := color_cfg[&quot;Index&quot;];
++	var color_list := array{};
++	var color_info := struct;
++	color_info.+
++	
++	
++	GetConfigStringArray(index_elem, &quot;Category&quot;);
++	
++	var index_y := 25;
++	foreach category in ( color_list )
++		GFAddButton(gump, 20, index_y+3, 5224, 5224, GF_PAGE_BTN, _color_info_iter);
++		GFTextLine(gump, 50, index_y, color_info.cat_color, color_info.name);
++		index_y := index_y + 20;
++		sleepms(2);
++	endforeach
++	
++	return gump;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000943.html">[Poldistro-svn] r969 - in trunk/096/pkg/items/hair: . config hairdye
+</A></li>
+	<LI>Next message: <A HREF="000945.html">[Poldistro-svn] r971 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#944">[ date ]</a>
+              <a href="thread.html#944">[ thread ]</a>
+              <a href="subject.html#944">[ subject ]</a>
+              <a href="author.html#944">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

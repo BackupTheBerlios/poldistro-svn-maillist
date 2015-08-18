@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r422 - trunk/096/pkg/items/containers/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r422%20-%20trunk/096/pkg/items/containers/include&In-Reply-To=%3C200510051343.j95DhaTp022296%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000399.html">
+   <LINK REL="Next"  HREF="000402.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r422 - trunk/096/pkg/items/containers/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r422%20-%20trunk/096/pkg/items/containers/include&In-Reply-To=%3C200510051343.j95DhaTp022296%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r422 - trunk/096/pkg/items/containers/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct  5 15:43:36 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000399.html">[Poldistro-svn] r421 - trunk/096/pkg/mobiles/brainAI/include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000402.html">[Poldistro-svn] r423 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#400">[ date ]</a>
+              <a href="thread.html#400">[ thread ]</a>
+              <a href="subject.html#400">[ subject ]</a>
+              <a href="author.html#400">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-05 15:43:36 +0200 (Wed, 05 Oct 2005)
+New Revision: 422
+
+Modified:
+   trunk/096/pkg/items/containers/include/storageAreas.inc
+   trunk/096/pkg/items/containers/include/vendorUtil.inc
+Log:
+
+
+Modified: trunk/096/pkg/items/containers/include/storageAreas.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/storageAreas.inc	2005-10-05 13:08:36 UTC (rev 421)
++++ trunk/096/pkg/items/containers/include/storageAreas.inc	2005-10-05 13:43:36 UTC (rev 422)
+@@ -1,8 +1,11 @@
+ /* $Id$
+  *
+  * Purpose
++ * Assists in the use of storage areas.
+  *
+- * Function List
++ * Author: Austin
++ *
++ * [ Function List ]
+  * CP_GetStorageContainerForMobile(container_id, storage_area_name:=0)
+  * CP_GetStorageAreaContainer(mobile, storage_area_name:=0, create:=CP_NOCREATE)
+  * CP_CreateStorageAreaContainer(container_id, storage_area_name:=0)
+@@ -10,7 +13,7 @@
+  * CP_RemoveStorageAreaContainer(container_id, storage_area_name)
+  * CP_StorageDebugMsg(text)
+  *
+- * Internal Function List
++ * [ Internal Function List ]
+  *
+  */
+ use uo;
+@@ -55,7 +58,11 @@
+  *
+  */
+ function CP_GetMobileContainerID(mobile)
+-	return &quot;Owner=&quot;+Hex(mobile.serial);
++	if ( mobile.IsA(POLCLASS_CORPSE) )
++		return &quot;Owner=&quot;+Hex(mobile.ownerserial);
++	else
++		return &quot;Owner=&quot;+Hex(mobile.serial);
++	endif
+ endfunction
+ 
+ /*
+
+Modified: trunk/096/pkg/items/containers/include/vendorUtil.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/vendorUtil.inc	2005-10-05 13:08:36 UTC (rev 421)
++++ trunk/096/pkg/items/containers/include/vendorUtil.inc	2005-10-05 13:43:36 UTC (rev 422)
+@@ -2,8 +2,8 @@
+ 
+ /*===============================================================
+ * Current Version
+-* MERCHANTUTIL.INC - v1.0
+-* Updated 10/2/2005 8:39PM
++* VENDORUTIL.INC - v1.0
++* Updated 10/5/2005 6:15AM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000399.html">[Poldistro-svn] r421 - trunk/096/pkg/mobiles/brainAI/include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000402.html">[Poldistro-svn] r423 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#400">[ date ]</a>
+              <a href="thread.html#400">[ thread ]</a>
+              <a href="subject.html#400">[ subject ]</a>
+              <a href="author.html#400">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

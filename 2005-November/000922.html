@@ -1,0 +1,372 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r948 - trunk/096/scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r948%20-%20trunk/096/scripts/misc&In-Reply-To=%3C200511130934.jAD9Y7ct024209%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000921.html">
+   <LINK REL="Next"  HREF="000923.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r948 - trunk/096/scripts/misc</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r948%20-%20trunk/096/scripts/misc&In-Reply-To=%3C200511130934.jAD9Y7ct024209%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r948 - trunk/096/scripts/misc">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 13 10:34:07 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000921.html">[Poldistro-svn] r947 - in trunk/096/scripts: include misc
+</A></li>
+        <LI>Next message: <A HREF="000923.html">[Poldistro-svn] r949 - trunk/096/scripts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#922">[ date ]</a>
+              <a href="thread.html#922">[ thread ]</a>
+              <a href="subject.html#922">[ subject ]</a>
+              <a href="author.html#922">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-13 10:34:01 +0100 (Sun, 13 Nov 2005)
+New Revision: 948
+
+Removed:
+   trunk/096/scripts/misc/demod.src
+   trunk/096/scripts/misc/namechecker.src
+Modified:
+   trunk/096/scripts/misc/logoff.src
+   trunk/096/scripts/misc/logofftest.src
+   trunk/096/scripts/misc/ondelete.src
+   trunk/096/scripts/misc/reconnect.src
+Log:
+Demod - no longer used, to be replaced by timedScripts package.
+namechecker - Wasnt being used, deleted.
+
+LogOff - Removed contents (most is now packaged or obsolete)
+LogOffTest - Optimized, removed obsolete data. Left pseudo code for new packages.
+OnDelete - Set it to return 1 if character is old enough (oops!)
+Reconnect - Removed contents (most is now packaged or was obsolete)
+
+Deleted: trunk/096/scripts/misc/demod.src
+===================================================================
+--- trunk/096/scripts/misc/demod.src	2005-11-13 09:17:23 UTC (rev 947)
++++ trunk/096/scripts/misc/demod.src	2005-11-13 09:34:01 UTC (rev 948)
+@@ -1,30 +0,0 @@
+-use uo;
+-use os;
+-include &quot;:attributes:attributes&quot;;
+-
+-program demod(parms)
+-  var mod := lower(parms[1]);
+-  var who := parms[2];
+-  var amt := parms[3];
+-  var duration := parms[4];
+-  var serial := parms[5];
+-  var prp := parms[6];
+-  sleep(duration);
+-  undo_mod(who, mod, amt, serial);
+-  EraseObjProperty(who, prp);
+-endprogram
+-
+-function undo_mod(who, mod, amt, serial)
+-  if((!who) &amp;&amp; (who.acctname))
+-    who := SystemFindObjectBySerial(serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+-  endif
+-  case(mod)
+-    &quot;str&quot;: 	AP_SetStatMod(who, STRENGTH, AP_GetStatMod(who, STRENGTH) - amt);
+-    &quot;dex&quot;: 	AP_SetStatMod(who, DEXTERITY, AP_GetStatMod(who, DEXTERITY) - amt);
+-    &quot;int&quot;: 	AP_SetStatMod(who, INTELLIGENCE, AP_GetStatMod(who, DEXTERITY) - amt);
+-    &quot;ar&quot; : 	who.ar_mod           := who.ar_mod - amt;
+-    &quot;p&quot;  : 	who.frozen           := 0;
+-            who.paralyzed        := 0;
+-  endcase
+-  return 1;
+-endfunction
+\ No newline at end of file
+
+Modified: trunk/096/scripts/misc/logoff.src
+===================================================================
+--- trunk/096/scripts/misc/logoff.src	2005-11-13 09:17:23 UTC (rev 947)
++++ trunk/096/scripts/misc/logoff.src	2005-11-13 09:34:01 UTC (rev 948)
+@@ -5,78 +5,7 @@
+  * Useful for stuff like cleaning up summoned NPCs, etc.
+  *
+  */
+-use uo;
+-use util;
+-use math;
+-use os;
+ 
+-include &quot;include/OLD/eventID&quot;;
+-include &quot;:attributes:attributes&quot;;
+-
+-const EVID_UNEQUIP   := 0x123456;
+-const EVID_DISCHARGE := 0x123457;
+-
+-
+-program core_logoff(who)
+-	var acct := FindAccount(who.acctname);
+-	acct.setprop(&quot;LastLogin&quot;, readGameclock());
+-	var sessiontime := ReadGameClock() - GetObjProperty(who,&quot;logontime&quot;);
+-	var timer := GetObjProperty(who,&quot;onlinetimer&quot;);
+-	if (!timer)
+-		timer := 0;
+-	endif
+-	SetObjProperty(who,&quot;onlinetimer&quot;,timer+sessiontime);
+-	EraseObjProperty(who,&quot;LoggedIn&quot;);
+-	RemoveMods(who);
+-	var mount := GetEquipmentByLayer(who, 25 );
+-	if (mount)
+-		if (GetObjProperty(mount, &quot;summoned&quot;))
+-			var ser := Cint(GetObjProperty(mount, &quot;serial&quot;));
+-			var critter := SystemFindObjectBySerial(ser);
+-			if (critter)
+-				ApplyRawDamage(critter, 2000);
+-			endif
+-			DestroyItem(mount);
+-		else
+-			var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
+-			SetObjProperty(animal,&quot;onhold&quot;, 1);
+-		endif
+-	endif
+-	staffnotify(who);
+-
+-	return;
++program LogOff(who)
++	return 1;
+ endprogram
+-
+-
+-function staffnotify(who)
+-	var pid := 0;
+-	while (!pid)
+-		sleepms(50);
+-		pid := GetGlobalProperty(&quot;#stafflist&quot;);
+-	endwhile
+-	pid := getprocess(pid);
+-	if (!pid)
+-		return;
+-	endif
+-	var k := struct;
+-	k.+player := who;
+-	k.+type  := EVID_PLAYER_LOGOFF;
+-	pid.sendevent(k);
+-
+-	return;
+-endfunction
+-
+-
+-function RemoveMods(who)
+-	foreach item in ListEquippedItems(who)
+-		var proc := GetProcess(Cint(GetObjProperty(item, &quot;Pid&quot;)));
+-		if (proc)
+-			var ev := {};
+-			ev.+type := EVID_UNEQUIP;
+-			proc.sendevent(ev);
+-		endif
+-	endforeach
+-	EraseObjProperty(who, &quot;EquipTimers&quot;);
+-
+-	return;
+-endfunction
+
+Modified: trunk/096/scripts/misc/logofftest.src
+===================================================================
+--- trunk/096/scripts/misc/logofftest.src	2005-11-13 09:17:23 UTC (rev 947)
++++ trunk/096/scripts/misc/logofftest.src	2005-11-13 09:34:01 UTC (rev 948)
+@@ -7,71 +7,30 @@
+  */
+ use uo;
+ 
+-include &quot;include/OLD/eventID&quot;;
+-include &quot;include/OLD/innCheck&quot;;
+-
++include &quot;include/time&quot;;
+ include &quot;:timedscripts:timedScripts&quot;;
+ 
+ program core_logoffTest(who)
++	// Send event to the 'timed scripts' package to run log off scripts.
+ 	TS_LogOff(who);
+-	
+-	if ((who.cmdlevel &gt; 1) || (GetObjProperty(who,&quot;justbanned&quot;)))
++		
++	if ( (who.cmdlevel &gt; 1) || (GetObjProperty(who,&quot;Delete&quot;)) )
++		// Let staff or characters being deleted/banned logout immediately.
+ 		return 0;
+ 	endif
+-	EraseObjProperty(who, &quot;#Online&quot;);
+-	var safelogoff := 0;
+-	if (CInt(GetObjProperty(who, &quot;#camped&quot;))== 1)
+-		EraseObjProperty(who, &quot;#camped&quot;);
+-		safelogoff := 1;
+-	elseif (Inncheck(who))
+-		safelogoff := 1;
+-	endif
+-
+-	if (!safelogoff)
+-		if (who.multi.serial)
+-			var house := who.multi;
+-			if (who.acctname == (GetObjProperty(house, &quot;owneracct&quot;)))
+-				safelogoff := 1;
+-			else
+-				foreach player in (GetObjProperty(house, &quot;friendlist&quot;))
+-					if (who.serial == player)
+-						safelogoff := 1;
+-					endif
+-				endforeach
+-				foreach player in (GetObjProperty(house,&quot;coownlist&quot;))
+-					if (who.serial == player)
+-						safelogoff := 1;
+-					endif
+-				endforeach
+-			endif
+-		endif
+-	endif
+-
+-	if (!safelogoff)
+-		staffnotify(who);
+-		return 300;  // wait 5 minutes
+-	elseif (safelogoff == 1)
+-		return 0;   // ok to log off
+-	else
+-		return safelogoff;
+-	endif
++	
++	var logout_delay := SECONDS_IN_MINUTE * 5;
++	
++	// Check if player is camping
++	// if ( IsCamping(who) )
++	
++	// Check if player is in an inn
++	// elseif ( IsInInn(who) )
++		
++	// Check if player is in a house
++	// Then check if player is the owner or  friend of the owner.
++	// elseif ( IsInHouse(who) )
++	
++	
++	return logout_delay;
+ endprogram
+-
+-
+-function staffnotify(who)
+-	var pid := 0;
+-	while (!pid)
+-		sleepms(50);
+-		pid := GetGlobalProperty(&quot;#stafflist&quot;);
+-	endwhile
+-	pid := getprocess(pid);
+-	if (!pid)
+-		return;
+-	endif
+-	var k := struct;
+-	k.+player := who;
+-	k.+type  := EVID_PLAYER_DELAY;
+-	pid.sendevent(k);
+-
+-	return;
+-endfunction
+
+Deleted: trunk/096/scripts/misc/namechecker.src
+===================================================================
+--- trunk/096/scripts/misc/namechecker.src	2005-11-13 09:17:23 UTC (rev 947)
++++ trunk/096/scripts/misc/namechecker.src	2005-11-13 09:34:01 UTC (rev 948)
+@@ -1,21 +0,0 @@
+-use uo;
+-use cfgfile;
+-
+-program checkname(who)
+-  var hisname := lower(who.name);
+-  var cfg := ReadConfigFile(&quot;badnames&quot;);
+-  var elem := FindConfigElem(cfg, hisname);
+-  if(!elem)
+-    return;
+-  endif
+-  who.name := &quot;invalid name&quot;;
+-  while (who.name == &quot;invalid name&quot;)
+-    var newname := SendTextEntryGump( who, &quot;You have selected a name that is not valid on this shard.&quot;, TE_CANCEL_DISABLE, TE_STYLE_NORMAL, 20, &quot;Please select a new name&quot;);
+-    var elem := FindConfigElem(cfg, lower(newname));
+-    if(!elem)
+-      SendSysMessage(who, &quot;Good choice, &quot; + newname + &quot;!&quot;);
+-      who.name := newname;
+-      return;
+-    endif
+-  endwhile
+-endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/misc/ondelete.src
+===================================================================
+--- trunk/096/scripts/misc/ondelete.src	2005-11-13 09:17:23 UTC (rev 947)
++++ trunk/096/scripts/misc/ondelete.src	2005-11-13 09:34:01 UTC (rev 948)
+@@ -17,6 +17,7 @@
+ 		return 1;
+ 	elseif ( age &gt;= SECONDS_IN_WEEK )
+ 		SysLog(&quot;Account [&quot;+who.acctname+&quot;] deleting character &quot;+who.name+&quot; (&quot;+who.serial+&quot;)&quot;);
++		return 1;
+ 	else
+ 		return 0;
+ 	endif
+
+Modified: trunk/096/scripts/misc/reconnect.src
+===================================================================
+--- trunk/096/scripts/misc/reconnect.src	2005-11-13 09:17:23 UTC (rev 947)
++++ trunk/096/scripts/misc/reconnect.src	2005-11-13 09:34:01 UTC (rev 948)
+@@ -11,22 +11,5 @@
+ 
+ 
+ program core_reconnect(who)
+-	var mount := GetEquipmentByLayer(who, LAYER_MOUNT);
+-	if (mount)
+-		var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
+-		EraseObjProperty(animal,&quot;onhold&quot;);
+-	endif
+-	run_script_to_completion( &quot;:motd:textcmd/player/motd&quot;, who );
+-	var ppl := EnumerateOnlineCharacters();
+-	if (GetObjProperty(who, &quot;StealthLogin&quot;) )
+-		return;
+-	endif
+-	foreach staff in ppl
+-		if ((staff.cmdlevel &gt; 0) &amp;&amp; (CInt(GetObjProperty(staff, &quot;LogNotify&quot;)) == 1))
+-			SendSysMessage(staff, CStr(who.name) + &quot; (Account name: &quot;
+-			+ CStr(who.acctname) + &quot;) has reconnected.  IP: &quot; + CStr(who.ip));
+-		endif
+-	endforeach
+-
+-	return;
++	return 1;
+ endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000921.html">[Poldistro-svn] r947 - in trunk/096/scripts: include misc
+</A></li>
+	<LI>Next message: <A HREF="000923.html">[Poldistro-svn] r949 - trunk/096/scripts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#922">[ date ]</a>
+              <a href="thread.html#922">[ thread ]</a>
+              <a href="subject.html#922">[ subject ]</a>
+              <a href="author.html#922">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

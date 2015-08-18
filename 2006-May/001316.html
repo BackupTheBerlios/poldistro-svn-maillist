@@ -1,0 +1,246 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1345 - in trunk/096: config scripts/console scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1345%20-%20in%20trunk/096%3A%20config%20scripts/console%20scripts/misc&In-Reply-To=%3C200605120818.k4C8ITNu022860%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001297.html">
+   <LINK REL="Next"  HREF="001313.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1345 - in trunk/096: config scripts/console scripts/misc</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1345%20-%20in%20trunk/096%3A%20config%20scripts/console%20scripts/misc&In-Reply-To=%3C200605120818.k4C8ITNu022860%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1345 - in trunk/096: config scripts/console scripts/misc">austin at berlios.de
+       </A><BR>
+    <I>Fri May 12 10:18:29 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001297.html">[Poldistro-svn] r1344 - trunk/096/pkg/systems/combat/useScripts
+</A></li>
+        <LI>Next message: <A HREF="001313.html">[Poldistro-svn] r1346 - trunk/096/batchfiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1316">[ date ]</a>
+              <a href="thread.html#1316">[ thread ]</a>
+              <a href="subject.html#1316">[ subject ]</a>
+              <a href="author.html#1316">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-12 10:18:29 +0200 (Fri, 12 May 2006)
+New Revision: 1345
+
+Removed:
+   trunk/096/scripts/console/about.src
+   trunk/096/scripts/console/time.src
+Modified:
+   trunk/096/config/console.cfg
+   trunk/096/scripts/console/shutdown.src
+   trunk/096/scripts/misc/dblclickself.src
+   trunk/096/scripts/misc/logoff.src
+   trunk/096/scripts/misc/oncreate.src
+   trunk/096/scripts/misc/reconnect.src
+Log:
+
+
+Modified: trunk/096/config/console.cfg
+===================================================================
+--- trunk/096/config/console.cfg	2006-05-12 08:12:38 UTC (rev 1344)
++++ trunk/096/config/console.cfg	2006-05-12 08:18:29 UTC (rev 1345)
+@@ -27,7 +27,7 @@
+ 
+ Commands Commands
+ {
+-	CMD a about About POL
++#	CMD a
+ #	CMD A
+ #	CMD ^A
+ 
+@@ -103,7 +103,7 @@
+ 	CMD S [lock/unlock] Lock/Unlock console
+ #	CMD ^S
+ 
+-	CMD t time Online time of day
++#	CMD t
+ #	CMD T
+ #	CMD ^T
+ 
+
+Deleted: trunk/096/scripts/console/about.src
+===================================================================
+--- trunk/096/scripts/console/about.src	2006-05-12 08:12:38 UTC (rev 1344)
++++ trunk/096/scripts/console/about.src	2006-05-12 08:18:29 UTC (rev 1345)
+@@ -1,20 +0,0 @@
+-/* $Id$
+- *
+- */
+-use uo;
+-
+-include &quot;include/OLD/clock&quot;;
+-
+-program console_about(cmd)
+-
+-	cmd := cmd;
+-	var system := polcore();
+-
+-	print(&quot;System Message:    About&quot;);
+-	print(&quot;    POL:         &quot; + system.verstr + &quot; [<A HREF="http://www.polserver.com">http://www.polserver.com</A>]&quot;);
+-	print(&quot;    Designer:    Syzygy [<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">syzygy at pobox.com</A>]&quot;);
+-	print(&quot;    Updated:     &quot; + system.compiledate + &quot; &quot; + system.compiletime);
+-
+-	return 1;
+-
+-endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/console/shutdown.src
+===================================================================
+--- trunk/096/scripts/console/shutdown.src	2006-05-12 08:12:38 UTC (rev 1344)
++++ trunk/096/scripts/console/shutdown.src	2006-05-12 08:18:29 UTC (rev 1345)
+@@ -5,8 +5,6 @@
+ use os;
+ use util;
+ 
+-include &quot;include/OLD/clock&quot;;
+-
+ program cmd_shutdown( cmd )
+ 
+ 	cmd := CInt(cmd);
+
+Deleted: trunk/096/scripts/console/time.src
+===================================================================
+--- trunk/096/scripts/console/time.src	2006-05-12 08:12:38 UTC (rev 1344)
++++ trunk/096/scripts/console/time.src	2006-05-12 08:18:29 UTC (rev 1345)
+@@ -1,16 +0,0 @@
+-/* $Id$
+- *
+- */
+-use uo;
+-
+-include &quot;include/OLD/clock&quot;;
+-
+-
+-program time(cmd)
+-
+-	cmd := cmd;
+-	print(&quot;System Message: The time in game is &quot; + GetTimeofDay());
+-
+-	return 1;
+-
+-endprogram
+
+Modified: trunk/096/scripts/misc/dblclickself.src
+===================================================================
+--- trunk/096/scripts/misc/dblclickself.src	2006-05-12 08:12:38 UTC (rev 1344)
++++ trunk/096/scripts/misc/dblclickself.src	2006-05-12 08:18:29 UTC (rev 1345)
+@@ -9,11 +9,9 @@
+ use os;
+ use npc;
+ 
+-include &quot;include/OLD/eventID&quot;;
+ include &quot;include/client&quot;;
+ include &quot;:mounts:mounts&quot;;
+ 
+-
+ program core_dblClickSelf(who)
+ 	var mount := GetEquipmentByLayer(who, LAYER_MOUNT);
+ 	if ( mount &amp;&amp; !who.warmode )
+@@ -21,22 +19,6 @@
+ 	endif
+ 	
+ 	return OpenPaperdoll(who, who);
+-	/*
+-	var serial := GetObjProperty(mount, &quot;serial&quot;);
+-	var animal := SystemFindObjectBySerial(CInt(serial));
+-	EraseObjProperty(animal,&quot;serial&quot;);
+-	EraseObjProperty(animal,&quot;mounted&quot;);
+-	EraseObjProperty(animal,&quot;mounted_on&quot;);
+-	animal.facing := who.facing;
+-	var ev := array;
+-	ev.+ type;
+-	ev.+ source;
+-	ev.type := EVID_WAKEUP;
+-	ev.source := who;
+-	SendEvent(animal, ev);
+-	MoveCharacterToLocation(animal, who.x, who.y, who.z, MOVECHAR_FORCELOCATION);
+-	RestartScript(animal);
+-	DestroyItem(mount);
+-	*/
++	
+ 	return 1;
+ endprogram
+
+Modified: trunk/096/scripts/misc/logoff.src
+===================================================================
+--- trunk/096/scripts/misc/logoff.src	2006-05-12 08:12:38 UTC (rev 1344)
++++ trunk/096/scripts/misc/logoff.src	2006-05-12 08:18:29 UTC (rev 1345)
+@@ -7,5 +7,6 @@
+  */
+ 
+ program LogOff(who)
++	who := who; // Avoid compiler warnings.
+ 	return 1;
+ endprogram
+
+Modified: trunk/096/scripts/misc/oncreate.src
+===================================================================
+--- trunk/096/scripts/misc/oncreate.src	2006-05-12 08:12:38 UTC (rev 1344)
++++ trunk/096/scripts/misc/oncreate.src	2006-05-12 08:18:29 UTC (rev 1345)
+@@ -6,10 +6,8 @@
+  *
+  */
+ use uo;
++use os;
+ 
+-include &quot;include/OLD/startEqp&quot;;
+-
+-
+ program core_onCreate(who, skillids)
+ 	var script := Start_Script(&quot;:newcharacter:oncreate&quot;, {who, skillids});
+ 	
+
+Modified: trunk/096/scripts/misc/reconnect.src
+===================================================================
+--- trunk/096/scripts/misc/reconnect.src	2006-05-12 08:12:38 UTC (rev 1344)
++++ trunk/096/scripts/misc/reconnect.src	2006-05-12 08:18:29 UTC (rev 1345)
+@@ -11,5 +11,6 @@
+ 
+ 
+ program core_reconnect(who)
++	who := who; // Avoid compiler warnings.
+ 	return 1;
+ endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001297.html">[Poldistro-svn] r1344 - trunk/096/pkg/systems/combat/useScripts
+</A></li>
+	<LI>Next message: <A HREF="001313.html">[Poldistro-svn] r1346 - trunk/096/batchfiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1316">[ date ]</a>
+              <a href="thread.html#1316">[ thread ]</a>
+              <a href="subject.html#1316">[ subject ]</a>
+              <a href="author.html#1316">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

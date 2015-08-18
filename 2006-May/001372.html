@@ -1,0 +1,1105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1403 - in trunk/096/pkg/packetHooks: . PartySystem PartySystem/commands PartySystem/config PartySystem/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1403%20-%20in%20trunk/096/pkg/packetHooks%3A%20.%20PartySystem%20PartySystem/commands%20PartySystem/config%20PartySystem/include&In-Reply-To=%3C200605132339.k4DNdH8n022829%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001371.html">
+   <LINK REL="Next"  HREF="001373.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1403 - in trunk/096/pkg/packetHooks: . PartySystem PartySystem/commands PartySystem/config PartySystem/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1403%20-%20in%20trunk/096/pkg/packetHooks%3A%20.%20PartySystem%20PartySystem/commands%20PartySystem/config%20PartySystem/include&In-Reply-To=%3C200605132339.k4DNdH8n022829%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1403 - in trunk/096/pkg/packetHooks: . PartySystem PartySystem/commands PartySystem/config PartySystem/include">austin at berlios.de
+       </A><BR>
+    <I>Sun May 14 01:39:17 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001371.html">[Poldistro-svn] r1402 - trunk/096/scripts
+</A></li>
+        <LI>Next message: <A HREF="001373.html">[Poldistro-svn] r1404 - in trunk/096: pkg/systems pkg/systems/help pkg/systems/help/commands pkg/systems/help/commands/gm pkg/systems/help/config pkg/systems/help/pageRequest scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1372">[ date ]</a>
+              <a href="thread.html#1372">[ thread ]</a>
+              <a href="subject.html#1372">[ subject ]</a>
+              <a href="author.html#1372">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-14 01:38:57 +0200 (Sun, 14 May 2006)
+New Revision: 1403
+
+Added:
+   trunk/096/pkg/packetHooks/PartySystem/
+   trunk/096/pkg/packetHooks/PartySystem/commands/
+   trunk/096/pkg/packetHooks/PartySystem/commands/gm/
+   trunk/096/pkg/packetHooks/PartySystem/commands/player/
+   trunk/096/pkg/packetHooks/PartySystem/config/
+   trunk/096/pkg/packetHooks/PartySystem/config/icp.cfg
+   trunk/096/pkg/packetHooks/PartySystem/doPartySystem.src
+   trunk/096/pkg/packetHooks/PartySystem/doPlayerStatus.src
+   trunk/096/pkg/packetHooks/PartySystem/handlePartyAccept.src
+   trunk/096/pkg/packetHooks/PartySystem/handlePartyAdd.src
+   trunk/096/pkg/packetHooks/PartySystem/handlePartyChat.src
+   trunk/096/pkg/packetHooks/PartySystem/handlePartyDecline.src
+   trunk/096/pkg/packetHooks/PartySystem/handlePartyLoot.src
+   trunk/096/pkg/packetHooks/PartySystem/handlePartyMessage.src
+   trunk/096/pkg/packetHooks/PartySystem/handlePartyRemove.src
+   trunk/096/pkg/packetHooks/PartySystem/include/
+   trunk/096/pkg/packetHooks/PartySystem/include/config.inc
+   trunk/096/pkg/packetHooks/PartySystem/include/packetInfo.inc
+   trunk/096/pkg/packetHooks/PartySystem/logoff.src
+   trunk/096/pkg/packetHooks/PartySystem/logon.src
+   trunk/096/pkg/packetHooks/PartySystem/pkg.cfg
+   trunk/096/pkg/packetHooks/PartySystem/readme.txt
+   trunk/096/pkg/packetHooks/PartySystem/reconnect.src
+   trunk/096/pkg/packetHooks/PartySystem/uopacket.cfg
+Log:
+Tekproxy's party system. 
+
+Added: trunk/096/pkg/packetHooks/PartySystem/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/config/icp.cfg	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/config/icp.cfg	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,17 @@
++ICP Register
++{
++	Name		Party System
++	Version		1.0
++
++	Description	Package that handles packets for the client's party system.
++
++	Creator		tekproxy
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">tekproxy at gmail.com</A>
++
++	Maintainer	tekproxy
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">tekproxy at gmail.com</A>
++	
++	#Script		cmdlevel	path
++
++	#TextCmd	cmdlevel	path
++}
+
+Added: trunk/096/pkg/packetHooks/PartySystem/doPartySystem.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/doPartySystem.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/doPartySystem.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,69 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:partySystem:config&quot;;
++include &quot;:partySystem:packetInfo&quot;;
++
++const OFFSET_PARTY_SERIAL := 6;
++const OFFSET_PARTY_MSG_PLAYERID := 6;
++const OFFSET_PARTY_MSG_MSG := 10;
++const OFFSET_PARTY_CHAT_MSG := 6;
++
++// IDs for party subsub commands
++const SUBSUBCMD_PARTY_ADD := 1;
++const SUBSUBCMD_PARTY_REMOVE := 2;
++const SUBSUBCMD_PARTY_MSG := 3;
++const SUBSUBCMD_PARTY_CHAT := 4;
++const SUBSUBCMD_PARTY_LOOT := 6;
++const SUBSUBCMD_PARTY_ACCEPT := 8;
++const SUBSUBCMD_PARTY_DECLINE := 9;
++
++program doPartySystem()
++	print(&quot;INSTALLING: Party System PH...&quot;);
++	return 1;
++endprogram
++
++exported function handlePartyCommand(character, byref packet)
++	var cmd := packet.GetInt8(OFFSET_PARTY_SUBSUBCMD);
++	var param, param2;
++
++	if ( DEBUG )
++		print( &quot;handlePartyCommand - character: &quot; + character.name + &quot;	packet: &quot; + packet);
++	endif
++
++	case ( cmd )
++		SUBSUBCMD_PARTY_ADD:
++			Start_Script(&quot;handlePartyAdd&quot;, character);
++		SUBSUBCMD_PARTY_REMOVE:
++			param := packet.GetInt32(OFFSET_PARTY_SERIAL);
++			Start_Script(&quot;handlePartyRemove&quot;, array{character, param});
++		SUBSUBCMD_PARTY_MSG:
++			param := packet.GetInt32(OFFSET_PARTY_MSG_PLAYERID);
++			param2 := packet.GetUnicodeString(OFFSET_PARTY_MSG_MSG, CInt(packet.GetSize() - OFFSET_PARTY_MSG_MSG) / 2);
++			Start_Script(&quot;handlePartyMessage&quot;, array{character, param, param2});
++		SUBSUBCMD_PARTY_CHAT:
++			param := packet.GetUnicodeString(OFFSET_PARTY_CHAT_MSG, CInt(packet.GetSize() - OFFSET_PARTY_CHAT_MSG) / 2);
++			Start_Script(&quot;handlePartyChat&quot;, array{character, param});
++		SUBSUBCMD_PARTY_LOOT:
++			param := packet.GetInt8(OFFSET_PARTY_SERIAL);
++			Start_Script(&quot;handlePartyLoot&quot;, array{character, param});
++		SUBSUBCMD_PARTY_ACCEPT:
++			param := packet.GetInt32(OFFSET_PARTY_SERIAL);
++			Start_Script(&quot;handlePartyAccept&quot;, array{character, param});
++		SUBSUBCMD_PARTY_DECLINE:
++			param := packet.GetInt32(OFFSET_PARTY_SERIAL);
++			Start_Script(&quot;handlePartyDecline&quot;, array{character, param});
++		default:
++			if (DEBUG)
++				print(&quot;handlePartyCommand: unknown command&quot;);
++				print(&quot;Subsubcmd: &quot;+cmd+&quot; Packet: &quot;+packet);
++			endif
++	endcase
++
++	// POL ignores the packet anyway, so return 1 (no further processing)
++	return 1;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/PartySystem/doPlayerStatus.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/doPlayerStatus.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/doPlayerStatus.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,107 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++use math;
++
++include &quot;:partySystem:config&quot;;
++include &quot;:partySystem:packetInfo&quot;;
++include &quot;:attributes:attributes&quot;; // for getting player stats
++
++const OFFSET_UPDATE_STAT_PLAYERID := 1;
++
++const OFFSET_SEND_STATUS_LENGTH := 1;
++const OFFSET_SEND_STATUS_PLAYERID := 3;
++const OFFSET_SEND_STATUS_CURRENT_HEALTH := 37;
++const OFFSET_SEND_STATUS_MAX_HEALTH := 39;
++const OFFSET_SEND_STATUS_NAME_CHANGE := 41;
++const OFFSET_SEND_STATUS_VALID := 42;
++const OFFSET_SEND_STATUS_SEX := 43;
++const OFFSET_SEND_STATUS_STR := 44;
++const OFFSET_SEND_STATUS_DEX := 46;
++const OFFSET_SEND_STATUS_INT := 48;
++const OFFSET_SEND_STATUS_CURRENT_STAMINA := 50;
++const OFFSET_SEND_STATUS_MAX_STAMINA := 52;
++const OFFSET_SEND_STATUS_CURRENT_MANA := 54;
++const OFFSET_SEND_STATUS_MAX_MANA := 56;
++const OFFSET_SEND_STATUS_GOLD := 58;
++const OFFSET_SEND_STATUS_ARMOR := 62;
++const OFFSET_SEND_STATUS_WEIGHT := 64;
++
++program doPlayerStatus()
++	print(&quot;INSTALLING: Party Status Update PH...&quot;);
++	return 1;
++endprogram
++
++exported function handleUpdateStat(character, byref packet)
++	var id := packet.GetInt32(OFFSET_UPDATE_STAT_PLAYERID);
++	var party := GetObjProperty(character, PARTY_PROP);
++
++	if ( DEBUG )
++		print(&quot;handleUpdateStat - character: &quot;+character.name+&quot;	packet: &quot;+packet);
++	endif
++
++	// Only send packets if character is in a party
++	if ( TypeOf(party) == &quot;Array&quot; )
++		var char;
++
++		foreach member in ( party )
++			// Only the other members of the party
++			if ( member != id )
++				char := SystemFindObjectBySerial(member);
++
++				// Only send this packet if we're less than PARTY_STATUS_UPDATE_DISTANCE tiles away in any direction
++				if ( char &amp;&amp; Distance(char, character) &lt;= PARTY_STATUS_UPDATE_DISTANCE )
++					packet.SendPacket(SystemFindObjectBySerial(member));
++				endif
++			endif
++			sleepms(2);
++		endforeach
++	endif
++
++	return 0;
++endfunction
++
++exported function handleSendStatus(character, byref packet)
++	var party := GetObjProperty(character, PARTY_PROP);
++
++	if ( DEBUG )
++		print(&quot;handleSendStatus - character: &quot; + character.name + &quot;	packet: &quot; + packet);
++	endif
++
++	// Only try to send packet if character is in a party
++	if ( TypeOf(party) == &quot;Array&quot; )
++		var id := packet.GetInt32(OFFSET_SEND_STATUS_PLAYERID);
++
++		// Modify the packet for everyone else in the party
++		if ( (id in party) &amp;&amp; (character.serial != id) )
++			var char := SystemFindObjectBySerial(id);
++
++			if ( char )
++				// Set the length and everything in the packet past name
++				packet.SetInt16(OFFSET_SEND_STATUS_LENGTH, 66);
++				packet.SetInt16(OFFSET_SEND_STATUS_CURRENT_HEALTH, AP_GetVital(char, &quot;health&quot;));
++				packet.SetInt16(OFFSET_SEND_STATUS_MAX_HEALTH, AP_GetVitalMaximumValue(char, &quot;health&quot;));
++				packet.SetInt8(OFFSET_SEND_STATUS_NAME_CHANGE, 0);
++				packet.SetInt8(OFFSET_SEND_STATUS_VALID, 1);
++				packet.SetInt8(OFFSET_SEND_STATUS_SEX, char.gender);
++				packet.SetInt16(OFFSET_SEND_STATUS_STR, AP_GetStat(char, &quot;strength&quot;));
++				packet.SetInt16(OFFSET_SEND_STATUS_DEX, AP_GetStat(char, &quot;dexterity&quot;));
++				packet.SetInt16(OFFSET_SEND_STATUS_INT, AP_GetStat(char, &quot;intelligence&quot;));
++				packet.SetInt16(OFFSET_SEND_STATUS_CURRENT_STAMINA, AP_GetVital(char, &quot;stamina&quot;));
++				packet.SetInt16(OFFSET_SEND_STATUS_MAX_STAMINA, AP_GetVital(char, &quot;stamina&quot;));
++				packet.SetInt16(OFFSET_SEND_STATUS_CURRENT_MANA, AP_GetVital(char, &quot;mana&quot;));
++				packet.SetInt16(OFFSET_SEND_STATUS_MAX_MANA, AP_GetVitalMaximumValue(char, &quot;mana&quot;));
++
++				// The client doesn't normally display this information, so don't send real data.
++				packet.SetInt32(OFFSET_SEND_STATUS_GOLD, 0); // should be: char.gold
++				packet.SetInt16(OFFSET_SEND_STATUS_ARMOR, 0); // should be: char.ar_mod
++				packet.SetInt16(OFFSET_SEND_STATUS_WEIGHT, 0); // should be: char.weight
++			endif
++		endif
++	endif
++
++	return 0;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/PartySystem/handlePartyAccept.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/handlePartyAccept.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/handlePartyAccept.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,82 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++use polsys;
++
++include &quot;:partySystem:config&quot;;
++include &quot;:partySystem:packetInfo&quot;;
++
++const OFFSET_PARTY_ADD_SIZE := 6;
++const OFFSET_PARTY_ADD_PLAYERIDS := 7;
++
++program handlePartyAccept(params)
++	Set_Critical(DEBUG_SET_CRITICAL);
++
++	var invited := params[1];
++	var leader := SystemFindObjectBySerial(params[2]);
++	var char, party, packet;
++
++	// Clear PARTY_JOINING_PROP
++	EraseObjProperty(invited, PARTY_JOINING_PROP);
++
++	// Maybe the leader logged off
++	if ( !leader )
++		SendSysMessage(invited, &quot;Unable to find party creator!&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++		return 0;
++	endif
++
++	party := GetObjProperty(leader, PARTY_PROP);
++
++	// If there is no party array, start one
++	if ( TypeOf(party) != &quot;Array&quot; )
++		party := array{CInt(leader.serial)};
++	else
++		// Check if invited isn't in the party and if the party.Size() isn't too big
++		if ( invited.serial in party )
++			// Can't invite someone already in the party
++			return 0;
++		endif
++
++		if ( party.Size() &gt;= PARTY_MAX_SIZE )
++			SendSysMessage(invited, &quot;That party is too big to add any more members.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++			return 0;
++		endif
++	endif
++
++	// Add invited's serial to the party array
++	party.Append(CInt(invited.serial));
++
++	// Build the packet according to the party array
++	packet := CreatePacket(MSGTYPE_PARTY, MSGLEN_VARIABLE);
++	packet.SetInt16(OFFSET_PARTY_SUBCMD, 6); // Set subcmd to Party
++	packet.SetInt8(OFFSET_PARTY_SUBSUBCMD, 1); // Set subsubcmd to Add
++	packet.SetInt8(OFFSET_PARTY_ADD_SIZE, party.Size()); // Set party size
++
++	// Append party member's serials at the end of packet
++	for i := 1 to ( party.Size() )
++		packet.SetInt32(OFFSET_PARTY_ADD_PLAYERIDS + ((i - 1) * 4), party[i]);
++		sleepms(2);
++	endfor
++
++	// Set packet length
++	packet.Set16(OFFSET_PARTY_MSGLEN, packet.GetSize());
++
++	// Loop through each member in the party array and update PARTY_PROP and send Add packet
++	foreach member in ( party )
++		char := SystemFindObjectBySerial(member);
++
++		if ( char )
++			SetObjProperty(char, PARTY_PROP, party);
++			packet.SendPacket(char);
++		endif
++		sleepms(2);
++	endforeach
++
++	SendSysMessage(leader, invited.name+&quot; has accepted your invitation.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++	SendSysMessage(invited, &quot;You have joined the party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/PartySystem/handlePartyAdd.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/handlePartyAdd.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/handlePartyAdd.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,103 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++use polsys;
++
++include &quot;:partySystem:config&quot;;
++include &quot;:partySystem:packetInfo&quot;;
++
++const OFFSET_PARTY_INVITE_PLAYERID := 6;
++
++program handlePartyAdd(who)
++	Set_Critical(DEBUG_SET_CRITICAL);
++
++	var party := GetObjProperty(who, PARTY_PROP);
++	var temp, targ, packet;
++
++	// Check to see if who is the leader of their party and the party size
++	if ( TypeOf(party) == &quot;Array&quot; )
++		if ( party[1] != who.serial )
++			SendSysMessage(who, &quot;Only the creator of the party can add members.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++			return 0;
++		endif
++
++		if ( party.Size() &gt; PARTY_MAX_SIZE )
++			SendSysMessage(who, &quot;Your party is too big to add any more members.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++			return 0;
++		endif
++	endif
++
++	SendSysMessage(who, &quot;Who would you like to add to your party?&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++
++	targ := Target(who);
++
++	// Check if who is targetting themselves, if targ is a player and and targ is alive
++	if ( targ.serial != who.serial &amp;&amp; targ.acct &amp;&amp; !targ.dead )
++		// Check if targ is already in a party or is about to join one
++		if ( GetObjProperty(targ, PARTY_JOINING_PROP) )
++			SendSysMessage(who, &quot;That person is already being invited into a party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++			return 0;
++		endif
++
++		if ( GetObjProperty(targ, PARTY_PROP) )
++			SendSysMessage(who, &quot;That person is already in a party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++			return 0;
++		endif
++
++		// Set the PARTY_JOINING_PROP on the target with who.serial
++		SetObjProperty(targ, PARTY_JOINING_PROP, CInt(who.serial));
++
++		SendSysMessage(targ, who.name+&quot;: You are invited to join the party. Type /accept to join or /decline to decline the offer.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++
++		// Build Invite subsubcmd packet and send to targ
++		packet := CreatePacket(MSGTYPE_PARTY, 10);
++		packet.SetInt16(OFFSET_PARTY_MSGLEN, 10); // Set packet length
++		packet.SetInt16(OFFSET_PARTY_SUBCMD, 6); // Set subcmd to Party
++		packet.SetInt8(OFFSET_PARTY_SUBSUBCMD, 7); // Set subsubcmd to Invite
++		packet.SetInt32(OFFSET_PARTY_INVITE_PLAYERID, who.serial); // Set leader's serial
++		packet.SendPacket(targ); // Send the invite packet to the target
++
++		Detach();
++
++		// Loop here for PARTY_INVITE_TIMEOUT seconds, checking if the user has accepted each second
++		for i := 1 to ( PARTY_INVITE_TIMEOUT )
++			sleep(1);
++
++			temp := GetObjProperty(targ, PARTY_PROP);
++
++			if ( !GetObjProperty(targ, PARTY_JOINING_PROP) )
++				// targ has declined and is in the process of joining another party
++				return 0;
++			elseif ( temp[1] == who.serial )
++				// targ has accepted, targ's party prop has who as the leader
++				EraseObjProperty(targ, PARTY_JOINING_PROP);
++				return 0;
++			elseif ( temp &amp;&amp; temp[1] != who.serial )
++				// targ has declined and then joined another party
++				EraseObjProperty(targ, PARTY_JOINING_PROP);
++				SendSysMessage(who, &quot;Your target is already in another party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++				return 0;
++			elseif ( targ.dead || !targ )
++				// targ has left the matrix or is dead
++				SendSysMessage(who, &quot;Your target can no longer accept.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++				return 0;
++			endif
++		endfor
++
++		// targ never made a choice, so automatic decline
++		EraseObjProperty(targ, PARTY_JOINING_PROP);
++
++		SendSysMessage(targ, &quot;You decline their offer.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++		SendSysMessage(who, targ.name+&quot; has declined your offer.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++
++		return 0;
++	else
++		// Invalid target
++		SendSysMessage(who, &quot;Cancelled.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++	endif
++
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/PartySystem/handlePartyChat.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/handlePartyChat.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/handlePartyChat.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,35 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++use unicode;
++
++include &quot;:partySystem:config&quot;;
++
++program handlePartyChat(params)
++	Set_Critical(DEBUG_SET_CRITICAL);
++
++	var who := params[1];
++	var msg := params[2];
++	var party := GetObjProperty(who, PARTY_PROP);
++
++	// Send message to every memeber in party
++	for i := 1 to ( party.Size() )
++		var char := SystemFindObjectBySerial(party[i]);
++
++		if ( char )
++			// Prepare unicode stuff
++			// One could probably just convert the unicode to a string, but I don't know if you should
++			var cmsg := CAscZ(&quot;[Party] &quot;+who.name+&quot;: &quot;);
++
++			cmsg := cmsg + msg;
++
++			SendSysMessageUC(char, cmsg, &quot;ENU&quot;);
++		endif
++		sleepms(2);
++	endfor
++
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/packetHooks/PartySystem/handlePartyDecline.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/handlePartyDecline.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/handlePartyDecline.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,26 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:partySystem:config&quot;;
++
++program handlePartyDecline(params)
++	Set_Critical(DEBUG_SET_CRITICAL);
++
++	var invitee := params[1];
++	var leader := SystemFindObjectBySerial(params[2]);
++
++	// No need for this anymore
++	EraseObjProperty(invitee, PARTY_JOINING_PROP);
++
++	// Let everyone know what happened
++	if ( leader )
++		SendSysMessage(leader, invitee.name+&quot; has declined your offer to join the party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++		SendSysMessage(invitee, &quot;You have declined &quot;+leader.name+&quot;'s offer.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++	endif
++
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/packetHooks/PartySystem/handlePartyLoot.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/handlePartyLoot.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/handlePartyLoot.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,23 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:partySystem:config&quot;;
++include &quot;:partySystem:packetInfo&quot;;
++
++program handlePartyLoot(who, loot)
++	Set_Critical(DEBUG_SET_CRITICAL);
++
++	if ( loot == 1 )
++		SetObjProperty(who, PARTY_LOOT_PROP, 1);
++		SendSysMessage(who, &quot;Your party may now loot you. This only takes effect on new corpses.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++	else
++		EraseObjProperty(who, PARTY_LOOT_PROP);
++		SendSysMessage(who, &quot;Your party may no longer loot you. This only takes effect on new corpses.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++	endif
++
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/PartySystem/handlePartyMessage.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/handlePartyMessage.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/handlePartyMessage.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,37 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++use unicode;
++
++include &quot;:partySystem:config&quot;;
++
++program handlePartyMessage(params)
++	Set_Critical(DEBUG_SET_CRITICAL);
++
++	var who := params[1];
++	var targid := params[2];
++	var msg := params[3];
++
++	// You really can not message yourself. The client doesn't send the packet and shows &quot;Note to self: &quot;
++	if ( targid == who.serial )
++		SendSysMessage(who, &quot;You cannot message yourself.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++		return;
++	endif
++
++	var char := SystemFindObjectBySerial(targid);
++
++	if ( char )
++		// Prepare unicode stuff
++		// One could probably just convert the unicode to a string, but just in case you don't use non-latin characters...
++		var cmsg := (CAscZ(&quot;[Private] &quot;+who.name+&quot;: &quot;))+msg;
++		var wmsg := (CAscZ(&quot;[Private-&gt;&quot;+char.name+&quot;] &quot;))+msg;
++
++		SendSysMessageUC(char, cmsg, &quot;ENU&quot;);
++		SendSysMessageUC(who, wmsg, &quot;ENU&quot;);
++	endif
++
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/PartySystem/handlePartyRemove.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/handlePartyRemove.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/handlePartyRemove.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,173 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++use polsys;
++
++include &quot;:partySystem:config&quot;;
++include &quot;:partySystem:packetInfo&quot;;
++
++const OFFSET_PARTY_REMOVE_NEWSIZE := 6;
++const OFFSET_PARTY_REMOVE_PLAYERID := 7;
++const OFFSET_PARTY_REMOVE_PLAYERIDS := 11;
++
++program HandlePartyRemove(params)
++	Set_Critical(DEBUG_SET_CRITICAL);
++
++	var kicker := params[1];
++	var packet := &quot;&quot;, newparty := array{};
++	var kicked, party, char;
++
++	// param[3] is set to PARTY_PROP when called from logoff, so search offline mobiles as well
++	if ( !params[3] )
++		kicked := SystemFindObjectBySerial(params[2]);
++		party := GetObjProperty(kicker, PARTY_PROP);
++	else
++		kicked := SystemFindObjectBySerial(params[2], SYSFIND_SEARCH_OFFLINE_MOBILES);
++		party := params[3];
++	endif
++
++	if ( TypeOf(party) != &quot;Array&quot; || party.Size() &lt; 1 || !party[1] )
++		EraseObjProperty(kicker, PARTY_PROP);
++		EraseObjProperty(kicker, PARTY_JOINING_PROP);
++		SendSysMessage(kicker, &quot;You are not in a party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++		return 0;
++	endif
++
++	// Don't build the packet unless we have to
++	if ( (kicked.serial == kicker.serial) || (party[1] == kicker.serial &amp;&amp; !params[3]) )
++		// Build the packet
++		packet := CreatePacket(MSGTYPE_PARTY, MSGLEN_VARIABLE);
++		packet.SetInt16(OFFSET_PARTY_SUBCMD, 6); // Set subcmd to Party
++		packet.SetInt8(OFFSET_PARTY_SUBSUBCMD, 2); // Set subsubcmd to Remove
++		packet.SetInt32(OFFSET_PARTY_REMOVE_PLAYERID, kicked.serial); // Set kicked player's serial
++		packet.SetInt8(OFFSET_PARTY_REMOVE_NEWSIZE, 0); // Set 0 party size (this may change)
++		packet.Set16(OFFSET_PARTY_MSGLEN, packet.GetSize()); // Set packet length (this may change)
++
++		// Packet looks like this now: BF 000B 0006 02 00 00112233
++		// 00112233 = kicked.serial
++	endif
++
++	if ( kicked.serial == kicker.serial ) // kicked is removing themself
++		if ( party[1] != kicked.serial ) // kicked is not the party leader
++			// Remove PARTY_PROP from kicked's character
++			EraseObjProperty(kicked, PARTY_PROP);
++
++			// Only send the packet and message if kicked is online (not being called from logoff)
++			if ( !params[3] )
++				packet.SendPacket(kicked);
++				SendSysMessage(kicked, &quot;You have left the party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++			endif
++
++			// Build newparty array and set remaining party member's serials at the end of packet
++			for i := 1 to ( party.Size() )
++				if ( party[i] != kicked.serial )
++					newparty.Append(party[i]);
++					packet.SetInt32(OFFSET_PARTY_REMOVE_PLAYERIDS + ((i - 1) * 4), party[i]);
++				endif
++				sleepms(2);
++			endfor
++
++			// Change remining party size and length
++			packet.SetInt8(OFFSET_PARTY_REMOVE_NEWSIZE, newparty.Size());
++			packet.Set16(OFFSET_PARTY_MSGLEN, packet.GetSize());
++
++			// Send the same packet to everyone else, unless it's a 2-person party, then send a different packet
++			foreach member in ( newparty )
++				char := SystemFindObjectBySerial(member);
++
++				if ( char )
++					if ( newparty.Size() &gt; 1 )
++						packet.SendPacket(kicked);
++						SetObjProperty(char, PARTY_PROP, newparty);
++						SendSysMessage(char, kicked.name+&quot; has left the party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++						packet.SendPacket(char);
++					else
++						// Set the kicked players id as char's id, the party size to 0 and resize packet to disband
++						packet.SetInt32(OFFSET_PARTY_REMOVE_PLAYERID, char.serial);
++						packet.SetInt8(OFFSET_PARTY_REMOVE_NEWSIZE, 0);
++						packet.SetSize(11);
++						packet.SendPacket(char);
++
++						EraseObjProperty(char, PARTY_PROP);
++						SendSysMessage(char, kicked.name+&quot; has left the party. Party disbanded.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++					endif
++				endif
++				sleepms(2);
++			endforeach
++		else // kicker == kicked and the party leader, so disband the party
++			// Remove PARTY_PROP from kicked's character
++			EraseObjProperty(kicked, PARTY_PROP);
++
++			// Only send the packet and message if kicked is online (not being called from logoff)
++			if ( !params[3] )
++				packet.SendPacket(kicked);
++				SendSysMessage(kicked, &quot;You have disbanded your party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++			endif
++
++			// For everyone else in the party who's online, send the same packet and a message
++			for i := 2 to ( party.Size() )
++				char := SystemFindObjectBySerial(party[i]);
++
++				if ( char )
++					packet.SendPacket(char);
++					EraseObjProperty(char, PARTY_PROP);
++					SendSysMessage(char, &quot;Your leader has disbanded the party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++				endif
++				sleepms(2);
++			endfor
++		endif
++
++	// Kicker is removing someone other than themselves so make sure kicker is the leader
++	// Skip if params[3] is true since script is being called by logoff
++	elseif ( party[1] == kicker.serial &amp;&amp; !params[3] )
++		// Send kicked the packet and message
++		packet.SendPacket(kicked);
++
++		// Build newparty array and set remaining party member's serials at the end of packet
++		for i := 1 to ( party.Size() )
++			if ( party[i] != kicked.serial )
++				newparty.Append(party[i]);
++				packet.SetInt32(OFFSET_PARTY_REMOVE_PLAYERIDS + ((i - 1) * 4), party[i]);
++			endif
++			sleepms(2);
++		endfor
++
++		// Change remining party size and length
++		packet.SetInt8(OFFSET_PARTY_REMOVE_NEWSIZE, newparty.Size());
++		packet.Set16(OFFSET_PARTY_MSGLEN, packet.GetSize());
++
++		// Notify every other member in the party and send the packet, unless it's a small party
++		foreach member in ( newparty )
++			char := SystemFindObjectBySerial(member);
++
++			if ( char )
++				if ( party.Size() &gt; 2 )
++					packet.SendPacket(char);
++
++					SetObjProperty(char, PARTY_PROP, newparty);
++					SendSysMessage(char, kicked.name+&quot; was kicked from the party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++				else
++					// Set the kicked players id to char's id, the party size to 0 and resize packet to disband
++					packet.SetInt32(OFFSET_PARTY_REMOVE_PLAYERID, char.serial);
++					packet.SetInt8(OFFSET_PARTY_REMOVE_NEWSIZE, 0);
++					packet.SetSize(11);
++					packet.SendPacket(char);
++
++					EraseObjProperty(char, PARTY_PROP);
++					SendSysMessage(char, kicked.name+&quot; was kicked from the party. Party disbanded.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++				endif
++			endif
++			sleepms(2);
++		endforeach
++
++		EraseObjProperty(kicked, PARTY_PROP);
++		SendSysMessage(kicked, &quot;You have been kicked out of the party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++	else
++		SendSysMessage(kicker, &quot;Only the creator can kick others from the party.&quot;, PARTY_FONT, PARTY_FONT_COLOR);
++	endif
++
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/PartySystem/include/config.inc
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/include/config.inc	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/include/config.inc	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,26 @@
++// Turn on/off debug messages. 1=yes/0=no
++const DEBUG := 0;
++
++// This turns Set_Critical() on or off for the handle scripts.
++// Normally packet hook scripts are run-to-completion, having Set_Critical( 1 ), will emulate this.
++const DEBUG_SET_CRITICAL := 1;
++
++// Object property names. These can be changed.
++// Note the leading &quot;#&quot; denotes a property that is not saved during server shutdown
++const PARTY_JOINING_PROP := &quot;#JoiningParty&quot;;
++const PARTY_PROP := &quot;#Party&quot;;
++const PARTY_LOOT_PROP	:= &quot;#PartyLoot&quot;;
++
++// This can be NO MORE than 10, because of the client gump
++const PARTY_MAX_SIZE := 10;
++
++// The number of seconds which a user has to accept
++const PARTY_INVITE_TIMEOUT := 10;
++
++// Characters must be at least this close to other party members to get stats update packets.
++// My client grey's out the other party member's status window after moving 19 tiles away.
++const PARTY_STATUS_UPDATE_DISTANCE := 19;
++
++// This font and color are used for the SendSysMessage()s to the clients.
++const PARTY_FONT := 3; // normal
++const PARTY_FONT_COLOR := 68; // green
+
+Added: trunk/096/pkg/packetHooks/PartySystem/include/packetInfo.inc
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/include/packetInfo.inc	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/include/packetInfo.inc	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,9 @@
++// None of these need to be changed unless the UO client is reprogrammed to use different packet structure...
++// So these will never need to be changed.
++
++const MSGTYPE_PARTY := 0xBF;
++const SUBCMD_PARTY := 6;
++
++const OFFSET_PARTY_MSGLEN := 1;
++const OFFSET_PARTY_SUBCMD := 3;
++const OFFSET_PARTY_SUBSUBCMD := 5;
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/PartySystem/logoff.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/logoff.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/logoff.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,19 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:partySystem:config&quot;;
++include &quot;:partySystem:packetInfo&quot;;
++
++program Logoff(who)
++	var party := GetObjProperty(who, PARTY_PROP);
++
++	if ( party )
++		Start_Script(&quot;handleRemove&quot;, array{who, who.serial, party});
++	endif
++
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/PartySystem/logon.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/logon.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/logon.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,14 @@
++/* $Id$
++ *
++ */
++
++use uo;
++
++include &quot;:partySystem:config&quot;;
++
++program Logon(who)
++	EraseObjProperty(who, PARTY_JOINING_PROP); 
++	EraseObjProperty(who, PARTY_PROP);
++	
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/packetHooks/PartySystem/pkg.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/pkg.cfg	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/pkg.cfg	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,18 @@
++# $Id$
++#
++
++Enabled		1
++Name		partysystem
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		tekproxy
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">tekproxy at gmail.com</A>
++
++Maintainer	tekproxy
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">tekproxy at gmail.com</A>
++
++#Conflicts	none
++#Requires	none
+
+Added: trunk/096/pkg/packetHooks/PartySystem/readme.txt
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/readme.txt	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/readme.txt	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,68 @@
++[ - What is this? -]
++A party system hook for use until the core supports it. Every effort has been made to make it as OSI-like as possible. It uses the client's party scroll gump, handles chat and private messaging and sends stats updates to other party members allowing you to see their stamina and mana.
++
++
++[ - Installation - ]
++In the 096 distro the BF packet is hooked by the BFCommanad package, so if you're not using the 096 distro, you must add this to uopacket.cfg:
++Packet 0xBF
++{
++  Length variable
++  SubCommandOffset 4
++  SubCommandLength 1
++}
++
++If you already have code that checks if looting another player's corpse is legal, then add the code that checks party information from corpseOnRemove to yours. If you don't have any code to check the legality, and you want it, find where the corpse item is defined and add this line somewhere in the definition of the item:
++OnRemoveScript :partySystem:corpseOnRemove
++
++This will call corpseOnRemove when an item is removed from the corpse. Basically you can loot a corpse if it's:
++your own corpse
++your agressor's corpse (someone who attacks you and you kill them)
++a criminal/murderer's
++fellow/rival guild member 
++
++If you become a criminal, the flag is set for 2 minutes or whatever default time is defined in repsys.cfg.
++
++
++NOTE: If you are NOT using the 096 distro, and you are still using the old attributes.inc file, you'll have to update a few functions in doPartySystem.src before it will compile. First, change the attributes include line to this:
++include &quot;include/attributes&quot;; // for getting player stats
++
++And then change these lines:
++        // Set the length and everything in the packet past name
++        packet.SetInt16( OFFSET_SEND_STATUS_LENGTH, 66 );
++        packet.SetInt16( OFFSET_SEND_STATUS_CURRENT_HEALTH, GetHp( char ) );
++        packet.SetInt16( OFFSET_SEND_STATUS_MAX_HEALTH, GetMaxHp( char ) );
++        packet.SetInt8( OFFSET_SEND_STATUS_NAME_CHANGE, 0 );
++        packet.SetInt8( OFFSET_SEND_STATUS_VALID, 1 );
++        packet.SetInt8( OFFSET_SEND_STATUS_SEX, char.gender );
++        packet.SetInt16( OFFSET_SEND_STATUS_STR, GetStrength( char ) );
++        packet.SetInt16( OFFSET_SEND_STATUS_DEX, GetDexterity( char ) );
++        packet.SetInt16( OFFSET_SEND_STATUS_INT, GetIntelligence( char ) );
++        packet.SetInt16( OFFSET_SEND_STATUS_CURRENT_STAMINA, GetStamina( char ) );
++        packet.SetInt16( OFFSET_SEND_STATUS_MAX_STAMINA, GetMaxStamina( char ) );
++        packet.SetInt16( OFFSET_SEND_STATUS_CURRENT_MANA, GetMana( char ) );
++        packet.SetInt16( OFFSET_SEND_STATUS_MAX_MANA, GetMaxMana( char ) );
++
++
++You also might want to take a look around config.inc and change settings to suit your needs.
++
++
++[ - Considerations - ]
++A big thank you to Max Scherr for his help on the forums (and help with German). Also, thanks to Kinetix, who doesn't know he helped me by posting code on Folko's old forums. And a massive thanks to the POL devs and various other POL supporters who keep these things alive!
++Thanks also to Aeros for testing and posting his problems on the forums
++
++
++[ - Possible bugs - ]
++Party chat and private party messages have no font or color because they're sent as unicode and I can't find a list of fonts or colors for unicode
++The onCorpseRemove script is somewhat untested
++
++
++[ - TODO - ]
++Documentation for all files and functions (right now everything is mostly in the code)
++In corpseOnRemove.src I couldn't find a way to determine agressors. I tried reportalbles but it always came up blank...
++
++
++[ - Contact - ]
++Please send me any comments, questions or BUGS.
++
++E-mail: <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">tekproxy at gmail.com</A>
++AIM: tekproxy
+\ No newline at end of file
+
+Added: trunk/096/pkg/packetHooks/PartySystem/reconnect.src
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/reconnect.src	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/reconnect.src	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,44 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++use polsys;
++
++include &quot;:partySystem:config&quot;;
++include &quot;:partySystem:packetInfo&quot;;
++
++const OFFSET_PARTY_ADD_SIZE := 6;
++const OFFSET_PARTY_ADD_PLAYERIDS := 7;
++
++program Reconnect(who)
++	var party := GetObjProperty(who, PARTY_PROP);
++
++	if ( TypeOf(party) == &quot;Array&quot; )
++		ReconnectParty(who, party);
++	else
++		EraseObjProperty(who, PARTY_PROP);
++	endif
++
++	return 1;
++endprogram
++
++function ReconnectParty(who, party)
++	// Create and build the packet
++	var packet := CreatePacket(MSGTYPE_PARTY, MSGLEN_VARIABLE);
++
++	packet.SetInt16(OFFSET_PARTY_SUBCMD, 6); // Set subcmd to Party
++	packet.SetInt8(OFFSET_PARTY_SUBSUBCMD, 1); // Set subsubcmd to Addd
++	packet.SetInt8(OFFSET_PARTY_ADD_SIZE, party.size()); // Set party size
++
++	// Fill in the party member serials at the end of the packet
++	for i := 1 to ( party.Size() )
++		packet.SetInt32(OFFSET_PARTY_ADD_PLAYERIDS + ((i - 1) * 4), party[i]);
++		sleepms(2);
++	endfor
++
++	packet.SendPacket(who);
++
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/packetHooks/PartySystem/uopacket.cfg
+===================================================================
+--- trunk/096/pkg/packetHooks/PartySystem/uopacket.cfg	2006-05-13 22:39:27 UTC (rev 1402)
++++ trunk/096/pkg/packetHooks/PartySystem/uopacket.cfg	2006-05-13 23:38:57 UTC (rev 1403)
+@@ -0,0 +1,23 @@
++Packet 0xA2 // Mana update
++{
++  Length 9
++  SendFunction doPlayerStatus:handleUpdateStat
++}
++
++Packet 0xA3 // Stamina update
++{
++  Length 9
++  SendFunction doPlayerStatus:handleUpdateStat
++}
++
++Packet 0x11 // Send player status
++{
++  Length variable
++  SendFunction doPlayerStatus:handleSendStatus
++}
++
++SubPacket 0xBF 
++{
++  SubCommandID 0x6 // Party scroll commands
++  ReceiveFunction doPartySystem:handlePartyCommand
++}
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001371.html">[Poldistro-svn] r1402 - trunk/096/scripts
+</A></li>
+	<LI>Next message: <A HREF="001373.html">[Poldistro-svn] r1404 - in trunk/096: pkg/systems pkg/systems/help pkg/systems/help/commands pkg/systems/help/commands/gm pkg/systems/help/config pkg/systems/help/pageRequest scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1372">[ date ]</a>
+              <a href="thread.html#1372">[ thread ]</a>
+              <a href="subject.html#1372">[ subject ]</a>
+              <a href="author.html#1372">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

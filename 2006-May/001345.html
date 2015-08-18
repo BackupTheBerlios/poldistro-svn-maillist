@@ -1,0 +1,707 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1376 - in trunk/096/pkg/items/moongates: . config include systemMoonGate
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1376%20-%20in%20trunk/096/pkg/items/moongates%3A%20.%20config%20include%20systemMoonGate&In-Reply-To=%3C200605130244.k4D2ijp2012374%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001344.html">
+   <LINK REL="Next"  HREF="001346.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1376 - in trunk/096/pkg/items/moongates: . config include systemMoonGate</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1376%20-%20in%20trunk/096/pkg/items/moongates%3A%20.%20config%20include%20systemMoonGate&In-Reply-To=%3C200605130244.k4D2ijp2012374%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1376 - in trunk/096/pkg/items/moongates: . config include systemMoonGate">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 04:44:45 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001344.html">[Poldistro-svn] r1375 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+        <LI>Next message: <A HREF="001346.html">[Poldistro-svn] r1377 - in trunk/096/pkg/items/moongates: include systemMoonGate
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1345">[ date ]</a>
+              <a href="thread.html#1345">[ thread ]</a>
+              <a href="subject.html#1345">[ subject ]</a>
+              <a href="author.html#1345">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 04:44:32 +0200 (Sat, 13 May 2006)
+New Revision: 1376
+
+Added:
+   trunk/096/pkg/items/moongates/config/icp.cfg
+   trunk/096/pkg/items/moongates/include/
+   trunk/096/pkg/items/moongates/include/moongate.inc
+   trunk/096/pkg/items/moongates/include/report.inc
+   trunk/096/pkg/items/moongates/start.src
+   trunk/096/pkg/items/moongates/systemMoonGate/method.src
+Removed:
+   trunk/096/pkg/items/moongates/config/autoload.cfg
+Modified:
+   trunk/096/pkg/items/moongates/config/moongate.cfg
+   trunk/096/pkg/items/moongates/itemdesc.cfg
+   trunk/096/pkg/items/moongates/pkg.cfg
+   trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src
+   trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src
+Log:
+Just uploading the progress so far on the new moongates package.
+
+Deleted: trunk/096/pkg/items/moongates/config/autoload.cfg
+===================================================================
+--- trunk/096/pkg/items/moongates/config/autoload.cfg	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/config/autoload.cfg	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -1,9 +0,0 @@
+-# $Id: autoload.cfg 938 2005-11-07 06:22:45Z muaddiblsd $
+-
+-Autoload moongateInit
+-{
+-	Script      systemMoonGate/moongateInit
+-	Resistent   1
+-	Name        Town Moongate Initializer
+-	Priority    0
+-}
+
+Added: trunk/096/pkg/items/moongates/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/moongates/config/icp.cfg	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/config/icp.cfg	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -0,0 +1,20 @@
++# $Id$
++#
++#
++ICP Register
++{
++	Name		Moongates
++	Version		1.0
++	Description	Manages the setup of the system moongates and other moongate items.
++
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	#Script		cmdlevel	path
++	Script		4	:moongates:systemMoonGate/moongateInit
++
++	#TextCmd	cmdlevel	path
++}
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/moongates/config/moongate.cfg
+===================================================================
+--- trunk/096/pkg/items/moongates/config/moongate.cfg	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/config/moongate.cfg	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -5,46 +5,71 @@
+ # Moongates Setup File:
+ #
+ # Purpose:
+-# Each entry in this file contains
+-# three element types. Realm, Active,
+-# and Town. The Realm element is the
+-# string name for the realm it is for.
+-# Active, is the setting that will
+-# decide if you want town gates to
+-# include this realm. Town elements
+-# can be as many as you need. Although
+-# Don't get too carried away. The
+-# layout for them are as follows:
+-# X Y Z TownName. The TownName part
+-# of the string is the name as it
+-# would appear in your gump for the
+-# moongates.
++# Each entry in this file contains two entry types. 
++# Active, and Town. 
+ #
++# The Realm element is the string name for the realm it is for.
++#
++# Active, is the setting that will decide if you want town gates to include this realm. 
++#
++# Town lines can be as many as you need. Although don't get too carried away. 
++# 
++# The layout for them are as follows: Town TownName X Y Z
++#
++# The TownName part of the string is the name as it would appear in your gump for the moongates.
++#
++# Setting RealmName
++# {
++# 	Realm		RealmName
++#	Active		0/1
++#
++#	Town		TownName X Y Z
++#	Town		TownName X Y Z
++# }
++#
+ ###############################
++
+ Setting britannia
+ {
+-	Realm		britannia
++	Faction		Trammel
+ 	Active		1
+-	Town		4467 1283 5 Moonglow
+-	Town		1336 1997 5 Britain
+-	Town		1499 3771 5 Jhelom
+-	Town		771 753 5 Yew
+-	Town		2701 693 5 Minoc
+-	Town		1828 2948 -20 Trinsic
+-	Town		643 2067 5 Skara
+-	Town		3564 2140 34 Magincia
++	
++	Town		Moonglow	4467 1283 5
++	Town		Britain		1336 1997 5
++	Town		Jhelom		1499 3771 5
++	Town		Yew		771 753 5
++	Town		Minoc		2701 693 5
++	Town		Trinsic		1828 2948 -20
++	Town		Skara_Brae	643 2067 5
++	Town		New_Magincia	3564 2140 34
+ }
+ 
+ Setting britannia_alt
+ {
+-	Realm		britannia_alt
++	Faction		Feluccia
+ 	Active		1
+-	Town		4467 1283 5 Moonglow
+-	Town		1336 1997 5 Britain
+-	Town		1499 3771 5 Jhelom
+-	Town		771 753 5 Yew
+-	Town		2701 693 5 Minoc
+-	Town		1828 2948 -20 Trinsic
+-	Town		643 2067 5 Skara
+-	Town		3564 2140 34 Magincia
+-}
+\ No newline at end of file
++	
++	Town		Moonglow	4467 1283 5
++	Town		Britain		1336 1997 5
++	Town		Jhelom		1499 3771 5
++	Town		Yew		771 753 5
++	Town		Minoc		2701 693 5
++	Town		Trinsic		1828 2948 -20
++	Town		Skara_Brae	643 2067 5
++	Town		New_Magincia	3564 2140 34
++}
++
++Setting Ilshenar
++{
++	Faction		Ilshenar
++}
++
++Setting Malas
++{
++	Faction		Malas
++}
++
++Setting Tokuno
++{
++	Faction		Tokuno
++}
+
+Added: trunk/096/pkg/items/moongates/include/moongate.inc
+===================================================================
+--- trunk/096/pkg/items/moongates/include/moongate.inc	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/include/moongate.inc	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -0,0 +1,54 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:datafile:datafile&quot;;
++
++// Constats for the moongate gump.
++const MG_CANCEL_BTN	:= 0x0;
++const MG_OKAY_BTN	:= 0x1;
++const MG_LOCATION_START := 0xA00;
++
++
++/*
++ * MG_GetRealmDataFile()
++ * 
++ * Purpose
++ * Quickly pull up the datafile.
++ *
++ * Parameters
++ *
++ * Return Value
++ * Data file reference
++ *
++ */
++function MG_GetDataFile()
++	var data_file := DFOpenDataFile(&quot;:moongates:gateinfo&quot;, DF_CREATE);
++	return data_file;
++endfunction
++
++/*
++ * MG_GetRealmDataElem(elem_name)
++ * 
++ * Purpose
++ * Quickly retrieve a data elem.
++ *
++ * Parameters
++ * elem_name:	Name of the elem to retrieve
++ *
++ * Return Value
++ * A datafile elem reference.
++ *
++ */
++function MG_GetDataElem(elem_name)
++	var data_file := MG_GetDataFile();
++	var realm_elem := DFFindElement(data_file, elem_name, DF_CREATE);
++
++	return realm_elem;
++endfunction
++
+
+Added: trunk/096/pkg/items/moongates/include/report.inc
+===================================================================
+--- trunk/096/pkg/items/moongates/include/report.inc	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/include/report.inc	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -0,0 +1,30 @@
++use uo;
++use os;
++use file;
++
++CONST MG_REPORT_DISABLE		:= 0x0;
++CONST MG_REPORT_CONSOLE		:= 0x1;
++CONST MG_REPORT_SYSLOG		:= 0x2;
++CONST MG_REPORT_BROADCAST	:= 0x4;
++CONST MG_REPORT_ALL		:= 0x7;
++
++function MG_ReportText(report_text:=&quot;?&quot;, flags:=MG_REPORT_DISABLE)
++	if ( !flags )
++		return 0;
++	endif
++	
++	if ( flags &amp; MG_REPORT_CONSOLE )
++		Print(&quot;&quot;+report_text);
++	endif
++	
++	if ( flags &amp; MG_REPORT_SYSLOG )
++		var script_name := GetProcess(GetPid()).name;
++		LogToFile(&quot;::log/moonGates.log&quot;, &quot;[&quot;+script_name+&quot;]: &quot;+report_text, LOG_DATETIME);
++	endif
++	
++	if ( flags &amp; MG_REPORT_BROADCAST )
++		Broadcast(&quot;&quot;+report_text);
++	endif
++	
++	return 1;
++endfunction
+
+Modified: trunk/096/pkg/items/moongates/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/moongates/itemdesc.cfg	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/itemdesc.cfg	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -21,6 +21,7 @@
+ 	SaveOnExit		0
+ 
+ 	WalkOnScript		systemMoonGate/walkOn
++	MethodScript		systemMoonGate/method
+ }
+ 
+ Item 0xF6C
+@@ -56,7 +57,7 @@
+ 	moonGate/walkOn
+ }
+ 
+-Item 0x1fe7
++Item 0x1FE7
+ {
+ 	Name			WhiteMoonGate
+ 	Desc			white moon gate
+
+Modified: trunk/096/pkg/items/moongates/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/moongates/pkg.cfg	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/pkg.cfg	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -3,6 +3,16 @@
+ #
+ Enabled		1
+ Name		moongates
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
+ Maintainer	Distro Team
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+-Version		1.0
++
++#Requires	none
++#Conflicts	none
+
+Added: trunk/096/pkg/items/moongates/start.src
+===================================================================
+--- trunk/096/pkg/items/moongates/start.src	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/start.src	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -0,0 +1,12 @@
++/* $Id$
++ *
++ */
++
++use os;
++
++var script := start_script(&quot;systemMoonGate/moongateInit&quot;);
++if ( script.errortext )
++	SysLog(&quot;Error starting system moongate setup -&gt;&quot;+script.errortext);
++else
++	Print(&quot;Starting system moongate setup... OK.&quot;);
++endif
+
+Added: trunk/096/pkg/items/moongates/systemMoonGate/method.src
+===================================================================
+--- trunk/096/pkg/items/moongates/systemMoonGate/method.src	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/systemMoonGate/method.src	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -0,0 +1,36 @@
++/* $Id$
++ *
++ */
++
++use uo;
++
++include &quot;:moongates:moongate&quot;;
++
++program Install()
++	return 1;
++endprogram
++
++exported function IsSystemMoonGate(moongate)
++	moongate := moongate;
++	return 1;
++endfunction
++
++exported function SaveGump(moongate, gump)
++	var data_elem := MG_GetDataElem(Hex(moongate.serial));
++	return data_elem.SetProp(&quot;Gump&quot;, gump);
++endfunction
++
++exported function GetGump(moongate)
++	var data_elem := MG_GetDataElem(Hex(moongate.serial));
++	return data_elem.GetProp(&quot;Gump&quot;);
++endfunction
++
++exported function SetTownName(moongate, name)
++	var data_elem := MG_GetDataElem(Hex(moongate.serial));
++	return data_elem.SetProp(&quot;TownName&quot;, name);
++endfunction
++
++exported function GetTownName(moongate)
++	var data_elem := MG_GetDataElem(Hex(moongate.serial));
++	return data_elem.GetProp(&quot;TownName&quot;);
++endfunction
+
+Modified: trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src
+===================================================================
+--- trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -1,47 +1,90 @@
++/* $Id$
++ *
++ */
++
+ use uo;
+ use os;
++use polsys;
++use cfgfile;
+ 
+-include &quot;:logger:log&quot;;
++include &quot;:moongates:report&quot;;
++include &quot;:moongates:moongate&quot;;
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
+ 
+-var mgate_config := ReadConfigFile(&quot;:moongates:config/moongate&quot;);
+-
+-program CreateMoongates()
+-	var facet_list := GetConfigStringKeys(mgate_config);
+-	if( facet_list.errortext )
+-        	Log(LOG_ERROR, &quot;Moongate Facet List Failed Config Read '&quot; + GetLogInfo(facet_list) + &quot;'&quot;);
++program CreateSystemMoonGates()
++	MG_ReportText(&quot;---=[ MOONGATE INIT SCRIPT HAS STARTED UP ]=---&quot;, MG_REPORT_SYSLOG);
++	var config := ReadConfigFile(&quot;:moongates:config/moongate&quot;);
++	if ( config.errortext )
++		MG_ReportText(&quot;ERROR: Could not open moongate.cfg - &quot;+config.errortext, MG_REPORT_SYSLOG);
+ 		return 0;
+ 	endif
+-  	syslog( &quot;Creating moongates.&quot; );
+-	foreach key_name in facet_list
+-		var key_elem := FindConfigElem(mgate_config, key_name);
+-		if( GetConfigInt(key_elem, &quot;Active&quot;) == 1 )
+-			var gate_realm := GetConfigString(key_elem, &quot;Realm&quot;);
+-			var gate_towns := GetConfigStringArray(key_elem, &quot;Town&quot;);
+-			foreach town_entry in gate_towns
+-				var gate := SplitWords(town_entry);
+-				RemoveOldGates(gate, gate_realm);
+-				CreateNewGates(gate, gate_realm);
++	
++	CleanupOldMoongates();
++	
++	var realm_names := Realms();
++	var gate_list := array{};
++	foreach realm_name in ( GetConfigStringKeys(config) )
++		var cfg_elem := config[realm_name];
++		if ( !realm_names.Exists(realm_name) )
++			MG_ReportText(&quot;ERROR: moongate.cfg elem '&quot;+realm_name+&quot;' is not a valid realm.&quot;, MG_REPORT_SYSLOG);
++			continue; // Not a valid realm name.
++		elseif ( !cfg_elem.Active )
++			continue;
++		else
++			foreach entry in ( GetConfigStringDictionary(cfg_elem, &quot;Town&quot;) )
++				CreateMoongate(realm_name, _entry_iter, entry);
++				BuildGumpForGate(realm_name, _entry_iter, config);
++				sleepms(2);
+ 			endforeach
+ 		endif
++
++		sleepms(2);
+ 	endforeach
+ endprogram
+ 
++function CreateMoongate(byref realm_name, byref town_name, byref entry)
++	var coords := SplitWords(entry);
+ 
+-function RemoveOldGates(gate, gate_realm)
+-	foreach thing in ListItemsNearLocation(CInt(gate[1]), CInt(gate[2]), CInt(gate[3]), 0, gate_realm);
+-		if(thing.objtype != 0x887b)
+-			DestroyItem(thing);
++	var item := CreateItemAtLocation(CInt(coords[1]), CInt(coords[2]), CInt(coords[3]), &quot;systemmoongate&quot;, 1, realm_name);
++	if ( !item )
++		MG_ReportText(&quot;ERROR: Unable to create &quot;+town_name+&quot; (&quot;+entry+&quot;) - &quot;+item.errortext, MG_REPORT_SYSLOG);
++		return 0;
++	else
++		item.facing := 29;
++		item.movable := 0;
++		item.SetTownName(town_name);
++		return item;
++	endif
++endfunction
++
++function BuildGumpForGate(byref realm_name, byref town_name, byref cfg_file)
++	var config := ReadConfigFile(&quot;:moongates:config/moongate&quot;);
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 340, 330);
++	GFResizePic(gump, 15, 15, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 310, 300);
++
++	GFTextMid(gump, 20, 20, 310, 2100, &quot;Select a Destination&quot;);
++	GFAddButton(gump, 35, 250, 2128, 2129, GF_CLOSE_BTN, MG_OKAY_BTN);
++	GFAddButton(gump, 35, 280, 2119, 2120, GF_CLOSE_BTN, MG_CANCEL_BTN);
++
++	
++endfunction
++	
++function CleanupOldMoongates()
++	var data_file := MG_GetDataFile();
++	
++	foreach elem_name in ( DFGetElemNames(data_file) )
++		var serial := CInt(elem_name);
++		var item := SystemFindObjectBySerial(serial);
++		if ( !item )
++			continue;
++		elseif ( item.IsSystemMoongate() )
++			DestroyItem(item);
+ 		endif
++		data_file.DeleteElement(elem_name);
++		sleepms(2);
+ 	endforeach
++	
+ 	return 1;
+ endfunction
+-
+-
+-function CreateNewGates(gate, gate_realm)
+-	var moongate := CreateItemAtLocation(CInt(gate[1]), CInt(gate[2]), CInt(gate[3]), &quot;systemmoongate&quot;, 1, gate_realm);
+-	SetObjProperty(moongate, &quot;City&quot;, gate[4]);
+-	moongate.facing := 29;
+-	moongate.decayAt := 0;
+-	moongate.movable := 0;
+-	return 1;
+-endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src
+===================================================================
+--- trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src	2006-05-13 02:24:21 UTC (rev 1375)
++++ trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src	2006-05-13 02:44:32 UTC (rev 1376)
+@@ -1,83 +1,58 @@
++/* $Id$
++ *
++ */
++
+ use uo;
+ use os;
+-use cfgfile;
++use polsys;
+ 
+-include &quot;:gumps:include/old/old-gumps&quot;;
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
+ 
+-GFref.x := 50;
+-GFref.y := 50;
++unload_scripts(&quot;&quot;);
+ 
+-var townarray := {};
++program walkOnScript(mobile, tile)
++	var config := ReadConfigFile(&quot;:moongates:config/moongate&quot;);
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 340, 330);
++	GFResizePic(gump, 15, 15, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 310, 300);
++	
++	GFTextMid(gump, 20, 20, 310, 2100, &quot;Select a Destination&quot;);
++	GFAddButton(gump, 35, 250, 2128, 2129, GF_CLOSE_BTN);
++	GFAddButton(gump, 35, 280, 2119, 2120, GF_CLOSE_BTN);
++	
++	var y_pos := 50;
++	var page := 2;
++	foreach realm in ( Realms() )
++		var cfg_elem := config[_realm_iter];
++		GFAddButton(gump, 20, y_pos+3, 2117, 2118, GF_PAGE_BTN, page);
++		GFTextLine(gump, 40, y_pos, 2100, cfg_elem.Faction);
++		y_pos := y_pos+20;
++		page := page+2;
++	endforeach
++	
++	page := 2;
++	foreach realm in ( Realms() )
++		var cfg_elem := config[_realm_iter];
++		GFPage(gump, page);
++		BuildLocationList(gump, cfg_elem);
++		sleepms(2);
++		page := page+2;
++	endforeach
++	
++	var input := GFSendGump(mobile, gump);
+ 
+-program gumptest(who, item)
+-  var city := GetObjProperty(item, &quot;City&quot;);
+-  if(!city)
+-    return;
+-  endif
+-  var cfg := ReadConfigFile(&quot;:moongates:moongate&quot;);
+-  var lands := Cint(cfg[&quot;Facets&quot;].value);
+-  if(!lands)
+-    return;
+-  endif
+-  case(city)
+-    &quot;Moonglow&quot;: townarray := array(&quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Britain&quot;:  townarray := array(&quot;Moonglow&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Jhelom&quot;:   townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Yew&quot;:      townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Minoc&quot;:    townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Trinsic&quot;:  townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Skara&quot;:    townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Magincia&quot;);
+-    &quot;Magincia&quot;: townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;);
+-  endcase
+-  OldGFInitGump(0, 0);
+-  OldGFPage(0);
+-  OldGFResizePic(100, 100, BKGND_STONESLAB, 350, 300);
+-  OldGFTextLine(110, 110, 0, &quot;Pick your destination:&quot;);
+-  OldGFSetRadioGroup(1);
+-  OldGFRadioButton(300, 140, 210, 211, 1);
+-  OldGFRadioButton(300, 165, 210, 211, 0);
+-  OldGFRadioButton(300, 190, 210, 211, 0);
+-  OldGFRadioButton(300, 215, 210, 211, 0);
+-  OldGFRadioButton(300, 240, 210, 211, 0);
+-  OldGFRadioButton(300, 265, 210, 211, 0);
+-  OldGFRadioButton(300, 290, 210, 211, 0);
+-  OldGFTextLine(330, 140,   0, townarray[1]);
+-  OldGFTextLine(330, 165,   0, townarray[2]);
+-  OldGFTextLine(330, 190,   0, townarray[3]);
+-  OldGFTextLine(330, 215,   0, townarray[4]);
+-  OldGFTextLine(330, 240,   0, townarray[5]);
+-  OldGFTextLine(330, 265,   0, townarray[6]);
+-  OldGFTextLine(330, 290,   0, townarray[7]);
+-  var ok := OldGFButtonID(110, 315, 4005, 4007, 1);
+-  var cancel := OldGFButtonID(110, 340, 4005, 4007, 1);
+-  OldGFTextLine(145, 315,   0, &quot;OKAY&quot;);
+-  OldGFTextLine(145, 340,   0, &quot;CANCEL&quot;);
+-  var res := OldGFSendGump(who);
+-  if(res[cancel.keyid] || !res[ok.keyid])
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  else
+-    var holder;
+-    foreach thing in (res.keys)
+-      if((thing != 0) and (thing != 1025))
+-        holder := thing;
+-        break;
+-      endif
+-    endforeach
+-    if((who.x == item.x) and (who.y == item.y) and (who.z == item.z))
+-      case(townarray[Cint(holder - 2048)])
+-        &quot;Moonglow&quot;:   MoveCharacterToLocation(who, 4467, 1284,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Britain&quot;:    MoveCharacterToLocation(who, 1336, 1998,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Jhelom&quot;:     MoveCharacterToLocation(who, 1499, 3772,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Yew&quot;:        MoveCharacterToLocation(who,  771,  754,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Minoc&quot;:      MoveCharacterToLocation(who, 2701,  694,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Trinsic&quot;:    MoveCharacterToLocation(who, 1828, 2949, -20, MOVECHAR_FORCELOCATION);
+-        &quot;Skara Brae&quot;: MoveCharacterToLocation(who,  643, 2068,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Magincia&quot;:   MoveCharacterToLocation(who, 3564, 2141,  33, MOVECHAR_FORCELOCATION);
+-      endcase
+-    else
+-      SendSysMessage(who, &quot;Cancelled.&quot;);
+-      return;
+-    endif
+-  endif
+-endprogram
+\ No newline at end of file
++	return 1;
++endprogram
++
++function BuildLocationList(byref gump, byref cfg_elem)
++	var y_pos := 50;
++	foreach entry in ( GetConfigStringDictionary(cfg_elem, &quot;Town&quot;) )
++		GFRadioButton(gump, 150, y_pos, 210, 211, 0, 0);
++		GFTextLine(gump, 173, y_pos, 2100, _entry_iter);
++		y_pos := y_pos+20;
++		sleepms(2);
++	endforeach
++	
++	return 1;		
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001344.html">[Poldistro-svn] r1375 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+	<LI>Next message: <A HREF="001346.html">[Poldistro-svn] r1377 - in trunk/096/pkg/items/moongates: include systemMoonGate
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1345">[ date ]</a>
+              <a href="thread.html#1345">[ thread ]</a>
+              <a href="subject.html#1345">[ subject ]</a>
+              <a href="author.html#1345">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

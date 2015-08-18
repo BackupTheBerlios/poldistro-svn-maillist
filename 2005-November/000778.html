@@ -1,0 +1,616 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r804 - trunk/096/pkg/mobiles/npcutils
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r804%20-%20trunk/096/pkg/mobiles/npcutils&In-Reply-To=%3C200511012149.jA1LnQgN009408%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000777.html">
+   <LINK REL="Next"  HREF="000779.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r804 - trunk/096/pkg/mobiles/npcutils</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r804%20-%20trunk/096/pkg/mobiles/npcutils&In-Reply-To=%3C200511012149.jA1LnQgN009408%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r804 - trunk/096/pkg/mobiles/npcutils">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 22:49:26 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000777.html">[Poldistro-svn] r803 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000779.html">[Poldistro-svn] r805 - in trunk/096/pkg: items items/ministatues items/ministatues/config mobiles/brainAI mobiles/brainAI/include mobiles/oldAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#778">[ date ]</a>
+              <a href="thread.html#778">[ thread ]</a>
+              <a href="subject.html#778">[ subject ]</a>
+              <a href="author.html#778">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 22:49:25 +0100 (Tue, 01 Nov 2005)
+New Revision: 804
+
+Modified:
+   trunk/096/pkg/mobiles/npcutils/NPCKeeper.src
+Log:
+Attribute updates
+
+Modified: trunk/096/pkg/mobiles/npcutils/NPCKeeper.src
+===================================================================
+--- trunk/096/pkg/mobiles/npcutils/NPCKeeper.src	2005-11-01 21:38:06 UTC (rev 803)
++++ trunk/096/pkg/mobiles/npcutils/NPCKeeper.src	2005-11-01 21:49:25 UTC (rev 804)
+@@ -4,7 +4,7 @@
+ use os;
+ 
+ include &quot;include/startEqp&quot;;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ include &quot;:npcutils:vetement&quot;;
+ include &quot;:npcutils:names&quot;;
+ include &quot;include/client&quot;;
+@@ -13,270 +13,272 @@
+ var equipt;
+ 
+ program npckeep(who)
+-  SetObjProperty(who, &quot;AiSerial&quot;, cint(who.serial));
+-  var colors := pncfg[who.npctemplate].colors;
+-  if(colors)
+-    colors := SplitWords(colors);
+-    var clr := Cint(colors[RandomInt(Len(colors)) + 1]);
+-    who.color := clr;
+-    SetObjProperty(who, &quot;Color&quot;, clr);
+-  endif
+-  if(who.name[&quot;&lt;escortee&gt;&quot;])
+-    var ttitle := &quot;&quot;;
+-    case(randomint(20) + 1)
+-       0: ttitle := &quot; the townsperson&quot;;           equipt := &quot;peasant1&quot;;
+-       1: ttitle := &quot; the townsperson&quot;;           equipt := &quot;peasant1&quot;;
+-       2: ttitle := &quot; the townsperson&quot;;           equipt := &quot;peasant1&quot;;
+-       3: ttitle := &quot; the townsperson&quot;;           equipt := &quot;peasant1&quot;;
+-       4: ttitle := &quot; the townsperson&quot;;           equipt := &quot;peasant1&quot;;
+-       5: ttitle := &quot; the townsperson&quot;;           equipt := &quot;peasant1&quot;;
+-       6: ttitle := &quot; the townsperson&quot;;           equipt := &quot;peasant1&quot;;
+-       7: ttitle := &quot;&quot;;                           equipt := &quot;peasant1&quot;;
+-       8: ttitle := &quot;&quot;;                           equipt := &quot;peasant1&quot;;
+-       9: ttitle := &quot;&quot;;                           equipt := &quot;peasant1&quot;;
+-      10: ttitle := &quot;&quot;;                           equipt := &quot;peasant1&quot;;
+-      11: ttitle := &quot;&quot;;                           equipt := &quot;peasant1&quot;;
+-      12: ttitle := &quot;&quot;;                           equipt := &quot;peasant1&quot;;
+-      13: ttitle := &quot; the mage&quot;;                  equipt := &quot;Mage&quot;;
+-      14: ttitle := &quot; the mage&quot;;                  equipt := &quot;Mage&quot;;
+-      15: ttitle := &quot; the mage&quot;;                  equipt := &quot;Mage&quot;;
+-      16: ttitle := &quot; the seeker of adventure&quot;;   equipt := &quot;seeker&quot;;
+-      17: ttitle := &quot; the seeker of adventure&quot;;   equipt := &quot;seeker&quot;;
+-      18: ttitle := &quot; the seeker of adventure&quot;;   equipt := &quot;seeker&quot;;
+-      19: ttitle := &quot; the noble&quot;;                 equipt := &quot;peasant2&quot;;
+-      20: ttitle := &quot; the noble&quot;;                 equipt := &quot;peasant2&quot;;
+-    endcase
+-    pickdestination(who, equipt);
+-    case(randomint(2))
+-      0: who.graphic := 0x190;
+-         who.gender := 0;
+-         equipt := equipt + &quot;M&quot;;
+-      1: who.graphic := 0x191;
+-         who.gender := 1;
+-         equipt := equipt + &quot;F&quot;;
+-    endcase
+-    SetObjProperty(who, &quot;Graphic&quot;, cint(who.graphic));
+-    // Removed randName functions and replaced with the new npcInit.inc
+-    // functions from the brainAI for compatibility.
+-    NPC_SetupNameOldAI(who);
+-    SetName(who, who.name + ttitle);
+-    if(equipt)
+-      Habille(who, equipt);
+-      EraseObjProperty(who, &quot;Equipt&quot;);
+-      var lewtgroup := pncfg[who.npctemplate].lootgroup;
+-      if(lewtgroup)
+-        MakeLoot(who, cint(lewtgroup));
+-      endif
+-    endif
+-  elseif(who.name[&quot;&lt;employee&gt;&quot;])
+-    var cost := 0;
+-    var ttitle := &quot;&quot;;
+-    case(randomint(15) + 1)
+-       0: ttitle := &quot; the fighter&quot;;   equipt := &quot;Fighter1&quot;;   cost := 40;
+-       1: ttitle := &quot; the fighter&quot;;   equipt := &quot;Fighter1&quot;;   cost := 40;
+-       2: ttitle := &quot; the thief&quot;;     equipt := &quot;Thief&quot;;      cost := 50;
+-       3: ttitle := &quot; the thief&quot;;     equipt := &quot;Thief&quot;;      cost := 50;
+-       4: ttitle := &quot; the mage&quot;;      equipt := &quot;Mage&quot;;       cost := 70;
+-       5: ttitle := &quot; the mage&quot;;      equipt := &quot;Mage&quot;;       cost := 70;
+-       6: ttitle := &quot; the paladin&quot;;   equipt := &quot;Paladin&quot;;    cost := 80;
+-       7: ttitle := &quot; the paladin&quot;;   equipt := &quot;Paladin&quot;;    cost := 80;
+-       8: ttitle := &quot; the fighter&quot;;   equipt := &quot;Fighter2&quot;;   cost := 40;
+-       9: ttitle := &quot; the fighter&quot;;   equipt := &quot;Fighter2&quot;;   cost := 40;
+-      10: ttitle := &quot; the fighter&quot;;   equipt := &quot;Fighter3&quot;;   cost := 40;
+-      11: ttitle := &quot; the fighter&quot;;   equipt := &quot;Fighter3&quot;;   cost := 40;
+-      12: ttitle := &quot; the fighter&quot;;   equipt := &quot;Fighter4&quot;;   cost := 40;
+-      13: ttitle := &quot; the fighter&quot;;   equipt := &quot;Fighter4&quot;;   cost := 40;
+-      14: ttitle := &quot; the beggar&quot;;    equipt := &quot;Beggar&quot;;     cost := 30;
+-      15: ttitle := &quot; the beggar&quot;;    equipt := &quot;Beggar&quot;;     cost := 30;
+-    endcase
+-    SetObjProperty(who, &quot;MerchantType&quot;, equipt);
+-    SetObjProperty(who, &quot;HireCost&quot;, cint(cost));
+-    Adjustment(who, equipt);
+-    case(randomint(2))
+-      0: who.graphic := 0x190;
+-         who.gender := 0;
+-         equipt := equipt + &quot;M&quot;;
+-      1: who.graphic := 0x191;
+-         who.gender := 1;
+-         equipt := equipt + &quot;F&quot;;
+-    endcase
+-    SetObjProperty(who, &quot;Graphic&quot;, cint(who.graphic));
+-    // Removed randName functions and replaced with the new npcInit.inc
+-    // functions from the brainAI for compatibility.
+-    NPC_SetupNameOldAI(who);
+-    SetName(who, who.name + ttitle);
+-    pncfg := ReadConfigFile(&quot;:*:npcdesc&quot;);
+-    if(equipt)
+-      Habille(who, equipt);
+-      EraseObjProperty(who, &quot;Equipt&quot;);
+-      var lewtgroup := pncfg[who.npctemplate].lootgroup;
+-      if(lewtgroup)
+-        MakeLoot(who, cint(lewtgroup));
+-      endif
+-    endif
+-  else
+-    pncfg := ReadConfigFile(&quot;:*:npcdesc&quot;);
+-    equipt := GetObjProperty(who, &quot;Equipt&quot;);
+-    if(equipt)
+-      if(who.graphic == 0x190)
+-        case(randomint(2))
+-          0: who.graphic := 0x190;
+-             who.gender := 0;
+-             equipt := equipt + &quot;M&quot;;
+-          1: who.graphic := 0x191;
+-             who.gender := 1;
+-             equipt := equipt + &quot;F&quot;;
+-        endcase
+-      endif
+-      SetObjProperty(who, &quot;Graphic&quot;, cint(who.graphic));
+-      Habille(who, equipt);
+-      EraseObjProperty(who, &quot;Equipt&quot;);
+-      var lewtgroup := pncfg[who.npctemplate].lootgroup;
+-      if(lewtgroup)
+-        MakeLoot(who, cint(lewtgroup));
+-      endif
+-    endif
+-    if(who.name[&quot;&lt;random&gt;&quot;])
+-      // Removed randName functions and replaced with the new npcInit.inc
+-      // functions from the brainAI for compatibility.
+-      NPC_SetupNameOldAI(who);
+-      if(pncfg[who.npctemplate].title)
+-        var title := randomint(20);
+-        var ttitle := &quot;&quot;;
+-        case(title)
+-          0: ttitle := &quot;&quot;;
+-          1: ttitle := &quot; the townsperson&quot;;
+-          2: ttitle := &quot; the farmer&quot;;
+-          3: ttitle := &quot; the sailor&quot;;
+-          4: ttitle := &quot; the drunkard&quot;;
+-          5: ttitle := &quot; the wanderer&quot;;
+-          6: ttitle := &quot; the villager&quot;;
+-          7: ttitle := &quot; the gypsie&quot;;
+-          8: ttitle := &quot; the vagabond&quot;;
+-          9: ttitle := &quot; the laborer&quot;;
+-          default: ttitle := &quot;&quot;;
+-        endcase
+-        SetName(who, who.name + ttitle);
+-      endif
+-    elseif(who.name[&quot;&lt;balron&gt;&quot;])
+-      case(randomint(3) + 1)
+-        1: SetName(who, &quot;Lord of the Abyss&quot;);
+-        2: SetName(who, &quot;The Collector of Souls&quot;);
+-        3: SetName(who, &quot;The Slayer&quot;);
+-      endcase
+-    endif
+-  endif
+-  if(pncfg[who.npctemplate].ammotype)
+-    var ammotype := pncfg[who.npctemplate].ammotype;
+-    if(ammotype)
+-      var ammoamount := pncfg[who.npctemplate].ammoamount;
+-      if(!ammoamount)
+-        ammoamount := 30;
+-      endif
+-      var theammo := CreateItemInBackpack(who, ammotype, ammoamount);
+-      if(theammo.amount &gt; ammoamount)
+-        SubtractAmount(theammo, (theammo.amount - ammoamount));
+-      endif
+-    endif
+-  endif
++	SetObjProperty(who, &quot;AiSerial&quot;, cint(who.serial));
++	var colors := pncfg[who.npctemplate].colors;
++	if(colors)
++		colors := SplitWords(colors);
++		var clr := Cint(colors[RandomInt(Len(colors)) + 1]);
++		who.color := clr;
++		SetObjProperty(who, &quot;Color&quot;, clr);
++	endif
++	if(who.name[&quot;&lt;escortee&gt;&quot;])
++		var ttitle := &quot;&quot;;
++		case(randomint(20) + 1)
++			 0: ttitle := &quot; the townsperson&quot;;		equipt := &quot;peasant1&quot;;
++			 1: ttitle := &quot; the townsperson&quot;;		equipt := &quot;peasant1&quot;;
++			 2: ttitle := &quot; the townsperson&quot;;		equipt := &quot;peasant1&quot;;
++			 3: ttitle := &quot; the townsperson&quot;;		equipt := &quot;peasant1&quot;;
++			 4: ttitle := &quot; the townsperson&quot;;		equipt := &quot;peasant1&quot;;
++			 5: ttitle := &quot; the townsperson&quot;;		equipt := &quot;peasant1&quot;;
++			 6: ttitle := &quot; the townsperson&quot;;		equipt := &quot;peasant1&quot;;
++			 7: ttitle := &quot;&quot;;				equipt := &quot;peasant1&quot;;
++			 8: ttitle := &quot;&quot;;				equipt := &quot;peasant1&quot;;
++			 9: ttitle := &quot;&quot;;				equipt := &quot;peasant1&quot;;
++			10: ttitle := &quot;&quot;;				equipt := &quot;peasant1&quot;;
++			11: ttitle := &quot;&quot;;				equipt := &quot;peasant1&quot;;
++			12: ttitle := &quot;&quot;;				equipt := &quot;peasant1&quot;;
++			13: ttitle := &quot; the mage&quot;;			equipt := &quot;Mage&quot;;
++			14: ttitle := &quot; the mage&quot;;			equipt := &quot;Mage&quot;;
++			15: ttitle := &quot; the mage&quot;;			equipt := &quot;Mage&quot;;
++			16: ttitle := &quot; the seeker of adventure&quot;;	equipt := &quot;seeker&quot;;
++			17: ttitle := &quot; the seeker of adventure&quot;;	equipt := &quot;seeker&quot;;
++			18: ttitle := &quot; the seeker of adventure&quot;;	equipt := &quot;seeker&quot;;
++			19: ttitle := &quot; the noble&quot;;			equipt := &quot;peasant2&quot;;
++			20: ttitle := &quot; the noble&quot;;			equipt := &quot;peasant2&quot;;
++		endcase
++		pickdestination(who, equipt);
++		case(randomint(2))
++			0: who.graphic := 0x190;
++				 who.gender := 0;
++				 equipt := equipt + &quot;M&quot;;
++			1: who.graphic := 0x191;
++				 who.gender := 1;
++				 equipt := equipt + &quot;F&quot;;
++		endcase
++		SetObjProperty(who, &quot;Graphic&quot;, cint(who.graphic));
++		// Removed randName functions and replaced with the new npcInit.inc
++		// functions from the brainAI for compatibility.
++		NPC_SetupNameOldAI(who);
++		SetName(who, who.name + ttitle);
++		if(equipt)
++			Habille(who, equipt);
++			EraseObjProperty(who, &quot;Equipt&quot;);
++			var lewtgroup := pncfg[who.npctemplate].lootgroup;
++			if(lewtgroup)
++				MakeLoot(who, cint(lewtgroup));
++			endif
++		endif
++	elseif(who.name[&quot;&lt;employee&gt;&quot;])
++		var cost := 0;
++		var ttitle := &quot;&quot;;
++		case(randomint(15) + 1)
++			 0: ttitle := &quot; the fighter&quot;;	equipt := &quot;Fighter1&quot;;	cost := 40;
++			 1: ttitle := &quot; the fighter&quot;;	equipt := &quot;Fighter1&quot;;	cost := 40;
++			 2: ttitle := &quot; the thief&quot;;	equipt := &quot;Thief&quot;;	cost := 50;
++			 3: ttitle := &quot; the thief&quot;;	equipt := &quot;Thief&quot;;	cost := 50;
++			 4: ttitle := &quot; the mage&quot;;	equipt := &quot;Mage&quot;;	cost := 70;
++			 5: ttitle := &quot; the mage&quot;;	equipt := &quot;Mage&quot;;	cost := 70;
++			 6: ttitle := &quot; the paladin&quot;;	equipt := &quot;Paladin&quot;;	cost := 80;
++			 7: ttitle := &quot; the paladin&quot;;	equipt := &quot;Paladin&quot;;	cost := 80;
++			 8: ttitle := &quot; the fighter&quot;;	equipt := &quot;Fighter2&quot;;	cost := 40;
++			 9: ttitle := &quot; the fighter&quot;;	equipt := &quot;Fighter2&quot;;	cost := 40;
++			10: ttitle := &quot; the fighter&quot;;	equipt := &quot;Fighter3&quot;;	cost := 40;
++			11: ttitle := &quot; the fighter&quot;;	equipt := &quot;Fighter3&quot;;	cost := 40;
++			12: ttitle := &quot; the fighter&quot;;	equipt := &quot;Fighter4&quot;;	cost := 40;
++			13: ttitle := &quot; the fighter&quot;;	equipt := &quot;Fighter4&quot;;	cost := 40;
++			14: ttitle := &quot; the beggar&quot;;	equipt := &quot;Beggar&quot;;	cost := 30;
++			15: ttitle := &quot; the beggar&quot;;	equipt := &quot;Beggar&quot;;	cost := 30;
++		endcase
++		SetObjProperty(who, &quot;MerchantType&quot;, equipt);
++		SetObjProperty(who, &quot;HireCost&quot;, cint(cost));
++		Adjustment(who, equipt);
++		case(randomint(2))
++			0: who.graphic := 0x190;
++				 who.gender := 0;
++				 equipt := equipt + &quot;M&quot;;
++			1: who.graphic := 0x191;
++				 who.gender := 1;
++				 equipt := equipt + &quot;F&quot;;
++		endcase
++		SetObjProperty(who, &quot;Graphic&quot;, cint(who.graphic));
++		// Removed randName functions and replaced with the new npcInit.inc
++		// functions from the brainAI for compatibility.
++		NPC_SetupNameOldAI(who);
++		SetName(who, who.name + ttitle);
++		pncfg := ReadConfigFile(&quot;:*:npcdesc&quot;);
++		if(equipt)
++			Habille(who, equipt);
++			EraseObjProperty(who, &quot;Equipt&quot;);
++			var lewtgroup := pncfg[who.npctemplate].lootgroup;
++			if(lewtgroup)
++				MakeLoot(who, cint(lewtgroup));
++			endif
++		endif
++	else
++		pncfg := ReadConfigFile(&quot;:*:npcdesc&quot;);
++		equipt := GetObjProperty(who, &quot;Equipt&quot;);
++		if(equipt)
++			if(who.graphic == 0x190)
++				case(randomint(2))
++					0: who.graphic := 0x190;
++						who.gender := 0;
++						equipt := equipt + &quot;M&quot;;
++						break;
++					1: who.graphic := 0x191;
++						who.gender := 1;
++						equipt := equipt + &quot;F&quot;;
++						break;
++				endcase
++			endif
++			SetObjProperty(who, &quot;Graphic&quot;, cint(who.graphic));
++			Habille(who, equipt);
++			EraseObjProperty(who, &quot;Equipt&quot;);
++			var lewtgroup := pncfg[who.npctemplate].lootgroup;
++			if(lewtgroup)
++				MakeLoot(who, cint(lewtgroup));
++			endif
++		endif
++		if(who.name[&quot;&lt;random&gt;&quot;])
++			// Removed randName functions and replaced with the new npcInit.inc
++			// functions from the brainAI for compatibility.
++			NPC_SetupNameOldAI(who);
++			if(pncfg[who.npctemplate].title)
++				var title := randomint(20);
++				var ttitle := &quot;&quot;;
++				case(title)
++					0: ttitle := &quot;&quot;; break;
++					1: ttitle := &quot; the townsperson&quot;; break;
++					2: ttitle := &quot; the farmer&quot;; break;
++					3: ttitle := &quot; the sailor&quot;; break;
++					4: ttitle := &quot; the drunkard&quot;; break;
++					5: ttitle := &quot; the wanderer&quot;; break;
++					6: ttitle := &quot; the villager&quot;; break;
++					7: ttitle := &quot; the gypsie&quot;; break;
++					8: ttitle := &quot; the vagabond&quot;; break;
++					9: ttitle := &quot; the laborer&quot;; break;
++					default: ttitle := &quot;&quot;; break;
++				endcase
++				SetName(who, who.name + ttitle);
++			endif
++		elseif(who.name[&quot;&lt;balron&gt;&quot;])
++			case(randomint(3) + 1)
++				1: SetName(who, &quot;Lord of the Abyss&quot;);
++				2: SetName(who, &quot;The Collector of Souls&quot;);
++				3: SetName(who, &quot;The Slayer&quot;);
++			endcase
++		endif
++	endif
++	if(pncfg[who.npctemplate].ammotype)
++		var ammotype := pncfg[who.npctemplate].ammotype;
++		if(ammotype)
++			var ammoamount := pncfg[who.npctemplate].ammoamount;
++			if(!ammoamount)
++				ammoamount := 30;
++			endif
++			var theammo := CreateItemInBackpack(who, ammotype, ammoamount);
++			if(theammo.amount &gt; ammoamount)
++				SubtractAmount(theammo, (theammo.amount - ammoamount));
++			endif
++		endif
++	endif
+ //moved out so all templates can use this
+-      if(pncfg[who.npctemplate].colorrange)
+-        var parms := splitwords(pncfg[who.npctemplate].colorrange);
+-        who.color := randomint(Cint(parms[2]) - Cint(parms[1]))+Cint(parms[1]);
+-      endif
+-      if(pncfg[who.npctemplate].mount)
+-        var mymount := CreateItemAtLocation(1,1,0,0xf021,1, who.realm);
+-        var mountparms := splitwords(pncfg[who.npctemplate].mount);
+-        mymount.graphic := Cint(mountparms[1]);
+-        mymount.color := Cint(mountparms[2]);
+-        EquipItem(who, mymount);
+-      endif
+-  var colornum := 0;
+-  var sccfg := ReadConfigFile(&quot;:*:colors&quot;);
+-  var colorit := FindConfigElem(sccfg, &quot;speechcolor&quot;);
+-  var colorarray := GetConfigStringArray(colorit, &quot;color&quot;);
+-  colornum := RandomInt(len(colorarray)) + 1;
+-  if(colornum == 0)
+-    colornum := 1;
+-  endif
+-  who.speech_color := CInt(colorarray[colornum]);
++	if(pncfg[who.npctemplate].colorrange)
++		var parms := splitwords(pncfg[who.npctemplate].colorrange);
++		who.color := randomint(Cint(parms[2]) - Cint(parms[1]))+Cint(parms[1]);
++	endif
++	if(pncfg[who.npctemplate].mount)
++		var mymount := CreateItemAtLocation(1,1,0,0xf021,1, who.realm);
++		var mountparms := splitwords(pncfg[who.npctemplate].mount);
++		mymount.graphic := Cint(mountparms[1]);
++		mymount.color := Cint(mountparms[2]);
++		EquipItem(who, mymount);
++	endif
++	var colornum := 0;
++	var sccfg := ReadConfigFile(&quot;:*:colors&quot;);
++	var colorit := FindConfigElem(sccfg, &quot;speechcolor&quot;);
++	var colorarray := GetConfigStringArray(colorit, &quot;color&quot;);
++	colornum := RandomInt(len(colorarray)) + 1;
++	if(colornum == 0)
++		colornum := 1;
++	endif
++	who.speech_color := CInt(colorarray[colornum]);
+ endprogram
+-
++	
+ function Adjustment(who, type)
+-  if(type == &quot;Mage&quot;)
+-    SetBaseSkillBaseValue(who, SKILLID_MAGERY,          1000);
+-    SetBaseSkillBaseValue(who, SKILLID_EVALINT,         1000);
+-    SetBaseSkillBaseValue(who, SKILLID_MAGICRESISTANCE, 900);
+-    SetBaseSkillBaseValue(who, SKILLID_TACTICS,         700);
+-    SetBaseSkillBaseValue(who, SKILLID_WRESTLING,       700);
+-  elseif(type == &quot;Thief&quot;)
+-    SetBaseSkillBaseValue(who, SKILLID_FENCING,         1000);
+-    SetBaseSkillBaseValue(who, SKILLID_MAGICRESISTANCE, 60);
+-    SetBaseSkillBaseValue(who, SKILLID_TACTICS,         80);
+-    SetBaseSkillBaseValue(who, SKILLID_ANATOMY,         600);
+-  elseif(type == &quot;Paladin&quot;)
+-    SetBaseSkillBaseValue(who, SKILLID_MAGICRESISTANCE, 800);
+-    SetBaseSkillBaseValue(who, SKILLID_TACTICS,         1000);
+-    SetBaseSkillBaseValue(who, SKILLID_SWORDSMANSHIP,   1000);
+-    SetBaseSkillBaseValue(who, SKILLID_MACEFIGHTING,    1000);
+-    SetBaseSkillBaseValue(who, SKILLID_FENCING,         1000);
+-    SetBaseSkillBaseValue(who, SKILLID_WRESTLING,       900);
+-    SetBaseSkillBaseValue(who, SKILLID_ANATOMY,         1000);
+-    SetBaseStrength(who, 80);
+-  elseif((type == &quot;Fighter1&quot;) || (type == &quot;Fighter2&quot;) || (type == &quot;Fighter3&quot;) || (type == &quot;Fighter4&quot;))
+-    SetBaseSkillBaseValue(who, SKILLID_MAGICRESISTANCE, 600);
+-    SetBaseSkillBaseValue(who, SKILLID_TACTICS,         900);
+-    SetBaseSkillBaseValue(who, SKILLID_SWORDSMANSHIP,   900);
+-    SetBaseSkillBaseValue(who, SKILLID_MACEFIGHTING,    900);
+-    SetBaseSkillBaseValue(who, SKILLID_FENCING,         900);
+-    SetBaseSkillBaseValue(who, SKILLID_WRESTLING,       900);
+-    SetBaseSkillBaseValue(who, SKILLID_ANATOMY,         900);
+-  endif
++	if(type == &quot;Mage&quot;)
++		AP_SetTrueSkill(who, &quot;Magery&quot;, 100);
++		AP_SetTrueSkill(who, &quot;EvaluatingIntelligence&quot;, 100);
++		AP_SetTrueSkill(who, &quot;ResistingSpells&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Tactics&quot;, 70);
++		AP_SetTrueSkill(who, &quot;Wrestling&quot;, 70);
++	elseif(type == &quot;Thief&quot;)
++		AP_SetTrueSkill(who, &quot;Fencing&quot;, 100);
++		AP_SetTrueSkill(who, &quot;ResistingSpells&quot;, 60);
++		AP_SetTrueSkill(who, &quot;Tactics&quot;, 80);
++		AP_SetTrueSkill(who, &quot;Anatomy&quot;, 60);
++	elseif(type == &quot;Paladin&quot;)
++		AP_SetTrueSkill(who, &quot;ResistingSpells&quot;, 80);
++		AP_SetTrueSkill(who, &quot;Tactics&quot;, 100);
++		AP_SetTrueSkill(who, &quot;Swordsmanship&quot;, 100);
++		AP_SetTrueSkill(who, &quot;MaceFighting&quot;, 100);
++		AP_SetTrueSkill(who, &quot;Fencing&quot;, 100);
++		AP_SetTrueSkill(who, &quot;Wrestling&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Anatomy&quot;, 100);
++		AP_SetTrueStat(who, &quot;Strength&quot;, 80);
++	elseif((type == &quot;Fighter1&quot;) || (type == &quot;Fighter2&quot;) || (type == &quot;Fighter3&quot;) || (type == &quot;Fighter4&quot;))
++		AP_SetTrueSkill(who, &quot;ResistingSpells&quot;, 60);
++		AP_SetTrueSkill(who, &quot;Tactics&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Swordsmanship&quot;, 90);
++		AP_SetTrueSkill(who, &quot;MaceFighting&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Fencing&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Wrestling&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Anatomy&quot;, 90);
++	endif
+ endfunction
+ 
+ 
+ function pickdestination(me, type)
+-  SetObjProperty(me, &quot;Type&quot;, type);
+-  var destination, coords;
+-  if(type == &quot;seeker&quot;)
+-    destination := &quot;a dungeon&quot;;
+-    SetObjProperty(me, &quot;Coords&quot;, &quot;5120 0 6143 2303&quot;);
+-    SetObjProperty(me, &quot;Dest&quot;, destination);
+-  elseif(type == &quot;Mage&quot;)
+-    case(randomint(12) + 1)
+-       1: coords := &quot;470 805 710 1020&quot;;    destination := &quot;the city of Yew&quot;;
+-       2: coords := &quot;1285 1512 1700 1785&quot;; destination := &quot;the city of Brittain&quot;;
+-       3: coords := &quot;2815 605 3050 1005&quot;;  destination := &quot;the city of Vesper&quot;;
+-       4: coords := &quot;1790 2635 2090 2900&quot;; destination := &quot;the city of Trinsic&quot;;
+-       5: coords := &quot;540 2110 685 2290&quot;;   destination := &quot;the city of Skara Brae&quot;;
+-       6: coords := &quot;2865 3335 3070 3520&quot;; destination := &quot;the city of Serpent's Hold&quot;;
+-       7: coords := &quot;3590 2460 3704 2695&quot;; destination := &quot;the city of Ocllo&quot;;
+-       8: coords := &quot;4375 1020 4498 1185&quot;; destination := &quot;the city of Moonglow&quot;;
+-       9: coords := &quot;2400 370 2545 590&quot;;   destination := &quot;the city of Minoc&quot;;
+-      10: coords := &quot;3645 2050 3785 2300&quot;; destination := &quot;the city of Magincia&quot;;
+-      11: coords := &quot;1300 1665 1515 3925&quot;; destination := &quot;the city of Jhelom&quot;;
+-      12: coords := &quot;5120 0 5375 255&quot;;     destination := &quot;the city of Wind&quot;;
+-    endcase
+-    SetObjProperty(me, &quot;Coords&quot;, coords);
+-    SetObjProperty(me, &quot;Dest&quot;, destination);
+-  else
+-    case(randomint(14) + 1)
+-       1: coords :=  &quot;470 805 710 1020&quot;;   destination := &quot;the city of Yew&quot;;
+-       2: coords := &quot;1285 1512 1700 1785&quot;; destination := &quot;the city of Brittain&quot;;
+-       3: coords := &quot;2815 605 3050 1005&quot;;  destination := &quot;the city of Vesper&quot;;
+-       4: coords := &quot;1790 2635 2090 2900&quot;; destination := &quot;the city of Trinsic&quot;;
+-       5: coords := &quot;540 2110 685 2290&quot;;   destination := &quot;the city of Skara Brae&quot;;
+-       6: coords := &quot;2865 3335 3070 3520&quot;; destination := &quot;the city of Serpent's Hold&quot;;
+-       7: coords := &quot;3590 2460 3704 2695&quot;; destination := &quot;the city of Ocllo&quot;;
+-       8: coords := &quot;3635 1165 3815 1410&quot;; destination := &quot;the city of Nujel'm&quot;;
+-       9: coords := &quot;4375 1020 4498 1185&quot;; destination := &quot;the city of Moonglow&quot;;
+-      10: coords := &quot;2400 370 2545 590&quot;;   destination := &quot;the city of Minoc&quot;;
+-      11: coords := &quot;3645 2050 3785 2300&quot;; destination := &quot;the city of Magincia&quot;;
+-      12: coords := &quot;1300 1665 1515 3925&quot;; destination := &quot;the city of Jhelom&quot;;
+-      13: coords := &quot;2205 1110 2280 1245&quot;; destination := &quot;the city of Cove&quot;;
+-      14: coords := &quot;2650 2070 2765 2265&quot;; destination := &quot;the city of Buccaneer's Den&quot;;
+-    endcase
+-    SetObjProperty(me, &quot;Coords&quot;, coords);
+-    SetObjProperty(me, &quot;Dest&quot;, destination);
+-  endif
++	SetObjProperty(me, &quot;Type&quot;, type);
++	var destination, coords;
++	if(type == &quot;seeker&quot;)
++		destination := &quot;a dungeon&quot;;
++		SetObjProperty(me, &quot;Coords&quot;, &quot;5120 0 6143 2303&quot;);
++		SetObjProperty(me, &quot;Dest&quot;, destination);
++	elseif(type == &quot;Mage&quot;)
++		case(randomint(12) + 1)
++			 1: coords := &quot;470 805 710 1020&quot;;	destination := &quot;the city of Yew&quot;;
++			 2: coords := &quot;1285 1512 1700 1785&quot;;	destination := &quot;the city of Brittain&quot;;
++			 3: coords := &quot;2815 605 3050 1005&quot;;	destination := &quot;the city of Vesper&quot;;
++			 4: coords := &quot;1790 2635 2090 2900&quot;;	destination := &quot;the city of Trinsic&quot;;
++			 5: coords := &quot;540 2110 685 2290&quot;;	destination := &quot;the city of Skara Brae&quot;;
++			 6: coords := &quot;2865 3335 3070 3520&quot;;	destination := &quot;the city of Serpent's Hold&quot;;
++			 7: coords := &quot;3590 2460 3704 2695&quot;;	destination := &quot;the city of Ocllo&quot;;
++			 8: coords := &quot;4375 1020 4498 1185&quot;;	destination := &quot;the city of Moonglow&quot;;
++			 9: coords := &quot;2400 370 2545 590&quot;;	destination := &quot;the city of Minoc&quot;;
++			10: coords := &quot;3645 2050 3785 2300&quot;;	destination := &quot;the city of Magincia&quot;;
++			11: coords := &quot;1300 1665 1515 3925&quot;;	destination := &quot;the city of Jhelom&quot;;
++			12: coords := &quot;5120 0 5375 255&quot;;	destination := &quot;the city of Wind&quot;;
++		endcase
++		SetObjProperty(me, &quot;Coords&quot;, coords);
++		SetObjProperty(me, &quot;Dest&quot;, destination);
++	else
++		case(randomint(14) + 1)
++			 1: coords :=	&quot;470 805 710 1020&quot;;	destination := &quot;the city of Yew&quot;;
++			 2: coords := &quot;1285 1512 1700 1785&quot;;	destination := &quot;the city of Brittain&quot;;
++			 3: coords := &quot;2815 605 3050 1005&quot;;	destination := &quot;the city of Vesper&quot;;
++			 4: coords := &quot;1790 2635 2090 2900&quot;;	destination := &quot;the city of Trinsic&quot;;
++			 5: coords := &quot;540 2110 685 2290&quot;;	destination := &quot;the city of Skara Brae&quot;;
++			 6: coords := &quot;2865 3335 3070 3520&quot;;	destination := &quot;the city of Serpent's Hold&quot;;
++			 7: coords := &quot;3590 2460 3704 2695&quot;;	destination := &quot;the city of Ocllo&quot;;
++			 8: coords := &quot;3635 1165 3815 1410&quot;;	destination := &quot;the city of Nujel'm&quot;;
++			 9: coords := &quot;4375 1020 4498 1185&quot;;	destination := &quot;the city of Moonglow&quot;;
++			10: coords := &quot;2400 370 2545 590&quot;;	destination := &quot;the city of Minoc&quot;;
++			11: coords := &quot;3645 2050 3785 2300&quot;;	destination := &quot;the city of Magincia&quot;;
++			12: coords := &quot;1300 1665 1515 3925&quot;;	destination := &quot;the city of Jhelom&quot;;
++			13: coords := &quot;2205 1110 2280 1245&quot;;	destination := &quot;the city of Cove&quot;;
++			14: coords := &quot;2650 2070 2765 2265&quot;;	destination := &quot;the city of Buccaneer's Den&quot;;
++		endcase
++		SetObjProperty(me, &quot;Coords&quot;, coords);
++		SetObjProperty(me, &quot;Dest&quot;, destination);
++	endif
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000777.html">[Poldistro-svn] r803 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000779.html">[Poldistro-svn] r805 - in trunk/096/pkg: items items/ministatues items/ministatues/config mobiles/brainAI mobiles/brainAI/include mobiles/oldAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#778">[ date ]</a>
+              <a href="thread.html#778">[ thread ]</a>
+              <a href="subject.html#778">[ subject ]</a>
+              <a href="author.html#778">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

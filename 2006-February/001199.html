@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1227 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1227%20-%20trunk/096/scripts/include&In-Reply-To=%3C200602151804.k1FI4TSx005576%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001198.html">
+   <LINK REL="Next"  HREF="001200.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1227 - trunk/096/scripts/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1227%20-%20trunk/096/scripts/include&In-Reply-To=%3C200602151804.k1FI4TSx005576%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1227 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Feb 15 19:04:29 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001198.html">[Poldistro-svn] r1226 - in trunk/096/pkg: mobiles/oldAI skills/magery
+</A></li>
+        <LI>Next message: <A HREF="001200.html">[Poldistro-svn] r1228 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1199">[ date ]</a>
+              <a href="thread.html#1199">[ thread ]</a>
+              <a href="subject.html#1199">[ subject ]</a>
+              <a href="author.html#1199">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-15 19:04:27 +0100 (Wed, 15 Feb 2006)
+New Revision: 1227
+
+Modified:
+   trunk/096/scripts/include/damage.inc
+Log:
+Adding support for AOS resistances stuff.
+Trying to keep it easy to remove since I figure most people dont want it anyway (BUT OSI USES IT SO I GOTTA!)
+
+Modified: trunk/096/scripts/include/damage.inc
+===================================================================
+--- trunk/096/scripts/include/damage.inc	2006-02-15 17:38:53 UTC (rev 1226)
++++ trunk/096/scripts/include/damage.inc	2006-02-15 18:04:27 UTC (rev 1227)
+@@ -143,23 +143,7 @@
+ 		return amount;
+ 	endif
+ 	
+-	var resistance_mult := error;
+-	var res_prop := GetObjProperty(mobile, &quot;Resistances&quot;);
+-	if ( res_prop.Exists(type) )
+-		// Resistances CProp overrides the NPCDESC.CFG settings.
+-		// Can also be used on players for their resistances.
+-		resistance_mult := CDbl(res_prop[type]);
+-	elseif ( mobile.npctemplate )
+-		// Looks for type-ResistMult in the NPCDESC.CFG
+-		// Example 'Physical-ResistMult 0.0' means the NPC is immune to physical damage.
+-		// 'Fire-ResistMult 2.0' means fire does double damage to the NPC.
+-		// 'Energy-ResistMult 0.5' means 50% reduction.
+-		var npc_elem := NPC_GetNPCConfig(mobile);
+-		var temp := GetConfigReal(npc_elem, type+&quot;-ResistMult&quot;);
+-		if (  temp != error )
+-			resistance_mult := temp;
+-		endif
+-	endif
++	var resistance_mult := GetResistance(mobile, type);	
+ 			
+ 	if ( resistance_mult == error )
+ 		// Do nothing, there is no resistance.
+@@ -229,23 +213,65 @@
+ //
+ 
+ /*
+- * GetResistances(mobile)
++ * GetResistance(mobile, type)
+  *
+  * Purpose
+  * Retrieves the resistances list for a mobile.
+  *
+  * Parameters
+  * mobile:	Mobile to retrieve the resistances for.
++ * type:	Optional argument.
++ *		If 0 or blank, will return a dictionary of all resistances.
++ *		If specified, will return a double for that value.
+  *
+  * Return value
+- * dictionary
++ * dictionary or double
+  * 
+  */
+-function GetResistances(mobile)
++function GetResistance(mobile, type:=0)
+ 	var resistances := GetObjProperty(mobile, &quot;Resistances&quot;);
+ 	if ( Lower(TypeOf(resistances)) != &quot;dictionary&quot; )
+ 		resistances := dictionary;
+ 	endif
++	if ( !type )
++		return resistances;
++	elseif ( resistances.Exists(type) )
++		// Resistances CProp overrides the NPCDESC.CFG settings.
++		// Can also be used on players for their resistances.
++		return CDbl(resistances[type]);
++	elseif ( mobile.npctemplate )
++		// Looks for type-ResistMult in the NPCDESC.CFG
++		var npc_elem := NPC_GetNPCConfig(mobile);
++		var mult := GetConfigReal(npc_elem, type+&quot;-ResistMult&quot;);
++		if (  mult != error )
++			return CDbl(mult);
++		endif
++	else
++		return 1.0;
++	endif
++endfunction
++
++/*
++ * SetResistance(mobile, name, value)
++ *
++ * Purpose
++ * Sets a resistance multiplier on a mobile.
++ *
++ * mobile:	Mobile to set the resistance multiplier for.
++ * name:	Name of the resistance type to set.
++ * value:	Multiplier for the resistance.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
++function SetResistance(mobile, name, value)
++	var resistances := GetObjProperty(mobile, &quot;Resistances&quot;);
++	if ( Lower(TypeOf(resistances)) != &quot;dictionary&quot; )
++		resistances := dictionary;
++	endif
+ 	
+-	return resistances;
++	resistances[name] := CDbl(value);
++	
++	return SetObjProperty(mobile, &quot;Resistances&quot;, resistances);
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001198.html">[Poldistro-svn] r1226 - in trunk/096/pkg: mobiles/oldAI skills/magery
+</A></li>
+	<LI>Next message: <A HREF="001200.html">[Poldistro-svn] r1228 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1199">[ date ]</a>
+              <a href="thread.html#1199">[ thread ]</a>
+              <a href="subject.html#1199">[ subject ]</a>
+              <a href="author.html#1199">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,648 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r693 - in trunk/096: config pkg/commands/player scripts scripts/console scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r693%20-%20in%20trunk/096%3A%20config%20pkg/commands/player%20scripts%20scripts/console%20scripts/include&In-Reply-To=%3C200510290646.j9T6kBsv010617%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000666.html">
+   <LINK REL="Next"  HREF="000668.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r693 - in trunk/096: config pkg/commands/player scripts scripts/console scripts/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r693%20-%20in%20trunk/096%3A%20config%20pkg/commands/player%20scripts%20scripts/console%20scripts/include&In-Reply-To=%3C200510290646.j9T6kBsv010617%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r693 - in trunk/096: config pkg/commands/player scripts scripts/console scripts/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sat Oct 29 08:46:11 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000666.html">[Poldistro-svn] r692 - trunk/096/regions
+</A></li>
+        <LI>Next message: <A HREF="000668.html">[Poldistro-svn] r694 - in trunk/096/pkg/utils/control: commands/coun include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#667">[ date ]</a>
+              <a href="thread.html#667">[ thread ]</a>
+              <a href="subject.html#667">[ subject ]</a>
+              <a href="author.html#667">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-29 08:45:26 +0200 (Sat, 29 Oct 2005)
+New Revision: 693
+
+Modified:
+   trunk/096/config/console.cfg
+   trunk/096/pkg/commands/player/consider.src
+   trunk/096/scripts/console/NPCCount.src
+   trunk/096/scripts/console/about.src
+   trunk/096/scripts/console/itemCount.src
+   trunk/096/scripts/console/online.src
+   trunk/096/scripts/console/reloadConfig.src
+   trunk/096/scripts/console/removeChars.src
+   trunk/096/scripts/console/save.src
+   trunk/096/scripts/console/shutdown.src
+   trunk/096/scripts/console/time.src
+   trunk/096/scripts/doRes.src
+   trunk/096/scripts/include/resurrection.inc
+   trunk/096/scripts/storageWipe.src
+Log:
+Fixed unused vars in Rez inc.
+Updated formatting in various files.
+Added Reload Configuration to console command list with ? and cmd formats.
+
+
+Modified: trunk/096/config/console.cfg
+===================================================================
+--- trunk/096/config/console.cfg	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/config/console.cfg	2005-10-29 06:45:26 UTC (rev 693)
+@@ -96,7 +96,7 @@
+ #	CMD ^Q
+ 
+ 	CMD r removeChars Remove all online chars
+-#	CMD R
++	CMD R reloadConfig Reload Configuration
+ #	CMD ^R
+ 
+ 	CMD s save Save World State
+
+Modified: trunk/096/pkg/commands/player/consider.src
+===================================================================
+--- trunk/096/pkg/commands/player/consider.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/pkg/commands/player/consider.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ use os;
+ 
+@@ -2,15 +5,18 @@
+ program textcmd_consider( who )
+-  var lc :=  CInt(GetObjProperty(who, &quot;longmurders&quot;));
+-  var short := CInt(GetObjProperty(who, &quot;shortmurders&quot;));
+-  if(GetObjProperty(who, &quot;permared&quot;))
+-    SendSysMessage(who, &quot;You are known throughout the land as a murderous brigand.&quot;);
+-  elseif((short == 0) &amp;&amp; (lc == 0))
+-    SendSysMessage(who, &quot;Fear not, thou hast not slain the innocent.&quot;);
+-  elseif((short == 0) &amp;&amp; (lc &gt; 0))
+-    SendSysMessage(who, &quot;Fear not, thou hast not slain the innocent in some time.&quot;);
+-  elseif((short &gt; 0) &amp;&amp; (short &lt;= 4))
+-    SendSysMessage(who, &quot;Although thou hast slain the innocent, thy deeds shall not bring retribution upon thy return to the living.&quot;);
+-  elseif(short &gt;= 5)
+-    SendSysMessage(who, &quot;If thou should return to the land of the living, the innocent shall wreak havoc upon thy soul.&quot;);
+-  endif
++
++	var lc    := CInt( GetObjProperty(who, &quot;longmurders&quot;) );
++	var short := CInt( GetObjProperty(who, &quot;shortmurders&quot;) );
++	if( GetObjProperty(who, &quot;permared&quot;) )
++		SendSysMessage(who, &quot;You are known throughout the land as a murderous brigand.&quot;);
++	elseif( (short == 0) &amp;&amp; (lc == 0) )
++		SendSysMessage(who, &quot;Fear not, thou hast not slain the innocent.&quot;);
++	elseif( (short == 0) &amp;&amp; (lc &gt; 0) )
++		SendSysMessage(who, &quot;Fear not, thou hast not slain the innocent in some time.&quot;);
++	elseif( (short &gt; 0) &amp;&amp; (short &lt;= 4) )
++		SendSysMessage(who, &quot;Although thou hast slain the innocent, thy deeds shall not bring retribution upon thy return to the living.&quot;);
++	elseif( short &gt;= 5 )
++		SendSysMessage(who, &quot;If thou should return to the land of the living, the innocent shall wreak havoc upon thy soul.&quot;);
++	endif
++	return 1;
++
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/console/NPCCount.src
+===================================================================
+--- trunk/096/scripts/console/NPCCount.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/console/NPCCount.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,10 +1,15 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ program console_npccount(cmd)
++
+ 	cmd := cmd;
+ 	var npccount := polcore().mobilecount - len(EnumerateOnlineCharacters());
+ 
+ 	print(&quot;System Message: Current # of NPCS - &quot; + npccount);
+ 
+-	return;
++	return 1;
++
+ endprogram
+
+Modified: trunk/096/scripts/console/about.src
+===================================================================
+--- trunk/096/scripts/console/about.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/console/about.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;include/clock&quot;;
+@@ -2,4 +5,4 @@
+ 
++program console_about(cmd)
+ 
+-program console_about(cmd)
+ 	cmd := cmd;
+@@ -12,5 +15,6 @@
+ 	print(&quot;    Designer:    Syzygy [<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">syzygy at pobox.com</A>]&quot;);
+ 	print(&quot;    Updated:     &quot; + system.compiledate + &quot; &quot; + system.compiletime);
+ 
+-	return;
+-endprogram
++	return 1;
++
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/console/itemCount.src
+===================================================================
+--- trunk/096/scripts/console/itemCount.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/console/itemCount.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,8 +1,13 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ program console_itemcount(cmd)
++
+ 	cmd := cmd;
+ 	print(&quot;System Message: Current # of Toplevel Items - &quot; + polcore().itemcount);
+ 
+-	return;
++	return 1;
++
+ endprogram
+
+Modified: trunk/096/scripts/console/online.src
+===================================================================
+--- trunk/096/scripts/console/online.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/console/online.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,18 +1,22 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ program console_online(cmd)
++
+ 	cmd := cmd;
+-	var chrs := EnumerateOnlineCharacters();
++
+ 	var names := {};
+-	foreach chr in chrs
++	foreach chr in EnumerateOnlineCharacters()
+ 		names.append( chr.name );
+ 	endforeach
+ 
+ 	names.sort();
+ 
+ 	var msg := &quot;System Message: &quot; + names.size() + &quot; Character&quot;;
+-	if (names.size() == 1)
+-		 msg := msg + &quot; is&quot;;
++	if( names.size() == 1 )
++		msg := msg + &quot; is&quot;;
+ 	else
+ 		msg := msg + &quot;s are&quot;;
+ 	endif
+@@ -21,21 +25,22 @@
+ 	var namestr := &quot;&quot;;
+ 	foreach name in names
+ 		var toadd := &quot;&quot;;
+-		if (namestr == &quot;&quot;)
++		if(namestr == &quot;&quot; )
+ 			toadd := name;
+ 		else
+ 			toadd := &quot;, &quot; + name;
+ 		endif
+-		if (len(namestr+toadd) &lt; 80)     // it'll fit
++		if( len(namestr+toadd) &lt; 80 )     // it'll fit
+ 			namestr := namestr + toadd;
+ 		else
+ 			print(namestr);
+ 			namestr := name;
+ 		endif
+ 	endforeach
+-	if (namestr != &quot;&quot;)
++	if( namestr != &quot;&quot; )
+ 		print(namestr);
+ 	endif
+ 
+-	return;
+-endprogram
++	return 1;
++
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/console/reloadConfig.src
+===================================================================
+--- trunk/096/scripts/console/reloadConfig.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/console/reloadConfig.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,8 +1,13 @@
++/* $Id$
++ *
++ */
+ use polsys;
+ 
+ program console_reloadConfig()
+-	print(&quot;System Message: Reloading configuration.&quot;);      
++
++	print(&quot;System Message: Reloading configuration.&quot;);
+ 	ReloadConfiguration();
+ 
+-	return;
+-endprogram
++	return 1;
++
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/console/removeChars.src
+===================================================================
+--- trunk/096/scripts/console/removeChars.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/console/removeChars.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ use os;
+ use util;
+@@ -4,13 +7,15 @@
+ 
+ 
+ program console_removeChars(cmd)
++
+ 	cmd := cmd;
+ 
+-	print(&quot;System Message: Remove all online characters!&quot;);
++	print(&quot;System Message: Removing all online characters!&quot;);
+ 	foreach char in EnumerateOnlineCharacters()
+ 		DisconnectClient(char);
+ 	endforeach
+ 
+-	return;
++	return 1;
++
+ endprogram
+ 
+
+Modified: trunk/096/scripts/console/save.src
+===================================================================
+--- trunk/096/scripts/console/save.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/console/save.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ use os;
+ 
+@@ -3,16 +6,17 @@
+ 
+ program console_save()
++
+ 	var res;
+ 	print(&quot;System Message: Saving World State&quot;);
+ 	Broadcast(&quot;Saving World State&quot;);
+ 
+-	if (!(res := SaveWorldState()))
++	if( !(res := SaveWorldState()) )
+ 		print(&quot;System Message: Done saving, &quot; + res);
+ 		Broadcast(&quot;Done saving&quot;);
++		return 1;
+ 	else
+ 		print(&quot;System Message: Save error, &quot; + res);
++		return 0;
+ 	endif
+ 
+-	return;
+-endprogram
+-
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/console/shutdown.src
+===================================================================
+--- trunk/096/scripts/console/shutdown.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/console/shutdown.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ use os;
+ use util;
+@@ -5,29 +8,31 @@
+ include &quot;include/clock&quot;;
+ 
+ program cmd_shutdown( cmd )
+-  cmd := CInt(cmd);
+-  var basetime;
+-  var nexttime;
+-  var i;
+-  case (cmd)
+-    0:  basetime := 60;
+-    1:  basetime := 6;
+-    2:  basetime := 12;
+-    3:  basetime := 18;
+-    4:  basetime := 24;
+-    5:  basetime := 30;
+-    6:  basetime := 36;
+-    7:  basetime := 42;
+-    8:  basetime := 48;
+-    9:  basetime := 54;
+-  endcase
+-  for(i := 1; i &lt;= 3; i := i + 1)
+-    nexttime := basetime - ((basetime/3) * (i-1));
+-    print(&quot;System Message: &quot; + nexttime +&quot; minutes to shutdown!&quot;);
+-    foreach onlinechr in EnumerateOnlineCharacters()
+-      SendSysMessage(onlinechr, &quot;System Message: &quot; + nexttime +&quot; minutes to shutdown!&quot;,3,38);
+-    endforeach
+-    sleep( 60 * basetime / 3 );
+-  endfor
+-  Shutdown();
++
++	cmd := CInt(cmd);
++	var basetime;
++	var nexttime;
++	var i;
++	case (cmd)
++		0:  basetime := 60;
++		1:  basetime := 6;
++		2:  basetime := 12;
++		3:  basetime := 18;
++		4:  basetime := 24;
++		5:  basetime := 30;
++		6:  basetime := 36;
++		7:  basetime := 42;
++		8:  basetime := 48;
++		9:  basetime := 54;
++	endcase
++	for(i := 1; i &lt;= 3; i := i + 1)
++		nexttime := basetime - ((basetime/3) * (i-1));
++		print(&quot;System Message: &quot; + nexttime +&quot; minutes to shutdown!&quot;);
++		foreach onlinechr in EnumerateOnlineCharacters()
++			SendSysMessage(onlinechr, &quot;System Message: &quot; + nexttime +&quot; minutes to shutdown!&quot;,3,38);
++		endforeach
++		sleep( 60 * basetime / 3 );
++	endfor
++	Shutdown();
++
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/console/time.src
+===================================================================
+--- trunk/096/scripts/console/time.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/console/time.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;include/clock&quot;;
+@@ -4,8 +7,10 @@
+ 
+ 
+ program time(cmd)
++
+ 	cmd := cmd;
+ 	print(&quot;System Message: The time in game is &quot; + GetTimeofDay());
+ 
+-	return;
++	return 1;
++
+ endprogram
+
+Modified: trunk/096/scripts/doRes.src
+===================================================================
+--- trunk/096/scripts/doRes.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/doRes.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -10,22 +10,23 @@
+ 
+ 
+ program do_res(parms)
++
+ 	var who := parms[1];
+ 	var mobile := parms[2];
+ 
+-	if (((who.npctemplate == &quot;healer&quot;) || (who.npctemplate == &quot;townhealer&quot;) ||
+-	(who.npctemplate == &quot;wanderinghealer&quot;)) &amp;&amp; (mobile.criminal))
++	if( ((who.npctemplate == &quot;healer&quot;) || (who.npctemplate == &quot;townhealer&quot;) ||
++	(who.npctemplate == &quot;wanderinghealer&quot;)) &amp;&amp; (mobile.criminal) )
+ 		PrintTextAbove(who, &quot;I will not aid a criminal.&quot;);
+-		return;
++		return 0;
+ 	endif
+-	if ((mobile.dead) &amp;&amp; (CheckLineOfSight(who, mobile)))
++	if( (mobile.dead) &amp;&amp; (CheckLineOfSight(who, mobile)) )
+ 		set_critical(1);
+-		if (GetObjProperty(mobile, &quot;#ResMenu&quot;))
+-			return;
++		if( GetObjProperty(mobile, &quot;#ResMenu&quot;) )
++			return 0;
+ 		endif
+ 		SetObjProperty(mobile, &quot;#ResMenu&quot;, 1);
+ 		set_critical(0);
+-		if (ResNow(mobile) == 1)
++		if( ResNow(mobile) == 1 )
+ 			PrintTextAbove(who, &quot;Live again by the Virtues!&quot;);
+ 			PerformAction(who, ACTION_EFFECT_CAST2);
+ 			PlaySoundEffect(who, SOUND_EFFECT_RES);
+@@ -33,15 +34,17 @@
+ 			MurdererStatLoss(mobile);
+ 		endif
+ 		EraseObjProperty(mobile, &quot;#ResMenu&quot;);
+-//	elseif ((GetPoisonByType(who, &quot;DefaultPoison&quot;).size() &gt; 0) &amp;&amp;
+-//	CheckLineOfSight(who, mobile))
+-//		PrintTextAbove(who, &quot;Sacrifice Purifies the Body and Soul!&quot;);
+-//		PerformAction(who, ANIM_CAST_AREA);
+-//		FakeDeath(who);
+-//		sleep(1);
+-//		PlayObjectCenteredEffect(mobile, FX_BLESS_EFFECT, 10,10);
+-//		SendSysMessage(mobile, who.name + &quot; has cured you completely!&quot;);
++//	elseif( GetPoisonByType(who, &quot;DefaultPoison&quot;).size() &gt; 0 )
++//		if( CheckLineOfSight(who, mobile) )
++//			PrintTextAbove(who, &quot;Sacrifice Purifies the Body and Soul!&quot;);
++//			PerformAction(who, ANIM_CAST_AREA);
++//			FakeDeath(who);
++//			sleep(1);
++//			PlayObjectCenteredEffect(mobile, FX_BLESS_EFFECT, 10,10);
++//			SendSysMessage(mobile, who.name + &quot; has cured you completely!&quot;);
++//		endif
+ 	endif
+ 
+-	return;
++	return 1;
++
+ endprogram
+
+Modified: trunk/096/scripts/include/resurrection.inc
+===================================================================
+--- trunk/096/scripts/include/resurrection.inc	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/include/resurrection.inc	2005-10-29 06:45:26 UTC (rev 693)
+@@ -1,10 +1,10 @@
+-/* 
++/*
+  * $Id$
+- * 
++ *
+  * Uhh what the fuck is this anyway?
+  *
+  */
+- 
++
+ use uo;
+ use os;
+ 
+@@ -14,64 +14,67 @@
+ const MAXIMUM_LOSS := 0.20; //20% loss for 20 shortterm murders or more
+ 
+ function ResNow(mobile)
++
+ 	var gump := GFCreateGump();
+ 	GFClosable(gump, 0);
+ 	GFGumpPic(gump, 300, 230, 2070);
+ 	GFAddButton(gump, 330, 305, 2073, 2072, GF_CLOSE_BTN, 10);
+ 	GFAddButton(gump, 400, 305, 2076, 2075, GF_CLOSE_BTN, 11);
+ 	GFTextLine(gump, 332, 264, 40, &quot;Resurrect Now?&quot;);
+-	
++
+ 	var input := GFSendGump(mobile, gump);
+ 	input := input[0];
+ 	input := input-10;
+-	
++
+ 	if ( !input )
+ 		return 0;
+ 	else
+ 		return 1;
+ 	endif
++
+ endfunction
+ 
+ function MurdererStatLoss(who)
++
+ 	var shortc := GetObjProperty(who,&quot;shortmurders&quot;);
+ 	if( !shortc )
+ 		return 0;
+ 	endif
+-	
++
+ 	if( shortc &gt; 4 )
+ 		var multiplier := CInt(shortc)/100.0;
+-		if(multiplier &gt; MAXIMUM_LOSS)
++		if( multiplier &gt; MAXIMUM_LOSS )
+ 			multiplier := MAXIMUM_LOSS;
+ 		endif
+-		
++
+ 		multiplier := 1.0 - multiplier;
+-		
++
+ 		var str := AP_GetTrueStat(who, &quot;strength&quot;);
+ 		var dex := AP_GetTrueStat(who, &quot;dexterity&quot;);
+ 		var inte := AP_GetTrueStat(who, &quot;intelligence&quot;);
+-	
++
+ 		str := CInt(str * multiplier);
+ 		dex := CInt(dex * multiplier);
+ 		inte := CInt(inte * multiplier);
+-	
++
+ 		AP_SetTrueStat(who, &quot;strength&quot;, str);
+ 		AP_SetTrueStat(who, &quot;dexterity&quot;, dex);
+ 		AP_SetTrueStat(who, &quot;intelligence&quot;, inte);
+-		
++
+ 		AP_SetVital(who, &quot;hits&quot;, AP_GetVitalMaximumValue(who, &quot;hits&quot;));
+ 		AP_SetVital(who, &quot;stamina&quot;, AP_GetVitalMaximumValue(who, &quot;stamina&quot;));
+ 		AP_SetVital(who, &quot;mana&quot;, AP_GetVitalMaximumValue(who, &quot;mana&quot;));
+-		
+-		var skillarray := GetObjProperty(who, &quot;SkillArray&quot;);
+-		var newval, final;
+-		
++
++		var newval;
++
+ 		foreach entry in (AP_ListAttributesByType(&quot;skill&quot;))
+ 			var skill_level := AP_GetTrueSkill(who, entry);
+-			if ( skill_level &gt; 0.0 )
++			if( skill_level &gt; 0.0 )
+ 				newval := skill_level * multiplier;
+ 				AP_SetTrueSkill(who, entry, newval);
+ 			endif
+ 		endforeach
+ 		SendSysMessage(who,&quot;Thy body pays the price for thy sins.&quot;);
+ 	endif
++
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/scripts/storageWipe.src
+===================================================================
+--- trunk/096/scripts/storageWipe.src	2005-10-29 06:09:12 UTC (rev 692)
++++ trunk/096/scripts/storageWipe.src	2005-10-29 06:45:26 UTC (rev 693)
+@@ -3,7 +3,8 @@
+ 
+ program storagewipe()
+ 
+-	set_critical(0);//without list line it runs fast, goes RunAway, makes megalag.
++	// without list line it runs fast, goes RunAway, makes megalag.
++	set_critical(0);
+ 
+ 	var endnum, npctest;
+ 	var startnum := CInt( GetGlobalProperty(&quot;storagestart&quot;) );
+@@ -33,7 +34,8 @@
+ 	var mercs := 0;
+ 	var i;
+ 	for (i := startnum; i &lt; endnum; i:= i + 1)
+-		sleepms(250);//without list line it runs fast, goes RunAway, makes megalag.
++		//without list line it runs fast, goes RunAway, makes megalag.
++		sleepms(250);
+ 		if (!SystemFindObjectBySerial(i))
+ 			inv_fs := i + &quot; FS&quot;;
+ 			inv_pb := i + &quot; PB&quot;;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000666.html">[Poldistro-svn] r692 - trunk/096/regions
+</A></li>
+	<LI>Next message: <A HREF="000668.html">[Poldistro-svn] r694 - in trunk/096/pkg/utils/control: commands/coun include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#667">[ date ]</a>
+              <a href="thread.html#667">[ thread ]</a>
+              <a href="subject.html#667">[ subject ]</a>
+              <a href="author.html#667">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

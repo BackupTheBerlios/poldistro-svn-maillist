@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r710 - in trunk/096/pkg/mobiles/brainAI: . scripts/enterArea scripts/leftArea scripts/lookAround scripts/shouldWatch scripts/sleep
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r710%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20scripts/enterArea%20scripts/leftArea%20scripts/lookAround%20scripts/shouldWatch%20scripts/sleep&In-Reply-To=%3C200510300859.j9U8x0jI011718%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000683.html">
+   <LINK REL="Next"  HREF="000685.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r710 - in trunk/096/pkg/mobiles/brainAI: . scripts/enterArea scripts/leftArea scripts/lookAround scripts/shouldWatch scripts/sleep</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r710%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20scripts/enterArea%20scripts/leftArea%20scripts/lookAround%20scripts/shouldWatch%20scripts/sleep&In-Reply-To=%3C200510300859.j9U8x0jI011718%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r710 - in trunk/096/pkg/mobiles/brainAI: . scripts/enterArea scripts/leftArea scripts/lookAround scripts/shouldWatch scripts/sleep">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct 30 09:59:00 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000683.html">[Poldistro-svn] r709 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+        <LI>Next message: <A HREF="000685.html">[Poldistro-svn] r711 - trunk/096/pkg/commands/player
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#684">[ date ]</a>
+              <a href="thread.html#684">[ thread ]</a>
+              <a href="subject.html#684">[ subject ]</a>
+              <a href="author.html#684">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-30 09:58:57 +0100 (Sun, 30 Oct 2005)
+New Revision: 710
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/scripts/enterArea/generic.src
+   trunk/096/pkg/mobiles/brainAI/scripts/leftArea/generic.src
+   trunk/096/pkg/mobiles/brainAI/scripts/lookAround/findAttackables.src
+   trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch/targetPlayers.src
+   trunk/096/pkg/mobiles/brainAI/scripts/sleep/generic.src
+Modified:
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+Generic nerve scripts to support the rigger npc and other npcs.
+Will do the combat nerve next.
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-10-30 08:46:18 UTC (rev 709)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-10-30 08:58:57 UTC (rev 710)
+@@ -52,6 +52,7 @@
+ NPCTemplate Rigger
+ {
+ 	Name		a rigger
++	Script		:brainAI:brain
+ 	ObjType		ObjType		0x27
+ 	Color		0
+ 	TrueColor	0
+@@ -83,7 +84,7 @@
+ 	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
+ 	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
+ 	AIScript	Sleep		:brainAI:scripts/sleep/generic
+-	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/findPlayers
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/targetPlayers
+ 	
+ 	AttackHitScript		:combat:mainhitscript
+ }
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/enterArea/generic.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/enterArea/generic.src	2005-10-30 08:46:18 UTC (rev 709)
++++ trunk/096/pkg/mobiles/brainAI/scripts/enterArea/generic.src	2005-10-30 08:58:57 UTC (rev 710)
+@@ -0,0 +1,52 @@
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	var event	:= params[3];
++	var settings	:= params[4];
++	var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( event )
++			case ( event.type )
++				SYSEVENT_ENTEREDAREA:
++					EnteredArea(npc, event, settings, scripts);
++					break;
++				default:
++					break;
++			endcase
++			
++			event := 0;
++		endif
++		
++		sleepms(5);
++		event := wait_for_event(600);
++	endwhile
++endprogram
++
++function EnteredArea(npc, byref event, byref settings, byref scripts)
++	var source := event.source;
++	
++	if ( NPC_ShouldWatch(npc, source, settings, scripts) )
++		if ( NPC_AddToWatchList(npc, source) )
++			AI_WakeUp(npc);
++			
++			if ( scripts[&quot;LookAround&quot;] )
++				if ( !GetNerveProcess(npc, &quot;LookAround&quot;) )
++					AI_WakeUp(npc);
++				endif
++			endif
++			
++			return 1;
++		endif
++	endif
++	
++	return 0;
++endfunction
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/leftArea/generic.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/leftArea/generic.src	2005-10-30 08:46:18 UTC (rev 709)
++++ trunk/096/pkg/mobiles/brainAI/scripts/leftArea/generic.src	2005-10-30 08:58:57 UTC (rev 710)
+@@ -0,0 +1,42 @@
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	var event	:= params[3];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( event )
++			case ( event.type )
++				SYSEVENT_LEFTAREA:
++					LeftArea(npc, event);
++					break;
++				default:
++					break;
++			endcase
++			
++			event := 0;
++		endif
++		
++		sleepms(5);
++		event := wait_for_event(600);
++	endwhile
++endprogram
++
++function LeftArea(npc, byref event)
++	var source := event.source;
++
++	if ( NPC_RemoveFromWatchList(npc, source) )
++		return 1;
++	else
++		return 0;
++	endif
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/lookAround/findAttackables.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/lookAround/findAttackables.src	2005-10-30 08:46:18 UTC (rev 709)
++++ trunk/096/pkg/mobiles/brainAI/scripts/lookAround/findAttackables.src	2005-10-30 08:58:57 UTC (rev 710)
+@@ -0,0 +1,47 @@
++use uo;
++use os;
++use util;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	var settings	:= params[4];
++	var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( !npc.opponent )
++			if ( NPC_LoadWatchList(npc).size() &lt; 1 )
++				// No need to look around any longer. We're all alone :(
++				return;
++			else
++				FindOpponent(npc, settings, scripts);
++			endif
++		endif
++		
++		AI_ClearThoughts(npc, CLR_NERVE);
++		Sleep(5);
++	endwhile
++endprogram
++
++function FindOpponent(npc, byref settings, byref scripts)
++	var attack_list := array;
++	foreach mobile in ListMobilesInLineOfSight(npc, CInt(settings[&quot;AreaSize&quot;]))
++		if ( NPC_ShouldWatch(npc, mobile, settings, scripts) )
++			attack_list.Append(mobile);
++		endif
++		sleepms(2);
++	endforeach
++	
++	if ( attack_list.size() &gt; 0 )
++		var victim := attack_list[RandomInt(attack_list.Size())+1];
++		AI_Attack(npc, victim);
++		return victim;
++	endif
++	
++	return 0;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch/targetPlayers.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch/targetPlayers.src	2005-10-30 08:46:18 UTC (rev 709)
++++ trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch/targetPlayers.src	2005-10-30 08:58:57 UTC (rev 710)
+@@ -0,0 +1,27 @@
++use uo;
++use os;
++use util;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainCriticalScript(params)
++	//var npc := params[1];
++	var mobile := params[2];
++	//var settings := params[3];
++	params := 0; // Not needed anymore
++	
++	if ( mobile.cmdlevel )
++		return 0;
++	elseif ( mobile.npctemplate )
++		return 0;
++	elseif ( mobile.connected )
++		// Only targets players actively ingame.
++		// If it should attack all players, just do mobile.IsA(POLCLASS_MOBILE)
++		// in the elseif statement above.
++		return 1;
++	else
++		return 1;
++	endif
++endprogram
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/sleep/generic.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/sleep/generic.src	2005-10-30 08:46:18 UTC (rev 709)
++++ trunk/096/pkg/mobiles/brainAI/scripts/sleep/generic.src	2005-10-30 08:58:57 UTC (rev 710)
+@@ -0,0 +1,44 @@
++use uo;
++use os;
++use util;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	var nerve_name	:= params[2];
++	var settings	:= params[3];
++	//var scripts	:= params[4];
++	params := 0; // Not needed anymore.
++	
++	// Shut down appropriate nerves.
++	foreach nerve in (LoadNerves(npc))
++		if ( nerve.flags &amp; NF_CONTINUE_ON_SLEEP )
++			continue;
++		elseif ( _nerve_iter != nerve_name )
++			StopNerve(npc, _nerve_iter);
++		endif
++		sleepms(2);
++	endforeach
++	
++	while ( npc )
++		Sleep(30+RandomInt(10));
++		
++		if ( settings[&quot;idle_sound&quot;] )
++			if ( settings[&quot;idle_sound&quot;].size() &gt; 0 )
++				var sounds := settings[&quot;idle_sound&quot;];
++				PlaySoundEffect(npc, sounds[RandomInt(sounds.size())+1]);
++			else
++				PlaySoundEffect(npc, settings[&quot;idle_sound&quot;]);
++			endif
++		endif
++		
++		sleep(20+RandomInt(10));
++		
++		npc.facing := RandomInt(8);
++		AI_Wander(npc, NOWAKE);
++		
++		AI_ClearThoughts(npc, CLR_NERVE);
++	endwhile
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000683.html">[Poldistro-svn] r709 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+	<LI>Next message: <A HREF="000685.html">[Poldistro-svn] r711 - trunk/096/pkg/commands/player
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#684">[ date ]</a>
+              <a href="thread.html#684">[ thread ]</a>
+              <a href="subject.html#684">[ subject ]</a>
+              <a href="author.html#684">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

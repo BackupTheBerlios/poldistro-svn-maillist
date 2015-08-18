@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r675 - trunk/096/pkg/skills/poisoning
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r675%20-%20trunk/096/pkg/skills/poisoning&In-Reply-To=%3C200510270436.j9R4ao1Q026527%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000648.html">
+   <LINK REL="Next"  HREF="000650.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r675 - trunk/096/pkg/skills/poisoning</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r675%20-%20trunk/096/pkg/skills/poisoning&In-Reply-To=%3C200510270436.j9R4ao1Q026527%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r675 - trunk/096/pkg/skills/poisoning">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Thu Oct 27 06:36:50 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000648.html">[Poldistro-svn] r674 - in trunk/096/pkg: items/training skills/lumberjacking
+</A></li>
+        <LI>Next message: <A HREF="000650.html">[Poldistro-svn] r676 - trunk/096/pkg/systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#649">[ date ]</a>
+              <a href="thread.html#649">[ thread ]</a>
+              <a href="subject.html#649">[ subject ]</a>
+              <a href="author.html#649">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-27 06:36:41 +0200 (Thu, 27 Oct 2005)
+New Revision: 675
+
+Added:
+   trunk/096/pkg/skills/poisoning/poisonSkill.src
+Removed:
+   trunk/096/pkg/skills/poisoning/poisoning.src
+Log:
+Fix for skills.cfg pointment for button skill script
+
+Copied: trunk/096/pkg/skills/poisoning/poisonSkill.src (from rev 656, trunk/096/pkg/skills/poisoning/poisoning.src)
+
+Deleted: trunk/096/pkg/skills/poisoning/poisoning.src
+===================================================================
+--- trunk/096/pkg/skills/poisoning/poisoning.src	2005-10-27 04:31:58 UTC (rev 674)
++++ trunk/096/pkg/skills/poisoning/poisoning.src	2005-10-27 04:36:41 UTC (rev 675)
+@@ -1,86 +0,0 @@
+-use uo;
+-use os;
+-use util;
+-use cfgfile;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/canAccess&quot;;
+-include &quot;include/noto&quot;;
+-
+-program do_poisoning(who)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  SendSysMessage(who, &quot;Select a poison potion.&quot;);
+-  var the_poison := Target(who);
+-  if(!the_poison)
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  elseif(!can_access(who, the_poison))
+-    SendSysMessage(who, &quot; You cannot use that!&quot;);
+-    return;
+-  elseif(the_poison.graphic != 0xf0a)
+-    SendSysMessage(who, &quot;You must select a poison potion!&quot;);
+-    return;
+-  endif
+-  SendSysMessage(who, &quot;Select an object to which to apply this poison.&quot;);
+-  var the_item := Target(who, TGTOPT_CHECK_LOS);
+-  if(!the_item)
+-    SendSysMessage(who, &quot;Targetting cancelled.&quot;);
+-    return;
+-  elseif(!can_access(who, the_item))
+-    SendSysMessage(who, &quot;You can't use that!&quot;);
+-    return;
+-  endif
+-  var acfgfile := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-  var theitem := acfgfile[the_item.objtype];
+-  if((theitem.Attribute == &quot;Swords&quot;) || (theitem.Attribute == &quot;Fencing&quot;))
+-    var stren, skill, point;
+-    case(the_poison.objtype)
+-      0xdc04: stren := 1;   skill := 10;   point := 50;
+-      0xdc05: stren := 2;   skill := 30;   point := 80;
+-      0xdc06: stren := 3;   skill := 55;   point := 110;
+-      0xdc17: stren := 4;   skill := 88;   point := 160;
+-    endcase
+-    if(SubtractAmount(the_poison, 1))
+-      CreateItemInBackpack(who, 0xf0e, 1);
+-      if(CheckSkill(who, SKILLID_POISONING, skill, point))
+-        PlaySoundEffect(who, 0x248);
+-        SetObjProperty(the_item, &quot;poison_level&quot;, stren);
+-        var skillmod := Cint(GetAttribute(who, &quot;poisoning&quot;) / 20) + RandomInt(4);
+-        SetObjProperty(the_item, &quot;d&quot;, Cint(25 - (stren * 4)) + skillmod);
+-        var hitscripts := GetObjProperty(the_item, &quot;OnHit&quot;);
+-        if(!hitscripts)
+-          hitscripts := array;
+-        endif
+-        if(!hitscripts.exists(&quot;:combat:poisonHit&quot;))
+-          hitscripts.append(&quot;:combat:poisonHit&quot;);
+-          SetObjProperty(the_item, &quot;OnHit&quot;, hitscripts);
+-        endif
+-        SendSysMessage(who, &quot;You have successfully applied the poison.&quot;);
+-        var myskill := CInt(GetEffectiveSkill(who, SKILLID_POISONING));
+-        var modpts := 0;
+-        if(myskill &gt;=  skill)
+-          modpts := (myskill - skill);
+-        endif
+-        var rint := RandomInt(100);
+-        if(modpts &gt;= rint)
+-          ExceptionalFameMod(who, myskill, skill, point);
+-        endif
+-      else
+-        if(RandomInt(100) &gt; 90)
+-          SendSysMessage(who, &quot;You fail and poison yourself!&quot;);
+-          var parms := array(who, who, &quot;poison Skill&quot;, stren);
+-          start_script(&quot;:spells:poisonDamage&quot;, parms);
+-        else
+-          SendSysMessage(who, &quot;You fail to apply the poison properly.&quot;);
+-        endif
+-      endif
+-    else
+-      SendSysMessage(who, &quot;You can't use that poison.&quot;);
+-      return;
+-    endif
+-  else
+-    SendSysMessage(who, &quot;That cannot be poisoned.&quot;);
+-    return;
+-  endif
+-endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000648.html">[Poldistro-svn] r674 - in trunk/096/pkg: items/training skills/lumberjacking
+</A></li>
+	<LI>Next message: <A HREF="000650.html">[Poldistro-svn] r676 - trunk/096/pkg/systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#649">[ date ]</a>
+              <a href="thread.html#649">[ thread ]</a>
+              <a href="subject.html#649">[ subject ]</a>
+              <a href="author.html#649">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

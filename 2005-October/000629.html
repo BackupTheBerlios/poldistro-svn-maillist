@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r656 - in trunk/096/pkg: other other/packetHooks other/packetHooks/WarAndPeace other/packetHooks/WarAndPeace/config skills/musicianship
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r656%20-%20in%20trunk/096/pkg%3A%20other%20other/packetHooks%20other/packetHooks/WarAndPeace%20other/packetHooks/WarAndPeace/config%20skills/musicianship&In-Reply-To=%3C200510251910.j9PJABwH022654%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000632.html">
+   <LINK REL="Next"  HREF="000630.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r656 - in trunk/096/pkg: other other/packetHooks other/packetHooks/WarAndPeace other/packetHooks/WarAndPeace/config skills/musicianship</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r656%20-%20in%20trunk/096/pkg%3A%20other%20other/packetHooks%20other/packetHooks/WarAndPeace%20other/packetHooks/WarAndPeace/config%20skills/musicianship&In-Reply-To=%3C200510251910.j9PJABwH022654%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r656 - in trunk/096/pkg: other other/packetHooks other/packetHooks/WarAndPeace other/packetHooks/WarAndPeace/config skills/musicianship">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Oct 25 21:10:11 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000632.html">[Poldistro-svn] r655 - trunk/096/config
+</A></li>
+        <LI>Next message: <A HREF="000630.html">[Poldistro-svn] r657 - in trunk/096/pkg/other/packetHooks: . RequestAttack RequestAttack/config WarAndPeace
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#629">[ date ]</a>
+              <a href="thread.html#629">[ thread ]</a>
+              <a href="subject.html#629">[ subject ]</a>
+              <a href="author.html#629">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-25 21:09:42 +0200 (Tue, 25 Oct 2005)
+New Revision: 656
+
+Added:
+   trunk/096/pkg/other/packetHooks/
+   trunk/096/pkg/other/packetHooks/WarAndPeace/
+   trunk/096/pkg/other/packetHooks/WarAndPeace/config/
+   trunk/096/pkg/other/packetHooks/WarAndPeace/config/icp.cfg
+   trunk/096/pkg/other/packetHooks/WarAndPeace/pkg.cfg
+   trunk/096/pkg/other/packetHooks/WarAndPeace/readme.txt
+   trunk/096/pkg/other/packetHooks/WarAndPeace/requestWar.src
+   trunk/096/pkg/other/packetHooks/WarAndPeace/uopacket.cfg
+Modified:
+   trunk/096/pkg/skills/musicianship/peacemaking.src
+Log:
+Update to area peacemaking for players being affected.
+Added Request Warmode Hook for working with peacemaking change.
+
+Warmode hook will be very helpful to those wanting to introduce no-fight zones and such.
+
+Added: trunk/096/pkg/other/packetHooks/WarAndPeace/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/other/packetHooks/WarAndPeace/config/icp.cfg	2005-10-25 15:53:53 UTC (rev 655)
++++ trunk/096/pkg/other/packetHooks/WarAndPeace/config/icp.cfg	2005-10-25 19:09:42 UTC (rev 656)
+@@ -0,0 +1,16 @@
++ICP Register
++{
++	Name		War And Peace Handler
++	Version		1.0
++	Description	PacketHook for handling Toggle of War Mode.
++
++	Creator		MuadDib
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	//Script	cmdlevel path
++
++	//TextCmd	cmdlevel path
++}
+
+Added: trunk/096/pkg/other/packetHooks/WarAndPeace/pkg.cfg
+===================================================================
+--- trunk/096/pkg/other/packetHooks/WarAndPeace/pkg.cfg	2005-10-25 15:53:53 UTC (rev 655)
++++ trunk/096/pkg/other/packetHooks/WarAndPeace/pkg.cfg	2005-10-25 19:09:42 UTC (rev 656)
+@@ -0,0 +1,6 @@
++Enabled         1
++Name            handlewarmode
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++CoreRequired	96
++Version		1.0
+
+Added: trunk/096/pkg/other/packetHooks/WarAndPeace/readme.txt
+===================================================================
+--- trunk/096/pkg/other/packetHooks/WarAndPeace/readme.txt	2005-10-25 15:53:53 UTC (rev 655)
++++ trunk/096/pkg/other/packetHooks/WarAndPeace/readme.txt	2005-10-25 19:09:42 UTC (rev 656)
+@@ -0,0 +1,40 @@
++===================================
++  War Request Packet Hook
++  Written By MuadDib
++===================================
++
++  1) Requirements
++  2) How to Install
++  3) Thanks To...
++
++===================================
++    Requirements
++===================================
++  To use these scripts, you will need the following:
++    A working and installed copy of POL v.096 or newer
++
++===================================
++    How To Install
++===================================
++  1) Extract the zip to somewhere in your pkg directory in POL
++  2) Making sure pkg.cfg has Enabled set to 1.
++  3) Compile the package with eCompile.
++  4) Start POL and begin using it.
++
++===================================
++    Notes
++===================================
++  1) If you want to block entering war mode in certain areas, or
++     if any circumstances exist, simply modify the ProcessWarMode(who)
++     function. If it returns 0, it will block entering war mode. If
++     it returns 1, it will allow it. 
++
++	For Example. In the ProcessWarMode(who) function, you can check
++        X and Y, to see if they are in a certain area (box), and if so,
++        return 0, and they will not be able to enter mode.
++
++===================================
++    Thanks To...
++===================================
++  Thanks to the POL dev team for continually developing the best 
++    Ultima Online server emulator around.
+
+Added: trunk/096/pkg/other/packetHooks/WarAndPeace/requestWar.src
+===================================================================
+--- trunk/096/pkg/other/packetHooks/WarAndPeace/requestWar.src	2005-10-25 15:53:53 UTC (rev 655)
++++ trunk/096/pkg/other/packetHooks/WarAndPeace/requestWar.src	2005-10-25 19:09:42 UTC (rev 656)
+@@ -0,0 +1,77 @@
++/* $Id$
++ *
++ */
++////////////////////////////////////////////////////////////////////////////////////////////////////
++//
++//  name:    Request War Mode Packet Hook
++//  version: 1.0
++//  author:  MuadDib
++//
++//  Purpose: This can allow you to disable entering war mode based on criteria set forth in this
++//           hook. Like for example, if they are in town, cannot enter war mode, or in certain
++//           areas, if they are mounted, whatever you like.
++//
++// Const settings:
++// BYTE_FLAG = 1  Position in the packet for the Status Flag. Can be 0x0 (in peace mode) or
++//                0x1 (in war mode, trying to leave war mode).
++//
++////////////////////////////////////////////////////////////////////////////////////////////////////
++use uo;
++use polsys;
++
++include &quot;include/client&quot;;
++
++CONST BYTE_FLAG := 1;
++
++program requestWar()
++	Print( &quot;LSD: Hooking Request War Mode Change...&quot; );
++	return 1;
++endprogram
++
++
++exported function HandleWarRequest( who, byref packet )
++
++	// Let's see which mode the are requesting.
++	var flag := CInt(packet.GetInt8(BYTE_FLAG));
++	var allowWar := 1;
++
++	case(flag)
++		// Requesting Peace Mode. Should never block this in my opinion.
++		0: return 0;
++		// Let's call the function that will decide to block entering
++		// war mode or not.
++		1: allowWar := ProcessWarMode(who);
++		default: return 0;
++	endcase
++
++	// If allowWar is 1 or higher, allow the core to handle this
++	// packet. Else, create a denial packet, send it, and then block
++	// the request from the core.
++	if(allowWar)
++		return 0;
++	else
++		var denyPacket := CreatePacket(0x72, 5);
++		denyPacket.SetInt8(BYTE_FLAG, 0);
++		denyPacket.SetInt8(3, 0x32);
++		denyPacket.SendPacket(who);
++		return 1;
++	endif
++
++endfunction
++
++
++// By returning 1 in this function, it means &quot;Allow them to
++// enter war mode&quot;. If you return 0, it will BLOCK and deny them
++// entering war mode. The packet will NOT be sent to the core to
++// let the core decide if they can, and they will be sent a packet
++// to let the client know it was not allowed.
++function ProcessWarMode(who)
++
++	// Used to stop ecompile error messages for unused variables
++	who := who;
++	if( CInt(GetObjProperty(who, &quot;#Peaced&quot;)) &gt; 0 )
++		return 0;
++	endif
++	return 1;
++
++endfunction
+
+Added: trunk/096/pkg/other/packetHooks/WarAndPeace/uopacket.cfg
+===================================================================
+--- trunk/096/pkg/other/packetHooks/WarAndPeace/uopacket.cfg	2005-10-25 15:53:53 UTC (rev 655)
++++ trunk/096/pkg/other/packetHooks/WarAndPeace/uopacket.cfg	2005-10-25 19:09:42 UTC (rev 656)
+@@ -0,0 +1,5 @@
++Packet 0x72
++{
++  Length 0x5
++  ReceiveFunction requestWar:HandleWarRequest
++}
+
+Modified: trunk/096/pkg/skills/musicianship/peacemaking.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/peacemaking.src	2005-10-25 15:53:53 UTC (rev 655)
++++ trunk/096/pkg/skills/musicianship/peacemaking.src	2005-10-25 19:09:42 UTC (rev 656)
+@@ -82,6 +82,9 @@
+ 				ev.+ length;
+ 				ev.length := peace_length_ranged;
+ 				SendEvent(thetarg, ev);
++			elseif( thetarg.acctname )
++				SetObjProperty(thetarg, &quot;#Peaced&quot;, ReadGameClock()+5);
++				thetarg.SetWarMode(0);
+ 			endif
+ 		endforeach
+ 	elseif( peacee.npctemplate )
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000632.html">[Poldistro-svn] r655 - trunk/096/config
+</A></li>
+	<LI>Next message: <A HREF="000630.html">[Poldistro-svn] r657 - in trunk/096/pkg/other/packetHooks: . RequestAttack RequestAttack/config WarAndPeace
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#629">[ date ]</a>
+              <a href="thread.html#629">[ thread ]</a>
+              <a href="subject.html#629">[ subject ]</a>
+              <a href="author.html#629">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

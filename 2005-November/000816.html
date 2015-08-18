@@ -1,0 +1,623 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r842 - in trunk/096: pkg/skills/magery scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r842%20-%20in%20trunk/096%3A%20pkg/skills/magery%20scripts/include&In-Reply-To=%3C200511021946.jA2JkODV001211%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000815.html">
+   <LINK REL="Next"  HREF="000817.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r842 - in trunk/096: pkg/skills/magery scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r842%20-%20in%20trunk/096%3A%20pkg/skills/magery%20scripts/include&In-Reply-To=%3C200511021946.jA2JkODV001211%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r842 - in trunk/096: pkg/skills/magery scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 20:46:24 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000815.html">[Poldistro-svn] r841 - in trunk/096/pkg/skills: herding lockpicking magery
+</A></li>
+        <LI>Next message: <A HREF="000817.html">[Poldistro-svn] r843 - in trunk/096/pkg: skills/taming systems/daynight systems/merchantnodes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#816">[ date ]</a>
+              <a href="thread.html#816">[ thread ]</a>
+              <a href="subject.html#816">[ subject ]</a>
+              <a href="author.html#816">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 20:46:22 +0100 (Wed, 02 Nov 2005)
+New Revision: 842
+
+Removed:
+   trunk/096/pkg/skills/magery/poisonDamage.src
+Modified:
+   trunk/096/pkg/skills/magery/dispel.src
+   trunk/096/pkg/skills/magery/energyField.src
+   trunk/096/pkg/skills/magery/explosion.src
+   trunk/096/pkg/skills/magery/fireField.src
+   trunk/096/pkg/skills/magery/fireball.src
+   trunk/096/pkg/skills/magery/harm.src
+   trunk/096/pkg/skills/magery/incognito.src
+   trunk/096/pkg/skills/magery/magicArrow.src
+   trunk/096/pkg/skills/magery/manaDrain.src
+   trunk/096/pkg/skills/magery/manaVamp.src
+   trunk/096/pkg/skills/magery/massDispel.src
+   trunk/096/pkg/skills/magery/meteorSwarm.src
+   trunk/096/pkg/skills/magery/mindBlast.src
+   trunk/096/pkg/skills/magery/paraField.src
+   trunk/096/pkg/skills/magery/paralyze.src
+   trunk/096/pkg/skills/magery/poison.src
+   trunk/096/pkg/skills/magery/poisonField.src
+   trunk/096/pkg/skills/magery/polymorph.src
+   trunk/096/pkg/skills/magery/reflect.inc
+   trunk/096/pkg/skills/magery/resurrect.src
+   trunk/096/pkg/skills/magery/reveal.src
+   trunk/096/pkg/skills/magery/summon.inc
+   trunk/096/pkg/skills/magery/vortex.src
+   trunk/096/pkg/skills/magery/wallOfStone.src
+   trunk/096/scripts/include/magic.inc
+Log:
+Attribute updates
+
+Modified: trunk/096/pkg/skills/magery/dispel.src
+===================================================================
+--- trunk/096/pkg/skills/magery/dispel.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/dispel.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -22,10 +22,10 @@
+     PlayStationaryEffect( castOn.x, castOn.y, castOn.z, FX_HEAL_EFFECT, 0xa, 0xa,0 , caster.realm );
+     var master := SystemFindObjectBySerial(CInt(GetObjProperty(castOn, &quot;master&quot;)));
+     if(master)
+-      var resist := GetEffectiveSkill(master, SKILLID_MAGICRESISTANCE);
++      var resist := AP_GetSkill(master, RESISTING_SPELLS);
+       if((RandomInt(99) + 1) &lt; resist)
+         MoveCharacterToLocation(castOn,0,0,0,MOVECHAR_FORCELOCATION);
+-        ApplyRawDamage(castOn, GetMaxHp(castOn) + 3);
++        ApplyRawDamage(castOn, AP_GetVitalMaximumValue(caston, HITS) + 3);
+       endif
+       send_attack(caster, castOn, 41);
+     endif
+
+Modified: trunk/096/pkg/skills/magery/energyField.src
+===================================================================
+--- trunk/096/pkg/skills/magery/energyField.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/energyField.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -20,7 +20,7 @@
+   endcase
+   PlaySoundEffect(caster,0x20c);
+   Detach();
+-  var duration := 20 + ( CInt(GetEffectiveSkill( caster, SKILLID_MAGERY ) ) / 3 );
++  var duration := 20 + ( CInt(AP_GetSkill(caster, MAGERY) ) / 3 );
+   sleep(duration);
+   foreach fieldpart in fields
+     DestroyItem(fieldpart);
+
+Modified: trunk/096/pkg/skills/magery/explosion.src
+===================================================================
+--- trunk/096/pkg/skills/magery/explosion.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/explosion.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -27,7 +27,7 @@
+   send_attack(castOn,caster, 43);
+   PlaySoundEffect( castOn, SFX_SPELL_EXPLOSION );
+   PlayStationaryEffect( castOn.x,castOn.y,castOn.z, FX_EXPLODE_3, 7, 0x10, 0 , caster.realm );
+-  if(GetHp(castOn) &gt;= 1)
++  if(AP_GetVital(castOn, HITS) &gt;= 1)
+     if(castOn.npctemplate)
+       dmg := dmg * 2;
+     endif
+
+Modified: trunk/096/pkg/skills/magery/fireField.src
+===================================================================
+--- trunk/096/pkg/skills/magery/fireField.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/fireField.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -17,7 +17,7 @@
+ 	endcase
+ 	PlaySoundEffect(caster, 0x20d);
+ 	Detach();
+-	var duration := 20 + ( CInt(GetEffectiveSkill( caster, SKILLID_MAGERY ) ) / 3 );
++	var duration := 20 + ( CInt(AP_GetSkill(caster, MAGERY) ) / 3 );
+ 	sleep(duration);
+ 	foreach fieldpart in fields
+ 		DestroyItem(fieldpart);
+
+Modified: trunk/096/pkg/skills/magery/fireball.src
+===================================================================
+--- trunk/096/pkg/skills/magery/fireball.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/fireball.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -24,7 +24,7 @@
+     PlaySoundEffect(castOn, 0x15f);
+     castOn := caster;
+   endif
+-  if (GetHp(castOn) &gt;= 1)
++  if (AP_GetVital(castOn, HITS) &gt;= 1)
+     if(castOn.npctemplate)
+       dmg := dmg * 2;
+     endif
+
+Modified: trunk/096/pkg/skills/magery/harm.src
+===================================================================
+--- trunk/096/pkg/skills/magery/harm.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/harm.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -25,7 +25,7 @@
+ 	endif
+ 	PlaySoundEffect(castOn, SFX_SPELL_HARM);
+ 	PlayObjectCenteredEffect( castOn, FX_GLOW_SPIKE, 0x0a,0x1e);
+-	if(GetHp(castOn) &gt;= 1)
++	if(AP_GetVital(castOn, HITS) &gt;= 1)
+ 		if(castOn.npctemplate)
+ 			dmg := dmg * 2;
+ 		endif
+
+Modified: trunk/096/pkg/skills/magery/incognito.src
+===================================================================
+--- trunk/096/pkg/skills/magery/incognito.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/incognito.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -16,7 +16,7 @@
+   PlaySoundEffect(caster, 0x1e1);
+   Detach();
+   set_critical(1);
+-  sleep( 60 * CInt(GetEffectiveSkill( caster, SKILLID_MAGERY )/10 ) );
++  sleep( 60 * CInt(AP_GetSkill(caster, MAGERY)/10 ) );
+   SetName( caster, GetObjProperty( caster, &quot;realname&quot; ) );
+   EraseObjProperty( caster, &quot;realname&quot; );
+ endprogram
+
+Modified: trunk/096/pkg/skills/magery/magicArrow.src
+===================================================================
+--- trunk/096/pkg/skills/magery/magicArrow.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/magicArrow.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -23,7 +23,7 @@
+ 		PlaySoundEffect( castOn, SFX_SPELL_MAGIC_ARROW );
+ 		ApplyRawDamage( caster, Resisted(circle,caster,castOn,dmg) );
+ 	else
+-		if (GetHp(castOn) &gt;= 1)
++		if (AP_GetVital(castOn, HITS) &gt;= 1)
+ 			SetObjProperty(castOn, &quot;LastHit&quot;, {caster.name,caster.serial, &quot;magic arrow&quot; });
+ 			if (castOn.isA(POLCLASS_NPC))
+ 				dmg := dmg * 2;
+
+Modified: trunk/096/pkg/skills/magery/manaDrain.src
+===================================================================
+--- trunk/096/pkg/skills/magery/manaDrain.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/manaDrain.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -26,10 +26,10 @@
+ 	if (diff)
+ 		PlaySoundEffect( caster, SFX_SPELL_MANA_DRAIN );
+ 		PlayObjectCenteredEffect( castOn, FX_HEAL_EFFECT, 7,0x10 );
+-		if (diff &gt; GetMana(castOn))
+-			SetMana(castOn, 0);
++		if (diff &gt; AP_GetVital(castOn, MANA))
++			AP_SetVital(castOn, MANA, 0);
+ 		else
+-			SetMana(castOn, GetMana(castOn) - diff);
++			AP_SetVital(castOn, MANA, AP_GetVital(castOn, MANA) - diff);
+ 		endif
+ 	endif
+ 
+
+Modified: trunk/096/pkg/skills/magery/manaVamp.src
+===================================================================
+--- trunk/096/pkg/skills/magery/manaVamp.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/manaVamp.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -27,16 +27,16 @@
+     PlaySoundEffect(caster, SFX_SPELL_MANA_VAMPIRE);
+     PlayObjectCenteredEffect(castOn, FX_GLOW, 7,0x10);
+     var gain := 0;
+-	if(diff &gt; GetMana(castOn))
+-	  gain := GetMana(castOn);
+-	  SetMana(castOn, 0);
++	if(diff &gt; AP_GetVital(castOn, MANA))
++	  gain := AP_GetVital(castOn, MANA);
++	  AP_SetVital(castOn, MANA, 0);
+ 	else
+ 	  gain := diff;
+-	  SetMana(castOn, GetMana(castOn) - diff);
++	  AP_SetVital(castOn, MANA, AP_GetVital(castOn, MANA) - diff);
+ 	endif
+-	SetMana(caster, GetMana(caster) + gain);
+-	if(GetMana(caster) &gt; GetMaxMana(caster))
+-	  SetMana(caster, GetMaxMana(caster));
++	AP_SetVital(caster, MANA, AP_GetVital(caster, MANA) + gain);
++	if(AP_GetVital(caster, MANA) &gt; AP_GetVitalMaximumValue(caster, MANA))
++	  AP_SetVital(caster, MANA, AP_GetVitalMaximumValue(caster, MANA));
+ 	endif
+   endif
+ 
+
+Modified: trunk/096/pkg/skills/magery/massDispel.src
+===================================================================
+--- trunk/096/pkg/skills/magery/massDispel.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/massDispel.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -32,10 +32,10 @@
+       PlayStationaryEffect( mobile.x, mobile.y, mobile.z, FX_HEAL_EFFECT, 0xa, 0xa,0 , caster.realm );
+       var master := SystemFindObjectBySerial(CInt(GetObjProperty(mobile, &quot;master&quot;)));
+       if(master)
+-        var resist := GetEffectiveSkill(master, SKILLID_MAGICRESISTANCE);
++        var resist := AP_GetSkill(master, RESISTING_SPELLS);
+         if((RandomInt(99) + 1) &lt; resist)
+           MoveCharacterToLocation(mobile,0,0,0,MOVECHAR_FORCELOCATION);
+-          ApplyRawDamage(mobile, GetMaxHp(mobile) + 3);
++          ApplyRawDamage(mobile, AP_GetVitalMaximumValue(mobile, HITS) + 3);
+         endif
+         send_attack(caster, mobile, 41);
+     endif
+
+Modified: trunk/096/pkg/skills/magery/meteorSwarm.src
+===================================================================
+--- trunk/096/pkg/skills/magery/meteorSwarm.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/meteorSwarm.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -30,7 +30,7 @@
+     endif
+ 	dmg := RandomDiceRoll(&quot;6d8&quot;);
+ 	send_attack(mobile,caster, 55);
+-    if(GetHp(mobile) &gt; 1)
++    if(AP_GetVital(mobile, HITS) &gt; 1)
+       if(castOn.npctemplate)
+         dmg := dmg * 2;
+       endif
+
+Modified: trunk/096/pkg/skills/magery/mindBlast.src
+===================================================================
+--- trunk/096/pkg/skills/magery/mindBlast.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/mindBlast.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -15,8 +15,8 @@
+   var spellcfg := ReadConfigFile(&quot;:*:spells&quot;);
+   var circle := spellcfg[spellid].circle;
+ 
+-  var myInt := CInt(GetIntelligence(caster));
+-  var hisInt := CInt(GetIntelligence(castOn));
++  var myInt := CInt(AP_GetStat(caster, INTELLIGENCE));
++  var hisInt := CInt(AP_GetStat(castOn, INTELLIGENCE));
+   SetObjProperty(castOn, &quot;LastHit&quot;, {caster.name,caster.serial, &quot;mind blast&quot; });
+   var modif := myInt - hisInt;
+   if(hisInt &gt; myInt)
+
+Modified: trunk/096/pkg/skills/magery/paraField.src
+===================================================================
+--- trunk/096/pkg/skills/magery/paraField.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/paraField.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -20,7 +20,7 @@
+ 		&quot;EW&quot; : fields:= CreateEastWestField(caster, UOBJ_PARAFIELD_EW, x, y, z, 5);
+ 	endcase
+ 	Detach();
+-	var duration := CInt(GetEffectiveSkill( caster, SKILLID_MAGERY ) )/2;
++	var duration := CInt(AP_GetSkill(caster, MAGERY) )/2;
+ 	if (duration &lt; 20)
+ 		duration := 20;
+ 	endif
+
+Modified: trunk/096/pkg/skills/magery/paralyze.src
+===================================================================
+--- trunk/096/pkg/skills/magery/paralyze.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/paralyze.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -29,8 +29,8 @@
+ 
+ function ParaResist(circle, caster, castOn, amt)
+   var magery := CInt(AP_GetSkill(caster, MAGERY));
+-  var evalint := CInt(GetEffectiveSkill(caster, SKILLID_EVALINT));
+-  var resist := CInt(GetEffectiveSkill(castOn, SKILLID_MAGICRESISTANCE));
++  var evalint := CInt(AP_GetSkill(caster, EVALUATING_INTELLIGENCE));
++  var resist := CInt(AP_GetSkill(castOn, RESISTING_SPELLS));
+   var chk1 := (resist / 5);
+   var chk2 := resist - (((magery - 20) / 5) + (circle * 5));
+   if(chk1 &lt; 1)
+@@ -45,7 +45,7 @@
+   else
+     diff := chk2;
+   endif
+-  var points := getresistpoints(circle, castOn, SKILLID_MAGICRESISTANCE);
++  //var points := getresistpoints(circle, castOn, RESISTING_SPELLS);
+   if(castOn.dead)
+     return 0;
+   endif
+@@ -53,7 +53,7 @@
+ 	SendSysMessage(castOn, &quot;You feel yourself resisting magical energy!&quot;);
+ 	PlaySoundEffect(castOn, SFX_SPELL_WEAKEN);
+ 	PlayObjectCenteredEffect(castOn, FX_CURSE_EFFECT, 5,5);
+-	AwardRawSkillPoints(castOn, SKILLID_MAGICRESISTANCE, points);
++	//AwardRawSkillPoints(castOn, RESISTING_SPELLS, points);
+ 	amt := 0;
+ 	return amt;
+   endif
+
+Modified: trunk/096/pkg/skills/magery/poison.src
+===================================================================
+--- trunk/096/pkg/skills/magery/poison.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/poison.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -6,6 +6,7 @@
+ include &quot;include/tileEffects&quot;;
+ include &quot;:attributes:attributes&quot;;
+ include &quot;:magery:reflect&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ 
+ const EVID_DISCHARGE := 0x123457;
+ 
+@@ -60,8 +61,9 @@
+     if(newamt &gt; 0)
+       SendSysMessage(castOn, &quot;You have been poisoned by &quot; + caster.name +&quot;!&quot;);
+       Detach();
+-      passparms := {castOn, caster, &quot;poison spell&quot;, newamt};
+-      start_script(&quot;:magery:poisonDamage&quot;, passparms);
++      TS_StartTimer(castOn, &quot;defaultPoison&quot;, 20, pLevel);
++      //passparms := {castOn, caster, &quot;poison spell&quot;, newamt};
++      //start_script(&quot;:magery:poisonDamage&quot;, passparms);
+       SetObjProperty(castOn, &quot;LastHit&quot;, {caster.name, caster.serial, &quot;poison spell&quot; });
+     else
+       SendSysMessage(castOn, &quot;You resist the spell completely.&quot;);
+@@ -73,8 +75,8 @@
+ endprogram
+ 
+ function PoisonResist(caster, castOn, amt)
+-  var diff := Cint(AP_GetSkill(caster, MAGERY) + Cint(GetEffectiveSkill(caster, SKILLID_EVALINT) / 10));
+-  if(CheckSkill(castOn, SKILLID_MAGICRESISTANCE, diff, (diff * 2)))
++  var diff := Cint(AP_GetSkill(caster, MAGERY) + Cint(AP_GetSkill(caster, EVALUATING_INTELLIGENCE) / 10));
++  if( SkillCheck(castOn, RESISTING_SPELLS, diff) &gt; 0 )
+     SendSysMessage(castOn, &quot;You feel yourself resisting magical energy!&quot;);
+     PlaySoundEffect(castOn, SFX_SPELL_WEAKEN);
+     PlayObjectCenteredEffect( castOn, FX_CURSE_EFFECT, 5,5);
+
+Deleted: trunk/096/pkg/skills/magery/poisonDamage.src
+===================================================================
+--- trunk/096/pkg/skills/magery/poisonDamage.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/poisonDamage.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -1,34 +0,0 @@
+-use uo;
+-use os;
+-use util;
+-
+-include &quot;include/client&quot;;
+-include &quot;:attributes:attributes&quot;;
+-include &quot;:timedscripts:timedScripts&quot;;
+-include &quot;include/spellRestrictions&quot;;
+-
+-
+-program spell_poisonDamage(passparms)
+-	var who      := passparms[1];
+-	var attacker := passparms[2];
+-	var weapon   := passparms[3];
+-	var level    := passparms[4];
+-	var pfield   := Cint(passparms[5]);
+-	weapon := weapon;
+-	if (who.npctemplate)
+-		//var npccfg := ReadConfigFile(&quot;::npcdesc&quot;);
+-		if (who.npctemplate == &quot;bladespirit&quot;)
+- 			return;
+-		endif
+-	elseif (who.cmdlevel &gt; 1)
+-		return;
+-	endif
+-	TS_StartTimer(who, &quot;defaultPoison&quot;, 120, level, attacker);
+-	if (pfield == 1)
+-		PrintTextAbovePrivate(who, &quot;You choke on the noxious fumes!&quot;, who);
+-		var dmg := Resisted(5, attacker, who, CInt(GetAttribute(attacker, &quot;magery&quot;) / 25));
+-		ApplyRawDamage(who, dmg);
+-	endif
+-
+-	return;
+-endprogram
+
+Modified: trunk/096/pkg/skills/magery/poisonField.src
+===================================================================
+--- trunk/096/pkg/skills/magery/poisonField.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/poisonField.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -19,7 +19,7 @@
+ 	&quot;EW&quot; : fields:= CreateEastWestField(caster, UOBJ_POISONFIELD_EW, x, y, z, 5);
+   endcase
+   Detach();
+-  var duration := 20 + ( CInt(GetEffectiveSkill( caster, SKILLID_MAGERY ) ) / 3 );
++  var duration := 20 + ( CInt(AP_GetSkill(caster, MAGERY) ) / 3 );
+   sleep(duration);
+   foreach fieldpart in fields
+     DestroyItem(fieldpart);
+
+Modified: trunk/096/pkg/skills/magery/polymorph.src
+===================================================================
+--- trunk/096/pkg/skills/magery/polymorph.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/polymorph.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -6,8 +6,8 @@
+ program spell_polymorph( parms )
+   var caster := parms.caster;
+   var magery     := CInt(AP_GetSkill(caster, MAGERY));
+-  var meditation := CInt(GetEffectiveSkill(caster, SKILLID_MEDITATION));
+-  var evalint    := CInt(GetEffectiveSkill(caster, SKILLID_EVALINT));
++  var meditation := CInt(AP_GetSkill(caster, MEDITATION));
++  var evalint    := CInt(AP_GetSkill(caster, EVALUATING_INTELLIGENCE));
+   var critgroup;
+   var thecreature;
+   if (magery &lt; 70)
+
+Modified: trunk/096/pkg/skills/magery/reflect.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/reflect.inc	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/reflect.inc	2005-11-02 19:46:22 UTC (rev 842)
+@@ -1,3 +1,7 @@
++use uo;
++use os;
++
++include &quot;include/eventID&quot;;
+ include &quot;include/sound&quot;;
+ include &quot;include/tileEffects&quot;;
+ 
+
+Modified: trunk/096/pkg/skills/magery/resurrect.src
+===================================================================
+--- trunk/096/pkg/skills/magery/resurrect.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/resurrect.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -37,11 +37,11 @@
+       ev.type := EVID_ENGAGED;
+       SendEvent(castOn, ev);
+       PlayObjectCenteredEffect(castOn, 0x37b9,0x03, 0x0a);
+-      if(CheckSkill(castOn,SKILLID_MAGICRESISTANCE, 70, 800))
++      if( SkillCheck(castOn, RESISTING_SPELLS, 70) &gt; 0 )
+         var dmg := CalcSpellDamage(circle,caster) + (RandomInt(20));
+         ApplyRawDamage(castOn, dmg);
+       else
+-        ApplyRawDamage(castOn, GetHp(castOn) +1);
++        ApplyRawDamage(castOn, AP_GetVital(castOn, HITS) +1);
+       endif
+     endif
+   else
+
+Modified: trunk/096/pkg/skills/magery/reveal.src
+===================================================================
+--- trunk/096/pkg/skills/magery/reveal.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/reveal.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -8,7 +8,7 @@
+ 
+ program reveal(parms)
+   var caster := parms.caster;
+-  var range := ( GetEffectiveSkill( caster, SKILLID_MAGERY  )/10 ) - 5;
++  var range := ( AP_GetSkill( caster, MAGERY  )/10 ) - 5;
+   if (range &lt; 1)
+ 	range := 1;
+   endif
+@@ -33,8 +33,8 @@
+ 
+ 
+ function Found(finder, hider)
+-  var magic_skill := Resisted(6, finder, hider, GetEffectiveSkill( finder, SKILLID_MAGERY ));
+-  var resist := (GetEffectiveSkill( finder, SKILLID_MAGICRESISTANCE)/1.5);
++  var magic_skill := Resisted(6, finder, hider, AP_GetSkill( finder, MAGERY ));
++  var resist := (AP_GetSkill( finder,RESISTING_SPELLS)/1.5);
+   if ( magic_skill &gt; resist )
+ 	return 1;
+   else
+
+Modified: trunk/096/pkg/skills/magery/summon.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/summon.inc	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/summon.inc	2005-11-02 19:46:22 UTC (rev 842)
+@@ -31,10 +31,11 @@
+   SetObjProperty(thecritter, &quot;happiness&quot;,100);
+   SetObjProperty(thecritter, &quot;summoned&quot;,1);
+   RestartScript(thecritter);
+-  SetBaseSkillBaseValue( thecritter, SKILLID_MAGICRESISTANCE,  magery * 10  );
++  //SetBaseSkillBaseValue( thecritter, SKILLID_MAGICRESISTANCE,  magery * 10  );
++  AP_SetTrueSkill(thecritter, RESISTING_SPELLS, magery*10);
+   sleep(duration);
+   PlaySoundEffect( thecritter, SFX_SPELL_MANA_VAMPIRE );
+   PlayStationaryEffect( thecritter.x, thecritter.y, thecritter.z, FX_SMOKE, 0xa, 0xa, 0, caster.realm );
+   MoveCharacterToLocation(thecritter,0,0,0,MOVECHAR_FORCELOCATION);
+-  ApplyRawDamage(thecritter, GetHp(thecritter) + 3);
++  ApplyRawDamage(thecritter, AP_GetVital(thecritter, HITS) + 3);
+ endfunction
+
+Modified: trunk/096/pkg/skills/magery/vortex.src
+===================================================================
+--- trunk/096/pkg/skills/magery/vortex.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/vortex.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -16,9 +16,9 @@
+   SetObjProperty(thecritter, &quot;summoned&quot;,1);
+   SetObjProperty(thecritter, &quot;master&quot;, caster.serial);
+   Detach();
+-  sleep( (GetEffectiveSkill( caster, SKILLID_MAGERY ) ) );
++  sleep( (AP_GetSkill(caster, MAGERY) ) );
+   PlaySoundEffect( thecritter, SFX_SPELL_MANA_VAMPIRE );
+   PlayStationaryEffect( thecritter.x, thecritter.y, thecritter.z, FX_SMOKE, 0xa, 0xa, 0, caster.realm );
+   MoveCharacterToLocation(thecritter,0,0,0,MOVECHAR_FORCELOCATION);
+-  ApplyRawDamage(thecritter, GetHp(thecritter) + 3);
++  ApplyRawDamage(thecritter, AP_GetVital(thecritter, HITS) + 3);
+ endprogram
+
+Modified: trunk/096/pkg/skills/magery/wallOfStone.src
+===================================================================
+--- trunk/096/pkg/skills/magery/wallOfStone.src	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/pkg/skills/magery/wallOfStone.src	2005-11-02 19:46:22 UTC (rev 842)
+@@ -20,7 +20,7 @@
+ 	&quot;EW&quot; : fields:= CreateEastWestField(caster, 0x80, x, y, z, 5);
+   endcase
+   Detach();
+-  duration := CInt(GetEffectiveSkill( caster, SKILLID_MAGERY ) )/2;
++  duration := CInt(AP_GetSkill(caster, MAGERY) )/2;
+   if (duration &lt; 20)
+     duration := 20;
+   endif
+
+Modified: trunk/096/scripts/include/magic.inc
+===================================================================
+--- trunk/096/scripts/include/magic.inc	2005-11-02 18:46:59 UTC (rev 841)
++++ trunk/096/scripts/include/magic.inc	2005-11-02 19:46:22 UTC (rev 842)
+@@ -8,9 +8,9 @@
+   // called by: most spells
+   // returns: amount of damage not resisted?
+ 
+-  var magery := CInt(GetEffectiveSkill(caster, SKILLID_MAGERY));
+-  var evalint := CInt(GetEffectiveSkill(caster, SKILLID_EVALINT));
+-  var resist := CInt(GetEffectiveSkill(cast_on, SKILLID_MAGICRESISTANCE));
++  var magery := CInt(AP_GetSkill(caster, MAGERY));
++  var evalint := CInt(AP_GetSkill(caster, EVALINT));
++  var resist := CInt(AP_GetSkill(cast_on, RESISTING_SPELLS));
+         
+   // chk1 relates to the resist ability.
+   var chk1 := (resist / 5);
+@@ -33,14 +33,13 @@
+     diff := chk2;
+   endif
+         
+-  var points := getresistpoints(circle, cast_on, SKILLID_MAGICRESISTANCE);
+   if(cast_on.dead)
+     return 0;
+   endif
+-  if(CheckSkill(cast_on, SKILLID_MAGICRESISTANCE, diff, points))
++  if( SkillCheck(cast_on, RESISTING_SPELLS, diff) &gt; 0 )
+     SendSysMessage(cast_on, &quot;You feel yourself resisting magical energy!&quot;);
+-    PlaySoundEffect(cast_on, SFX_SPELL_WEAKEN);
+-    PlayObjectCenteredEffect(cast_on, FX_CURSE_EFFECT, 5,5);
++    //PlaySoundEffect(cast_on, SFX_SPELL_WEAKEN);
++    //PlayObjectCenteredEffect(cast_on, FX_CURSE_EFFECT, 5,5);
+     amt := (amt * 0.5);
+     if(amt &lt; 1)
+       amt := 1;
+@@ -69,7 +68,7 @@
+     7:   points := 160; diff := 86;
+     8:   points := 180; diff := 100;
+   endcase
+-  var skill := GetEffectiveSkill(victim, skillid);
++  var skill := AP_GetSkill(victim, skillid);
+   if(skill &gt; (diff - 20))
+     if((skill - diff) &lt;= 5)
+       points := points;
+@@ -89,7 +88,7 @@
+ function CalcSpellDamage(circle, caster)
+   var die_string := circle+&quot;d8&quot;;
+   var dmg := RandomDiceRoll(die_string);
+-  dmg := dmg + CInt(GetEffectiveSkill(caster, SKILLID_MAGERY)/10);
++  dmg := dmg + CInt(AP_GetSkill(caster, MAGERY)/10);
+   if(dmg &gt; (circle * 8))
+     dmg := circle * 8;
+   endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000815.html">[Poldistro-svn] r841 - in trunk/096/pkg/skills: herding lockpicking magery
+</A></li>
+	<LI>Next message: <A HREF="000817.html">[Poldistro-svn] r843 - in trunk/096/pkg: skills/taming systems/daynight systems/merchantnodes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#816">[ date ]</a>
+              <a href="thread.html#816">[ thread ]</a>
+              <a href="subject.html#816">[ subject ]</a>
+              <a href="author.html#816">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

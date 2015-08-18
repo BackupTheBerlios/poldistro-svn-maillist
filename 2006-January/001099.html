@@ -1,0 +1,283 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1128 - in trunk/096/pkg/multis/boat: commands commands/gm include multi tiller
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1128%20-%20in%20trunk/096/pkg/multis/boat%3A%20commands%20commands/gm%20include%20multi%20tiller&In-Reply-To=%3C200601121225.k0CCPCUj006768%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001098.html">
+   <LINK REL="Next"  HREF="001100.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1128 - in trunk/096/pkg/multis/boat: commands commands/gm include multi tiller</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1128%20-%20in%20trunk/096/pkg/multis/boat%3A%20commands%20commands/gm%20include%20multi%20tiller&In-Reply-To=%3C200601121225.k0CCPCUj006768%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1128 - in trunk/096/pkg/multis/boat: commands commands/gm include multi tiller">austin at berlios.de
+       </A><BR>
+    <I>Thu Jan 12 13:25:12 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001098.html">[Poldistro-svn] r1127 - trunk/096/scripts/misc
+</A></li>
+        <LI>Next message: <A HREF="001100.html">[Poldistro-svn] r1129 - trunk/096/pkg/mobiles/brainAI/scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1099">[ date ]</a>
+              <a href="thread.html#1099">[ thread ]</a>
+              <a href="subject.html#1099">[ subject ]</a>
+              <a href="author.html#1099">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-12 13:25:11 +0100 (Thu, 12 Jan 2006)
+New Revision: 1128
+
+Added:
+   trunk/096/pkg/multis/boat/commands/gm/
+   trunk/096/pkg/multis/boat/commands/gm/restartboat.src
+Modified:
+   trunk/096/pkg/multis/boat/include/cmdParser.inc
+   trunk/096/pkg/multis/boat/multi/listener.src
+   trunk/096/pkg/multis/boat/tiller/methods.src
+   trunk/096/pkg/multis/boat/tiller/use.src
+Log:
+Added a command to restart a boat's controller script (.restartboat)
+Fixed issues with the parser and listener script.
+Boats will now correctly move around and follow commands.
+
+
+
+Added: trunk/096/pkg/multis/boat/commands/gm/restartboat.src
+===================================================================
+--- trunk/096/pkg/multis/boat/commands/gm/restartboat.src	2006-01-12 11:36:21 UTC (rev 1127)
++++ trunk/096/pkg/multis/boat/commands/gm/restartboat.src	2006-01-12 12:25:11 UTC (rev 1128)
+@@ -0,0 +1,34 @@
++/* $Id$
++ *
++ *
++ */
++
++use uo;
++use os;
++
++program RestartBoat(who)
++	SendSysMessage(who, &quot;Target the tillerman.&quot;);
++	var targ := target(who);
++	
++	if ( !targ.IsTillerMan() )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++	
++	var process := GetProcess(GetObjProperty(targ, &quot;#PID&quot;));
++	process.Kill();
++	EraseObjProperty(targ, &quot;#PID&quot;);
++	
++	var multi := targ.multi;
++	
++	var result := start_script(&quot;:boat:multi/listener&quot;, multi);
++	
++	if ( result.errortext )
++		PrintTextAbove(multi.tillerman, &quot;Error initializing control script&quot;);
++		PrintTextAbove(multi.tillerman, &quot;&quot;+result.errortext);
++	else
++		SendSysMessage(who, &quot;Done!&quot;);
++	endif
++	
++	return result;
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/multis/boat/include/cmdParser.inc
+===================================================================
+--- trunk/096/pkg/multis/boat/include/cmdParser.inc	2006-01-12 11:36:21 UTC (rev 1127)
++++ trunk/096/pkg/multis/boat/include/cmdParser.inc	2006-01-12 12:25:11 UTC (rev 1128)
+@@ -20,14 +20,18 @@
+  * Returns an array of strings.
+  *
+  */
+-function ParseCommands(byref text)
++function ParseCommands(text)
+ 	var cmd_cfg := ReadConfigFile(&quot;:boat:config/commands&quot;);
+-	var cmd_elem := GetConfigStringArray(cmd_cfg[&quot;heirarchy&quot;], &quot;CMD&quot;);
++	if ( cmd_cfg.errortext )
++		SysLog(&quot;Error - Unable to open :boat:config/commands.cfg&quot;);
++		return cmd_cfg;
++	endif	
+ 	
++	var cmd_list := GetConfigStringArray(cmd_cfg[&quot;heirarchy&quot;], &quot;CMD&quot;);
+ 	text := Lower(text);
+ 		
+ 	var match := 0, pos := 0;
+-	foreach cmd in ( cmd_elem )
++	foreach cmd in ( cmd_list )
+ 		pos := pos + 1;
+ 		cmd := Lower(cmd);
+ 		while ( text[cmd] )
+@@ -41,18 +45,18 @@
+ 		return 0;
+ 	endif
+ 
+-	var cmd_list := array{};
++	var cmd_order := array{};
+ 	text := SplitWords(text);
+ 	foreach cmd in ( text )
+ 		if ( cmd[&quot;[[&quot;] &amp;&amp; cmd[&quot;]]&quot;] )
+ 			cmd[&quot;[[&quot;] := &quot;&quot;;
+ 			cmd[&quot;]]&quot;] := &quot;&quot;;
+ 			cmd := cmd_list[CInt(cmd)];
+-			cmd_list.Append(cmd);
++			cmd_order.Append(cmd);
+ 		endif
+ 		sleepms(2);
+ 	endforeach
+ 	text := &quot;&quot;;
+ 
+-	return cmd_list;
++	return cmd_order;
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/multis/boat/multi/listener.src
+===================================================================
+--- trunk/096/pkg/multis/boat/multi/listener.src	2006-01-12 11:36:21 UTC (rev 1127)
++++ trunk/096/pkg/multis/boat/multi/listener.src	2006-01-12 12:25:11 UTC (rev 1128)
+@@ -20,7 +20,7 @@
+ 	while ( boat )
+ 		var ev;
+ 		
+-		if ( repeat_cmd != -1 &amp;&amp; !Events_Waiting() )
++		if ( repeat_cmd == -1 &amp;&amp; !Events_Waiting() )
+ 			while ( !ev )
+ 				if ( last_sound &lt; polcore().systime-120 )
+ 					PlaySoundEffect(boat, 0x14);
+@@ -41,6 +41,7 @@
+ 		sleepms(delay);		
+ 				
+ 		if ( ev.text )
++			
+ 			if ( (boat.tillerman).IsOnBoat(boat, ev.source) )
+ 				if ( (boat.tillerman).CanCommand(ev.source) )
+ 					var cmd_list := ParseCommands(ev.text);
+@@ -63,22 +64,35 @@
+ endprogram
+ 
+ function Initialize(boat)
+-	while ( !(boat.tillerman).GetOwner() )
+-		sleep(2);
+-	endwhile
+-	
+ 	SetObjProperty(boat.tillerman, &quot;#PID&quot;, GetPid());
+ 	
+-	//ToDo:
+-	//Consider checking the size of the boat then set this accordingly.
+-	RegisterForSpeechEvents(boat, 15);
++	if ( !(boat.tillerman).GetOwner() )
++		SetName(boat.tillerman, &quot;a tiller man [awaiting owner]&quot;);
++		while ( !(boat.tillerman).GetOwner() )
++			sleep(2);
++		endwhile
++		var name := (boat.tillerman).desc;
++		name[&quot; [awaiting owner]&quot;] := &quot;&quot;;
++		SetName(boat.tillerman, name);
++	endif
+ 	
++	// Ensures the boat only listens as far as it needs to from its mid-point (usually the mast)
++	var foot_print := boat.footprint;
++	var bow_dist := CoordinateDistance(foot_print.xmin, foot_print.ymin, boat.x, boat.y);
++	var stern_dist := CoordinateDistance(foot_print.xmax, foot_print.ymax, boat.x, boat.y);
++	if ( bow_dist &gt; stern_dist )
++		foot_print := bow_dist;
++	else
++		foot_print := stern_dist;
++	endif
++	RegisterForSpeechEvents(boat, foot_print);
++	
+ 	return 1;
+ endfunction
+ 
+ function DoCommand(byref boat, byref cmd)
+ 	var cmd_cfg := ReadConfigFile(&quot;:boat:config/commands&quot;);
+-	var cmd_elem := GetConfigStringArray(cmd_cfg[cmd], &quot;CMD&quot;);
++	var cmd_elem := cmd_cfg[cmd];
+ 	
+ 	if ( cmd_elem.Anchor == 2 )
+ 		if ( !(boat.tillerman).IsAnchored() )
+
+Modified: trunk/096/pkg/multis/boat/tiller/methods.src
+===================================================================
+--- trunk/096/pkg/multis/boat/tiller/methods.src	2006-01-12 11:36:21 UTC (rev 1127)
++++ trunk/096/pkg/multis/boat/tiller/methods.src	2006-01-12 12:25:11 UTC (rev 1128)
+@@ -8,6 +8,10 @@
+ 	return 1;
+ endprogram
+ 
++exported function IsTillerMan(tiller)
++	return 1;
++endfunction
++
+ exported function GetMulti(tiller)
+ 	return SystemFindBoatBySerial((tiller.multi).serial);
+ endfunction
+
+Modified: trunk/096/pkg/multis/boat/tiller/use.src
+===================================================================
+--- trunk/096/pkg/multis/boat/tiller/use.src	2006-01-12 11:36:21 UTC (rev 1127)
++++ trunk/096/pkg/multis/boat/tiller/use.src	2006-01-12 12:25:11 UTC (rev 1128)
+@@ -6,7 +6,24 @@
+ use uo;
+ 
+ include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:yesno&quot;;
+ 
+ program UseScript(who, tillerman)
++	if ( who.cmdlevel )
++		if ( !tillerman.GetOwner() )
++			TakeOverBoat(who, tillerman);
++		endif
++	endif
++		
+ 	return 1;
+ endprogram
++
++function TakeOverBoat(who, tillerman)
++	if ( YesNo(who, &quot;Do you want to set yourself as the owner of this boat?&quot;) )
++		tillerman.SetOwner(who);
++		SendSysMessage(who, &quot;Done!&quot;);
++		return 1;
++	endif
++	
++	return 0;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001098.html">[Poldistro-svn] r1127 - trunk/096/scripts/misc
+</A></li>
+	<LI>Next message: <A HREF="001100.html">[Poldistro-svn] r1129 - trunk/096/pkg/mobiles/brainAI/scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1099">[ date ]</a>
+              <a href="thread.html#1099">[ thread ]</a>
+              <a href="subject.html#1099">[ subject ]</a>
+              <a href="author.html#1099">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

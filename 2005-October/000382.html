@@ -1,0 +1,509 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r404 - trunk/096/pkg/utils/gumps/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r404%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200510042041.j94KfYf7004277%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000381.html">
+   <LINK REL="Next"  HREF="000383.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r404 - trunk/096/pkg/utils/gumps/include</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r404%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200510042041.j94KfYf7004277%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r404 - trunk/096/pkg/utils/gumps/include">panosl at berlios.de
+       </A><BR>
+    <I>Tue Oct  4 22:41:34 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000381.html">[Poldistro-svn] r403 - in trunk/096/pkg/commands: coun gm
+</A></li>
+        <LI>Next message: <A HREF="000383.html">[Poldistro-svn] r405 - trunk/096/pkg/items/containers/corpse
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#382">[ date ]</a>
+              <a href="thread.html#382">[ thread ]</a>
+              <a href="subject.html#382">[ subject ]</a>
+              <a href="author.html#382">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-10-04 22:41:34 +0200 (Tue, 04 Oct 2005)
+New Revision: 404
+
+Modified:
+   trunk/096/pkg/utils/gumps/include/gumps.inc
+   trunk/096/pkg/utils/gumps/include/gumps_ex.inc
+Log:
+
+
+Modified: trunk/096/pkg/utils/gumps/include/gumps.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/gumps.inc	2005-10-04 10:49:34 UTC (rev 403)
++++ trunk/096/pkg/utils/gumps/include/gumps.inc	2005-10-04 20:41:34 UTC (rev 404)
+@@ -1,92 +1,43 @@
+-/*===============================================================
+-* Current Version
+-* GUMPS.INC - v0.3
+-* include &quot;:gumps:includes/gumps&quot;;
+-*
+-* -- Revision v0.3 --
+-* Austin
+-*  Added:
+-*      Support for setting arbitrary data locations for GFTextEntry()
+-*
+-* -- Revision v0.2 --
+-* Austin
+-*  Added:
+-*	Support for setting arbitrary button ID's and automatic assignments.
+-*	Ability to change a gumps 'NoMove' 'NoClose' 'NoDispose' settings multiple times.
+-*	XGFError()
+-*  Changed:
+-*	Function names and prototypes to better match the old gumps.inc for faster migration time.
+-*	Rewrote various functions for improved error checking and utility. Will document better later
+-	on as a lot of code was changed (Sorry, Melanius!)
+-*
+-* -- Revision v0.1 --
+-* Melanius
+-*  First version created to handle gumps as an object rather than as a global variable.
+-*  This new include now allows multiple gumps to be handled in a single script as well
+-*  as allowing easier saving of them.
+-*  Added:
+-*	AddCheckBox()
+-*	AddGumpButton()
+-*	AddGumpPic()
+-*	AddHTML()
+-*	AddHTMLLocalized()
+-*	AddLabel()
+-*	AddLabelCropped()
+-*	AddPage()
+-*	AddRadioButton()
+-*	AddRadioGroup()
+-*	AddTextInput()
+-*	AddTilePic()
+-*	CreateGump()
+-*	Disposable()
+-*	Movable()
+-*	ResizePic()
+-*	SendGump()
+-*
+-===============================================================*/
+-
++/* $Id$
++ *
++ * Purpose
++ * TODO
++ *
++ * Function List
++ * GFAddButton(byref gump, x, y, off_id, on_id, btn_type:=GF_PAGE_BTN, btn_value:=0)
++ * GFAddHTMLLocalized(byref gump, x, y, width, height, cliloc, background, scrollbar, hue := 0)
++ * GFCheckBox(byref gump, x, y, unc_id, che_id, status:=0, btn_value:=0)
++ * GFCreateGump(x:=0, y:=0, width:=0, height:=0)
++ * GFDisposable(byref gump, bool)
++ * GFExtractData(input, data_id)
++ * GFGumpPic(byref gump, x, y, gump_id, hue := 0)
++ * GFHTMLArea(byref gump, x, y, width, height, text, background:=0, scrollbar:=0)
++ * GFMovable(byref gump, bool)
++ * GFPage(byref gump, page_num)
++ * GFRadioButton(byref gump, x, y, unp_id, pres_id, status:=0, btn_value:=0)
++ * GFResizePic(byref gump, x, y, gump_id, width:=0, height:=0)
++ * GFSendGump(who, byref gump)
++ * GFSetRadioGroup(byref gump, group_id)
++ * GFTextCrop(byref gump, x, y, width, height, hue:=0, text:=&quot;&quot;)
++ * GFTextEntry(byref gump, x, y, width, height, txt_color, ini_text:=&quot;&quot;)
++ * GFTextLine(byref gump, x, y, hue:=0, text:=&quot;&quot;)
++ * GFTilePic(byref gump, x, y, tile_id, hue := 0)
++ *
++ * Private Function List
++ * XGFError(text)
++ * XGFAddToLayout(byref gump, string)
++ *
++ */
+ use uo;
+ use os;
+ use basic;
+ 
+-/////////////////////////////////////////////////////////////////
+-// * Function List *
+-//
+-// GFAddButton(byref gump, x, y, off_id, on_id, btn_type:=GF_PAGE_BTN, btn_value:=0)
+-// GFAddHTMLLocalized(byref gump, x, y, width, height, cliloc, background, scrollbar, hue := 0)
+-// GFCheckBox(byref gump, x, y, unc_id, che_id, status:=0, btn_value:=0)
+-// GFCreateGump(x:=0, y:=0, width:=0, height:=0)
+-// GFDisposable(byref gump, bool)
+-// GFExtractData(input, data_id)
+-// GFGumpPic(byref gump, x, y, gump_id, hue := 0)
+-// GFHTMLArea(byref gump, x, y, width, height, text, background:=0, scrollbar:=0)
+-// GFMovable(byref gump, bool)
+-// GFPage(byref gump, page_num)
+-// GFRadioButton(byref gump, x, y, unp_id, pres_id, status:=0, btn_value:=0)
+-// GFResizePic(byref gump, x, y, gump_id, width:=0, height:=0)
+-// GFSendGump(who, byref gump)
+-// GFSetRadioGroup(byref gump, group_id)
+-// GFTextCrop(byref gump, x, y, width, height, hue:=0, text:=&quot;&quot;)
+-// GFTextEntry(byref gump, x, y, width, height, txt_color, ini_text:=&quot;&quot;)
+-// GFTextLine(byref gump, x, y, hue:=0, text:=&quot;&quot;)
+-// GFTilePic(byref gump, x, y, tile_id, hue := 0)
+-//
+-/////////////////////////////////////////////////////////////////
+-// * Internal/Private Function List *
+-//
+-// XGFError(text)
+-// XGFAddToLayout(byref gump, string)
+-//
+-/////////////////////////////////////////////////////////////////
+-// * Global Variables *
+-//
+ // Constants for the GFAddButton() function
+ const GF_PAGE_BTN	:= 0x0;
+ const GF_CLOSE_BTN	:= 0x1;
+ const GF_DUMMY_BTN	:= 0x2;
+-//
+-/////////////////////////////////////////////////////////////////
+ 
++
+ /*
+  * GFCreateGump(x, y, width, height)
+  *
+@@ -132,6 +83,7 @@
+ 	return(gump);
+ endfunction
+ 
++
+ /*
+  * GFClosable(byref gump, bool)
+  *
+@@ -171,6 +123,7 @@
+ 	return 1;
+  endfunction
+ 
++
+ /*
+  * GFDisposable(byref gump, bool)
+  *
+@@ -214,6 +167,7 @@
+ 	return 1;
+  endfunction
+ 
++
+ /*
+  * GFMovable(byref gump, bool)
+  *
+@@ -253,6 +207,7 @@
+ 	return 1;
+  endfunction
+ 
++
+ /*
+  * GFPage(byref gump, page_num)
+  *
+@@ -281,6 +236,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFResizePic(byref gump, x, y, gump_id, width, height)
+  *
+@@ -314,6 +270,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFAddAlphaRegion(byref gump, x, y, width, height)
+  *
+@@ -337,6 +294,7 @@
+ 	return 1;
+  endfunction
+ 
++
+ /*
+  * GFAddButton(byref gump, x, y, off_id, on_id, btn_type, btn_value)
+  *
+@@ -361,7 +319,6 @@
+  * Return value is the button value.
+  *
+  */
+-
+ function GFAddButton(byref gump, x, y, off_id, on_id, btn_type:=GF_PAGE_BTN, btn_value:=0)
+ 	var line := &quot;Button &quot; + CStr(gump.base.x + x) + &quot; &quot; + CStr(gump.base.y + y) + &quot; &quot; + CStr(off_id) + &quot; &quot; + CStr(on_id);
+ 
+@@ -384,6 +341,7 @@
+ 	return (btn_value);
+ endfunction
+ 
++
+ /*
+  * GFCheckBox(byref gump, x, y, unc_id, che_id, status, btn_value)
+  *
+@@ -431,6 +389,7 @@
+ 	return (btn_value);
+ endfunction
+ 
++
+ /*
+  * GFSetRadioGroup(byref gump, group_id)
+  *
+@@ -453,6 +412,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFHTMLArea(byref gump, x, y, width, height, text, background, scrollbar)
+  *
+@@ -485,6 +445,7 @@
+ 	return (index);
+ endfunction
+ 
++
+ /*
+  * GFAddHTMLLocalized(byref gump, x, y, width, height, cliloc, background, scrollbar, hue)
+  *
+@@ -507,7 +468,7 @@
+  * No return value.
+  *
+  */
+-function GFAddHTMLLocalized(byref gump, x, y, width, height, cliloc, background, scrollbar, hue:=0)
++function GFAddHTMLLocalized(byref gump, x, y, width, height, cliloc, background:=0, scrollbar:=0, hue:=0)
+ 	if(hue == 0)
+ 		(gump.layout).append(&quot;XMFHTMLGump &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 					+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot; + CStr(cliloc) + &quot; &quot;
+@@ -520,6 +481,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFGumpPic(byref gump, x, y, gump_id, hue)
+  *
+@@ -552,6 +514,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFTilePic(byref gump, x, y, tile_id, hue)
+  *
+@@ -584,6 +547,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFTextLine(byref gump, x, y, hue, text)
+  *
+@@ -610,6 +574,7 @@
+ 	return (index);
+ endfunction
+ 
++
+ /*
+  * GFTextCrop(byref gump, x, y, width, height, hue, text)
+  *
+@@ -640,6 +605,7 @@
+ 	return (index);
+ endfunction
+ 
++
+ /*
+  * GFRadioButton(byref gump, x, y, unp_id, pres_id, status, btn_value)
+  *
+@@ -685,6 +651,7 @@
+ 	return (btn_value);
+ endfunction
+ 
++
+ /*
+  * GFTextEntry(byref gump, x, y, width, height, txt_color, ini_text)
+  *
+@@ -726,6 +693,7 @@
+ 	return (txt_id);
+ endfunction
+ 
++
+ /*
+  * GFSendGump(who, gump)
+  *
+@@ -751,6 +719,7 @@
+ 	return ret_val;
+ endfunction
+ 
++
+ /*
+  * XGFErrorSetup(who, gump)
+  *
+
+Modified: trunk/096/pkg/utils/gumps/include/gumps_ex.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/gumps_ex.inc	2005-10-04 10:49:34 UTC (rev 403)
++++ trunk/096/pkg/utils/gumps/include/gumps_ex.inc	2005-10-04 20:41:34 UTC (rev 404)
+@@ -1,32 +1,18 @@
+-/*===============================================================
+-* Current Version
+-* GUMPS_EX.INC - v0.3
+-* Updated 9/17/2005 2:38AM
+-* include &quot;:gumps:includes/gumps_ex&quot;;
+-*
+-* -- Revision v0.3 --
+-* Austin
+-* Added:
+-*	GFOptimizeGump()
+-*
+-* -- Revision v0.2 --
+-* Austin
+-* Added:
+-*	GFWordWrap()
+-* Changed
+-*	Spaces are 9 pixels instead of 5 in GFTextWidth()
+-*
+-* -- Revision v0.1 --
+-* Austin
+-*  Added:
+-*	GFTextCoords()
+-*	GFTextMid()
+-*	GFTextRight()
+-*	GFExtractData()	- Copied from old-gumps.inc
+-*	GFTextWidth()	- From old-gumps.inc
+-*
+-===============================================================*/
+-
++/* $Id$
++ *
++ * Purpose
++ * TODO
++ *
++ * Function List
++ * GFExtractData()
++ * GFOptimizeGump()
++ * GFTextCoords()
++ * GFTextMid()
++ * GFTextRight()
++ * GFTextWidth()
++ * GFWordWrap()
++ *
++ */
+ use uo;
+ use os;
+ use basic;
+@@ -34,29 +20,11 @@
+ 
+ include &quot;:gumps:include/gumps&quot;;
+ 
+-/////////////////////////////////////////////////////////////////
+-// * Function List *
+-//
+-// GFExtractData()
+-// GFOptimizeGump()
+-// GFTextCoords()
+-// GFTextMid()
+-// GFTextRight()
+-// GFTextWidth()
+-// GFWordWrap()
+-//
+-/////////////////////////////////////////////////////////////////
+-// * Internal/Private Function List *
+-//
+-/////////////////////////////////////////////////////////////////
+-// * Global Variables *
+-//
+ // Constants for GFTextCoords()
+ const ALIGN_CENTER	:= 0x1;
+ const ALIGN_RIGHT	:= 0x2;
+-//
+-/////////////////////////////////////////////////////////////////
+ 
++
+ /*
+  * GFCfgConst(elem_name, prop_name)
+  *
+@@ -94,6 +62,7 @@
+ 	return value;
+ endfunction
+ 
++
+ /*
+  * GFExtractData(input, data_id)
+  *
+@@ -117,6 +86,7 @@
+ 	return ret_val;
+ endfunction
+ 
++
+ /* 
+  * GFOptimizeGump(gump)
+  *
+@@ -166,6 +136,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * GFTextCoords(type, gump_text, x_pos, width)
+  *
+@@ -193,6 +164,7 @@
+ 	endif
+ endfunction
+ 
++
+ /*
+  * GFTextMid(gump, x, y, width, color, text)
+  *
+@@ -216,6 +188,7 @@
+ 	return GFTextLine(gump, x_pos, y, color, text);
+ endfunction
+ 
++
+ /*
+  * GFTextRight(gump, x, y, color, text)
+  *
+@@ -238,6 +211,7 @@
+ 	return GFTextLine(gump, x_pos, y, color, text);
+ endfunction
+ 
++
+ /*
+  * GFGetTextWidth(char)
+  *
+@@ -294,6 +268,7 @@
+ 	return (points);
+ endfunction
+ 
++
+ /*
+  * GFWordWrap(text, pixels)
+  *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000381.html">[Poldistro-svn] r403 - in trunk/096/pkg/commands: coun gm
+</A></li>
+	<LI>Next message: <A HREF="000383.html">[Poldistro-svn] r405 - trunk/096/pkg/items/containers/corpse
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#382">[ date ]</a>
+              <a href="thread.html#382">[ thread ]</a>
+              <a href="subject.html#382">[ subject ]</a>
+              <a href="author.html#382">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

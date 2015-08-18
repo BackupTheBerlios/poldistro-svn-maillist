@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r502 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r502%20-%20trunk/096/scripts/include&In-Reply-To=%3C200510092227.j99MRSfD020160%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000474.html">
+   <LINK REL="Next"  HREF="000476.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r502 - trunk/096/scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r502%20-%20trunk/096/scripts/include&In-Reply-To=%3C200510092227.j99MRSfD020160%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r502 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 00:27:28 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000474.html">[Poldistro-svn] r501 - trunk/096/pkg/systems/merchantnodes
+</A></li>
+        <LI>Next message: <A HREF="000476.html">[Poldistro-svn] r503 - trunk/096/scripts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#475">[ date ]</a>
+              <a href="thread.html#475">[ thread ]</a>
+              <a href="subject.html#475">[ subject ]</a>
+              <a href="author.html#475">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 00:27:28 +0200 (Mon, 10 Oct 2005)
+New Revision: 502
+
+Modified:
+   trunk/096/scripts/include/resurrection.inc
+Log:
+
+
+Modified: trunk/096/scripts/include/resurrection.inc
+===================================================================
+--- trunk/096/scripts/include/resurrection.inc	2005-10-09 22:20:42 UTC (rev 501)
++++ trunk/096/scripts/include/resurrection.inc	2005-10-09 22:27:28 UTC (rev 502)
+@@ -8,6 +8,7 @@
+ use uo;
+ use os;
+ 
++include &quot;:attributes:attributes&quot;;
+ include &quot;:gumps:gumps&quot;;
+ 
+ const MAXIMUM_LOSS := 0.20; //20% loss for 20 shortterm murders or more
+@@ -45,28 +46,30 @@
+ 		
+ 		multiplier := 1.0 - multiplier;
+ 		
+-		var str := GetStrength(who);
+-		var dex := GetDexterity(who);
+-		var inte := GetIntelligence(who);
++		var str := AP_GetTrueStat(who, &quot;strength&quot;);
++		var dex := AP_GetTrueStat(who, &quot;dexterity&quot;);
++		var inte := AP_GetTrueStat(who, &quot;intelligence&quot;);
+ 	
+ 		str := CInt(str * multiplier);
+ 		dex := CInt(dex * multiplier);
+ 		inte := CInt(inte * multiplier);
+ 	
+-		SetBaseStrength(who,str);
+-		SetBaseDexterity(who,dex);
+-		SetBaseIntelligence(who,inte);
+-		SetHp(who, who.maxhp);
+-		SetStamina(who, who.maxstamina);
+-		SetMana(who, who.maxmana);
++		AP_SetTrueStat(who, &quot;strength&quot;, str);
++		AP_SetTrueStat(who, &quot;dexterity&quot;, dex);
++		AP_SetTrueStat(who, &quot;intelligence&quot;, inte);
+ 		
++		AP_SetVital(who, &quot;hits&quot;, AP_GetVitalMaximumValue(who, &quot;hits&quot;));
++		AP_SetVital(who, &quot;stamina&quot;, AP_GetVitalMaximumValue(who, &quot;stamina&quot;));
++		AP_SetVital(who, &quot;mana&quot;, AP_GetVitalMaximumValue(who, &quot;mana&quot;));
++		
+ 		var skillarray := GetObjProperty(who, &quot;SkillArray&quot;);
+ 		var newval, final;
+-		foreach entry in skillarray
+-			if((GetTrueEffectiveSkill(who, entry)	) &gt; 0.0)
+-				newval:= (GetTrueEffectiveSkill(who, entry)	);
+-				final:=(newval * multiplier);
+-				SetBaseSkillBaseValue(who, entry, CInt(final * 10));
++		
++		foreach entry in (AP_ListAttributesByType(&quot;skill&quot;))
++			var skill_level := AP_GetTrueSkill(who, entry);
++			if ( skill_level &gt; 0.0 )
++				newval := skill_level * multiplier;
++				AP_SetTrueSkill(who, entry, newval);
+ 			endif
+ 		endforeach
+ 		SendSysMessage(who,&quot;Thy body pays the price for thy sins.&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000474.html">[Poldistro-svn] r501 - trunk/096/pkg/systems/merchantnodes
+</A></li>
+	<LI>Next message: <A HREF="000476.html">[Poldistro-svn] r503 - trunk/096/scripts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#475">[ date ]</a>
+              <a href="thread.html#475">[ thread ]</a>
+              <a href="subject.html#475">[ subject ]</a>
+              <a href="author.html#475">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

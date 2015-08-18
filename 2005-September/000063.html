@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r81 - trunk/096
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r81%20-%20trunk/096&In-Reply-To=%3C200509061054.j86AsC3Y003441%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000062.html">
+   <LINK REL="Next"  HREF="000064.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r81 - trunk/096</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r81%20-%20trunk/096&In-Reply-To=%3C200509061054.j86AsC3Y003441%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r81 - trunk/096">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep  6 12:54:12 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000062.html">[Poldistro-svn] r80 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000064.html">[Poldistro-svn] r82 - trunk/096/pkg/other/hooks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#63">[ date ]</a>
+              <a href="thread.html#63">[ thread ]</a>
+              <a href="subject.html#63">[ subject ]</a>
+              <a href="author.html#63">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-06 12:54:07 +0200 (Tue, 06 Sep 2005)
+New Revision: 81
+
+Modified:
+   trunk/096/pol.cfg
+Log:
+Removed entries for port and encryption - They belong in uoclient.cfg
+Removed the line for the .pol files as realms are now used instead.
+
+Modified: trunk/096/pol.cfg
+===================================================================
+--- trunk/096/pol.cfg	2005-09-06 10:32:19 UTC (rev 80)
++++ trunk/096/pol.cfg	2005-09-06 10:54:07 UTC (rev 81)
+@@ -3,23 +3,15 @@
+ #############################################################################
+ 
+ #
+-# UoDataFileRoot: where the UO client files are located
++# Port and encryption settings now handled in UOCLIENT.CFG
+ #
+-UoDataFileRoot=MUL
+ 
+ #
+-# ListenPort: TCP/IP port to listen
+-#  NOTE, if you change this, you probably need to edit
+-#  servers.cfg
++# UoDataFileRoot: where the UO client files are located
+ #
+-ListenPort=5003
++UoDataFileRoot=MUL
+ 
+ #
+-# ClientEncryptionVersion: The client encryption version
+-#                          Supported values: 1.26.4  2.0.0  ignition  uorice  none
+-ClientEncryptionVersion=none
+-
+-#
+ # RetainCleartextPasswords: If you select this, the server will save plain passwords
+ # in the accounts.txt file. If you set it to 0, all will be erased. You can get them back
+ # by changing this back to 1 and successfully logging into the account (for each account)
+@@ -98,21 +90,11 @@
+ #
+ ReportCriticalScripts=0
+ 
+-# UseNewStaticsFile: Large shards will want to set UseNewStaticsFile=1 in pol.cfg.
+-#                    This will create files 'statics0.pol' and 'staidx0.pol',
+-#                    which are smaller versions of statics0.mul and staidx0.mul.
+-#                    These files are then loaded wholly into memory for very fast
+-#                    access for walking height and LOS checks. If this option is
+-#                    enabled, POL uses an additional 11 MB memory
+-UseNewStaticsFile=1
+-
+ #
+ # MaxCallDepth: Maximum function call depth for scripts
+ #
+ MaxCallDepth=100
+ 
+-
+-
+ #############################################################################
+ ## Debugging
+ #############################################################################
+@@ -136,12 +118,12 @@
+ #
+ # DebugPort: TCP/IP port to listen for debugger connections
+ #
+-DebugPort=5004
++DebugPort=5001
+ 
+ #
+ # DebugPassword: Password for debugging
+ #   If none is specified, no password is required.
+-DebugPassword= debugme
++DebugPassword=debugme
+ 
+ #
+ # DebugLocalOnly: Only allow access from localhost
+@@ -156,6 +138,39 @@
+ MiniDumpType=small
+ 
+ #############################################################################
++## Integrated Web Server
++#############################################################################
++
++#
++# WebServer: in multithread mode only, run the internal web server
++#            This may be a security risk.  It's susceptible to DoS attacks.
++#            If someone knows a little about TCP/IP, they could cause you
++#            trouble if it's enabled.
++#
++WebServer=1
++
++#
++# WebServerPort: What TCP/IP port to listen for web requests
++#
++WebServerPort=5000
++
++#
++# WebServerLocalOnly: Only allow access from localhost
++#
++WebServerLocalOnly=0
++
++#
++# WebServerDebug: Print trace information about http requests
++#
++WebServerDebug=0
++
++#
++# WebServerPassword: username/password required for access to the web server.
++#                    if not specified, no password is required.
++#
++WebServerPassword=
++
++#############################################################################
+ ## System Load and Save
+ #############################################################################
+ 
+@@ -192,44 +207,7 @@
+ #
+ EnableSecureTrading=1
+ 
+-
+-
+ #############################################################################
+-## Integrated Web Server
+-#############################################################################
+-
+-#
+-# WebServer: in multithread mode only, run the internal web server
+-#            This may be a security risk.  It's susceptible to DoS attacks.
+-#            If someone knows a little about TCP/IP, they could cause you
+-#            trouble if it's enabled.
+-#
+-WebServer=1
+-
+-#
+-# WebServerPort: What TCP/IP port to listen for web requests
+-#
+-WebServerPort=5002
+-
+-#
+-# WebServerLocalOnly: Only allow access from localhost
+-#
+-WebServerLocalOnly=0
+-
+-#
+-# WebServerDebug: Print trace information about http requests
+-#
+-WebServerDebug=0
+-
+-#
+-# WebServerPassword: username/password required for access to the web server.
+-#                    if not specified, no password is required.
+-#
+-WebServerPassword=
+-
+-
+-
+-#############################################################################
+ ## Experimental Options - Modify at your own risk
+ #############################################################################
+ 
+@@ -240,11 +218,9 @@
+ ExpLosChecksMap=1
+ 
+ 
+-
+ #############################################################################
+ ## Obsolete options - do not modify these
+ #############################################################################
+-
+ #
+ # Keyfile - contains crypto constants for a given client version
+ #
+@@ -263,4 +239,3 @@
+ #   Has no effect in multithread mode
+ #
+ SelectTimeout=0
+-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000062.html">[Poldistro-svn] r80 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000064.html">[Poldistro-svn] r82 - trunk/096/pkg/other/hooks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#63">[ date ]</a>
+              <a href="thread.html#63">[ thread ]</a>
+              <a href="subject.html#63">[ subject ]</a>
+              <a href="author.html#63">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

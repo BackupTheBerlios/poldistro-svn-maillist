@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r279 - in trunk/096/pkg: skills/herding skills/spiritspeak systems/combat systems/nature/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r279%20-%20in%20trunk/096/pkg%3A%20skills/herding%20skills/spiritspeak%20systems/combat%20systems/nature/commands/gm&In-Reply-To=%3C200509281931.j8SJV3JM031793%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000256.html">
+   <LINK REL="Next"  HREF="000258.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r279 - in trunk/096/pkg: skills/herding skills/spiritspeak systems/combat systems/nature/commands/gm</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r279%20-%20in%20trunk/096/pkg%3A%20skills/herding%20skills/spiritspeak%20systems/combat%20systems/nature/commands/gm&In-Reply-To=%3C200509281931.j8SJV3JM031793%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r279 - in trunk/096/pkg: skills/herding skills/spiritspeak systems/combat systems/nature/commands/gm">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Wed Sep 28 21:31:03 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000256.html">[Poldistro-svn] r278 - in trunk/096: pkg/commands/gm pkg/mobiles/brainAI/complete/testnpc pkg/skills/camping pkg/skills/detecthidden pkg/skills/fishing pkg/skills/herding pkg/skills/itemid pkg/skills/magery pkg/skills/musicianship pkg/skills/removetrap pkg/skills/stealth pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking scripts/control scripts/items
+</A></li>
+        <LI>Next message: <A HREF="000258.html">[Poldistro-svn] r280 - in trunk/096/pkg/items/containers: . container include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#257">[ date ]</a>
+              <a href="thread.html#257">[ thread ]</a>
+              <a href="subject.html#257">[ subject ]</a>
+              <a href="author.html#257">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-28 21:31:02 +0200 (Wed, 28 Sep 2005)
+New Revision: 279
+
+Modified:
+   trunk/096/pkg/skills/herding/herd.src
+   trunk/096/pkg/skills/spiritspeak/spiritSpeak.src
+   trunk/096/pkg/systems/combat/bladed.src
+   trunk/096/pkg/systems/nature/commands/gm/desolation.src
+Log:
+Fixes for some misc issues with moved/deleted includes.
+
+Modified: trunk/096/pkg/skills/herding/herd.src
+===================================================================
+--- trunk/096/pkg/skills/herding/herd.src	2005-09-28 19:20:39 UTC (rev 278)
++++ trunk/096/pkg/skills/herding/herd.src	2005-09-28 19:31:02 UTC (rev 279)
+@@ -45,7 +45,7 @@
+                 SendSysMessage(who, &quot;You can't herd that!&quot;);
+                 return;
+         endif
+-	var thepoints := get_default_points(SKILLID_HERDING);
++	var thepoints := 50;
+         if(CheckSkill(who, SKILLID_HERDING, herdskill, thepoints))
+ 
+                 SendSysMessage(who, &quot;Where do you want to move &quot;+ npc.name +&quot; to?&quot;);
+
+Modified: trunk/096/pkg/skills/spiritspeak/spiritSpeak.src
+===================================================================
+--- trunk/096/pkg/skills/spiritspeak/spiritSpeak.src	2005-09-28 19:20:39 UTC (rev 278)
++++ trunk/096/pkg/skills/spiritspeak/spiritSpeak.src	2005-09-28 19:31:02 UTC (rev 279)
+@@ -22,9 +22,9 @@
+ use uo;
+ use os;
+ 
+-include &quot;:attributes:include/attributeConstants&quot;;
+-include &quot;:attributes:include/attributes&quot;;
+-include &quot;:attributes:include/skillCheck&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ include &quot;include/sound&quot;;
+ 
+ CONST SS_RANGE   :=  3;
+
+Modified: trunk/096/pkg/systems/combat/bladed.src
+===================================================================
+--- trunk/096/pkg/systems/combat/bladed.src	2005-09-28 19:20:39 UTC (rev 278)
++++ trunk/096/pkg/systems/combat/bladed.src	2005-09-28 19:31:02 UTC (rev 279)
+@@ -1,3 +1,6 @@
++// //$Id$
++
++
+ use cfgfile;
+ use uo;
+ use os;
+@@ -15,7 +18,7 @@
+ include &quot;:bowcraft:bowcraftFunctions&quot;;
+ include &quot;:tailoring:tailoringFunctions&quot;;
+ include &quot;:fishing:fishingFunctions&quot;;
+-include &quot;:corpses:corpseFunctions&quot;;
++include &quot;:containers:corpse/corpseFunctions&quot;;
+ 
+ var bowcraftconfigfile := ReadConfigFile(&quot;:bowcraft:bowcraft&quot;);
+ 
+
+Modified: trunk/096/pkg/systems/nature/commands/gm/desolation.src
+===================================================================
+--- trunk/096/pkg/systems/nature/commands/gm/desolation.src	2005-09-28 19:20:39 UTC (rev 278)
++++ trunk/096/pkg/systems/nature/commands/gm/desolation.src	2005-09-28 19:31:02 UTC (rev 279)
+@@ -3,7 +3,7 @@
+ use uo;
+ use cfgfile;
+ include &quot;include/std&quot;;
+-include &quot;../../nature&quot;;
++include &quot;:nature:nature&quot;;
+ 
+ program desolation(who, text)
+ 
+@@ -23,17 +23,17 @@
+ 	  UnloadConfigFile(cfg);
+ 
+           case (calendar[MONTH])
+-           
++
+              3:
+              4:
+-             5: 
++             5:
+                 if (seasons)
+                      var everyone := EnumerateOnlineCharacters();
+                      foreach dude in everyone
+                          Season(dude, SEASON_SPRING);
+                      endforeach
+                 endif
+-             6: 
++             6:
+              7:
+              8:
+                 if (seasons)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000256.html">[Poldistro-svn] r278 - in trunk/096: pkg/commands/gm pkg/mobiles/brainAI/complete/testnpc pkg/skills/camping pkg/skills/detecthidden pkg/skills/fishing pkg/skills/herding pkg/skills/itemid pkg/skills/magery pkg/skills/musicianship pkg/skills/removetrap pkg/skills/stealth pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking scripts/control scripts/items
+</A></li>
+	<LI>Next message: <A HREF="000258.html">[Poldistro-svn] r280 - in trunk/096/pkg/items/containers: . container include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#257">[ date ]</a>
+              <a href="thread.html#257">[ thread ]</a>
+              <a href="subject.html#257">[ subject ]</a>
+              <a href="author.html#257">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

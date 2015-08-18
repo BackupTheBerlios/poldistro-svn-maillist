@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r725 - in trunk/096/pkg/items: . vomit vomit/config vomit/vomit
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r725%20-%20in%20trunk/096/pkg/items%3A%20.%20vomit%20vomit/config%20vomit/vomit&In-Reply-To=%3C200510301513.j9UFDj3f004272%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000697.html">
+   <LINK REL="Next"  HREF="000699.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r725 - in trunk/096/pkg/items: . vomit vomit/config vomit/vomit</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r725%20-%20in%20trunk/096/pkg/items%3A%20.%20vomit%20vomit/config%20vomit/vomit&In-Reply-To=%3C200510301513.j9UFDj3f004272%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r725 - in trunk/096/pkg/items: . vomit vomit/config vomit/vomit">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct 30 16:13:45 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000697.html">[Poldistro-svn] r724 - in trunk/096/pkg/items: . blood blood/blood blood/config blood/include
+</A></li>
+        <LI>Next message: <A HREF="000699.html">[Poldistro-svn] r726 - in trunk/096/pkg/items: blood/blood blood/config vomit/vomit
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#698">[ date ]</a>
+              <a href="thread.html#698">[ thread ]</a>
+              <a href="subject.html#698">[ subject ]</a>
+              <a href="author.html#698">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-30 16:13:45 +0100 (Sun, 30 Oct 2005)
+New Revision: 725
+
+Added:
+   trunk/096/pkg/items/vomit/
+   trunk/096/pkg/items/vomit/config/
+   trunk/096/pkg/items/vomit/config/icp.cfg
+   trunk/096/pkg/items/vomit/config/settings.cfg
+   trunk/096/pkg/items/vomit/itemdesc.cfg
+   trunk/096/pkg/items/vomit/pkg.cfg
+   trunk/096/pkg/items/vomit/vomit/
+   trunk/096/pkg/items/vomit/vomit/control.src
+   trunk/096/pkg/items/vomit/vomit/onCreate.src
+Log:
+Since we have blood... might as well have vomit too!
+Need graphics with chunks. Remember those as a kid? Leave it on the teacher's desk.
+
+Added: trunk/096/pkg/items/vomit/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/vomit/config/icp.cfg	2005-10-30 14:48:32 UTC (rev 724)
++++ trunk/096/pkg/items/vomit/config/icp.cfg	2005-10-30 15:13:45 UTC (rev 725)
+@@ -0,0 +1,16 @@
++ICP Register
++{
++	Name		Vomit
++	Version		1.0
++	Description	Manages creation and removal of vomit tiles.
++		
++	Creator		Austin Heilman
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
++	
++	Maintainer	
++	M_Email		
++	
++	//Script	cmdlevel path
++	
++	//TextCmd	cmdlevel path	
++}
+
+Added: trunk/096/pkg/items/vomit/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/items/vomit/config/settings.cfg	2005-10-30 14:48:32 UTC (rev 724)
++++ trunk/096/pkg/items/vomit/config/settings.cfg	2005-10-30 15:13:45 UTC (rev 725)
+@@ -0,0 +1,20 @@
++#
++# $Id
++#
++
++Elem Graphics
++{
++	// Uses blood graphics since they have a slight transparency.
++	Graphic	4650
++	Graphic	4651
++	Graphic	4652
++	Graphic	4653
++	Graphic	4654
++}
++
++Elem Colors
++{
++	// Nice mix of greens and browns. Yum!
++	MinColor	2001
++	MaxColor	2012
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/vomit/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/vomit/itemdesc.cfg	2005-10-30 14:48:32 UTC (rev 724)
++++ trunk/096/pkg/items/vomit/itemdesc.cfg	2005-10-30 15:13:45 UTC (rev 725)
+@@ -0,0 +1,12 @@
++Item 0xEF02
++{
++	Name		vomit
++	Desc		pool of vomit
++	Graphic		4560
++	
++	Movable		0
++	SaveOnExit	0
++	
++	ControlScript	vomit/control
++	CreateScript	vomit/onCreate
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/vomit/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/vomit/pkg.cfg	2005-10-30 14:48:32 UTC (rev 724)
++++ trunk/096/pkg/items/vomit/pkg.cfg	2005-10-30 15:13:45 UTC (rev 725)
+@@ -0,0 +1,18 @@
++# $Id$
++#
++#
++
++Enabled		1
++Name		vomit
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires none
++#conflicts	none
+
+Added: trunk/096/pkg/items/vomit/vomit/control.src
+===================================================================
+--- trunk/096/pkg/items/vomit/vomit/control.src	2005-10-30 14:48:32 UTC (rev 724)
++++ trunk/096/pkg/items/vomit/vomit/control.src	2005-10-30 15:13:45 UTC (rev 725)
+@@ -0,0 +1,7 @@
++use uo;
++use os;
++
++program cleanup_vomit(vomit)
++	sleep(60);
++	DestroyItem(vomit);
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/vomit/vomit/onCreate.src
+===================================================================
+--- trunk/096/pkg/items/vomit/vomit/onCreate.src	2005-10-30 14:48:32 UTC (rev 724)
++++ trunk/096/pkg/items/vomit/vomit/onCreate.src	2005-10-30 15:13:45 UTC (rev 725)
+@@ -0,0 +1,22 @@
++use uo;
++use util;
++use cfgfile;
++
++program OnCreate(vomit)
++	var setting_cfg := ReadConfigFile(&quot;:vomit:config/settings&quot;);
++	var graphic_elem := setting_cfg[&quot;Graphics&quot;];
++	var graphics := GetConfigStringArray(graphic_elem, &quot;Graphic&quot;);
++	
++	var color_elem := setting_cfg[&quot;Colors&quot;];
++	var min_color := CInt(color_elem.MinColor);
++	var max_color := CInt(color_elem.MaxColor);
++	
++	if ( graphics.size() &gt; 0 )
++		vomit.graphic := graphics[RandomInt(graphics.size())+1];
++	endif
++	var color := RandomInt(max_color - min_color);
++	color := color+min_color;
++	vomit.color := color;
++	
++	return 1;
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000697.html">[Poldistro-svn] r724 - in trunk/096/pkg/items: . blood blood/blood blood/config blood/include
+</A></li>
+	<LI>Next message: <A HREF="000699.html">[Poldistro-svn] r726 - in trunk/096/pkg/items: blood/blood blood/config vomit/vomit
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#698">[ date ]</a>
+              <a href="thread.html#698">[ thread ]</a>
+              <a href="subject.html#698">[ subject ]</a>
+              <a href="author.html#698">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

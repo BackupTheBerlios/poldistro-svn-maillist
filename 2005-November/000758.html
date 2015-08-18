@@ -1,0 +1,1745 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r784 - in trunk/096/pkg/commands: . gm props seer test
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r784%20-%20in%20trunk/096/pkg/commands%3A%20.%20gm%20props%20seer%20test&In-Reply-To=%3C200511011745.jA1HjvZQ007433%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000757.html">
+   <LINK REL="Next"  HREF="000759.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r784 - in trunk/096/pkg/commands: . gm props seer test</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r784%20-%20in%20trunk/096/pkg/commands%3A%20.%20gm%20props%20seer%20test&In-Reply-To=%3C200511011745.jA1HjvZQ007433%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r784 - in trunk/096/pkg/commands: . gm props seer test">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 18:45:57 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000757.html">[Poldistro-svn] r783 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000759.html">[Poldistro-svn] r785 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#758">[ date ]</a>
+              <a href="thread.html#758">[ thread ]</a>
+              <a href="subject.html#758">[ subject ]</a>
+              <a href="author.html#758">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 18:45:55 +0100 (Tue, 01 Nov 2005)
+New Revision: 784
+
+Added:
+   trunk/096/pkg/commands/props/
+   trunk/096/pkg/commands/props/eraseglobal.src
+   trunk/096/pkg/commands/props/eraseobjproperty.src
+   trunk/096/pkg/commands/props/getCProp.src
+   trunk/096/pkg/commands/props/getglobal.src
+   trunk/096/pkg/commands/props/getprop.src
+   trunk/096/pkg/commands/props/propedit.src
+   trunk/096/pkg/commands/props/props.src
+   trunk/096/pkg/commands/props/setglobal.src
+   trunk/096/pkg/commands/props/setobjproperty.src
+   trunk/096/pkg/commands/props/setprop.src
+Removed:
+   trunk/096/pkg/commands/gm/eraseglobal.src
+   trunk/096/pkg/commands/gm/eraseobjproperty.src
+   trunk/096/pkg/commands/gm/getCProp.src
+   trunk/096/pkg/commands/gm/getglobal.src
+   trunk/096/pkg/commands/gm/getprop.src
+   trunk/096/pkg/commands/gm/propedit.src
+   trunk/096/pkg/commands/gm/recreate.src
+   trunk/096/pkg/commands/gm/setglobal.src
+   trunk/096/pkg/commands/gm/setskill.src
+   trunk/096/pkg/commands/seer/setintproperty.src
+   trunk/096/pkg/commands/test/getobjprop.src
+   trunk/096/pkg/commands/test/props.src
+   trunk/096/pkg/commands/test/smember.src
+Modified:
+   trunk/096/pkg/commands/gm/ekill.src
+   trunk/096/pkg/commands/gm/kill.src
+   trunk/096/pkg/commands/gm/lkill.src
+Log:
+Deleted some commands that are redundant or not needed.
+Moved CProp commands and .getprop / .setprop to props dir for organization. Linked to GM command level in cmds.cfg
+
+Modified: trunk/096/pkg/commands/gm/ekill.src
+===================================================================
+--- trunk/096/pkg/commands/gm/ekill.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/ekill.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,29 +1,27 @@
++/*
++ * $Id$
++ *
++ */
+ use uo;
+-use os;
+-use util;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/spellAttack&quot;;
+-include &quot;include/spellRestrictions&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+-program cast_fireball( caster, effect, sound )
+-
+-  if (!effect)
+-    SendSysMessage(caster, &quot;This command plays a moving effect, then kills the target. Usage: ekill &lt;effect&gt;&quot;);
+-    return;
+-  endif
+-
+-  var tsound := CInt(sound);
+-  var teffect := CInt(effect);
+-
+-  var cast_on := Target( caster );
+-  if (!cast_on || cast_on.errortext || !cast_on.isA(POLCLASS_MOBILE))
+-    return;
+-  endif
+-
+-  PlaySoundEffect( cast_on, tsound  );
+-  PlayMovingEffect( caster, cast_on, teffect, 5, 1 );
+-  ApplyRawDamage( cast_on, GetMaxHp(cast_on) + 10  );
+-
++program textcmd_eKill(who, text)
++	if ( !text )
++		SendSysMessage(who, &quot;Syntax .ekill &lt;tile number&gt;&quot;);
++		return 0;
++	endif
++	
++	SendSysMessage(who, &quot;Select a target to kill.&quot;);
++	var targ := Target(who);
++	
++	if ( !targ.IsA(POLCLASS_MOBILE) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	PlayMovingEffect(who, targ, CInt(text), 5, 1);
++	ApplyRawDamage(targ, AP_GetVitalMaximumValue(targ, &quot;Hits&quot;));
++	
++	return 1;
+ endprogram
+
+Deleted: trunk/096/pkg/commands/gm/eraseglobal.src
+===================================================================
+--- trunk/096/pkg/commands/gm/eraseglobal.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/eraseglobal.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,13 +0,0 @@
+-use uo;
+-
+-
+-program textcmd_eraseglobal( who, propertyname )
+-    print( &quot;Property Name: &quot; + propertyname );
+-
+-    var res := EraseGlobalProperty( propertyname );
+-    if (res != error)
+-        SendSysMessage( who, &quot;Property &quot; + propertyname + &quot; erased.&quot; );
+-    else
+-        SendSysMessage( who, &quot;Error erasing property: &quot; + res.errortext );
+-    endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/gm/eraseobjproperty.src
+===================================================================
+--- trunk/096/pkg/commands/gm/eraseobjproperty.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/eraseobjproperty.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,15 +0,0 @@
+-use uo;
+-
+-program textcmd_eraseobjproperty( who, propname )
+-    print( &quot;Property Name: &quot; + propname );
+-
+-    var tgt := Target( who );
+-    if (tgt)
+-        var res := EraseObjProperty( tgt, propname );
+-        if (res != error)
+-            SendSysMessage( who, &quot;Property &quot; + propname + &quot; erased.&quot; );
+-        else
+-            SendSysMessage( who, &quot;Error erasing property: &quot; + res.errortext );
+-        endif
+-    endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/gm/getCProp.src
+===================================================================
+--- trunk/096/pkg/commands/gm/getCProp.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/getCProp.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,35 +0,0 @@
+-use uo;
+-
+-include &quot;include/properties&quot;;
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
+-
+-
+-program command_getCProp(who, prop)
+-	var obj, res;
+-
+-	if (!prop)
+-		SendMessage(who, MSG_NO_PARAM, {}, MSG_COMMAND);
+-		return;
+-	else
+-		SendMessage(who, MSG_TARGET_OBJ, {}, MSG_COMMAND);
+-	endif
+-
+-	obj := Target(who, TGTOPT_NOCHECK_LOS);
+-	if (!obj)
+-		SendMessage(who, MSG_CANCELLED, {}, MSG_COMMAND);
+-	else
+-		Log(LOG_COMMAND, GetLogInfo(who) + &quot; invoking 'getprop' command on &quot; + GetLogInfo(obj));
+-	endif
+-
+-        res := GetProperty(obj, prop, SECURE_MAGIC);
+-
+-	if (!res)
+-		SendMessage(who, MSG_NOT_EXIST, {prop}, MSG_COMMAND);
+-		return;
+-	endif
+-
+-	SendMessage(who, MSG_GET_PROP, {prop, CStr(res), TypeOf(res)}, MSG_COMMAND);
+-
+-	return;
+-endprogram
+
+Deleted: trunk/096/pkg/commands/gm/getglobal.src
+===================================================================
+--- trunk/096/pkg/commands/gm/getglobal.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/getglobal.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,12 +0,0 @@
+-use uo;
+-
+-program textcmd_getglobal( who, propname )
+-    print( &quot;Property Name: &quot; + propname );
+-
+-    var res := GetGlobalProperty( propname );
+-    if (res != error)
+-        SendSysMessage( who, &quot;Property &quot; + propname + &quot;: &quot; + res );
+-    else
+-        SendSysMessage( who, &quot;Error getting property: &quot; + res.errortext );
+-    endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/gm/getprop.src
+===================================================================
+--- trunk/096/pkg/commands/gm/getprop.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/getprop.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,20 +0,0 @@
+-//
+-// getprop.src
+-//
+-// Show information on a mob/items members
+-//
+-// Austin
+-// Created: 9/24/2001 11:25AM
+-// Updated: 9/24/2001 11:25AM
+-//
+-
+-use uo;
+-
+-program propertyinfo(who, property)
+-	var targ := target(who);
+-	if ( !targ )
+-		SendSysMessage(who, &quot;Cancelled&quot;);
+-		return;
+-	endif
+-	SendSysMessage(who, &quot;Property &quot;+property+&quot;: &quot;+targ.get_member(property));
+-endprogram
+
+Modified: trunk/096/pkg/commands/gm/kill.src
+===================================================================
+--- trunk/096/pkg/commands/gm/kill.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/kill.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,22 +1,23 @@
+-use os;
++/*
++ * $Id$
++ *
++ */
+ use uo;
+-use boat;
+ 
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+-
+-program command_kill(who)
+-	var tgt := TargetCoordinates( who );
+-	if (tgt.mobile)
+-		var mob := tgt.mobile;
+-		if (!mob.dead)
+-			RevokePrivilege(mob, &quot;invul&quot;);
+-			SetObjProperty(mob, &quot;guardkill&quot;, 1);
+-			ApplyRawDamage(mob, GetHp(mob));
+-		else
+-			SendSysMessage(who, &quot;That tickles!&quot;);
+-		endif
++program textcmd_Kill(who)
++	SendSysMessage(who, &quot;Select a target to kill.&quot;);
++	var targ := Target(who);
++	
++	if ( !targ.IsA(POLCLASS_MOBILE) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
+ 	endif
+-
+-	return;
++	
++	targ.Disable(&quot;Invul&quot;);
++	SetObjProperty(targ, &quot;GuardKill&quot;, 1);	
++	ApplyRawDamage(targ, AP_GetVitalMaximumValue(targ, &quot;Hits&quot;));
++	
++	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/commands/gm/lkill.src
+===================================================================
+--- trunk/096/pkg/commands/gm/lkill.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/lkill.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,20 +1,26 @@
+-use os;
++/*
++ * $Id$
++ *
++ */
+ use uo;
+-use boat;
+ 
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ include &quot;include/sound&quot;;
+ 
+-
+-program command_kill(who)
+-	var mobile := Target(who, TGTOPT_NOCHECK_LOS);
+-
+-	PlayLightningBoltEffect(mobile);
+-	PlaySoundEffect(mobile, SFX_SPELL_LIGHTNING);
+-
+-	RevokePrivilege(mobile, &quot;invul&quot;);
+-	SetObjProperty(mobile, &quot;guardkill&quot;, 1);
+-	ApplyRawDamage(mobile, GetMaxHp(mobile));
+-
+-	return;
+-endprogram
+\ No newline at end of file
++program textcmd_Kill(who)
++	SendSysMessage(who, &quot;Select a target to kill.&quot;);
++	var targ := Target(who);
++	
++	if ( !targ.IsA(POLCLASS_MOBILE) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	targ.Disable(&quot;Invul&quot;);
++	SetObjProperty(targ, &quot;GuardKill&quot;, 1);
++	PlayLightningBoltEffect(targ);
++	PlaySoundEffect(targ, SFX_SPELL_LIGHTNING);	
++	ApplyRawDamage(targ, AP_GetVitalMaximumValue(targ, &quot;Hits&quot;));
++	
++	return 1;
++endprogram
+
+Deleted: trunk/096/pkg/commands/gm/propedit.src
+===================================================================
+--- trunk/096/pkg/commands/gm/propedit.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/propedit.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,404 +0,0 @@
+-////////////////////////////////////////////////////////
+-//
+-// Propedit v0.6 - gump based cprop editor
+-//
+-////////////////////////////////////////////////////////
+-//
+-// Author  : Dougall
+-// Updated : 15 August 2002
+-// Contact : <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">dougalloogle at yahoo.com</A>
+-//
+-////////////////////////////////////////////////////////
+-//
+-// Notes:
+-//
+-//  - type &quot;.propedit&quot; then target the item or 
+-//    mobile who's cprops you wish to view or edit.
+-//
+-//  - edit Cprop strings, doubles and integers
+-//    directly into the gump.
+-//
+-//  - deals with the first 60 cprops on an object
+-//
+-//  - press the red flag in the top right corner
+-//    to toggle the gump size (to help with larger 
+-//    Cprops)
+-//
+-//  - to edit cprops on a multi, first stand on the 
+-//    multi then type &quot;.propedit multi&quot;
+-//
+-//  - you can call propedit from another script
+-//    like this:
+-//        start_script(&quot;::textcmd/gm/propedit&quot;, { who, thing });
+-//    where
+-//        who   - person who gets sent the gump
+-//        thing - thing to view/edit props on
+-//
+-//  - please send me an email if you find any bugs...
+-//
+-////////////////////////////////////////////////////////
+-//
+-// Histoy:
+-//
+-//  0.6 - rewrote propedit to use SendDialogGump() rather
+-//        than gumps.inc (should make the script quicker
+-//        and more efficient)
+-//      - added support for multis/housing
+-//      - added support for calling propedit from another
+-//        script.
+-//
+-//  0.5 - fixed gump crash when very large arrays or
+-//        strings were stored as cprops on items
+-//      - tightened up the code a bit
+-//
+-//  0.4 - removed faulty array editing
+-//
+-//  0.1 to 0.3 - initial construction and testing
+-//
+-////////////////////////////////////////////////////////
+-//
+-// Warning &amp; Disclaimer:
+-//
+-//  - !BE WARNED! It's really easy to make a mess of
+-//    some pretty essential Cprops with this tool.
+-//
+-//  - Disclaimer: ...I didn't do it.....I wasn't there
+-//    ....It wasn't me.... ....honest...
+-//
+-////////////////////////////////////////////////////////
+-
+-use os;
+-use uo;
+-use basic;
+-
+-////////////////////////////////////////////////////////
+-// Consts
+-
+-const TEXT_LINES        := 10;
+-const MAX_PAGES         := 6;
+-const MAX_CHARS         := 200;
+-
+-////////////////////////////////////////////////////////
+-// Global Variables
+-var gump_width     :=1;
+-var show_in_hex    :=1;
+-
+-//////////
+-
+-var main_data:={
+-&quot;&quot;,                     // show hex/int
+-&quot;CProp Editor&quot;,
+-&quot;Add Cprop&quot;,
+-&quot;Del Marked Cprops&quot;,
+-&quot;&quot;,                     // item name
+-&quot;Enter new propname....&quot;,
+-&quot;Enter proptype....&quot;,
+-&quot;Integer&quot;,
+-&quot;Double&quot;,
+-&quot;String&quot;,
+-&quot;Confirm Delete&quot;,
+-&quot;Delete Checked Cprops ?&quot; };
+-
+-//////////
+-
+-var main_layout:={
+-&quot;page0&quot;,
+-&quot;nodispose&quot;,
+-&quot;resizepic&quot;,                        // resizepic (varies - altered later in script)
+-&quot;text 70 270 34 0&quot;,
+-&quot;button 50 273 2224 2224 1 0 1000&quot;, // hextoggle
+-&quot;button&quot;,                           // widthtoggle (varies - altered later in script)
+-&quot;text 40 9 1 1&quot;,
+-&quot;text 43 11 66 1&quot;,
+-&quot;text&quot;                             // item name (varies - altered later in script)
+-};
+-
+-//////////
+-
+-var add_layout:={ 
+-  &quot;resizepic 160 25 2520 340 250&quot;,
+-  &quot;button 380 243 2071 2072 0 1&quot;,
+-  &quot;button 230 243 239 240 1 0 998&quot;,
+-  &quot;group 0&quot;,
+-  &quot;radio 220 140 2152 2154 1 1005&quot;,
+-  &quot;radio 220 170 2152 2154 0 1006&quot;,
+-  &quot;radio 220 200 2152 2154 0 1007&quot;,
+-  &quot;text 280 34 1 2&quot;,
+-  &quot;text 283 35 34 2&quot;,
+-  &quot;text 200 70 0 5&quot;,
+-  &quot;text 200 120 0 6&quot;,
+-  &quot;text 260 144 0 7&quot;,
+-  &quot;text 260 174 0 8&quot;,
+-  &quot;text 260 204 0 9&quot;,
+-  &quot;gumppic 190 90 1143&quot;
+- };
+-  
+-//////////
+-
+-var del_layout:={
+-  &quot;resizepic 160 25 2520 340 250&quot;,
+-  &quot;text 260 34 1 10&quot;,
+-  &quot;text 263 36 34 10&quot;,
+-  &quot;text 240 110 0 11&quot;,
+-  &quot;button 380 242 2071 2072 0 1&quot;,
+-  &quot;button 230 243 239 240 1 0 997&quot;
+- };
+-
+-////////////////////////////////////////////////////////
+-
+-program CpropEditor(parms1,parms2)
+-  var who,thing;
+-
+-  if (TypeOf(parms1)==&quot;Array&quot;)
+-    if ( (parms1[1].isa(POLCLASS_MOBILE) and !parms1[1].isa(POLCLASS_NPC)) and parms1[2].isa(POLCLASS_UOBJECT) )
+-      who:=parms1[1];
+-      thing:=parms1[2];
+-    else
+-      syslog(&quot;Invalid params in call_script : &quot;+who);
+-      return;
+-    endif
+-  else
+-    who:=parms1;
+-    parms2:=lower(parms2);
+-    if (parms2[&quot;multi&quot;])
+-      if (!who.multi)
+-        sendsysmessage(who,&quot;You must stand on the multi to edit it's cprops.&quot;);
+-        return;
+-      else
+-        thing:=who.multi;
+-      endif
+-    else
+-      sendsysmessage(who,&quot;Edit Cprops on what?&quot;);
+-      thing:=Target(who,TGTOPT_NOCHECK_LOS);
+-    endif
+-  endif
+-
+-  if (!thing)
+-    sendsysmessage(who,&quot;Cancelled.&quot;);
+-    return;
+-  elseif (thing.isa(POLCLASS_ITEM))
+-    ReserveItem(thing);
+-  endif
+-
+-  while (SendCpropGump(who,thing))
+-    sleepms(20);
+-  endwhile
+-
+-  if (!thing)
+-    sendsysmessage(who,&quot;Item destroyed!&quot;);
+-  elseif (thing.isa(POLCLASS_ITEM))
+-    ReleaseItem(thing);
+-  endif
+-
+-endprogram
+-
+-////////////////////////////////////////////////////////
+-
+-function SendCpropGump(who,thing)
+-  var propnames:=GetObjPropertyNames(thing);
+-  var num_pages;
+-  if (!len(propnames))
+-    num_pages:=1;
+-  else
+-    num_pages:=1+Cint((len(propnames)-1)/TEXT_LINES);
+-  endif
+-  if (num_pages&gt;MAX_PAGES)
+-    num_pages:=MAX_PAGES;
+-  endif
+-  var add_page:=num_pages+1;
+-  var del_page:=num_pages+2;
+-  var this_layout:=main_layout;
+-  var this_data:=main_data;
+-  
+-//  Compose Cprop Pages
+-  ComposeMainGump(add_page,del_page,this_layout,this_data,thing);
+-  
+-// Add Prop Page
+-  this_layout.append(&quot;page &quot;+add_page);
+-  foreach bit in add_layout
+-    this_layout.append(bit);
+-  endforeach
+-  this_layout.append(&quot;textentry 200 92 200 20 0 500 &quot;+len(this_data));
+-  this_data.append(&quot;&quot;);
+-  
+-// Del Prop Page  
+-  this_layout.append(&quot;page &quot;+del_page);
+-  foreach bit in del_layout
+-    this_layout.append(bit);
+-  endforeach
+-  
+-  var retval:=SendDialogGump(who,this_layout,this_data);
+-
+-// Check for buttons.....  
+-  var i;
+-  if (retval[1000])           // Toggle Hex
+-    show_in_hex:=!show_in_hex;
+-    return 1;
+-  elseif (retval[1001])       // Toggle Width
+-    gump_width:=gump_width+1;
+-    if (!GetGumpWidth())
+-      gump_width:=1;
+-    endif
+-    return 1;
+-  elseif (retval[998])        // Add Cprop
+-    var add_prop_name:=GetGumpText(retval[500]);
+-    if (!len(add_prop_name))
+-      sendsysmessage(who,&quot;No Cprop name specified!&quot;);
+-      return 1;
+-    elseif (add_prop_name in propnames)
+-      sendsysmessage(who,&quot;There is alread a Cprop with that name!&quot;);
+-      return 1;
+-    endif
+-    var add_prop_val;
+-    if (retval[1005])
+-      add_prop_val:=0;   // integer
+-    elseif (retval[1006])
+-      add_prop_val:=0.0; // double
+-    else
+-      add_prop_val:=&quot;&quot;;  // string
+-    endif    
+-    SetObjProperty(thing,add_prop_name,add_prop_val);
+-    return 1;
+-  elseif (retval[997])      // Delete Cprop
+-    for (i:=1;i&lt;=len(propnames);i:=i+1)
+-      if (retval[700+i])
+-        EraseObjProperty(thing,propnames[i]);
+-      endif
+-    endfor
+-    return 1;
+-  elseif (retval[999])      // Apply changes to cprops
+-    for (i:=1;i&lt;=len(propnames);i:=i+1)
+-      var this_prop:=GetObjProperty(thing,propnames[i]);
+-      var this_text:=retval[i+500];
+-      if (!this_text.errortext)
+-        SetObjProperty(thing,propnames[i],SetPropType(GetGumpText(this_text),TypeOf(this_prop)));
+-      endif
+-    endfor
+-    return 1;
+-  endif
+-  
+-  return 0;
+-endfunction
+-
+-////////////////////////////////////////////////////////
+-
+-
+-function ComposeMainGump(byref add_page,byref del_page,byref this_layout,byref this_data,thing)
+-  var propnames:=GetObjPropertyNames(thing);
+-  var width:=GetGumpWidth();
+-  this_layout[3]:=&quot;resizepic 0 0 2520 &quot;+width+&quot; 300&quot;;
+-  this_layout[6]:=&quot;button &quot;+(width-40)+&quot; 10 31 31 1 0 1001&quot;; 
+-  this_layout[9]:=&quot;croppedtext 140 10 &quot;+(width-200)+&quot; 25 0 4&quot;;
+-  if (show_in_hex)
+-    this_data[1]:=&quot;Show Int&quot;;
+-  else
+-    this_data[1]:=&quot;Show Hex&quot;;
+-  endif                    
+-  if (thing.name)
+-    this_data[5]:=thing.name+&quot; [&quot;+ToggleHex(thing.serial)+&quot;]&quot;;
+-  else
+-    this_data[5]:=thing.desc+&quot; [&quot;+ToggleHex(thing.serial)+&quot;]&quot;;
+-  endif
+-  
+-  var i,j,y,this_prop,this_type;
+-
+-  for (i:=1;i&lt;add_page;i:=i+1)
+-    this_layout.append(&quot;page &quot;+i);
+-    this_layout.append(&quot;button 380 267 2071 2072 1 0 995&quot;);// Cancel button
+-    this_layout.append(&quot;button 200 267 239 240 1 0 999&quot;);  // Main apply button
+-    if (i&gt;1)
+-      this_layout.append(&quot;button &quot;+(width-60)+&quot; 40 250 251 0 &quot;+(i-1)); 
+-    endif
+-    if (i&lt;(add_page-1))
+-      this_layout.append(&quot;button &quot;+(width-60)+&quot; 265 252 253 0 &quot;+(i+1)); 
+-    endif
+-    if (add_page&gt;2)
+-      this_layout.append(&quot;gumppic &quot;+(width-108)+&quot; 263 2644&quot;);
+-      this_layout.append(&quot;gumppic &quot;+(width-105)+&quot; 266 &quot;+(2224+i));
+-    endif
+-    this_layout.append(&quot;button 340 38 2224 2224 0 &quot;+add_page);
+-    this_layout.append(&quot;text 360 35 34 2&quot;);
+-    this_layout.append(&quot;button 40 38 2224 2224 0 &quot;+del_page);
+-    this_layout.append(&quot;text 60 35 34 3&quot;);
+-
+-    var start_j:=((i-1)*TEXT_LINES)+1;
+-    var end_j:=i*TEXT_LINES;
+-    if (end_j&gt;len(propnames))
+-      end_j:=len(propnames);
+-    endif
+-    
+-    for (j:=start_j; j&lt;=end_j; j:=j+1)
+-      if (propnames[j])
+-        this_prop:=GetObjProperty(thing,propnames[j]);
+-        this_type:=TypeOf(this_prop);
+-        this_prop:=Cstr(this_prop);
+-        var can_edit:=1;
+-        if (len(this_prop)&gt;MAX_CHARS)
+-          this_prop:=this_prop[1,MAX_CHARS];
+-          can_edit:=0;
+-        endif
+-        y:=(j-start_j)*20+60;
+-        this_layout.append(&quot;croppedtext 50 &quot;+y+&quot; 130 20 0 &quot;+len(this_data));
+-        this_data.append(propnames[j]);
+-
+-        this_layout.append(&quot;croppedtext 200 &quot;+y+&quot; 60 20 0 &quot;+len(this_data));
+-        this_data.append(this_type);
+-
+-        if (this_prop.errortext)
+-          this_layout.append(&quot;croppedtext 280 &quot;+y+&quot; &quot;+(width-310)+&quot; 20 34 &quot;+len(this_data));
+-          this_data.append(this_prop.errortext);
+-        elseif ( (can_edit) and  ( this_type==&quot;Integer&quot;) or (this_type==&quot;Double&quot;) or (this_type==&quot;String&quot;) )
+-          this_layout.append(&quot;gumppic 260 &quot;+(y+3)+&quot; 58&quot;);
+-          this_layout.append(&quot;textentry 280 &quot;+y+&quot; &quot;+(width-310)+&quot; 20 0 &quot;+(500+j)+&quot; &quot;+len(this_data));
+-          this_data.append(ToggleHex(this_prop,this_type));
+-        else
+-          this_layout.append(&quot;croppedtext 280 &quot;+y+&quot; &quot;+(width-310)+&quot; 20 0 &quot;+len(this_data));
+-          this_data.append(this_prop);
+-        endif
+-        this_layout.append(&quot;checkbox 30 &quot;+y+&quot; 210 211 0 &quot;+(j+700)); 
+-      endif
+-    endfor
+-  endfor
+-endfunction
+-
+-////////////////////////////////////////////////////////
+-
+-function GetGumpText(text)
+-  return text[Find(text,&quot;: &quot;,1)+2,len(text)];
+-endfunction
+-
+-////////////////////////////////////////////////////////
+-
+-function GetGumpWidth()
+-  case (gump_width)
+-    1:  return 600;
+-    2:  return 750;
+-    3:  return 900;
+-  endcase
+-  return 0;
+-endfunction
+-
+-////////////////////////////////////////////////////////
+-
+-function SetPropType(text,type)
+-  case (type)
+-    &quot;Integer&quot; : return Cint(text);
+-    &quot;Double&quot;  : return Cdbl(text);
+-  endcase
+-  return text;
+-endfunction
+-
+-////////////////////////////////////////////////////////
+-
+-function ToggleHex(value,value_type:=0)
+-  if (!value_type)
+-    value_type:=TypeOf(value);
+-  endif
+-  if ((value_type==&quot;Integer&quot;) and (show_in_hex))
+-    return Hex(value);
+-  else
+-    return Cstr(value);
+-  endif
+-endfunction
+-
+-////////////////////////////////////////////////////////
+
+Deleted: trunk/096/pkg/commands/gm/recreate.src
+===================================================================
+--- trunk/096/pkg/commands/gm/recreate.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/recreate.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,25 +0,0 @@
+-use os;
+-use uo;
+-use boat;
+-include &quot;include/attributes&quot;;
+-
+-program textcmd_kill( who )
+-    var tgt := TargetCoordinates( who );
+-   
+-    if (tgt.mobile)
+-        var obj := tgt.mobile.npctemplate;
+-        var x := tgt.mobile.x;
+-        var y := tgt.mobile.y;
+-        var z := tgt.mobile.z;
+-       
+-        var mob := tgt.mobile;
+-
+-      
+-            RevokePrivilege( mob, &quot;invul&quot; );
+-            SetObjProperty(mob, &quot;guardkill&quot;, 1);
+-            ApplyRawDamage( mob, GetHp(mob) );
+-            Detach();
+-            sleep(2);
+-            CreateNpcFromTemplate(obj,x,y,z,0,who.realm);
+-    endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/gm/setglobal.src
+===================================================================
+--- trunk/096/pkg/commands/gm/setglobal.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/setglobal.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,15 +0,0 @@
+-use uo;
+-use os;
+-
+-
+-program textcmd_setglobal( who, text )
+-    var tparams := SplitWords( text );
+-
+-    print( &quot;Property Name: &quot; + tparams[1] );
+-    print( &quot;Property Value: &quot; + tparams[2] );
+-
+-    var res := SetGlobalProperty( tparams[1], tparams[2] );
+-    if (!res)
+-        SendSysMessage( who, &quot;Error setting property: &quot; + res.errortext );
+-    endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/gm/setskill.src
+===================================================================
+--- trunk/096/pkg/commands/gm/setskill.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/gm/setskill.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,45 +0,0 @@
+-use os;
+-use uo;
+-use boat;
+-
+-include &quot;include/attributes&quot;;
+-
+-program textcmd_setskill( who, text )
+-
+-	text := SplitWords(text);
+-	if( !text[1] )
+-		SendSysMessage( who, &quot;Usage is : .setskill &lt;skillid&gt; &lt;level&gt;&quot; );
+-		return 0;
+-	elseif( !text[2] )
+-		SendSysMessage( who, &quot;Usage is : .setskill &lt;skillid&gt; &lt;level&gt;&quot; );
+-		return 0;
+-	endif
+-		
+-	var skillid := Cint(text[1]);
+-	if( skillid == error )
+-		SendSysMessage( who, &quot;Skillid must be a an integer.&quot; );
+-		return 0;
+-	endif
+-	
+-	var level := Cdbl(text[2]);
+-	if( level == error )
+-		SendSysMessage( who, &quot;Skill level must be a floating value.&quot; );
+-		return 0;
+-	endif
+-	
+-	SendSysMessage( who, &quot;Set skill &quot; + skillid + &quot; to &quot; + level + &quot; on who?&quot; );
+-	var mobile := Target(who);
+-	if( !mobile )
+-		return 0;
+-	elseif( !mobile.IsA(POLCLASS_MOBILE) )
+-		SendSysMessage( who, &quot;You must target a mobile.&quot; );
+-		return 0;
+-	endif
+-	
+-	if( SetBaseSkillBaseValue( mobile, skillid, Cint(level*10.0) ) )
+-		SendSysMessage( who, &quot;New Effective Skill is &quot; + GetTrueEffectiveSkill( mobile, skillid ) );
+-	else
+-		SendSysMessage( who, &quot;Unable to set the skill.&quot; );
+-	endif
+-	
+-endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/props/eraseglobal.src
+===================================================================
+--- trunk/096/pkg/commands/props/eraseglobal.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/props/eraseglobal.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -0,0 +1,13 @@
++use uo;
++
++
++program textcmd_eraseglobal( who, propertyname )
++    print( &quot;Property Name: &quot; + propertyname );
++
++    var res := EraseGlobalProperty( propertyname );
++    if (res != error)
++        SendSysMessage( who, &quot;Property &quot; + propertyname + &quot; erased.&quot; );
++    else
++        SendSysMessage( who, &quot;Error erasing property: &quot; + res.errortext );
++    endif
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/props/eraseobjproperty.src
+===================================================================
+--- trunk/096/pkg/commands/props/eraseobjproperty.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/props/eraseobjproperty.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -0,0 +1,15 @@
++use uo;
++
++program textcmd_eraseobjproperty( who, propname )
++    print( &quot;Property Name: &quot; + propname );
++
++    var tgt := Target( who );
++    if (tgt)
++        var res := EraseObjProperty( tgt, propname );
++        if (res != error)
++            SendSysMessage( who, &quot;Property &quot; + propname + &quot; erased.&quot; );
++        else
++            SendSysMessage( who, &quot;Error erasing property: &quot; + res.errortext );
++        endif
++    endif
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/props/getCProp.src
+===================================================================
+--- trunk/096/pkg/commands/props/getCProp.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/props/getCProp.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -0,0 +1,35 @@
++use uo;
++
++include &quot;include/properties&quot;;
++include &quot;include/messages&quot;;
++include &quot;include/localization&quot;;
++
++
++program command_getCProp(who, prop)
++	var obj, res;
++
++	if (!prop)
++		SendMessage(who, MSG_NO_PARAM, {}, MSG_COMMAND);
++		return;
++	else
++		SendMessage(who, MSG_TARGET_OBJ, {}, MSG_COMMAND);
++	endif
++
++	obj := Target(who, TGTOPT_NOCHECK_LOS);
++	if (!obj)
++		SendMessage(who, MSG_CANCELLED, {}, MSG_COMMAND);
++	else
++		Log(LOG_COMMAND, GetLogInfo(who) + &quot; invoking 'getprop' command on &quot; + GetLogInfo(obj));
++	endif
++
++        res := GetProperty(obj, prop, SECURE_MAGIC);
++
++	if (!res)
++		SendMessage(who, MSG_NOT_EXIST, {prop}, MSG_COMMAND);
++		return;
++	endif
++
++	SendMessage(who, MSG_GET_PROP, {prop, CStr(res), TypeOf(res)}, MSG_COMMAND);
++
++	return;
++endprogram
+
+Added: trunk/096/pkg/commands/props/getglobal.src
+===================================================================
+--- trunk/096/pkg/commands/props/getglobal.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/props/getglobal.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -0,0 +1,12 @@
++use uo;
++
++program textcmd_getglobal( who, propname )
++    print( &quot;Property Name: &quot; + propname );
++
++    var res := GetGlobalProperty( propname );
++    if (res != error)
++        SendSysMessage( who, &quot;Property &quot; + propname + &quot;: &quot; + res );
++    else
++        SendSysMessage( who, &quot;Error getting property: &quot; + res.errortext );
++    endif
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/props/getprop.src
+===================================================================
+--- trunk/096/pkg/commands/props/getprop.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/props/getprop.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -0,0 +1,20 @@
++//
++// getprop.src
++//
++// Show information on a mob/items members
++//
++// Austin
++// Created: 9/24/2001 11:25AM
++// Updated: 9/24/2001 11:25AM
++//
++
++use uo;
++
++program propertyinfo(who, property)
++	var targ := target(who);
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return;
++	endif
++	SendSysMessage(who, &quot;Property &quot;+property+&quot;: &quot;+targ.get_member(property));
++endprogram
+
+Added: trunk/096/pkg/commands/props/propedit.src
+===================================================================
+--- trunk/096/pkg/commands/props/propedit.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/props/propedit.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -0,0 +1,404 @@
++////////////////////////////////////////////////////////
++//
++// Propedit v0.6 - gump based cprop editor
++//
++////////////////////////////////////////////////////////
++//
++// Author  : Dougall
++// Updated : 15 August 2002
++// Contact : <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">dougalloogle at yahoo.com</A>
++//
++////////////////////////////////////////////////////////
++//
++// Notes:
++//
++//  - type &quot;.propedit&quot; then target the item or 
++//    mobile who's cprops you wish to view or edit.
++//
++//  - edit Cprop strings, doubles and integers
++//    directly into the gump.
++//
++//  - deals with the first 60 cprops on an object
++//
++//  - press the red flag in the top right corner
++//    to toggle the gump size (to help with larger 
++//    Cprops)
++//
++//  - to edit cprops on a multi, first stand on the 
++//    multi then type &quot;.propedit multi&quot;
++//
++//  - you can call propedit from another script
++//    like this:
++//        start_script(&quot;::textcmd/gm/propedit&quot;, { who, thing });
++//    where
++//        who   - person who gets sent the gump
++//        thing - thing to view/edit props on
++//
++//  - please send me an email if you find any bugs...
++//
++////////////////////////////////////////////////////////
++//
++// Histoy:
++//
++//  0.6 - rewrote propedit to use SendDialogGump() rather
++//        than gumps.inc (should make the script quicker
++//        and more efficient)
++//      - added support for multis/housing
++//      - added support for calling propedit from another
++//        script.
++//
++//  0.5 - fixed gump crash when very large arrays or
++//        strings were stored as cprops on items
++//      - tightened up the code a bit
++//
++//  0.4 - removed faulty array editing
++//
++//  0.1 to 0.3 - initial construction and testing
++//
++////////////////////////////////////////////////////////
++//
++// Warning &amp; Disclaimer:
++//
++//  - !BE WARNED! It's really easy to make a mess of
++//    some pretty essential Cprops with this tool.
++//
++//  - Disclaimer: ...I didn't do it.....I wasn't there
++//    ....It wasn't me.... ....honest...
++//
++////////////////////////////////////////////////////////
++
++use os;
++use uo;
++use basic;
++
++////////////////////////////////////////////////////////
++// Consts
++
++const TEXT_LINES        := 10;
++const MAX_PAGES         := 6;
++const MAX_CHARS         := 200;
++
++////////////////////////////////////////////////////////
++// Global Variables
++var gump_width     :=1;
++var show_in_hex    :=1;
++
++//////////
++
++var main_data:={
++&quot;&quot;,                     // show hex/int
++&quot;CProp Editor&quot;,
++&quot;Add Cprop&quot;,
++&quot;Del Marked Cprops&quot;,
++&quot;&quot;,                     // item name
++&quot;Enter new propname....&quot;,
++&quot;Enter proptype....&quot;,
++&quot;Integer&quot;,
++&quot;Double&quot;,
++&quot;String&quot;,
++&quot;Confirm Delete&quot;,
++&quot;Delete Checked Cprops ?&quot; };
++
++//////////
++
++var main_layout:={
++&quot;page0&quot;,
++&quot;nodispose&quot;,
++&quot;resizepic&quot;,                        // resizepic (varies - altered later in script)
++&quot;text 70 270 34 0&quot;,
++&quot;button 50 273 2224 2224 1 0 1000&quot;, // hextoggle
++&quot;button&quot;,                           // widthtoggle (varies - altered later in script)
++&quot;text 40 9 1 1&quot;,
++&quot;text 43 11 66 1&quot;,
++&quot;text&quot;                             // item name (varies - altered later in script)
++};
++
++//////////
++
++var add_layout:={ 
++  &quot;resizepic 160 25 2520 340 250&quot;,
++  &quot;button 380 243 2071 2072 0 1&quot;,
++  &quot;button 230 243 239 240 1 0 998&quot;,
++  &quot;group 0&quot;,
++  &quot;radio 220 140 2152 2154 1 1005&quot;,
++  &quot;radio 220 170 2152 2154 0 1006&quot;,
++  &quot;radio 220 200 2152 2154 0 1007&quot;,
++  &quot;text 280 34 1 2&quot;,
++  &quot;text 283 35 34 2&quot;,
++  &quot;text 200 70 0 5&quot;,
++  &quot;text 200 120 0 6&quot;,
++  &quot;text 260 144 0 7&quot;,
++  &quot;text 260 174 0 8&quot;,
++  &quot;text 260 204 0 9&quot;,
++  &quot;gumppic 190 90 1143&quot;
++ };
++  
++//////////
++
++var del_layout:={
++  &quot;resizepic 160 25 2520 340 250&quot;,
++  &quot;text 260 34 1 10&quot;,
++  &quot;text 263 36 34 10&quot;,
++  &quot;text 240 110 0 11&quot;,
++  &quot;button 380 242 2071 2072 0 1&quot;,
++  &quot;button 230 243 239 240 1 0 997&quot;
++ };
++
++////////////////////////////////////////////////////////
++
++program CpropEditor(parms1,parms2)
++  var who,thing;
++
++  if (TypeOf(parms1)==&quot;Array&quot;)
++    if ( (parms1[1].isa(POLCLASS_MOBILE) and !parms1[1].isa(POLCLASS_NPC)) and parms1[2].isa(POLCLASS_UOBJECT) )
++      who:=parms1[1];
++      thing:=parms1[2];
++    else
++      syslog(&quot;Invalid params in call_script : &quot;+who);
++      return;
++    endif
++  else
++    who:=parms1;
++    parms2:=lower(parms2);
++    if (parms2[&quot;multi&quot;])
++      if (!who.multi)
++        sendsysmessage(who,&quot;You must stand on the multi to edit it's cprops.&quot;);
++        return;
++      else
++        thing:=who.multi;
++      endif
++    else
++      sendsysmessage(who,&quot;Edit Cprops on what?&quot;);
++      thing:=Target(who,TGTOPT_NOCHECK_LOS);
++    endif
++  endif
++
++  if (!thing)
++    sendsysmessage(who,&quot;Cancelled.&quot;);
++    return;
++  elseif (thing.isa(POLCLASS_ITEM))
++    ReserveItem(thing);
++  endif
++
++  while (SendCpropGump(who,thing))
++    sleepms(20);
++  endwhile
++
++  if (!thing)
++    sendsysmessage(who,&quot;Item destroyed!&quot;);
++  elseif (thing.isa(POLCLASS_ITEM))
++    ReleaseItem(thing);
++  endif
++
++endprogram
++
++////////////////////////////////////////////////////////
++
++function SendCpropGump(who,thing)
++  var propnames:=GetObjPropertyNames(thing);
++  var num_pages;
++  if (!len(propnames))
++    num_pages:=1;
++  else
++    num_pages:=1+Cint((len(propnames)-1)/TEXT_LINES);
++  endif
++  if (num_pages&gt;MAX_PAGES)
++    num_pages:=MAX_PAGES;
++  endif
++  var add_page:=num_pages+1;
++  var del_page:=num_pages+2;
++  var this_layout:=main_layout;
++  var this_data:=main_data;
++  
++//  Compose Cprop Pages
++  ComposeMainGump(add_page,del_page,this_layout,this_data,thing);
++  
++// Add Prop Page
++  this_layout.append(&quot;page &quot;+add_page);
++  foreach bit in add_layout
++    this_layout.append(bit);
++  endforeach
++  this_layout.append(&quot;textentry 200 92 200 20 0 500 &quot;+len(this_data));
++  this_data.append(&quot;&quot;);
++  
++// Del Prop Page  
++  this_layout.append(&quot;page &quot;+del_page);
++  foreach bit in del_layout
++    this_layout.append(bit);
++  endforeach
++  
++  var retval:=SendDialogGump(who,this_layout,this_data);
++
++// Check for buttons.....  
++  var i;
++  if (retval[1000])           // Toggle Hex
++    show_in_hex:=!show_in_hex;
++    return 1;
++  elseif (retval[1001])       // Toggle Width
++    gump_width:=gump_width+1;
++    if (!GetGumpWidth())
++      gump_width:=1;
++    endif
++    return 1;
++  elseif (retval[998])        // Add Cprop
++    var add_prop_name:=GetGumpText(retval[500]);
++    if (!len(add_prop_name))
++      sendsysmessage(who,&quot;No Cprop name specified!&quot;);
++      return 1;
++    elseif (add_prop_name in propnames)
++      sendsysmessage(who,&quot;There is alread a Cprop with that name!&quot;);
++      return 1;
++    endif
++    var add_prop_val;
++    if (retval[1005])
++      add_prop_val:=0;   // integer
++    elseif (retval[1006])
++      add_prop_val:=0.0; // double
++    else
++      add_prop_val:=&quot;&quot;;  // string
++    endif    
++    SetObjProperty(thing,add_prop_name,add_prop_val);
++    return 1;
++  elseif (retval[997])      // Delete Cprop
++    for (i:=1;i&lt;=len(propnames);i:=i+1)
++      if (retval[700+i])
++        EraseObjProperty(thing,propnames[i]);
++      endif
++    endfor
++    return 1;
++  elseif (retval[999])      // Apply changes to cprops
++    for (i:=1;i&lt;=len(propnames);i:=i+1)
++      var this_prop:=GetObjProperty(thing,propnames[i]);
++      var this_text:=retval[i+500];
++      if (!this_text.errortext)
++        SetObjProperty(thing,propnames[i],SetPropType(GetGumpText(this_text),TypeOf(this_prop)));
++      endif
++    endfor
++    return 1;
++  endif
++  
++  return 0;
++endfunction
++
++////////////////////////////////////////////////////////
++
++
++function ComposeMainGump(byref add_page,byref del_page,byref this_layout,byref this_data,thing)
++  var propnames:=GetObjPropertyNames(thing);
++  var width:=GetGumpWidth();
++  this_layout[3]:=&quot;resizepic 0 0 2520 &quot;+width+&quot; 300&quot;;
++  this_layout[6]:=&quot;button &quot;+(width-40)+&quot; 10 31 31 1 0 1001&quot;; 
++  this_layout[9]:=&quot;croppedtext 140 10 &quot;+(width-200)+&quot; 25 0 4&quot;;
++  if (show_in_hex)
++    this_data[1]:=&quot;Show Int&quot;;
++  else
++    this_data[1]:=&quot;Show Hex&quot;;
++  endif                    
++  if (thing.name)
++    this_data[5]:=thing.name+&quot; [&quot;+ToggleHex(thing.serial)+&quot;]&quot;;
++  else
++    this_data[5]:=thing.desc+&quot; [&quot;+ToggleHex(thing.serial)+&quot;]&quot;;
++  endif
++  
++  var i,j,y,this_prop,this_type;
++
++  for (i:=1;i&lt;add_page;i:=i+1)
++    this_layout.append(&quot;page &quot;+i);
++    this_layout.append(&quot;button 380 267 2071 2072 1 0 995&quot;);// Cancel button
++    this_layout.append(&quot;button 200 267 239 240 1 0 999&quot;);  // Main apply button
++    if (i&gt;1)
++      this_layout.append(&quot;button &quot;+(width-60)+&quot; 40 250 251 0 &quot;+(i-1)); 
++    endif
++    if (i&lt;(add_page-1))
++      this_layout.append(&quot;button &quot;+(width-60)+&quot; 265 252 253 0 &quot;+(i+1)); 
++    endif
++    if (add_page&gt;2)
++      this_layout.append(&quot;gumppic &quot;+(width-108)+&quot; 263 2644&quot;);
++      this_layout.append(&quot;gumppic &quot;+(width-105)+&quot; 266 &quot;+(2224+i));
++    endif
++    this_layout.append(&quot;button 340 38 2224 2224 0 &quot;+add_page);
++    this_layout.append(&quot;text 360 35 34 2&quot;);
++    this_layout.append(&quot;button 40 38 2224 2224 0 &quot;+del_page);
++    this_layout.append(&quot;text 60 35 34 3&quot;);
++
++    var start_j:=((i-1)*TEXT_LINES)+1;
++    var end_j:=i*TEXT_LINES;
++    if (end_j&gt;len(propnames))
++      end_j:=len(propnames);
++    endif
++    
++    for (j:=start_j; j&lt;=end_j; j:=j+1)
++      if (propnames[j])
++        this_prop:=GetObjProperty(thing,propnames[j]);
++        this_type:=TypeOf(this_prop);
++        this_prop:=Cstr(this_prop);
++        var can_edit:=1;
++        if (len(this_prop)&gt;MAX_CHARS)
++          this_prop:=this_prop[1,MAX_CHARS];
++          can_edit:=0;
++        endif
++        y:=(j-start_j)*20+60;
++        this_layout.append(&quot;croppedtext 50 &quot;+y+&quot; 130 20 0 &quot;+len(this_data));
++        this_data.append(propnames[j]);
++
++        this_layout.append(&quot;croppedtext 200 &quot;+y+&quot; 60 20 0 &quot;+len(this_data));
++        this_data.append(this_type);
++
++        if (this_prop.errortext)
++          this_layout.append(&quot;croppedtext 280 &quot;+y+&quot; &quot;+(width-310)+&quot; 20 34 &quot;+len(this_data));
++          this_data.append(this_prop.errortext);
++        elseif ( (can_edit) and  ( this_type==&quot;Integer&quot;) or (this_type==&quot;Double&quot;) or (this_type==&quot;String&quot;) )
++          this_layout.append(&quot;gumppic 260 &quot;+(y+3)+&quot; 58&quot;);
++          this_layout.append(&quot;textentry 280 &quot;+y+&quot; &quot;+(width-310)+&quot; 20 0 &quot;+(500+j)+&quot; &quot;+len(this_data));
++          this_data.append(ToggleHex(this_prop,this_type));
++        else
++          this_layout.append(&quot;croppedtext 280 &quot;+y+&quot; &quot;+(width-310)+&quot; 20 0 &quot;+len(this_data));
++          this_data.append(this_prop);
++        endif
++        this_layout.append(&quot;checkbox 30 &quot;+y+&quot; 210 211 0 &quot;+(j+700)); 
++      endif
++    endfor
++  endfor
++endfunction
++
++////////////////////////////////////////////////////////
++
++function GetGumpText(text)
++  return text[Find(text,&quot;: &quot;,1)+2,len(text)];
++endfunction
++
++////////////////////////////////////////////////////////
++
++function GetGumpWidth()
++  case (gump_width)
++    1:  return 600;
++    2:  return 750;
++    3:  return 900;
++  endcase
++  return 0;
++endfunction
++
++////////////////////////////////////////////////////////
++
++function SetPropType(text,type)
++  case (type)
++    &quot;Integer&quot; : return Cint(text);
++    &quot;Double&quot;  : return Cdbl(text);
++  endcase
++  return text;
++endfunction
++
++////////////////////////////////////////////////////////
++
++function ToggleHex(value,value_type:=0)
++  if (!value_type)
++    value_type:=TypeOf(value);
++  endif
++  if ((value_type==&quot;Integer&quot;) and (show_in_hex))
++    return Hex(value);
++  else
++    return Cstr(value);
++  endif
++endfunction
++
++////////////////////////////////////////////////////////
+
+Added: trunk/096/pkg/commands/props/props.src
+===================================================================
+--- trunk/096/pkg/commands/props/props.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/props/props.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -0,0 +1,16 @@
++use uo;
++
++program dot_props( who )
++    var what := Target( who );
++    if (what)
++        var names := what.propnames();
++        if (names.size() != 0)
++            foreach propname in names
++                SendSysMessage( who, propname + &quot;: &quot; + what.getprop( propname ) );
++            endforeach
++        else
++            SendSysMessage( who, &quot;No properties.&quot; );
++        endif
++    endif
++
++endprogram
+
+Added: trunk/096/pkg/commands/props/setglobal.src
+===================================================================
+--- trunk/096/pkg/commands/props/setglobal.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/props/setglobal.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -0,0 +1,15 @@
++use uo;
++use os;
++
++
++program textcmd_setglobal( who, text )
++    var tparams := SplitWords( text );
++
++    print( &quot;Property Name: &quot; + tparams[1] );
++    print( &quot;Property Value: &quot; + tparams[2] );
++
++    var res := SetGlobalProperty( tparams[1], tparams[2] );
++    if (!res)
++        SendSysMessage( who, &quot;Error setting property: &quot; + res.errortext );
++    endif
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/props/setobjproperty.src
+===================================================================
+--- trunk/096/pkg/commands/props/setobjproperty.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/props/setobjproperty.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -0,0 +1,38 @@
++/*
++ * $Id$
++ *
++ */
++ 
++use uo;
++
++program textcmd_SetObjProperty(who, text)
++	var param := SplitWords(text);
++	if ( param.size() &lt; 2 )
++		SendSysMessage(who, &quot;SYNTAX: .setobjproperty &lt;prop&gt; &lt;value&gt;&quot;);
++		return 0;
++	endif
++	var prop := param[1];
++	
++	SendSysMessage(who,&quot;Select object to set the CProp on.&quot;);
++	var targ := Target( who );
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	var pos := find(text, param[2], Len(param[1])+1);
++	var value := text[pos, len(text)];
++	if ( value[1] in {&quot;+&quot;,&quot;-&quot;} )
++		// Make it an actual integer variable if it starts with +/-
++		// This makes a difference to the setting of a CProp (ie. how it's packed)
++		value := CInt(value);
++	endif
++
++	var ret_val := SetObjProperty(targ, prop, value);
++	if ( !ret_val )
++		SendSysMessage(who, &quot;Error setting CProp -&gt;&quot;+ret_val);
++		return 0;
++	endif
++	
++ 	SendSysMessage(who, &quot;Successful (set as &quot;+TypeOf(value)+&quot;)&quot;);
++endprogram
+
+Added: trunk/096/pkg/commands/props/setprop.src
+===================================================================
+--- trunk/096/pkg/commands/props/setprop.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/props/setprop.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -0,0 +1,120 @@
++/* $Id: setprop.src 385 2005-10-02 18:31:15Z panosl $
++ *
++ */
++use uo;
++
++
++program SetProperties(who, text)
++	var param := SplitWords(text);
++	if ( param.size() &lt; 2 )
++		SendSysMessage(who, &quot;SYNTAX: .setprop &lt;property name&gt; &lt;value&gt;&quot;);
++		return;
++	endif
++
++	var targ := target(who);
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return;
++	endif
++
++	var property := Lower(param[1]);
++	var pos := Find(text, param[2], Len(param[1])+1);
++	var value := text[pos, Len(text)];
++
++	// Useful for clearing something like 'mobile.guild_title'.
++	if ( value == &quot;NULL&quot; )
++		value := &quot;&quot;;
++	endif
++	var old_val := targ.get_member(property);
++	var old_type := Lower(TypeOf(old_val));
++	case ( old_type )
++		&quot;integer&quot;	: value := CInt(value); break;
++		&quot;string&quot;	: value := CStr(value); break;
++		&quot;double&quot;	: value := CDbl(value); break;
++		default:
++			SendSysMessage(who, &quot;Original data-type '&quot;+old_type+&quot;' not supported. No changes can be made.&quot;);
++			return 0;
++	endcase
++	SendSysMessage(who, &quot;Old Value-&gt;&quot;+old_val);
++
++	ProcessInput(who, targ,property, value);
++
++	SendSysMessage(who, &quot;New Value-&gt;&quot;+targ.get_member(property));
++endprogram
++
++
++function ProcessInput(who, targ, byref property, byref value)
++	//Works on items and mobiles, so do this first.
++	if ( property in array{&quot;x&quot;, &quot;y&quot;, &quot;z&quot;, &quot;realm&quot;} )
++		DoMovement(targ,property, value);
++		return 1;
++	elseif ( MobileProperties(who, targ,property, value) )
++		// Special mobile methods/functions were used.
++		return 1;
++	else
++		// Nothing special was needed to be done, just an ordinary member to change.
++		targ.set_member(property, value);
++		return 1;
++	endif
++endfunction
++
++
++function MobileProperties(who, targ, byref property, byref value)
++	if ( !targ.IsA(POLCLASS_MOBILE) )
++		return error;
++	endif
++	
++	case ( property )
++		&quot;concealed&quot;:
++			if ( value &gt; who.cmdlevel )
++				SendSysMessage(who, &quot;You can not conceal something higher than your cmdlevel.&quot;);
++				return 1;
++			else
++				targ.concealed := value; return 1;
++			endif
++		&quot;cmdlevel&quot;:
++			if ( value &gt; who.cmdlevel )
++				SendSysMessage(who, &quot;You can not set a command level higher than your own.&quot;);
++				return 1;
++			else
++				targ.cmdlevel := value; return 1;
++			endif
++		&quot;criminal&quot;:
++			targ.SetCriminal(value); return 1;
++		&quot;murderer&quot;:
++			targ.SetMurderer(value); return 1;
++		&quot;poisoned&quot;:
++			targ.SetPoisoned(value); return 1;
++		&quot;squelch&quot;:
++			targ.Squelch(value); return 1;
++		&quot;warmode&quot;:
++			targ.SetWarMode(value); return 1;
++	endcase
++	
++	// Nothing was done here.
++	return 0;
++endfunction
++
++
++function DoMovement(targ, byref property, byref value)
++	var x := targ.x;
++	var y := targ.y;
++	var z := targ.z;
++	var realm := targ.realm;
++
++	if ( property == realm )
++		MoveObjectToRealm(targ, property, x, y, z);
++	else
++		case ( property )
++			&quot;x&quot;: x := value;
++			&quot;y&quot;: y := value;
++			&quot;z&quot;: z := value;
++		endcase
++
++		if ( targ.IsA(POLCLASS_ITEM) )
++			MoveItemToLocation(targ, x, y, z, MOVEITEM_FORCELOCATION);
++		elseif ( targ.IsA(POLCLASS_MOBILE) )
++			MoveCharacterToLocation(targ, x, y, z, MOVECHAR_FORCELOCATION);
++		endif
++	endif
++endfunction
+
+Deleted: trunk/096/pkg/commands/seer/setintproperty.src
+===================================================================
+--- trunk/096/pkg/commands/seer/setintproperty.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/seer/setintproperty.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,11 +0,0 @@
+-use uo;
+-
+-program addintproperty( who, text )
+-	var params := SplitWords( text );
+-	var item := Target( who );
+-	SetObjProperty( item, params[1], CInt(params[2]) );
+-
+-	print(&quot;objprop: &quot; + GetObjProperty( item, params[1] ) );
+-
+-        
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/test/getobjprop.src
+===================================================================
+--- trunk/096/pkg/commands/test/getobjprop.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/test/getobjprop.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,27 +0,0 @@
+-/////////////////////////////////////////////////////////////////////////////
+-//
+-//
+-/////////////////////////////////////////////////////////////////////////////
+-use uo;
+-
+-program showmember( who, membername )
+-    SendSysMessage( who, &quot;Display &quot; + membername + &quot; of what?&quot; );
+-    var what := Target( who );
+-    if (what)
+-            //
+-            // Note this trick: since there's an operator involved,
+-            // the compiler won't change membername to &quot;membername&quot;
+-            // like it usually does when it sees an identifier follow
+-            // a dot-operator.
+-            //
+-        var member := GetObjProperty( what, membername );
+-        var extra := CInt( member );
+-        if (extra)
+-            extra := &quot; (&quot; + Hex(extra) + &quot;)&quot;;
+-        else
+-            extra := &quot;&quot;;
+-        endif
+-
+-        PrintTextAbovePrivate( what, &quot;that.&quot; + membername + &quot; = &quot; + member + extra, who );
+-    endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/test/props.src
+===================================================================
+--- trunk/096/pkg/commands/test/props.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/test/props.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,16 +0,0 @@
+-use uo;
+-
+-program dot_props( who )
+-    var what := Target( who );
+-    if (what)
+-        var names := what.propnames();
+-        if (names.size() != 0)
+-            foreach propname in names
+-                SendSysMessage( who, propname + &quot;: &quot; + what.getprop( propname ) );
+-            endforeach
+-        else
+-            SendSysMessage( who, &quot;No properties.&quot; );
+-        endif
+-    endif
+-
+-endprogram
+
+Deleted: trunk/096/pkg/commands/test/smember.src
+===================================================================
+--- trunk/096/pkg/commands/test/smember.src	2005-11-01 17:20:30 UTC (rev 783)
++++ trunk/096/pkg/commands/test/smember.src	2005-11-01 17:45:55 UTC (rev 784)
+@@ -1,16 +0,0 @@
+-use uo;
+-
+-program showmember(who, membername)
+-  SendSysMessage(who, &quot;Display &quot; + membername + &quot; of what?&quot;);
+-  var what := Target(who);
+-  if(what)
+-    var member := what.get_member(membername);
+-    var extra := CInt( member );
+-    if(extra)
+-      extra := &quot; (&quot; + Hex(extra) + &quot;)&quot;;
+-    else
+-      extra := &quot;&quot;;
+-    endif
+-    PrintTextAbovePrivate(what, &quot;that.&quot; + membername + &quot; = &quot; + member + extra, who);
+-  endif
+-endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000757.html">[Poldistro-svn] r783 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000759.html">[Poldistro-svn] r785 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#758">[ date ]</a>
+              <a href="thread.html#758">[ thread ]</a>
+              <a href="subject.html#758">[ subject ]</a>
+              <a href="author.html#758">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

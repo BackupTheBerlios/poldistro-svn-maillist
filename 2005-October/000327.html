@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r349 - in trunk/096/pkg/items/containers/commands: . admin
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r349%20-%20in%20trunk/096/pkg/items/containers/commands%3A%20.%20admin&In-Reply-To=%3C200510011411.j91EBNs9006180%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000326.html">
+   <LINK REL="Next"  HREF="000328.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r349 - in trunk/096/pkg/items/containers/commands: . admin</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r349%20-%20in%20trunk/096/pkg/items/containers/commands%3A%20.%20admin&In-Reply-To=%3C200510011411.j91EBNs9006180%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r349 - in trunk/096/pkg/items/containers/commands: . admin">austin at berlios.de
+       </A><BR>
+    <I>Sat Oct  1 16:11:23 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000326.html">[Poldistro-svn] r348 - trunk/096/pkg/items/containers/include
+</A></li>
+        <LI>Next message: <A HREF="000328.html">[Poldistro-svn] r350 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#327">[ date ]</a>
+              <a href="thread.html#327">[ thread ]</a>
+              <a href="subject.html#327">[ subject ]</a>
+              <a href="author.html#327">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-01 16:11:23 +0200 (Sat, 01 Oct 2005)
+New Revision: 349
+
+Added:
+   trunk/096/pkg/items/containers/commands/admin/
+   trunk/096/pkg/items/containers/commands/admin/openStorage.ecl
+   trunk/096/pkg/items/containers/commands/admin/openStorage.src
+   trunk/096/pkg/items/containers/commands/admin/storageAreas.ecl
+   trunk/096/pkg/items/containers/commands/admin/storageAreas.src
+Log:
+
+
+Added: trunk/096/pkg/items/containers/commands/admin/openStorage.ecl
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/096/pkg/items/containers/commands/admin/openStorage.ecl
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/096/pkg/items/containers/commands/admin/openStorage.src
+===================================================================
+--- trunk/096/pkg/items/containers/commands/admin/openStorage.src	2005-10-01 13:46:25 UTC (rev 348)
++++ trunk/096/pkg/items/containers/commands/admin/openStorage.src	2005-10-01 14:11:23 UTC (rev 349)
+@@ -0,0 +1,34 @@
++// $Id$
++
++use uo;
++use os;
++
++include &quot;:gumps:requestgump&quot;;
++include &quot;:containers:storageAreas&quot;;
++
++unload_scripts(&quot;&quot;);
++
++program command_OpenStorage(mobile)
++	var storage_area := RequestGump(mobile, &quot;Storage Area Name&quot;, &quot;&quot;, CP_DEFAULT_AREA);
++	if ( !storage_area )
++		SendSysMessage(mobile, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	var container_id := RequestGump(mobile, &quot;Storage container ID&quot;);
++	if ( !container_id )
++		SendSysMessage(mobile, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	var root_container := CP_GetStorageAreaContainer(container_id, storage_area);
++	if ( !root_container )
++		SendSysMessage(mobile, &quot;Container does not exist. -&gt;&quot;+root_container.errortext);
++		return 0;
++	else
++		SendSysMessage(mobile, &quot;Opening...&quot;);
++		SendOpenSpecialContainer(mobile, root_container);
++	endif
++	
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/containers/commands/admin/storageAreas.ecl
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/096/pkg/items/containers/commands/admin/storageAreas.ecl
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/096/pkg/items/containers/commands/admin/storageAreas.src
+===================================================================
+--- trunk/096/pkg/items/containers/commands/admin/storageAreas.src	2005-10-01 13:46:25 UTC (rev 348)
++++ trunk/096/pkg/items/containers/commands/admin/storageAreas.src	2005-10-01 14:11:23 UTC (rev 349)
+@@ -0,0 +1,33 @@
++// $Id$
++
++use uo;
++use os;
++use polsys;
++
++include &quot;:gumps:gumps_ex&quot;;
++
++unload_scripts(&quot;&quot;);
++
++program command_StorageAreas(mobile)
++	var storage_area := GFSendGump(mobile, BuildAreaListGump());
++endprogram
++
++function BuildAreaListGump()
++	var storage_areas := StorageAreas();
++	
++	var gump := GFCreateGump();
++	GFPage(gump, 0);
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 300, 480);
++	GFResizePic(gump, 10, 10, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 280, 460);
++	var y_pos := 40;
++	var counter := 1;
++	var page_num := 1;
++	GFTextMid(gump, 10, 15, 280, 2100, &quot;Storage Areas&quot;);
++	foreach area in (storage_areas)
++		GFAddButton(gump, 20, y_pos+3, 2117, 2118, GF_CLOSE_BTN);
++		GFTextLine(gump, 40, y_pos, 2100, _area_iter);
++		y_pos := y_pos+20;
++	endforeach
++	
++	return gump;
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000326.html">[Poldistro-svn] r348 - trunk/096/pkg/items/containers/include
+</A></li>
+	<LI>Next message: <A HREF="000328.html">[Poldistro-svn] r350 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#327">[ date ]</a>
+              <a href="thread.html#327">[ thread ]</a>
+              <a href="subject.html#327">[ subject ]</a>
+              <a href="author.html#327">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

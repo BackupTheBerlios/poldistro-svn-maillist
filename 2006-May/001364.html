@@ -1,0 +1,299 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1395 - in trunk/096/pkg/items/containers: . corpse
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1395%20-%20in%20trunk/096/pkg/items/containers%3A%20.%20corpse&In-Reply-To=%3C200605131450.k4DEoMfN020272%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001363.html">
+   <LINK REL="Next"  HREF="001365.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1395 - in trunk/096/pkg/items/containers: . corpse</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1395%20-%20in%20trunk/096/pkg/items/containers%3A%20.%20corpse&In-Reply-To=%3C200605131450.k4DEoMfN020272%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1395 - in trunk/096/pkg/items/containers: . corpse">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 16:50:22 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001363.html">[Poldistro-svn] r1394 - trunk/096/data
+</A></li>
+        <LI>Next message: <A HREF="001365.html">[Poldistro-svn] r1396 - in trunk/096/pkg/items/containers: . corpse
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1364">[ date ]</a>
+              <a href="thread.html#1364">[ thread ]</a>
+              <a href="subject.html#1364">[ subject ]</a>
+              <a href="author.html#1364">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 16:50:21 +0200 (Sat, 13 May 2006)
+New Revision: 1395
+
+Added:
+   trunk/096/pkg/items/containers/corpse/remainsControl.src
+   trunk/096/pkg/items/containers/corpse/remainsOnCreate.src
+Removed:
+   trunk/096/pkg/items/containers/corpse/boneControl.src
+Modified:
+   trunk/096/pkg/items/containers/corpse/corpseControl.src
+   trunk/096/pkg/items/containers/corpse/methods.src
+   trunk/096/pkg/items/containers/itemdesc.cfg
+Log:
+Added object type for the bones that corpses decay to.
+Added better support for bones and corpses in the method script.
+
+Deleted: trunk/096/pkg/items/containers/corpse/boneControl.src
+===================================================================
+--- trunk/096/pkg/items/containers/corpse/boneControl.src	2006-05-13 14:22:13 UTC (rev 1394)
++++ trunk/096/pkg/items/containers/corpse/boneControl.src	2006-05-13 14:50:21 UTC (rev 1395)
+@@ -1,9 +0,0 @@
+-use uo;
+-use os;
+-
+-program boneControl(corpse)
+-
+-        sleep(300);
+-        DestroyItem(corpse);
+-
+-endprogram
+
+Modified: trunk/096/pkg/items/containers/corpse/corpseControl.src
+===================================================================
+--- trunk/096/pkg/items/containers/corpse/corpseControl.src	2006-05-13 14:22:13 UTC (rev 1394)
++++ trunk/096/pkg/items/containers/corpse/corpseControl.src	2006-05-13 14:50:21 UTC (rev 1395)
+@@ -2,8 +2,8 @@
+ use os;
+ use util;
+ 
+-program corpseControl(corpse)
+-
++program control_Corpse(corpse)
++	/*
+ 	sleep(300);
+ 	if(!corpse)
+ 		return 0;
+@@ -33,5 +33,5 @@
+ 	endif
+ 
+ 	return 0;
+-
++	*/
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/containers/corpse/methods.src
+===================================================================
+--- trunk/096/pkg/items/containers/corpse/methods.src	2006-05-13 14:22:13 UTC (rev 1394)
++++ trunk/096/pkg/items/containers/corpse/methods.src	2006-05-13 14:50:21 UTC (rev 1395)
+@@ -9,9 +9,20 @@
+ endprogram
+ 
+ exported function GetOwner(corpse)
+-	return SystemFindObjectBySerial(corpse.ownerserial);
++	if ( corpse.ownerserial )
++		return SystemFindObjectBySerial(corpse.ownerserial);
++	elseif ( CInt(GetObjProperty(corpse, &quot;ownerserial&quot;)) )
++		return SystemFindObjectBySerial(CInt(GetObjProperty(corpse, &quot;ownerserial&quot;)));
++	endif
+ endfunction
+ 
++exported function SetOwner(corpse, serial)
++	if ( serial.IsA(POLCLASS_UOBJECT) )
++		serial := serial.serial;
++	endif
++	return SetObjProperty(corpse, &quot;ownerserial&quot;, serial);
++endfunction
++
+ exported function NPCTemplate(corpse)
+ 	var template := GetObjProperty(corpse, &quot;npctemplate&quot;);
+ 	if ( template )
+@@ -54,6 +65,32 @@
+ 	return CInt(GetObjProperty(corpse, &quot;Skinned&quot;));
+ endfunction
+ 
++exported function MakeRemains(corpse)
++	if ( !corpse.IsA(POLCLASS_CORPSE) )
++		return error{&quot;errortext&quot;:=&quot;Object is not a corpse.&quot;};
++	endif
++	
++	var remains := CreateItemAtLocation(corpse.x, corpse.y, corpse.z, &quot;CorpseRemains&quot;, 1, corpse.realm);
++	if ( remains.errortext )
++		return remains;
++	endif
++	
++	foreach item in ( corpse )
++		if ( item.container != corpse )
++			continue;
++		endif
++		
++		MoveItemToContainer(item, remains, item.x, item.y);
++	endforeach
++	
++	var owner := IsPlayerCorpse(corpse);
++	if ( owner )
++		remains.SetOwner(owner);
++	endif
++	
++	return remains;
++endfunction
++
+ exported function Gibbify(corpse, range:=10)
+ 	var piece_list := array
+ 	{
+@@ -88,11 +125,12 @@
+ 				newy := corpse.y;
+ 				break MOVE_LOOP;
+ 			endif
+-
+ 		until ( CheckLosAt(corpse, newx, newy, corpse.z) );
+ 		
+ 		MoveItemToLocation(item, newx, newy, corpse.z, MOVEITEM_FORCELOCATION);
+ 	endforeach
+ 	
+ 	DestroyItem(corpse);
++	
++	return 1;
+ endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/containers/corpse/remainsControl.src
+===================================================================
+--- trunk/096/pkg/items/containers/corpse/remainsControl.src	2006-05-13 14:22:13 UTC (rev 1394)
++++ trunk/096/pkg/items/containers/corpse/remainsControl.src	2006-05-13 14:50:21 UTC (rev 1395)
+@@ -0,0 +1,21 @@
++/* $Id$
++ *
++ */
++ 
++use uo;
++use os;
++
++program control_Remains(remains)
++	sleep(300); // 5 minutes
++	
++	foreach item in ( EnumerateItemsInContainer(remains) )
++		if ( item.container != remains )
++			continue;
++		else
++			MoveObjectToLocation(item, remains.x, remains.y, remains.z, remains.realm, MOVEOBJECT_NORMAL);
++		endif
++		sleepms(2);
++	endforeach
++	
++	DestroyItem(remains);
++endprogram
+
+Added: trunk/096/pkg/items/containers/corpse/remainsOnCreate.src
+===================================================================
+--- trunk/096/pkg/items/containers/corpse/remainsOnCreate.src	2006-05-13 14:22:13 UTC (rev 1394)
++++ trunk/096/pkg/items/containers/corpse/remainsOnCreate.src	2006-05-13 14:50:21 UTC (rev 1395)
+@@ -0,0 +1,19 @@
++/* $Id$
++ *
++ */
++ 
++use uo;
++use util;
++use cfgfile;
++
++program OnCreate(remains)
++	var bonearray := array{0xED2, 0xED1, 0xED0, 0xECF, 0xECE, 0xECD, 0xECC, 0xECB, 0xECA};
++	
++	if ( bonearray.Size() &lt; 1 )
++		return 1;
++	endif
++	
++	remains.graphic := bonearray[RandomInt(bonearray.Size())+1];
++	
++	return 1;
++endprogram
+
+Modified: trunk/096/pkg/items/containers/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/containers/itemdesc.cfg	2006-05-13 14:22:13 UTC (rev 1394)
++++ trunk/096/pkg/items/containers/itemdesc.cfg	2006-05-13 14:50:21 UTC (rev 1395)
+@@ -1315,7 +1315,7 @@
+ Container 0xF013
+ {
+ 	Name			ShipsHold
+-	Desc			ship's hold%%
++	Desc			ship\'s hold%%
+ 	Graphic			1
+ 
+ 	Gump			0x4C
+@@ -1336,8 +1336,8 @@
+ Container 0x2006
+ {
+ 	Name			Corpse
++
+ 	Gump			0x9
+-
+ 	MinX			20
+ 	MaxX			80
+ 	MinY			85
+@@ -1352,7 +1352,30 @@
+ 	ControlScript		corpse/corpseControl
+ 	MethodScript		corpse/methods
+ }
++Container 0xEFFF
++{
++	Name			CorpseRemains
++	Desc			the remains of
++	Graphic			0xED2
++	Color			0
++	
++	Gump			0x9
++	MinX			20
++	MaxX			80
++	MinY			85
++	MaxY			165
++	
++	MaxItems		0
++	MaxWeight		0
+ 
++	RequiresAttention	0
++	DecayOnMultis		1
++
++	ControlScript		corpse/remainsControl
++	CreateScript		corpse/remainsOnCreate
++	MethodScript		corpse/methods
++}
++
+ Container 0xFF01
+ {
+ 	Name			SecureTradeContainer
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001363.html">[Poldistro-svn] r1394 - trunk/096/data
+</A></li>
+	<LI>Next message: <A HREF="001365.html">[Poldistro-svn] r1396 - in trunk/096/pkg/items/containers: . corpse
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1364">[ date ]</a>
+              <a href="thread.html#1364">[ thread ]</a>
+              <a href="subject.html#1364">[ subject ]</a>
+              <a href="author.html#1364">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

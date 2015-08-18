@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r375 - trunk/096/pkg/other/gmtools/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r375%20-%20trunk/096/pkg/other/gmtools/commands/gm&In-Reply-To=%3C200510021413.j92ED806007216%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000349.html">
+   <LINK REL="Next"  HREF="000351.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r375 - trunk/096/pkg/other/gmtools/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r375%20-%20trunk/096/pkg/other/gmtools/commands/gm&In-Reply-To=%3C200510021413.j92ED806007216%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r375 - trunk/096/pkg/other/gmtools/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct  2 16:13:08 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000349.html">[Poldistro-svn] r374 - trunk/096/pkg/items/containers/include
+</A></li>
+        <LI>Next message: <A HREF="000351.html">[Poldistro-svn] r376 - trunk/096/pkg/items/containers/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#350">[ date ]</a>
+              <a href="thread.html#350">[ thread ]</a>
+              <a href="subject.html#350">[ subject ]</a>
+              <a href="author.html#350">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-02 16:13:08 +0200 (Sun, 02 Oct 2005)
+New Revision: 375
+
+Modified:
+   trunk/096/pkg/other/gmtools/commands/gm/gmtools.src
+Log:
+
+
+Modified: trunk/096/pkg/other/gmtools/commands/gm/gmtools.src
+===================================================================
+--- trunk/096/pkg/other/gmtools/commands/gm/gmtools.src	2005-10-02 14:10:53 UTC (rev 374)
++++ trunk/096/pkg/other/gmtools/commands/gm/gmtools.src	2005-10-02 14:13:08 UTC (rev 375)
+@@ -12,7 +12,7 @@
+ include &quot;:gmtools:gotoLayout&quot;;
+ include &quot;:gmtools:accountLayout&quot;;
+ include &quot;:gmtools:spawnerLayout&quot;;
+-include &quot;:bank:bank&quot;;
++include &quot;:containers:storageAreas&quot;;
+ include &quot;include/gumpUtil&quot;; // Added by Shinigami
+ 
+ const TEXTSTARTLOCY :=  70;
+@@ -798,15 +798,15 @@
+        sleep(10);
+        act.ban();
+ 	   var x, i;
+-       WipeBankBox(act.GetCharacter(1));
+-	   for(i := 1; i &lt;= 25; i := i + 1)
++	CP_RemoveStorageAreaContainer(CP_GetMobileContainerID(act.GetCharacter(1).serial));	   
++         for(i := 1; i &lt;= 25; i := i + 1)
+ 	     x := GetEquipmentByLayer(act.GetCharacter(1), i);
+ 	     MoveItemToContainer(x, act.GetCharacter(1).backpack);
+ 	   endfor
+        DestroyItem(act.GetCharacter(1).backpack);
+        act.DeleteCharacter(1);
+        i := 0;
+-       WipeBankBox(act.GetCharacter(2));
++      CP_RemoveStorageAreaContainer(CP_GetMobileContainerID(act.GetCharacter(2).serial));
+ 	   for(i := 1; i &lt;= 25; i := i + 1)
+ 	     x := GetEquipmentByLayer(act.GetCharacter(2), i);
+ 	     MoveItemToContainer(x, act.GetCharacter(2).backpack);
+@@ -814,7 +814,7 @@
+        DestroyItem(act.GetCharacter(2).backpack);
+        act.DeleteCharacter(2);
+        i := 0;
+-       WipeBankBox(act.GetCharacter(3));
++       CP_RemoveStorageAreaContainer(CP_GetMobileContainerID(act.GetCharacter(3).serial));
+ 	   for(i := 1; i &lt;= 25; i := i + 1)
+ 	     x := GetEquipmentByLayer(act.GetCharacter(3), i);
+ 	     MoveItemToContainer(x, act.GetCharacter(3).backpack);
+@@ -822,7 +822,7 @@
+        DestroyItem(act.GetCharacter(3).backpack);
+        act.DeleteCharacter(3);
+        i := 0;
+-       WipeBankBox(act.GetCharacter(4));
++      CP_RemoveStorageAreaContainer(CP_GetMobileContainerID(act.GetCharacter(4).serial));
+ 	   for(i := 1; i &lt;= 25; i := i + 1)
+ 	     x := GetEquipmentByLayer(act.GetCharacter(4), i);
+ 	     MoveItemToContainer(x, act.GetCharacter(4).backpack);
+@@ -830,7 +830,7 @@
+        DestroyItem(act.GetCharacter(4).backpack);
+        act.DeleteCharacter(4);
+        i := 0;
+-       WipeBankBox(act.GetCharacter(5));
++       CP_RemoveStorageAreaContainer(CP_GetMobileContainerID(act.GetCharacter(5).serial));
+ 	   for(i := 1; i &lt;= 24; i := i + 1)
+ 	     x := GetEquipmentByLayer(act.GetCharacter(5), i);
+ 	     MoveItemToContainer(x, act.GetCharacter(5).backpack);
+@@ -1030,7 +1030,7 @@
+           endif
+       20: MoveCharacterToLocation(character, 1, 1, 0);
+       21: if(!character.isA(POLCLASS_NPC))
+-            var bankbox := FindBankBox(character);
++            var bankbox := CP_GetStorageContainerForMobile(character);
+             SendOpenSpecialContainer(who, bankbox);
+           else
+             SendSysMessage(who, &quot;Only can be used on players.&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000349.html">[Poldistro-svn] r374 - trunk/096/pkg/items/containers/include
+</A></li>
+	<LI>Next message: <A HREF="000351.html">[Poldistro-svn] r376 - trunk/096/pkg/items/containers/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#350">[ date ]</a>
+              <a href="thread.html#350">[ thread ]</a>
+              <a href="subject.html#350">[ subject ]</a>
+              <a href="author.html#350">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

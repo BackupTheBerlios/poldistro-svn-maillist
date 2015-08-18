@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1197 - in trunk/096/pkg/items: containers/container doors/door
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1197%20-%20in%20trunk/096/pkg/items%3A%20containers/container%20doors/door&In-Reply-To=%3C200602111816.k1BIGe6D011529%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001167.html">
+   <LINK REL="Next"  HREF="001169.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1197 - in trunk/096/pkg/items: containers/container doors/door</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1197%20-%20in%20trunk/096/pkg/items%3A%20containers/container%20doors/door&In-Reply-To=%3C200602111816.k1BIGe6D011529%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1197 - in trunk/096/pkg/items: containers/container doors/door">austin at berlios.de
+       </A><BR>
+    <I>Sat Feb 11 19:16:40 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001167.html">[Poldistro-svn] r1196 - trunk/096/pkg/items/doors/door
+</A></li>
+        <LI>Next message: <A HREF="001169.html">[Poldistro-svn] r1198 - trunk/096/pkg/items/containers/container
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1168">[ date ]</a>
+              <a href="thread.html#1168">[ thread ]</a>
+              <a href="subject.html#1168">[ subject ]</a>
+              <a href="author.html#1168">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-11 19:16:38 +0100 (Sat, 11 Feb 2006)
+New Revision: 1197
+
+Modified:
+   trunk/096/pkg/items/containers/container/use.src
+   trunk/096/pkg/items/doors/door/use.src
+Log:
+Made doors report being locked as a private print above.
+Added key searching and trap support to containers.
+
+Modified: trunk/096/pkg/items/containers/container/use.src
+===================================================================
+--- trunk/096/pkg/items/containers/container/use.src	2006-02-11 18:13:24 UTC (rev 1196)
++++ trunk/096/pkg/items/containers/container/use.src	2006-02-11 18:16:38 UTC (rev 1197)
+@@ -4,6 +4,9 @@
+ use os;
+ use cfgfile;
+ 
++include &quot;:keys:key&quot;;
++include &quot;:traps:traps&quot;;
++
+ program useContainer(mobile, container)
+ 	var item_cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+ 	item_cfg := item_cfg[container.graphic];
+@@ -17,6 +20,11 @@
+ 	//Check if mobile has a key for the container.
+ 	//Check if container is a treasure chest - generate loot.
+ 	
++	if ( ContainerIsLocked(mobile, container) )
++		RunTraps(container, mobile);
++		return 0;
++	endif
++	
+ 	SendViewContainer(mobile, container);
+ 	
+ 	if ( (item_cfg.OpenGraphic) &amp;&amp; (item_cfg.CloseGraphic) )
+@@ -25,3 +33,16 @@
+ 		container.graphic := item_cfg.CloseGraphic;
+ 	endif
+ endprogram
++
++function ContainerIsLocked(mobile, container)
++	if ( !container.locked )
++		// Nothing to worry about.
++		return 0;
++	elseif ( KP_HasKeyForLock(mobile, container) )
++		SendSysMessage(mobile, &quot;You use your key to open the container.&quot;);
++		return 0;
++	else
++		PrintTextAbovePrivate(container, &quot;That is locked.&quot;, mobile);
++		return 1;
++	endif
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/doors/door/use.src
+===================================================================
+--- trunk/096/pkg/items/doors/door/use.src	2006-02-11 18:13:24 UTC (rev 1196)
++++ trunk/096/pkg/items/doors/door/use.src	2006-02-11 18:16:38 UTC (rev 1197)
+@@ -43,7 +43,7 @@
+ 		SendSysMessage(mobile, &quot;You use your key to open the door.&quot;);
+ 		return 0;
+ 	else
+-		PrintTextAbove(door, &quot;That is locked.&quot;);
++		PrintTextAbovePrivate(door, &quot;That is locked.&quot;, mobile);
+ 		return 1;
+ 	endif
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001167.html">[Poldistro-svn] r1196 - trunk/096/pkg/items/doors/door
+</A></li>
+	<LI>Next message: <A HREF="001169.html">[Poldistro-svn] r1198 - trunk/096/pkg/items/containers/container
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1168">[ date ]</a>
+              <a href="thread.html#1168">[ thread ]</a>
+              <a href="subject.html#1168">[ subject ]</a>
+              <a href="author.html#1168">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r160 - trunk/096/pkg/other/hooks
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r160%20-%20trunk/096/pkg/other/hooks&In-Reply-To=%3C200509181040.j8IAeeEa016863%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000139.html">
+   <LINK REL="Next"  HREF="000141.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r160 - trunk/096/pkg/other/hooks</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r160%20-%20trunk/096/pkg/other/hooks&In-Reply-To=%3C200509181040.j8IAeeEa016863%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r160 - trunk/096/pkg/other/hooks">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep 18 12:40:40 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000139.html">[Poldistro-svn] r159 - trunk/096/pkg/config
+</A></li>
+        <LI>Next message: <A HREF="000141.html">[Poldistro-svn] r161 - trunk/096/pkg/systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#140">[ date ]</a>
+              <a href="thread.html#140">[ thread ]</a>
+              <a href="subject.html#140">[ subject ]</a>
+              <a href="author.html#140">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-18 12:40:22 +0200 (Sun, 18 Sep 2005)
+New Revision: 160
+
+Modified:
+   trunk/096/pkg/other/hooks/uoclient.cfg
+Log:
+Protocol and Listener elems moved to configs file since they are not attribute related.
+
+Modified: trunk/096/pkg/other/hooks/uoclient.cfg
+===================================================================
+--- trunk/096/pkg/other/hooks/uoclient.cfg	2005-09-18 10:39:13 UTC (rev 159)
++++ trunk/096/pkg/other/hooks/uoclient.cfg	2005-09-18 10:40:22 UTC (rev 160)
+@@ -16,33 +16,6 @@
+ #   MaxSkillID      (integer maximum UO client skill ID)
+ # }
+ #
+-# Protocol
+-# {
+-#   # EnableFlowControlPackets: use the 0x33 (0x00 / 0x01) pause/restart packets.
+-#   # Though OSI seems to no longer send these packets, they seem to help with smoothness,
+-#   # particularly with boat movement.
+-#   # NOTE: causes clients 4.0.0e and newer to fail login
+-#   EnableFlowControlPackets    1
+-# }
+-#
+-# Listener
+-# {
+-#   Port (int port number 1024..65535)
+-#   Encryption (string encryption type)
+-# }
+-#
+-# Explanation:
+-# The left-hand-side &quot;Strength&quot;, &quot;Intelligence&quot;, and &quot;Dexterity&quot; are Attribute names that
+-# MUST be defined in attributes.cfg.
+-# The right-hand-side &quot;Life&quot;, &quot;Mana&quot;, and &quot;Stamina&quot; are Vital names that
+-# MUST be defined in vitals.cfg.
+-# MaxSkillID allows you to use new client skills, but setting it too high can crash older clients.
+-# You must define skills.cfg entries for each skillID up to MaxSkillID (default 51).
+-# The Protocol and Listener sections are optional.
+-# Each Listener section allows you to listen for different client encryption types on different ports.
+-# This means you can listen for &quot;1.26.4&quot; clients on port 5003 and &quot;ignition&quot; clients on port 5555.
+-# Valid encryption types are found in the pol.cfg section. If you use Listeners set ListenPort
+-# in pol.cfg to 0.
+ 
+ General
+ {
+@@ -56,24 +29,3 @@
+ 
+ 	MaxSkillID     51
+ }
+-
+-
+-Protocol
+-{
+-	EnableFlowControlPackets 0
+-}
+-
+-
+-Listener
+-{
+-	#
+-	# Enabled mostly for development purposes
+-	# Will be removed when distro goes final
+-	Port		5002
+-	Encryption	2.0.0
+-}
+-Listener
+-{
+-	Port		5003
+-	Encryption	none
+-}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000139.html">[Poldistro-svn] r159 - trunk/096/pkg/config
+</A></li>
+	<LI>Next message: <A HREF="000141.html">[Poldistro-svn] r161 - trunk/096/pkg/systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#140">[ date ]</a>
+              <a href="thread.html#140">[ thread ]</a>
+              <a href="subject.html#140">[ subject ]</a>
+              <a href="author.html#140">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

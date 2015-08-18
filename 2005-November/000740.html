@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r766 - in trunk/096/pkg/mobiles/timedScripts: . commands/gm config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r766%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20.%20commands/gm%20config%20include&In-Reply-To=%3C200511010552.jA15qBDs011731%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000739.html">
+   <LINK REL="Next"  HREF="000741.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r766 - in trunk/096/pkg/mobiles/timedScripts: . commands/gm config include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r766%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20.%20commands/gm%20config%20include&In-Reply-To=%3C200511010552.jA15qBDs011731%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r766 - in trunk/096/pkg/mobiles/timedScripts: . commands/gm config include">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 06:52:11 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000739.html">[Poldistro-svn] r765 - trunk/096/pkg/mobiles/timedScripts/config
+</A></li>
+        <LI>Next message: <A HREF="000741.html">[Poldistro-svn] r767 - trunk/096/pkg/other
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#740">[ date ]</a>
+              <a href="thread.html#740">[ thread ]</a>
+              <a href="subject.html#740">[ subject ]</a>
+              <a href="author.html#740">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 06:51:58 +0100 (Tue, 01 Nov 2005)
+New Revision: 766
+
+Added:
+   trunk/096/pkg/mobiles/timedScripts/commands/gm/curePoisons.src
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+   trunk/096/pkg/mobiles/timedScripts/include/poisonUtil.inc
+   trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc
+   trunk/096/pkg/mobiles/timedScripts/timerControl.src
+Log:
+poisonUtil.inc works now.
+Fixed some bugs in timedScripts.inc
+Removed debug messages from timerControl.src
+
+Added: trunk/096/pkg/mobiles/timedScripts/commands/gm/curePoisons.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/commands/gm/curePoisons.src	2005-11-01 04:45:24 UTC (rev 765)
++++ trunk/096/pkg/mobiles/timedScripts/commands/gm/curePoisons.src	2005-11-01 05:51:58 UTC (rev 766)
+@@ -0,0 +1,34 @@
++/*
++ * $Id$
++ *
++ */
++use uo;
++
++include &quot;:timedscripts:timedScripts&quot;;
++include &quot;:timedscripts:poisonUtil&quot;;
++
++
++program textcmd_LowerTimer(who, text)
++	text := SplitWords(text);
++	
++	var amount	:= CInt(text[1]);
++	var type	:= CStr(text[2]);
++	var level	:= CInt(text[3]);
++	
++	if ( !amount || !type || !level )
++		SendSysMessage(who, &quot;Syntax: .curePoisons &lt;amount&gt; &lt;type&gt; &lt;level&gt;&quot;);
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;Select a mobile to cure poisons on.&quot;);
++	var targ := target(who);
++	
++	if ( !targ.IsA(POLCLASS_MOBILE) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	var num_cured := TS_CurePoison(targ, amount, type, level);
++	SendSysMessage(who, &quot;Done. Number of poisons cured -&gt;&quot;+num_cured);
++	return 1;
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2005-11-01 04:45:24 UTC (rev 765)
++++ trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2005-11-01 05:51:58 UTC (rev 766)
+@@ -45,7 +45,7 @@
+ #                   If the timer (e.g. poison) has levels, lower durations will add a fraction
+ #                   of their duration to the higher level.
+ #
+-#	AllorNothingCure: 0 - Default. 
++#	AllOrNothingCure: 0 - Default. 
+ #		0 - Means a cure reduces the timers's duration at least a little.
+ #		1 - Means a cure either works or it doesn't. (e.g. must be &gt;= duration)
+ #
+@@ -73,7 +73,7 @@
+ 	IndicatePoison		1
+ 	EndMessage		You have been cured of poison.
+ 	Cumulative		0
+-	AllorNothingCure	1
++	AllOrNothingCure	1
+ 	MaxDuration		120	// 2 minutes
+ 	
+ 	Type			P
+
+Modified: trunk/096/pkg/mobiles/timedScripts/include/poisonUtil.inc
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/include/poisonUtil.inc	2005-11-01 04:45:24 UTC (rev 765)
++++ trunk/096/pkg/mobiles/timedScripts/include/poisonUtil.inc	2005-11-01 05:51:58 UTC (rev 766)
+@@ -31,11 +31,15 @@
+  *
+  */
+ function TS_CurePoison(mobile, cure_amount, cure_type:=&quot;&quot;, cure_level:=1)
++	cure_amount := CInt(cure_amount);
++	cure_level := CInt(cure_level);
++	
+ 	var poison_names := TS_GetTimerNames(mobile, cure_type);
+ 	
+ 	var num_cured := 0;
+ 	//Run through all curable poisons, and keep curing until it runs out of curing power.
+ 	foreach timer_name in ( poison_names )
++		SendSysMessage(mobile, &quot;Found poison &quot;+timer_name);
+ 		var elem_info := TS_GetCfgElem(timer_name);
+ 
+ 		if ( elem_info.NoCure ) // Incurable
+@@ -46,16 +50,17 @@
+ 		cure_amount := CInt(cure_amount / CInt(elem_info.Virulence));
+ 		
+ 		if ( elem_info.AllOrNothingCure )
+-			if ( (cure_level - 2) &lt; timer_info.level )
++			if ( (timer_info.level - 2) &gt; cure_level )
+ 				// If cure level is less than two levels lower than the poison 
+ 				// level, there is no chance to cure.
+ 				continue; 
+ 			endif
+ 			
+ 			var chance := CInt(timer_info.level / (cure_level * 0.01)); // cure_level % of timer_level.
+-			if ( RandomInt(100)+1 &lt;= chance )
++			var roll := RandomInt(100)+1;
++			if ( roll &lt;= chance )
+ 				cure_amount := cure_amount - duration;
+-				TS_LowerDuration(, timer_name, -1);
++				TS_LowerDuration(mobile, timer_name, -1);
+ 				num_cured := num_cured+1;
+ 			endif
+ 		else
+
+Modified: trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc	2005-11-01 04:45:24 UTC (rev 765)
++++ trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc	2005-11-01 05:51:58 UTC (rev 766)
+@@ -185,13 +185,15 @@
+ 		if ( type )
+ 			var elem_info := TS_GetCfgElem(timer_name);
+ 			if ( Lower(elem_info.Type) == type )
+-				name_list.Append(type);
++				name_list.Append(timer_name);
+ 			endif
+ 		else
+-			name_list.Append(type);
++			name_list.Append(timer_name);
+ 		endif
+ 		sleepms(2);
+ 	endforeach
++	
++	return name_list;
+ endfunction
+ 
+ /*
+
+Modified: trunk/096/pkg/mobiles/timedScripts/timerControl.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/timerControl.src	2005-11-01 04:45:24 UTC (rev 765)
++++ trunk/096/pkg/mobiles/timedScripts/timerControl.src	2005-11-01 05:51:58 UTC (rev 766)
+@@ -32,16 +32,12 @@
+ 		endif
+ 				
+ 		if( event.type == EVENT_ADD_TIMER )
+-			SendSysMessage(mobile, &quot;** ADD TIMER **&quot;);
+ 			AddTimer(mobile, event, timer_list, num_poisons);
+ 		elseif( event.type == EVENT_LOWER_TIMER )
+-			SendSysMessage(mobile, &quot;** LOWER TIMER **&quot;);
+ 			LowerDuration(mobile, event, timer_list, num_poisons);
+ 		elseif( event.type == EVENT_DEAD )
+-			SendSysMessage(mobile, &quot;** DEAD **&quot;);
+ 			Death(mobile, timer_list, num_poisons);
+ 		elseif ( event.type == EVENT_LOGOFF )
+-			SendSysMessage(mobile, &quot;** LOG OFF **&quot;);
+ 			LogOff(mobile, timer_list);
+ 			break;
+ 		endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000739.html">[Poldistro-svn] r765 - trunk/096/pkg/mobiles/timedScripts/config
+</A></li>
+	<LI>Next message: <A HREF="000741.html">[Poldistro-svn] r767 - trunk/096/pkg/other
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#740">[ date ]</a>
+              <a href="thread.html#740">[ thread ]</a>
+              <a href="subject.html#740">[ subject ]</a>
+              <a href="author.html#740">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

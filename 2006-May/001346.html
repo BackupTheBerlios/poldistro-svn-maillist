@@ -1,0 +1,262 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1377 - in trunk/096/pkg/items/moongates: include systemMoonGate
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1377%20-%20in%20trunk/096/pkg/items/moongates%3A%20include%20systemMoonGate&In-Reply-To=%3C200605130326.k4D3QbIB019413%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001345.html">
+   <LINK REL="Next"  HREF="001347.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1377 - in trunk/096/pkg/items/moongates: include systemMoonGate</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1377%20-%20in%20trunk/096/pkg/items/moongates%3A%20include%20systemMoonGate&In-Reply-To=%3C200605130326.k4D3QbIB019413%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1377 - in trunk/096/pkg/items/moongates: include systemMoonGate">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 05:26:37 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001345.html">[Poldistro-svn] r1376 - in trunk/096/pkg/items/moongates: . config include systemMoonGate
+</A></li>
+        <LI>Next message: <A HREF="001347.html">[Poldistro-svn] r1378 - in trunk/096/pkg/items/moongates: config systemMoonGate
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1346">[ date ]</a>
+              <a href="thread.html#1346">[ thread ]</a>
+              <a href="subject.html#1346">[ subject ]</a>
+              <a href="author.html#1346">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 05:26:31 +0200 (Sat, 13 May 2006)
+New Revision: 1377
+
+Modified:
+   trunk/096/pkg/items/moongates/include/moongate.inc
+   trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src
+   trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src
+Log:
+Finished... mostly. Ill redesign the walkon part later on.
+
+Modified: trunk/096/pkg/items/moongates/include/moongate.inc
+===================================================================
+--- trunk/096/pkg/items/moongates/include/moongate.inc	2006-05-13 02:44:32 UTC (rev 1376)
++++ trunk/096/pkg/items/moongates/include/moongate.inc	2006-05-13 03:26:31 UTC (rev 1377)
+@@ -11,7 +11,7 @@
+ 
+ // Constats for the moongate gump.
+ const MG_CANCEL_BTN	:= 0x0;
+-const MG_OKAY_BTN	:= 0x1;
++const MG_OKAY_BTN	:= 0x10;
+ const MG_LOCATION_START := 0xA00;
+ 
+ 
+
+Modified: trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src
+===================================================================
+--- trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src	2006-05-13 02:44:32 UTC (rev 1376)
++++ trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src	2006-05-13 03:26:31 UTC (rev 1377)
+@@ -33,8 +33,8 @@
+ 			continue;
+ 		else
+ 			foreach entry in ( GetConfigStringDictionary(cfg_elem, &quot;Town&quot;) )
+-				CreateMoongate(realm_name, _entry_iter, entry);
+-				BuildGumpForGate(realm_name, _entry_iter, config);
++				var gate := CreateMoongate(realm_name, _entry_iter, entry);
++				BuildGumpForGate(gate, _entry_iter, config);
+ 				sleepms(2);
+ 			endforeach
+ 		endif
+@@ -58,8 +58,7 @@
+ 	endif
+ endfunction
+ 
+-function BuildGumpForGate(byref realm_name, byref town_name, byref cfg_file)
+-	var config := ReadConfigFile(&quot;:moongates:config/moongate&quot;);
++function BuildGumpForGate(gate, byref town_name, byref config)
+ 	var gump := GFCreateGump();
+ 	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 340, 330);
+ 	GFResizePic(gump, 15, 15, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 310, 300);
+@@ -67,8 +66,41 @@
+ 	GFTextMid(gump, 20, 20, 310, 2100, &quot;Select a Destination&quot;);
+ 	GFAddButton(gump, 35, 250, 2128, 2129, GF_CLOSE_BTN, MG_OKAY_BTN);
+ 	GFAddButton(gump, 35, 280, 2119, 2120, GF_CLOSE_BTN, MG_CANCEL_BTN);
+-
+ 	
++	var y_pos := 50;
++	var page := 2;
++	foreach realm in ( Realms() )
++		var cfg_elem := config[_realm_iter];
++		GFAddButton(gump, 20, y_pos+3, 2117, 2118, GF_PAGE_BTN, page);
++		GFTextLine(gump, 40, y_pos, 2100, cfg_elem.Faction);
++		y_pos := y_pos+20;
++		page := page+2;
++	endforeach
++	
++	page := 2;
++	var btn_id := 1;
++	foreach realm in ( Realms() )
++		y_pos := 50;
++		var cfg_elem := config[_realm_iter];
++		GFPage(gump, page);
++		
++		foreach entry in ( GetConfigStringDictionary(cfg_elem, &quot;Town&quot;) )
++			if ( _entry_iter == town_name &amp;&amp; _realm_iter == gate.realm )
++				GFGumpPic(gump, 153, y_pos+5, 2104);
++			else
++				GFRadioButton(gump, 150, y_pos, 210, 211, 0, btn_id+MG_LOCATION_START);
++			endif
++			GFTextLine(gump, 173, y_pos, 2100, _entry_iter);
++			y_pos := y_pos+20;
++			btn_id := btn_id+1;
++			sleepms(2);
++		endforeach
++		
++		sleepms(2);
++		page := page+2;
++	endforeach
++	
++	gate.SaveGump(gump);
+ endfunction
+ 	
+ function CleanupOldMoongates()
+
+Modified: trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src
+===================================================================
+--- trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src	2006-05-13 02:44:32 UTC (rev 1376)
++++ trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src	2006-05-13 03:26:31 UTC (rev 1377)
+@@ -8,51 +8,67 @@
+ 
+ include &quot;:gumps:gumps&quot;;
+ include &quot;:gumps:gumps_ex&quot;;
++include &quot;:moongates:moongate&quot;;
+ 
+-unload_scripts(&quot;&quot;);
+-
+ program walkOnScript(mobile, tile)
+-	var config := ReadConfigFile(&quot;:moongates:config/moongate&quot;);
+-	var gump := GFCreateGump();
+-	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 340, 330);
+-	GFResizePic(gump, 15, 15, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 310, 300);
++	if ( mobile.npctemplate )
++		return 0;
++	elseif ( JustTeleported(mobile) )
++		return 0;
++	endif
+ 	
+-	GFTextMid(gump, 20, 20, 310, 2100, &quot;Select a Destination&quot;);
+-	GFAddButton(gump, 35, 250, 2128, 2129, GF_CLOSE_BTN);
+-	GFAddButton(gump, 35, 280, 2119, 2120, GF_CLOSE_BTN);
++	var gump := tile.GetGump();
++	var input := GFSendGump(mobile, gump);
+ 	
+-	var y_pos := 50;
+-	var page := 2;
+-	foreach realm in ( Realms() )
+-		var cfg_elem := config[_realm_iter];
+-		GFAddButton(gump, 20, y_pos+3, 2117, 2118, GF_PAGE_BTN, page);
+-		GFTextLine(gump, 40, y_pos, 2100, cfg_elem.Faction);
+-		y_pos := y_pos+20;
+-		page := page+2;
++	if ( !input[MG_OKAY_BTN] )
++		SendSysMessage(mobile, &quot;Cancelled.&quot;);
++		return 0;
++	elseif ( Distance(mobile, tile) &gt; 1 )
++		SendSysMessage(mobile, &quot;No longer close enough to the moongate.&quot;);
++		return 0;
++	endif
++	
++	var select := 0;
++	foreach key in ( input.Keys )
++		if ( key &gt;= MG_LOCATION_START )
++			select := key-MG_LOCATION_START;
++			break;
++		endif
++		sleepms(2);
+ 	endforeach
+ 	
+-	page := 2;
++	// Not too happy with how I designed this part. - Austin
++	// Should probably save a list in a datafile and directly access it by the 'select' variable.
++	var config := ReadConfigFile(&quot;:moongates:config/moongate&quot;);
++	var btn_id := 1;
+ 	foreach realm in ( Realms() )
++		realm := realm; // To avoid a compiler warning.
+ 		var cfg_elem := config[_realm_iter];
+-		GFPage(gump, page);
+-		BuildLocationList(gump, cfg_elem);
++		foreach entry in ( GetConfigStringDictionary(cfg_elem, &quot;Town&quot;) )
++			if ( btn_id == select )
++				var coords := SplitWords(entry);
++				var result := MoveObjectToLocation(mobile, CInt(coords[1]), CInt(coords[2]), CInt(coords[3]), _realm_iter, MOVEOBJECT_NORMAL);				
++				SetObjProperty(mobile, &quot;#Teleported&quot;, ReadMillisecondClock());
++				if ( result.errortext )
++					SendSysMessage(mobile, &quot;Unable to move -&gt;&quot;+result.errortext);
++				endif
++				return 1;
++			endif
++			btn_id := btn_id+1;
++		endforeach
+ 		sleepms(2);
+-		page := page+2;
+ 	endforeach
+ 	
+-	var input := GFSendGump(mobile, gump);
+-
+-	return 1;
++	return 0;
+ endprogram
+ 
+-function BuildLocationList(byref gump, byref cfg_elem)
+-	var y_pos := 50;
+-	foreach entry in ( GetConfigStringDictionary(cfg_elem, &quot;Town&quot;) )
+-		GFRadioButton(gump, 150, y_pos, 210, 211, 0, 0);
+-		GFTextLine(gump, 173, y_pos, 2100, _entry_iter);
+-		y_pos := y_pos+20;
+-		sleepms(2);
+-	endforeach
+-	
+-	return 1;		
++function JustTeleported(mobile)
++	var tele_time := CInt(GetObjProperty(mobile, &quot;#Teleported&quot;));
++	if ( tele_time &gt; ReadMillisecondClock()-500 )
++		// Mobile just teleported. Too soon to teleport again.
++		return 1;
++	else
++		// Safe to teleport the mobile
++		return 0;
++	endif
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001345.html">[Poldistro-svn] r1376 - in trunk/096/pkg/items/moongates: . config include systemMoonGate
+</A></li>
+	<LI>Next message: <A HREF="001347.html">[Poldistro-svn] r1378 - in trunk/096/pkg/items/moongates: config systemMoonGate
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1346">[ date ]</a>
+              <a href="thread.html#1346">[ thread ]</a>
+              <a href="subject.html#1346">[ subject ]</a>
+              <a href="author.html#1346">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r405 - trunk/096/pkg/items/containers/corpse
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r405%20-%20trunk/096/pkg/items/containers/corpse&In-Reply-To=%3C200510042218.j94MIqCM012851%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000382.html">
+   <LINK REL="Next"  HREF="000384.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r405 - trunk/096/pkg/items/containers/corpse</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r405%20-%20trunk/096/pkg/items/containers/corpse&In-Reply-To=%3C200510042218.j94MIqCM012851%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r405 - trunk/096/pkg/items/containers/corpse">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct  5 00:18:52 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000382.html">[Poldistro-svn] r404 - trunk/096/pkg/utils/gumps/include
+</A></li>
+        <LI>Next message: <A HREF="000384.html">[Poldistro-svn] r406 - in trunk/096/pkg: items/containers/include mobiles/brainAI/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#383">[ date ]</a>
+              <a href="thread.html#383">[ thread ]</a>
+              <a href="subject.html#383">[ subject ]</a>
+              <a href="author.html#383">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-05 00:18:52 +0200 (Wed, 05 Oct 2005)
+New Revision: 405
+
+Modified:
+   trunk/096/pkg/items/containers/corpse/methods.src
+Log:
+
+
+Modified: trunk/096/pkg/items/containers/corpse/methods.src
+===================================================================
+--- trunk/096/pkg/items/containers/corpse/methods.src	2005-10-04 20:41:34 UTC (rev 404)
++++ trunk/096/pkg/items/containers/corpse/methods.src	2005-10-04 22:18:52 UTC (rev 405)
+@@ -8,44 +8,8 @@
+ 	return 1;
+ endprogram
+ 
+-exported function SetOwner(corpse, owner)
+-	var serial;
+-	if ( owner.IsA(POLCLASS_MOBILE) )
+-		serial := owner.serial;
+-	else
+-		serial := owner;
+-		owner := SystemFindObjectBySerial(owner, SYSFIND_SEARCH_OFFLINE_MOBILES);
+-	endif
+-	
+-	SetObjProperty(corpse, &quot;OwnerSerial&quot;, serial);
+-	SetObjProperty(owner, &quot;CorpseSerial&quot;, corpse.serial);
+-	
+-	return 1;
+-endfunction
+-
+ exported function GetOwner(corpse)
+-	//Function returns the corpse as the owner if no real owner can be found
+-	//This situation is met when:
+-	//The corpse belonged to an npc.
+-	//The player character that owned the corpse was deleted.
+-
+-	var owner := CInt(GetObjProperty(corpse, &quot;OwnerSerial&quot;));
+-	if ( !owner )
+-		//NPC Corpse?
+-		return corpse;
+-	else
+-		//Return the player who owns this corpse.
+-		owner := SystemFindObjectBySerial(owner);
+-		if ( owner )
+-			return owner;
+-		else
+-			//Owner has been deleted - return 0
+-			return corpse;
+-		endif
+-	endif
+-	
+-	// Shouldnt be possible to get here.
+-	return corpse;
++	return SystemFindObjectBySerial(corpse.ownerserial);
+ endfunction
+ 
+ exported function SetSkinned(corpse, skinner)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000382.html">[Poldistro-svn] r404 - trunk/096/pkg/utils/gumps/include
+</A></li>
+	<LI>Next message: <A HREF="000384.html">[Poldistro-svn] r406 - in trunk/096/pkg: items/containers/include mobiles/brainAI/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#383">[ date ]</a>
+              <a href="thread.html#383">[ thread ]</a>
+              <a href="subject.html#383">[ subject ]</a>
+              <a href="author.html#383">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,300 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r230 - in trunk/096/pkg/systems/attributes: hooks include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r230%20-%20in%20trunk/096/pkg/systems/attributes%3A%20hooks%20include&In-Reply-To=%3C200509250158.j8P1w5iV020188%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000211.html">
+   <LINK REL="Next"  HREF="000213.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r230 - in trunk/096/pkg/systems/attributes: hooks include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r230%20-%20in%20trunk/096/pkg/systems/attributes%3A%20hooks%20include&In-Reply-To=%3C200509250158.j8P1w5iV020188%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r230 - in trunk/096/pkg/systems/attributes: hooks include">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep 25 03:58:05 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000211.html">[Poldistro-svn] r229 - in trunk/096/pkg/systems/attributes: config include
+</A></li>
+        <LI>Next message: <A HREF="000213.html">[Poldistro-svn] r231 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#212">[ date ]</a>
+              <a href="thread.html#212">[ thread ]</a>
+              <a href="subject.html#212">[ subject ]</a>
+              <a href="author.html#212">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-25 03:58:04 +0200 (Sun, 25 Sep 2005)
+New Revision: 230
+
+Modified:
+   trunk/096/pkg/systems/attributes/hooks/vitalInit.src
+   trunk/096/pkg/systems/attributes/include/attributes.inc
+   trunk/096/pkg/systems/attributes/include/skillCheck.inc
+   trunk/096/pkg/systems/attributes/include/skills.inc
+   trunk/096/pkg/systems/attributes/include/stats.inc
+   trunk/096/pkg/systems/attributes/include/vitals.inc
+Log:
+
+
+Modified: trunk/096/pkg/systems/attributes/hooks/vitalInit.src
+===================================================================
+--- trunk/096/pkg/systems/attributes/hooks/vitalInit.src	2005-09-25 01:37:26 UTC (rev 229)
++++ trunk/096/pkg/systems/attributes/hooks/vitalInit.src	2005-09-25 01:58:04 UTC (rev 230)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * regenRates.src
+-* Updated 9/20/2005 12:20PM
++* Updated 9/24/2005 6:52PM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+
+Modified: trunk/096/pkg/systems/attributes/include/attributes.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-25 01:37:26 UTC (rev 229)
++++ trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-25 01:58:04 UTC (rev 230)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * ATTRIBUTES.INC - v1.0
+-* Updated 9/20/2005 10:30AM
++* Updated 9/24/2005 6:52PM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+@@ -18,28 +18,48 @@
+ include &quot;:attributes:include/stats&quot;;
+ include &quot;:attributes:include/vitals&quot;;
+ 
++/* AP_GetAttributesCfgFile()
++ * 
++ * Purpose
++ * Loads attributes.cfg
++ *
++ * Parameters
++ *
++ * Return value
++ * Config file
++ *
++ */
++function AP_GetAttributesCfgFile()
++	var cfg_file := ReadConfigFile(&quot;:attributes:attributes&quot;);
++	if ( cfg_file.errortext )
++		SysLog(&quot;Error::AP_GetAttributesCfgFile() - Unable to open attributes.cfg -&gt;&quot;+cfg_file.errortext);
++	endif
++
++	return cfg_file;
++endfunction
++
+ /*
+- * AP_GetAttributeCfgElem(attribute)
++ * AP_GetAttributeCfgElem(attribute_name, cfg_file)
+  *
+  * Purpose
+- * Retrieves a config elem for an attribute in attributes.cfg
++ * Retrieves a config elem for an vital in attributes.cfg
+  *
+  * Parameters
+- * attribute:	Name of the attribute to get the elem of.
++ * attribute_name:	Name of the attribute to get the elem of.
++ * cfg_file:		Optional parameter - reference to a config already read in.
+  *
+  * Return value
+  * Returns a config file elem.
+  *
+  */
+-function AP_GetAttributeCfgElem(attribute)
+-	var cfg := ReadConfigFile(&quot;:attributes:attributes&quot;);
+-	if ( cfg.errortext )
+-		SysLog(&quot;Error::AP_GetAttributeCfgElem() - Unable to open attributes.cfg -&gt;&quot;+cfg.errortext);
++function AP_GetAttributeCfgElem(attribute_name, byref cfg_file:=0)
++	if ( !cfg_file )
++		cfg_file := AP_GetAttributesCfgFile();
+ 	endif
+ 	
+-	var cfg_elem := cfg[attribute];
++	var cfg_elem := cfg_file[attribute_name];
+ 	if ( cfg_elem.errortext )
+-		SysLog(&quot;Error::AP_GetAttributeCfgElem() - unable to find cfg elem [&quot;+attribute+&quot;] -&gt;&quot;+cfg_elem.errortext);
++		SysLog(&quot;Error::AP_GetAttributeCfgElem() - unable to find cfg elem [&quot;+attribute_name+&quot;] -&gt;&quot;+cfg_elem.errortext);
+ 	endif
+ 	
+ 	return cfg_elem;
+
+Modified: trunk/096/pkg/systems/attributes/include/skillCheck.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skillCheck.inc	2005-09-25 01:37:26 UTC (rev 229)
++++ trunk/096/pkg/systems/attributes/include/skillCheck.inc	2005-09-25 01:58:04 UTC (rev 230)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * SKILLCHECK.INC - v1.0
+-* Updated 9/24/2005 12:34AM
++* Updated 9/24/2005 6:52PM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-25 01:37:26 UTC (rev 229)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-25 01:58:04 UTC (rev 230)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * SKILLS.INC - v1.0
+-* Updated 9/20/2005 2:20PM
++* Updated 9/24/2005 6:52PM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+
+Modified: trunk/096/pkg/systems/attributes/include/stats.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/stats.inc	2005-09-25 01:37:26 UTC (rev 229)
++++ trunk/096/pkg/systems/attributes/include/stats.inc	2005-09-25 01:58:04 UTC (rev 230)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * STATS.INC - v1.0
+-* Updated 9/20/2005 2:20PM
++* Updated 9/24/2005 6:52PM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+
+Modified: trunk/096/pkg/systems/attributes/include/vitals.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/vitals.inc	2005-09-25 01:37:26 UTC (rev 229)
++++ trunk/096/pkg/systems/attributes/include/vitals.inc	2005-09-25 01:58:04 UTC (rev 230)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * VITALS.INC - v1.0
+-* Updated 9/20/2005 2:04PM
++* Updated 9/24/2005 6:52PM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+@@ -24,32 +24,36 @@
+  *
+  */
+ function AP_GetVitalsCfgFile()
+-	var cfg := ReadConfigFile(&quot;:attributes:vitals&quot;);
+-	if ( cfg.errortext )
+-		SysLog(&quot;Error::AP_GetVitalsCfgFile() - Unable to open vitals.cfg -&gt;&quot;+cfg.errortext);
++	var cfg_file := ReadConfigFile(&quot;:attributes:vitals&quot;);
++	if ( cfg_file.errortext )
++		SysLog(&quot;Error::AP_GetVitalsCfgFile() - Unable to open vitals.cfg -&gt;&quot;+cfg_file.errortext);
+ 	endif
+ 
+-	return cfg;
++	return cfg_file;
+ endfunction
+ 
+ /*
+- * AP_GetVitalCfgElem(vital)
++ * AP_GetVitalCfgElem(vital_name, cfg_file)
+  *
+  * Purpose
+  * Retrieves a config elem for an vital in vitals.cfg
+  *
+  * Parameters
+- * attribute:	Name of the vital to get the elem of.
++ * vital_name:	Name of the vital to get the elem of.
++ * cfg_file:	Optional parameter - reference to a config already read in.
+  *
+  * Return value
+  * Returns a config file elem.
+  *
+  */
+-function AP_GetVitalCfgElem(vital)
+-	var cfg_file := AP_GetVitalsCfgFile();
+-	var cfg_elem := cfg_file[vital];
++function AP_GetVitalCfgElem(vital_name, byref cfg_file:=0)
++	if ( !cfg_file )
++		cfg_file := AP_GetVitalsCfgFile();
++	endif
++	
++	var cfg_elem := cfg_file[vital_name];
+ 	if ( cfg_elem.errortext )
+-		SysLog(&quot;Error::AP_GetVitalsCfgElem() - unable to find cfg elem [&quot;+vital+&quot;] -&gt;&quot;+cfg_elem.errortext);
++		SysLog(&quot;Error::AP_GetVitalsCfgElem() - unable to find cfg elem [&quot;+vital_name+&quot;] -&gt;&quot;+cfg_elem.errortext);
+ 	endif
+ 	
+ 	return cfg_elem;
+@@ -78,7 +82,7 @@
+  * Retrieves the number of vital points a mobile has.
+  *
+  * Parameters
+- * mobile:	Mobile reference to retrieve the points from.
++ * mobile:		Mobile reference to retrieve the points from.
+  * vital_name:	Name of the vital to retrieve the points for.
+  *
+  * Return value
+@@ -86,7 +90,7 @@
+  *
+  */
+ function AP_GetVital(mobile, vital_name)
+-	return (GetVital(mobile, vital_name) / 100);
++	return CDbl(GetVital(mobile, vital_name)) / 100.0;
+ endfunction
+ 
+ /*
+@@ -96,7 +100,7 @@
+  * Retrieves the maximum number of vital points a mobile can have.
+  *
+  * Parameters
+- * mobile:	Mobile reference to check.
++ * mobile:		Mobile reference to check.
+  * vital_name:	Name of the vital to retrieve the max. points for.
+  *
+  * Return value
+@@ -104,7 +108,7 @@
+  *
+  */
+ function AP_GetVitalMaximumValue(mobile, vital_name)
+-	return GetVitalMaximumValue(mobile, vital_name);
++	return CDbl(GetVitalMaximumValue(mobile, vital_name)) / 100.0;
+ endfunction
+ 
+ /*
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000211.html">[Poldistro-svn] r229 - in trunk/096/pkg/systems/attributes: config include
+</A></li>
+	<LI>Next message: <A HREF="000213.html">[Poldistro-svn] r231 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#212">[ date ]</a>
+              <a href="thread.html#212">[ thread ]</a>
+              <a href="subject.html#212">[ subject ]</a>
+              <a href="author.html#212">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

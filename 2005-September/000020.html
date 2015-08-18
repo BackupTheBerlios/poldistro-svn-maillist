@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r38 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r38%20-%20trunk/096/pkg/mobiles/ai_brain/include/braincore&In-Reply-To=%3C200509020636.j826a28q032643%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000019.html">
+   <LINK REL="Next"  HREF="000021.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r38 - trunk/096/pkg/mobiles/ai_brain/include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r38%20-%20trunk/096/pkg/mobiles/ai_brain/include/braincore&In-Reply-To=%3C200509020636.j826a28q032643%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r38 - trunk/096/pkg/mobiles/ai_brain/include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Fri Sep  2 08:36:02 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000019.html">[Poldistro-svn] r37 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+        <LI>Next message: <A HREF="000021.html">[Poldistro-svn] r39 - trunk/096/pkg/mobiles/ai_brain
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#20">[ date ]</a>
+              <a href="thread.html#20">[ thread ]</a>
+              <a href="subject.html#20">[ subject ]</a>
+              <a href="author.html#20">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-02 08:36:02 +0200 (Fri, 02 Sep 2005)
+New Revision: 38
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/error.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/eventprocessor.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/error.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/error.inc	2005-09-02 06:35:17 UTC (rev 37)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/error.inc	2005-09-02 06:36:02 UTC (rev 38)
+@@ -8,9 +8,6 @@
+ *  Created include file
+ ===============================================================*/
+ 
+-use uo;
+-use os;
+-
+ /*
+  * FatalError(errmsg)
+  *
+@@ -29,7 +26,7 @@
+ 	
+ 	PrintTextAbove(npc, errmsg, _DEFAULT_TEXT_FONT, 32);
+ 	
+-	BrainSysLog(errmsg);
++	NPC_ErrorSysLog(npc, errmsg);
+ 	
+ 	npc.cmdlevel := 1;
+ 	npc.concealed := 1;
+@@ -43,24 +40,4 @@
+ 	return 1;
+ endfunction
+ 
+-/*
+- * FatalError(errmsg)
+- *
+- * Purpose
+- * Logs an error message.
+- *
+- * Parameters
+- * errmsg:	Error message
+- *
+- * Return value
+- * Always returns 1
+- *
+- */
+-function BrainSysLog( errmsg )
+-	SysLog(&quot;NPC Template: &quot; + npc.npctemplate);
+-	SysLog(&quot;NPC Name    : &quot; + npc.name);
+-	SysLog(errmsg );
+-	SysLog(&quot;------------&quot;);
+-	
+-	return 1;
+-endfunction
++
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/eventprocessor.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/eventprocessor.inc	2005-09-02 06:35:17 UTC (rev 37)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/eventprocessor.inc	2005-09-02 06:36:02 UTC (rev 38)
+@@ -37,7 +37,7 @@
+ 		// Wander somewhere
+ 		// .loop	: Number of times to attept to wander.
+ 		NPCEVENT_WANDER:
+-	   		MovementWander();
++	   		MovementWander(ev);
+ 	   		break;
+ 			
+ 		// Triggered when a mobile enter's the npcs 'area size'.
+@@ -287,7 +287,7 @@
+ 			break;
+ 	   endcase
+ 
+-	   // If the event has a .process, reply to it by sending
++	   // If the event has a .process member, reply to it by sending
+ 	   // an event with .type being the NPCEVENT_DONE constant
+ 	   // and telling it what event it sent that has finished
+ 	   // being processed.
+@@ -296,4 +296,4 @@
+ 	   endif
+ 	   
+ 	   set_priority(old_priority);
+-endfunctions
+\ No newline at end of file
++endfunction
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc	2005-09-02 06:35:17 UTC (rev 37)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc	2005-09-02 06:36:02 UTC (rev 38)
+@@ -8,10 +8,6 @@
+ *  Created include file
+ ===============================================================*/
+ 
+-use uo;
+-use os;
+-use npc;
+-
+ /*
+  * Movement(ev)
+  *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000019.html">[Poldistro-svn] r37 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+	<LI>Next message: <A HREF="000021.html">[Poldistro-svn] r39 - trunk/096/pkg/mobiles/ai_brain
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#20">[ date ]</a>
+              <a href="thread.html#20">[ thread ]</a>
+              <a href="subject.html#20">[ subject ]</a>
+              <a href="author.html#20">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

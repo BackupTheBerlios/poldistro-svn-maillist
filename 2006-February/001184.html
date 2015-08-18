@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1213 - in trunk/096/pkg/mobiles/brainAI: . commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1213%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20commands/gm&In-Reply-To=%3C200602142019.k1EKJMRD030936%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001183.html">
+   <LINK REL="Next"  HREF="001185.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1213 - in trunk/096/pkg/mobiles/brainAI: . commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1213%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20commands/gm&In-Reply-To=%3C200602142019.k1EKJMRD030936%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1213 - in trunk/096/pkg/mobiles/brainAI: . commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Tue Feb 14 21:19:22 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001183.html">[Poldistro-svn] r1212 - in trunk/096/pkg/mobiles/brainAI/commands: gm test
+</A></li>
+        <LI>Next message: <A HREF="001185.html">[Poldistro-svn] r1214 - in trunk/096: config pkg/mobiles/oldAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1184">[ date ]</a>
+              <a href="thread.html#1184">[ thread ]</a>
+              <a href="subject.html#1184">[ subject ]</a>
+              <a href="author.html#1184">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-14 21:19:20 +0100 (Tue, 14 Feb 2006)
+New Revision: 1213
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+Added rat people to the npcdesc.cfg
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src	2006-02-14 20:14:07 UTC (rev 1212)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src	2006-02-14 20:19:20 UTC (rev 1213)
+@@ -13,8 +13,6 @@
+ 
+ var g_datafile := DFOpenDataFile(&quot;:brainAI:createnpc&quot;, DF_CREATE);
+ 
+-unload_scripts(&quot;&quot;);
+-
+ program command_CreateNPC(who, template)
+ 	if ( !template )
+ 		template := SelectTemplateFromGump(who);
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-02-14 20:14:07 UTC (rev 1212)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-02-14 20:19:20 UTC (rev 1213)
+@@ -1138,4 +1138,212 @@
+ 	NameTemplate	Orc
+ 
+ 	// CProps (eww!)
++}
++
++##########################################
++# Rat People
++##########################################
++
++NPCTemplate RatMan1
++{
++	// Primary NPC information
++	Name			&lt;random&gt;
++	Script			:brainAI:brain
++	ObjType			0x2A
++	Color			0
++	TrueColor		0
++	Gender			0
++	AR			14
++	RunSpeed		100
++	Alignment		evil
++	Category		RatMan
++
++	// Attributes
++	Strength		120
++	Intelligence		50
++	Dexterity		100
++	
++	Tactics			75
++	ResistingSpells		60
++	Wrestling		75
++
++	// Vitals
++	HITS			120
++	MANA			50
++	STAM			100
++
++	// Intrinsic Weapon
++	AttackSpeed		30
++	AttackDamage		2d8
++	AttackAttribute		Wrestling
++	AttackHitScript		:combat:mainHitScript
++	
++	// Sounds
++	AttackHitSound		440
++	AttackMissSound		569
++	DeathSound		442
++	DamagedSound		441
++	IdleSound		438
++	IdleSound		439
++	
++	// Brain AI Settings
++	AISetting	AreaSize	i8
++	AISetting	CycleWait	i10
++	AISetting	FleeLevel	i5 // 5%
++	AISetting	IdleTicks	i10
++	AISetting	SleepWait	i1800
++
++	// Brain AI Nerves
++	AIScript	Combat		:brainAI:scripts/combat/genericCombat
++	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
++	AIScript	Init		:brainAI:scripts/init/generic
++	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
++	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
++	AIScript	Sleep		:brainAI:scripts/sleep/generic
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/findPlayers
++
++	// Skinning Info
++	Skinning	RawRibs		2
++	Skinning	Hides		8
++
++	// Settings other scripts use...
++	NameTemplate	RatMan
++
++	// CProps (eww!)
++}
++
++NPCTemplate RatMan2
++{
++	// Primary NPC information
++	Name			&lt;random&gt;
++	Script			:brainAI:brain
++	ObjType			0x2C
++	Color			0
++	TrueColor		0
++	Gender			0
++	AR			14
++	RunSpeed		100
++	Alignment		evil
++	Category		RatMan
++
++	// Attributes
++	Strength		120
++	Intelligence		50
++	Dexterity		100
++	
++	Tactics			75
++	ResistingSpells		60
++	Wrestling		75
++
++	// Vitals
++	HITS			120
++	MANA			50
++	STAM			100
++
++	// Intrinsic Weapon
++	AttackSpeed		30
++	AttackDamage		2d8
++	AttackAttribute		Wrestling
++	AttackHitScript		:combat:mainHitScript
++	
++	// Sounds
++	AttackHitSound		440
++	AttackMissSound		569
++	DeathSound		442
++	DamagedSound		441
++	IdleSound		438
++	IdleSound		439
++	
++	// Brain AI Settings
++	AISetting	AreaSize	i8
++	AISetting	CycleWait	i10
++	AISetting	FleeLevel	i5 // 5%
++	AISetting	IdleTicks	i10
++	AISetting	SleepWait	i1800
++
++	// Brain AI Nerves
++	AIScript	Combat		:brainAI:scripts/combat/genericCombat
++	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
++	AIScript	Init		:brainAI:scripts/init/generic
++	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
++	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
++	AIScript	Sleep		:brainAI:scripts/sleep/generic
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/findPlayers
++
++	// Skinning Info
++	Skinning	RawRibs		2
++	Skinning	Hides		8
++
++	// Settings other scripts use...
++	NameTemplate	RatMan
++
++	// CProps (eww!)
++}
++
++NPCTemplate RatMan3
++{
++	// Primary NPC information
++	Name			&lt;random&gt;
++	Script			:brainAI:brain
++	ObjType			0x2D
++	Color			0
++	TrueColor		0
++	Gender			0
++	AR			14
++	RunSpeed		100
++	Alignment		evil
++	Category		RatMan
++
++	// Attributes
++	Strength		120
++	Intelligence		50
++	Dexterity		100
++	
++	Tactics			75
++	ResistingSpells		60
++	Wrestling		75
++
++	// Vitals
++	HITS			120
++	MANA			50
++	STAM			100
++
++	// Intrinsic Weapon
++	AttackSpeed		30
++	AttackDamage		2d8
++	AttackAttribute		Wrestling
++	AttackHitScript		:combat:mainHitScript
++	
++	// Sounds
++	AttackHitSound		440
++	AttackMissSound		569
++	DeathSound		442
++	DamagedSound		441
++	IdleSound		438
++	IdleSound		439
++	
++	// Brain AI Settings
++	AISetting	AreaSize	i8
++	AISetting	CycleWait	i10
++	AISetting	FleeLevel	i5 // 5%
++	AISetting	IdleTicks	i10
++	AISetting	SleepWait	i1800
++
++	// Brain AI Nerves
++	AIScript	Combat		:brainAI:scripts/combat/genericCombat
++	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
++	AIScript	Init		:brainAI:scripts/init/generic
++	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
++	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
++	AIScript	Sleep		:brainAI:scripts/sleep/generic
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/findPlayers
++
++	// Skinning Info
++	Skinning	RawRibs		2
++	Skinning	Hides		8
++
++	// Settings other scripts use...
++	NameTemplate	RatMan
++
++	// CProps (eww!)
+ }
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001183.html">[Poldistro-svn] r1212 - in trunk/096/pkg/mobiles/brainAI/commands: gm test
+</A></li>
+	<LI>Next message: <A HREF="001185.html">[Poldistro-svn] r1214 - in trunk/096: config pkg/mobiles/oldAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1184">[ date ]</a>
+              <a href="thread.html#1184">[ thread ]</a>
+              <a href="subject.html#1184">[ subject ]</a>
+              <a href="author.html#1184">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

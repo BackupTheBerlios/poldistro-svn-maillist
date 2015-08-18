@@ -1,0 +1,606 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r278 - in trunk/096: pkg/commands/gm pkg/mobiles/brainAI/complete/testnpc pkg/skills/camping pkg/skills/detecthidden pkg/skills/fishing pkg/skills/herding pkg/skills/itemid pkg/skills/magery pkg/skills/musicianship pkg/skills/removetrap pkg/skills/stealth pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking scripts/control scripts/items
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r278%20-%20in%20trunk/096%3A%20pkg/commands/gm%20pkg/mobiles/brainAI/complete/testnpc%20pkg/skills/camping%20pkg/skills/detecthidden%20pkg/skills/fishing%20pkg/skills/herding%20pkg/skills/itemid%20pkg/skills/magery%20pkg/skills/musicianship%20pkg/skills/removetrap%20pkg/skills/stealth%20pkg/skills/tasteid%20pkg/skills/tinkering%20pkg/skills/tracking%20scripts/control%20scripts/items&In-Reply-To=%3C200509281920.j8SJKhpT030646%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000255.html">
+   <LINK REL="Next"  HREF="000257.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r278 - in trunk/096: pkg/commands/gm pkg/mobiles/brainAI/complete/testnpc pkg/skills/camping pkg/skills/detecthidden pkg/skills/fishing pkg/skills/herding pkg/skills/itemid pkg/skills/magery pkg/skills/musicianship pkg/skills/removetrap pkg/skills/stealth pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking scripts/control scripts/items</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r278%20-%20in%20trunk/096%3A%20pkg/commands/gm%20pkg/mobiles/brainAI/complete/testnpc%20pkg/skills/camping%20pkg/skills/detecthidden%20pkg/skills/fishing%20pkg/skills/herding%20pkg/skills/itemid%20pkg/skills/magery%20pkg/skills/musicianship%20pkg/skills/removetrap%20pkg/skills/stealth%20pkg/skills/tasteid%20pkg/skills/tinkering%20pkg/skills/tracking%20scripts/control%20scripts/items&In-Reply-To=%3C200509281920.j8SJKhpT030646%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r278 - in trunk/096: pkg/commands/gm pkg/mobiles/brainAI/complete/testnpc pkg/skills/camping pkg/skills/detecthidden pkg/skills/fishing pkg/skills/herding pkg/skills/itemid pkg/skills/magery pkg/skills/musicianship pkg/skills/removetrap pkg/skills/stealth pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking scripts/control scripts/items">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Wed Sep 28 21:20:43 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000255.html">[Poldistro-svn] r277 - trunk/096/pkg/items/containers/include
+</A></li>
+        <LI>Next message: <A HREF="000257.html">[Poldistro-svn] r279 - in trunk/096/pkg: skills/herding skills/spiritspeak systems/combat systems/nature/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#256">[ date ]</a>
+              <a href="thread.html#256">[ thread ]</a>
+              <a href="subject.html#256">[ subject ]</a>
+              <a href="author.html#256">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-28 21:20:39 +0200 (Wed, 28 Sep 2005)
+New Revision: 278
+
+Modified:
+   trunk/096/pkg/commands/gm/attack.src
+   trunk/096/pkg/mobiles/brainAI/complete/testnpc/combat.src
+   trunk/096/pkg/skills/camping/camping.src
+   trunk/096/pkg/skills/detecthidden/detectHidden.src
+   trunk/096/pkg/skills/fishing/SOSBottle.src
+   trunk/096/pkg/skills/fishing/fishing.src
+   trunk/096/pkg/skills/herding/herd.src
+   trunk/096/pkg/skills/itemid/itemID.src
+   trunk/096/pkg/skills/magery/magicUntrap.src
+   trunk/096/pkg/skills/magery/unlock.src
+   trunk/096/pkg/skills/musicianship/entice.src
+   trunk/096/pkg/skills/musicianship/musicianship.src
+   trunk/096/pkg/skills/musicianship/provocation.src
+   trunk/096/pkg/skills/removetrap/removeTrap.src
+   trunk/096/pkg/skills/stealth/stealth.src
+   trunk/096/pkg/skills/tasteid/tasteID.src
+   trunk/096/pkg/skills/tinkering/tinkering.src
+   trunk/096/pkg/skills/tracking/tracking.src
+   trunk/096/scripts/control/fireControl.src
+   trunk/096/scripts/items/fires.src
+Log:
+Updates for the removed include &quot;include/SkillPoints&quot; file
+
+Modified: trunk/096/pkg/commands/gm/attack.src
+===================================================================
+--- trunk/096/pkg/commands/gm/attack.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/commands/gm/attack.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use util;
+ 
+@@ -3,5 +5,4 @@
+ include &quot;include/client&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;include/skillPoints&quot;;
+ include &quot;include/bard&quot;;
+ include &quot;include/eventID&quot;;
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/testnpc/combat.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/combat.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/mobiles/brainAI/complete/testnpc/combat.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use os;
+ 
+@@ -3,5 +5,5 @@
+ include &quot;:brainAI:include/npcNerves&quot;;
+ include &quot;:brainAI:include/npcCommands&quot;;
+-include &quot;:attributes:/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ program BrainNerve(params)
+@@ -18,7 +20,7 @@
+ 
+ 	var opponent := event.source;
+ 	var flee_mode := 0;
+-	
++
+ 	AI_SetOpponent(npc, opponent);
+ 
+ 	while ( npc )
+
+Modified: trunk/096/pkg/skills/camping/camping.src
+===================================================================
+--- trunk/096/pkg/skills/camping/camping.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/camping/camping.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use util;
+ use os;
+@@ -5,7 +7,6 @@
+ include &quot;include/client&quot;;
+ include &quot;include/attributes&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;include/skillPoints&quot;;
+ include &quot;include/canAccess&quot;;
+ 
+ program UseWood( who, wood )
+@@ -34,8 +35,8 @@
+ 		PrintTextAbovePrivate( wood, &quot;Put that on the ground first!&quot;, who );
+ 		return;
+ 	endif
+-	
+-	if(CheckSkill(who, SKILLID_CAMPING, -1, get_default_points(SKILLID_CAMPING)))
++
++	if(CheckSkill(who, SKILLID_CAMPING, -1, 50))
+ 		var x := wood.x;
+ 		var y := wood.y;
+ 		var z := wood.z;
+
+Modified: trunk/096/pkg/skills/detecthidden/detectHidden.src
+===================================================================
+--- trunk/096/pkg/skills/detecthidden/detectHidden.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/detecthidden/detectHidden.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,16 @@
++// //$Id$
++
++////////////////////////////////////////////////////////////////////////////////////////////////////
++//
++//  name:    hiding.src - Skill Script
++//  version: 1.0
++//  author:  Distro
++//
++//  Purpose:
++//
++//
++//
++////////////////////////////////////////////////////////////////////////////////////////////////////
+ use uo;
+ use os;
+ use util;
+@@ -3,34 +16,33 @@
+ use cfgfile;
+ 
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ include &quot;include/sound&quot;;
+ include &quot;include/tileEffects&quot;;
+-include &quot;include/skillPoints&quot;;
+ include &quot;:poisonwatcher:poisons&quot;;
+ 
++CONST TRAP := &quot;hiddentrap&quot;;
++CONST CRITICAL_FAILURE := 1;
++
+ var thepoints;
+-var item_cfg;
++var item_cfg := ReadConfigFile( &quot;:*:itemdesc&quot; );
+ 
+-const TRAP := &quot;hiddentrap&quot;;
++program skill_DetectHidden(who)
+ 
+-const CRITICAL_FAILURE := 1;
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++	thepoints := AP_GetSkill(who, ATTRIBUTE_DETECTING_HIDDEN) + 10;
+ 
+-
+-program detectHidden(who)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-    thepoints := get_default_points(SKILLID_DETECTINGHIDDEN );
+-    item_cfg := ReadConfigFile( &quot;::itemdesc&quot; );
+-    SendSysMessage(who,&quot;Target the location to search.&quot;);
+-    var targ := TargetCoordinates( who );
+-    var range := getDetectRange( GetEffectiveSkill( who, SKILLID_DETECTINGHIDDEN  ) );
+-    var hiders := ListMobilesNearLocationEx( cint(targ.x), cint(targ.y), cint(targ.z), range, LISTEX_FLAG_HIDDEN, who.realm );
+-    var items  := ListItemsNearLocation( cint(targ.x), cint(targ.y), cint(targ.z), range, who.realm );
+-    var elem;
+-    var data;
+-    var prop;
+-    var dtct;
+-    var skil;
+-    var foundany := 0;
++	SendSysMessage(who,&quot;Target the location to search.&quot;);
++	var targ := TargetCoordinates( who );
++	var range := my_DetectRange( AP_GetSkill( who, ATTRIBUTE_DETECTING_HIDDEN  ) );
++	var hiders := ListMobilesNearLocationEx( cint(targ.x), cint(targ.y), cint(targ.z), range, LISTEX_FLAG_HIDDEN, who.realm );
++	var items  := ListItemsNearLocation( cint(targ.x), cint(targ.y), cint(targ.z), range, who.realm );
++	var elem;
++	var data;
++	var prop;
++	var dtct;
++	var foundany := 0;
+     foreach mobile in hiders
+       if( Found( who,  mobile) )
+@@ -52,7 +64,7 @@
+      var trapstrength := GetObjProperty(item,&quot;trap_strength&quot;);
+      thepoints := trapstrength *2;
+ 	 if( dtct )
+-        if(CheckSkill( who, SKILLID_DETECTINGHIDDEN, -1, thepoints ))
++        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1, thepoints ))
+ 	      PrintTextAbovePrivate( item, &quot;Trapped&quot;, who);
+         else
+           var results := RandomInt(9) + 1;
+@@ -82,7 +94,7 @@
+           endif
+         endif
+       elseif( data == TRAP)
+-        if(CheckSkill( who, SKILLID_DETECTINGHIDDEN, -1, thepoints ))
++        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1, thepoints ))
+ 	      PrintTextAbovePrivate( item, &quot;Trap&quot;, who );
+           SetObjProperty( item, &quot;trapped&quot;, 1 );
+         else
+@@ -117,7 +129,7 @@
+           endif
+         endif
+      elseif( prop )
+-        if(CheckSkill( who, SKILLID_DETECTINGHIDDEN, -1, thepoints ))
++        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1, thepoints ))
+ 	      PrintTextAbovePrivate( item, &quot;Trapped&quot;, who);
+ 	      SetObjProperty( item, &quot;trapped&quot;, 1 );
+         else
+@@ -169,15 +181,15 @@
+ 
+ 
+ function Found( finder, hider ) //FIXME: should not be 100% certain to find a hider if your skill is greater
+-  var hide_skill := GetEffectiveSkill( hider, SKILLID_HIDING );
+-  if (CheckSkill( finder, SKILLID_DETECTINGHIDDEN, hide_skill, thepoints ) )
++  var hide_skill := AP_GetSkill( hider, ATTRIBUTE_HIDING );
++  if (SkillCheck( finder, ATTRIBUTE_DETECTING_HIDDEN, hide_skill, thepoints ) )
+     return 1;
+   else
+     return 0;
+   endif
+ endfunction
+ 
+-function getDetectRange( skill )
++function my_DetectRange( skill )
+     if( skill &gt;= 100 )
+         return 10;
+     elseif( skill &gt;= 90 )
+
+Modified: trunk/096/pkg/skills/fishing/SOSBottle.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/SOSBottle.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/fishing/SOSBottle.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use cfgfile;
+ use os;
+@@ -6,7 +8,6 @@
+ include &quot;include/client&quot;;
+ include &quot;include/objtype&quot;;
+ include &quot;include/startEqp&quot;;
+-include &quot;include/skillPoints&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;include/canAccess&quot;;
+ 
+
+Modified: trunk/096/pkg/skills/fishing/fishing.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishing.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/fishing/fishing.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use cfgfile;
+ use os;
+@@ -10,7 +12,6 @@
+ include &quot;include/math&quot;;
+ include &quot;include/objtype&quot;;
+ include &quot;include/startEqp&quot;;
+-include &quot;include/skillPoints&quot;;
+ include &quot;include/canAccess&quot;;
+ include &quot;include/toolWear&quot;;
+ include &quot;include/eventID&quot;;
+
+Modified: trunk/096/pkg/skills/herding/herd.src
+===================================================================
+--- trunk/096/pkg/skills/herding/herd.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/herding/herd.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use os;
+ use uo;
+ use cfgfile;
+@@ -5,7 +7,6 @@
+ include &quot;include/client&quot;;
+ include &quot;include/eventID&quot;;
+ include &quot;include/attributes&quot;;
+-include &quot;include/skillPoints&quot;;
+ 
+ program herd(who)
+         SendSysMessage(who, &quot;What would you like to herd?&quot;);
+
+Modified: trunk/096/pkg/skills/itemid/itemID.src
+===================================================================
+--- trunk/096/pkg/skills/itemid/itemID.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/itemid/itemID.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use os;
+ use basic;
+@@ -4,9 +6,7 @@
+ use cfgfile;
+ 
+ include &quot;include/client&quot;;
+-include &quot;include/skillPoints&quot;;
+ 
+-
+ program do_itemid( who )
+   EraseObjProperty(who, &quot;IsMeditating&quot;);
+   EraseObjProperty(who, &quot;HealTimer&quot;);
+
+Modified: trunk/096/pkg/skills/magery/magicUntrap.src
+===================================================================
+--- trunk/096/pkg/skills/magery/magicUntrap.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/magery/magicUntrap.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use os;
+ use uo;
+ use util;
+@@ -5,9 +7,7 @@
+ include &quot;include/client&quot;;
+ include &quot;include/sound&quot;;
+ include &quot;include/attributes&quot;;
+-include &quot;include/skillPoints&quot;;
+ 
+-
+ program spell_magicUntrap(parms)
+ 	var caster := parms.caster;
+ 	var castOn := parms.castOn;
+
+Modified: trunk/096/pkg/skills/magery/unlock.src
+===================================================================
+--- trunk/096/pkg/skills/magery/unlock.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/magery/unlock.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use os;
+ use uo;
+ use util;
+@@ -4,9 +6,7 @@
+ 
+ include &quot;include/sound&quot;;
+ include &quot;include/client&quot;;
+-include &quot;include/skillPoints&quot;;
+ 
+-
+ program spell_unlock(parms)
+   var caster := parms.caster;
+   var castOn := parms.castOn;
+
+Modified: trunk/096/pkg/skills/musicianship/entice.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/entice.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/musicianship/entice.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use os;
+ use util;
+@@ -4,7 +6,6 @@
+ 
+ include &quot;include/client&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;include/skillPoints&quot;;
+ include &quot;include/bard&quot;;
+ include &quot;include/eventID&quot;;
+ 
+
+Modified: trunk/096/pkg/skills/musicianship/musicianship.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/musicianship.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/musicianship/musicianship.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use os;
+ use util;
+@@ -5,7 +7,6 @@
+ include &quot;include/client&quot;;
+ include &quot;include/attributes&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;include/skillPoints&quot;;
+ include &quot;include/canAccess&quot;;
+ 
+ var config;
+
+Modified: trunk/096/pkg/skills/musicianship/provocation.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/provocation.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/musicianship/provocation.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,4 @@
++// $Id$
+ 
+ use uo;
+ use os;
+@@ -6,7 +7,6 @@
+ 
+ include &quot;include/client&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;include/skillPoints&quot;;
+ include &quot;include/bard&quot;;
+ include &quot;include/eventID&quot;;
+ include &quot;include/dist&quot;;
+@@ -109,7 +109,7 @@
+    PrintTextAbovePrivate(thetarg, &quot;You enrage &quot; + thetarg.name + &quot;!&quot;, who);
+     SendEvent(thetarg, ev);
+   endif
+-endprogram 
++endprogram
+ 
+ function canProvoke(template)
+   case( template )
+
+Modified: trunk/096/pkg/skills/removetrap/removeTrap.src
+===================================================================
+--- trunk/096/pkg/skills/removetrap/removeTrap.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/removetrap/removeTrap.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use os;
+ use util;
+@@ -5,14 +7,13 @@
+ include &quot;include/client&quot;;
+ include &quot;include/sound&quot;;
+ include &quot;include/tileEffects&quot;;
+-include &quot;include/skillPoints&quot;;
+ include &quot;include/canAccess&quot;;
+ 
+ 
+ program removeTrap(who)
+   EraseObjProperty(who, &quot;IsMeditating&quot;);
+   EraseObjProperty(who, &quot;HealTimer&quot;);
+-  var thepoints := get_default_points(SKILLID_REMOVETRAP);
++  var thepoints := 50;
+   SendSysMessage(who, &quot;Select Target.&quot;);
+   var item := Target(who);
+   if(!item)
+
+Modified: trunk/096/pkg/skills/stealth/stealth.src
+===================================================================
+--- trunk/096/pkg/skills/stealth/stealth.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/stealth/stealth.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -14,9 +14,9 @@
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ use uo;
+ 
+-include &quot;:attributes:include/attributeConstants&quot;;
+-include &quot;:attributes:include/attributes&quot;;
+-include &quot;:attributes:include/skillCheck&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ 
+ program skill_Stealth( who )
+ 
+
+Modified: trunk/096/pkg/skills/tasteid/tasteID.src
+===================================================================
+--- trunk/096/pkg/skills/tasteid/tasteID.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/tasteid/tasteID.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use cfgfile;
+ 
+@@ -8,8 +10,6 @@
+ const UOBJECT_FLASK_FULL := 0x1834;
+ const UOBJECT_FLASK_HEATED := 0x1833;
+ 
+-include &quot;include/skillPoints&quot;;
+-
+ program do_tasteid(who)
+   EraseObjProperty(who, &quot;IsMeditating&quot;);
+   EraseObjProperty(who, &quot;HealTimer&quot;);
+
+Modified: trunk/096/pkg/skills/tinkering/tinkering.src
+===================================================================
+--- trunk/096/pkg/skills/tinkering/tinkering.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/tinkering/tinkering.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use cfgfile;
+ use os;
+@@ -7,7 +9,6 @@
+ include &quot;include/client&quot;;
+ include &quot;include/sound&quot;;
+ include &quot;include/objtype&quot;;
+-include &quot;include/skillPoints&quot;;
+ include &quot;util/key&quot;;
+ include &quot;include/canAccess&quot;;
+ include &quot;include/toolWear&quot;;
+
+Modified: trunk/096/pkg/skills/tracking/tracking.src
+===================================================================
+--- trunk/096/pkg/skills/tracking/tracking.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/pkg/skills/tracking/tracking.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use basic;
+ use os;
+@@ -5,7 +7,6 @@
+ include &quot;include/client&quot;;
+ include &quot;include/sound&quot;;
+ include &quot;include/attributes&quot;;
+-include &quot;include/skillPoints&quot;;
+ 
+ 
+ program tracking(who)
+
+Modified: trunk/096/scripts/control/fireControl.src
+===================================================================
+--- trunk/096/scripts/control/fireControl.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/scripts/control/fireControl.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use util;
+ use os;
+@@ -2,3 +4,3 @@
+ use cfgfile;
+-include &quot;include/skillPoints&quot;;
++
+ include &quot;include/attributes&quot;;
+
+Modified: trunk/096/scripts/items/fires.src
+===================================================================
+--- trunk/096/scripts/items/fires.src	2005-09-28 19:19:21 UTC (rev 277)
++++ trunk/096/scripts/items/fires.src	2005-09-28 19:20:39 UTC (rev 278)
+@@ -1,7 +1,8 @@
++// $Id$
++
+ use uo;
+ use cfgfile;
+ 
+-include &quot;include/skillPoints&quot;;
+ include &quot;include/attributes&quot;;
+ include &quot;include/spellRestrictions&quot;;
+ include &quot;include/client&quot;;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000255.html">[Poldistro-svn] r277 - trunk/096/pkg/items/containers/include
+</A></li>
+	<LI>Next message: <A HREF="000257.html">[Poldistro-svn] r279 - in trunk/096/pkg: skills/herding skills/spiritspeak systems/combat systems/nature/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#256">[ date ]</a>
+              <a href="thread.html#256">[ thread ]</a>
+              <a href="subject.html#256">[ subject ]</a>
+              <a href="author.html#256">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

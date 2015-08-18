@@ -1,0 +1,322 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1104 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1104%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20scripts/combat&In-Reply-To=%3C200601071541.k07FfQwh029610%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001074.html">
+   <LINK REL="Next"  HREF="001076.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1104 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1104%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20scripts/combat&In-Reply-To=%3C200601071541.k07FfQwh029610%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1104 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat">austin at berlios.de
+       </A><BR>
+    <I>Sat Jan  7 16:41:26 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001074.html">[Poldistro-svn] r1103 - in trunk/096/pkg/skills/magery: config include
+</A></li>
+        <LI>Next message: <A HREF="001076.html">[Poldistro-svn] r1105 - trunk/096/batchfiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1075">[ date ]</a>
+              <a href="thread.html#1075">[ thread ]</a>
+              <a href="subject.html#1075">[ subject ]</a>
+              <a href="author.html#1075">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-07 16:41:25 +0100 (Sat, 07 Jan 2006)
+New Revision: 1104
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/scripts/combat/spellCombat.src
+Modified:
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+Working on making magic casting npcs work.
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-01-07 15:27:15 UTC (rev 1103)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-01-07 15:41:25 UTC (rev 1104)
+@@ -265,7 +265,7 @@
+ ##########################################
+ # Utility
+ ##########################################
+-NPCTemplate banker
++NPCTemplate Banker
+ {
+ 	// Primary NPC settings
+ 	Name			&lt;random&gt; the banker
+@@ -319,7 +319,7 @@
+ 	CProp	GuardKill	i1
+ }
+ 
+-NPCTemplate healer
++NPCTemplate Healer
+ {
+ 	// Primary NPC settings
+ 	Name			&lt;random&gt; the healer
+@@ -376,7 +376,7 @@
+ ##########################################
+ # Animals
+ ##########################################
+-NPCTemplate cow
++NPCTemplate Cow
+ {
+ 	// Primary NPC settings
+ 	Name			a cow
+@@ -441,7 +441,7 @@
+ 	// CProps (eww!)
+ }
+ 
+-NPCTemplate sheep
++NPCTemplate Sheep
+ {
+ 	// Primary NPC Settings
+ 	Name			a sheep
+@@ -515,3 +515,77 @@
+ 	CProp  Fame		i1
+ }
+ 
++##########################################
++# Orcs
++##########################################
++
++NPCTemplate OrcMage
++{
++	// Primary NPC information
++	Name			&lt;random&gt; the orc mage
++	Script			:brainAI:brain
++	ObjType			0x11
++	Color			0
++	TrueColor		0
++	Gender			0
++	AR			15
++	RunSpeed		115
++	Alignment		evil
++	Category		Orc
++
++	// Attributes
++	Strength		150
++	Intelligence		145
++	Dexterity		115
++
++	// Vitals
++	HITS			150
++	MANA			145
++	STAM			115
++
++	// Intrinsic Weapon
++	AttackSpeed		30
++	AttackDamage		3d5
++	AttackAttribute		Wrestling
++	AttackHitSound		0x1B3
++	AttackMissSound		0x239
++	AttackHitScript		:combat:mainHitScript
++	
++	// Brain AI Settings
++	AISetting	AreaSize	i10
++	AISetting	CycleWait	i10
++	AISetting	FleeLevel	i10 // 10%
++	AISetting	IdleTicks	i10
++	AISetting	SleepWait	i100
++	AISetting	SpellWords	i1
++
++	// Brain AI Nerves
++	AIScript	Combat		:brainAI:scripts/combat/spellCombat
++	AIScript	EnterArea	:brainAI:bundled/exampleNPC/enteredArea
++	AIScript	Init		:brainAI:bundled/exampleNPC/init
++	AIScript	LeftArea	:brainAI:bundled/exampleNPC/leftArea
++	AIScript	LookAround	:brainAI:bundled/exampleNPC/lookAround
++	AIScript	Sleep		:brainAI:bundled/exampleNPC/sleep
++	AIScript	ShouldWatch	:brainAI:bundled/exampleNPC/shouldWatch
++	AIScript	EndFight	:brainAI:bundled/exampleNPC/endFight
++
++	// Skinning Info
++	// Skinning	ItemName	Amount
++	Skinning	RawRibs		1
++
++	// Settings other scripts use...
++	NameTemplate	Orc
++	Spell		MagicArrow	10
++	Spell		Telekinesis	5
++	Spell		Paralyze	5
++	Spell		Curse		5
++	Spell		Harm		15
++	Spell		Poison		5
++	Spell		FireBall	15
++	Spell		Lightning	15
++	Spell		EBolt		10
++	Spell		Explosion	10
++	Spell		FlameStrike	5
++
++	// CProps (eww!)
++}
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/combat/spellCombat.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/combat/spellCombat.src	2006-01-07 15:27:15 UTC (rev 1103)
++++ trunk/096/pkg/mobiles/brainAI/scripts/combat/spellCombat.src	2006-01-07 15:41:25 UTC (rev 1104)
+@@ -0,0 +1,124 @@
++/*
++ * $Id*
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:magery:spells_ex&quot;;
++include &quot;include/shapes&quot;;
++include &quot;include/client&quot;;
++include &quot;include/sounds&quot;;
++include &quot;include/facings&quot;;
++include &quot;include/damage&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	var nerve_name	:= params[2];
++	var event	:= params[3];
++	var settings	:= params[4];
++	var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++
++	//Store it here so it does not have to do the math over and over.
++	var flee_level := AP_GetVitalMaximumValue(npc, &quot;Hits&quot;) * (CDbl(settings[&quot;FleeLevel&quot;])/100.0);
++	
++	var opponent := event.source;
++	var flee_mode := 0;
++
++	AI_SetOpponent(npc, opponent);
++
++	while( npc )
++		var dist := Distance(npc, opponent);
++		if ( ShouldFlee(npc, flee_level, flee_mode) )
++			flee_mode := 1;
++			AI_WarMode(npc, 0);
++			AI_Move(npc, opponent, NEMOVE_AWAY, NEMOVE_RUN, WAKEUP, 100);
++		elseif ( DoneFighting(npc, opponent, dist) )
++			if ( scripts.Exists(&quot;EndFight&quot;) )
++				params := array{opponent, settings, scripts};
++				AI_StartNerve(npc, &quot;EndFight&quot;, scripts[&quot;EndFight&quot;].script, params);
++			else
++				AI_WarMode(npc, 0);
++			endif
++			AI_EndNerve(npc, nerve_name);
++		elseif ( dist &lt;= settings[&quot;MinRange&quot;] )
++			AI_Move(npc, opponent, NEMOVE_AWAY, NEMOVE_RUN, WAKEUP, (settings[&quot;MinRange&quot;]-dist));
++		elseif( dist &gt; settings[&quot;MaxRange&quot;] )
++			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, (dist-settings[&quot;MaxRange&quot;]));
++		else
++			npc.facing := GetFacing(npc.x, npc.y, opponent.x, opponent.y);
++		endif
++
++		SpecialAttack(npc, opponent, dist);
++
++		sleepms(400);
++		AI_ClearThoughts(npc, CLR_NERVE);
++	endwhile
++endprogram
++
++function DoneFighting(npc, opponent, byref dist)
++	if ( opponent.dead )
++		return 1;
++	elseif ( !opponent )
++		return 1;
++	elseif ( opponent.hidden )
++		return 1;
++	elseif ( opponent.concealed &gt; npc.cmdlevel )
++		return 1;
++	elseif ( dist &gt; 20 )
++		return 1;
++	elseif ( dist &gt; 10 &amp;&amp; !CheckLineOfSight(npc, opponent) )
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++function ShouldFlee(npc, byref flee_level, byref flee_mode)
++	if ( flee_mode )
++		return 1;
++	elseif ( AP_GetVital(npc, &quot;Hits&quot;) &lt; flee_level )
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++function SpecialAttack(npc, opponent, byref dist)
++	if ( GetObjProperty(npc, &quot;#medding&quot;) )
++		return 0;
++	elseif ( CInt(GetObjProperty(npc, &quot;#NextCast&quot;)) &gt; ReadGameClock() )
++		return 0;
++	elseif ( AP_GetVital(npc, MANA) &lt;= 10 )
++		return 0;
++	elseif ( !CheckLineOfSight(npc, opponent) )
++		return 0;
++	elseif ( dist &gt; 16 )
++		return 0;
++	endif
++	
++	var npc_elem := NPC_GetNPCConfig(npc.npctemplate);
++	var spell_list := GetConfigStringArray(npc_elem, &quot;Spell&quot;);
++	var cast_spell := spell_list[RandomInt(spell_list.Size())+1];
++	cast_spell := SplitWords(cast_spell);
++	var spell_id := MS_SpellNameToId(cast_spell[1]);
++	
++	if ( !spell_id )
++		return 0;
++	elseif ( RandomInt(100) &gt; CInt(cast_spell[2]) )
++		return 0;
++	endif
++	
++	var script := Start_Script(&quot;:magery:spellStarter&quot;, {npc, spell_id, 0, opponent});
++	if ( script.errortext )
++		PrintTextAbove(npc, script.errortext);
++		return 0;
++	endif
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001074.html">[Poldistro-svn] r1103 - in trunk/096/pkg/skills/magery: config include
+</A></li>
+	<LI>Next message: <A HREF="001076.html">[Poldistro-svn] r1105 - trunk/096/batchfiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1075">[ date ]</a>
+              <a href="thread.html#1075">[ thread ]</a>
+              <a href="subject.html#1075">[ subject ]</a>
+              <a href="author.html#1075">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

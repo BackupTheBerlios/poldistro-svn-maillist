@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1216 - trunk/096/pkg/mobiles/brainAI/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1216%20-%20trunk/096/pkg/mobiles/brainAI/include&In-Reply-To=%3C200602142032.k1EKWXIc007548%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001186.html">
+   <LINK REL="Next"  HREF="001188.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1216 - trunk/096/pkg/mobiles/brainAI/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1216%20-%20trunk/096/pkg/mobiles/brainAI/include&In-Reply-To=%3C200602142032.k1EKWXIc007548%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1216 - trunk/096/pkg/mobiles/brainAI/include">austin at berlios.de
+       </A><BR>
+    <I>Tue Feb 14 21:32:33 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001186.html">[Poldistro-svn] r1215 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+        <LI>Next message: <A HREF="001188.html">[Poldistro-svn] r1217 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1187">[ date ]</a>
+              <a href="thread.html#1187">[ thread ]</a>
+              <a href="subject.html#1187">[ subject ]</a>
+              <a href="author.html#1187">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-14 21:32:32 +0100 (Tue, 14 Feb 2006)
+New Revision: 1216
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/include/npcSounds.inc
+Log:
+Updated to have GetConfigStringArray() support instead.
+Easier to work with in the config file.
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcSounds.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcSounds.inc	2006-02-14 20:26:13 UTC (rev 1215)
++++ trunk/096/pkg/mobiles/brainAI/include/npcSounds.inc	2006-02-14 20:32:32 UTC (rev 1216)
+@@ -47,10 +47,10 @@
+  */
+ function NPC_GetIdleSound(mobile)
+ 	var mobile_template := NPC_GetNPCConfig(mobile);
+-	var idle_sound_list := UnPack(mobile_template.IdleSounds);
++	var idle_sound_list := GetConfigStringArray(mobile, &quot;IdleSound&quot;);
+ 
+ 	if( TypeOf(idle_sound_list) != &quot;Array&quot; )
+-		NPC_ErrorSysLog(mobile, &quot;Invalid Idle Sound Setting&quot;);
++		//NPC_ErrorSysLog(mobile, &quot;Invalid Idle Sound Setting&quot;);
+ 		return 0;
+ 	endif
+ 
+@@ -74,10 +74,10 @@
+  */
+ function NPC_GetDamagedSound(mobile)
+ 	var mobile_template := NPC_GetNPCConfig(mobile);
+-	var damaged_sound_list := UnPack(mobile_template.DamagedSounds);
++	var damaged_sound_list := GetConfigStringArray(mobile, &quot;DamagedSound&quot;);
+ 
+ 	if( TypeOf(damaged_sound_list) != &quot;Array&quot; )
+-		NPC_ErrorSysLog(mobile, &quot;Invalid Damaged Sound Setting&quot;);
++		//NPC_ErrorSysLog(mobile, &quot;Invalid Damaged Sound Setting&quot;);
+ 		return 0;
+ 	endif
+ 
+@@ -101,10 +101,10 @@
+  */
+ function NPC_GetDeathSound(mobile)
+ 	var mobile_template := NPC_GetNPCConfig(mobile);
+-	var death_sound_list := UnPack(mobile_template.DeathSounds);
++	var death_sound_list := GetConfigStringArray(mobile, &quot;DeathSound&quot;);
+ 
+ 	if( TypeOf(death_sound_list) != &quot;Array&quot; )
+-		NPC_ErrorSysLog(mobile, &quot;Invalid Death Sound Setting&quot;);
++		//NPC_ErrorSysLog(mobile, &quot;Invalid Death Sound Setting&quot;);
+ 		return 0;
+ 	endif
+ 
+@@ -128,10 +128,10 @@
+  */
+ function NPC_GetMissSound(mobile)
+ 	var mobile_template := NPC_GetNPCConfig(mobile);
+-	var miss_sound_list := UnPack(mobile_template.AttackMissSounds);
++	var miss_sound_list := GetConfigStringArray(mobile, &quot;AttackMissSound&quot;);
+ 
+ 	if( TypeOf(miss_sound_list) != &quot;Array&quot; )
+-		NPC_ErrorSysLog(mobile, &quot;Invalid Miss Sound Setting&quot;);
++		//NPC_ErrorSysLog(mobile, &quot;Invalid Miss Sound Setting&quot;);
+ 		return 0;
+ 	endif
+ 
+@@ -154,7 +154,7 @@
+  */
+ function NPC_GetHitSound(mobile)
+ 	var mobile_template := NPC_GetNPCConfig(mobile);
+-	var hit_sound_list := UnPack(mobile_template.AttackHitSounds);
++	var hit_sound_list := GetConfigStringArray(mobile, &quot;AttackHitSound&quot;);
+ 
+ 	if( TypeOf(hit_sound_list) != &quot;Array&quot; )
+ 		NPC_ErrorSysLog(mobile, &quot;Invalid Hit Sound Setting&quot;);
+@@ -181,10 +181,10 @@
+  */
+ function NPC_GetBarkSound(mobile)
+ 	var mobile_template := NPC_GetNPCConfig(mobile);
+-	var bark_sound_list := UnPack(mobile_template.BarkSounds);
++	var bark_sound_list := GetConfigStringArray(mobile, &quot;BarkSound&quot;);
+ 
+ 	if( TypeOf(bark_sound_list) != &quot;Array&quot; )
+-		NPC_ErrorSysLog(mobile, &quot;Invalid Bark Sound Setting&quot;);
++		//NPC_ErrorSysLog(mobile, &quot;Invalid Bark Sound Setting&quot;);
+ 		return 0;
+ 	endif
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001186.html">[Poldistro-svn] r1215 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+	<LI>Next message: <A HREF="001188.html">[Poldistro-svn] r1217 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1187">[ date ]</a>
+              <a href="thread.html#1187">[ thread ]</a>
+              <a href="subject.html#1187">[ subject ]</a>
+              <a href="author.html#1187">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

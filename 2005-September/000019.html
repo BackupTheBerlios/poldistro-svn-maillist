@@ -1,0 +1,389 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r37 - trunk/096/pkg/mobiles/ai_brain/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r37%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509020635.j826ZHDE032607%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000018.html">
+   <LINK REL="Next"  HREF="000020.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r37 - trunk/096/pkg/mobiles/ai_brain/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r37%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509020635.j826ZHDE032607%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r37 - trunk/096/pkg/mobiles/ai_brain/include">austin at berlios.de
+       </A><BR>
+    <I>Fri Sep  2 08:35:17 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000018.html">[Poldistro-svn] r36 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000020.html">[Poldistro-svn] r38 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#19">[ date ]</a>
+              <a href="thread.html#19">[ thread ]</a>
+              <a href="subject.html#19">[ subject ]</a>
+              <a href="author.html#19">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-02 08:35:17 +0200 (Fri, 02 Sep 2005)
+New Revision: 37
+
+Added:
+   trunk/096/pkg/mobiles/ai_brain/include/npc_error.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc	2005-09-02 03:02:48 UTC (rev 36)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc	2005-09-02 06:35:17 UTC (rev 37)
+@@ -11,30 +11,29 @@
+ use uo;
+ use os;
+ 
+-include &quot;include/sysevent&quot;;
++include &quot;include/sysEvent&quot;;
+ include &quot;:ai_brain:include/eventid&quot;;
+ 
+ /////////////////////////////////////////////////////////////////
+ // * Function List *
+ //
+-// AI_Attack()
+-// AI_ClearThoughts()
+-// AI_EndNerve()
+-// AI_Flee()
+-// AI_FowardEvent()
+-// AI_Move()
+-// AI_MoveXY()
+-// AI_SetOpponent()
+-// AI_Sleep()
+-// AI_Speak()
+-// AI_StartNerve()
+-// AI_Turn()
+-// AI_TurnXY()
+-// AI_WakeUp()
+-// AI_Wander()
+-// AI_Warmode()
+-// AI_WinFight()
+-//
++// AI_Attack(mobile, opponent, no_wake:=WAKEUP)
++// AI_ClearThoughts(mobile, flags)
++// AI_EndNerve(mobile, nerve_name, no_wake:=WAKEUP)
++// AI_Flee(mobile, opponent, no_wake:=WAKEUP)
++// AI_FowardEvent(mobile, nerve_name, mask, data, no_wake:=WAKEUP)
++// AI_Move(mobile, object, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
++// AI_MoveXY(mobile, x, y, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
++// AI_SetOpponent(mobile, opponent, no_wake:=WAKEUP)
++// AI_Sleep(mobile)
++// AI_Speak(mobile, text, text_type:=SPEAK_TEXTTYPE_DEFAULT, do_event:=SPEAK_DOEVENT_DISABLE, no_wake:=WAKEUP)
++// AI_StartNerve(mobile, nerve_name, script_name, data, no_wake:=WAKEUP)
++// AI_Turn(mobile, turn_to, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
++// AI_TurnXY(mobile, x, y, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
++// AI_WakeUp(mobile)
++// AI_Wander(mobile, no_wake:=WAKEUP, loop:=0)
++// AI_WarMode(mobile, mode:=0, no_wake:=WAKEUP)
++// 
+ /////////////////////////////////////////////////////////////////
+ 
+ /*
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/npc_error.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_error.inc	2005-09-02 03:02:48 UTC (rev 36)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_error.inc	2005-09-02 06:35:17 UTC (rev 37)
+@@ -0,0 +1,36 @@
++/*===============================================================
++* Current Version
++* NPC_ERRORS.INC - v1.0
++* Updated 8/31/2005 5:08AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++
++/*
++ * NPC_ErrorSysLog(errmsg)
++ *
++ * Purpose
++ * Logs an error message.
++ *
++ * Parameters
++ * errmsg:	Error message
++ *
++ * Return value
++ * Always returns 1
++ *
++ */
++function NPC_ErrorSysLog(mobile, errmsg)
++	Set_Critical(1);
++	SysLog(&quot;NPC Template: &quot; + mobile.npctemplate);
++	SysLog(&quot;NPC Name    : &quot; + mobile.name);
++	SysLog(errmsg );
++	SysLog(&quot;------------&quot;);
++	Set_Critical(0);
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc	2005-09-02 03:02:48 UTC (rev 36)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc	2005-09-02 06:35:17 UTC (rev 37)
+@@ -0,0 +1,213 @@
++/*===============================================================
++* Current Version
++* NERVES.INC - v1.0
++* Updated 9/1/2005 6:15PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++
++include &quot;:ai_brain:include/npc_error&quot;;
++
++/////////////////////////////////////////////////////////////////
++// * Function List *
++//
++// GetNerveFlags(mobile, nerve_name, byref nerve_dict:=0)
++// GetNerveProcess(mobile, nerve_name, byref nerve_dict:=0)
++// LoadNerves(mobile)
++// SaveNerves(mobile, nerve_dict)
++// StartNerve(mobile, nerve_name, nerve_script, data:=array, flags:=NF_NO_FLAGS, byref nerve_dict:=0)
++// StopNerve(mobile, nerve_name, byref nerve_dict:=0)
++//
++/////////////////////////////////////////////////////////////////
++// * Global Varibles *
++//
++// Nerve flags
++const NF_NO_FLAGS		:= 0x0;
++const NF_CONTINUE_ON_SLEEP	:= 0x1;
++//
++/////////////////////////////////////////////////////////////////
++
++/*
++ * LoadNerves()
++ *
++ * Purpose
++ * Loads nerve information for an npc.
++ *
++ * Parameters
++ * mobile:	NPC to get the nerve settings from.
++ *
++ * Return value
++ * Returns a dictionary
++ *
++ */
++function LoadNerves(mobile)
++	var nerve_dict := GetObjProperty(mobile, &quot;#NerveInfo&quot;);
++	if ( Lower(TypeOf(nerve_dict)) != &quot;dictionary&quot; )
++		nerve_dict := dictionary;
++	endif
++
++	return nerve_dict;
++endfunction
++
++/*
++ * SaveNerves(mobile, nerve_dict)
++ *
++ * Purpose
++ * Saves nerve information for an npc.
++ *
++ * Parameters
++ * mobile:	NPC to save the nerve settings on.
++ * nerve_dict:	Dictionary containing nerve information.
++ *
++ * Return value
++ * Returns 1 on success
++ *
++ */
++function SaveNerves(mobile, nerve_dict)
++	return SetObjProperty(mobile, &quot;#NerveInfo&quot;, nerve_dict);
++endfunction
++
++/*
++ * GetNerveProcess(mobile, nerve_name, byref nerve_dict)
++ *
++ * Purpose
++ * Retrieves a reference to a running nerve script.
++ *
++ * Parameters
++ * mobile:	NPC to get the nerve information from.
++ * nerve_name:	Name of the nerve to get the information for.
++ * nerve_dict:	Optional parameter. Use if the settings were already loaded for faster access.
++ *
++ * Return value
++ * Returns a script reference.
++ *
++ */
++function GetNerveProcess(mobile, nerve_name, byref nerve_dict:=0)
++	if ( !nerve_dict )
++		nerve_dict := LoadNerves(mobile);
++	endif
++
++	if ( nerve_dict.exists(nerve_name) )
++		return GetProcess(CInt(nerve_dict[nerve_name].pid));
++	else
++		return error{&quot;errortext&quot; := &quot;GetNerveProcess() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
++	endif
++endfunction
++
++/*
++ * GetNerveFlags(mobile, nerve_name, byref nerve_dict)
++ *
++ * Purpose
++ * Retrieves the flag setting set on a nerve.
++ *
++ * Parameters
++ * mobile:	NPC to get the nerve information from.
++ * nerve_name:	Name of the nerve to get the information for.
++ * nerve_dict:	Optional parameter. Use if the settings were already loaded for faster access.
++ *
++ * Return value
++ * Returns a script reference.
++ *
++ */
++function GetNerveFlags(mobile, nerve_name, byref nerve_dict:=0)
++	if ( !nerve_dict )
++		nerve_dict := LoadNerves(mobile);
++	endif
++
++	if ( nerve_dict.exists(nerve_name) )
++		return GetProcess(CInt(nerve_dict[nerve_name].flags));
++	else
++		return error{&quot;errortext&quot; := &quot;GetNerveProcess() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
++	endif
++endfunction
++
++/*
++ * StartNerve(mobile, nerve_name, nerve_script, data, flags, byref nerve_dict)
++ *
++ * Purpose
++ * Starts up a nerve script.
++ *
++ * Parameters
++ * mobile:	NPC the nerve will be running for.
++ * nerve_name:	The name the nerve script will be run under. (Example: &quot;combat_script&quot;)
++ * data:	Array of data to send to the nerve script when it starts.
++ * flags:	Can contain anything - but should use NF_* flags for bitwise checks.
++ * nerve_dict:	Optional parameter. Use if the settings were already loaded for faster access.
++ *
++ * Notes:
++ * data[1] - Will contain the mobile argument.
++ * data[2] - Will contain the nerve name argument.
++ * If data is not an array, it will be placed at index[3].
++ * If data is sent as an array, it will begin at the index of [3].
++ *
++ * Return value
++ * Returns a script reference to the nerve script.
++ *
++ */
++function StartNerve(mobile, nerve_name, nerve_script, data:=array, flags:=NF_NO_FLAGS, byref nerve_dict:=0)
++	if ( Lower(TypeOf(data)) != &quot;array&quot;)
++		data := array{data};
++	endif
++	//Mobile is always the begining of the data array.
++	data.Insert(1, mobile);
++	//Nerve name is always the second part of the data array.
++	data.Insert(2, nerve_name);
++
++	var process := start_script(nerve_script, data);
++
++	if ( process.errortext )
++		var errmsg := &quot;StartNerve() [&quot;+nerve_name+&quot;] [&quot;+nerve_script+&quot;] failed to start! -&gt;&quot;+process.errortext;
++		NPC_ErrorSysLog(mobile, errmsg);
++		return error{&quot;errortext&quot;:=errmsg};
++	else
++		//Before setting the new nerve, check if one is already running.
++		if ( nerve_dict.exists(nerve_name) )
++			//Stop the old nerve, before storing the new one.
++			StopNerve(mobile, nerve_name, nerve_dict);
++		endif
++		var nerve_info := struct;
++		nerve_info.+pid := process.pid;
++		nerve_info.+flags := flags;
++		nerve_dict[nerve_name] := nerve_info;
++
++		SaveNerves(mobile, nerve_dict);
++
++		return process;
++	endif
++endfunction
++
++/*
++ * StopNerve(mobile, nerve_name, byref nerve_dict)
++ *
++ * Purpose
++ * Starts up a nerve script.
++ *
++ * Parameters
++ * mobile:	NPC the nerve will be stopped on.
++ * nerve_name:	The name of the nerve script to stop.
++ * nerve_dict:	Optional parameter. Use if the settings were already loaded for faster access.
++ *
++ * Return value
++ * Returns 1 on success.
++ *
++ */
++function StopNerve(mobile, nerve_name, byref nerve_dict:=0)
++	if ( !nerve_dict )
++		nerve_dict := LoadNerves(mobile);
++	endif
++
++	if ( nerve_dict.Exists(nerve_name) )
++		GetNerveProcess(mobile, nerve_name, nerve_dict).kill();
++		nerve_dict.Erase(nerve_name);
++
++		return SaveNerves(mobile, nerve_dict);
++	else
++		return error{&quot;errortext&quot; := &quot;StopNerve() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
++	endif
++endfunction
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000018.html">[Poldistro-svn] r36 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000020.html">[Poldistro-svn] r38 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#19">[ date ]</a>
+              <a href="thread.html#19">[ thread ]</a>
+              <a href="subject.html#19">[ subject ]</a>
+              <a href="author.html#19">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

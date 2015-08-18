@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r321 - in trunk/096/pkg: skills/blacksmithy/tongs systems/crafting systems/crafting/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r321%20-%20in%20trunk/096/pkg%3A%20skills/blacksmithy/tongs%20systems/crafting%20systems/crafting/include&In-Reply-To=%3C200509300242.j8U2g4bw008231%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000298.html">
+   <LINK REL="Next"  HREF="000300.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r321 - in trunk/096/pkg: skills/blacksmithy/tongs systems/crafting systems/crafting/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r321%20-%20in%20trunk/096/pkg%3A%20skills/blacksmithy/tongs%20systems/crafting%20systems/crafting/include&In-Reply-To=%3C200509300242.j8U2g4bw008231%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r321 - in trunk/096/pkg: skills/blacksmithy/tongs systems/crafting systems/crafting/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Fri Sep 30 04:42:04 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000298.html">[Poldistro-svn] r320 - in trunk/096/pkg/items/sysbook: . book commands commands/gm include
+</A></li>
+        <LI>Next message: <A HREF="000300.html">[Poldistro-svn] r322 - trunk/096/pkg/systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#299">[ date ]</a>
+              <a href="thread.html#299">[ thread ]</a>
+              <a href="subject.html#299">[ subject ]</a>
+              <a href="author.html#299">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-30 04:42:02 +0200 (Fri, 30 Sep 2005)
+New Revision: 321
+
+Added:
+   trunk/096/pkg/systems/crafting/include/toolWearMethod.inc
+Removed:
+   trunk/096/pkg/systems/crafting/method/
+Modified:
+   trunk/096/pkg/skills/blacksmithy/tongs/tongsMethod.src
+   trunk/096/pkg/systems/crafting/include/craftGumps.inc
+Log:
+
+
+Modified: trunk/096/pkg/skills/blacksmithy/tongs/tongsMethod.src
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/tongs/tongsMethod.src	2005-09-30 02:08:03 UTC (rev 320)
++++ trunk/096/pkg/skills/blacksmithy/tongs/tongsMethod.src	2005-09-30 02:42:02 UTC (rev 321)
+@@ -1,6 +1,6 @@
+ use uo;
+ 
+-include &quot;:crafting:method/toolWearMethod&quot;;
++include &quot;:crafting:toolWearMethod&quot;;
+ 
+ program install()
+ 
+
+Modified: trunk/096/pkg/systems/crafting/include/craftGumps.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/craftGumps.inc	2005-09-30 02:08:03 UTC (rev 320)
++++ trunk/096/pkg/systems/crafting/include/craftGumps.inc	2005-09-30 02:42:02 UTC (rev 321)
+@@ -7,8 +7,9 @@
+ var craft_settings;
+ var atc := 1;
+ var PageNum := 1;
++// Gump backgrounds - Used in various functions - easier to use globally.
++var BKGND_SILVERTRIM := GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;);
+ 
+-
+ // This function is the main backbone for building the Crafting Menu.
+ function sendCraftGump(who, skill_name)
+ 
+@@ -149,8 +150,8 @@
+ 	// take care with your items.
+ 	arcnt   := 61500;
+ 
+-	var gump := GFCreateGump(50, 50);
+-	GFResizePic(gump, 0, 0, 5054, 530, 437);
++	var gump := GFCreateGump(50, 25);
++	GFResizePic(gump, 2, 0, BKGND_SILVERTRIM, 522, 440);
+ 	GFGumpPic(gump, 10, 10, 2624);
+ 	GFGumpPic(gump, 10, 205, 2624);
+ 	GFGumpPic(gump, 10, 225, 2624);
+@@ -419,8 +420,8 @@
+ 		echance := CStr(ExceptionalCraft(temp1, skillreq, temp2, 1))+&quot;%&quot;;
+ 	endif
+ 
+-	var gump := GFCreateGump(50, 50);
+-	GFResizePic(gump, 0, 0, 5054, 530, 417);
++	var gump := GFCreateGump(50, 25);
++	GFResizePic(gump, 2, 0, BKGND_SILVERTRIM, 521, 420);
+ 	GFGumpPic(gump, 10, 10, 2624);
+ 	GFGumpPic(gump, 10, 205, 2624);
+ 	GFGumpPic(gump, 250, 10, 2624);
+@@ -435,7 +436,7 @@
+ 	GFGumpPic(gump, 10, 370, 5055);
+ 	GFGumpPic(gump, 90, 370, 5055);
+ 	GFHTMLArea(gump, 10, 27, 150, 18, &quot;&lt;basefont color=#ffffff&gt;ITEM&quot;);
+-	GFHTMLArea(gump, 170, 177, 150, 18, &quot;&lt;basefont color=#ffffff&gt;SKILLS&quot;);
++	GFHTMLArea(gump, 170, 117, 150, 18, &quot;&lt;basefont color=#ffffff&gt;SKILLS&quot;);
+ 	GFHTMLArea(gump, 10, 207, 150, 18, &quot;&lt;basefont color=#ffffff&gt;MATERIALS&quot;);
+ 	GFHTMLArea(gump, 10, 287, 150, 18, &quot;&lt;basefont color=#ffffff&gt;OTHER&quot;);
+ 	GFAddButton(gump, 15, 387, 4014, 4016, GF_CLOSE_BTN, 1);
+@@ -475,12 +476,12 @@
+ 	// Item Name
+ 	GFHTMLArea(gump, 330, 40, 150, 20, (&quot;&lt;basefont color=#ffffff&gt;&quot;+itemdesc));
+ 	// Skill name
+-	GFHTMLArea(gump, 170, 132, 150, 20, (craft_skill + &quot; required&quot;));
++	GFHTMLArea(gump, 170, 132, 150, 20, (&quot;&lt;basefont color=#ffffff&gt;&quot;+craft_skill + &quot; required&quot;));
+ 
+ 	if((skillreqb &gt; 0) &amp;&amp; (skillreqb != error))
+ 		// Skill 2 name
+-		GFHTMLArea(gump, 170, 152, 150, 20, (aid_skill + &quot; required&quot;));
+-		GFHTMLArea(gump, 430, 152, 150, 20, skillreqb);
++		GFHTMLArea(gump, 170, 152, 150, 20, (&quot;&lt;basefont color=#ffffff&gt;&quot;+aid_skill + &quot; required&quot;));
++		GFHTMLArea(gump, 430, 152, 150, 20, (&quot;&lt;basefont color=#ffffff&gt;&quot;+skillreqb));
+ 	endif
+ 
+ 	var ifres := GFSendGump(who, gump);
+
+Added: trunk/096/pkg/systems/crafting/include/toolWearMethod.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/toolWearMethod.inc	2005-09-30 02:08:03 UTC (rev 320)
++++ trunk/096/pkg/systems/crafting/include/toolWearMethod.inc	2005-09-30 02:42:02 UTC (rev 321)
+@@ -0,0 +1,75 @@
++// //$Id$
++
++exported function CheckToolWear (tool, who, craft_skill)
++
++	var swings := GetObjProperty(tool,&quot;swings&quot;);
++	if( TypeOf(swings) != &quot;Integer&quot; )
++		var mods := GetObjProperty(tool, &quot;durability&quot;);
++		var bonus := 0;
++		case(mods)
++			&quot;durable&quot;:        bonus := 10;
++			&quot;substantial&quot;:    bonus := 20;
++			&quot;massive&quot;:        bonus := 30;
++			&quot;fortified&quot;:      bonus := 40;
++			&quot;indestructable&quot;: bonus := 50;
++		endcase
++		swings := Cint(50 * tool.quality) + bonus;
++		SetObjProperty(tool,&quot;swings&quot;, swings);
++	endif
++	if(swings &lt;= 0)
++		DestroyItem(tool);
++		SendSysMessage(who,&quot;Your tool broke.&quot;);
++	else
++		var skill := AP_GetSkill(who, craft_skill);
++		if(skill &gt; 80)
++			skill := 80;
++		elseif(skill &lt; 20)
++			skill := 20;
++		endif
++		if((RandomInt(100)+1) &gt; skill)
++			if(tool.isa(POLCLASS_WEAPON))
++				if(tool.hp &gt; 1)
++					SetObjProperty(tool,&quot;swings&quot;, CInt(swings - 1));
++					tool.hp := tool.hp - 1;
++				elseif((tool.hp &gt; tool.maxhp) or (tool.hp == 1))
++					SendSysMessage(who, &quot;Your tool broke.&quot;);
++					DestroyItem(tool);
++				endif
++			else
++				SetObjProperty(tool, &quot;swings&quot;, CInt(swings - 1));
++			endif
++		endif
++	endif
++
++endfunction
++
++exported function SetToolDurability(tool, who, craft_skill)
++
++	var item_config   := ReadConfigFile(&quot;:*:itemdesc&quot;);
++	var item_script  := item_config[tool.objtype].Script;
++
++	if( TypeOf(item_script) != &quot;Struct&quot; )
++		if(!tool.isA(POLCLASS_CONTAINER) &amp;&amp; !tool.isA(POLCLASS_ARMOR))
++			var myskill := AP_GetSkill(who, craft_skill);
++			var swings := 0;
++			var mods := GetObjProperty(tool, &quot;durability&quot;);
++			var bonus := 0;
++			case(mods)
++				&quot;durable&quot;:        bonus := 10;
++				&quot;substantial&quot;:    bonus := 20;
++				&quot;massive&quot;:        bonus := 30;
++				&quot;fortified&quot;:      bonus := 40;
++				&quot;indestructable&quot;: bonus := 50;
++				default: bonus := 0;
++			endcase
++			swings := Cint(50 + myskill) + bonus;
++			SetObjProperty(tool, &quot;swings&quot;, swings);
++			if(!tool.quality or tool.quality == error)
++				tool.quality := 1.0;
++			endif
++		endif
++	endif
++
++	return 1;
++
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000298.html">[Poldistro-svn] r320 - in trunk/096/pkg/items/sysbook: . book commands commands/gm include
+</A></li>
+	<LI>Next message: <A HREF="000300.html">[Poldistro-svn] r322 - trunk/096/pkg/systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#299">[ date ]</a>
+              <a href="thread.html#299">[ thread ]</a>
+              <a href="subject.html#299">[ subject ]</a>
+              <a href="author.html#299">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

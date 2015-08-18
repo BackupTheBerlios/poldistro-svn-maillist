@@ -1,0 +1,400 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r667 - trunk/096/config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r667%20-%20trunk/096/config&In-Reply-To=%3C200510270404.j9R44RtW017277%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000640.html">
+   <LINK REL="Next"  HREF="000642.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r667 - trunk/096/config</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r667%20-%20trunk/096/config&In-Reply-To=%3C200510270404.j9R44RtW017277%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r667 - trunk/096/config">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Thu Oct 27 06:04:27 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000640.html">[Poldistro-svn] r666 - in trunk/096/pkg/commands: . coun
+</A></li>
+        <LI>Next message: <A HREF="000642.html">[Poldistro-svn] r668 - trunk/096/pkg/skills/blacksmithy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#641">[ date ]</a>
+              <a href="thread.html#641">[ thread ]</a>
+              <a href="subject.html#641">[ subject ]</a>
+              <a href="author.html#641">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-27 06:04:25 +0200 (Thu, 27 Oct 2005)
+New Revision: 667
+
+Modified:
+   trunk/096/config/itemdesc.cfg
+   trunk/096/config/npcdesc.cfg
+Log:
+Fixed error with Head/Skull and script usestuff
+
+Modified: trunk/096/config/itemdesc.cfg
+===================================================================
+--- trunk/096/config/itemdesc.cfg	2005-10-27 03:59:36 UTC (rev 666)
++++ trunk/096/config/itemdesc.cfg	2005-10-27 04:04:25 UTC (rev 667)
+@@ -385,14 +385,14 @@
+ {
+ 	Name			Head
+ 	Desc			head
+-	Script			useStuff
++	Script			:usestuff:useStuff
+ }
+ 
+ Item 0x1ae2
+ {
+ 	Name			Skull
+ 	Desc			skull
+-	Script			useStuff
++	Script			:usestuff:useStuff
+ }
+ 
+ Item 0xE17
+
+Modified: trunk/096/config/npcdesc.cfg
+===================================================================
+--- trunk/096/config/npcdesc.cfg	2005-10-27 03:59:36 UTC (rev 666)
++++ trunk/096/config/npcdesc.cfg	2005-10-27 04:04:25 UTC (rev 667)
+@@ -2097,14 +2097,19 @@
+ 	Strength		30
+ 	Intelligence		5
+ 	Dexterity		15
+-	HITS			30
++	HITS			18
+ 	MANA			0
+ 	STAM			15
+-	MagicResistance		6
+-	Tactics			6
+-	Wrestling		6
++	Anatomy			0.0
++	EvaluatingIntelligence	0.0
++	Magery			0.0
++	Meditation		0.0
++	Poisoning		0.0
++	ResistingSpells		5.5
++	Tactics			5.5
++	Wrestling		5.5
+ 	AttackSpeed		30
+-	AttackDamage		2d4+4
++	AttackDamage		1d4
+ 	AttackAttribute		Wrestling
+ 	AttackHitSound		0x7B
+ 	AttackMissSound		0x239
+@@ -2113,11 +2118,10 @@
+ 	IdleSound1		0x79
+ 	IdleSound2		0x7a
+ 	AR			9
+-	tameskill		11
+-	herdskill		11
+ 	food			veggie
++	foodtype		veggie
++	packinstinct		none
+ 	GuardIgnore		1
+-	provoke			30
+ 	DStart			10
+ 	CorpseItm		rawribs hides
+ 	CorpseAmt		8 12
+@@ -2138,11 +2142,17 @@
+ 	Strength		5
+ 	Intelligence		5
+ 	Dexterity		15
+-	HITS			5
++	HITS			3
+ 	MANA			0
+ 	STAM			15
+-	Tactics			5
+-	Wrestling		5
++	Anatomy			0.0
++	EvaluatingIntelligence	0.0
++	Magery			0.0
++	Meditation		0.0
++	Poisoning		0.0
++	ResistingSpells		4.0
++	Tactics			5.0
++	Wrestling		5.0
+ 	AttackSpeed		30
+ 	AttackDamage		1d2
+ 	AttackAttribute		Wrestling
+@@ -2153,11 +2163,10 @@
+ 	IdleSound1		0x6f
+ 	IdleSound2		0x70
+ 	AR			1
+-	tameskill		1
+-	herdskill		1
+ 	food			veggie
++	foodtype		veggie
++	packinstinct		none
+ 	GuardIgnore		1
+-	provoke			10
+ 	DStart			10
+ 	CorpseItm		rawbird feather
+ 	CorpseAmt		1 25
+@@ -2178,13 +2187,19 @@
+ 	Strength		9
+ 	Intelligence		5
+ 	Dexterity		35
+-	HITS			9
++	HITS			6
+ 	MANA			0
+ 	STAM			35
+-	Tactics			4
+-	Wrestling		5
++	Anatomy			0.0
++	EvaluatingIntelligence	0.0
++	Magery			0.0
++	Meditation		0.0
++	Poisoning		0.0
++	ResistingSpells		5.0
++	Tactics			4.0
++	Wrestling		5.0
+ 	AttackSpeed		30
+-	AttackDamage		1d3
++	AttackDamage		1d2
+ 	AttackAttribute		Wrestling
+ 	AttackHitSound		0x6C
+ 	AttackMissSound		0x239
+@@ -2193,14 +2208,13 @@
+ 	IdleSound1		0x6a
+ 	IdleSound2		0x6b
+ 	AR			4
+-	tameskill		1
+-	herdskill		1
++	food			fish
++	foodtype		fish
++	packinstinct		feline
+ 	GuardIgnore		1
+-	food			meat
+-	provoke			20
+ 	DStart			10
+-	CorpseItm		rawribs hides
+-	CorpseAmt		1 1
++	CorpseItm		rawribs
++	CorpseAmt		1
+ 	Colors			444 448 544 548 150 550 902 922 151 775
+ 	NoLoot			1
+ 	CProp  Karma		i1
+@@ -2216,17 +2230,22 @@
+ 	Color			0
+ 	TrueColor		0
+ 	Gender			0
+-	Strength		120
+-	Intelligence		10
+-	Dexterity		55
+-	HITS			120
++	Strength		19d5+3
++	Intelligence		4d2+2
++	Dexterity		19d2+37
++	HITS			17d2+11
+ 	MANA			0
+-	STAM			55
+-	MagicResistance		30
+-	Tactics			44
+-	Wrestling		44
++	STAM			19d2+37
++	Anatomy			0.0
++	EvaluatingIntelligence	0.0
++	Magery			0.0
++	Meditation		0.0
++	Poisoning		0.0
++	ResistingSpells		5d2+20
++	Tactics			15d2+14
++	Wrestling		15d2+14
+ 	AttackSpeed		35
+-	AttackDamage		2d8
++	AttackDamage		2d2+2
+ 	AttackAttribute		Wrestling
+ 	AttackHitSound		0xAB
+ 	AttackMissSound		0x239
+@@ -2235,11 +2254,10 @@
+ 	IdleSound1		0xa9
+ 	IdleSound2		0xaa
+ 	AR			9
+-	tameskill		29
+-	herdskill		35
+ 	food			veggie
++	foodtype		veggie
++	packinstinct		none
+ 	GuardIgnore		1
+-	provoke			40
+ 	DStart			10
+ 	CorpseItm		rawribs hides
+ 	CorpseAmt		3 10
+@@ -2257,17 +2275,22 @@
+ 	Color			0
+ 	TrueColor		0
+ 	Gender			0
+-	Strength		120
+-	Intelligence		10
+-	Dexterity		55
+-	HITS			120
++	Strength		19d5+3
++	Intelligence		4d2+2
++	Dexterity		19d2+37
++	HITS			17d2+11
+ 	MANA			0
+-	STAM			55
+-	MagicResistance		30
+-	Tactics			44
+-	Wrestling		44
++	STAM			19d2+37
++	Anatomy			0.0
++	EvaluatingIntelligence	0.0
++	Magery			0.0
++	Meditation		0.0
++	Poisoning		0.0
++	ResistingSpells		5d2+20
++	Tactics			15d2+14
++	Wrestling		15d2+14
+ 	AttackSpeed		35
+-	AttackDamage		2d8
++	AttackDamage		2d2+2
+ 	AttackAttribute		Wrestling
+ 	AttackHitSound		0xAB
+ 	AttackMissSound		0x239
+@@ -2276,11 +2299,10 @@
+ 	IdleSound1		0xa9
+ 	IdleSound2		0xaa
+ 	AR			9
+-	tameskill		29
+-	herdskill		35
+ 	food			veggie
++	foodtype		veggie
++	packinstinct		none
+ 	GuardIgnore		1
+-	provoke			40
+ 	DStart			10
+ 	CorpseItm		rawribs hides
+ 	CorpseAmt		3 10
+@@ -2298,17 +2320,22 @@
+ 	Color			0
+ 	TrueColor		33784
+ 	Gender			0
+-	Strength		120
+-	Intelligence		10
+-	Dexterity		55
+-	HITS			120
++	Strength		19d5+3
++	Intelligence		4d2+2
++	Dexterity		19d2+37
++	HITS			17d2+11
+ 	MANA			0
+-	STAM			55
+-	MagicResistance		30
+-	Tactics			44
+-	Wrestling		44
++	STAM			19d2+37
++	Anatomy			0.0
++	EvaluatingIntelligence	0.0
++	Magery			0.0
++	Meditation		0.0
++	Poisoning		0.0
++	ResistingSpells		5d2+20
++	Tactics			15d2+14
++	Wrestling		15d2+14
+ 	AttackSpeed		35
+-	AttackDamage		2d8
++	AttackDamage		2d2+2
+ 	AttackAttribute		Wrestling
+ 	AttackHitSound		0xAB
+ 	AttackMissSound		0x239
+@@ -2316,11 +2343,10 @@
+ 	IdleSound1		0xa9
+ 	IdleSound2		0xaa
+ 	AR			9
+-	tameskill		29
+-	herdskill		35
+ 	food			veggie
++	foodtype		veggie
++	packinstinct		none
+ 	GuardIgnore		1
+-	provoke			40
+ 	DStart			10
+ 	CorpseItm		rawribs hides
+ 	CorpseAmt		3 10
+@@ -2338,17 +2364,22 @@
+ 	Color			0
+ 	TrueColor		0
+ 	Gender			0
+-	Strength		120
+-	Intelligence		10
+-	Dexterity		55
+-	HITS			120
++	Strength		19d5+3
++	Intelligence		4d2+2
++	Dexterity		19d2+37
++	HITS			17d2+11
+ 	MANA			0
+-	STAM			55
+-	MagicResistance		30
+-	Tactics			44
+-	Wrestling		44
++	STAM			19d2+37
++	Anatomy			0.0
++	EvaluatingIntelligence	0.0
++	Magery			0.0
++	Meditation		0.0
++	Poisoning		0.0
++	ResistingSpells		5d2+20
++	Tactics			15d2+14
++	Wrestling		15d2+14
+ 	AttackSpeed		35
+-	AttackDamage		2d8
++	AttackDamage		2d2+2
+ 	AttackAttribute		Wrestling
+ 	AttackHitSound		0xAB
+ 	AttackMissSound		0x239
+@@ -2357,11 +2388,10 @@
+ 	IdleSound1		0xa9
+ 	IdleSound2		0xaa
+ 	AR			9
+-	tameskill		29
+-	herdskill		35
+ 	food			veggie
++	foodtype		veggie
++	packinstinct		none
+ 	GuardIgnore		1
+-	provoke			40
+ 	DStart			10
+ 	CorpseItm		rawribs hides
+ 	CorpseAmt		3 10
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000640.html">[Poldistro-svn] r666 - in trunk/096/pkg/commands: . coun
+</A></li>
+	<LI>Next message: <A HREF="000642.html">[Poldistro-svn] r668 - trunk/096/pkg/skills/blacksmithy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#641">[ date ]</a>
+              <a href="thread.html#641">[ thread ]</a>
+              <a href="subject.html#641">[ subject ]</a>
+              <a href="author.html#641">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,385 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r418 - trunk/096/pkg/mobiles/death
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r418%20-%20trunk/096/pkg/mobiles/death&In-Reply-To=%3C200510051255.j95CtxFl016281%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000395.html">
+   <LINK REL="Next"  HREF="000397.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r418 - trunk/096/pkg/mobiles/death</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r418%20-%20trunk/096/pkg/mobiles/death&In-Reply-To=%3C200510051255.j95CtxFl016281%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r418 - trunk/096/pkg/mobiles/death">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct  5 14:55:59 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000395.html">[Poldistro-svn] r417 - trunk/096/pkg/skills/musicianship/include
+</A></li>
+        <LI>Next message: <A HREF="000397.html">[Poldistro-svn] r419 - trunk/096/pkg/mobiles/death
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#396">[ date ]</a>
+              <a href="thread.html#396">[ thread ]</a>
+              <a href="subject.html#396">[ subject ]</a>
+              <a href="author.html#396">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-05 14:55:58 +0200 (Wed, 05 Oct 2005)
+New Revision: 418
+
+Modified:
+   trunk/096/pkg/mobiles/death/npcdeath.src
+   trunk/096/pkg/mobiles/death/plyrdeath.src
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/death/npcdeath.src
+===================================================================
+--- trunk/096/pkg/mobiles/death/npcdeath.src	2005-10-05 12:35:25 UTC (rev 417)
++++ trunk/096/pkg/mobiles/death/npcdeath.src	2005-10-05 12:55:58 UTC (rev 418)
+@@ -39,11 +39,31 @@
+ 		return 1;
+ 	elseif ( NoCorpseCheck(corpse, npc_cfg) )
+ 		return 1;
+-	else
+-		MP_DeathUnmount(corpse);
+ 	endif
++	
++	MP_DeathUnmount(corpse);
++	NotorietyChecks(corpse);
+ endprogram
+ 
++function NotorietyChecks(corpse)
++	var killer := GetObjProperty(corpse, &quot;LastHit&quot;);
++	if ( killer == error )
++		return 0;
++	endif
++	
++	var kwho := SystemFindObjectBySerial(killer[2]);
++	AdjustNoto(kwho, corpse);
++
++	// If killer was provoked, give noto to provoker.
++	var provoked := array;
++	provoked := GetObjProperty(kwho, &quot;Provoked&quot;); 
++	if ( provoked ) 
++		kwho := SystemFindObjectBySerial(provoked[2]);
++		AdjustNoto(kwho, corpse);
++		EraseObjProperty(killer[2], &quot;Provoked&quot;);
++	endif
++endfunction
++
+ function GuardKillCheck(corpse)
+ 	if ( GetObjProperty(corpse, &quot;GuardKill&quot;) );
+ 		// Nothing
+@@ -71,6 +91,8 @@
+ 		// Nothing
+ 	elseif ( GetObjProperty(corpse, &quot;NoCorpse&quot;) );
+ 		// Nothing
++	elseif ( GetObjProperty(corpse, &quot;nocorpse&quot;) );
++		// Nothing - Old Cprop
+ 	elseif ( GetObjProperty(corpse, &quot;summoned&quot;) );
+ 		// Nothing;
+ 	else
+@@ -88,157 +110,3 @@
+ 	
+ 	return 1;
+ endfunction
+-
+-/*	
+-	// if he had things to restock, destroy them, he's dead now.
+-	if (GetObjProperty(corpse, &quot;restockserial&quot;))
+-		var stocklist := SystemFindObjectBySerial(CInt(GetObjProperty(corpse, &quot;restockserial&quot;)));
+-		DestroyItem(stocklist);
+-	endif
+-
+-	// give noto and fame to the killer as appropriate.
+-	var killer := GetObjProperty(corpse, &quot;LastHit&quot;);
+-	if ((killer != error) &amp;&amp; (!GetObjProperty(corpse, &quot;guardkill&quot;)))
+-		var kwho := SystemFindObjectBySerial(killer[2], SYSFIND_SEARCH_OFFLINE_MOBILES);
+-		AdjustNoto(kwho, corpse);
+-
+-		// If killer was provoked, give noto to provoker
+-		var provoked := array;
+-		provoked := GetObjProperty(kwho, &quot;Provoked&quot;); 
+-		if (provoked) 
+-			kwho := SystemFindObjectBySerial(provoked[2], SYSFIND_SEARCH_OFFLINE_MOBILES);
+-			AdjustNoto(kwho, corpse);
+-			EraseObjProperty(killer[2], &quot;Provoked&quot;);
+-		endif
+-	endif
+-
+-	// A convoluted way to dismount the dead, if it was a player.
+-	var char;
+-	var mounted_char;
+-	var onchars := EnumerateOnlineCharacters();
+-	if (GetObjProperty(corpse,&quot;mounted&quot;))
+-		char := GetObjProperty(corpse,&quot;mounted_on&quot;);
+-		foreach person in onchars
+-			if (person.serial == CInt(char))
+-				mounted_char := person;
+-				break;
+-			endif
+-		endforeach
+-		dismountme(mounted_char, corpse);
+-	endif
+-
+-	// Play the death sound!
+-	var elem := GetObjProperty(corpse, &quot;npctemplate&quot;);
+-	var deathsound := 0;
+-	var graphic := GetObjProperty(corpse, &quot;Graphic&quot;);
+-	if ((graphic != 0x190) &amp;&amp; (graphic != 0x191))
+-		deathsound := cfg[elem].&quot;deathsound&quot;;
+-		if (deathsound)
+-			PlaySoundEffect(corpse, deathsound);
+-		endif
+-	endif
+-
+-	set_critical(1);
+-	// Dismount NPCs.
+-	dismount(corpse);
+-
+-	// Tell spawnregion that the recently deceased is dead.
+-	Run_Script_To_Completion(&quot;:spawnregion:death&quot;, corpse);
+-	if(GetObjProperty(corpse, &quot;regspawn&quot;))
+-		var spawnname := GetObjProperty(corpse, &quot;regspawn&quot;);
+-		var numspawns := CInt(GetGlobalProperty(spawnname))-1;
+-		SetGlobalProperty(spawnname,numspawns);
+-	endif
+-	set_critical(0);
+-
+-	// Destroy the corpse if it was guardkilled. No easy looting.
+-	if(GetObjProperty(corpse, &quot;guardkill&quot;))
+-		DestroyItem(corpse);
+-		return;
+-	endif
+-
+-	// Destroy weapons and armor on employee, though I'm not sure why,
+-	// and then move their backpack into their corpse.
+-	if (GetObjProperty(corpse,&quot;npctemplate&quot;) == &quot;employee&quot;)
+-		foreach thing in EnumerateItemsInContainer(corpse)
+-			if ((thing.layer) &amp;&amp; (thing.isa(POLCLASS_WEAPON) || thing.isa(POLCLASS_ARMOR)))
+-				DestroyItem(thing);
+-			endif
+-		endforeach
+-	endif
+-	MoveBackpackToCorpse(corpse);
+-  
+-	// Deal with playervendors
+-	if (GetObjProperty(corpse, &quot;npctemplate&quot;) == &quot;playervendor&quot;)
+-		var itemdesc := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-		var elm, dsc;
+-		foreach thing in EnumerateItemsInContainer(corpse)
+-			EraseObjProperty(thing, &quot;Vendored&quot;);
+-			if (GetObjProperty(thing, &quot;Vendor&quot;))
+-				DestroyItem(thing);
+-			else
+-				var oldname := GetObjProperty(thing, &quot;OldName&quot;);
+-				if (oldname)
+-					SetName(thing, oldname);
+-				else
+-					elm := FindConfigElem(itemdesc, thing.objtype);
+-					dsc := itemdesc[thing.objtype].desc;
+-					SetName(thing, dsc);
+-				endif
+-				EraseObjProperty(thing, &quot;Master&quot;);
+-				EraseObjProperty(thing, &quot;OldName&quot;);
+-				EraseObjProperty(thing, &quot;price&quot;);
+-			endif
+-		endforeach
+-	endif
+-
+-	// summoned creatures leave no corpse
+-	if (GetObjProperty(corpse, &quot;summoned&quot;))
+-		DestroyItem(corpse);
+-		// if the creature has no corpse, move all the stuff in the corpse to the ground
+-		// and then destroy the corpse.
+-	elseif (GetObjProperty(corpse, &quot;nocorpse&quot;))
+-		foreach item in EnumerateItemsInContainer(corpse);
+-			MoveItemToLocation(item, corpse.x, corpse.y, corpse.z, MOVEITEM_FORCELOCATION);
+-		endforeach
+-		DestroyItem(corpse);
+-	else
+-	// This was here but I'm not sure what it was meant to do... doesn't so anything
+-	// right now, so I'm commenting out to remove the 'unused var' warning, but I'll
+-	// leave the code here in case anyone can figure out what it was meant for.
+-	//    var corpseof := GetObjProperty(corpse,&quot;npctemplate&quot;);
+-	endif
+-  
+-	// This requires NPCKeeper. Destroy storage areas associated with the NPC.
+-	var theserial := CInt(GetObjProperty(corpse, &quot;AiSerial&quot;));
+-	var thestorage, inv_fs, inv_pb, inv_1c;
+-	var cont := &quot;Bankbox  &quot;+ Hex(theserial);
+-	thestorage := FindStorageArea(&quot;Tamed Storage&quot;);
+-	if (DestroyRootItemInStorageArea(thestorage, cont))
+-		print(&quot;Tamed storage for &quot;+ Hex(theserial) +&quot; destroyed.&quot;);
+-	else
+-		thestorage := FindStorageArea(&quot;Merchant Storage&quot;);
+-		inv_fs := theserial +&quot; FS&quot;;
+-		inv_pb := theserial +&quot; PB&quot;;
+-		inv_1c := theserial +&quot; 1C&quot;;
+-		if (DestroyRootItemInStorageArea(thestorage, inv_fs))
+-			DestroyRootItemInStorageArea(thestorage, inv_pb);
+-			DestroyRootItemInStorageArea(thestorage, inv_1c);
+-			print(&quot;Merchant storage for &quot;+ Hex(theserial) +&quot; destroyed.&quot;);
+-		endif
+-	endif 
+-
+-	return;
+-endprogram
+-
+-function ListRootItemsInContainer(container)
+-	var ret := { };
+-	foreach item in EnumerateItemsInContainer(container)
+-		if (item.container.serial == container.serial)
+-			ret[len(ret)+1] := item;
+-		endif
+-	endforeach
+-
+-	return ret;
+-endfunction
+-*/
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/death/plyrdeath.src
+===================================================================
+--- trunk/096/pkg/mobiles/death/plyrdeath.src	2005-10-05 12:35:25 UTC (rev 417)
++++ trunk/096/pkg/mobiles/death/plyrdeath.src	2005-10-05 12:55:58 UTC (rev 418)
+@@ -10,18 +10,32 @@
+ use os;
+ use util;
+ 
+-include &quot;:attributes:attributes&quot;;
+-include &quot;include/statMod&quot;;
+ include &quot;include/noto&quot;;
+ include &quot;include/reportMurder&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:death:death&quot;;
++include &quot;:mounts:mounts&quot;;
+ 
+ program core_chrDeath(params)
+ 	var corpse := params[1];
+ 	var ghost := params[2];
+ 	
+ 	EraseObjProperty(ghost, &quot;IsMeditating&quot;);
+-	//  ghost.SetPoisoned(0);
+-  	var killer := GetObjProperty(ghost, &quot;LastHit&quot;);
++	
++	DP_PlayDeathSound(ghost);
++	MP_DeathUnmount(corpse);
++	
++	CheckForAutoRes(ghost, corpse);
++	
++	if ( (ghost.reportables).Size() &gt; 0)
++		SendReportGump(ghost);
++	endif
++	
++	return 1;
++endprogram
++
++function NotorietyChecks(ghost)
++	var killer := GetObjProperty(ghost, &quot;LastHit&quot;);
+   	if (killer != error)
+ 		AdjustNoto((SystemFindObjectBySerial(killer[2], SYSFIND_SEARCH_OFFLINE_MOBILES)), ghost);
+ 	endif
+@@ -29,32 +43,21 @@
+ 	fame := (fame - CInt(fame / 20));
+ 	SetObjProperty(ghost, &quot;Fame&quot;, fame);
+ 	SetObjProperty(corpse,&quot;serial&quot;, ghost.serial);
+-	dismount(corpse);
+-	CheckForAutoRes(ghost, corpse);
+-	var corpsenamearray := SplitWords(corpse.name);
+-	var corpsenamearraylen := len(corpsenamearray);
+-	var x, corpsename := &quot;&quot;;
+-	for (x := 4; x &lt;= corpsenamearraylen; x := x + 1)
+-		corpsename := corpsename + &quot; &quot; + corpsenamearray[x];
+-	endfor
+-	if (len(ghost.reportables) &gt; 0)
+-		SendReportGump(ghost);
+-	endif
+-endprogram
++endfunction
+ 
+-
+ function CheckForAutoRes(who, corpse)
+ 	if(CInt(GetObjProperty(corpse, &quot;AutoRes&quot;)) == 1)
+ 		Resurrect(who);
+ 		AP_RefreshVitals(who);	
+-		var mypack := who.backpack;
+-		if (!mypack)
++		
++		if ( !who.backpack )
+ 			return;
+ 		endif
+-		foreach thing in EnumerateItemsInContainer(corpse)
+-			if (thing.container == corpse)
+-				if (!EquipItem(who, thing))
+-					MoveItemToContainer(thing, mypack);
++		
++		foreach item in (EnumerateItemsInContainer(corpse))
++			if ( item.container == corpse )
++				if ( !EquipItem(who, item) )
++					MoveItemToContainer(item, who.backpack);
+ 				endif
+ 			endif
+ 		endforeach
+@@ -63,23 +66,3 @@
+ 	return;
+ endfunction
+ 
+-function dismount(corpse)
+-	var mount := GetEquipmentByLayer( corpse, 25 );
+-	foreach item in EnumerateItemsInContainer(corpse)
+-		if (item.objtype == 0xf021)
+-			mount := item;
+-			break;
+-		endif
+-	endforeach
+-	if (!mount)
+-		return;
+-	endif
+-	var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
+-	animal.facing := corpse.facing;
+-	EraseObjProperty(animal, &quot;mounted&quot;);
+-	EraseObjProperty(animal, &quot;mounted_on&quot;);
+-	MoveCharacterToLocation( animal, corpse.x, corpse.y, corpse.z, MOVECHAR_FORCELOCATION);
+-	DestroyItem(mount);
+-
+-	return;
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000395.html">[Poldistro-svn] r417 - trunk/096/pkg/skills/musicianship/include
+</A></li>
+	<LI>Next message: <A HREF="000397.html">[Poldistro-svn] r419 - trunk/096/pkg/mobiles/death
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#396">[ date ]</a>
+              <a href="thread.html#396">[ thread ]</a>
+              <a href="subject.html#396">[ subject ]</a>
+              <a href="author.html#396">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

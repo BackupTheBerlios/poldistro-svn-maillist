@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r429 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r429%20-%20trunk/096/pkg/mobiles/brainAI/complete/exampleNPC&In-Reply-To=%3C200510060807.j9687aq3004398%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000406.html">
+   <LINK REL="Next"  HREF="000408.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r429 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r429%20-%20trunk/096/pkg/mobiles/brainAI/complete/exampleNPC&In-Reply-To=%3C200510060807.j9687aq3004398%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r429 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC">austin at berlios.de
+       </A><BR>
+    <I>Thu Oct  6 10:07:36 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000406.html">[Poldistro-svn] r428 - trunk/096/pkg/items/containers/include
+</A></li>
+        <LI>Next message: <A HREF="000408.html">[Poldistro-svn] r430 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#407">[ date ]</a>
+              <a href="thread.html#407">[ thread ]</a>
+              <a href="subject.html#407">[ subject ]</a>
+              <a href="author.html#407">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-06 10:07:36 +0200 (Thu, 06 Oct 2005)
+New Revision: 429
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src	2005-10-06 08:04:28 UTC (rev 428)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src	2005-10-06 08:07:36 UTC (rev 429)
+@@ -4,7 +4,7 @@
+ include &quot;:brainAI:eventid&quot;;
+ include &quot;:brainAI:npcNerves&quot;;
+ include &quot;:brainAI:npcCommands&quot;;
+-include &quot;:containers:vendorUtil&quot;;
++include &quot;:containers:merchantUtil&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+@@ -33,6 +33,14 @@
+ endprogram
+ 
+ function SpeechEvent(npc, event)
++	if ( event.text[&quot;restock&quot;] )
++		Restock(npc, event.text);
++		return 1;
++	elseif ( event.text[&quot;buy&quot;] )
++		BuyStuff(npc, event.source);
++		return 1;
++	endif
++	
+ 	AI_Speak(npc, &quot;I just heard &quot;+(event.source).name+&quot; say \&quot;&quot;+event.text+&quot;\&quot;&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, WAKEUP);
+ 	
+ 	// Doing 'SPEAK_DOEVENT_ENABLE' here with multiple npcs around, could cause an infinite loop - they would keep talking to each other!
+@@ -47,26 +55,42 @@
+ 			AI_Speak(npc, &quot;You're fun to talk to, you know that?&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, WAKEUP);
+ 			break;
+ 	endcase
++		
++	return 1;
++endfunction
++
++function Restock(npc, text)
++	text := SplitWords(text);
++	var item_name := text[2];
++	var amount := CInt(text[3]);
+ 	
+-	if ( event.text[&quot;restock&quot;] )
+-		CreateItemInContainer(CPV_GetForSaleContainer(npc), &quot;longsword&quot;, 1);
+-	elseif ( event.text[&quot;buy&quot;] )
+-		BuyStuff(npc, event.source);
++	var objtype := GetObjTypeByName(item_name);
++	if ( !objtype )
++		AI_Speak(npc, &quot;I dont know what '&quot;+item_name+&quot;' is!&quot;);
++		return 1;
+ 	endif
++	if ( amount &lt; 1 )
++		amount := 1;
++	endif
+ 	
++	var container := CPM_GetMerchantContainer(npc, CPM_FORSALE);
++	var item := CreateItemInContainer(container, objtype, amount);
++	AI_Speak(npc, &quot;I have added &quot;+(item.amount)+&quot; &quot;+item_name+&quot; to my inventory.&quot;);
++	
+ 	return 1;
+ endfunction
+ 
+ function BuyStuff(npc, mobile)
+-	var forsale_bp := CPV_GetForSaleContainer(npc);
+-	var shopping_cart := CPV_GetShoppingCartContainer(npc);
+ 	
++	var forsale := CPM_GetMerchantContainer(npc, CPM_FORSALE);
++	var shopping_cart := CPM_GetMerchantContainer(npc, CPM_SHOPPINGCART);
++	
+ 	AI_Turn(npc, mobile, NETURN_TOWARD);
+ 		
+-	var result := SendBuyWindow(mobile, forsale_bp, npc, shopping_cart);
++	var result := SendBuyWindow(mobile, forsale, npc, shopping_cart);
+ 	if ( !result )
+ 		PrintTextAbove(npc, &quot;SendBuyWindow() error - &quot;+result.errortext);
+ 	endif
+ 	
+ 	return 1;
+-endfunction
+\ No newline at end of file
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000406.html">[Poldistro-svn] r428 - trunk/096/pkg/items/containers/include
+</A></li>
+	<LI>Next message: <A HREF="000408.html">[Poldistro-svn] r430 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#407">[ date ]</a>
+              <a href="thread.html#407">[ thread ]</a>
+              <a href="subject.html#407">[ subject ]</a>
+              <a href="author.html#407">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r293 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r293%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509290002.j8T02rxM004674%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000270.html">
+   <LINK REL="Next"  HREF="000272.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r293 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r293%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509290002.j8T02rxM004674%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r293 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep 29 02:02:53 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000270.html">[Poldistro-svn] r292 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000272.html">[Poldistro-svn] r294 - trunk/096/pkg/systems/attributes/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#271">[ date ]</a>
+              <a href="thread.html#271">[ thread ]</a>
+              <a href="subject.html#271">[ subject ]</a>
+              <a href="author.html#271">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-29 02:02:39 +0200 (Thu, 29 Sep 2005)
+New Revision: 293
+
+Removed:
+   trunk/096/pkg/systems/attributes/include/statCheck.inc
+Log:
+
+
+Deleted: trunk/096/pkg/systems/attributes/include/statCheck.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/statCheck.inc	2005-09-29 00:01:24 UTC (rev 292)
++++ trunk/096/pkg/systems/attributes/include/statCheck.inc	2005-09-29 00:02:39 UTC (rev 293)
+@@ -1,73 +0,0 @@
+-// $Id$
+-
+-/*===============================================================
+-* Current Version
+-* STATCHECK.INC - v1.0
+-* Updated 9/28/2005 3:48PM
+-*
+-* -- Revision v1.0 --
+-* Austin:
+-*  Created include file
+-===============================================================*/
+-
+-function CheckStatAdvancement(mobile, stat_name)
+-	// Get the stat and work out the advancement chance (biased against max stat)
+-	var stat_value := CDbl(GetTrueStat(mobile, stat_name));
+-	var stat_cap := 6000.0;
+-	if ( !mobile.npctemplate )
+-		stat_cap := CDbl(GetStatCap(mobile, stat_name));
+-		if ( stat_value &gt;= stat_cap )
+-			SkillDbgMsg(mobile, &quot;stat_cap reached. No advance.&quot; );
+-			return 0;
+-		endif
+-	endif
+-
+-	var stat_start := 0.0;
+-	if ( !mobile.npctemplate )
+-		stat_start := CDbl(GetStatStart(mobile, stat_name));
+-	endif
+-	var stat_diff := CDbl(stat_cap - stat_start);
+-	var stat_left := CDbl(stat_cap - stat_value);
+-
+-	SkillDbgMsg(mobile, &quot;Stat Start: &quot;+CStr(stat_start));
+-	SkillDbgMsg(mobile, &quot;Stat Cap: &quot;+CStr(stat_cap));
+-	SkillDbgMsg(mobile, &quot;Stat Diff: &quot;+CStr(stat_diff));
+-	SkillDbgMsg(mobile, &quot;---&quot;);
+-	SkillDbgMsg(mobile, &quot;Stat Current: &quot;+CStr(stat_value));
+-	SkillDbgMsg(mobile, &quot;Left to cap: &quot;+CStr(stat_left)+&quot; -&gt;&quot;+stat_cap+&quot;-&quot;+stat_value);
+-
+-	var chance := CDbl(stat_left * stat_mult / stat_diff);
+-	if ( chance &lt; 1.0 )
+-		chance := 1.0;
+-	endif
+-
+-	SkillDbgMsg(mobile, &quot;Chance: &quot;+CStr(chance));
+-	SkillDbgMsg(mobile, &quot;---&quot;);
+-
+-	var random := CDbl(RandomFloat(100.0));
+-	SkillDbgMsg(mobile, &quot;Check %age: &quot;+CStr(random));
+-	if ( random &lt; chance )
+-		var advance := CDbl(0.1 + (0.1 * CDbl(CInt(chance / 12.5))));
+-		if ( advance &gt; stat_left )
+-			advance := stat_left;
+-		elseif ( advance &lt; 0.1 )
+-			advance := 0.1;
+-		endif
+-
+-		var temp := stat_value+advance;
+-		while ( CInt(temp*10.0) == CInt(GetRawStat(mobile, stat_name)) )
+-			//Makes sure you always go up atleast .1
+-			temp := temp+0.1;
+-			sleepms(10);
+-		endwhile
+-
+-		SkillDbgMsg(mobile, &quot;Passed. Advance &quot;+stat_name+&quot;: &quot; + CStr(advance));
+-		SendSysMessageEX(mobile, &quot;You gain a little &quot; + stat_name + &quot; from your actions.&quot;, SSM_HELPFUL);
+-		SetTrueStat(mobile, stat_name, temp);
+-
+-		SetObjProperty(mobile, &quot;#LastStatGain&quot;, ReadGameClock());
+-		return 1;
+-	endif
+-	SkillDbgMsg(mobile, &quot;Failed. No advance.&quot;);
+-	return 0;
+-endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000270.html">[Poldistro-svn] r292 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000272.html">[Poldistro-svn] r294 - trunk/096/pkg/systems/attributes/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#271">[ date ]</a>
+              <a href="thread.html#271">[ thread ]</a>
+              <a href="subject.html#271">[ subject ]</a>
+              <a href="author.html#271">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

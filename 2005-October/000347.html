@@ -1,0 +1,612 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r372 - in trunk/096/pkg/items/dyes: . config dyeTub dyes furnitureTub include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r372%20-%20in%20trunk/096/pkg/items/dyes%3A%20.%20config%20dyeTub%20dyes%20furnitureTub%20include&In-Reply-To=%3C200510021358.j92DwrZx006212%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000346.html">
+   <LINK REL="Next"  HREF="000348.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r372 - in trunk/096/pkg/items/dyes: . config dyeTub dyes furnitureTub include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r372%20-%20in%20trunk/096/pkg/items/dyes%3A%20.%20config%20dyeTub%20dyes%20furnitureTub%20include&In-Reply-To=%3C200510021358.j92DwrZx006212%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r372 - in trunk/096/pkg/items/dyes: . config dyeTub dyes furnitureTub include">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct  2 15:58:53 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000346.html">[Poldistro-svn] r371 - in trunk/096: pkg/commands/gm pkg/commands/seer pkg/items/doors scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000348.html">[Poldistro-svn] r373 - trunk/096/pkg/items/dyes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#347">[ date ]</a>
+              <a href="thread.html#347">[ thread ]</a>
+              <a href="subject.html#347">[ subject ]</a>
+              <a href="author.html#347">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-02 15:58:53 +0200 (Sun, 02 Oct 2005)
+New Revision: 372
+
+Added:
+   trunk/096/pkg/items/dyes/config/
+   trunk/096/pkg/items/dyes/config/icp.cfg
+   trunk/096/pkg/items/dyes/dyeTub/
+   trunk/096/pkg/items/dyes/dyeTub/use.ecl
+   trunk/096/pkg/items/dyes/dyeTub/use.src
+   trunk/096/pkg/items/dyes/dyes/
+   trunk/096/pkg/items/dyes/dyes/use.ecl
+   trunk/096/pkg/items/dyes/dyes/use.src
+   trunk/096/pkg/items/dyes/furnitureTub/
+   trunk/096/pkg/items/dyes/furnitureTub/use.ecl
+   trunk/096/pkg/items/dyes/furnitureTub/use.src
+   trunk/096/pkg/items/dyes/include/
+   trunk/096/pkg/items/dyes/include/dyes.inc
+Removed:
+   trunk/096/pkg/items/dyes/dyeBan.src
+   trunk/096/pkg/items/dyes/dyeable.src
+   trunk/096/pkg/items/dyes/furniture.src
+   trunk/096/pkg/items/dyes/useDyes.src
+Modified:
+   trunk/096/pkg/items/dyes/itemdesc.cfg
+   trunk/096/pkg/items/dyes/pkg.cfg
+Log:
+
+
+Added: trunk/096/pkg/items/dyes/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/dyes/config/icp.cfg	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/config/icp.cfg	2005-10-02 13:58:53 UTC (rev 372)
+@@ -0,0 +1,13 @@
++ICP Register
++{
++	Name		Dyes
++	Version		1.0
++	
++	Description	Package that handles dyes and dye tubs.
++	
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
++	
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++}
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/items/dyes/dyeBan.src
+===================================================================
+--- trunk/096/pkg/items/dyes/dyeBan.src	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/dyeBan.src	2005-10-02 13:58:53 UTC (rev 372)
+@@ -1,48 +0,0 @@
+-// //$Id$
+-
+-use uo;
+-use os;
+-
+-include &quot;:bank:bank&quot;;
+-
+-program dyeban(who)
+-  sleep(10);
+-  var act := who.acct;
+-  act.ban();
+-  act.setprop(&quot;deleteme&quot;, 1);
+-  var i;
+-  WipeBankBox(act.GetCharacter(1));
+-    foreach thing in ListEquippedItems(act.GetCharacter(1))
+-      MoveItemToContainer(thing, act.GetCharacter(1).backpack);
+-    endforeach
+-  DestroyItem(act.GetCharacter(1).backpack);
+-  act.DeleteCharacter(1);
+-  i := 0;
+-  WipeBankBox(act.GetCharacter(2));
+-    foreach thing in ListEquippedItems(act.GetCharacter(2))
+-      MoveItemToContainer(thing, act.GetCharacter(2).backpack);
+-    endforeach
+-  DestroyItem(act.GetCharacter(2).backpack);
+-  act.DeleteCharacter(2);
+-  i := 0;
+-  WipeBankBox(act.GetCharacter(3));
+-    foreach thing in ListEquippedItems(act.GetCharacter(3))
+-      MoveItemToContainer(thing, act.GetCharacter(3).backpack);
+-    endforeach
+-  DestroyItem(act.GetCharacter(3).backpack);
+-  act.DeleteCharacter(3);
+-  i := 0;
+-  WipeBankBox(act.GetCharacter(4));
+-    foreach thing in ListEquippedItems(act.GetCharacter(4))
+-      MoveItemToContainer(thing, act.GetCharacter(4).backpack);
+-    endforeach
+-  DestroyItem(act.GetCharacter(4).backpack);
+-  act.DeleteCharacter(4);
+-  i := 0;
+-  WipeBankBox(act.GetCharacter(5));
+-    foreach thing in ListEquippedItems(act.GetCharacter(5))
+-      MoveItemToContainer(thing, act.GetCharacter(5).backpack);
+-    endforeach
+-  DestroyItem(act.GetCharacter(5).backpack);
+-  act.DeleteCharacter(5);
+-endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/dyes/dyeTub/use.ecl
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/096/pkg/items/dyes/dyeTub/use.ecl
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/096/pkg/items/dyes/dyeTub/use.src
+===================================================================
+--- trunk/096/pkg/items/dyes/dyeTub/use.src	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/dyeTub/use.src	2005-10-02 13:58:53 UTC (rev 372)
+@@ -0,0 +1,30 @@
++use uo;
++use cfgfile;
++
++include &quot;:dyes:dyes&quot;;
++
++program UseTub(mobile, dyetub)
++	if( !ReserveItem(dyetub) )
++		SendSysMessage(mobile, &quot;That dye tub is aleady in use.&quot;);
++		return 0;
++	endif
++	
++	SendSysMessage(mobile, &quot;What do you want to use this dyetub on?&quot;);
++	var targ := target(mobile);
++	
++	if ( !targ )
++		SendSysMessage(mobile, &quot;Cancelled&quot;);
++		return;
++	elseif( !ReserveItem(targ) )
++		SendSysMessage(mobile, &quot;That is already in use.&quot;);
++		return 0;
++	endif
++	
++	if ( CanDye(targ) || mobile.cmdlevel )
++		PlaySoundEffect(mobile, 0x23F);
++		targ.color := dyetub.color;
++	else
++		SendSysMessage(mobile, &quot;You can not dye that.&quot;);
++	endif
++
++endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/items/dyes/dyeable.src
+===================================================================
+--- trunk/096/pkg/items/dyes/dyeable.src	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/dyeable.src	2005-10-02 13:58:53 UTC (rev 372)
+@@ -1,59 +0,0 @@
+-use os;
+-use uo;
+-use cfgfile;
+-
+-include &quot;include/canAccess&quot;;
+-
+-var cfg  := ReadConfigFile( &quot;:*:itemdesc&quot; );
+-
+-program dyeable(who, dyetub)
+-  if(who.cmdlevel &gt;= 2)
+-    var item := Target(who);
+-    if(!item)
+-      SendSysMessage(who, &quot;Cancelled.&quot;);
+-      return;
+-    endif
+-    item.color := dyetub.color;
+-    PlaySoundEffect(who, 0x23f);
+-    return;
+-  endif
+-  if((dyetub.color &gt; 1001) || (dyetub.color == 1))
+-    dyetub.color := 38;
+-  endif
+-  if(!can_access(who, dyetub))
+-    return;
+-  endif
+-  if(!ReserveItem(dyetub))
+-	return;
+-  endif
+-  SendSysMessage(who, &quot;Select an item to dye.&quot;);
+-  var item := Target(who);
+-  if(!item)
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  endif
+-  if(!can_access(who, item))
+-    return;
+-  endif
+-  if(!ReserveItem(item))
+-    SendSysMessage(who, &quot;You can't use that!&quot;);
+-    return;
+-  elseif(!Accessible(who, item))
+-    SendSysMessage(who, &quot;You can't reach that!&quot;);
+-    return;
+-  endif
+-  var element  := FindConfigElem(cfg,  item.objtype);
+-  var dyeable  := GetConfigInt(element, &quot;dyeable&quot;);
+-  if(dyeable == 1)
+-    if((item.objtype == 0xfab) and (dyetub.color == 1))
+-      SendSysMessage(who, &quot;You cannot duplicate black dye tubs.&quot;);
+-      return;
+-    else
+-      item.color := dyetub.color;
+-      PlaySoundEffect(who, 0x23f);
+-    endif
+-  else
+-    SendSysMessage( who, &quot;That item cannot be dyed.&quot;);
+-    return;
+-  endif
+-endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/dyes/dyes/use.ecl
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/096/pkg/items/dyes/dyes/use.ecl
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/096/pkg/items/dyes/dyes/use.src
+===================================================================
+--- trunk/096/pkg/items/dyes/dyes/use.src	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/dyes/use.src	2005-10-02 13:58:53 UTC (rev 372)
+@@ -0,0 +1,34 @@
++use uo;
++use cfgfile;
++
++include &quot;:dyes:dyes&quot;;
++
++program UseDyes(mobile, dyes)
++	if( !ReserveItem(dyes) )
++		SendSysMessage(mobile, &quot;Those dyes are already in use.&quot;);
++		return 0;
++	endif
++	
++	SendSysMessage(mobile, &quot;What do you want to use these dyes on?&quot;);
++	var targ := target(mobile);
++	
++	if ( !targ )
++		SendSysMessage(mobile, &quot;Cancelled&quot;);
++		return 0;
++	elseif( !ReserveItem(targ) )
++		SendSysMessage(mobile, &quot;That is already in use.&quot;);
++		return 0;
++	endif
++	
++	if ( (CanDye(targ)) || (mobile.cmdlevel) )
++		var color := SelectColor(mobile, targ);
++		if ( ValidDyeColor(mobile, color) )
++			PlaySoundEffect(mobile, 0x25);
++			targ.color := color;
++		endif
++		return 1;
++	else
++		SendSysMessage(mobile, &quot;You can not dye that.&quot;);
++		return 0;
++	endif
++endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/items/dyes/furniture.src
+===================================================================
+--- trunk/096/pkg/items/dyes/furniture.src	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/furniture.src	2005-10-02 13:58:53 UTC (rev 372)
+@@ -1,43 +0,0 @@
+-use os;
+-use uo;
+-
+-include &quot;include/canAccess&quot;;
+-
+-program dyecheck( who, dyetub )
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  if(!can_access(who, dyetub))
+-    return;
+-  endif
+-  ReserveItem(dyetub);
+-  SendSysMessage(who, &quot;Select something to dye.&quot;);
+-  var item := Target(who, TGTOPT_NOCHECK_LOS );
+-  if(!ReserveItem(item))
+-    return;
+-  endif
+-  if(!item)
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  endif
+-  if(!can_access(who, item))
+-    return;
+-  endif
+-  if(!who.multi)
+-	SendSysMessage(who, &quot;You must be inside a house to dye furniture!&quot;);
+-	return;
+-  endif
+-  if(GetObjProperty((who.multi),&quot;ownerserial&quot;)!=who.serial)
+-	SendSysMessage(who, &quot;You are not the owner of this house!&quot;);
+-    return;
+-  endif
+-  if(item.movable &gt; 0)
+-     SendSysMessage(who, &quot;That item is not locked down.&quot;);
+-     return;
+-  endif
+-  var allowdye := GetObjProperty(item, &quot;furniture&quot;);
+-  if(allowdye == 1)
+-    item.color := dyetub.color;
+-    return;
+-  else
+-    SendSysMessage(who, item.desc + &quot; cannot be colored.&quot;);
+-  endif
+-endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/dyes/furnitureTub/use.ecl
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/096/pkg/items/dyes/furnitureTub/use.ecl
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/096/pkg/items/dyes/furnitureTub/use.src
+===================================================================
+--- trunk/096/pkg/items/dyes/furnitureTub/use.src	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/furnitureTub/use.src	2005-10-02 13:58:53 UTC (rev 372)
+@@ -0,0 +1,36 @@
++use uo;
++use cfgfile;
++
++include &quot;:dyes:dyes&quot;;
++
++program UseTub(mobile, dyetub)
++	if( !ReserveItem(dyetub) )
++		SendSysMessage(mobile, &quot;That dye tub is aleady in use.&quot;);
++		return 0;
++	endif
++	
++	SendSysMessage(mobile, &quot;What do you want to use this dyetub on?&quot;);
++	var targ := target(mobile);
++	
++	if ( !targ )
++		SendSysMessage(mobile, &quot;Cancelled&quot;);
++		return;
++	elseif( !ReserveItem(targ) )
++		SendSysMessage(mobile, &quot;That is already in use.&quot;);
++		return 0;
++	elseif( GetObjProperty((mobile.multi), &quot;ownerserial&quot;) != mobile.serial )
++		SendSysMessage(mobile, &quot;You are not the owner of this house.&quot;);
++		return 0;
++	elseif( targ.movable )
++		SendSysMessage(mobile, &quot;That targ is not locked down.&quot;);
++		return 0;
++	endif
++	
++	if ( GetObjProperty(targ, &quot;furniture&quot;) || mobile.cmdlevel )
++		PlaySoundEffect(mobile, 0x23F);
++		targ.color := dyetub.color;
++	else
++		SendSysMessage(mobile, &quot;You can not dye that.&quot;);
++	endif
++
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/dyes/include/dyes.inc
+===================================================================
+--- trunk/096/pkg/items/dyes/include/dyes.inc	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/include/dyes.inc	2005-10-02 13:58:53 UTC (rev 372)
+@@ -0,0 +1,33 @@
++use uo;
++use util;
++use cfgfile;
++
++const MIN_COLOR := 2;
++const MAX_COLOR := 1001;
++
++function CanDye(item)
++	var config := ReadConfigFile(&quot;:*:itemdesc&quot;);
++	config := config[item.objtype];
++	
++	if ( config.CanDye )
++		return 1;
++	elseif ( config.dyeable )
++		return 1;
++	endif
++endfunction
++
++function ValidDyeColor(mobile, color)
++	if ( mobile.cmdlevel )
++		return 1;
++	elseif ( (color &gt;= MIN_COLOR) &amp;&amp; (color &lt;= MAX_COLOR) )
++		return 1;
++	else
++		return 0;
++	endif
++endfunction
++
++function RandomDyeColor(item)
++	var color := RandomInt(MAX_COLOR - MIN_COLOR);
++	color := color+MIN_COLOR;
++	item.color := color;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/dyes/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/dyes/itemdesc.cfg	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/itemdesc.cfg	2005-10-02 13:58:53 UTC (rev 372)
+@@ -2,24 +2,35 @@
+ 
+ Item 0xFA9
+ {
+-    Name            dyes
+-    script          useDyes
+-    VendorSellsFor  20
++	Name		dyes
++		
++	VendorSellsFor	20
++	
++	Script		dyes/use
+ }
++
+ Item 0xFAB
+ {
+-    Name            dyetub
+-    script          dyeable
+-    VendorSellsFor  20
+-    dyeable         1
++	Name		dyetub
++		
++	VendorSellsFor	20
++	
++	Script		dyeTub/use
++	
++	dyeable		1
+ }
+-Item 0xb00f
++
++Item 0xB00F
+ {
+-    Name                furnituretub
+-    Desc                furniture dye tub
+-    graphic             0xfab
+-    VendorSellsFor      200
+-	VendorBuysFor       50
+-    script              furniture
+-    dyeable             1
++	Name		furnituretub
++	Desc		furniture dye tub
++	Graphic		0xFAB
++	Color		0
++		
++	VendorSellsFor	200
++	VendorBuysFor	50
++	
++	Script		furnitureTub/use
++	
++	dyeable		1
+ }
+
+Modified: trunk/096/pkg/items/dyes/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/dyes/pkg.cfg	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/pkg.cfg	2005-10-02 13:58:53 UTC (rev 372)
+@@ -1,5 +1,14 @@
+-Enabled 1
+-Name dyes
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+\ No newline at end of file
++Enabled		1
++Name		dyes
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++#Requires none
++#Conflicts none
+
+Deleted: trunk/096/pkg/items/dyes/useDyes.src
+===================================================================
+--- trunk/096/pkg/items/dyes/useDyes.src	2005-10-02 13:51:29 UTC (rev 371)
++++ trunk/096/pkg/items/dyes/useDyes.src	2005-10-02 13:58:53 UTC (rev 372)
+@@ -1,51 +0,0 @@
+-// //$Id$
+-
+-use uo;
+-use os;
+-
+-include &quot;include/canAccess&quot;;
+-
+-program use_dyes(who, dyes)
+-  if(!ReserveItem(dyes))
+-    SendSysMessage(who, &quot;Those dyes are already in use.&quot;);
+-    return;
+-  endif
+-  if(!can_access(who, dyes))
+-    return;
+-  endif
+-  SendSysMessage(who, &quot;Select a dye tub to use the dyes on.&quot;);
+-  var dyetub := Target(who, TGTOPT_CHECK_LOS);
+-  if(!ReserveItem(dyetub))
+-     SendSysMessage(who, &quot;That is already in use.&quot;);
+-     return;
+-  endif
+-  if(!can_access(who, dyetub))
+-    return;
+-  endif
+-  if(!Accessible(who, dyetub))
+-    SendSysMessage(who, &quot;You cannot reach that!&quot;);
+-    return;
+-  endif
+-  if((dyetub.objtype != 0xb00f) &amp;&amp; (dyetub.objtype != 0x0fab))
+-    SendSysMessage(who, &quot;That is not a dye tub!&quot;);
+-    return;
+-  endif
+-  var color := SelectColor(who, dyetub);
+-  if( color &gt; 1001 )
+-    SendSysMessage( who, &quot;Bug abusers aren't tolerated here.&quot; );
+-    who.frozen := 1;
+-    SendSysMessage(who, &quot;You have been banned for exploiting.&quot;);
+-    SetObjProperty(who,&quot;justbanned&quot;, 1);
+-    var characters := EnumerateOnlineCharacters();
+-    foreach chr in characters
+-      if(chr.cmdlevel &gt; 1)
+-        SendSysMessage(chr, &quot;account &quot; + who.acctname + &quot; has been banned for dye exploiting.&quot;);
+-      endif
+-    endforeach
+-    sleep(5);
+-    DisconnectClient(who);
+-    start_script(&quot;:dyes:dyeBan&quot;, who);
+-  else
+-    dyetub.color := color;
+-  endif
+-endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000346.html">[Poldistro-svn] r371 - in trunk/096: pkg/commands/gm pkg/commands/seer pkg/items/doors scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000348.html">[Poldistro-svn] r373 - trunk/096/pkg/items/dyes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#347">[ date ]</a>
+              <a href="thread.html#347">[ thread ]</a>
+              <a href="subject.html#347">[ subject ]</a>
+              <a href="author.html#347">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

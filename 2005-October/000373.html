@@ -1,0 +1,311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r395 - in trunk/096/pkg/items: . mounts mounts/config mounts/include mounts/mount
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r395%20-%20in%20trunk/096/pkg/items%3A%20.%20mounts%20mounts/config%20mounts/include%20mounts/mount&In-Reply-To=%3C200510032003.j93K3vEn023382%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000372.html">
+   <LINK REL="Next"  HREF="000374.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r395 - in trunk/096/pkg/items: . mounts mounts/config mounts/include mounts/mount</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r395%20-%20in%20trunk/096/pkg/items%3A%20.%20mounts%20mounts/config%20mounts/include%20mounts/mount&In-Reply-To=%3C200510032003.j93K3vEn023382%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r395 - in trunk/096/pkg/items: . mounts mounts/config mounts/include mounts/mount">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct  3 22:03:57 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000372.html">[Poldistro-svn] r394 - trunk/096/pkg/items/dyes/include
+</A></li>
+        <LI>Next message: <A HREF="000374.html">[Poldistro-svn] r396 - trunk/096/pkg/items/containers/commands/admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#373">[ date ]</a>
+              <a href="thread.html#373">[ thread ]</a>
+              <a href="subject.html#373">[ subject ]</a>
+              <a href="author.html#373">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-03 22:03:57 +0200 (Mon, 03 Oct 2005)
+New Revision: 395
+
+Added:
+   trunk/096/pkg/items/mounts/
+   trunk/096/pkg/items/mounts/config/
+   trunk/096/pkg/items/mounts/config/mounts.cfg
+   trunk/096/pkg/items/mounts/include/
+   trunk/096/pkg/items/mounts/include/mounts.inc
+   trunk/096/pkg/items/mounts/itemdesc.cfg
+   trunk/096/pkg/items/mounts/mount/
+   trunk/096/pkg/items/mounts/mount/equip.src
+   trunk/096/pkg/items/mounts/mount/unequip.src
+   trunk/096/pkg/items/mounts/pkg.cfg
+Log:
+
+
+Added: trunk/096/pkg/items/mounts/config/mounts.cfg
+===================================================================
+--- trunk/096/pkg/items/mounts/config/mounts.cfg	2005-10-03 19:22:41 UTC (rev 394)
++++ trunk/096/pkg/items/mounts/config/mounts.cfg	2005-10-03 20:03:57 UTC (rev 395)
+@@ -0,0 +1,24 @@
++# {$Id}
++
++Elem	MobileToMount
++{
++	# NPC graphic -&gt; Mount tile graphic
++	0xCC		0x3EA2
++	0xC8		0x3E9F
++	0xE2		0x3EA0
++	0xE4		0x3EA1
++	0xDC		0x3EA6
++	0xD2		0x3EA3
++	0xDA		0x3EA4
++	0xDB		0x3EA5
++}
++
++Elem	MountToMobile
++{
++	# Mount graphic -&gt; Template name
++	0x3EA2		horse1
++	0x3E9F		horse2
++	0x3EA0		horse3
++	0x3EA1		horse4
++	0x3EA6		llama
++}
+
+Added: trunk/096/pkg/items/mounts/include/mounts.inc
+===================================================================
+--- trunk/096/pkg/items/mounts/include/mounts.inc	2005-10-03 19:22:41 UTC (rev 394)
++++ trunk/096/pkg/items/mounts/include/mounts.inc	2005-10-03 20:03:57 UTC (rev 395)
+@@ -0,0 +1,134 @@
++// {$Id}
++
++/*===============================================================
++* Current Version
++* MOUNTS.INC - v1.0
++* Updated 10/3/2005 12:22PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++use cfgfile;
++
++//Arbitrary objtype in the core.
++const MOUNT_OBJTYPE := 0xF021;
++
++include &quot;include/client&quot;;
++
++
++/*
++ * MP_GetMountsCfgFile()
++ *
++ * Purpose
++ * Retrieves the mounts.cfg file
++ *
++ * Parameters
++ *
++ * Return value
++ * Returns a config file
++ *
++ */
++function MP_GetMountsCfgFile()
++	var cfg := ReadConfigFile(&quot;:mounts:config/mounts&quot;);
++
++	if ( cfg.errortext )
++		SysLog(&quot;Error::MP_GetMountsCfgFile() - Unable to open [:mounts:config/mounts.cfg] -&gt;&quot;+cfg.errortext);
++	endif
++
++	return cfg;
++endfunction
++
++/*
++ * AP_GetMountsCfgElem(elem_name, cfg_file)
++ *
++ * Purpose
++ * Retrieves an elem from a config file. 
++ *
++ * Parameters
++ * elem_name:	A string matching the elem name to be retrieved.
++ * cfg_file:	Optional parameter - reference to a config already read in by AP_GetMountsCfgFile()
++ *
++ * Return value
++ * A config file elem.
++ *
++ */
++function MP_GetMountsCfgElem(elem_name, byref cfg_file:=0)
++	if ( !cfg_file )
++		cfg_file := MP_GetMountsCfgFile();
++	endif
++	
++	var elem := cfg_file[elem_name];
++
++	if ( elem.errortext )
++		SysLog(&quot;Error::MP_GetMountsCfgElem() - Unable to find elem [&quot;+elem_name+&quot;] -&gt;&quot;+elem.errortext);
++	endif
++
++	return elem;
++endfunction
++
++/*
++ * MP_GetMountGraphic(mobile)
++ *
++ * Purpose
++ * Finds what graphic a mount piece must be set to in order to match an npc.
++ *
++ * Parameters
++ * mobile:	NPC to get the mount tile graphic for.
++ *
++ * Return value
++ * Returns a graphic number.
++ * Returns error if no match can be found.
++ */
++function MP_GetMountGraphic(mobile)
++	var mobile_graphic;
++	if ( mobile.IsA(POLCLASS_NPC) )
++		mobile_graphic := Hex(mobile.graphic);
++	else
++		mobile_graphic := Hex(CInt(mobile));
++	endif
++	
++	var elem := MP_GetMountsCfgElem(&quot;MobileToMount&quot;);
++	var tile_graphic := GetConfigInt(elem, mobile_graphic);
++	
++	if ( tile_graphic )
++		return tile_graphic;
++	else
++		return error{&quot;errortext&quot;:=&quot;Error::MP_GetMountGraphic() - No mount tile graphic matches mobile graphic '&quot;+mobile_graphic+&quot;'&quot;};
++	endif
++endfunction
++
++/*
++ * MP_GetMountTemplate(mount)
++ *
++ * Purpose
++ * Finds what npc template must be used to match a mount tile's graphic.
++ *
++ * Parameters
++ * mount:	Mount piece to find a matching npc template for.
++ *
++ * Return value
++ * Returns a string.
++ * Returns error if no match can be found.
++ */
++function MP_GetMountTemplate(mount)
++	var mount_graphic;
++	if ( mount.IsA(POLCLASS_ITEM) )
++		mount_graphic := Hex(mount.graphic);
++	else
++		mount_graphic := Hex(CInt(mount));
++	endif
++	
++	var elem := MP_GetMountsCfgElem(&quot;MountToMobile&quot;);
++	var template := GetConfigString(elem, mount_graphic);
++	
++	if ( template )
++		return template;
++	else
++		return error{&quot;errortext&quot;:=&quot;Error::MP_GetMountTemplate() - No NPC template match for mount piece graphic '&quot;+mount_graphic+&quot;'&quot;};
++	endif
++endfunction
++
+
+Added: trunk/096/pkg/items/mounts/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/mounts/itemdesc.cfg	2005-10-03 19:22:41 UTC (rev 394)
++++ trunk/096/pkg/items/mounts/itemdesc.cfg	2005-10-03 20:03:57 UTC (rev 395)
+@@ -0,0 +1,11 @@
++Item 0xF021
++{
++	Name		MountPiece
++	Name		Mount
++	Desc		a mount piece
++	Graphic		0x3EA2
++	Weight		0
++	
++	EquipScript	mount/equip
++	UnEquipScript	mount/unequip
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/mounts/mount/equip.src
+===================================================================
+--- trunk/096/pkg/items/mounts/mount/equip.src	2005-10-03 19:22:41 UTC (rev 394)
++++ trunk/096/pkg/items/mounts/mount/equip.src	2005-10-03 20:03:57 UTC (rev 395)
+@@ -0,0 +1,5 @@
++use uo;
++
++program EquipScript(mobile, item, start_up)
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/mounts/mount/unequip.src
+===================================================================
+--- trunk/096/pkg/items/mounts/mount/unequip.src	2005-10-03 19:22:41 UTC (rev 394)
++++ trunk/096/pkg/items/mounts/mount/unequip.src	2005-10-03 20:03:57 UTC (rev 395)
+@@ -0,0 +1,5 @@
++use uo;
++
++program UnequipScript(mobile, item, start_up)
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/mounts/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/mounts/pkg.cfg	2005-10-03 19:22:41 UTC (rev 394)
++++ trunk/096/pkg/items/mounts/pkg.cfg	2005-10-03 20:03:57 UTC (rev 395)
+@@ -0,0 +1,14 @@
++Enabled		1
++Name		mounts
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++#Requires none
++#Conflicts none
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000372.html">[Poldistro-svn] r394 - trunk/096/pkg/items/dyes/include
+</A></li>
+	<LI>Next message: <A HREF="000374.html">[Poldistro-svn] r396 - trunk/096/pkg/items/containers/commands/admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#373">[ date ]</a>
+              <a href="thread.html#373">[ thread ]</a>
+              <a href="subject.html#373">[ subject ]</a>
+              <a href="author.html#373">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

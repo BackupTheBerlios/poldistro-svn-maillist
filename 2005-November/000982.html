@@ -1,0 +1,596 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1009 - in trunk/096/pkg: items/runebook skills/magery/config skills/magery/recallRune skills/magery/spellScripts/circle4 skills/magery/spellScripts/circle6 skills/magery/spellScripts/circle7 utils/coords/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1009%20-%20in%20trunk/096/pkg%3A%20items/runebook%20skills/magery/config%20skills/magery/recallRune%20skills/magery/spellScripts/circle4%20skills/magery/spellScripts/circle6%20skills/magery/spellScripts/circle7%20utils/coords/include&In-Reply-To=%3C200511160705.jAG75l7r002322%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000981.html">
+   <LINK REL="Next"  HREF="000983.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1009 - in trunk/096/pkg: items/runebook skills/magery/config skills/magery/recallRune skills/magery/spellScripts/circle4 skills/magery/spellScripts/circle6 skills/magery/spellScripts/circle7 utils/coords/include</H1>
+    <B>muaddiblsd at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1009%20-%20in%20trunk/096/pkg%3A%20items/runebook%20skills/magery/config%20skills/magery/recallRune%20skills/magery/spellScripts/circle4%20skills/magery/spellScripts/circle6%20skills/magery/spellScripts/circle7%20utils/coords/include&In-Reply-To=%3C200511160705.jAG75l7r002322%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1009 - in trunk/096/pkg: items/runebook skills/magery/config skills/magery/recallRune skills/magery/spellScripts/circle4 skills/magery/spellScripts/circle6 skills/magery/spellScripts/circle7 utils/coords/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Wed Nov 16 08:05:47 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000981.html">[Poldistro-svn] r1008 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="000983.html">[Poldistro-svn] r1010 - in trunk/096/pkg/items/runebook: . config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#982">[ date ]</a>
+              <a href="thread.html#982">[ thread ]</a>
+              <a href="subject.html#982">[ subject ]</a>
+              <a href="author.html#982">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-16 08:05:43 +0100 (Wed, 16 Nov 2005)
+New Revision: 1009
+
+Modified:
+   trunk/096/pkg/items/runebook/customSpells.inc
+   trunk/096/pkg/items/runebook/runeInsert.src
+   trunk/096/pkg/items/runebook/runebook.src
+   trunk/096/pkg/items/runebook/runebookFunctions.inc
+   trunk/096/pkg/skills/magery/config/runeColor.cfg
+   trunk/096/pkg/skills/magery/recallRune/methods.src
+   trunk/096/pkg/skills/magery/spellScripts/circle4/recall.src
+   trunk/096/pkg/skills/magery/spellScripts/circle6/mark.src
+   trunk/096/pkg/skills/magery/spellScripts/circle7/gate.src
+   trunk/096/pkg/utils/coords/include/isValidLoc.inc
+Log:
+
+
+Modified: trunk/096/pkg/items/runebook/customSpells.inc
+===================================================================
+--- trunk/096/pkg/items/runebook/customSpells.inc	2005-11-16 05:22:45 UTC (rev 1008)
++++ trunk/096/pkg/items/runebook/customSpells.inc	2005-11-16 07:05:43 UTC (rev 1009)
+@@ -2,7 +2,7 @@
+ use os;
+ 
+ function runebookRecall(who, parms, book, charges, use_charge:=0)
+-	var runebook_info := array{ book, parms };
++	var runebook_info := array{ book, parms, use_charge };
+ 	var script := Start_Script(&quot;:magery:spellStarter&quot;, {who, 32, 1, runebook_info});
+ 	if ( script.errortext )
+ 		SendSysMessage(who, &quot;Error - Could not start spell starter -&gt;&quot;+script.errortext);
+
+Modified: trunk/096/pkg/items/runebook/runeInsert.src
+===================================================================
+--- trunk/096/pkg/items/runebook/runeInsert.src	2005-11-16 05:22:45 UTC (rev 1008)
++++ trunk/096/pkg/items/runebook/runeInsert.src	2005-11-16 07:05:43 UTC (rev 1009)
+@@ -94,23 +94,19 @@
+ 		MoveItemToContainer(rune, who.backpack);
+ 		return;
+ 	endif
+-	if( !GetObjProperty(rune, &quot;x&quot;) )
++	if( !GetObjProperty(rune, &quot;Destination&quot;) )
+ 		SendSysMessage(who,&quot;You can only add marked runes.&quot;);
+ 		MoveItemToContainer(rune, who.backpack);
+-		return;
++		return 0;
+ 	endif
+ 	set_critical(1);
+ 
+-	var temp := dictionary;
+-	temp[&quot;Name&quot;]  := rune.desc - &quot;A recall rune for&quot;;
+-	temp[&quot;Realm&quot;] := GetObjProperty(rune, &quot;realm&quot;);
+-	temp[&quot;X&quot;] := GetObjProperty(rune, &quot;x&quot;);
+-	temp[&quot;Y&quot;] := GetObjProperty(rune, &quot;y&quot;);
+-	temp[&quot;Z&quot;] := GetObjProperty(rune, &quot;z&quot;);
++	var temp := GetObjProperty(rune, &quot;Destination&quot;);
++	temp.+name := rune.name;
+ 	if( !rune.color )
+-		temp[&quot;Color&quot;] := 10;
++		temp.+color := 24;
+ 	else
+-		temp[&quot;Color&quot;] := rune.color;
++		temp.+color := CInt(rune.color);
+ 	endif
+ 	rune_list.append(temp);
+ 
+
+Modified: trunk/096/pkg/items/runebook/runebook.src
+===================================================================
+--- trunk/096/pkg/items/runebook/runebook.src	2005-11-16 05:22:45 UTC (rev 1008)
++++ trunk/096/pkg/items/runebook/runebook.src	2005-11-16 07:05:43 UTC (rev 1009)
+@@ -4,8 +4,6 @@
+ 
+ include &quot;:gumps:gumps&quot;;
+ include &quot;:gumps:gumps_ex&quot;;
+-//include &quot;include/math&quot;;
+-include &quot;include/client&quot;;
+ include &quot;:itemUtils:canAccess&quot;;
+ include &quot;:runebook:runebookFunctions&quot;;
+ include &quot;:runebook:customSpells&quot;;
+@@ -79,12 +77,9 @@
+ 		else
+ 			var rune_info := GetRuneDetails(book, (result[0]-400));
+ 			var rune := CreateItemInBackpack(who, 0x1F14);
+-			SetName(rune, rune_info.Name);
+-			SetObjProperty(rune, &quot;x&quot;, rune_info.X);
+-			SetObjProperty(rune, &quot;y&quot;, rune_info.Y);
+-			SetObjProperty(rune, &quot;z&quot;, rune_info.Z);
+-			SetObjProperty(rune, &quot;realm&quot;, rune_info.Realm);
+-			rune.color := rune_info.Color;
++			SetName(rune, rune_info.name);
++			SetObjProperty(rune, &quot;Destination&quot;, rune_info);
++			rune.color := rune_info.color;
+ 			DeleteRune(book, (result[0]-400));
+ 			return 1;
+ 		endif
+
+Modified: trunk/096/pkg/items/runebook/runebookFunctions.inc
+===================================================================
+--- trunk/096/pkg/items/runebook/runebookFunctions.inc	2005-11-16 05:22:45 UTC (rev 1008)
++++ trunk/096/pkg/items/runebook/runebookFunctions.inc	2005-11-16 07:05:43 UTC (rev 1009)
+@@ -96,21 +96,21 @@
+ 		endif
+ 
+ 		var rune_entry := rune_list[rune_pos];
+-		if( TypeOf(rune_entry) == &quot;Dictionary&quot; )
+-			if( rune_entry.Name )
++		if( TypeOf(rune_entry) == &quot;Struct&quot; )
++			if( rune_entry.name )
+ 				// Fixes any error with the text color.
+-				if( TypeOf(rune_entry.Color) != &quot;Integer&quot; || rune_entry.Color &lt; 0 )
+-					rune_entry.Color := 10;
++				if( TypeOf(rune_entry.Color) != &quot;Integer&quot; || rune_entry.color &lt; 0 )
++					rune_entry.color := 24;
+ 				endif
+ 				// This puts the rune in page 1's list.
+ 				GFPage(book_gump, 1);
+-				GFTextCrop(book_gump, pOX,  pOY, 115, 17, rune_entry.Color, rune_entry.Name);
++				GFTextCrop(book_gump, pOX,  pOY, 115, 17, rune_entry.color, rune_entry.name);
+ 				GFPage(book_gump, i);
+ 
+ 				GFAddButton(book_gump, 130, 65, 2103, 2104, GF_CLOSE_BTN, charge_button);
+-				GFTextCrop(book_gump, 145, 60, 115, 17, rune_entry.Color, rune_entry.Name);
+-				GFTextLine(book_gump, 135, 80, 0, ConvertLatLong(rune_entry.X, rune_entry.Y, 1));
+-				GFTextLine(book_gump, 135, 95, 0, ConvertLatLong(rune_entry.X, rune_entry.Y, 2));
++				GFTextCrop(book_gump, 145, 60, 115, 17, rune_entry.color, rune_entry.name);
++				GFTextLine(book_gump, 135, 80, 0, ConvertLatLong(rune_entry.x, rune_entry.y, 1));
++				GFTextLine(book_gump, 135, 95, 0, ConvertLatLong(rune_entry.x, rune_entry.y, 2));
+ 
+ 				GFAddButton(book_gump, 135, 115, 2437, 2438, GF_CLOSE_BTN, drop_rune_button);
+ 				GFHTMLArea(book_gump, 150, 115, 100, 18, &quot;Drop Rune&quot;);
+@@ -137,21 +137,21 @@
+ 		endif
+ 
+ 		rune_entry := rune_list[rune_pos];
+-		if( TypeOf(rune_entry) == &quot;Dictionary&quot; )
+-			if( rune_entry.Name )
++		if( TypeOf(rune_entry) == &quot;Struct&quot; )
++			if( rune_entry.name )
+ 				// Fixes any error with the text color.
+-				if( TypeOf(rune_entry.Color) != &quot;Integer&quot; || rune_entry.Color &lt; 0 )
+-					rune_entry.Color := 10;
++				if( TypeOf(rune_entry.color) != &quot;Integer&quot; || rune_entry.color &lt; 0 )
++					rune_entry.color := 10;
+ 				endif
+ 				// This puts the rune in page 1's list.
+ 				GFPage(book_gump, 1);
+-				GFTextCrop(book_gump, pOX,  pOY, 115, 17, rune_entry.Color, rune_entry.Name);
++				GFTextCrop(book_gump, pOX,  pOY, 115, 17, rune_entry.color, rune_entry.name);
+ 				GFPage(book_gump, i);
+ 
+ 				GFAddButton(book_gump, 290, 65, 2103, 2104, GF_CLOSE_BTN, charge_button);
+-				GFTextCrop(book_gump, 305, 60, 115, 17, rune_entry.Color, rune_entry.Name);
+-				GFTextLine(book_gump, 295, 80, 0, ConvertLatLong(rune_entry.X, rune_entry.Y, 1));
+-				GFTextLine(book_gump, 295, 95, 0, ConvertLatLong(rune_entry.X, rune_entry.Y, 2));
++				GFTextCrop(book_gump, 305, 60, 115, 17, rune_entry.color, rune_entry.name);
++				GFTextLine(book_gump, 295, 80, 0, ConvertLatLong(rune_entry.x, rune_entry.y, 1));
++				GFTextLine(book_gump, 295, 95, 0, ConvertLatLong(rune_entry.x, rune_entry.y, 2));
+ 
+ 				GFAddButton(book_gump, 295, 115, 2437, 2438, GF_CLOSE_BTN, drop_rune_button);
+ 				GFHTMLArea(book_gump, 310, 115, 100, 18, &quot;Drop Rune&quot;);
+@@ -311,11 +311,8 @@
+ 
+ function SetDefault(book, who, rune_pos)
+ 	var rune_info := GetRuneDetails(book, rune_pos);
+-	SetObjProperty(book, &quot;x&quot;, rune_info.X);
+-	SetObjProperty(book, &quot;y&quot;, rune_info.Y);
+-	SetObjProperty(book, &quot;z&quot;, rune_info.Z);
+-	SetObjProperty(book, &quot;realm&quot;, rune_info.Realm);
+-	SendSysMessage(who, &quot;Default rune set to: &quot; + rune_info.Name);
++	SetObjProperty(book, &quot;Destination&quot;, rune_info);
++	SendSysMessage(who, &quot;Default rune set to: &quot; + rune_info.name);
+ 	return 1;
+ endfunction
+ 
+
+Modified: trunk/096/pkg/skills/magery/config/runeColor.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/config/runeColor.cfg	2005-11-16 05:22:45 UTC (rev 1008)
++++ trunk/096/pkg/skills/magery/config/runeColor.cfg	2005-11-16 07:05:43 UTC (rev 1009)
+@@ -1,5 +1,25 @@
+ 
+-Realm Britannia
++Realm britannia
+ {
+-	RuneColor	24
++	RuneColor	57
+ }
++
++Realm britannia_alt
++{
++	RuneColor	34
++}
++
++Realm ilshenar
++{
++	RuneColor	54
++}
++
++Realm Malas
++{
++	RuneColor	17
++}
++
++Realm Tokuno
++{
++	RuneColor	88
++}
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/magery/recallRune/methods.src
+===================================================================
+--- trunk/096/pkg/skills/magery/recallRune/methods.src	2005-11-16 05:22:45 UTC (rev 1008)
++++ trunk/096/pkg/skills/magery/recallRune/methods.src	2005-11-16 07:05:43 UTC (rev 1009)
+@@ -17,15 +17,15 @@
+ 
+ exported function SetDestination(rune, x, y, z, realm)
+ 	var coords := struct;
+-	struct.+x := CInt(x);
+-	struct.+y := CInt(y);
+-	struct.+z := CInt(z);
+-	struct.+realm := CStr(realm);
+-	
++	coords.+x := CInt(x);
++	coords.+y := CInt(y);
++	coords.+z := CInt(z);
++	coords.+realm := CStr(realm);
++
+ 	var color_cfg := ReadConfigFile(&quot;:magery:config/runeColor&quot;);
+ 	var realm_elem := color_cfg[realm];
+ 	rune.color := CInt(realm_elem.RuneColor);
+-		
++
+ 	return SetObjProperty(rune, &quot;Destination&quot;, coords);
+ endfunction
+ 
+@@ -38,7 +38,6 @@
+ 	if ( !dest )
+ 		return error{&quot;errortext&quot;:=&quot;Rune has no destination set.&quot;};
+ 	endif
+-	
++
+ 	return MoveObjectToLocation(object, dest.x, dest.y, dest.z, dest.realm, MOVEOBJECT_FORCELOCATION);
+ endfunction
+-	
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/magery/spellScripts/circle4/recall.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellScripts/circle4/recall.src	2005-11-16 05:22:45 UTC (rev 1008)
++++ trunk/096/pkg/skills/magery/spellScripts/circle4/recall.src	2005-11-16 07:05:43 UTC (rev 1009)
+@@ -38,14 +38,20 @@
+ 		SendSysMessage(who, &quot;You cannot recall off of runes on a vendor.&quot;);
+ 		return 0;
+ 	endif
+-	var tox := CInt(GetObjProperty( recall_rune, &quot;x&quot; ));
+-	var toy := CInt(GetObjProperty( recall_rune, &quot;y&quot; ));
+-	var toz := CInt(GetObjProperty( recall_rune, &quot;z&quot; ));
+-	var torealm :=  GetObjProperty( recall_rune, &quot;realm&quot; );
+-	if(!tox)
++	var rune_settings;
++	case(recall_rune.objtype)
++		UOBJ_RUNE: rune_settings := recall_rune.GetDestination();
++		0x6100: rune_settings := GetObjProperty(recall_rune, &quot;Destination&quot;);
++	endcase
++	if( TypeOf(rune_settings) != &quot;Struct&quot; )
+ 		SendSysMessage(who, &quot;That item is not marked.&quot;);
+ 		return 0;
+ 	endif
++
++	var tox := CInt(rune_settings.x);
++	var toy := CInt(rune_settings.y);
++	var toz := CInt(rune_settings.z);
++	var torealm :=  rune_settings.realm;
+ 	if(!torealm)
+ 		torealm := &quot;britannia&quot;;
+ 	endif
+@@ -106,7 +112,10 @@
+ 		return 0;
+ 	endif
+ 	DestroyItem(multicheck);
+-	MoveObjectToLocation( who, tox, toy, toz, torealm );
++	case(recall_rune.objtype)
++		UOBJ_RUNE: recall_rune.SendToDestination(who);
++		0x6100: MoveObjectToLocation(who, tox, toy, toz, torealm, MOVEOBJECT_FORCELOCATION);
++	endcase
+ 	PlaySoundEffect(who, 0x1fd);
+ 	return 1;
+ endprogram
+@@ -158,9 +167,11 @@
+ function RunebookRecall(who, runebook_info)
+ 	var runebook := runebook_info[1];
+ 	var rune_info := runebook_info[2];
++	var use_charge := runebook_info[3];
+ 
+ 	var spell_elem := MS_GetSpellsCfgElem(32);
+-	if ( !CheckReagents(who, spell_elem, 0) )
++
++	if ( !CheckReagents(who, spell_elem, use_charge) )
+ 		FailSpell(who);
+ 		return 0;
+ 	endif
+@@ -173,14 +184,16 @@
+ 		SendSysMessage(who, &quot;You cannot recall off of runebooks on a vendor.&quot;);
+ 		return 0;
+ 	endif
+-	var tox := CInt(rune_info.X);
+-	var toy := CInt(rune_info.Y);
+-	var toz := CInt(rune_info.Z);
+-	var torealm :=  rune_info.Realm;
+-	if(!tox)
+-		SendSysMessage(who, &quot;That is an invalid location.&quot;);
++
++	if( TypeOf(rune_info) != &quot;Struct&quot; )
++		SendSysMessage(who, &quot;That item is not marked.&quot;);
+ 		return 0;
+ 	endif
++
++	var tox := CInt(rune_info.x);
++	var toy := CInt(rune_info.y);
++	var toz := CInt(rune_info.z);
++	var torealm :=  rune_info.realm;
+ 	if(!torealm)
+ 		torealm := &quot;britannia&quot;;
+ 	endif
+
+Modified: trunk/096/pkg/skills/magery/spellScripts/circle6/mark.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellScripts/circle6/mark.src	2005-11-16 05:22:45 UTC (rev 1008)
++++ trunk/096/pkg/skills/magery/spellScripts/circle6/mark.src	2005-11-16 07:05:43 UTC (rev 1009)
+@@ -62,127 +62,9 @@
+ 
+ 	PlayObjectCenteredEffect(who, FX_MARK_EFFECT, 10, 10);
+ 	PlaySoundEffect(who, SFX_SPELL_MARK);
+-	SetObjProperty(recall_rune, &quot;x&quot;, who.x);
+-	SetObjProperty(recall_rune, &quot;y&quot;, who.y);
+-	SetObjProperty(recall_rune, &quot;z&quot;, who.z);
+-	SetObjProperty(recall_rune, &quot;realm&quot;, who.realm);
++	recall_rune.SetDestination(who.x, who.y, who.z, who.realm);
+ 
+-	var color_cfg := ReadConfigFile(&quot;:magery:config/runeColor&quot;);
+-	var realm_elem := color_cfg[who.realm];
+-	recall_rune.color := CInt(realm_elem.RuneColor);
+-
+ 	SetName(recall_rune, &quot;a marked recall rune&quot;);
+ 
+ 	return 1;
+-endprogram
+-
+-function RemoveRunebookDefault(runebook)
+-	var tox := CInt(GetObjProperty( runebook, &quot;x&quot; ));
+-	var toy := CInt(GetObjProperty( runebook, &quot;y&quot; ));
+-	var toz := CInt(GetObjProperty( runebook, &quot;z&quot; ));
+-	var torealm := GetObjProperty( runebook, &quot;realm&quot; );
+-	var rune_list := GetRuneList(runebook);
+-
+-	foreach rune_entry in rune_list
+-		if( (Cint(rune_list.X) == tox) &amp;&amp; (Cint(rune_list.Y) == toy) &amp;&amp; (Cint(rune_list.Z) == toz) &amp;&amp; (Cint(rune_list.Realm) == torealm) )
+-			rune_list.Erase(rune_entry);
+-		endif
+-	endforeach
+-
+-	SetObjProperty(runebook, &quot;%RuneList%&quot;, rune_list);
+-	EraseObjProperty(runebook, &quot;x&quot;);
+-	EraseObjProperty(runebook, &quot;y&quot;);
+-	EraseObjProperty(runebook, &quot;z&quot;);
+-	EraseObjProperty(runebook, &quot;realm&quot;);
+-	return 1;
+-endfunction
+-
+-
+-function RemoveRunebookEntry(runebook, rune_info)
+-	var tox := CInt(rune_info.X);
+-	var toy := CInt(rune_info.Y);
+-	var toz := CInt(rune_info.Z);
+-	var torealm :=  rune_info.Realm;
+-	var rune_list := GetRuneList(runebook);
+-
+-	foreach rune_entry in rune_list
+-		if( (Cint(rune_list.X) == tox) &amp;&amp; (Cint(rune_list.Y) == toy) &amp;&amp; (Cint(rune_list.Z) == toz) &amp;&amp; (Cint(rune_list.Realm) == torealm) )
+-			rune_list.Erase(rune_entry);
+-		endif
+-	endforeach
+-
+-	SetObjProperty(runebook, &quot;%RuneList%&quot;, rune_list);
+-	EraseObjProperty(runebook, &quot;x&quot;);
+-	EraseObjProperty(runebook, &quot;y&quot;);
+-	EraseObjProperty(runebook, &quot;z&quot;);
+-	EraseObjProperty(runebook, &quot;realm&quot;);
+-	return 1;
+-endfunction
+-
+-
+-function RunebookRecall(who, runebook_info)
+-	var runebook := runebook_info[1];
+-	var rune_info := runebook_info[2];
+-
+-	if( !ReserveItem(runebook) )
+-		return 0;
+-	endif
+-
+-	if( GetObjProperty(runebook, &quot;Vendored&quot;) )
+-		SendSysMessage(who, &quot;You cannot recall off of runebooks on a vendor.&quot;);
+-		return 0;
+-	endif
+-	var tox := CInt(rune_info.X);
+-	var toy := CInt(rune_info.Y);
+-	var toz := CInt(rune_info.Z);
+-	var torealm :=  rune_info.Realm;
+-	if(!tox)
+-		SendSysMessage(who, &quot;That is an invalid location.&quot;);
+-		return 0;
+-	endif
+-	if(!torealm)
+-		torealm := &quot;britannia&quot;;
+-	endif
+-
+-	if( !isValidLoc(tox,toy,torealm) )
+-		SendSysMessage(who, &quot;Invalid recall location.&quot;);
+-		RemoveRunebookEntry(runebook, rune_info);
+-		return 0;
+-	endif
+-
+-	PlaySoundEffect(who, 0x210);
+-
+-	if( (who.x &gt;= 5120) &amp;&amp; (who.x &lt;= 5375) &amp;&amp; (who.y &gt;= 0) &amp;&amp; (who.y &lt;= 255) )
+-		SendSysMessage(who, &quot;Your spell fails and consumes the rune!&quot;);
+-		RemoveRunebookEntry(runebook, rune_info);
+-		return 0;
+-	endif
+-
+-	var signs := ListItemsNearLocationOfType( tox, toy, toz, 30, 0x7060, torealm);
+-	foreach sign in signs
+-		var infoarr := GetObjProperty(sign, &quot;homeinfo&quot;);
+-		if( infoarr )
+-			if( (tox &gt;= infoarr[2]) &amp;&amp; (tox &lt;= infoarr[4]) &amp;&amp; (toy &gt;= infoarr[3]) &amp;&amp; (toy &lt;= infoarr[5]) )
+-				SendSysMessage(who, &quot;Something is blocking the location.&quot;);
+-				return 0;
+-				break;
+-			endif
+-		endif
+-	endforeach
+-
+-	var multicheck := CreateItemAtLocation(1, 1, 0, 0xeed, 1, torealm);
+-	multicheck.invisible := 1;
+-	if( !MoveItemToLocation(multicheck, tox, toy, toz, MOVEITEM_NORMAL) )
+-		SendSysMessage(who, &quot;Something is blocking the location.&quot;);
+-		return 0;
+-	endif
+-	if(multicheck.multi)
+-		SendSysMessage(who,&quot;A house is blocking the location.&quot;);
+-		RemoveRunebookEntry(runebook, rune_info);
+-		return 0;
+-	endif
+-	DestroyItem(multicheck);
+-	MoveObjectToLocation( who, tox, toy, toz, torealm );
+-	PlaySoundEffect(who, 0x1fd);
+-	return 1;
+-endfunction
+\ No newline at end of file
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/magery/spellScripts/circle7/gate.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellScripts/circle7/gate.src	2005-11-16 05:22:45 UTC (rev 1008)
++++ trunk/096/pkg/skills/magery/spellScripts/circle7/gate.src	2005-11-16 07:05:43 UTC (rev 1009)
+@@ -38,14 +38,21 @@
+ 		SendSysMessage(who, &quot;You cannot recall off of runes on a vendor.&quot;);
+ 		return 0;
+ 	endif
+-	var tox := CInt(GetObjProperty( recall_rune, &quot;x&quot; ));
+-	var toy := CInt(GetObjProperty( recall_rune, &quot;y&quot; ));
+-	var toz := CInt(GetObjProperty( recall_rune, &quot;z&quot; ));
+-	var torealm :=  GetObjProperty( recall_rune, &quot;realm&quot; );
+-	if(!tox)
++
++	var rune_settings;
++	case(recall_rune.objtype)
++		UOBJ_RUNE: rune_settings := recall_rune.GetDestination();
++		0x6100: rune_settings := GetObjProperty(recall_rune, &quot;Destination&quot;);
++	endcase
++	if( TypeOf(rune_settings) != &quot;Struct&quot; )
+ 		SendSysMessage(who, &quot;That item is not marked.&quot;);
+ 		return 0;
+ 	endif
++
++	var tox := CInt(rune_settings.x);
++	var toy := CInt(rune_settings.y);
++	var toz := CInt(rune_settings.z);
++	var torealm :=  rune_settings.realm;
+ 	if(!torealm)
+ 		torealm := &quot;britannia&quot;;
+ 	endif
+@@ -204,14 +211,16 @@
+ 		SendSysMessage(who, &quot;You cannot recall off of runebooks on a vendor.&quot;);
+ 		return 0;
+ 	endif
+-	var tox := CInt(rune_info.X);
+-	var toy := CInt(rune_info.Y);
+-	var toz := CInt(rune_info.Z);
+-	var torealm :=  rune_info.Realm;
+-	if(!tox)
+-		SendSysMessage(who, &quot;That is an invalid location.&quot;);
++
++	if( TypeOf(rune_info) != &quot;Struct&quot; )
++		SendSysMessage(who, &quot;That item is not marked.&quot;);
+ 		return 0;
+ 	endif
++
++	var tox := CInt(rune_info.x);
++	var toy := CInt(rune_info.y);
++	var toz := CInt(rune_info.z);
++	var torealm :=  rune_info.realm;
+ 	if(!torealm)
+ 		torealm := &quot;britannia&quot;;
+ 	endif
+
+Modified: trunk/096/pkg/utils/coords/include/isValidLoc.inc
+===================================================================
+--- trunk/096/pkg/utils/coords/include/isValidLoc.inc	2005-11-16 05:22:45 UTC (rev 1008)
++++ trunk/096/pkg/utils/coords/include/isValidLoc.inc	2005-11-16 07:05:43 UTC (rev 1009)
+@@ -50,8 +50,9 @@
+ 	  endif
+ 
+   else
+-  	var realm := Realms()[realm];
+-  	if( x &gt;= realm.width || y &gt;= realm.height )
++  	var t_realm := Realms()[realm];
++
++  	if( x &gt;= t_realm.width || y &gt;= t_realm.height )
+   		return 0;
+   	endif
+   endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000981.html">[Poldistro-svn] r1008 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="000983.html">[Poldistro-svn] r1010 - in trunk/096/pkg/items/runebook: . config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#982">[ date ]</a>
+              <a href="thread.html#982">[ thread ]</a>
+              <a href="subject.html#982">[ subject ]</a>
+              <a href="author.html#982">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

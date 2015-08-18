@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r873 - in trunk/096/pkg/skills/magery: . include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r873%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20include&In-Reply-To=%3C200511030651.jA36pRwK015851%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000845.html">
+   <LINK REL="Next"  HREF="000847.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r873 - in trunk/096/pkg/skills/magery: . include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r873%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20include&In-Reply-To=%3C200511030651.jA36pRwK015851%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r873 - in trunk/096/pkg/skills/magery: . include">austin at berlios.de
+       </A><BR>
+    <I>Thu Nov  3 07:51:27 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000845.html">[Poldistro-svn] r872 - trunk/096/pkg/systems/combat/old
+</A></li>
+        <LI>Next message: <A HREF="000847.html">[Poldistro-svn] r874 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#846">[ date ]</a>
+              <a href="thread.html#846">[ thread ]</a>
+              <a href="subject.html#846">[ subject ]</a>
+              <a href="author.html#846">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-03 07:50:55 +0100 (Thu, 03 Nov 2005)
+New Revision: 873
+
+Modified:
+   trunk/096/pkg/skills/magery/include/settings.inc
+   trunk/096/pkg/skills/magery/include/spells.inc
+   trunk/096/pkg/skills/magery/movementCheck.src
+   trunk/096/pkg/skills/magery/spellStarter.src
+Log:
+Little more progress.. Need to add some functions to the core.
+
+Modified: trunk/096/pkg/skills/magery/include/settings.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/include/settings.inc	2005-11-03 06:41:46 UTC (rev 872)
++++ trunk/096/pkg/skills/magery/include/settings.inc	2005-11-03 06:50:55 UTC (rev 873)
+@@ -8,7 +8,7 @@
+  * MS_GetSettingsCfgFile(engine_name)
+  *
+  * Purpose
+- * Reads in :lumberjacking:config/settings.cfg
++ * Reads in :magery:config/settings.cfg
+  *
+  * Parameters
+  *
+
+Modified: trunk/096/pkg/skills/magery/include/spells.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/include/spells.inc	2005-11-03 06:41:46 UTC (rev 872)
++++ trunk/096/pkg/skills/magery/include/spells.inc	2005-11-03 06:50:55 UTC (rev 873)
+@@ -5,18 +5,19 @@
+ 
+ include &quot;:attributes:attributes&quot;;
+ include &quot;include/client&quot;;
++include &quot;include/dist&quot;;
+ 
+ const MAX_RANGE	:= 16;
+ 
+ function SpellDebug(who, text)
+ 	if ( who.cmdlevel )
+-		SendSysMessage(who, text, SSM_INFO_DEBUG);
++		SendSysMessage(who, &quot;&quot;+text);
+ 	endif
+ endfunction
+ 
+ function UseMana(who, amount)
+-	if ( GetManaPoints(who) &gt;= amount )
+-		SetManaPoints(who, GetManaPoints(who)-amount);
++	if ( AP_GetVital(who, MANA) &gt;= amount )
++		AP_SetVital(who, MANA, AP_GetVital(who, MANA)-amount);
+ 		return 1;
+ 	else
+ 		return 0;
+@@ -84,8 +85,8 @@
+ endfunction
+ 
+ function GetSpellPoints(mage, targ, points)
+-	var mage_skill := GetSkill(mage, &quot;Magery&quot;);
+-	var defense := GetSkill(targ, &quot;Magic_Resistance&quot;);
++	var mage_skill := AP_GetSkill(mage, MAGERY);
++	var defense := AP_GetSkill(targ, RESISTING_SPELLS);
+ 
+ 	// Failed MR check results in only half your resistance being used!
+ 	if ( SkillCheck(targ, &quot;Magic_Resistance&quot;, -1) &lt; 0 )
+
+Modified: trunk/096/pkg/skills/magery/movementCheck.src
+===================================================================
+--- trunk/096/pkg/skills/magery/movementCheck.src	2005-11-03 06:41:46 UTC (rev 872)
++++ trunk/096/pkg/skills/magery/movementCheck.src	2005-11-03 06:50:55 UTC (rev 873)
+@@ -4,14 +4,17 @@
+ program MovementChecker(params)
+ 	var who := params[1];
+ 	var spell_starter := GetProcess(params[2]);
+-	var my_x := params[3];
+-	var my_y := params[4];
++	var orig_x := params[3];
++	var orig_y := params[4];
++	params := 0; // not needed anymore
+ 	
+ 	while ( spell_starter.pid )
+-		if ( who.x != my_x || who.y != my_y )
++		if ( who.x != orig_x || who.y != orig_y )
+ 			spell_starter.SendEvent(&quot;moved&quot;);
+-			return;
++			return 1;
+ 		endif
+ 		sleepms(50);
+ 	endwhile
++	
++	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/skills/magery/spellStarter.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellStarter.src	2005-11-03 06:41:46 UTC (rev 872)
++++ trunk/096/pkg/skills/magery/spellStarter.src	2005-11-03 06:50:55 UTC (rev 873)
+@@ -100,6 +100,10 @@
+ endprogram
+ 
+ function CheckDelay(who, attribute, difficulty, base_delay)
++	if ( who.npctemplate )
++		// NPCs are allowed to move.
++		return 1;
++	endif
+ 	
+ 	SendSysMessage(who, &quot;You begin building the concentration needed to cast.&quot;);
+ 	var equip_delay := GetEquipmentDelay(who);
+@@ -114,24 +118,20 @@
+ 	if ( delay &lt; 50 )
+ 		delay := 50;
+ 	endif
++	var script := start_script(&quot;movementCheck&quot;, {who, GetPid(), my_x, my_y});
+ 	
+-	var script;
+-	if ( !who.npctemplate )
+-		script := start_script(&quot;movementcheck&quot;, {who, GetPid(), my_x, my_y});
+-	endif
+-	
+ 	SpellDebug(who, &quot;Cast delay -&gt;&quot;+delay);
++	
+ 	sleepms(delay);
+ 	
++	// Delay is over, stop the movement checker.
+ 	script.kill();
+ 	
+-	if ( who.npctemplate )
+-		return 1;
+-	elseif ( Events_Waiting() &gt; 0 )
++	if ( Events_Waiting() &gt; 0 )
++		// movementCheck.ecl sent a &quot;moved&quot; event.
+ 		return 0;
+-	elseif ( who.x != my_x || who.y != my_y )
+-		return 0;
+ 	else
++		// Player stood still and can move on.
+ 		return 1;
+ 	endif
+ endfunction
+@@ -150,7 +150,7 @@
+ 	
+ 	var cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+ 	var delay := 0;
+-	foreach item in EnumeratePhysicalItems(who)
++	foreach item in ListEquippedItems(who)
+ 		delay := delay+CInt(cfg[item.objtype].CastDelay);
+ 		sleepms(2);
+ 	endforeach
+@@ -171,6 +171,7 @@
+ 
+ function CheckRegs(who, byref spell_info)
+ 	if ( who.npctemplate )
++		// NPCs don't need reagents to cast.
+ 		return 1;
+ 	endif
+ 	
+@@ -187,10 +188,10 @@
+ 			reg_list[objtype] := amount;
+ 		endif
+ 
+-		if ( AmountInPack(who, objtype) &lt; reg_list[objtype] )
+-			SendSysMessage(who, &quot;You do not have enough &quot; + GetName(objtype, 1));
+-			return 0;
+-		endif
++		//if ( AmountInPack(who, objtype) &lt; reg_list[objtype] )
++		//	SendSysMessage(who, &quot;You do not have enough &quot; + GetName(objtype, 1));
++		//	return 0;
++		//endif
+ 		sleepms(1);
+ 	endforeach
+ 
+@@ -203,12 +204,9 @@
+ endfunction
+ 
+ function FailSpell(who)
+-/*
+-Simple function for handling effects when a caster
+-fails the casting.
+-*/
++	// Simple function for handling effects when a caster
++	// fails the casting.
+ 	EraseObjProperty(who, &quot;#medding&quot;);
+-	PlayObjectCenteredEffect(who, FX_SPELL_FAIL, 5, 50);
++	PlayObjectCenteredEffect(who, GFX_SPELL_FAIL, 5, 50);
+ 	PlaySoundEffect(who, SFX_SPELL_FAIL);
+-
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000845.html">[Poldistro-svn] r872 - trunk/096/pkg/systems/combat/old
+</A></li>
+	<LI>Next message: <A HREF="000847.html">[Poldistro-svn] r874 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#846">[ date ]</a>
+              <a href="thread.html#846">[ thread ]</a>
+              <a href="subject.html#846">[ subject ]</a>
+              <a href="author.html#846">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

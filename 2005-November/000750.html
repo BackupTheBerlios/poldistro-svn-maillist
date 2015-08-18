@@ -1,0 +1,939 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r776 - in trunk/096: config pkg/mobiles/brainAI pkg/mobiles/brainAI/config pkg/mobiles/brainAI/include pkg/mobiles/brainAI/scripts/combat pkg/mobiles/brainAI/scripts/doubleClick pkg/mobiles/brainAI/scripts/lookAround pkg/mobiles/brainAI/scripts/shouldWatch pkg/mobiles/brainAI/scripts/sleep pkg/mobiles/brainAI/scripts/wonFight
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r776%20-%20in%20trunk/096%3A%20config%20pkg/mobiles/brainAI%20pkg/mobiles/brainAI/config%20pkg/mobiles/brainAI/include%20pkg/mobiles/brainAI/scripts/combat%20pkg/mobiles/brainAI/scripts/doubleClick%20pkg/mobiles/brainAI/scripts/lookAround%20pkg/mobiles/brainAI/scripts/shouldWatch%20pkg/mobiles/brainAI/scripts/sleep%20pkg/mobiles/brainAI/scripts/wonFight&In-Reply-To=%3C200511010816.jA18Ga1Z005119%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000749.html">
+   <LINK REL="Next"  HREF="000751.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r776 - in trunk/096: config pkg/mobiles/brainAI pkg/mobiles/brainAI/config pkg/mobiles/brainAI/include pkg/mobiles/brainAI/scripts/combat pkg/mobiles/brainAI/scripts/doubleClick pkg/mobiles/brainAI/scripts/lookAround pkg/mobiles/brainAI/scripts/shouldWatch pkg/mobiles/brainAI/scripts/sleep pkg/mobiles/brainAI/scripts/wonFight</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r776%20-%20in%20trunk/096%3A%20config%20pkg/mobiles/brainAI%20pkg/mobiles/brainAI/config%20pkg/mobiles/brainAI/include%20pkg/mobiles/brainAI/scripts/combat%20pkg/mobiles/brainAI/scripts/doubleClick%20pkg/mobiles/brainAI/scripts/lookAround%20pkg/mobiles/brainAI/scripts/shouldWatch%20pkg/mobiles/brainAI/scripts/sleep%20pkg/mobiles/brainAI/scripts/wonFight&In-Reply-To=%3C200511010816.jA18Ga1Z005119%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r776 - in trunk/096: config pkg/mobiles/brainAI pkg/mobiles/brainAI/config pkg/mobiles/brainAI/include pkg/mobiles/brainAI/scripts/combat pkg/mobiles/brainAI/scripts/doubleClick pkg/mobiles/brainAI/scripts/lookAround pkg/mobiles/brainAI/scripts/shouldWatch pkg/mobiles/brainAI/scripts/sleep pkg/mobiles/brainAI/scripts/wonFight">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 09:16:36 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000749.html">[Poldistro-svn] r775 - trunk/096/pkg/mobiles/timedScripts/include
+</A></li>
+        <LI>Next message: <A HREF="000751.html">[Poldistro-svn] r777 - trunk/096/pkg/mobiles/brainAI/scripts/sleep
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#750">[ date ]</a>
+              <a href="thread.html#750">[ thread ]</a>
+              <a href="subject.html#750">[ subject ]</a>
+              <a href="author.html#750">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-01 09:16:27 +0100 (Tue, 01 Nov 2005)
+New Revision: 776
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/include/npcSounds.inc
+   trunk/096/pkg/mobiles/brainAI/scripts/combat/genericAnimal.src
+   trunk/096/pkg/mobiles/brainAI/scripts/doubleClick/cowTip.src
+   trunk/096/pkg/mobiles/brainAI/scripts/lookAround/findFeared.src
+   trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch/watchFeared.src
+   trunk/096/pkg/mobiles/brainAI/scripts/wonFight/wonFightAnimal.src
+Modified:
+   trunk/096/config/npcdesc.cfg
+   trunk/096/pkg/mobiles/brainAI/config/hatelist.cfg
+   trunk/096/pkg/mobiles/brainAI/include/npcUtil.inc
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+   trunk/096/pkg/mobiles/brainAI/scripts/sleep/generic.src
+Log:
+Moved cow npc to brain package.
+Added nerves to fully support cow npc.
+Added npcSounds to brain includes. To get the new sounds format for IdleSounds, they are stored in PACKED array format. Template props renamed also, See cow template for examples.
+Added generic and genericAnimal nerves.
+Added cow's hatelist. 
+Distro hatelist.cfg stores &quot;Hates&quot; and &quot;Fears&quot; entries. All names (both the elem's name) and Prop entries, MUST match a npctemplate name (minus package).
+Find and Watch Feared nerves added.
+
+ToDo: Need to make an include function set for getting HateList and FearList (with return as an array).
+
+Modified: trunk/096/config/npcdesc.cfg
+===================================================================
+--- trunk/096/config/npcdesc.cfg	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/config/npcdesc.cfg	2005-11-01 08:16:27 UTC (rev 776)
+@@ -2135,51 +2135,6 @@
+ 	AttackHitScript		:combat:wrestlingHitScript
+ }
+ 
+-NPCTemplate	cow
+-{
+-	Name			a cow
+-	Script			:oldAI:cow
+-	ObjType			0xd8
+-	Color			0
+-	TrueColor		33784
+-	Gender			0
+-	Strength		30
+-	Intelligence		5
+-	Dexterity		15
+-	HITS			18
+-	MANA			0
+-	STAM			15
+-	Anatomy			0.0
+-	EvaluatingIntelligence	0.0
+-	Magery			0.0
+-	Meditation		0.0
+-	Poisoning		0.0
+-	ResistingSpells		5.5
+-	Tactics			5.5
+-	Wrestling		5.5
+-	AttackSpeed		30
+-	AttackDamage		1d4
+-	AttackAttribute		Wrestling
+-	AttackHitSound		0x7B
+-	AttackMissSound		0x239
+-	DeathSound		0x7d
+-	DamagedSound		0x7c
+-	IdleSound1		0x79
+-	IdleSound2		0x7a
+-	AR			9
+-	food			veggie
+-	foodtype		veggie
+-	packinstinct		none
+-	GuardIgnore		1
+-	DStart			10
+-	CorpseItm		rawribs hides
+-	CorpseAmt		8 12
+-	NoLoot			1
+-	CProp  Karma		i0
+-	CProp  Fame		i10
+-	AttackHitScript		:combat:wrestlingHitScript
+-}
+-
+ NPCTemplate	chicken
+ {
+ 	Name			a chicken
+
+Modified: trunk/096/pkg/mobiles/brainAI/config/hatelist.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/config/hatelist.cfg	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/pkg/mobiles/brainAI/config/hatelist.cfg	2005-11-01 08:16:27 UTC (rev 776)
+@@ -1,17 +1,43 @@
+ HateList Dog
+ {
+-	Hates	cats
+-	Hates	birds
+-	Hates	horses
+-	Hates	cows
++	Hates	cat
++	Hates	bird
++	Hates	horse
++	Hates	horse2
++	Hates	horse3
++	Hates	horse4
++	Hates	packhorse
++	Hates	cow
+ 	Hates	deer
++	Hates	wolf
++	Fears	direwolf
++	Fears	frostwolf
++	Fears	whitewolf
++	Fears	greywolf
+ }
+ 
+ HateList Wolf
+ {
+-	Hates	cats
+-	Hates	birds
+-	Hates	horses
+-	Hates	cows
++	Hates	dog
++	Hates	cat
++	Hates	bird
++	Hates	horse
++	Hates	horse2
++	Hates	horse3
++	Hates	horse4
++	Hates	packhorse
++	Hates	cow
+ 	Hates	deer
+ }
++
++HateList Cow
++{
++	Hates	snake
++	Hates	icesnake
++	Fears	dog
++	Fears	wolf
++	Fears	direwolf
++	Fears	frostwolf
++	Fears	whitewolf
++	Fears	greywolf
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/brainAI/include/npcSounds.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcSounds.inc	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/pkg/mobiles/brainAI/include/npcSounds.inc	2005-11-01 08:16:27 UTC (rev 776)
+@@ -0,0 +1,165 @@
++/*===============================================================
++* Current Version
++* NPCSOUNDS.INC - v1.0
++* Updated 11/01/2005 2:26AM
++*
++* -- Revision v1.0 --
++* MuadDib:
++*  Created include file
++===============================================================*/
++use uo;
++use os;
++use util;
++use cfgfile;
++
++include &quot;:brainAI:npcUtil&quot;;
++include &quot;:brainAI:npcError&quot;;
++
++
++/////////////////////////////////////////////////////////////////
++// * Function List *
++//
++// NPC_GetIdleSound(mobile)
++// NPC_GetDamagedSound(mobile)
++// NPC_GetDeathSound(mobile)
++// NPC_GetMissSound(mobile)
++// NPC_GetHitSound(mobile)
++//
++/////////////////////////////////////////////////////////////////
++// * Internal/Private Function List *
++//
++/////////////////////////////////////////////////////////////////
++
++
++/*
++ * NPC_GetIdleSound(mobile)
++ *
++ * Purpose
++ * Gets the packed array form of IdleSounds Prop from NPC Template.
++ *
++ * Parameters
++ * mobile:	Mobile to find the idle sound for.
++ *
++ * Return value
++ * Returns an integer that is the sound ID to be played.
++ *
++ */
++function NPC_GetIdleSound(mobile)
++	var mobile_template := NPC_GetNPCConfig(mobile);
++	var idle_sound_list := UnPack(mobile_template.IdleSounds);
++
++	if( TypeOf(idle_sound_list) != &quot;Array&quot; )
++		NPC_ErrorSysLog(mobile, &quot;Invalid Idle Sound Setting&quot;);
++		return 0;
++	endif
++
++	return RandomInt(idle_sound_list.size())+1;
++
++endfunction
++
++
++/*
++ * NPC_GetDamagedSound(mobile)
++ *
++ * Purpose
++ * Gets the packed array form of DamagedSounds Prop from NPC Template.
++ *
++ * Parameters
++ * mobile:	Mobile to find the damaged sound for.
++ *
++ * Return value
++ * Returns an integer that is the sound ID to be played.
++ *
++ */
++function NPC_GetDamagedSound(mobile)
++	var mobile_template := NPC_GetNPCConfig(mobile);
++	var damaged_sound_list := UnPack(mobile_template.DamagedSounds);
++
++	if( TypeOf(damaged_sound_list) != &quot;Array&quot; )
++		NPC_ErrorSysLog(mobile, &quot;Invalid Damaged Sound Setting&quot;);
++		return 0;
++	endif
++
++	return RandomInt(damaged_sound_list.size())+1;
++
++endfunction
++
++
++/*
++ * NPC_GetDeathSound(mobile)
++ *
++ * Purpose
++ * Gets the packed array form of DeathSounds Prop from NPC Template.
++ *
++ * Parameters
++ * mobile:	Mobile to find the death sound for.
++ *
++ * Return value
++ * Returns an integer that is the sound ID to be played.
++ *
++ */
++function NPC_GetDeathSound(mobile)
++	var mobile_template := NPC_GetNPCConfig(mobile);
++	var death_sound_list := UnPack(mobile_template.DeathSounds);
++
++	if( TypeOf(death_sound_list) != &quot;Array&quot; )
++		NPC_ErrorSysLog(mobile, &quot;Invalid Death Sound Setting&quot;);
++		return 0;
++	endif
++
++	return RandomInt(death_sound_list.size())+1;
++
++endfunction
++
++
++/*
++ * NPC_GetMissSound(mobile)
++ *
++ * Purpose
++ * Gets the packed array form of AttackMissSounds Prop from NPC Template.
++ *
++ * Parameters
++ * mobile:	Mobile to find the attack and miss sound for.
++ *
++ * Return value
++ * Returns an integer that is the sound ID to be played.
++ *
++ */
++function NPC_GetMissSound(mobile)
++	var mobile_template := NPC_GetNPCConfig(mobile);
++	var miss_sound_list := UnPack(mobile_template.AttackMissSounds);
++
++	if( TypeOf(miss_sound_list) != &quot;Array&quot; )
++		NPC_ErrorSysLog(mobile, &quot;Invalid Miss Sound Setting&quot;);
++		return 0;
++	endif
++
++	return RandomInt(miss_sound_list.size())+1;
++
++endfunction
++
++/*
++ * NPC_GetHitSound(mobile)
++ *
++ * Purpose
++ * Gets the packed array form of AttackHitSounds Prop from NPC Template.
++ *
++ * Parameters
++ * mobile:	Mobile to find the attack and hit sound for.
++ *
++ * Return value
++ * Returns an integer that is the sound ID to be played.
++ *
++ */
++function NPC_GetHitSound(mobile)
++	var mobile_template := NPC_GetNPCConfig(mobile);
++	var hit_sound_list := UnPack(mobile_template.AttackHitSounds);
++
++	if( TypeOf(hit_sound_list) != &quot;Array&quot; )
++		NPC_ErrorSysLog(mobile, &quot;Invalid Hit Sound Setting&quot;);
++		return 0;
++	endif
++
++	return RandomInt(hit_sound_list.size())+1;
++
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcUtil.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcUtil.inc	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/pkg/mobiles/brainAI/include/npcUtil.inc	2005-11-01 08:16:27 UTC (rev 776)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ /*===============================================================
+ * Current Version
+ * NPCUTIL.INC - v1.0
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-01 08:16:27 UTC (rev 776)
+@@ -12,17 +12,17 @@
+ 	AR		25
+ 	RunSpeed	200
+ 	Category	Testing
+-	
++
+ 	// Attributes
+ 	Strength	100
+ 	Intelligence	1
+ 	Dexterity	10
+-	
++
+ 	// Vitals
+ 	HITS		100
+ 	MANA		1
+ 	STAM		100
+-		
++
+ 	AISetting	CycleWait	i10
+ 	AISetting	FleeLevel	i50 // 50%
+ 	AISetting	IdleTicks	i5
+@@ -54,42 +54,117 @@
+ 
+ NPCTemplate Rigger
+ {
+-	Name		a rigger
+-	Script		:brainAI:brain
+-	ObjType		0x27
+-	Color		0
+-	TrueColor	0
+-	Gender		0
+-	AR		1
+-	RunSpeed	25
+-	Category	Monster
+-		
++	Name			a rigger
++	Script			:brainAI:brain
++	ObjType			0x27
++	Color			0
++	TrueColor		0
++	Gender			0
++	AR			1
++	RunSpeed		25
++	Category		Monster
++
+ 	// Attributes
+-	Strength	15
+-	Intelligence	5
+-	Dexterity	35
+-	Wrestling	35
+-	Tactics		10
+-	
++	Strength		15
++	Intelligence		5
++	Dexterity		35
++	Wrestling		35
++	Tactics			10
++
+ 	// Vitals
+-	HITS		25
+-	MANA		0
+-	STAM		35
+-	
+-	AttackAttribute	Wrestling
+-	AttackSpeed	20
+-	AttackDamage	2d5
+-	AttackHitSound	0x1A9
+-	AttackMissSound	0x239
+-	DeathSound	0x1AB
+-	DamagedSound	0x1AA
+-	
++	HITS			25
++	MANA			0
++	STAM			35
++
++	AttackAttribute		Wrestling
++	AttackSpeed		20
++	AttackDamage		2d5
++	AttackHitSounds		a1:i425
++	AttackMissSounds	a1:i569
++	DeathSounds		a1:i427
++	DamagedSounds		a1:i426
++
+ 	AIScript	Combat		:brainAI:scripts/combat/rigger
+ 	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
+ 	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
+ 	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
+ 	AIScript	Sleep		:brainAI:scripts/sleep/generic
+ 	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/targetPlayers
+-	
++
+ 	AttackHitScript		:combat:mainhitscript
+ }
++
++##########################################
++# Farm type animals
++##########################################
++NPCTemplate	cow
++{
++	Name			a cow
++	Script			:brainAI:brain
++	ObjType			0xd8
++	Color			0
++	TrueColor		0
++	Gender			0
++	RunSpeed		15
++	Category		Animal
++
++	// Attributes
++	Strength		30
++	Intelligence		5
++	Dexterity		15
++	Anatomy			0.0
++	EvaluatingIntelligence	0.0
++	Magery			0.0
++	Meditation		0.0
++	Poisoning		0.0
++	ResistingSpells		5.5
++	Tactics			5.5
++	Wrestling		5.5
++
++	// Vitals
++	HITS			18
++	MANA			0
++	STAM			15
++
++	AttackAttribute		Wrestling
++	AttackSpeed		30
++	AttackDamage		1d4
++	AttackHitSounds		a1:i123
++	AttackMissSounds	a1:i0x239
++	DeathSounds		a1:i125
++	DamagedSounds		a1:i124
++	IdleSounds		a2:i121i122		// Sounds stored in Packed Array form
++
++	AR			9
++
++	food			veggie
++	foodtype		veggie
++	packinstinct		none
++
++	GuardIgnore		1
++	DStart			10
++	CorpseItm		rawribs hides
++	CorpseAmt		8 12
++	NoLoot			1
++
++	CProp  Karma		i0
++	CProp  Fame		i10
++
++	AISetting	FleeLevel	i50		// 50%
++	AISetting	IdleTicks	i5
++	AISetting	SleepWait	i1000
++	AISetting	ListenRange	i10
++	AISetting	AreaSize	i5
++	AISetting	DblClickRange	i1
++
++	AIScript	Combat		:brainAI:scripts/combat/genericAnimal
++	AIScript	DblClick	:brainAI:scripts/doubleClick/cowTip
++	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
++	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
++	AIScript	LookAround	:brainAI:scripts/lookAround/findFeared
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/watchFeared
++	AIScript	Sleep		:brainAI:scripts/sleep/generic
++	AIScript	EndFight	:brainAI:scripts/wonFight/wonFightAnimal
++
++	AttackHitScript		:combat:wrestlingHitScript
++}
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/combat/genericAnimal.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/combat/genericAnimal.src	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/pkg/mobiles/brainAI/scripts/combat/genericAnimal.src	2005-11-01 08:16:27 UTC (rev 776)
+@@ -0,0 +1,101 @@
++/* $Id$
++ *
++ */
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:attributes:attributes&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	var nerve_name	:= params[2];
++	var event	:= params[3];
++	var settings	:= params[4];
++	var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++
++	//Store it here so it does not have to do the math over and over.
++	var flee_level := AP_GetVitalMaximumValue(npc, &quot;Hits&quot;) * (CDbl(settings[&quot;FleeLevel&quot;])/100.0);
++
++	var opponent := event.source;
++	var flee_mode := 0;
++
++	AI_SetOpponent(npc, opponent);
++
++	while ( npc )
++		var dist := Distance(npc, opponent);
++		if ( ShouldFlee(npc, flee_level, flee_mode) )
++			flee_mode := 1;
++			AI_WarMode(npc, 0);
++			AI_Move(npc, opponent, NEMOVE_AWAY, NEMOVE_RUN, WAKEUP, 100);
++		elseif ( DoneFighting(npc, opponent, dist) )
++			if ( scripts.Exists(&quot;EndFight&quot;) )
++				params := array{opponent, settings, scripts};
++				AI_StartNerve(npc, &quot;EndFight&quot;, scripts[&quot;EndFight&quot;].script, params);
++			else
++				AI_WarMode(npc, 0);
++			endif
++			AI_EndNerve(npc, nerve_name);
++		elseif( dist &gt; 1 )
++			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, dist+1);
++		endif
++
++		sleepms(400);
++		While ( Events_Waiting() )
++			CheckForEvent(npc, event);
++		endwhile
++	endwhile
++endprogram
++
++function DoneFighting(npc, opponent, byref dist)
++	if ( opponent.dead )
++		return 1;
++	elseif ( !opponent )
++		return 1;
++	elseif ( opponent.hidden )
++		return 1;
++	elseif ( opponent.concealed &gt; npc.cmdlevel )
++		return 1;
++	elseif ( dist &gt; 20 )
++		return 1;
++	elseif ( dist &gt; 10 &amp;&amp; !CheckLineOfSight(npc, opponent) )
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++function ShouldFlee(npc, byref flee_level, byref flee_mode)
++	if ( flee_mode )
++		return 1;
++	elseif ( AP_GetVital(npc, &quot;Hits&quot;) &lt; flee_level )
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++
++// Need more stuff here, should have events checked for peacemaking
++// and provocation.
++function CheckForEvent(npc, byref event)
++	// Temp added for stopping ecompile spam
++	npc := npc;
++	event := wait_for_event(0);
++	if ( event )
++		var source := event.source;
++		case ( event.type )
++			SYSEVENT_ENGAGED: source := source; // Added temp for stopping ecompile spam
++				break;
++			SYSEVENT_DAMAGED:
++				break;
++			default:
++				break;
++		endcase
++		event := 0;
++	endif
++
++	return 1;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/doubleClick/cowTip.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/doubleClick/cowTip.src	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/pkg/mobiles/brainAI/scripts/doubleClick/cowTip.src	2005-11-01 08:16:27 UTC (rev 776)
+@@ -0,0 +1,64 @@
++/* $Id$
++ *
++ */
++///////////////////////////////////////////////
++// cowTip.src
++//
++// Created 7/26/2002 11:31AM
++// Updated 10/31/2005 11:25AM
++//
++// Creator: Austin Heilman
++// Last Update: MuadDib
++//
++///////////////////////////////////////////////
++//
++// This simply makes a double clicked cow tip over
++// when double clicked. It goes &quot;mooo&quot; in a whiny
++// sort of way too. Players from Wisconsin will
++// love it. Never tip a Californian cow though!
++// *ahem*
++//
++///////////////////////////////////////////////
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++
++program npcTip(params)
++	var npc		:= params[1];
++	//var nerve_name:= params[2];
++	var event	:= params[3];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0;
++
++	while ( npc )
++		if ( event )
++			case ( event.type )
++				SYSEVENT_DOUBLECLICKED:
++					CowTipEvent(npc, event);
++					break;
++				default:
++					break;
++			endcase
++
++			event := 0;
++		endif
++
++		sleepms(5);
++		event := wait_for_event(900000);
++	endwhile
++
++endprogram
++
++
++function CowTipEvent(npc, event)
++	PrintTextAbove(event.source, &quot;*push*&quot;);
++	PlaySoundEffect(npc, 0x7D);
++	PerformAction(npc, 0x8);
++	sleep(2);
++	AI_Move(npc, event.source, NEMOVE_AWAY, NEMOVE_WALK, WAKEUP, 1);
++
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/lookAround/findFeared.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/lookAround/findFeared.src	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/pkg/mobiles/brainAI/scripts/lookAround/findFeared.src	2005-11-01 08:16:27 UTC (rev 776)
+@@ -0,0 +1,54 @@
++/* $Id$
++ *
++ */
++use uo;
++use os;
++use util;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	var settings	:= params[4];
++	var scripts	:= params[5];
++	params := 0;
++
++	while ( npc )
++		if ( !npc.opponent )
++			if ( NPC_LoadWatchList(npc).size() &lt; 1 )
++				// No need to look around any longer. We're all alone :(
++				return;
++			else
++				FindFearedOpponent(npc, settings, scripts);
++			endif
++		endif
++
++		AI_ClearThoughts(npc, CLR_NERVE);
++		Sleep(5);
++	endwhile
++endprogram
++
++function FindFearedOpponent(npc, byref settings, byref scripts)
++	var run_list := array;
++	foreach mobile in ListMobilesInLineOfSight(npc, CInt(settings[&quot;AreaSize&quot;]))
++		if ( NPC_ShouldWatch(npc, mobile, settings, scripts) )
++			run_list.Append(mobile);
++		endif
++		sleepms(2);
++	endforeach
++
++	if ( run_list.size() &gt; 0 )
++		var feared_one := run_list[RandomInt(run_list.Size())+1];
++		for i := 1 to CInt(settings[&quot;AreaSize&quot;])
++			if( feared_one in ListMobilesInLineOfSight(npc, CInt(settings[&quot;AreaSize&quot;])) )
++				AI_Move(npc, feared_one, NEMOVE_AWAY, NEMOVE_WALK, WAKEUP, 1);
++			endif
++		endfor
++		return feared_one;
++	endif
++
++	return 0;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch/watchFeared.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch/watchFeared.src	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch/watchFeared.src	2005-11-01 08:16:27 UTC (rev 776)
+@@ -0,0 +1,29 @@
++/* $Id$
++ *
++ */
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++include &quot;:brainAI:npcUtil&quot;;
++
++program BrainCriticalScript(params)
++	var npc := params[1];
++	var mobile := params[2];
++	//var settings := params[3];
++	params := 0; // Not needed anymore
++
++	if ( mobile.npctemplate )
++		var hate_config := ReadConfigFile(&quot;:brainAI:config/hatelist&quot;);
++		var config_list := FindConfigElem(hate_config, NPC_ParseTemplateName(npc.npctemplate).template);
++		var my_fear_list := GetConfigStringArray(config_list, &quot;Fears&quot;);
++		if( !(NPC_ParseTemplateName(mobile.npctemplate).template in my_fear_list) )
++			return 0;
++		else
++			return 1;
++		endif
++	elseif ( mobile.connected )
++		return 1;
++	else
++		return 0;
++	endif
++endprogram
+
+Modified: trunk/096/pkg/mobiles/brainAI/scripts/sleep/generic.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/sleep/generic.src	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/pkg/mobiles/brainAI/scripts/sleep/generic.src	2005-11-01 08:16:27 UTC (rev 776)
+@@ -4,6 +4,7 @@
+ 
+ include &quot;:brainAI:npcNerves&quot;;
+ include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcSounds&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+@@ -11,7 +12,7 @@
+ 	var settings	:= params[3];
+ 	//var scripts	:= params[4];
+ 	params := 0; // Not needed anymore.
+-	
++
+ 	// Shut down appropriate nerves.
+ 	foreach nerve in (LoadNerves(npc))
+ 		if ( nerve.flags &amp; NF_CONTINUE_ON_SLEEP )
+@@ -21,24 +22,20 @@
+ 		endif
+ 		sleepms(2);
+ 	endforeach
+-	
++
+ 	while ( npc )
+ 		Sleep(30+RandomInt(10));
+-		
+-		if ( settings[&quot;idle_sound&quot;] )
+-			if ( settings[&quot;idle_sound&quot;].size() &gt; 0 )
+-				var sounds := settings[&quot;idle_sound&quot;];
+-				PlaySoundEffect(npc, sounds[RandomInt(sounds.size())+1]);
+-			else
+-				PlaySoundEffect(npc, settings[&quot;idle_sound&quot;]);
+-			endif
++
++		var my_idle_sound := NPC_GetIdleSound(npc);
++		if ( my_idle_sound )
++			PlaySoundEffect(npc, my_idle_sound);
+ 		endif
+-		
++
+ 		sleep(20+RandomInt(10));
+-		
++
+ 		npc.facing := RandomInt(8);
+ 		AI_Wander(npc, NOWAKE);
+-		
++
+ 		AI_ClearThoughts(npc, CLR_NERVE);
+ 	endwhile
+ endprogram
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/wonFight/wonFightAnimal.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/wonFight/wonFightAnimal.src	2005-11-01 08:14:19 UTC (rev 775)
++++ trunk/096/pkg/mobiles/brainAI/scripts/wonFight/wonFightAnimal.src	2005-11-01 08:16:27 UTC (rev 776)
+@@ -0,0 +1,43 @@
++/* $Id$
++ *
++ */
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:attributes:attributes&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	var nerve_name	:= params[2];
++	var opponent	:= params[3];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++
++	AI_WarMode(npc, 0);
++
++	var corpse := opponent.GetCorpse();
++	do
++		var dist := Distance(npc, corpse);
++		AI_Move(npc, corpse, NEMOVE_TOWARD, NEMOVE_WALK, dist);
++		sleep(dist-1);
++	dowhile( ShouldApproach(npc, opponent, corpse) );
++
++	AI_EndNerve(npc, nerve_name);
++endprogram
++
++function ShouldApproach(npc, opponent, corpse)
++	if ( !opponent )
++		return 0;
++	elseif ( !corpse )
++		return 0;
++	endif
++
++	if ( Distance(npc, corpse) &gt; 1 )
++		return 1;
++	endif
++
++	return 0;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000749.html">[Poldistro-svn] r775 - trunk/096/pkg/mobiles/timedScripts/include
+</A></li>
+	<LI>Next message: <A HREF="000751.html">[Poldistro-svn] r777 - trunk/096/pkg/mobiles/brainAI/scripts/sleep
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#750">[ date ]</a>
+              <a href="thread.html#750">[ thread ]</a>
+              <a href="subject.html#750">[ subject ]</a>
+              <a href="author.html#750">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

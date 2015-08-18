@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r698 - in trunk/096/pkg/mobiles/oldAI: . combat main
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r698%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20combat%20main&In-Reply-To=%3C200510291928.j9TJSSsc001802%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000671.html">
+   <LINK REL="Next"  HREF="000673.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r698 - in trunk/096/pkg/mobiles/oldAI: . combat main</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r698%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20combat%20main&In-Reply-To=%3C200510291928.j9TJSSsc001802%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r698 - in trunk/096/pkg/mobiles/oldAI: . combat main">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sat Oct 29 21:28:28 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000671.html">[Poldistro-svn] r697 - in trunk/096/pkg/mobiles/oldAI: . setup
+</A></li>
+        <LI>Next message: <A HREF="000673.html">[Poldistro-svn] r699 - in trunk/096/pkg/mobiles/oldAI: . combat main
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#672">[ date ]</a>
+              <a href="thread.html#672">[ thread ]</a>
+              <a href="subject.html#672">[ subject ]</a>
+              <a href="author.html#672">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-29 21:28:27 +0200 (Sat, 29 Oct 2005)
+New Revision: 698
+
+Modified:
+   trunk/096/pkg/mobiles/oldAI/combat/animalCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/fight.inc
+   trunk/096/pkg/mobiles/oldAI/escortee.src
+   trunk/096/pkg/mobiles/oldAI/main/loot.inc
+Log:
+Fixed unused var reports.
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/animalCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/animalCombatEvent.inc	2005-10-29 19:15:15 UTC (rev 697)
++++ trunk/096/pkg/mobiles/oldAI/combat/animalCombatEvent.inc	2005-10-29 19:28:27 UTC (rev 698)
+@@ -7,6 +7,7 @@
+ endfunction
+ 
+ function process_flee_event(opponent)
++  opponent := opponent;
+   return 0;
+ endfunction
+ 
+@@ -27,6 +28,7 @@
+ endfunction
+ 
+ function prepare_for_fight(opponent)
++  opponent := opponent;
+   DisableMainEvents();
+   EnableCombatEvents();
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/fight.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/fight.inc	2005-10-29 19:15:15 UTC (rev 697)
++++ trunk/096/pkg/mobiles/oldAI/combat/fight.inc	2005-10-29 19:28:27 UTC (rev 698)
+@@ -9,8 +9,7 @@
+   prepare_for_fight(opponent);
+   TurnToward(opponent);
+   var loops := 0;
+-  var ev;
+-  var waittime := 0;
++
+   while((opponent) &amp;&amp; (!opponent.dead) &amp;&amp; (!opponent.hidden) &amp;&amp; (!opponent.concealed) &amp;&amp; (dist(me,opponent) &lt; 20))
+ 	if(!CloseDistance(opponent))
+ 	  loops := loops + 1;
+@@ -79,7 +78,6 @@
+     SetObjProperty(me,&quot;#flees&quot;, numflees);
+     var runs := 0;
+     var chk := 0;
+-    var ev;
+     while((Distance(me, opponent) &lt; 15) &amp;&amp; (runs &lt; 50) &amp;&amp; (CheckLineOfSight(me, opponent)))
+       ev := wait_for_event(1);
+       chk := process_flee_event(opponent);
+
+Modified: trunk/096/pkg/mobiles/oldAI/escortee.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/escortee.src	2005-10-29 19:15:15 UTC (rev 697)
++++ trunk/096/pkg/mobiles/oldAI/escortee.src	2005-10-29 19:28:27 UTC (rev 698)
+@@ -64,8 +64,6 @@
+   endif
+   SetWarMode( 0 );
+   set_priority(10);
+-  var ph := SplitWords(me.name);
+-  var myname := lower(ph[1]);
+   var destination := GetObjProperty(me, &quot;Dest&quot;);
+   SetObjProperty(me, &quot;Waiting&quot;, 1);
+   waittime := 120;
+@@ -216,7 +214,6 @@
+   var ly := holder[2];
+   var loops := 0;
+   var opponent;
+-  var waittime := 0;
+   while(1)
+ 	if(!CloseIn(me, lx, ly))
+ 	  loops := loops + 1;
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/loot.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/loot.inc	2005-10-29 19:15:15 UTC (rev 697)
++++ trunk/096/pkg/mobiles/oldAI/main/loot.inc	2005-10-29 19:28:27 UTC (rev 698)
+@@ -11,6 +11,7 @@
+     return;
+   endif
+   var numitems := 0;
++  numitems := numitems;
+   var mypack := 0;
+   if(!GetObjProperty(me, &quot;serial&quot;))
+     SetObjProperty(me, &quot;serial&quot;, me.serial);
+@@ -72,4 +73,4 @@
+     endif
+     look_around();
+   endfor
+-endfunction 
+\ No newline at end of file
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000671.html">[Poldistro-svn] r697 - in trunk/096/pkg/mobiles/oldAI: . setup
+</A></li>
+	<LI>Next message: <A HREF="000673.html">[Poldistro-svn] r699 - in trunk/096/pkg/mobiles/oldAI: . combat main
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#672">[ date ]</a>
+              <a href="thread.html#672">[ thread ]</a>
+              <a href="subject.html#672">[ subject ]</a>
+              <a href="author.html#672">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

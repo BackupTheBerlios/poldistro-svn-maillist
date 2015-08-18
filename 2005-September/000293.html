@@ -1,0 +1,336 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r315 - trunk/096/pkg/items/sysbook/book
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r315%20-%20trunk/096/pkg/items/sysbook/book&In-Reply-To=%3C200509292319.j8TNJAN0014735%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000292.html">
+   <LINK REL="Next"  HREF="000294.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r315 - trunk/096/pkg/items/sysbook/book</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r315%20-%20trunk/096/pkg/items/sysbook/book&In-Reply-To=%3C200509292319.j8TNJAN0014735%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r315 - trunk/096/pkg/items/sysbook/book">austin at berlios.de
+       </A><BR>
+    <I>Fri Sep 30 01:19:10 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000292.html">[Poldistro-svn] r314 - trunk/096/pkg/items/sysbook/include
+</A></li>
+        <LI>Next message: <A HREF="000294.html">[Poldistro-svn] r316 - in trunk/096/pkg: skills/blacksmithy skills/blacksmithy/config skills/blacksmithy/tongs systems/crafting systems/crafting/include systems/crafting/method
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#293">[ date ]</a>
+              <a href="thread.html#293">[ thread ]</a>
+              <a href="subject.html#293">[ subject ]</a>
+              <a href="author.html#293">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-30 01:19:04 +0200 (Fri, 30 Sep 2005)
+New Revision: 315
+
+Modified:
+   trunk/096/pkg/items/sysbook/book/methods.src
+Log:
+
+
+Modified: trunk/096/pkg/items/sysbook/book/methods.src
+===================================================================
+--- trunk/096/pkg/items/sysbook/book/methods.src	2005-09-29 23:05:41 UTC (rev 314)
++++ trunk/096/pkg/items/sysbook/book/methods.src	2005-09-29 23:19:04 UTC (rev 315)
+@@ -1 +1,260 @@
+ // $Id$
++
++/*
++From core-changes.txt:
++
++Added support for the client's book interface:
++uo::SendOpenBook(chr,book) kicks it off
++
++The 'book' passed must have a Method Script, exporting the following functions:
++	exported function IsWritable(book) - returns 0 or 1 for readonly/writable
++	exported function GetNumLines(book) - returns maximum number of lines
++        exported function GetTitle(book)
++        exported function GetAuthor(book)
++        exported function GetLine(book, line) - line is 1-based
++
++Writable books must provide the following functions:
++        exported function SetAuthor(book,author)
++        exported function SetTitle(book,title)
++        exported function SetLine(book,line,text)
++        exported function GetContents(book) - returns an array of all lines
++*/
++
++/////////////////////////////////////////////////////////////////
++// * Function List *
++//
++// IsBook(book)
++//
++// IsWritable(book)
++// GetNumLines(book)
++// GetTitle(book)
++// GetAuthor(book)
++// GetLine(book, line_num)
++// GetContents(book)
++// SetAuthor(book, author)
++// SetTitle(book, title)
++// SetLine(book, line_num, text)
++// SetOwner(book, serial)
++// GetOwner(book)
++// ReadOnly(book, value)
++// ExtractInfo(book)
++//
++/////////////////////////////////////////////////////////////////
++// * Internal/Private Function List *
++//
++// GetInfo(book, prop_name)
++// SetInfo(book, prop_name, prop_value)
++//
++///////////////////////////
++
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:datafile:datafile&quot;;
++
++program Install()
++	return 1;
++endprogram
++
++exported function IsBook(book)
++	return book;
++endfunction
++
++//++++++++++++++++++++++++++++
++// Core Required Functions
++//++++++++++++++++++++++++++++
++
++exported function IsWritable(book)
++	if ( GetInfo(book, &quot;ReadOnly&quot;) )
++		return 0;
++	else
++		return 1;
++	endif
++endfunction
++
++exported function GetNumLines(book)
++	// There are 8 lines per page.
++	// For simplicity, take in the number of pages and return 8 lines for every page.
++	return (CInt(GetInfo(book, &quot;NumPages&quot;)) * 8);
++endfunction
++
++exported function GetTitle(book)
++	//One line. Looks for a property called &quot;Title&quot;.
++	return CStr(GetInfo(book, &quot;Title&quot;));
++endfunction
++
++exported function GetAuthor(book)
++	//One line. :ooks for a property called &quot;Author&quot;.
++	return CStr(GetInfo(book, &quot;Author&quot;));
++endfunction
++
++exported function GetLine(book, line_num)
++	// Used to get a specific line from the book.
++
++	// Uses the GetContents() function.
++	var contents := GetContents(book);
++	if ( line_num &lt;= contents.size() )
++		var line := contents[line_num];
++
++		if ( line &amp;&amp; line != error )
++			return line;
++		endif
++	endif
++
++	// If there wasnt a line, return an empty string.
++	return &quot;&quot;;
++endfunction
++
++exported function GetContents(book)
++	// Returns an array of all lines
++	var info := GetInfo(book, &quot;Contents&quot;);
++	if ( !info || info == error )
++		info := array;
++	endif
++	return info;
++endfunction
++
++exported function SetAuthor(book, author)
++	return SetInfo(book, &quot;Author&quot;, CStr(author));
++endfunction
++
++exported function SetTitle(book, title)
++	return SetInfo(book, &quot;Title&quot;, CStr(title));
++endfunction
++
++exported function SetLine(book, line_num, text)
++	// Gets all the lines, then edits the appropriate line.
++	// Returns the contents of the book.
++
++	// Reuses the GetContents() function.
++	var contents := GetContents(book);
++	if ( !contents || contents == error )
++		contents := array;
++	endif
++
++	//Reuses the GetNumLines() function
++	if ( line_num &lt;= GetNumLines(book) )
++		contents[line_num] := CStr(text);
++		SetInfo(book, &quot;Contents&quot;, contents);
++	endif
++
++	return contents;
++endfunction
++
++//++++++++++++++++++++++++++++
++// Helper Functions
++//++++++++++++++++++++++++++++
++
++exported function SetOwner(book, owner)
++	var serial;
++	
++	if ( owner.IsA(POLCLASS_MOBILE) )
++		serial := owner.serial;
++	endif
++	
++	//book.SetOwner(serial)
++	//Sets the serial of who owns the book.
++	return SetInfo(book, &quot;Owner&quot;, CInt(serial));
++endfunction
++
++exported function GetOwner(book)
++	//book.GetOwner()
++	//Gets the serial of the owner of the book.
++	return GetInfo(book, &quot;Owner&quot;);
++endfunction
++
++exported function ReadOnly(book, mode)
++	// book.ReadOnly(1|0)
++	// Mode:
++	//	1 - Disable read write (sets to read only)
++	//	0 - Enable read write
++
++	mode := CInt(mode);
++	if ( mode &lt; 0 )
++		mode := 0;
++	elseif ( mode &gt; 1 )
++		mode := 1;
++	endif
++
++	return SetInfo(book, &quot;ReadOnly&quot;, CInt(mode));
++endfunction
++
++exported function ExtractInfo(book)
++	// book.ExtractInfo()
++	// Get all the info you need about a book
++	// useful for copying one or something else.
++
++	// Returns a structure
++	// .Author
++	// .Contents
++	// .Title
++
++	var book_info := struct;
++	book_info.+Author := GetAuthor(book);
++	book_info.+Contents := GetContents(book);
++	book_info.+Title := GetTitle(book);
++
++	return book_info;
++endfunction
++
++//++++++++++++++++++++++++++++
++// Internal/Private Functions
++//++++++++++++++++++++++++++++
++
++// *GetInfo(book, prop_name)
++//
++// Function for getting a book's info.
++// First it will search for a datafile entry for the value based on
++// the book's serial. Then it will look on the book for a cprop, then
++// if neither of the previous two were found, it will fall back on the
++// itemdesc.cfg entry for the book.
++
++function GetInfo(book, prop_name)
++	var prop_value;
++
++	// First we check for a datafile entry.
++	// We do create the datafile if it doesnt exist.
++	// However, the elem is not created if it doesnt exist
++	// because were only reading in this function and not writing.
++	var book_data_file := DFOpenDataFile(&quot;books&quot;, DF_CREATE);
++	var book_elem := DFFindElement(book_data_file, hex(book.serial), DF_NO_CREATE);
++	prop_value := book_elem.GetProp(prop_name);
++	if ( prop_value )
++		return prop_value;
++	endif
++
++	//If we got here, then there was no datafile entry for
++	//the property passed. So at this point we check the book
++	//for a cprop.
++	prop_value := GetObjProperty(book, prop_name);
++	if ( prop_value )
++		return prop_value;
++	endif
++
++	//If we got this far.. then lets fall back on the itemdesc.cfg
++	//Note its read in as :*: which reads in every itemdesc.cfg
++	var cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
++	cfg := cfg[book.objtype];
++	prop_value := GetConfigString(cfg, prop_name);
++	if ( prop_value )
++		return prop_value;
++	endif
++
++	return 0;
++endfunction
++
++// *SetInfo(book, prop_name, prop_value)
++//
++// Private function for setting a value for a book.
++// Writes to a datafile, the elem being the book's serial #
++//
++// Note: Make sure the prop_name never has any spaces.
++//       Datafiles dont like that.
++//
++function SetInfo(book, prop_name, prop_value)
++	var book_data_file := DFOpenDataFile(&quot;books&quot;, DF_CREATE);
++	var book_elem := DFFindElement(book_data_file, hex(book.serial), DF_CREATE);
++
++	return book_elem.SetProp(CStr(prop_name), prop_value);
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000292.html">[Poldistro-svn] r314 - trunk/096/pkg/items/sysbook/include
+</A></li>
+	<LI>Next message: <A HREF="000294.html">[Poldistro-svn] r316 - in trunk/096/pkg: skills/blacksmithy skills/blacksmithy/config skills/blacksmithy/tongs systems/crafting systems/crafting/include systems/crafting/method
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#293">[ date ]</a>
+              <a href="thread.html#293">[ thread ]</a>
+              <a href="subject.html#293">[ subject ]</a>
+              <a href="author.html#293">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

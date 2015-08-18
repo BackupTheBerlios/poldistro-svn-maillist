@@ -1,0 +1,327 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1155 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/exampleNPC bundled/gUnicorn scripts/doubleClick scripts/lookAround
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1155%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20bundled%20bundled/exampleNPC%20bundled/gUnicorn%20scripts/doubleClick%20scripts/lookAround&In-Reply-To=%3C200602090831.k198VVrf031927%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001125.html">
+   <LINK REL="Next"  HREF="001127.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1155 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/exampleNPC bundled/gUnicorn scripts/doubleClick scripts/lookAround</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1155%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20bundled%20bundled/exampleNPC%20bundled/gUnicorn%20scripts/doubleClick%20scripts/lookAround&In-Reply-To=%3C200602090831.k198VVrf031927%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1155 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/exampleNPC bundled/gUnicorn scripts/doubleClick scripts/lookAround">austin at berlios.de
+       </A><BR>
+    <I>Thu Feb  9 09:31:31 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001125.html">[Poldistro-svn] r1154 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+        <LI>Next message: <A HREF="001127.html">[Poldistro-svn] r1156 - trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1126">[ date ]</a>
+              <a href="thread.html#1126">[ thread ]</a>
+              <a href="subject.html#1126">[ subject ]</a>
+              <a href="author.html#1126">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-09 09:31:16 +0100 (Thu, 09 Feb 2006)
+New Revision: 1155
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/
+   trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/doubleClick.src
+   trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/lookAround.src
+   trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src
+   trunk/096/pkg/mobiles/brainAI/scripts/lookAround/keepAwake.src
+Modified:
+   trunk/096/pkg/mobiles/brainAI/bundled/exampleNPC/doubleClick.src
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+   trunk/096/pkg/mobiles/brainAI/scripts/doubleClick/cowTip.src
+Log:
+Added a 'byref' entry to dblclick scripts when they handle the event.
+Working on a... flamboyant unicorn NPC that started as a joke in IRC :-P
+
+Modified: trunk/096/pkg/mobiles/brainAI/bundled/exampleNPC/doubleClick.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/exampleNPC/doubleClick.src	2006-02-08 16:37:44 UTC (rev 1154)
++++ trunk/096/pkg/mobiles/brainAI/bundled/exampleNPC/doubleClick.src	2006-02-09 08:31:16 UTC (rev 1155)
+@@ -30,7 +30,7 @@
+ 	endwhile
+ endprogram
+ 
+-function DoubleClickEvent(npc, event)
++function DoubleClickEvent(npc, byref event)
+ 	AI_Speak(npc, &quot;Eeeheee... that tickles!&quot;, SPEAK_TEXTTYPE_YELL, SPEAK_DOEVENT_ENABLE, WAKEUP);
+ 	AI_Speak(npc, &quot;*moves away from &quot;+(event.source).name+&quot;*&quot;);
+ 	AI_Move(npc, event.source, NEMOVE_AWAY, NEMOVE_WALK, WAKEUP, 1);
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/doubleClick.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/doubleClick.src	2006-02-08 16:37:44 UTC (rev 1154)
++++ trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/doubleClick.src	2006-02-09 08:31:16 UTC (rev 1155)
+@@ -0,0 +1,37 @@
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name:= params[2];
++	var event	:= params[3];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++
++	while ( npc )
++		if ( event )
++			case ( event.type )
++				SYSEVENT_DOUBLECLICKED:
++					DoubleClickEvent(npc, event);
++					break;
++				default:
++					break;
++			endcase
++
++			event := 0;
++		endif
++
++		sleepms(5);
++		event := wait_for_event(900000);
++	endwhile
++endprogram
++
++function DoubleClickEvent(npc, byref event)
++	SendEvent(npc, &quot;Virtual&quot;);
++
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/lookAround.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/lookAround.src	2006-02-08 16:37:44 UTC (rev 1154)
++++ trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/lookAround.src	2006-02-09 08:31:16 UTC (rev 1155)
+@@ -0,0 +1,31 @@
++use uo;
++use os;
++use util;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( !npc.opponent )
++			if ( NPC_LoadWatchList(npc).size() &lt; 1 )
++				// No need to look around any longer. We're all alone :(
++				return 0;
++			endif
++			// Keep running while the npc sees something
++			// to prevent it from going to sleep.
++			//
++			// Provides no interraction with those mobiles it is watching.
++		endif
++		
++		AI_ClearThoughts(npc, CLR_NERVE);
++		Sleep(5);
++	endwhile
++endprogram
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src	2006-02-08 16:37:44 UTC (rev 1154)
++++ trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src	2006-02-09 08:31:16 UTC (rev 1155)
+@@ -0,0 +1,38 @@
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;include/client&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name:= params[2];
++	var event	:= params[3];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( event )
++			case ( event.type )
++				NPCEVENT_DONE:
++					break;
++				default:
++					VirtualEvent(npc, event);
++					break;
++			endcase
++						
++			event := 0;
++		endif
++		
++		event := wait_for_event(900000);
++	endwhile
++endprogram
++
++function VirtualEvent(npc, event)
++	AI_Speak(npc, &quot;So yeah.. I just got this event and I don't know what to do with it... its virtual time, baby.&quot;, SPEAK_TEXTTYPE_YELL, SPEAK_DOEVENT_ENABLE, WAKEUP);
++	AI_Speak(npc, &quot;The event structure is... &quot;+event, SPEAK_TEXTTYPE_YELL, SPEAK_DOEVENT_ENABLE, WAKEUP);
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-02-08 16:37:44 UTC (rev 1154)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-02-09 08:31:16 UTC (rev 1155)
+@@ -297,23 +297,14 @@
+ 	AISetting	SleepWait	i1000
+ 
+ 	// Brain AI Nerves
+-	AIScript	Combat		:brainAI:bundled/exampleNPC/combat
+-	AIScript	DblClick	:brainAI:bundled/exampleNPC/doubleClick
+-	AIScript	Disengaged	:brainAI:bundled/exampleNPC/disengaged
+-	AIScript	EnterArea	:brainAI:bundled/exampleNPC/enteredArea
+-	AIScript	GoneCriminal	:brainAI:bundled/exampleNPC/goneCriminal
+-	AIScript	Init		:brainAI:bundled/exampleNPC/init
+-	AIScript	ItemGiven	:brainAI:bundled/exampleNPC/itemGiven
+-	AIScript	LeftArea	:brainAI:bundled/exampleNPC/leftArea
+-	AIScript	LookAround	:brainAI:bundled/exampleNPC/lookAround
+-	AIScript	Listen		:brainAI:bundled/exampleNPC/listen
+-	AISCript	Merchant	:brainAI:bundled/exampleNPC/merchant
+-	AIScript	Restart		:brainAI:bundled/exampleNPC/restart
+-	AIScript	Sleep		:brainAI:bundled/exampleNPC/sleep
+-	AIScript	ShouldWatch	:brainAI:bundled/exampleNPC/shouldWatch
+-	AIScript	Virtual		:brainAI:bundled/exampleNPC/virtual
+-	AIScript	EndFight	:brainAI:bundled/exampleNPC/endFight
+-
++	AIScript	Combat		:brainAI:scripts/combat/genericCombat
++	AIScript	DblClick	:brainAI:bundled/gUnicorn/doubleClick
++	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
++	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
++	AIScript	LookAround	:brainAI:bundled/gUnicorn/lookAround
++	AIScript	Sleep		:brainAI:scripts/sleep/generic
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/targetPlayers
++	
+ 	// Skinning Info
+ 
+ 	// Settings other scripts use...
+@@ -681,14 +672,12 @@
+ 
+ 	// Brain AI Nerves
+ 	AIScript	Combat		:brainAI:scripts/combat/spellCombat
+-	AIScript	EnterArea	:brainAI:bundled/exampleNPC/enteredArea
+-	AIScript	Init		:brainAI:bundled/exampleNPC/init
+-	AIScript	LeftArea	:brainAI:bundled/exampleNPC/leftArea
+-	AIScript	LookAround	:brainAI:bundled/exampleNPC/lookAround
+-	AIScript	Sleep		:brainAI:bundled/exampleNPC/sleep
+-	AIScript	ShouldWatch	:brainAI:bundled/exampleNPC/shouldWatch
+-	AIScript	EndFight	:brainAI:bundled/exampleNPC/endFight
+-
++	AIScript	EnterArea	:brainAI:acripts/enterArea/generic
++	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
++	AIScript	LookAround	:brainAI:scripts/lookAround/findAttackables
++	AIScript	Sleep		:brainAI:scripts/sleep/generic
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/targetPlayers
++	
+ 	// Skinning Info
+ 	// Skinning	ItemName	Amount
+ 	Skinning	RawRibs		1
+
+Modified: trunk/096/pkg/mobiles/brainAI/scripts/doubleClick/cowTip.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/doubleClick/cowTip.src	2006-02-08 16:37:44 UTC (rev 1154)
++++ trunk/096/pkg/mobiles/brainAI/scripts/doubleClick/cowTip.src	2006-02-09 08:31:16 UTC (rev 1155)
+@@ -53,7 +53,7 @@
+ endprogram
+ 
+ 
+-function CowTipEvent(npc, event)
++function CowTipEvent(npc, byref event)
+ 	PrintTextAbove(event.source, &quot;*push*&quot;);
+ 	PlaySoundEffect(npc, 0x7D);
+ 	PerformAction(npc, 0x8);
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/lookAround/keepAwake.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/lookAround/keepAwake.src	2006-02-08 16:37:44 UTC (rev 1154)
++++ trunk/096/pkg/mobiles/brainAI/scripts/lookAround/keepAwake.src	2006-02-09 08:31:16 UTC (rev 1155)
+@@ -0,0 +1,31 @@
++use uo;
++use os;
++use util;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( !npc.opponent )
++			if ( NPC_LoadWatchList(npc).size() &lt; 1 )
++				// No need to look around any longer. We're all alone :(
++				return;
++			endif
++			// Keep running while the npc sees something
++			// to prevent it from going to sleep.
++			//
++			// Provides no interraction with those mobiles it is watching.
++		endif
++		
++		AI_ClearThoughts(npc, CLR_NERVE);
++		Sleep(5);
++	endwhile
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001125.html">[Poldistro-svn] r1154 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+	<LI>Next message: <A HREF="001127.html">[Poldistro-svn] r1156 - trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1126">[ date ]</a>
+              <a href="thread.html#1126">[ thread ]</a>
+              <a href="subject.html#1126">[ subject ]</a>
+              <a href="author.html#1126">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

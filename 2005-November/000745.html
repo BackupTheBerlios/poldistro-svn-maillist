@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r771 - trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r771%20-%20trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis&In-Reply-To=%3C200511010734.jA17Y3M7018209%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000744.html">
+   <LINK REL="Next"  HREF="000746.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r771 - trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r771%20-%20trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis&In-Reply-To=%3C200511010734.jA17Y3M7018209%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r771 - trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 08:34:03 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000744.html">[Poldistro-svn] r770 - in trunk/096/pkg/items/walkOn: . spiderWeb
+</A></li>
+        <LI>Next message: <A HREF="000746.html">[Poldistro-svn] r772 - in trunk/096/pkg/mobiles/timedScripts: config subScripts/odors
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#745">[ date ]</a>
+              <a href="thread.html#745">[ thread ]</a>
+              <a href="subject.html#745">[ subject ]</a>
+              <a href="author.html#745">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 08:34:00 +0100 (Tue, 01 Nov 2005)
+New Revision: 771
+
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/endParalysis.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/paralysis.src
+Log:
+Updated to.. work
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/endParalysis.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/endParalysis.src	2005-11-01 07:22:07 UTC (rev 770)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/endParalysis.src	2005-11-01 07:34:00 UTC (rev 771)
+@@ -1,9 +1,14 @@
++/*
++ * $Id$
++ *
++ */
++ 
+ use uo;
+ use os;
+ 
+-program poisonScript(params)
+-	var who := params[1];
++program poisonScript(mobile)
++	mobile.paralyzed := 0;
+ 	
+-	who.paralyzed := 0;
++	return 1;
+ endprogram
+ 
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/paralysis.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/paralysis.src	2005-11-01 07:22:07 UTC (rev 770)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/paralysis.src	2005-11-01 07:34:00 UTC (rev 771)
+@@ -1,3 +1,8 @@
++/*
++ * $Id$
++ *
++ */
++ 
+ use uo;
+ use os;
+ 
+@@ -2,8 +7,8 @@
+ program poisonScript(params)
+-	var who := params[1];
++	var mobile := params[1];
+ 	
+-	PlaySoundEffect(who, 0x205);
+-	SendSysMessage(who, &quot;You are unable to move.&quot;);
+-	while ( who )
+-		who.paralyzed := 1;
++	PlaySoundEffect(mobile, 0x205);
++	SendSysMessage(mobile, &quot;You are unable to move.&quot;);
++	while ( mobile )
++		mobile.paralyzed := 1;
+ 		sleepms(250);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000744.html">[Poldistro-svn] r770 - in trunk/096/pkg/items/walkOn: . spiderWeb
+</A></li>
+	<LI>Next message: <A HREF="000746.html">[Poldistro-svn] r772 - in trunk/096/pkg/mobiles/timedScripts: config subScripts/odors
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#745">[ date ]</a>
+              <a href="thread.html#745">[ thread ]</a>
+              <a href="subject.html#745">[ subject ]</a>
+              <a href="author.html#745">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

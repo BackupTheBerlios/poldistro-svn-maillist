@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r965 - in trunk/096/pkg/items: . hair hair/config hair/cuthair
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r965%20-%20in%20trunk/096/pkg/items%3A%20.%20hair%20hair/config%20hair/cuthair&In-Reply-To=%3C200511131401.jADE1OLf005342%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000938.html">
+   <LINK REL="Next"  HREF="000940.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r965 - in trunk/096/pkg/items: . hair hair/config hair/cuthair</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r965%20-%20in%20trunk/096/pkg/items%3A%20.%20hair%20hair/config%20hair/cuthair&In-Reply-To=%3C200511131401.jADE1OLf005342%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r965 - in trunk/096/pkg/items: . hair hair/config hair/cuthair">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 13 15:01:24 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000938.html">[Poldistro-svn] r964 - in trunk/096/pkg/mobiles/brainAI: . bundled/banker config include
+</A></li>
+        <LI>Next message: <A HREF="000940.html">[Poldistro-svn] r966 - trunk/096/pkg/mobiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#939">[ date ]</a>
+              <a href="thread.html#939">[ thread ]</a>
+              <a href="subject.html#939">[ subject ]</a>
+              <a href="author.html#939">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-13 15:01:14 +0100 (Sun, 13 Nov 2005)
+New Revision: 965
+
+Added:
+   trunk/096/pkg/items/hair/
+   trunk/096/pkg/items/hair/commands/
+   trunk/096/pkg/items/hair/config/
+   trunk/096/pkg/items/hair/config/icp.cfg
+   trunk/096/pkg/items/hair/cuthair/
+   trunk/096/pkg/items/hair/cuthair/control.src
+   trunk/096/pkg/items/hair/include/
+   trunk/096/pkg/items/hair/itemdesc.cfg
+   trunk/096/pkg/items/hair/pkg.cfg
+Log:
+Gotta have hair, man!
+
+Added: trunk/096/pkg/items/hair/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/hair/config/icp.cfg	2005-11-13 13:51:51 UTC (rev 964)
++++ trunk/096/pkg/items/hair/config/icp.cfg	2005-11-13 14:01:14 UTC (rev 965)
+@@ -0,0 +1,13 @@
++ICP Register
++{
++	Name		Hair
++	Version		1.0
++
++	Description	Package that handles head hair and facial hair.
++
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/hair/cuthair/control.src
+===================================================================
+--- trunk/096/pkg/items/hair/cuthair/control.src	2005-11-13 13:51:51 UTC (rev 964)
++++ trunk/096/pkg/items/hair/cuthair/control.src	2005-11-13 14:01:14 UTC (rev 965)
+@@ -0,0 +1,14 @@
++/* 
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++program ControlScript(cuthair)
++	Sleep(90);
++	DestroyItem(cuthair);
++	
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/items/hair/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/hair/itemdesc.cfg	2005-11-13 13:51:51 UTC (rev 964)
++++ trunk/096/pkg/items/hair/itemdesc.cfg	2005-11-13 14:01:14 UTC (rev 965)
+@@ -0,0 +1,99 @@
++Item 0xDFE
++{
++	Name		cuthair
++	Desc		cut hair
++
++	Movable		0
++	
++	ControlScript	cuthair/control
++}
++
++
++//-=[ Hair ]=--------------------------
++Item 0x203B
++{
++	Name		ShortHair
++	Desc		short hair
++}
++Item 0x203C
++{
++	Name		LongHair
++	Desc		long hair
++}
++Item 0x203d
++{
++	Name		PonyTailHair
++	Desc		pony tail
++}
++Item 0x2044
++{
++	Name		MohawkHair
++	Desc		mohawk
++}
++Item 0x2045
++{
++	Name		PageBoyHair
++	Desc		pageboy
++}
++Item 0x2046
++{
++	Name		BunsHair
++	Desc		buns hair
++}
++Item 0x2047
++{
++	Name		AfroHair
++	Desc		afro
++}
++Item 0x2048
++{
++	Name		RecedingHair
++	Desc		receding hair
++}
++Item 0x2049
++{
++	Name		PigTailHair
++	Desc		two pig tails
++}
++Item 0x204A
++{
++	Name		KrisnaHair
++	Desc		krisna hair
++}
++
++//-=[ Facial Hair ]=-------------------
++Item 0x203E
++{
++	Name		LongBeardHair
++	Desc		long beard
++}
++Item 0x203F
++{
++	Name		ShortBeardHair
++	Desc		short beard
++}
++Item 0x2040
++{
++	Name		GoateeHair
++	Desc		goatee
++}
++Item 0x2041
++{
++	Name		MustacheHair
++	Desc		mustache
++}
++Item 0x204B
++{
++	Name		MedShortBeardHair
++	Desc		medium-short beard
++}
++Item 0x204C
++{
++	Name		medlongbeard
++	Desc		medium-long beard
++}
++Item 0x204D
++{
++	Name		VandykeHair
++	Desc		vandyke
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/hair/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/hair/pkg.cfg	2005-11-13 13:51:51 UTC (rev 964)
++++ trunk/096/pkg/items/hair/pkg.cfg	2005-11-13 14:01:14 UTC (rev 965)
+@@ -0,0 +1,17 @@
++# $Id$
++#
++#
++Enabled		1
++Name		hair
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires	NONE
++#Conflicts	NONE
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000938.html">[Poldistro-svn] r964 - in trunk/096/pkg/mobiles/brainAI: . bundled/banker config include
+</A></li>
+	<LI>Next message: <A HREF="000940.html">[Poldistro-svn] r966 - trunk/096/pkg/mobiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#939">[ date ]</a>
+              <a href="thread.html#939">[ thread ]</a>
+              <a href="subject.html#939">[ subject ]</a>
+              <a href="author.html#939">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

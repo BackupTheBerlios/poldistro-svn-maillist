@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1245 - trunk/uomul
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1245%20-%20trunk/uomul&In-Reply-To=%3C200604201609.k3KG9xPN025836%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001216.html">
+   <LINK REL="Next"  HREF="001218.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1245 - trunk/uomul</H1>
+    <B>panosl at berlios.de</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1245%20-%20trunk/uomul&In-Reply-To=%3C200604201609.k3KG9xPN025836%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1245 - trunk/uomul">panosl at berlios.de
+       </A><BR>
+    <I>Thu Apr 20 18:09:59 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001216.html">[Poldistro-svn] r1244 - trunk/uomul
+</A></li>
+        <LI>Next message: <A HREF="001218.html">[Poldistro-svn] r1246 - trunk/uomul
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1217">[ date ]</a>
+              <a href="thread.html#1217">[ thread ]</a>
+              <a href="subject.html#1217">[ subject ]</a>
+              <a href="author.html#1217">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2006-04-20 18:09:57 +0200 (Thu, 20 Apr 2006)
+New Revision: 1245
+
+Modified:
+   trunk/uomul/skills.py
+Log:
+skills.idx updates successfully on skill editing. Now have to figure out data (skills.mul) update.
+
+Modified: trunk/uomul/skills.py
+===================================================================
+--- trunk/uomul/skills.py	2006-04-20 14:26:34 UTC (rev 1244)
++++ trunk/uomul/skills.py	2006-04-20 16:09:57 UTC (rev 1245)
+@@ -14,6 +14,7 @@
+ 		Index.__init__(self, indexfile)
+ 		self.data = getData(file)
+ 		self.max = self.__getMax()
++		self.newentries = []
+ 
+ 	def __getMax(self):
+ 		'''Determine the max number of skills'''
+@@ -36,17 +37,25 @@
+ 		return skill
+ 	
+ 	def setSkill(self, id, name, active):
+-		'''Replace an already existing skill, with a new one.'''
+-		entries = self.entries[:]
+-		idxold = entries.pop(id)
++		'''Replace an already existing skill, with a new one'''
++		if len(self.newentries) == 0:
++			self.newentries = self.entries[:]
++		self.newentries = [list(entry) for entry in self.newentries]
++		idxold = self.newentries.pop(id)
+ 		idxnew = (idxold[0], len(name), 0)
+-		entries.insert(id, idxnew)
+-		return entries
++		self.newentries.insert(id, idxnew)
++		temp = idxold[1] - idxnew[1]
++		for i in range(id+1, self.max):
++			self.newentries[i][0] += temp
++		return self.newentries
+ 
+ 	def getSkills(self):
+ 		skills = [self.getSkill(skill) for skill in range(0, self.max)]
+ 		return skills
+ 
++	def writeSkills(self, entries=self.newentries, data):
++		fsock = open('Skills.idx', 'w')
++		fsock.close()
+ 
+ class SkillGrp:
+ 	def __init__(self, file='SkillGrp.mul'):
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001216.html">[Poldistro-svn] r1244 - trunk/uomul
+</A></li>
+	<LI>Next message: <A HREF="001218.html">[Poldistro-svn] r1246 - trunk/uomul
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1217">[ date ]</a>
+              <a href="thread.html#1217">[ thread ]</a>
+              <a href="subject.html#1217">[ subject ]</a>
+              <a href="author.html#1217">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,412 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r881 - in trunk/096/pkg/skills/magery: . config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r881%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20config%20include&In-Reply-To=%3C200511031509.jA3F9RSW003377%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000854.html">
+   <LINK REL="Next"  HREF="000856.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r881 - in trunk/096/pkg/skills/magery: . config include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r881%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20config%20include&In-Reply-To=%3C200511031509.jA3F9RSW003377%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r881 - in trunk/096/pkg/skills/magery: . config include">austin at berlios.de
+       </A><BR>
+    <I>Thu Nov  3 16:09:27 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000854.html">[Poldistro-svn] r880 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="000856.html">[Poldistro-svn] r882 - trunk/096/pkg/items/magic
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#855">[ date ]</a>
+              <a href="thread.html#855">[ thread ]</a>
+              <a href="subject.html#855">[ subject ]</a>
+              <a href="author.html#855">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-03 16:09:26 +0100 (Thu, 03 Nov 2005)
+New Revision: 881
+
+Modified:
+   trunk/096/pkg/skills/magery/config/spells.cfg
+   trunk/096/pkg/skills/magery/include/spells.inc
+   trunk/096/pkg/skills/magery/spellStarter.src
+Log:
+
+
+Modified: trunk/096/pkg/skills/magery/config/spells.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/config/spells.cfg	2005-11-03 14:42:53 UTC (rev 880)
++++ trunk/096/pkg/skills/magery/config/spells.cfg	2005-11-03 15:09:26 UTC (rev 881)
+@@ -0,0 +1,17 @@
++#
++# Spell	Example
++# {
++#	Script		:magery:spellScripts/Circle#/fileName
++#	
++#	ManaCost	25
++#	
++#	BaseDelay	100
++#	Difficulty	35
++#	
++#	Attribute	Magery
++#	
++#	Reagent	BloodMoss	5
++#	Reagent	BlackPearl	10
++#	Reagent	Ginseng		250000
++#}
++#
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/magery/include/spells.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/include/spells.inc	2005-11-03 14:42:53 UTC (rev 880)
++++ trunk/096/pkg/skills/magery/include/spells.inc	2005-11-03 15:09:26 UTC (rev 881)
+@@ -9,22 +9,80 @@
+ 
+ const MAX_RANGE	:= 16;
+ 
+-function SpellDebug(who, text)
+-	if ( who.cmdlevel )
+-		SendSysMessage(who, &quot;&quot;+text);
++/*
++ * MS_GetSpellsCfgFile()
++ *
++ * Purpose
++ * Gets the spells.cfg file from the magery package.
++ *
++ * Parameters
++ *
++ * Return value
++ * Config file
++ *
++ */
++function MS_GetSpellsCfgFile()
++	var cfg := ReadConfigFile(&quot;:magery:config/spells&quot;);
++
++	if ( cfg.errortext )
++		SysLog(&quot;Error::MS_GetSpellsCfgFile() - Unable to open [:magery:config/spells.cfg] -&gt;&quot;+cfg.errortext);
+ 	endif
++
++	return cfg;
+ endfunction
+ 
+-function UseMana(who, amount)
+-	if ( AP_GetVital(who, MANA) &gt;= amount )
+-		AP_SetVital(who, MANA, AP_GetVital(who, MANA)-amount);
++/*
++ * MS_GetSpellsCfgElem(elem_name, cfg_file)
++ *
++ * Purpose
++ * Retrieves an elem from a config file. 
++ *
++ * Parameters
++ * elem_name:	A string matching the elem name to be retrieved.
++ * cfg_file:	Optional parameter - reference to a config already read in by MS_GetSpellsCfgFile()
++ *
++ * Return value
++ * A config file elem reference.
++ *
++ */
++function MS_GetSpellsCfgElem(elem_name, byref cfg_file:=0)
++	if ( !cfg_file )
++		cfg_file := MS_GetSpellsCfgFile();
++	endif
++	
++	var elem := cfg_file[elem_name];
++
++	if ( elem.errortext )
++		SysLog(&quot;Error::MS_GetSpellsCfgElem() - Unable to find elem [&quot;+elem_name+&quot;] -&gt;&quot;+elem.errortext);
++	endif
++
++	return elem;
++endfunction
++
++/* 
++ * MS_SpellDebug(who, text)
++ *
++ * Purpose
++ * Sends debug information to mobiles with a command level.
++ *
++ * Parameters
++ * who:		Mobile that will see the debug message.
++ * text:	Text to show.
++ *
++ * Return value
++ * Returns 1 if the text was sent.
++ * Returns 0 if the text was not sent.
++ */
++function MS_SpellDebug(who, text)
++	if ( who.cmdlevel )
++		SendSysMessage(who, &quot;&quot;+text);
+ 		return 1;
+-	else
+-		return 0;
+ 	endif
++	return 0;
+ endfunction
+ 
+-function Reflection(who, targ, spell_strength, info)
++function MS_Reflection()
++	// Not sure what params it would need yet to be flexible.
+ 	// Lower targ's defense
+ 	// Apply some of spell_strength to target if reflected.
+ 	// Lower spell_strength by how much was not reflected.
+@@ -32,59 +90,108 @@
+ 	
+ endfunction
+ 
+-function SpellTarget(byref who, byref npctarget:=0, prompt := &quot;Select a target.&quot;, ops:=TGTOPT_CHECK_LOS+TGTOPT_NEUTRAL)
+-	var x := who.x;
+-	var y := who.y;
++/* 
++ * MS_Target(who, targ, prompt, flags)
++ *
++ * Purpose
++ * Used to handle targetting of other objects in spell scripts.
++ *
++ * Parameters
++ * who:		Mobile that is doing the targetting
++ * targ:	Pre-selected target (for NPCs)
++ * prompt:	Message the user receives when targeting.
++ * flags:	uo.em targeting flags.
++ *
++ * Return value
++ * Returns an object reference to what was targeted.
++ *
++ */
++function MS_Target(byref who, byref targ:=0, byref prompt := &quot;Select a target.&quot;, byref flags:=TGTOPT_CHECK_LOS+TGTOPT_NEUTRAL)
+ 	who.hidden := 0;
+ 	
+-	if ( npctarget )
+-		return npctarget;
++	if ( targ.IsA(POLCLASS_UOBJECT) )
++		return targ;
+ 	elseif ( who.npctemplate )
+-		return;
++		return 0;
+ 	endif
+ 	
++	var orig_x := who.x;
++	var orig_y := who.y;
++	
+ 	SendSysMessage(who, prompt);
+ 	
+-	var targ := Target(who, ops);
++	targ := Target(who, flags);
+ 	if ( Distance(who, targ) &gt; MAX_RANGE )
+ 		SendSysMessage(who, &quot;That is too far away.&quot;);
+ 		return 0;
+-	elseif ( who.x == x &amp;&amp; who.y == y )
+-		return targ;
+-	else
++	elseif ( who.x != orig_x || who.y != orig_y )
+ 		SendSysMessage(who, &quot;You break your concentration.&quot;);
+ 		return 0;
++	else
++		return targ;
+ 	endif
+ endfunction
+ 
+-function SpellTargetCoordinates(byref who, byref npctarget:=0, prompt := &quot;Select a target.&quot;, range := MAX_RANGE)
+-	var x := who.x;
+-	var y := who.y;
++/* 
++ * MS_TargetCoordinates(who, targ, prompt)
++ *
++ * Purpose
++ * Used to handle targetting of other objects in spell scripts.
++ *
++ * Parameters
++ * who:		Mobile that is doing the targetting
++ * targ:	Pre-selected target (for NPCs)
++ * prompt:	Message the user receives when targeting.
++ *
++ * Return value
++ * Returns an object reference to what was targeted.
++ *
++ */
++function MS_TargetCoordinates(byref who, byref targ:=0, byref prompt := &quot;Select a target.&quot;)
+ 	who.hidden := 0;
+ 	
+-	if ( npctarget )
+-		return npctarget;
++	if ( targ )
++		return targ;
+ 	elseif ( who.npctemplate )
+-		return;
++		return 0;
+ 	endif
+ 	
++	var orig_x := who.x;
++	var orig_y := who.y;
++	
+ 	SendSysMessage(who, prompt);
+-	var targ := TargetCoordinates(who);
++	targ := TargetCoordinates(who);
++	
+ 	if ( !targ )
+ 		SendSysMessage(who, &quot;Cancelled.&quot;);
+ 		return 0;
+-	elseif ( CoordDistance(who.x, who.y, targ.x, targ.y) &gt; range )
++	elseif ( CoordinateDistance(who.x, who.y, targ.x, targ.y) &gt; MAX_RANGE )
+ 		SendSysMessage(who, &quot;That is too far away.&quot;);
+ 		return 0;
+-	elseif ( who.x == x &amp;&amp; who.y == y )
+-		return targ;
+-	else
++	elseif ( who.x != orig_x || who.y != orig_y )
+ 		SendSysMessage(who, &quot;You lose concentration.&quot;);
+ 		return 0;
++	else
++		return targ;
+ 	endif
+ endfunction
+ 
+-function GetSpellPoints(mage, targ, points)
++/*
++ * MS_AdjustSpellPoints(mage, targ, points)
++ *
++ * Purpose
++ * Adjusts the effectiveness of a spell based on the target's magic resistance.
++ *
++ * Parameters
++ * caster:	Who is casting the spells.
++ * targ:	Who the spell is effecting.
++ * points:	Strength of the spell.
++ *
++ * Return value
++ * Integer - adjusted point
++ *
++ */
++function MS_AdjustSpellPoints(mage, targ, points)
+ 	var mage_skill := AP_GetSkill(mage, MAGERY);
+ 	var defense := AP_GetSkill(targ, RESISTING_SPELLS);
+ 
+@@ -100,21 +207,23 @@
+ 	return effect_level;
+ endfunction
+ 
+-function GetSpellWords(spell_name)
+-	var cfg := ReadConfigFile(&quot;:magic:configs/spell_info&quot;);
+-	if ( cfg.errortext )
+-		return &quot;Error - GetSpellWords(). Unable to open :magic:configs/spell_info.cfg -&gt;&quot;+cfg.errortext;
+-	endif
+-	
+-	cfg := cfg[spell_name];
+-	if ( cfg.errortext )
+-		return &quot;Error - GetSpellWords(). Unable to find elem [&quot;+spell_name+&quot;] -&gt;&quot;+cfg.errortext;
+-	endif
+-	
+-	return cfg.SpellWords;
+-endfunction
+-
++/*
++ * MS_ReleaseScript(pid)
++ *
++ * Purpose
++ * Informs the spell starter that the caster can cast another spell.
++ * This allows the spell script to continue running without blocking future castings.
++ *
++ * Parameters
++ * pid:	PId to the spell starter that started the spell.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
+ function ReleaseScript(pid)
+ 	var process := GetProcess(pid);
+ 	process.SendEvent(&quot;done&quot;);
++	
++	return 1;
+ endfunction
+
+Modified: trunk/096/pkg/skills/magery/spellStarter.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellStarter.src	2005-11-03 14:42:53 UTC (rev 880)
++++ trunk/096/pkg/skills/magery/spellStarter.src	2005-11-03 15:09:26 UTC (rev 881)
+@@ -1,3 +1,8 @@
++/*
++ * $Id$
++ *
++ */
++
+ use uo;
+ use os;
+ use cfgfile;
+@@ -3,8 +8,9 @@
+ 
+ include &quot;:attributes:attributes&quot;;
++include &quot;:magery:spells&quot;;
+ include &quot;include/client&quot;;
+-include &quot;:magery:spells&quot;;
+ include &quot;include/string&quot;;
+ 
++
+ set_script_option(SCRIPTOPT_CAN_ACCESS_OFFLINE_MOBILES, 1);
+ 
+@@ -38,7 +44,7 @@
+ 	var attribute		:= spell_info.Attribute;
+ 	var delay		:= spell_info.BaseDelay;
+ 	var difficulty		:= spell_info.Difficulty;
+-	var mana		:= spell_info.ManaCost;
++	var mana_cost		:= spell_info.ManaCost;
+ 	if ( !attribute )
+ 		attribute := &quot;Magery&quot;;
+ 	endif
+@@ -59,7 +65,7 @@
+ 	elseif ( who.squelched &amp;&amp; !who.npctemplate )
+ 		SendSysMessage(who, &quot;Something prevents you from casting.&quot;);
+ 		FailSpell(who);
+-	elseif ( !UseMana(who, mana) )
++	elseif ( !ConsumeVital(who, MANA, mana_cost) )
+ 		SendSysMessage(who, &quot;You are too tired to cast.&quot;);
+ 		FailSpell(who);
+ 	elseif ( !CheckRegs(who, spell_info) )
+@@ -120,7 +126,7 @@
+ 	endif
+ 	var script := start_script(&quot;movementCheck&quot;, {who, GetPid(), my_x, my_y});
+ 	
+-	SpellDebug(who, &quot;Cast delay -&gt;&quot;+delay);
++	MS_SpellDebug(who, &quot;Cast delay -&gt;&quot;+delay);
+ 	
+ 	sleepms(delay);
+ 	
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000854.html">[Poldistro-svn] r880 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="000856.html">[Poldistro-svn] r882 - trunk/096/pkg/items/magic
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#855">[ date ]</a>
+              <a href="thread.html#855">[ thread ]</a>
+              <a href="subject.html#855">[ subject ]</a>
+              <a href="author.html#855">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

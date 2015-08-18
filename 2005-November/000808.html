@@ -1,0 +1,631 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r833 - in trunk/096/pkg/mobiles/oldAI: . combat main
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r833%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20combat%20main&In-Reply-To=%3C200511021357.jA2Dvn1Q014830%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000806.html">
+   <LINK REL="Next"  HREF="000809.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r833 - in trunk/096/pkg/mobiles/oldAI: . combat main</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r833%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20combat%20main&In-Reply-To=%3C200511021357.jA2Dvn1Q014830%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r833 - in trunk/096/pkg/mobiles/oldAI: . combat main">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 14:57:49 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000806.html">[Poldistro-svn] r832 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000809.html">[Poldistro-svn] r834 - in trunk/096/pkg: skills/anatomy skills/animallore skills/armslore skills/begging skills/bowcraft skills/camping skills/carpentry skills/cartography skills/detecthidden skills/evalint skills/fishing skills/hiding skills/itemid skills/musicianship skills/musicianship/include skills/spiritspeak skills/stealth systems/attributes/include systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#808">[ date ]</a>
+              <a href="thread.html#808">[ thread ]</a>
+              <a href="subject.html#808">[ subject ]</a>
+              <a href="author.html#808">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 14:57:44 +0100 (Wed, 02 Nov 2005)
+New Revision: 833
+
+Modified:
+   trunk/096/pkg/mobiles/oldAI/bladeSpirit.src
+   trunk/096/pkg/mobiles/oldAI/combat/fight.inc
+   trunk/096/pkg/mobiles/oldAI/combat/immobileFight.inc
+   trunk/096/pkg/mobiles/oldAI/combat/packFight.inc
+   trunk/096/pkg/mobiles/oldAI/crier.src
+   trunk/096/pkg/mobiles/oldAI/escortee.src
+   trunk/096/pkg/mobiles/oldAI/goodCaster.src
+   trunk/096/pkg/mobiles/oldAI/helpPCs.src
+   trunk/096/pkg/mobiles/oldAI/immobile.src
+   trunk/096/pkg/mobiles/oldAI/immobileSpell.src
+   trunk/096/pkg/mobiles/oldAI/main/killPCsLoop.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoop.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopAnimal.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopBarker.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopCat.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopChicken.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopCow.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopKillAny.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopMeek.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopSheep.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopWolf.inc
+   trunk/096/pkg/mobiles/oldAI/main/meanLoop.inc
+   trunk/096/pkg/mobiles/oldAI/main/packKillPCsLoop.inc
+   trunk/096/pkg/mobiles/oldAI/main/sleepMode.inc
+   trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc
+   trunk/096/pkg/mobiles/oldAI/main/sleepModeSheep.inc
+   trunk/096/pkg/mobiles/oldAI/townPerson.src
+   trunk/096/pkg/mobiles/oldAI/vortexAI.src
+   trunk/096/pkg/mobiles/oldAI/worker.src
+Log:
+Renamed herding(ev) to herdingloop(ev)
+
+
+Modified: trunk/096/pkg/mobiles/oldAI/bladeSpirit.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/bladeSpirit.src	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/bladeSpirit.src	2005-11-02 13:57:44 UTC (rev 833)
+@@ -193,7 +193,7 @@
+   endif
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/fight.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/fight.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/combat/fight.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -48,7 +48,7 @@
+ 			              DisableCombatEvents();
+ 			              EnableMainEvents();
+ 			              return;
+-        EVID_HERDING:     Herding(ev);
++        EVID_HERDING:     HerdingLoop(ev);
+ 	  endcase
+ 	endif
+   endwhile
+@@ -89,7 +89,7 @@
+ 			  		        SetOpponent(opponent);
+ 			              endif
+         EVID_PEACEMADE:   chk := 1;
+-        EVID_HERDING:     Herding(ev);
++        EVID_HERDING:     HerdingLoop(ev);
+ 	  endcase
+ 	  if(chk)
+ 	    break;
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/immobileFight.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/immobileFight.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/combat/immobileFight.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -44,7 +44,7 @@
+ 			            DisableCombatEvents();
+ 			            EnableMainEvents();
+ 			            return;
+-      EVID_HERDING:     Herding(ev);
++      EVID_HERDING:     HerdingLoop(ev);
+ 	endcase
+   endwhile
+   post_combat();
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/packFight.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/packFight.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/combat/packFight.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -69,7 +69,7 @@
+                            DisableCombatEvents();
+                            EnableMainEvents();
+                            return;
+-      EVID_HERDING:           Herding(ev);
++      EVID_HERDING:           HerdingLoop(ev);
+     endcase
+   endwhile
+   post_combat();
+
+Modified: trunk/096/pkg/mobiles/oldAI/crier.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/crier.src	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/crier.src	2005-11-02 13:57:44 UTC (rev 833)
+@@ -39,7 +39,7 @@
+   endcase
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/escortee.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/escortee.src	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/escortee.src	2005-11-02 13:57:44 UTC (rev 833)
+@@ -208,7 +208,7 @@
+   endcase
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/goodCaster.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/goodCaster.src	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/goodCaster.src	2005-11-02 13:57:44 UTC (rev 833)
+@@ -46,7 +46,7 @@
+   endcase
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/helpPCs.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/helpPCs.src	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/helpPCs.src	2005-11-02 13:57:44 UTC (rev 833)
+@@ -41,7 +41,7 @@
+   endcase
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/immobile.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/immobile.src	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/immobile.src	2005-11-02 13:57:44 UTC (rev 833)
+@@ -35,7 +35,7 @@
+   sleepms(100);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/immobileSpell.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/immobileSpell.src	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/immobileSpell.src	2005-11-02 13:57:44 UTC (rev 833)
+@@ -54,7 +54,7 @@
+   sleepms(100);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/killPCsLoop.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/killPCsLoop.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/killPCsLoop.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -33,7 +33,7 @@
+         SYSEVENT_ENGAGED:       Fight(ev.source);
+         EVID_ALL_ATTACK_CMD:    Fight(ev.source);
+         SYSEVENT_DAMAGED:       Fight(ev.source);
+-        EVID_HERDING:           Herding(ev);
++        EVID_HERDING:           HerdingLoop(ev);
+       endcase
+     endif
+   endwhile
+@@ -57,7 +57,7 @@
+   DisableEvents(SYSEVENT_ENGAGED + SYSEVENT_DAMAGED + SYSEVENT_ENTEREDAREA);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoop.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoop.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoop.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -15,7 +15,7 @@
+         SYSEVENT_ENTEREDAREA: if((!critter.npctemplate) ||(critter.script == &quot;tamed&quot;) || (critter.script == &quot;employed&quot;))
+                                 Fight(ev.source);
+                               endif
+-        EVID_HERDING:         Herding(ev);
++        EVID_HERDING:         HerdingLoop(ev);
+       endcase
+     until(!(ev := os::wait_for_event(5)));
+     if(ReadGameClock() &gt; next_wander)
+@@ -56,7 +56,7 @@
+   cleareventque();
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopAnimal.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopAnimal.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopAnimal.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -15,7 +15,7 @@
+         case(ev.type)
+           SYSEVENT_DAMAGED: Fight(ev.source);
+           SYSEVENT_ENGAGED: Fight(ev.source);
+-          EVID_HERDING:     Herding(ev);
++          EVID_HERDING:     HerdingLoop(ev);
+         endcase
+       until(!(ev := os::wait_for_event(5)));
+     endif
+@@ -48,7 +48,7 @@
+   DisableEvents(SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DAMAGED + SYSEVENT_ENTEREDAREA);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopBarker.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopBarker.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopBarker.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -19,7 +19,7 @@
+                                 endif
+           SYSEVENT_DAMAGED:     Fight(ev.source);
+           SYSEVENT_ENGAGED:     RunLikeHell(ev.source);
+-          EVID_HERDING:           Herding(ev);
++          EVID_HERDING:           HerdingLoop(ev);
+         endcase
+       until(!(ev := os::wait_for_event(2)));
+     endif
+@@ -107,7 +107,7 @@
+   return noise;
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopCat.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopCat.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopCat.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -21,7 +21,7 @@
+                                 endif
+           SYSEVENT_DAMAGED:
+           SYSEVENT_ENGAGED:     Fight(ev.source);
+-          EVID_HERDING:         Herding(ev);
++          EVID_HERDING:         HerdingLoop(ev);
+         endcase
+       until(!(ev := os::wait_for_event(2)));
+     endif
+@@ -48,7 +48,7 @@
+   DisableEvents(SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DAMAGED + SYSEVENT_ENTEREDAREA);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopChicken.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopChicken.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopChicken.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -24,7 +24,7 @@
+         case(ev.type)
+           SYSEVENT_DAMAGED: RunLikeHell(ev.source);
+           SYSEVENT_ENGAGED: RunLikeHell(ev.source);
+-          EVID_HERDING:     Herding(ev);
++          EVID_HERDING:     HerdingLoop(ev);
+         endcase
+       until(!(ev := os::wait_for_event(5)));
+     endif
+@@ -61,7 +61,7 @@
+   DisableEvents(SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DAMAGED + SYSEVENT_ENTEREDAREA);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopCow.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopCow.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopCow.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -22,7 +22,7 @@
+                                   endif
+           SYSEVENT_DAMAGED:       Fight(ev.source);
+           SYSEVENT_ENGAGED:       Fight(ev.source);
+-          EVID_HERDING:           Herding(ev);
++          EVID_HERDING:           HerdingLoop(ev);
+         endcase
+       until(!(ev := os::wait_for_event(5)));
+     endif
+@@ -55,7 +55,7 @@
+   DisableEvents(SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DAMAGED + SYSEVENT_ENTEREDAREA);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopKillAny.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopKillAny.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopKillAny.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -23,7 +23,7 @@
+           SYSEVENT_ENTEREDAREA:
+           SYSEVENT_ENGAGED:
+           SYSEVENT_DAMAGED:     Fight(ev.source);
+-          EVID_HERDING:         Herding(ev);
++          EVID_HERDING:         HerdingLoop(ev);
+         endcase
+       until(!(ev := os::wait_for_event(1)));
+     endif
+@@ -46,7 +46,7 @@
+   DisableEvents(SYSEVENT_ENGAGED + SYSEVENT_DAMAGED + SYSEVENT_ENTEREDAREA);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopMeek.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopMeek.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopMeek.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -34,7 +34,7 @@
+           SYSEVENT_ENGAGED:    Run(ev.source);
+           SYSEVENT_ITEM_GIVEN: next_wander := ReadGameClock()+60;
+                                TakeItem(ev.source,ev.item);
+-          EVID_HERDING:        Herding(ev);
++          EVID_HERDING:        HerdingLoop(ev);
+         endcase
+       until(!(ev := os::wait_for_event(1)));
+     endif
+@@ -57,7 +57,7 @@
+   DisableEvents(SYSEVENT_ITEM_GIVEN);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopSheep.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopSheep.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopSheep.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -33,7 +33,7 @@
+                                   ApplyRawDamage(me, AP_GetVital(me, &quot;Hits&quot;) + 3);
+                                 endif
+         SYSEVENT_ENGAGED:       RunLikeHell(ev.source);
+-        EVID_HERDING:           Herding(ev);
++        EVID_HERDING:           HerdingLoop(ev);
+       endcase
+     endif
+     if(ReadGameClock() &gt; next_regrow)
+@@ -81,7 +81,7 @@
+   DisableEvents(SYSEVENT_ENGAGED + SYSEVENT_DAMAGED);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopWolf.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopWolf.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopWolf.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -34,7 +34,7 @@
+                                    Fight( ev.source);
+                                  endif
+           EVID_ALL_ATTACK_CMD:   Fight( ev.source);
+-          EVID_HERDING:          Herding(ev);
++          EVID_HERDING:          HerdingLoop(ev);
+         endcase
+       until(!(ev := os::wait_for_event(1)));
+     endif
+@@ -72,7 +72,7 @@
+   endforeach
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/meanLoop.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/meanLoop.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/meanLoop.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -19,7 +19,7 @@
+         SYSEVENT_ENTEREDAREA: if((!(ev.source).npctemplate) ||(((ev.source).script == &quot;employed&quot;) ||((ev.source).script == &quot;tamed&quot;)))
+                                 fight(ev.source);
+                               endif
+-        EVID_HERDING:           Herding(ev);
++        EVID_HERDING:           HerdingLoop(ev);
+       endcase
+     until(!(ev := os::wait_for_event(1)));
+       if(ReadGameClock() &gt; next_wander)
+@@ -59,7 +59,7 @@
+   cleareventque();
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/packKillPCsLoop.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/packKillPCsLoop.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/packKillPCsLoop.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -52,7 +52,7 @@
+                                   endif
+                                 endforeach
+                                 Fight(ev.source);
+-          EVID_HERDING:           Herding(ev);
++          EVID_HERDING:           HerdingLoop(ev);
+         endcase
+       until(!(ev := os::wait_for_event(2)));
+     endif
+@@ -104,7 +104,7 @@
+     endforeach
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/sleepMode.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/sleepMode.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/sleepMode.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -54,7 +54,7 @@
+                              EnableMainEvents();
+                              return ev;
+                            endif
+-      EVID_HERDING:        Herding(ev);
++      EVID_HERDING:        HerdingLoop(ev);
+     endcase
+     until(!(ev := os::wait_for_event(30)));
+   endwhile
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -59,7 +59,7 @@
+                              EnableMainEvents();
+                              return ev;
+                            endif
+-      EVID_HERDING:        Herding(ev);
++      EVID_HERDING:        HerdingLoop(ev);
+     endcase
+     until(!(ev := os::wait_for_event(30)));
+   endwhile
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/sleepModeSheep.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/sleepModeSheep.inc	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/main/sleepModeSheep.inc	2005-11-02 13:57:44 UTC (rev 833)
+@@ -62,7 +62,7 @@
+                              EnableMainEvents();
+                              return ev;
+                            endif
+-      EVID_HERDING:        Herding(ev);
++      EVID_HERDING:        HerdingLoop(ev);
+     endcase
+     until(!(ev := os::wait_for_event(30)));
+   endwhile
+
+Modified: trunk/096/pkg/mobiles/oldAI/townPerson.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/townPerson.src	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/townPerson.src	2005-11-02 13:57:44 UTC (rev 833)
+@@ -203,7 +203,7 @@
+   return (goldreceived/10) + pc_level;
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/vortexAI.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/vortexAI.src	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/vortexAI.src	2005-11-02 13:57:44 UTC (rev 833)
+@@ -141,7 +141,7 @@
+   DisableEvents( SYSEVENT_ENGAGED + SYSEVENT_DAMAGED + SYSEVENT_ENTEREDAREA);
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+Modified: trunk/096/pkg/mobiles/oldAI/worker.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/worker.src	2005-11-02 10:13:17 UTC (rev 832)
++++ trunk/096/pkg/mobiles/oldAI/worker.src	2005-11-02 13:57:44 UTC (rev 833)
+@@ -292,7 +292,7 @@
+   return (goldreceived/10) + pc_level;
+ endfunction
+ 
+-function herding(ev)
++function HerdingLoop(ev)
+   var holder := ev.data;
+   var lx := holder[1];
+   var ly := holder[2];
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000806.html">[Poldistro-svn] r832 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000809.html">[Poldistro-svn] r834 - in trunk/096/pkg: skills/anatomy skills/animallore skills/armslore skills/begging skills/bowcraft skills/camping skills/carpentry skills/cartography skills/detecthidden skills/evalint skills/fishing skills/hiding skills/itemid skills/musicianship skills/musicianship/include skills/spiritspeak skills/stealth systems/attributes/include systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#808">[ date ]</a>
+              <a href="thread.html#808">[ thread ]</a>
+              <a href="subject.html#808">[ subject ]</a>
+              <a href="author.html#808">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1080 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-December/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1080%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200512140021.jBE0LF2a014885%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001050.html">
+   <LINK REL="Next"  HREF="001052.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1080 - trunk/096/pkg/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1080%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200512140021.jBE0LF2a014885%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1080 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Wed Dec 14 01:21:15 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001050.html">[Poldistro-svn] r1079 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="001052.html">[Poldistro-svn] r1081 - trunk/096/data
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1051">[ date ]</a>
+              <a href="thread.html#1051">[ thread ]</a>
+              <a href="subject.html#1051">[ subject ]</a>
+              <a href="author.html#1051">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-12-14 01:20:05 +0100 (Wed, 14 Dec 2005)
+New Revision: 1080
+
+Modified:
+   trunk/096/pkg/commands/gm/info.src
+Log:
+
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-12-10 22:10:49 UTC (rev 1079)
++++ trunk/096/pkg/commands/gm/info.src	2005-12-14 00:20:05 UTC (rev 1080)
+@@ -23,6 +23,9 @@
+ CONST START_Y	:= 55;
+ CONST END_Y	:= 410;
+ 
++const MENU_BTN	:= 0xA0;
++const DATA_BTN	:= 0xF0;
++
+ unload_scripts(&quot;&quot;);
+ 
+ // Storing these globally just makes the script easier to use...
+@@ -39,6 +42,7 @@
+ 		index_list := GetConfigStringArray(info_cfg[&quot;Index&quot;], &quot;Index&quot;);
+ 	endif
+ 
++	//var targ := Target(who);
+ 	var targ := who;
+ 	if ( serial )
+ 		targ := SystemFindObjectBySerial(CInt(serial));
+@@ -46,19 +50,26 @@
+ 		targ := Target(who);
+ 	endif
+ 	if ( !targ.IsA(POLCLASS_MOBILE) )
+-		//SendSysMessage(who, &quot;Cancelled.&quot;);
+-		//return 0;
+-		targ := who;
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
+ 	endif
+ 
+ 	template := GumpTemplate(targ);
+ 	var cur_gump := 1;
+ 
+ 	while ( 1 )
+-		cur_gump := GFSendGump(who, BuildGump(targ, cur_gump));
+-		cur_gump := cur_gump[0];
+-		if ( !who.connected )
++		var gump := BuildGump(targ, cur_gump);
++		var input := GFSendGump(targ, gump);
++		input := input[0];
++		
++		if ( input &gt;= MENU_BTN )
++			cur_gump := input - MENU_BTN;
++		endif
++		
++		if ( !input )
+ 			break;
++		elseif ( !who.connected )
++			break;
+ 		elseif ( !cur_gump )
+ 			break;
+ 		endif
+@@ -224,7 +235,7 @@
+ 		if ( _group_iter &gt; 1 )
+ 			GFAddButton(gump, 460, START_Y+5, 2650, 2651, GF_PAGE_BTN, gump.cur_page-1);
+ 		endif
+-
++		
+ 		foreach attrib_name in ( group )
+ 			GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+ 			GFTextLine(gump, 175, y_pos, 2100, attrib_name);
+@@ -388,7 +399,7 @@
+ 
+ 	var y_pos := 60;
+ 	foreach entry in ( index_list )
+-		GFAddButton(gump, 20, (y_pos+3), 2117, 2118, GF_CLOSE_BTN, _entry_iter);
++		GFAddButton(gump, 20, (y_pos+3), 2117, 2118, GF_CLOSE_BTN, (MENU_BTN+_entry_iter));
+ 		GFTextLine(gump, 40, y_pos, 2100, entry);
+ 		y_pos := y_pos+20;
+ 		sleepms(2);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001050.html">[Poldistro-svn] r1079 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="001052.html">[Poldistro-svn] r1081 - trunk/096/data
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1051">[ date ]</a>
+              <a href="thread.html#1051">[ thread ]</a>
+              <a href="subject.html#1051">[ subject ]</a>
+              <a href="author.html#1051">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

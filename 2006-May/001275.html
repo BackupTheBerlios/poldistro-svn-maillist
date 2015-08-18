@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1303 - in trunk/096/pkg/systems/accounts: . config hook
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1303%20-%20in%20trunk/096/pkg/systems/accounts%3A%20.%20config%20hook&In-Reply-To=%3C200605110652.k4B6qVGV021761%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001274.html">
+   <LINK REL="Next"  HREF="001276.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1303 - in trunk/096/pkg/systems/accounts: . config hook</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1303%20-%20in%20trunk/096/pkg/systems/accounts%3A%20.%20config%20hook&In-Reply-To=%3C200605110652.k4B6qVGV021761%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1303 - in trunk/096/pkg/systems/accounts: . config hook">austin at berlios.de
+       </A><BR>
+    <I>Thu May 11 08:52:31 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001274.html">[Poldistro-svn] r1302 - in trunk/096/pkg/systems/accounts: auxsvc config www
+</A></li>
+        <LI>Next message: <A HREF="001276.html">[Poldistro-svn] r1304 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1275">[ date ]</a>
+              <a href="thread.html#1275">[ thread ]</a>
+              <a href="subject.html#1275">[ subject ]</a>
+              <a href="author.html#1275">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-11 08:51:44 +0200 (Thu, 11 May 2006)
+New Revision: 1303
+
+Added:
+   trunk/096/pkg/systems/accounts/hook/
+   trunk/096/pkg/systems/accounts/hook/onLogin.src
+   trunk/096/pkg/systems/accounts/uopacket.cfg
+Modified:
+   trunk/096/pkg/systems/accounts/config/icp.cfg
+   trunk/096/pkg/systems/accounts/config/settings.cfg
+Log:
+Automatic account creation supported (thanks Unreal for the goods!)
+
+Modified: trunk/096/pkg/systems/accounts/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/systems/accounts/config/icp.cfg	2006-05-11 05:43:38 UTC (rev 1302)
++++ trunk/096/pkg/systems/accounts/config/icp.cfg	2006-05-11 06:51:44 UTC (rev 1303)
+@@ -5,7 +5,8 @@
+ {
+ 	Name		Accounts
+ 	Version		1.0
+-	Description	Handles account related tasks. Monitoring, creation, etc.
++	Description	Handles account related tasks. Monitoring, creation, etc. [P]
++	Description	Auto-account packet hook thanks to Unreal!
+ 
+ 	Creator		Austin
+ 	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+
+Modified: trunk/096/pkg/systems/accounts/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/accounts/config/settings.cfg	2006-05-11 05:43:38 UTC (rev 1302)
++++ trunk/096/pkg/systems/accounts/config/settings.cfg	2006-05-11 06:51:44 UTC (rev 1303)
+@@ -5,7 +5,7 @@
+ Elem Settings
+ {
+ 	// AllowAutoAccounts - If a client logs in and the account does not exist, it will be created.
+-	AllowAutoAccounts	0
++	AllowAutoAccounts	1
+ 	
+ 	// AllowAuxAccounts - If set to 0, no aux account creations will be allowed.
+ 	AllowAuxAccounts	0
+
+Added: trunk/096/pkg/systems/accounts/hook/onLogin.src
+===================================================================
+--- trunk/096/pkg/systems/accounts/hook/onLogin.src	2006-05-11 05:43:38 UTC (rev 1302)
++++ trunk/096/pkg/systems/accounts/hook/onLogin.src	2006-05-11 06:51:44 UTC (rev 1303)
+@@ -0,0 +1,134 @@
++/*
++ *   Author: Unreal (<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">MontuZ at Gmail.com</A>) April 28, 2006.
++ *   Version: 1.0
++ *   Core: 096
++ *   Description: Auto Account Creator. Just like many of you know this is a RunUO/SphereServer
++ *   feature and now a POL feature. What it does exactly is when a person trys to login with
++ *   an unknown(non-existant) account. This script creates the account and logs them in.
++ *   Bugs: There shouldn't be any, but you never really know. So if a bug does come up
++ *   please send me an email or post on the forum where you got this(polserver.com)
++ *
++ */
++
++use uo;
++use os;
++use polsys;
++
++include &quot;:accounts:settings&quot;;
++include &quot;:accounts:accounts&quot;;
++
++const OFFSET_ACCOUNT_NAME	:= 0x01;
++const OFFSET_ACCOUNT_PASS	:= 0x1F;
++const INFO_LEN			:= 30;
++
++enum THEFT_LEVELS
++	ACCT_NOT_EXIST		:= 0,
++	ACCT_LOGIN_OKAY		:= 1,
++	ACCT_LOGIN_FAIL		:= 2,
++	ACCT_LOGIN_HACK		:= 3,
++endenum
++
++Program Install()
++	Print( &quot;INSTALLING: Login packet hook...&quot; );
++	Return 1;
++Endprogram
++
++exported function LoginHook(who, byref packet)
++	who := who; // Avoid compiler warnings.
++
++	var username := Packet.GetString(OFFSET_ACCOUNT_NAME, INFO_LEN);
++	var password := Packet.GetString(OFFSET_ACCOUNT_PASS, INFO_LEN);
++
++	if ( !username )
++		SysLog( &quot;Account/GetString Error: &quot; + username.errortext );
++		return 0;
++	elseif ( !password )
++		SysLog( &quot;Password/GetString Error: &quot; + password.errortext );
++		return 0;
++	endif
++
++	var theft_level := AcctHackChecks(username, password);
++	case ( theft_level )
++		ACCT_NOT_EXIST:	 // Account doesn't yet exist.
++			break; 
++		ACCT_LOGIN_OKAY: // Account credentials are valid.
++			return 0;
++			break;
++		ACCT_LOGIN_FAIL: // Account credentials are invalid.
++			return 0; 
++			break;
++		ACCT_LOGIN_HACK: // Too many invalid logins. Leave user hanging.
++			return 1;
++			break;
++	endcase
++	
++	var settings := ACCT_GetSettingsCfgElem(&quot;Settings&quot;);
++	if ( !settings.AllowAutoAccounts )
++		// Automatic account creation is disabled.
++		return 0;
++	endif
++	
++	var account := CreateNewAccount(username, password);
++	// In theory this should only return an error saying &quot;Invalid parameter type&quot;.
++	// Should never return &quot;Account already exists&quot; because we already looked for the
++	// account and let pol handle it. And when it does return &quot;Invalid parameter type&quot;
++	// we don't have to worry, pol will do the right job for us and just say that account
++	// does not exist.
++	if ( account.errortext )
++		SysLog(&quot;CreateAccount() Error: &quot; + account.errortext);
++		return 0;
++	endif
++
++	SysLog( &quot;AutoAccount Created: &quot; + username );
++
++	return 0;
++
++endfunction
++
++function AcctHackChecks(username, password)
++	/*
++	 * This is just a little password protection, so someone doesn't go around
++	 * trying to steal peoples accounts trying 100's of passwords. It doesn't
++	 * really stop someone, but it slows them down a lot and may lead them off
++	 * from trying to steal the account.
++	 * This is currently UNTESTED, in theory it should work. Any problems, again
++	 * please send me an email to <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">MontuZ at Gmail.com</A> or post on the polserver.com's
++	 * forum.
++	 *
++	 */
++
++	/*  [Password Protection]  */
++	var account := FindAccount(username);
++	if ( !account )
++		// Account doesn't even exist.
++		return ACCT_NOT_EXIST;
++	endif
++
++	if ( account )
++		 if ( !account.CheckPassword(password) )
++		 	var failed_login := account.GetProp(&quot;FailedLogin&quot;);
++			// First attempt at failing the password check.
++			if ( !failed_login )
++				account.SetProp( &quot;FailedLogin&quot;, {1, ReadGameClock()});
++				return ACCT_LOGIN_FAIL; // Let pol tell the user it's an incorrect password.
++			else
++				// Incorrect password for the 5th time.
++			 	// Leave the user hanging at login for the next 10 minutes.
++			 	if ( failed_login[1] &gt;= 5 &amp;&amp; ( failed_login[2] &gt;&gt; ReadGameClock() ) )
++			  		account.SetProp( &quot;FailedLogin&quot;, {failed_login[1]+1, ReadGameClock()+10});
++			  		return ACCT_LOGIN_HACK; // Leave user hanging.
++			 	elseif ( failed_login[1] &gt;= 5 &amp;&amp; ( failed_login[2] &lt;&lt; ReadGameClock() ) )
++			  		// User attempted to login with the wrong password after 10 minutes.
++			 		// Reset user's wait time.
++			 		account.EraseProp( &quot;FailedLogin&quot; );
++			  		return ACCT_LOGIN_FAIL; // Let pol tell the user it's an incorrect password.
++			 	elseif ( failed_login[1] &lt;&lt; 5 )
++			  		account.SetProp( &quot;FailedLogin&quot;, {failed_login[1]+1, ReadGameClock()});
++			  		return ACCT_LOGIN_FAIL; // Let pol tell him it's an incorrect password.
++			 	endif
++			endif
++		else
++			return ACCT_LOGIN_OKAY; // Passed password check, let them login.
++		endif
++	endif
++endfunction
+
+Added: trunk/096/pkg/systems/accounts/uopacket.cfg
+===================================================================
+--- trunk/096/pkg/systems/accounts/uopacket.cfg	2006-05-11 05:43:38 UTC (rev 1302)
++++ trunk/096/pkg/systems/accounts/uopacket.cfg	2006-05-11 06:51:44 UTC (rev 1303)
+@@ -0,0 +1,9 @@
++# $Id$
++#
++#
++
++Packet 0x80
++{
++	Length			0x3E
++	ReceiveFunction		:Accounts:hook/onLogin:LoginHook
++}
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001274.html">[Poldistro-svn] r1302 - in trunk/096/pkg/systems/accounts: auxsvc config www
+</A></li>
+	<LI>Next message: <A HREF="001276.html">[Poldistro-svn] r1304 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1275">[ date ]</a>
+              <a href="thread.html#1275">[ thread ]</a>
+              <a href="subject.html#1275">[ subject ]</a>
+              <a href="author.html#1275">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

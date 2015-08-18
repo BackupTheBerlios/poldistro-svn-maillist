@@ -1,0 +1,314 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1031 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/healer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1031%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20bundled%20bundled/healer&In-Reply-To=%3C200511191438.jAJEc0MY028618%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001003.html">
+   <LINK REL="Next"  HREF="001005.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1031 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/healer</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1031%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20bundled%20bundled/healer&In-Reply-To=%3C200511191438.jAJEc0MY028618%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1031 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/healer">austin at berlios.de
+       </A><BR>
+    <I>Sat Nov 19 15:38:00 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001003.html">[Poldistro-svn] r1030 - trunk/096/scripts
+</A></li>
+        <LI>Next message: <A HREF="001005.html">[Poldistro-svn] r1032 - in trunk/096/pkg/mobiles/brainAI: . scripts/sleep
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1004">[ date ]</a>
+              <a href="thread.html#1004">[ thread ]</a>
+              <a href="subject.html#1004">[ subject ]</a>
+              <a href="author.html#1004">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-19 15:38:00 +0100 (Sat, 19 Nov 2005)
+New Revision: 1031
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/bundled/healer/
+   trunk/096/pkg/mobiles/brainAI/bundled/healer/combat.src
+   trunk/096/pkg/mobiles/brainAI/bundled/healer/enterArea.src
+   trunk/096/pkg/mobiles/brainAI/bundled/healer/init.src
+   trunk/096/pkg/mobiles/brainAI/bundled/healer/resMenu.src
+Modified:
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+Working on healer... just need to get a picture of what the resurrection gump they give you looks like.
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/healer/combat.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/healer/combat.src	2005-11-19 13:46:44 UTC (rev 1030)
++++ trunk/096/pkg/mobiles/brainAI/bundled/healer/combat.src	2005-11-19 14:38:00 UTC (rev 1031)
+@@ -0,0 +1,44 @@
++// $Id: combat.src 1005 2005-11-15 09:20:06Z muaddiblsd $
++
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:attributes:attributes&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	var event	:= params[3];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++
++	while ( npc )
++		CheckForEvent(npc, event);
++	endwhile
++endprogram
++
++function CheckForEvent(npc, byref event)
++	if ( event )
++		var source := event.source;
++		case ( event.type )
++			SYSEVENT_ENGAGED:
++				AI_Speak(npc, &quot;HELP! GUARDS!!&quot;, SPEAK_TEXTTYPE_YELL, SPEAK_DOEVENT_ENABLE);
++				ApplyRawDamage(source, AP_GetVitalMaximumValue(source, HITS));
++				break;
++			SYSEVENT_DAMAGED:
++				// Ignore 'damaged'.
++				break;
++			default:
++				break;
++		endcase
++		event := 0;
++	endif
++	
++	event := wait_for_event(100000);
++	
++
++	return 1;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/healer/enterArea.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/healer/enterArea.src	2005-11-19 13:46:44 UTC (rev 1030)
++++ trunk/096/pkg/mobiles/brainAI/bundled/healer/enterArea.src	2005-11-19 14:38:00 UTC (rev 1031)
+@@ -0,0 +1,53 @@
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	var event	:= params[3];
++	//var settings	:= params[4];
++	var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( event )
++			case ( event.type )
++				SYSEVENT_ENTEREDAREA:
++					EnteredArea(npc, event, scripts);
++					break;
++				default:
++					break;
++			endcase
++			
++			event := 0;
++		endif
++		
++		sleepms(5);
++		event := wait_for_event(600);
++	endwhile
++endprogram
++
++function EnteredArea(npc, byref event, byref scripts)
++	var source := event.source;
++	
++	if ( !source.dead )
++		return 0;
++	elseif ( !CheckLineOfSight(npc, source) )
++		return 0;
++	elseif ( source.criminal )
++		AI_Speak(npc, &quot;I will not aid a criminal.&quot;);
++	elseif ( !GetObjProperty(source, &quot;#ResMenu&quot;) )
++		var script := Start_Script(scripts[&quot;ResMenu&quot;], {npc, source});
++		if ( script.errortext )
++			SendSysMessage(source, &quot;Error - Unable to start &quot;+scripts[&quot;ResMenu&quot;]+&quot; -&gt;&quot;+script.errortext);
++			return 0;
++		endif
++		return 1;
++	endif
++	
++	return 0;
++endfunction
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/healer/init.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/healer/init.src	2005-11-19 13:46:44 UTC (rev 1030)
++++ trunk/096/pkg/mobiles/brainAI/bundled/healer/init.src	2005-11-19 14:38:00 UTC (rev 1031)
+@@ -0,0 +1,29 @@
++/*
++ * $Id: init.src 1005 2005-11-15 09:20:06Z muaddiblsd $
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcInit&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:dyes:dyes&quot;;
++
++program BrainCriticalScript(params)
++	var npc		:= params[1];
++	//var settings	:= params[2];
++	//var scripts	:= params[3];
++	params := 0; // Not needed anymore.
++
++	NPC_SetupName(npc);
++	NPC_SetupRandomEquipment(npc);
++
++	foreach item in ( ListEquippedItems(npc) )
++		item.color := RandomDyeColor();
++		sleepms(2);
++	endforeach
++
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/healer/resMenu.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/healer/resMenu.src	2005-11-19 13:46:44 UTC (rev 1030)
++++ trunk/096/pkg/mobiles/brainAI/bundled/healer/resMenu.src	2005-11-19 14:38:00 UTC (rev 1031)
+@@ -0,0 +1,21 @@
++use uo;
++use os;
++
++include &quot;:gumps:gumps&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++
++program ResMenu(params)
++	var npc := params[1];
++	var player := params[2];
++	params := 0; // Not needed anymore
++	
++	SetObjProperty(player, &quot;#ResMenu&quot;, npc.serial);
++	
++	var result := 1;//RessurectGump(player);
++	if ( result )
++		AI_Speak(npc, &quot;Live again by the virtues!&quot;);
++		Resurrect(player);
++	endif
++	
++	EraseObjProperty(player, &quot;#ResMenu&quot;);
++endprogram
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-19 13:46:44 UTC (rev 1030)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-19 14:38:00 UTC (rev 1031)
+@@ -318,8 +318,60 @@
+ 	// CProps (eww!)
+ 	CProp	GuardKill	i1
+ }
++
++NPCTemplate healer
++{
++	// Primary NPC settings
++	Name			&lt;random&gt; the healer
++	Script			:brainAI:brain
++	ObjType			0x190
++	Color			1024
++	TrueColor		1024
++	Gender			0
++	RunSpeed		255
++	AR			100
++	Alignment		good
++	Privs			invul seeghosts
++	Settings		invul seeghosts
++	Category		Utility
+ 	
++	// Attributes
++	Strength		200
++	Intelligence		200
++	Dexterity		200
++	Wrestling		500
++	
++	// Vitals
++	HITS			200
++	MANA			200
++	STAM			200
++	
++	// Intrinsic Weapon
++	AttackAttribute		Wrestling
++	AttackSpeed		80
++	AttackDamage		200
++	AttackHitScript		:combat:mainHitScript
+ 
++	// Brain AI Settings
++	AISetting	CycleWait	i100
++	AISetting	AreaSize	i5
++	
++	// Brain AI Nerves
++	AIScript	Combat		:brainAI:bundled/healer/combat
++	AIScript	Init		:brainAI:bundled/healer/init
++	AIScript	EnterArea	:brainAI:bundled/healer/enterArea
++	AIScript	ResMenu		:brainAI:bundled/healer/resMenu
++	
++	// Skinning Info
++
++	// Settings other scripts use...
++	NameTemplate		Human_Male
++	EquipTemplate		Villager_1
++	
++	// CProps (eww!)
++	CProp	GuardKill	i1
++}	
++
+ ##########################################
+ # Animals
+ ##########################################
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001003.html">[Poldistro-svn] r1030 - trunk/096/scripts
+</A></li>
+	<LI>Next message: <A HREF="001005.html">[Poldistro-svn] r1032 - in trunk/096/pkg/mobiles/brainAI: . scripts/sleep
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1004">[ date ]</a>
+              <a href="thread.html#1004">[ thread ]</a>
+              <a href="subject.html#1004">[ subject ]</a>
+              <a href="author.html#1004">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

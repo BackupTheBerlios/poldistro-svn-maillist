@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1397 - in trunk/096/pkg/items/containers: config corpse include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1397%20-%20in%20trunk/096/pkg/items/containers%3A%20config%20corpse%20include&In-Reply-To=%3C200605131549.k4DFncAC027758%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001365.html">
+   <LINK REL="Next"  HREF="001367.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1397 - in trunk/096/pkg/items/containers: config corpse include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1397%20-%20in%20trunk/096/pkg/items/containers%3A%20config%20corpse%20include&In-Reply-To=%3C200605131549.k4DFncAC027758%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1397 - in trunk/096/pkg/items/containers: config corpse include">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 17:49:38 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001365.html">[Poldistro-svn] r1396 - in trunk/096/pkg/items/containers: . corpse
+</A></li>
+        <LI>Next message: <A HREF="001367.html">[Poldistro-svn] r1398 - in trunk/096/pkg/items/containers: . corpse
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1366">[ date ]</a>
+              <a href="thread.html#1366">[ thread ]</a>
+              <a href="subject.html#1366">[ subject ]</a>
+              <a href="author.html#1366">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 17:49:37 +0200 (Sat, 13 May 2006)
+New Revision: 1397
+
+Added:
+   trunk/096/pkg/items/containers/config/settings.cfg
+   trunk/096/pkg/items/containers/include/settings.inc
+Modified:
+   trunk/096/pkg/items/containers/corpse/corpseControl.src
+   trunk/096/pkg/items/containers/corpse/methods.src
+   trunk/096/pkg/items/containers/corpse/remainsControl.src
+Log:
+More corpse improvements... settings stuff to handle decay times.
+
+Added: trunk/096/pkg/items/containers/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/items/containers/config/settings.cfg	2006-05-13 14:58:41 UTC (rev 1396)
++++ trunk/096/pkg/items/containers/config/settings.cfg	2006-05-13 15:49:37 UTC (rev 1397)
+@@ -0,0 +1,22 @@
++# $Id$
++#
++#
++
++Elem Settings
++{
++
++}
++
++Elem Corpse
++{
++	// CorpseDecay -
++	// Number of seconds that will pass until a corpse is turned into remains.
++	// 0 will mean the corpse must be decayed by the core's decay cycle and will
++	// not turn into remains.
++	CorpseDecay	600
++	
++	// RemainsDecay -
++	// Number of seconds that must pass until the remains of a corpse are removed
++	// and the contents dumped onto the world to decay.
++	RemainsDecay	300
++}
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/containers/corpse/corpseControl.src
+===================================================================
+--- trunk/096/pkg/items/containers/corpse/corpseControl.src	2006-05-13 14:58:41 UTC (rev 1396)
++++ trunk/096/pkg/items/containers/corpse/corpseControl.src	2006-05-13 15:49:37 UTC (rev 1397)
+@@ -2,36 +2,23 @@
+ use os;
+ use util;
+ 
++include &quot;:containers:settings&quot;;
++
+ program control_Corpse(corpse)
+-	/*
+-	sleep(300);
+-	if(!corpse)
++	if ( corpse.NPCTemplate() )
+ 		return 0;
+ 	endif
+-	if(GetObjProperty(corpse, &quot;npctemplate&quot;))
+-		DestroyItem(corpse);
++
++	var settings := CP_GetSettingsCfgElem(&quot;Corpse&quot;);
++	var decay_wait := CInt(settings.CorpseDecay);
++	if ( !decay_wait )
+ 		return 0;
+-	else
+-		var beardlist := {0x203e, 0x203f, 0x2040, 0x2041, 0x204b, 0x204c, 0x204d };
+-		var hairlist  := {0x2044, 0x2045, 0x2046, 0x2047, 0x2048, 0x2049, 0x204a, 0x203b, 0x203c, 0x203d };
+-		var bonearray := array(0xed2, 0xed1, 0xed0, 0xecf, 0xece, 0xecd, 0xecc, 0xecb, 0xeca);
+-		var bones := CreateItemAtLocation(corpse.x, corpse.y, corpse.z, bonearray[RandomInt(9)+1], 1, corpse.realm);
+-		var newname := corpse.name[&quot;A corpse of &quot;] := &quot;&quot;;
+-		bones.name := &quot;remains of &quot; + newname;
+-		foreach thing in EnumerateItemsInContainer(corpse)
+-			if((thing.objtype in beardlist) || (thing.objtype in hairlist))
+-				DestroyItem(thing);
+-			elseif(thing.movable == 0)
+-				DestroyItem(thing);
+-			else
+-				MoveItemToContainer(thing, bones);
+-				thing.decayAt := ReadGameClock() + 600;
+-			endif
+-		endforeach
+-		DestroyItem(corpse);
+-		start_script(&quot;boneControl&quot;, bones);
+ 	endif
+ 
+-	return 0;
+-	*/
++	// Script will handle decay time, not the core.
++	corpse.decayat := 0;
++	sleep(decay_wait);
++	corpse.MakeRemains();
++
++	return 1;
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/containers/corpse/methods.src
+===================================================================
+--- trunk/096/pkg/items/containers/corpse/methods.src	2006-05-13 14:58:41 UTC (rev 1396)
++++ trunk/096/pkg/items/containers/corpse/methods.src	2006-05-13 15:49:37 UTC (rev 1397)
+@@ -86,6 +86,7 @@
+ 	var owner := IsPlayerCorpse(corpse);
+ 	if ( owner )
+ 		remains.SetOwner(owner);
++		SetName(remains, &quot;remains of &quot;+owner.name);
+ 	endif
+ 	
+ 	return remains;
+
+Modified: trunk/096/pkg/items/containers/corpse/remainsControl.src
+===================================================================
+--- trunk/096/pkg/items/containers/corpse/remainsControl.src	2006-05-13 14:58:41 UTC (rev 1396)
++++ trunk/096/pkg/items/containers/corpse/remainsControl.src	2006-05-13 15:49:37 UTC (rev 1397)
+@@ -5,8 +5,16 @@
+ use uo;
+ use os;
+ 
++include &quot;:containers:settings&quot;;
++
+ program control_Remains(remains)
+-	sleep(300); // 5 minutes
++	var settings := CP_GetSettingsCfgElem(&quot;Corpse&quot;);
++	var decay_wait := CInt(settings.RemainsDecay);
++	if ( !decay_wait )
++		decay_wait := 60;
++	endif
++		
++	sleep(decay_wait);
+ 	
+ 	foreach item in ( EnumerateItemsInContainer(remains) )
+ 		if ( item.container != remains )
+@@ -18,4 +26,6 @@
+ 	endforeach
+ 	
+ 	DestroyItem(remains);
++	
++	return 1;
+ endprogram
+
+Added: trunk/096/pkg/items/containers/include/settings.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/settings.inc	2006-05-13 14:58:41 UTC (rev 1396)
++++ trunk/096/pkg/items/containers/include/settings.inc	2006-05-13 15:49:37 UTC (rev 1397)
+@@ -0,0 +1,65 @@
++//$Id$
++
++/*===============================================================
++* Current Version
++* SETTINGS.INC - v1.0
++* Updated 5/13/2006 8:39AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++use cfgfile;
++
++/*
++ * CP_GetSettingsCfgFile(engine_name)
++ *
++ * Purpose
++ * Reads in :containers:configs/settings.cfg
++ *
++ * Parameters
++ *
++ * Return value
++ * A config file reference.
++ *
++ */
++function CP_GetSettingsCfgFile()
++	var cfg := ReadConfigFile(&quot;:containers:config/settings&quot;);
++
++	if ( cfg.errortext )
++		SysLog(&quot;Error::CP_GetSettingsCfgFile() - Unable to open [:containers:config/settings.cfg] -&gt;&quot;+cfg.errortext);
++	endif
++
++	return cfg;
++endfunction
++
++/*
++ * CP_GetSettingsCfgElem(elem_name, cfg_file)
++ *
++ * Purpose
++ * Retrieves an elem from a config file. 
++ *
++ * Parameters
++ * elem_name:	A string matching the elem name to be retrieved.
++ * cfg_file:	Optional parameter - reference to a config already read in by CP_GetSettingsCfgFile()
++ *
++ * Return value
++ * A config file elem reference.
++ *
++ */
++function CP_GetSettingsCfgElem(elem_name, byref cfg_file:=0)
++	if ( !cfg_file )
++		cfg_file := CP_GetSettingsCfgFile();
++	endif
++	
++	var elem := cfg_file[elem_name];
++
++	if ( elem.errortext )
++		SysLog(&quot;Error::CP_GetSettingsCfgElem() - Unable to find elem [&quot;+elem_name+&quot;] -&gt;&quot;+elem.errortext);
++	endif
++
++	return elem;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001365.html">[Poldistro-svn] r1396 - in trunk/096/pkg/items/containers: . corpse
+</A></li>
+	<LI>Next message: <A HREF="001367.html">[Poldistro-svn] r1398 - in trunk/096/pkg/items/containers: . corpse
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1366">[ date ]</a>
+              <a href="thread.html#1366">[ thread ]</a>
+              <a href="subject.html#1366">[ subject ]</a>
+              <a href="author.html#1366">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

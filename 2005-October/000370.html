@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r392 - in trunk/096/pkg/mobiles/brainAI: complete/exampleNPC include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r392%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20complete/exampleNPC%20include&In-Reply-To=%3C200510030433.j934XlS7032446%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000369.html">
+   <LINK REL="Next"  HREF="000371.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r392 - in trunk/096/pkg/mobiles/brainAI: complete/exampleNPC include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r392%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20complete/exampleNPC%20include&In-Reply-To=%3C200510030433.j934XlS7032446%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r392 - in trunk/096/pkg/mobiles/brainAI: complete/exampleNPC include">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct  3 06:33:47 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000369.html">[Poldistro-svn] r391 - in trunk/096/pkg/mobiles/brainAI: . complete/exampleNPC scripts
+</A></li>
+        <LI>Next message: <A HREF="000371.html">[Poldistro-svn] r393 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#370">[ date ]</a>
+              <a href="thread.html#370">[ thread ]</a>
+              <a href="subject.html#370">[ subject ]</a>
+              <a href="author.html#370">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-03 06:33:39 +0200 (Mon, 03 Oct 2005)
+New Revision: 392
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/include/merchantUtil.inc
+Modified:
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src	2005-10-03 01:37:11 UTC (rev 391)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src	2005-10-03 04:33:39 UTC (rev 392)
+@@ -4,6 +4,7 @@
+ include &quot;:brainAI:eventid&quot;;
+ include &quot;:brainAI:npcNerves&quot;;
+ include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:merchantUtil&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+@@ -48,14 +49,24 @@
+ 	endcase
+ 	
+ 	if ( event.text[&quot;restock&quot;] )
+-		CreateItemInBackPack(npc, &quot;longsword&quot;, 1);
++		CreateItemInContainer(NPC_MerchantForSaleContainer(npc), &quot;longsword&quot;, 1);
+ 	elseif ( event.text[&quot;buy&quot;] )
+-		AI_Turn(npc, event.source, NETURN_TOWARD);
+-		var result := SendBuyWindow(event.source, npc.backpack, npc, (event.source).backpack);
+-		if ( !result )
+-			PrintTextAbove(npc, &quot;SendBuyWindow() error - &quot;+result.errortext);
+-		endif
++		BuyStuff(npc, event.source);
+ 	endif
+ 	
+ 	return 1;
+ endfunction
++
++function BuyStuff(npc, mobile)
++	var forsale_bp := NPC_MerchantForSaleContainer(npc);
++	var shopping_cart := NPC_MerchantShoppingCartContainer(npc);
++	
++	AI_Turn(npc, mobile, NETURN_TOWARD);
++		
++	var result := SendBuyWindow(mobile, forsale_bp, npc, shopping_cart);
++	if ( !result )
++		PrintTextAbove(npc, &quot;SendBuyWindow() error - &quot;+result.errortext);
++	endif
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/brainAI/include/merchantUtil.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/merchantUtil.inc	2005-10-03 01:37:11 UTC (rev 391)
++++ trunk/096/pkg/mobiles/brainAI/include/merchantUtil.inc	2005-10-03 04:33:39 UTC (rev 392)
+@@ -0,0 +1,89 @@
++// $Id$
++
++/*===============================================================
++* Current Version
++* MERCHANTUTIL.INC - v1.0
++* Updated 10/2/2005 8:39PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++
++
++/*
++ * NPC_MerchantForSaleContainer(npc)
++ *
++ * Purpose
++ *
++ * Parameters
++ * npc:	
++ *
++ * Return value
++ * Returns a container
++ *
++ */
++function NPC_MerchantForSaleContainer(npc)
++	var forsale_pack := CInt(GetObjProperty(npc, &quot;ForSaleContainer&quot;));
++	forsale_pack := SystemFindObjectBySerial(forsale_pack);
++	
++	if ( !forsale_pack )
++		forsale_pack := CreateItemInBackPack(npc, &quot;backpack&quot;, 1);
++		SetName(forsale_pack, &quot;Items Being Sold&quot;);
++		SetObjProperty(npc, &quot;ForSaleContainer&quot;, forsale_pack.serial);
++	endif
++	
++	return forsale_pack;
++endfunction
++
++/*
++ * NPC_MerchantBuyingContainer(npc)
++ *
++ * Purpose
++ *
++ * Parameters
++ * npc:	
++ *
++ * Return value
++ * Returns a container
++ *
++ */
++function NPC_MerchantBuyingContainer(npc)
++	var buying_pack := CInt(GetObjProperty(npc, &quot;BuyingContainer&quot;));
++	buying_pack := SystemFindObjectBySerial(buying_pack);
++	
++	if ( !buying_pack )
++		buying_pack := CreateItemInBackPack(npc, &quot;backpack&quot;, 1);
++		SetName(buying_pack, &quot;Items Ill Buy&quot;);
++		SetObjProperty(npc, &quot;BuyingContainer&quot;, buying_pack.serial);
++	endif
++	
++	return buying_pack;
++endfunction
++
++/*
++ * NPC_MerchantShoppingCartContainer(npc)
++ *
++ * Purpose
++ *
++ * Parameters
++ * npc:	
++ *
++ * Return value
++ * Returns a container
++ *
++ */
++function NPC_MerchantShoppingCartContainer(npc)
++	var shopcart_pack := CInt(GetObjProperty(npc, &quot;ShopCartContainer&quot;));
++	shopcart_pack := SystemFindObjectBySerial(shopcart_pack);
++	
++	if ( !shopcart_pack )
++		shopcart_pack := CreateItemInBackPack(npc, &quot;backpack&quot;, 1);
++		SetName(shopcart_pack, &quot;Shopping Cart&quot;);
++		SetObjProperty(npc, &quot;ShopCartContainer&quot;, shopcart_pack.serial);
++	endif
++	
++	return shopcart_pack;
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000369.html">[Poldistro-svn] r391 - in trunk/096/pkg/mobiles/brainAI: . complete/exampleNPC scripts
+</A></li>
+	<LI>Next message: <A HREF="000371.html">[Poldistro-svn] r393 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#370">[ date ]</a>
+              <a href="thread.html#370">[ thread ]</a>
+              <a href="subject.html#370">[ subject ]</a>
+              <a href="author.html#370">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

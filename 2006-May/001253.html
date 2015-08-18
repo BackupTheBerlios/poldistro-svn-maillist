@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1281 - trunk/096/pkg/systems/spawnSystem/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1281%20-%20trunk/096/pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200605060926.k469QftO019217%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001252.html">
+   <LINK REL="Next"  HREF="001254.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1281 - trunk/096/pkg/systems/spawnSystem/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1281%20-%20trunk/096/pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200605060926.k469QftO019217%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1281 - trunk/096/pkg/systems/spawnSystem/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sat May  6 11:26:41 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001252.html">[Poldistro-svn] r1280 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001254.html">[Poldistro-svn] r1282 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1253">[ date ]</a>
+              <a href="thread.html#1253">[ thread ]</a>
+              <a href="subject.html#1253">[ subject ]</a>
+              <a href="author.html#1253">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-06 11:26:41 +0200 (Sat, 06 May 2006)
+New Revision: 1281
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+Log:
+Working on refining the adding gump for making new groups (will probably merge editing and making group gumps into 1 to reduce code redundancy)
+
+Modified: trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-06 06:16:52 UTC (rev 1280)
++++ trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-06 09:26:41 UTC (rev 1281)
+@@ -290,11 +290,11 @@
+ 	var y_pos := 50;
+ 
+ 	foreach realm_name in ( realm_names )
+-		//if ( !(realm_name in used_realms) )
++		if ( !(realm_name in used_realms) )
+ 			GFAddButton(gump, 155, y_pos+3, 2117, 2118, GF_CLOSE_BTN, _realm_name_iter);
+ 			GFTextLine(gump, 175, y_pos, 2100, realm_name);
+ 			y_pos := y_pos+20;
+-		//endif
++		endif
+ 		sleepms(2);
+ 	endforeach
+ 
+@@ -379,10 +379,19 @@
+ 	GFTextEntry(gump, 236, 50, 235, 20, 2100, &quot;&quot;, NAME_TEXT_POS);
+ 
+ 	GFAddButton(gump, 555, 70, 0x482, 0x483, GF_CLOSE_BTN, APPLY_BTN);
+-	GFTextLine(gump, 525, 50, 2100, &quot;Create Group.&quot;);
++	GFTextLine(gump, 525, 50, 2100, &quot;Create Group&quot;);
+ 
+-	GFTextLine(gump, 155, 80, 2100, &quot;Spawn Engine&quot;);
++	GFTextLine(gump, 175, 80, 2100, &quot;Spawn Engine&quot;);
++	GFTextLine(gump, 375, 80, 2100, &quot;Group Entries&quot;);
++
+ 	GFPage(gump, 1);
++	GFAddButton(gump, 155, 82, 0xA96, 0xA97, GF_PAGE_BTN, 200);
++	GFAddButton(gump, 355, 82, 0xA96, 0xA97, GF_PAGE_BTN, 300);
++	
++	GFPage(gump, 200);
++	GFAddButton(gump, 155, 82, 0xA97, 0xA96, GF_PAGE_BTN, 1);
++	GFAddButton(gump, 355, 82, 0xA96, 0xA97, GF_PAGE_BTN, 300);
++	
+ 	var engines := SS_GetEnginesList();
+ 	var y_pos := 100;
+ 	var counter := 0;
+@@ -399,15 +408,29 @@
+ 			y_pos := 100;
+ 		endif
+ 	endforeach
++	GFPage(gump, 300);
++	GFAddButton(gump, 155, 82, 0xA96, 0xA97, GF_PAGE_BTN, 200);
++	GFAddButton(gump, 355, 82, 0xA97, 0xA96, GF_PAGE_BTN, 1);
++	var lines := 16;
++	y_pos := 120;
++	for ( lines; lines &gt; 0; lines:=lines-1 )
++		GFResizePic(gump, 155, y_pos-4, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 210, 28);
++		GFTextEntry(gump, 161, y_pos, 200, 20, 2100, &quot;&quot;, NAME_TEXT_POS);
++		
++		GFResizePic(gump, 405, y_pos-4, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 210, 28);
++		GFTextEntry(gump, 406, y_pos, 200, 20, 2100, &quot;&quot;, NAME_TEXT_POS);
++		y_pos := y_pos+21;
++		sleepms(2);
++	endfor
+ 
+ 	var input := GFSendGump(who, gump);
+ 	if ( input[APPLY_BTN] )
+ 		var group_name := GFExtractData(input, NAME_TEXT_POS);
+ 		var engine_name;
+ 		foreach key in ( input.keys )
+-			BroadCast(&quot;*** &quot;+key+&quot;  (&quot;+hex(key)+&quot;)&quot;);
+ 			if ( key &gt;= ENGINE_START &amp;&amp; key &lt; ENTRY_START )
+ 				engine_name := engines[key-ENGINE_START];
++				break;
+ 			endif
+ 			sleepms(2);
+ 		endforeach
+@@ -428,7 +451,7 @@
+ endfunction
+ 
+ function BuildGroupInfoGump(who, group_name)
+-	var gump := BuildGumpTemplate(group_name);
++	var gump := BuildGumpTemplate();
+ 
+ 	GFTextMid(gump, 145, 20, 485, 2100, &quot;Edit Group&quot;);
+ 
+@@ -439,6 +462,7 @@
+ 	GFAddButton(gump, 525, 50, 0x84C, 0x84B, GF_CLOSE_BTN, APPLY_BTN);
+ 	
+ 	GFTextLine(gump, 155, 80, 2100, &quot;Spawn Engine&quot;);
++	
+ 	GFPage(gump, 1);
+ 	var engines := SS_GetEnginesList();
+ 	var y_pos := 100;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001252.html">[Poldistro-svn] r1280 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001254.html">[Poldistro-svn] r1282 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1253">[ date ]</a>
+              <a href="thread.html#1253">[ thread ]</a>
+              <a href="subject.html#1253">[ subject ]</a>
+              <a href="author.html#1253">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

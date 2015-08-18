@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r769 - in trunk/096/pkg/systems/attributes: config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r769%20-%20in%20trunk/096/pkg/systems/attributes%3A%20config%20include&In-Reply-To=%3C200511010710.jA17AbN9007135%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000742.html">
+   <LINK REL="Next"  HREF="000744.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r769 - in trunk/096/pkg/systems/attributes: config include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r769%20-%20in%20trunk/096/pkg/systems/attributes%3A%20config%20include&In-Reply-To=%3C200511010710.jA17AbN9007135%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r769 - in trunk/096/pkg/systems/attributes: config include">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 08:10:37 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000742.html">[Poldistro-svn] r768 - in trunk/096/pkg/systems/attributes: . config
+</A></li>
+        <LI>Next message: <A HREF="000744.html">[Poldistro-svn] r770 - in trunk/096/pkg/items/walkOn: . spiderWeb
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#743">[ date ]</a>
+              <a href="thread.html#743">[ thread ]</a>
+              <a href="subject.html#743">[ subject ]</a>
+              <a href="author.html#743">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 08:10:15 +0100 (Tue, 01 Nov 2005)
+New Revision: 769
+
+Added:
+   trunk/096/pkg/systems/attributes/include/titles.inc
+Modified:
+   trunk/096/pkg/systems/attributes/config/titles.cfg
+Log:
+Titles support finished.
+
+Modified: trunk/096/pkg/systems/attributes/config/titles.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/config/titles.cfg	2005-11-01 06:42:01 UTC (rev 768)
++++ trunk/096/pkg/systems/attributes/config/titles.cfg	2005-11-01 07:10:15 UTC (rev 769)
+@@ -5,14 +5,14 @@
+ 
+ Elem LevelTitles
+ {
+-	// Skill	Title
+-	Skill	10.0	Untrained
+-	Skill	40.0	Neophyte
+-	Skill	50.0	Novice
+-	Skill	60.0	Apprentice
+-	Skill	70.0	Journeyman
+-	Skill	80.0	Expert
+-	Skill	90.0	Adept
+-	Skill	100	Master
+-	Skill	130	Grandmaster
++	//	Title		Level
++	Level	Untrained	10.0
++	Level	Neophyte	40.0
++	Level	Novice		50.0
++	Level	Apprentice	60.0
++	Level	Journeyman	70.0
++	Level	Expert		80.0
++	Level	Adept		90.0
++	Level	Master		100.0
++	Level	Grandmaster	130.0
+ }
+
+Added: trunk/096/pkg/systems/attributes/include/titles.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/titles.inc	2005-11-01 06:42:01 UTC (rev 768)
++++ trunk/096/pkg/systems/attributes/include/titles.inc	2005-11-01 07:10:15 UTC (rev 769)
+@@ -0,0 +1,80 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:attributes:attributes&quot;;
++
++/*
++ * AP_GetLevelTitle(skill_level)
++ *
++ * Purpose
++ * Gets the title for a particlar skill level.
++ *
++ * Parameters
++ * skill_level:	Skill level of a skill. (e.g. 80% = 80)
++ *
++ * Return value
++ * Returns a string on success.
++ * Returns an error on failure.
++ *
++ */
++function AP_GetLevelTitle(skill_level)
++	skill_level := Cdbl(skill_level);
++	
++	if ( skill_level &lt; 0.0 )
++		return &quot;U SUK&quot;;
++	endif
++	
++	var title_cfg := ReadConfigFile(&quot;:attributes:config/titles.cfg&quot;);
++	if ( !title_cfg )
++		return title_cfg;
++	endif
++	
++	var title_elem := title_cfg[&quot;LevelTitles&quot;];
++	if ( !title_elem )
++		return title_elem;
++	endif
++	
++	var levels_list := GetConfigStringDictionary(title_elem, &quot;Level&quot;);
++	
++	foreach entry in ( levels_list )
++		if ( skill_level &lt; CDbl(entry) )
++			return _entry_iter;
++		endif
++		sleepms(2);
++	endforeach
++	
++	return error{&quot;errortext&quot;:=&quot;Could not find skill title for that level.&quot;};
++endfunction
++
++/*
++ * AP_GetSkillTitle(skill_name)
++ * 
++ * Purpose
++ * Finds the title name of a skill.
++ *
++ * Parameters
++ * skill_name:	Name of a skill from attributes.cfg
++ *
++ * Return value
++ * Returns a string on success.
++ * Returns an error on failure.
++ *
++ */
++function AP_GetSkillTitle(skill_name)
++	var elem_info := AP_GetAttributeCfgElem(skill_name);
++	if ( !elem_info )
++		return elem_info;
++	endif
++	
++	if ( elem_info.Title) 
++		return elem_info.Title;
++	else
++		return error{&quot;errortext&quot;:=&quot;Attribute does not have a 'Title' entry.&quot;};
++	endif
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000742.html">[Poldistro-svn] r768 - in trunk/096/pkg/systems/attributes: . config
+</A></li>
+	<LI>Next message: <A HREF="000744.html">[Poldistro-svn] r770 - in trunk/096/pkg/items/walkOn: . spiderWeb
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#743">[ date ]</a>
+              <a href="thread.html#743">[ thread ]</a>
+              <a href="subject.html#743">[ subject ]</a>
+              <a href="author.html#743">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

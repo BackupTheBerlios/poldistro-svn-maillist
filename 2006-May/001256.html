@@ -1,0 +1,362 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1284 - trunk/096/pkg/systems/spawnSystem/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1284%20-%20trunk/096/pkg/systems/spawnSystem/include&In-Reply-To=%3C200605061018.k46AIuv8022892%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001255.html">
+   <LINK REL="Next"  HREF="001257.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1284 - trunk/096/pkg/systems/spawnSystem/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1284%20-%20trunk/096/pkg/systems/spawnSystem/include&In-Reply-To=%3C200605061018.k46AIuv8022892%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1284 - trunk/096/pkg/systems/spawnSystem/include">austin at berlios.de
+       </A><BR>
+    <I>Sat May  6 12:18:56 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001255.html">[Poldistro-svn] r1283 - in trunk/096/pkg/systems/spawnSystem: commands/gm include
+</A></li>
+        <LI>Next message: <A HREF="001257.html">[Poldistro-svn] r1285 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1256">[ date ]</a>
+              <a href="thread.html#1256">[ thread ]</a>
+              <a href="subject.html#1256">[ subject ]</a>
+              <a href="author.html#1256">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-06 12:18:55 +0200 (Sat, 06 May 2006)
+New Revision: 1284
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/include/groups.inc
+   trunk/096/pkg/systems/spawnSystem/include/realms.inc
+   trunk/096/pkg/systems/spawnSystem/include/regions.inc
+Log:
+Forced names to lowercase.
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/groups.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/groups.inc	2006-05-06 10:08:58 UTC (rev 1283)
++++ trunk/096/pkg/systems/spawnSystem/include/groups.inc	2006-05-06 10:18:55 UTC (rev 1284)
+@@ -36,7 +36,7 @@
+  */
+ function SS_GetGroupDataElem(elem_name)
+ 	var data_file := SS_GetGroupDataFile();
+-	var group_elem := DFFindElement(data_file, elem_name, DF_NO_CREATE);
++	var group_elem := DFFindElement(data_file, Lower(elem_name), DF_NO_CREATE);
+ 	
+ 	return group_elem;
+ endfunction
+@@ -56,6 +56,10 @@
+  *
+  */
+ function SS_AddGroup(group_name, engine_type:=&quot;&quot;)
++	group_name := Lower(group_name);
++	engine_type := Lower(engine_type);
++	
++	
+ 	var data_file := SS_GetGroupDataFile();
+ 	
+ 	if ( data_file.FindElement(group_name) != error )
+@@ -86,7 +90,7 @@
+  */
+ function SS_RemoveGroup(group_name)
+ 	var data_file := SS_GetGroupDataFile();
+-	return data_file.DeleteElement(group_name);
++	return data_file.DeleteElement(Lower(group_name));
+ endfunction
+ 
+ /*
+@@ -122,7 +126,7 @@
+  *
+  */
+ function SS_GetGroupEngine(group_name)
+-	var group_elem := SS_GetGroupDataElem(group_name);
++	var group_elem := SS_GetGroupDataElem(Lower(group_name));
+ 	return group_elem.GetProp(&quot;Engine&quot;);
+ endfunction
+ 
+@@ -141,9 +145,12 @@
+  *
+  */
+ function SS_SetGroupEngine(group_name, engine_name)
++	group_name := Lower(group_name);
++	engine_name := Lower(engine_name);
++	
+ 	var group_elem := SS_GetGroupDataElem(group_name);
+ 	
+-	return group_elem.SetProp(&quot;Engine&quot;, Lower(engine_name));
++	return group_elem.SetProp(&quot;Engine&quot;, engine_name);
+ endfunction
+ 
+ /*
+@@ -161,9 +168,11 @@
+  *
+  */
+ function SS_AddEntryToGroup(group_name, entry_name)
+-	var entry_list := SS_GetEntriesInGroup(group_name);
++	group_name := Lower(group_name);
+ 	entry_name := Lower(entry_name);
+ 	
++	var entry_list := SS_GetEntriesInGroup(group_name);
++		
+ 	if ( entry_list.Exists(entry_name) )
+ 		return 0;
+ 	else
+@@ -188,9 +197,11 @@
+  *
+  */
+ function SS_RemoveEntryFromGroup(group_name, entry_name)
+-	var entry_list := SS_GetEntriesInGroup(group_name);
++	group_name := Lower(group_name);
+ 	entry_name := Lower(entry_name);
+ 	
++	var entry_list := SS_GetEntriesInGroup(group_name);
++	
+ 	if ( !entry_list.Exists(entry_name) )
+ 		return 0;
+ 	else
+@@ -215,6 +226,8 @@
+  * 
+  */
+ function SS_GetEntriesInGroup(group_name)
++	group_name := Lower(group_name);
++	
+ 	var group_elem := SS_GetGroupDataElem(group_name);
+ 	var group_list := group_elem.GetProp(&quot;EntryList&quot;);
+ 	
+@@ -240,9 +253,12 @@
+  *
+  */
+ function SS_GetEntryByNumber(group_name, number)
++	group_name := Lower(group_name);
++	number := CInt(number);
++	
+ 	var entries := SS_GetEntriesInGroup(group_name);
+ 	entries := entries.Keys();
+-	var entry := entries[CInt(number)];
++	var entry := entries[number];
+ 	if ( entry )
+ 		return CStr(entry);
+ 	else
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/realms.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/realms.inc	2006-05-06 10:08:58 UTC (rev 1283)
++++ trunk/096/pkg/systems/spawnSystem/include/realms.inc	2006-05-06 10:18:55 UTC (rev 1284)
+@@ -56,6 +56,8 @@
+  */
+ function SS_AddRealm(realm_name)
+ 	var core_realms := Realms();
++	realm_name := Lower(realm_name);
++	
+ 	if ( !core_realms.Exists(Lower(realm_name)) )
+ 		return error{&quot;errortext&quot;:=&quot;'&quot;+realm_name+&quot;' is not a valid realm name.&quot;};
+ 	endif
+@@ -83,7 +85,7 @@
+  */
+ function SS_RemoveRealm(realm_name)
+ 	var data_file := SS_GetRealmDataFile();
+-	return data_file.DeleteElement(realm_name);
++	return data_file.DeleteElement(Lower(realm_name));
+ endfunction
+ 
+ /*
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/regions.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/regions.inc	2006-05-06 10:08:58 UTC (rev 1283)
++++ trunk/096/pkg/systems/spawnSystem/include/regions.inc	2006-05-06 10:18:55 UTC (rev 1284)
+@@ -57,13 +57,16 @@
+ function SS_AddRegion(region_name, realm_name:=&quot;&quot;)
+ 	var data_file := SS_GetRegionDataFile();
+ 	
++	region_name := Lower(region_name);
++	realm_name := Lower(realm_name);
++	
+ 	if ( data_file.FindElement(region_name) != error )
+ 		return error{&quot;errortext&quot;:=&quot;Region already exists.&quot;};
+ 	endif
+ 	
+ 	var result := data_file.CreateElement(region_name);
+ 	if ( realm_name &amp;&amp; result )
+-		SS_SetRegionRealm(region_name, Lower(realm_name));
++		SS_SetRegionRealm(region_name, realm_name);
+ 	endif
+ 	
+ 	return result;
+@@ -87,7 +90,7 @@
+  */
+ function SS_RemoveRegion(region_name)
+ 	var data_file := SS_GetRegionDataFile();
+-	return data_file.DeleteElement(region_name);
++	return data_file.DeleteElement(Lower(region_name));
+ endfunction
+ 
+ /*
+@@ -106,6 +109,8 @@
+  */
+ function SS_GetRegionNames(realm_name:=&quot;&quot;)
+ 	var data_file := SS_GetRegionDataFile();
++	
++	realm_name := Lower(realm_name);
+ 
+ 	var region_names := array{};
+ 	if ( !realm_name )
+@@ -136,7 +141,7 @@
+  *
+  */
+ function SS_GetRegionRealm(region_name)
+-	var region_elem := SS_GetRegionDataElem(region_name);
++	var region_elem := SS_GetRegionDataElem(Lower(region_name));
+ 	return region_elem.GetProp(&quot;Realm&quot;);
+ endfunction
+ 
+@@ -155,7 +160,7 @@
+  *
+  */
+ function SS_SetRegionRealm(region_name, realm_name)
+-	var region_elem := SS_GetRegionDataElem(region_name);
++	var region_elem := SS_GetRegionDataElem(Lower(region_name));
+ 	return region_elem.SetProp(&quot;Realm&quot;, Lower(realm_name));
+ endfunction
+ 
+@@ -173,7 +178,7 @@
+  *
+  */
+ function SS_GetRegionCoordinates(region_name)
+-	var region_elem := SS_GetRegionDataElem(region_name);
++	var region_elem := SS_GetRegionDataElem(Lower(region_name));
+ 	return region_elem.GetProp(&quot;Coordinates&quot;);
+ endfunction
+ 
+@@ -195,7 +200,7 @@
+  *
+  */
+ function SS_SetRegionCoordinates(region_name, x1, y1, x2, y2)
+-	var region_elem := SS_GetRegionDataElem(region_name);
++	var region_elem := SS_GetRegionDataElem(Lower(region_name));
+ 	
+ 	var coords := struct{&quot;x1&quot;:=CInt(x1), &quot;y1&quot;:=CInt(y1), &quot;x2&quot;:=CInt(x2), &quot;y2&quot;:=CInt(y2)};
+ 		
+@@ -217,7 +222,7 @@
+  * 
+  */
+ function SS_GetGroupsInRegion(region_name)
+-	var region_elem := SS_GetRegionDataElem(region_name);
++	var region_elem := SS_GetRegionDataElem(Lower(region_name));
+ 	var group_list := region_elem.GetProp(&quot;Groups&quot;);
+ 	if ( !group_list )
+ 		group_list := dictionary;
+@@ -239,8 +244,8 @@
+  *
+  */
+  function SS_GetGroupInRegion(region_name, group_name)
+- 	var group_list := SS_GetGroupsInRegion(region_name);
+- 	return group_list[group_name];
++ 	var group_list := SS_GetGroupsInRegion(Lower(region_name));
++ 	return group_list[Lower(group_name)];
+  endfunction
+ 
+ /*
+@@ -267,6 +272,9 @@
+ 	settings.+max_amt := max_amt;
+ 	settings.+enabled := enabled;
+ 	
++	region_name := Lower(region_name);
++	group_name := Lower(group_name);
++	
+ 	var group_list := SS_GetGroupsInRegion(region_name);
+ 	group_list.Insert(Lower(group_name), settings);
+ 	
+@@ -289,9 +297,11 @@
+  *
+  */
+ function SS_RemoveGroupFromRegion(region_name, group_name)
+-	var group_list := SS_GetGroupsInRegion(region_name);
++	region_name := Lower(region_name);
+ 	group_name := Lower(group_name);
+ 	
++	var group_list := SS_GetGroupsInRegion(region_name);
++	
+ 	group_list.Erase(group_name);
+ 	
+ 	var region_elem := SS_GetRegionDataElem(region_name);
+@@ -315,6 +325,9 @@
+  *
+  */
+ function SS_AddSpawnToRegion(region_name, group_name, object)
++	region_name := Lower(region_name);
++	group_name := Lower(group_name);
++	
+ 	var spawn_list := SS_GetSpawnsInRegionGroup(region_name, group_name);
+ 	
+ 	var spawn_info := struct;
+@@ -342,9 +355,11 @@
+  *
+  */
+ function SS_GetSpawnsInRegionGroup(region_name, group_name)
+-	var region_elem := SS_GetRegionDataElem(region_name);
++	region_name := Lower(region_name);
+ 	group_name := Lower(group_name);
+ 	
++	var region_elem := SS_GetRegionDataElem(region_name);
++	
+ 	var spawns := region_elem.GetProp(&quot;Spawns-&quot;+group_name);
+ 	if ( !spawns )
+ 		spawns := dictionary;
+@@ -367,7 +382,7 @@
+  *
+  */
+ function SS_GetRegionSpawnWait(region_name)
+-	var region_elem := SS_GetRegionDataElem(region_name);
++	var region_elem := SS_GetRegionDataElem(Lower(region_name));
+ 	var wait := CInt(region_elem.GetProp(&quot;SpawnWait&quot;));
+ 	if ( wait &lt; 1 )
+ 		wait := 1;
+@@ -390,7 +405,7 @@
+  *
+  */
+ function SS_SetRegionSpawnWait(region_name, seconds)
+-	var region_elem := SS_GetRegionDataElem(region_name);
++	var region_elem := SS_GetRegionDataElem(Lower(region_name));
+ 	
+ 	seconds := CInt(seconds);
+ 	if ( seconds &lt; 1 )
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001255.html">[Poldistro-svn] r1283 - in trunk/096/pkg/systems/spawnSystem: commands/gm include
+</A></li>
+	<LI>Next message: <A HREF="001257.html">[Poldistro-svn] r1285 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1256">[ date ]</a>
+              <a href="thread.html#1256">[ thread ]</a>
+              <a href="subject.html#1256">[ subject ]</a>
+              <a href="author.html#1256">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

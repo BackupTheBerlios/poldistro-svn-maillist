@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1302 - in trunk/096/pkg/systems/accounts: auxsvc config www
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1302%20-%20in%20trunk/096/pkg/systems/accounts%3A%20auxsvc%20config%20www&In-Reply-To=%3C200605110543.k4B5hfGS031961%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001273.html">
+   <LINK REL="Next"  HREF="001275.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1302 - in trunk/096/pkg/systems/accounts: auxsvc config www</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1302%20-%20in%20trunk/096/pkg/systems/accounts%3A%20auxsvc%20config%20www&In-Reply-To=%3C200605110543.k4B5hfGS031961%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1302 - in trunk/096/pkg/systems/accounts: auxsvc config www">austin at berlios.de
+       </A><BR>
+    <I>Thu May 11 07:43:41 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001273.html">[Poldistro-svn] r1301 - trunk/096/pkg/systems/accounts/www
+</A></li>
+        <LI>Next message: <A HREF="001275.html">[Poldistro-svn] r1303 - in trunk/096/pkg/systems/accounts: . config hook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1274">[ date ]</a>
+              <a href="thread.html#1274">[ thread ]</a>
+              <a href="subject.html#1274">[ subject ]</a>
+              <a href="author.html#1274">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-11 07:43:38 +0200 (Thu, 11 May 2006)
+New Revision: 1302
+
+Modified:
+   trunk/096/pkg/systems/accounts/auxsvc/newAccount.src
+   trunk/096/pkg/systems/accounts/config/settings.cfg
+   trunk/096/pkg/systems/accounts/www/newAccount.src
+Log:
+Added support to disable WWW and Aux account creation.
+
+Modified: trunk/096/pkg/systems/accounts/auxsvc/newAccount.src
+===================================================================
+--- trunk/096/pkg/systems/accounts/auxsvc/newAccount.src	2006-05-11 05:39:35 UTC (rev 1301)
++++ trunk/096/pkg/systems/accounts/auxsvc/newAccount.src	2006-05-11 05:43:38 UTC (rev 1302)
+@@ -20,7 +20,14 @@
+  */
+ program AuxService(connection)
+ 	var report;
++	var settings := ACCT_GetSettingsCfgElem(&quot;Settings&quot;);
+ 	while ( connection )
++		if ( !settings.AllowWWWAccounts )
++			report := array{&quot;Error&quot;, &quot;Web account maker is disabled.&quot;};
++			connection.Transmit(report);
++			return 0;
++		endif
++	
+ 		var event := Wait_For_Event(5);
+ 		if ( event ) // New account to be made?
+ 			var username := event[1];
+@@ -30,11 +37,11 @@
+ 			var email := event[5];
+ 			var admin_pw := event[6];
+ 			
+-			var settings := ACCT_GetSettingsCfgElem(&quot;Settings&quot;);
+ 			if ( settings.AuxWebPassword )
+ 				if ( settings.AuxWebPassword != admin_pw )
+-					 connection.Transmit(&quot;Invalid administration password.&quot;);
+-					 return 0;
++					report := array{&quot;Error&quot;, &quot;Invalid administration password.&quot;};
++					connection.Transmit(report);
++					return 0;
+ 				endif
+ 			endif
+ 			
+
+Modified: trunk/096/pkg/systems/accounts/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/accounts/config/settings.cfg	2006-05-11 05:39:35 UTC (rev 1301)
++++ trunk/096/pkg/systems/accounts/config/settings.cfg	2006-05-11 05:43:38 UTC (rev 1302)
+@@ -7,6 +7,12 @@
+ 	// AllowAutoAccounts - If a client logs in and the account does not exist, it will be created.
+ 	AllowAutoAccounts	0
+ 	
++	// AllowAuxAccounts - If set to 0, no aux account creations will be allowed.
++	AllowAuxAccounts	0
++	
++	// AllowWWWAccounts - If set to 0, no www account creations will be allowed.
++	AllowWWWAccounts	0
++	
+ 	// If set, the password must be sent to the aux and web script to allow them to make an account.
+ 	// Make sure to not use weird special characters that can't be converted by POL in a URL string.
+ 	AuxWebPassword		
+
+Modified: trunk/096/pkg/systems/accounts/www/newAccount.src
+===================================================================
+--- trunk/096/pkg/systems/accounts/www/newAccount.src	2006-05-11 05:39:35 UTC (rev 1301)
++++ trunk/096/pkg/systems/accounts/www/newAccount.src	2006-05-11 05:43:38 UTC (rev 1302)
+@@ -23,14 +23,19 @@
+  *
+  */
+ program HTTPScript()
++	var settings := ACCT_GetSettingsCfgElem(&quot;Settings&quot;);
++	if ( !settings.AllowWWWAccounts )
++		WriteHTMLRaw(&quot;Error: Web account maker is disabled.&quot;);
++		return 0;
++	endif
++	
+ 	var username := QueryParam(&quot;username&quot;);
+ 	var password := QueryParam(&quot;password&quot;);
+ 	var cmd_lvl := QueryParam(&quot;cmdlevel&quot;);
+ 	var expansion := QueryParam(&quot;expansion&quot;);
+ 	var email := QueryParam(&quot;email&quot;);
+ 	var admin_pw := QueryParam(&quot;adminpw&quot;);
+-
+-	var settings := ACCT_GetSettingsCfgElem(&quot;Settings&quot;);
++	
+ 	if ( settings.AuxWebPassword )
+ 		if ( settings.AuxWebPassword != admin_pw )
+ 			 WriteHTMLRaw(&quot;Error: Invalid administration password.&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001273.html">[Poldistro-svn] r1301 - trunk/096/pkg/systems/accounts/www
+</A></li>
+	<LI>Next message: <A HREF="001275.html">[Poldistro-svn] r1303 - in trunk/096/pkg/systems/accounts: . config hook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1274">[ date ]</a>
+              <a href="thread.html#1274">[ thread ]</a>
+              <a href="subject.html#1274">[ subject ]</a>
+              <a href="author.html#1274">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

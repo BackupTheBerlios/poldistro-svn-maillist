@@ -1,0 +1,416 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1421 - in trunk/096/pkg/mobiles/timedScripts: config subScripts/food subScripts/magery subScripts/odors subScripts/paralysis subScripts/poison
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1421%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20config%20subScripts/food%20subScripts/magery%20subScripts/odors%20subScripts/paralysis%20subScripts/poison&In-Reply-To=%3C200605141230.k4ECUi3x028926%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001389.html">
+   <LINK REL="Next"  HREF="001391.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1421 - in trunk/096/pkg/mobiles/timedScripts: config subScripts/food subScripts/magery subScripts/odors subScripts/paralysis subScripts/poison</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1421%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20config%20subScripts/food%20subScripts/magery%20subScripts/odors%20subScripts/paralysis%20subScripts/poison&In-Reply-To=%3C200605141230.k4ECUi3x028926%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1421 - in trunk/096/pkg/mobiles/timedScripts: config subScripts/food subScripts/magery subScripts/odors subScripts/paralysis subScripts/poison">austin at berlios.de
+       </A><BR>
+    <I>Sun May 14 14:30:44 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001389.html">[Poldistro-svn] r1420 - trunk/096/pkg/mobiles/brainAI/bundled/skunk
+</A></li>
+        <LI>Next message: <A HREF="001391.html">[Poldistro-svn] r1422 - trunk/096/pkg/mobiles/brainAI/bundled/skunk
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1390">[ date ]</a>
+              <a href="thread.html#1390">[ thread ]</a>
+              <a href="subject.html#1390">[ subject ]</a>
+              <a href="author.html#1390">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-14 14:30:41 +0200 (Sun, 14 May 2006)
+New Revision: 1421
+
+Added:
+   trunk/096/pkg/mobiles/timedScripts/subScripts/odors/skunk.src
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+   trunk/096/pkg/mobiles/timedScripts/subScripts/food/alcohol.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/magery/clumsy.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endClumsy.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endFeebleMind.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endWeaken.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/magery/feebleMind.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/magery/weaken.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/odors/flatulence.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/odors/poostink.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/endParalysis.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/paralysis.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src
+Log:
+Skunk odor
+
+Modified: trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -115,6 +115,15 @@
+ 	MaxDuration		300	// 5 minutes
+ }
+ 
++TimerElem skunk
++{
++	Name			Skunk
++	Script			subScripts/odors/skunk
++	NoCure			1
++	EndOnDeath		0
++	MaxDuration		300	// 5 minutes
++}
++
+ #--=[ Consumables ]=------------------------------
+ 
+ TimerElem alcohol
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/food/alcohol.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/food/alcohol.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/food/alcohol.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -1,3 +1,7 @@
++/* $Id$
++ *
++ */
++
+ use uo;
+ use os;
+ use util;
+@@ -2,9 +6,10 @@
+ 
++include &quot;include/client&quot;;
+ include &quot;:timedscripts:timedScripts&quot;;
+ 
+-program shitfaced(params)
++program TimedScript_Alcohol(params)
+ 	var mobile := params[1];
+ 
+ 	var cycle := 0;
+-	while(1)
++	while ( 1 )
+ 		cycle := cycle+1;
+@@ -24,21 +29,23 @@
+ 
+ 		var roll := RandomInt(10);
+ 		if ( cycle &gt;= 13 )
+-			mobile.facing := RandomDiceRoll(&quot;1d8&quot;);
++			mobile.facing := RandomInt(8);
+ 			PrintTextAbove(mobile, &quot;*Hic!*&quot;);
+ 
+ 			if ( roll &lt; 7 )
+-				PerformAction(mobile, 32);
++				PerformAction(mobile, ANIM_BOW);
+ 			endif
+ 		endif
+ 
+ 		if ( cycle &gt; 25 ) // Boy this person is wasted.
+ 			PerformAction(mobile, 32);
+ 			if ( roll &lt; 3 )
+-				CreateItemAtLocation(mobile.x, mobile.y, mobile.z, &quot;vomit&quot;, 1);
++				CreateItemAtLocation(mobile.x, mobile.y, mobile.z, &quot;vomit&quot;, 1, mobile.realm);
+ 			endif
+ 		endif
+ 		
+ 		Sleep(RandomDiceRoll(&quot;1d4&quot;)+2);
+ 	endwhile
++	
++	return 1;
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/magery/clumsy.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/magery/clumsy.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/magery/clumsy.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -8,7 +8,7 @@
+ 
+ include &quot;:attributes:attributes&quot;;
+ 
+-program poisonScript(params)
++program TimedScript_Clumsy(params)
+ 	var mobile := params[1];
+ 	var attacker := params[2];
+ 	params := 0; // Not needed anymore.
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endClumsy.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endClumsy.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endClumsy.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -8,7 +8,7 @@
+ 
+ include &quot;:attributes:attributes&quot;;
+ 
+-program cureScript(params)
++program TimedScript_EndClumsy(params)
+ 	var mobile := params[1];
+ 	
+ 	var points := CInt(GetObjProperty(mobile, &quot;#ClumsyMod&quot;));	
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endFeebleMind.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endFeebleMind.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endFeebleMind.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -8,7 +8,7 @@
+ 
+ include &quot;:attributes:attributes&quot;;
+ 
+-program cureScript(params)
++program TimedScript_EndFeebleMind(params)
+ 	var mobile := params[1];
+ 	
+ 	var points := CInt(GetObjProperty(mobile, &quot;#FeebleMindMod&quot;));	
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endWeaken.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endWeaken.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/magery/endWeaken.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -8,7 +8,7 @@
+ 
+ include &quot;:attributes:attributes&quot;;
+ 
+-program cureScript(params)
++program TimedScript_EndWeaken(params)
+ 	var mobile := params[1];
+ 	
+ 	var points := CInt(GetObjProperty(mobile, &quot;#WeakenMod&quot;));	
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/magery/feebleMind.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/magery/feebleMind.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/magery/feebleMind.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -8,7 +8,7 @@
+ 
+ include &quot;:attributes:attributes&quot;;
+ 
+-program poisonScript(params)
++program TimedScript_FeebleMind(params)
+ 	var mobile := params[1];
+ 	var attacker := params[2];
+ 	params := 0; // Not needed anymore.
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/magery/weaken.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/magery/weaken.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/magery/weaken.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -8,7 +8,7 @@
+ 
+ include &quot;:attributes:attributes&quot;;
+ 
+-program poisonScript(params)
++program TimedScript_Weaken(params)
+ 	var mobile := params[1];
+ 	var attacker := params[2];
+ 	params := 0; // Not needed anymore.
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/odors/flatulence.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/odors/flatulence.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/odors/flatulence.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -2,23 +2,25 @@
+ use os;
+ use util;
+ 
+-program Flatulence(params)
++program TimedScript_Flatulence(params)
+ 	var who := params[1];
+ 	
+ 	var sounds := array{0x5d, 0x5f, 0x5b, 0x22};
+ 	
+ 	SendSysMessage(who, &quot;Your stomach feels bloated.&quot;);
+ 	
+-	while( 1 )
++	while ( 1 )
+ 		sleep(RandomDiceRoll(&quot;6d5&quot;));
+ 		
+ 		PlaySoundEffect(who, sounds[RandomInt(sounds.size())+1]);
+ 		
+-		PrintTextAbove(who, &quot;*breaks the wind*&quot;);
++		PrintTextAbove(who, &quot;*breaks wind*&quot;);
+ 		
+-		foreach mobile in ListMobilesNearLocationEX(who.x, who.y, who.z, 10, LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN)
++		foreach mobile in ( ListMobilesNearLocationEX(who.x, who.y, who.z, 10, LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN) )
+ 			SendSysMessage(mobile, &quot;You notice an indistinguishable stench in the air.&quot;);
+ 			sleepms(2);
+ 		endforeach
+ 	endwhile
++	
++	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/odors/poostink.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/odors/poostink.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/odors/poostink.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -1,11 +1,17 @@
++/* $Id$
++ *
++ */
++
+ use uo;
+ use os;
+ 
+-program PooStink(params)
++program TimedScript_PooStink(params)
+ 	var who := params[1];
+ 	
+-	while(1)
++	while ( 1 )
+ 		PrintTextAbove(who, &quot;*&quot; + who.name + &quot; smells like poo!*&quot;);
+ 		sleep(6);
+ 	endwhile
++	
++	return 1;
+ endprogram
+
+Added: trunk/096/pkg/mobiles/timedScripts/subScripts/odors/skunk.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/odors/skunk.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/odors/skunk.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -0,0 +1,42 @@
++/* $Id$
++ *
++ */
++use uo;
++use util;
++use os;
++
++include &quot;include/client&quot;;
++
++program TimedScript_Skunk(params)
++	var who := params[1];
++	
++	while ( 1 )
++		PrintTextAbove(who, &quot;*&quot; + who.name + &quot; smells like skunk*&quot;);
++		sleep(10);
++		if ( RandomInt(5) == 3 )
++			DoVomit(who);
++		endif				
++	endwhile
++	
++	return 1;
++endprogram
++
++function DoVomit(who)
++	var players := array{};
++	foreach mobile in ( ListMobilesInLineOfSight(who, 6) )
++		if ( mobile.connected )
++			players.Append(mobile);
++		endif
++		sleepms(2);
++	endforeach
++	
++	if ( players.Size() &gt; 0 )
++		var vomiter := players[RandomInt(players.size())+1];
++		SendSysMessage(vomiter, &quot;The stench from &quot;+who.name+&quot; makes you feel extremely sick.&quot;);
++		PerformAction(vomiter, ANIM_BOW);
++		sleepms(60);
++		CreateItemAtLocation(vomiter.x, vomiter.y, vomiter.z, &quot;vomit&quot;, 1, vomiter.realm);
++	endif
++	
++	return 1;
++endfunction
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/endParalysis.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/endParalysis.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/endParalysis.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -6,9 +6,8 @@
+ use uo;
+ use os;
+ 
+-program poisonScript(mobile)
++program TimedScript_EndParalysis(mobile)
+ 	mobile.paralyzed := 0;
+ 	
+ 	return 1;
+ endprogram
+-
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/paralysis.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/paralysis.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/paralysis/paralysis.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -6,7 +6,7 @@
+ use uo;
+ use os;
+ 
+-program poisonScript(params)
++program TimedScript_Paralysis(params)
+ 	var mobile := params[1];
+ 	
+ 	PlaySoundEffect(mobile, 0x205);
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src	2006-05-14 12:20:37 UTC (rev 1420)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src	2006-05-14 12:30:41 UTC (rev 1421)
+@@ -5,10 +5,11 @@
+ include &quot;:timedscripts:timedScripts&quot;;
+ include &quot;include/damage&quot;;
+ 
+-program default_poison(params)
++program TimedScript_DefaultPoison(params)
+ 	var who := params[1];
+ 	var attacker := params[2];
+ 	var level := CInt(params[3]);
++	params := 0; // No longer needed.
+ 
+ 	if ( !level )
+ 		level := 1;
+@@ -64,7 +65,7 @@
+ 		   time := 5;
+ 	endcase
+ 
+-	while(1)
++	while ( 1 )
+ 		PrintTextAbovePrivate(who, poisonedmsg, who);
+ 		foreach mobile in ( ListMobilesInLineOfSight(who, 8) )
+ 			if( mobile.ip &amp;&amp; mobile != who )
+@@ -87,6 +88,5 @@
+ 		sleep(time);
+ 	endwhile
+ 
+-	return;
++	return 1;
+ endprogram
+-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001389.html">[Poldistro-svn] r1420 - trunk/096/pkg/mobiles/brainAI/bundled/skunk
+</A></li>
+	<LI>Next message: <A HREF="001391.html">[Poldistro-svn] r1422 - trunk/096/pkg/mobiles/brainAI/bundled/skunk
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1390">[ date ]</a>
+              <a href="thread.html#1390">[ thread ]</a>
+              <a href="subject.html#1390">[ subject ]</a>
+              <a href="author.html#1390">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

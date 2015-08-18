@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1228 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1228%20-%20trunk/096/scripts/include&In-Reply-To=%3C200602151815.k1FIFAtp007502%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001199.html">
+   <LINK REL="Next"  HREF="001201.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1228 - trunk/096/scripts/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1228%20-%20trunk/096/scripts/include&In-Reply-To=%3C200602151815.k1FIFAtp007502%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1228 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Feb 15 19:15:10 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001199.html">[Poldistro-svn] r1227 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="001201.html">[Poldistro-svn] r1229 - trunk/096/pkg/systems/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1200">[ date ]</a>
+              <a href="thread.html#1200">[ thread ]</a>
+              <a href="subject.html#1200">[ subject ]</a>
+              <a href="author.html#1200">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-15 19:14:59 +0100 (Wed, 15 Feb 2006)
+New Revision: 1228
+
+Modified:
+   trunk/096/scripts/include/damage.inc
+Log:
+Should do the trick.
+
+Modified: trunk/096/scripts/include/damage.inc
+===================================================================
+--- trunk/096/scripts/include/damage.inc	2006-02-15 18:04:27 UTC (rev 1227)
++++ trunk/096/scripts/include/damage.inc	2006-02-15 18:14:59 UTC (rev 1228)
+@@ -1,3 +1,10 @@
++/* $Id$
++ * 
++ * Purpose
++ * Handles damages and resistances to damage types
++ *
++ */
++
+ use uo;
+ use os;
+ use math;
+@@ -275,3 +282,30 @@
+ 	
+ 	return SetObjProperty(mobile, &quot;Resistances&quot;, resistances);
+ endfunction
++
++/*
++ * ModifyResistance(mobile, name, value)
++ * Purpose
++ * Modifies a resistance multiplier on a mobile.
++ *
++ * mobile:	Mobile to set the resistance multiplier for.
++ * name:	Name of the resistance type to change.
++ * value:	Adjustment to the multiplier.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
++function ModifyResistance(mobile, name, value)
++	var resistances := GetObjProperty(mobile, &quot;Resistances&quot;);
++	if ( Lower(TypeOf(resistances)) != &quot;dictionary&quot; )
++		resistances := dictionary;
++	endif
++	
++	var cur_value := CDbl(resistances[name]);
++	value := cur_value + CDbl(value);
++	
++	resistances[name] := value;
++	
++	return SetObjProperty(mobile, &quot;Resistances&quot;, resistances);
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001199.html">[Poldistro-svn] r1227 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="001201.html">[Poldistro-svn] r1229 - trunk/096/pkg/systems/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1200">[ date ]</a>
+              <a href="thread.html#1200">[ thread ]</a>
+              <a href="subject.html#1200">[ subject ]</a>
+              <a href="author.html#1200">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

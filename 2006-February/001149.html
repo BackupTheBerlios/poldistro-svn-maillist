@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1178 - trunk/096/pkg/items/sysbook/book
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1178%20-%20trunk/096/pkg/items/sysbook/book&In-Reply-To=%3C200602101233.k1ACX55o018714%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001148.html">
+   <LINK REL="Next"  HREF="001150.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1178 - trunk/096/pkg/items/sysbook/book</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1178%20-%20trunk/096/pkg/items/sysbook/book&In-Reply-To=%3C200602101233.k1ACX55o018714%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1178 - trunk/096/pkg/items/sysbook/book">austin at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 13:33:05 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001148.html">[Poldistro-svn] r1177 - trunk/096/pkg/items/mounts/config
+</A></li>
+        <LI>Next message: <A HREF="001150.html">[Poldistro-svn] r1179 - in trunk/096/pkg/items/doors: . OLD OLD/config config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1149">[ date ]</a>
+              <a href="thread.html#1149">[ thread ]</a>
+              <a href="subject.html#1149">[ subject ]</a>
+              <a href="author.html#1149">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-10 13:32:59 +0100 (Fri, 10 Feb 2006)
+New Revision: 1178
+
+Modified:
+   trunk/096/pkg/items/sysbook/book/onCreate.src
+   trunk/096/pkg/items/sysbook/book/onDestroy.src
+   trunk/096/pkg/items/sysbook/book/use.src
+Log:
+Minor cleanups.
+OnDestroy returns 1 properly now.
+No longer uses SysLog() and instead writes to sysbook.log
+
+Modified: trunk/096/pkg/items/sysbook/book/onCreate.src
+===================================================================
+--- trunk/096/pkg/items/sysbook/book/onCreate.src	2006-02-10 01:37:31 UTC (rev 1177)
++++ trunk/096/pkg/items/sysbook/book/onCreate.src	2006-02-10 12:32:59 UTC (rev 1178)
+@@ -2,5 +2,6 @@
+ 
+ program OnCreate(book)
+ 	book := book;
++	
+ 	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/items/sysbook/book/onDestroy.src
+===================================================================
+--- trunk/096/pkg/items/sysbook/book/onDestroy.src	2006-02-10 01:37:31 UTC (rev 1177)
++++ trunk/096/pkg/items/sysbook/book/onDestroy.src	2006-02-10 12:32:59 UTC (rev 1178)
+@@ -6,5 +6,8 @@
+ 	var book_data_file := DFOpenDataFile(&quot;:sysbooks:books&quot;, DF_NO_CREATE);
+ 	book_data_file.DeleteElement(Hex(book.serial));
+ 	
+-	SysLog(&quot;Deleting datafile elem for book &quot; + Hex(book.serial));
++	var script_name := GetProcess(GetPid()).name;
++	LogToFile(&quot;::log/sysBook.log&quot;, &quot;[&quot;+script_name+&quot;]: &quot;+&quot;Deleting datafile elem for book &quot; + Hex(book.serial), LOG_DATETIME);
++	
++	return 1;
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/sysbook/book/use.src
+===================================================================
+--- trunk/096/pkg/items/sysbook/book/use.src	2006-02-10 01:37:31 UTC (rev 1177)
++++ trunk/096/pkg/items/sysbook/book/use.src	2006-02-10 12:32:59 UTC (rev 1178)
+@@ -5,7 +5,7 @@
+ program useBook(who,book)
+ 	if ( !ReserveItem(book) )
+ 		SendSysMessage(who, &quot;Someone else is already reading this book.&quot;);
+-		return;
++		return 0;
+ 	endif
+ 
+ 	SendOpenBook(who, book);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001148.html">[Poldistro-svn] r1177 - trunk/096/pkg/items/mounts/config
+</A></li>
+	<LI>Next message: <A HREF="001150.html">[Poldistro-svn] r1179 - in trunk/096/pkg/items/doors: . OLD OLD/config config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1149">[ date ]</a>
+              <a href="thread.html#1149">[ thread ]</a>
+              <a href="subject.html#1149">[ subject ]</a>
+              <a href="author.html#1149">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

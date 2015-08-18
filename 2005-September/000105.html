@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r123 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r123%20-%20trunk/096/pkg/mobiles/ai_brain/complete/testnpc&In-Reply-To=%3C200509140157.j8E1vsGr028452%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000104.html">
+   <LINK REL="Next"  HREF="000106.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r123 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r123%20-%20trunk/096/pkg/mobiles/ai_brain/complete/testnpc&In-Reply-To=%3C200509140157.j8E1vsGr028452%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r123 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 14 03:57:54 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000104.html">[Poldistro-svn] r122 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc
+</A></li>
+        <LI>Next message: <A HREF="000106.html">[Poldistro-svn] r124 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#105">[ date ]</a>
+              <a href="thread.html#105">[ thread ]</a>
+              <a href="subject.html#105">[ subject ]</a>
+              <a href="author.html#105">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-14 03:57:45 +0200 (Wed, 14 Sep 2005)
+New Revision: 123
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/itemGiven.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/listen.src
+Log:
+More nerve updates
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/itemGiven.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/itemGiven.src	2005-09-14 01:55:56 UTC (rev 122)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/itemGiven.src	2005-09-14 01:57:45 UTC (rev 123)
+@@ -37,12 +37,12 @@
+ 	
+ 	var result := MoveItemToContainer(item, npc.backpack);
+ 	if ( result )
+-		AI_Speak(npc, &quot;Awww my very own '&quot;+item.desc+&quot;'. Thank you so much &quot;+source.name+&quot;!&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, WAKEUP);
++		AI_Speak(npc, &quot;Awww my very own '&quot;+item.desc+&quot;'. Thank you so much &quot;+source.name+&quot;!&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_ENABLE, WAKEUP);
+ 	else
+ 		if ( !npc.backpack )
+-			AI_Speak(npc, &quot;I have nowhere to put '&quot;+item.desc+&quot;', but thank you anyway.&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, WAKEUP);
++			AI_Speak(npc, &quot;I have nowhere to put '&quot;+item.desc+&quot;', but thank you anyway.&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_ENABLE, WAKEUP);
+ 		else
+-			AI_Speak(npc, &quot;I was unable to put '&quot;+item.desc+&quot;' in my backpack. [&quot;+result.errortext+&quot;]&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, WAKEUP);
++			AI_Speak(npc, &quot;I was unable to put '&quot;+item.desc+&quot;' in my backpack. [&quot;+result.errortext+&quot;]&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_ENABLE, WAKEUP);
+ 		endif
+ 		MoveItemToLocation(item, npc.x, npc.y, npc.z);
+ 	endif
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/listen.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/listen.src	2005-09-14 01:55:56 UTC (rev 122)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/listen.src	2005-09-14 01:57:45 UTC (rev 123)
+@@ -33,6 +33,8 @@
+ 
+ function SpeechEvent(npc, event)
+ 	AI_Speak(npc, &quot;I just heard &quot;+(event.source).name+&quot; say \&quot;&quot;+event.text+&quot;\&quot;&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, WAKEUP);
++	
++	// Doing 'SPEAK_DOEVENT_ENABLE' here with multiple npcs around, could cause an infinite loop - they would keep talking to each other!
+ 	case ( event.texttype )
+ 		SPEAK_TEXTTYPE_YELL:
+ 			AI_Speak(npc, &quot;*yells* No need to yell!&quot;, event.texttype, SPEAK_DOEVENT_DISABLE, WAKEUP);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000104.html">[Poldistro-svn] r122 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc
+</A></li>
+	<LI>Next message: <A HREF="000106.html">[Poldistro-svn] r124 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#105">[ date ]</a>
+              <a href="thread.html#105">[ thread ]</a>
+              <a href="subject.html#105">[ subject ]</a>
+              <a href="author.html#105">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

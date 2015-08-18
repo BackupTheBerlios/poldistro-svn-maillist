@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1133 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1133%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200601150110.k0F1Abg7007251%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001103.html">
+   <LINK REL="Next"  HREF="001105.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1133 - trunk/096/pkg/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1133%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200601150110.k0F1Abg7007251%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1133 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sun Jan 15 02:10:37 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001103.html">[Poldistro-svn] r1132 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001105.html">[Poldistro-svn] r1134 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1104">[ date ]</a>
+              <a href="thread.html#1104">[ thread ]</a>
+              <a href="subject.html#1104">[ subject ]</a>
+              <a href="author.html#1104">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-15 02:10:16 +0100 (Sun, 15 Jan 2006)
+New Revision: 1133
+
+Modified:
+   trunk/096/pkg/commands/gm/info.src
+Log:
+
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2006-01-15 00:39:06 UTC (rev 1132)
++++ trunk/096/pkg/commands/gm/info.src	2006-01-15 01:10:16 UTC (rev 1133)
+@@ -32,7 +32,7 @@
+ var template;			// Template gump (so it doesn't need to be rebuilt)
+ 
+ var btn_list := array{};	// Stores button information for the current gump (since its so dynamic)
+-var btn_info := struct{&quot;type&quot;, &quot;value&quot;}; // Individual button tracking that goes into the btn_list array.
++var btn_info := struct{&quot;editFunc&quot;, &quot;name&quot;}; // Individual button tracking that goes into the btn_list array.
+ 
+ program textcmd_Info(who, serial)
+ 	info_cfg := ReadConfigFile(&quot;:commands:config/info&quot;);
+@@ -62,16 +62,16 @@
+ 		var gump := BuildGump(targ, cur_gump);
+ 		var input := GFSendGump(targ, gump);
+ 		input := input[0];
+-		
++
+ 		SendSysMessage(who, &quot;Input-&gt; &quot;+input);
+-				
++
+ 		if ( input &gt;= MENU_BTN )
+ 			cur_gump := input - MENU_BTN;
+ 			btn_list.Shrink(0); // New panel, reset button tracking.
+ 		elseif ( input &gt; 0 )
+ 			ProcessInput(who, targ, input);
+ 		endif
+-				
++
+ 		if ( !input )
+ 			break;
+ 		elseif ( !who.connected )
+@@ -156,9 +156,7 @@
+ function DisplayMember(targ, byref gump, byref entry, byref y_pos)
+ 	if ( entry[5] )
+ 		var btn_id := GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+-		btn_info.type := entry[1]; // 'member' or 'custom'
+-		btn_info.value := entry[3];
+-		btn_list[btn_id] := btn_info;
++		RegisterButton(btn_id, entry[3], entry[5]);
+ 	endif
+ 
+ 	GFTextLine(gump, 175, y_pos, 2100, ParseEntryName(entry[2]));
+@@ -239,12 +237,12 @@
+ 		if ( _group_iter &lt; num_groups )
+ 			y_stretch := y_stretch + 10;
+ 		endif
+-		
++
+ 		GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, y_stretch);
+ 		if ( _group_iter &gt; 1 )
+ 			GFAddButton(gump, 460, START_Y+5, 2650, 2651, GF_PAGE_BTN, gump.cur_page-1);
+ 		endif
+-		
++
+ 		foreach attrib_name in ( group )
+ 			GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+ 			GFTextLine(gump, 175, y_pos, 2100, attrib_name);
+@@ -276,12 +274,12 @@
+ 	foreach priv_name in ( privs )
+ 		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+ 		GFTextLine(gump, 175, y_pos, 2100, priv_name);
+-		
++
+ 		var status := &quot;Disabled&quot;;
+ 		if ( targ.Enabled(priv_name) )
+ 			status := &quot;Enabled&quot;;
+ 		endif
+-		
++
+ 		GFTextRight(gump, 480, y_pos, 2100, status);
+ 		y_pos := y_pos+20;
+ 		sleepms(2);
+@@ -347,22 +345,21 @@
+ 	var result := targ;
+ 	foreach member in ( members )
+ 		var temp := result.Get_Member(member);
+-		
++
+ 		if ( new_val != error &amp;&amp; _member_iter == members.Size() )
+ 			var old_type := Lower(TypeOf(temp));
+ 			if ( new_val == &quot;NULL&quot; )
+ 				new_val := &quot;&quot;;
+ 			endif
+ 			case ( old_type )
+-				&quot;integer&quot;	: value := CInt(new_val); break;
+-				&quot;string&quot;	: value := CStr(new_val); break;
+-				&quot;double&quot;	: value := CDbl(new_val); break;
++				&quot;integer&quot;	: new_val := CInt(new_val); break;
++				&quot;string&quot;	: new_val := CStr(new_val); break;
++				&quot;double&quot;	: new_val := CDbl(new_val); break;
+ 				default:
+-					GumpPrompt(who, &quot;Original data-type '&quot;+old_type+&quot;' not supported. No changes can be made.&quot;);
+-					return error{&quot;errortext&quot;:=old_type+&quot; not a supported data type.&quot;};
++					return error{&quot;errortext&quot;:=&quot;'&quot;+old_type+&quot;' is not a supported data type.&quot;};
+ 			endcase
+-						
+-			return result.Set_Member(member, new_val);			
++
++			return result.Set_Member(member, new_val);
+ 		elseif ( temp == error )
+ 			return error;
+ 		else
+@@ -433,30 +430,33 @@
+ 	return gump;
+ endfunction
+ 
++function RegisterButton(btn_id, name, edit_function)
++	btn_info.editFunc := edit_function;
++	btn_info.name := name;
++	btn_list[btn_id] := btn_info;
++	
++	return 1;
++endfunction
++
+ function ProcessInput(who, targ, input)
+ 	var input_info := btn_list[input];
+-	
++
+ 	SendSysMessage(who, &quot;+&gt;&quot;+input_info);
+-	
+-	case ( CStr(input_info.type) )
+-		&quot;member&quot;: &quot;custom&quot;:
+-			ChangeMember(who, targ, input_info);
++
++	case ( CStr(input_info.editFunc) )
++		&quot;PropEdit&quot;:
++			PropEdit(who, targ, input_info);
+ 		default:
+ 			GumpPrompt(who, &quot;Dont know what to do with type '&quot;+input_info.type+&quot;'&quot;);
+ 	endcase
+ 	return 0;
+ endfunction
+ 
+-function ChangeMember(who, targ, input_info)
+-	var value;
+-	if ( Lower(input_info.type) == &quot;member&quot; )
+-		value := ParseMembers(targ, input_info.value);
+-	else
+-		value := GetCustom(targ, input_info.value);
+-	endif
++function PropEdit(who, targ, input_info)
++	var value := ParseMembers(targ, input_info.name);
+ 	
+-	var change := CStr(RequestGump(who, &quot;New value to assign &quot;+input_info.value+&quot; to.&quot;, &quot;'NULL' to set as non-value.&quot;, CStr(value)));
+-	SendSysMessage(who, &quot;*&gt;&quot;+ParseMembers(targ, input_info.value, change));
+-	
++	var change := CStr(RequestGump(who, &quot;New value to assign &quot;+input_info.name+&quot; to.&quot;, &quot;'NULL' to set as non-value.&quot;, CStr(value)));
++	SendSysMessage(who, &quot;*&gt;&quot;+ParseMembers(targ, input_info.name, change));
++
+ 	return 1;
+ endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001103.html">[Poldistro-svn] r1132 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001105.html">[Poldistro-svn] r1134 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1104">[ date ]</a>
+              <a href="thread.html#1104">[ thread ]</a>
+              <a href="subject.html#1104">[ subject ]</a>
+              <a href="author.html#1104">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

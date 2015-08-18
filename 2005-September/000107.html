@@ -1,0 +1,292 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r125 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r125%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20complete/testnpc%20include%20include/braincore&In-Reply-To=%3C200509141202.j8EC28PB024246%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000106.html">
+   <LINK REL="Next"  HREF="000108.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r125 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r125%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20complete/testnpc%20include%20include/braincore&In-Reply-To=%3C200509141202.j8EC28PB024246%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r125 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 14 14:02:08 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000106.html">[Poldistro-svn] r124 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000108.html">[Poldistro-svn] r126 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#107">[ date ]</a>
+              <a href="thread.html#107">[ thread ]</a>
+              <a href="subject.html#107">[ subject ]</a>
+              <a href="author.html#107">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-14 14:02:00 +0200 (Wed, 14 Sep 2005)
+New Revision: 125
+
+Added:
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/cycle.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc
+   trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+Log:
+Beginning to implement targeting scripts.
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/cycle.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/cycle.src	2005-09-14 05:05:00 UTC (rev 124)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/cycle.src	2005-09-14 12:02:00 UTC (rev 125)
+@@ -4,15 +4,13 @@
+ include &quot;:ai_brain:include/npcNerves&quot;;
+ include &quot;:ai_brain:include/npcCommands&quot;;
+ 
+-program BrainNerve(params)
+-	var npc		:= params[1];
+-	var nerve_name	:= params[2];
+-	var event	:= params[3];
+-	var settings	:= params[4];
+-	var scripts	:= params[5];
++program BrainCriticalScript(params)
++	//var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	//var event	:= params[3];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
+ 	params := 0; // Not needed anymore.
+ 	
+-	while ( npc )
+-		// Do stuff here
+-	endwhile
++	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src	2005-09-14 05:05:00 UTC (rev 124)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src	2005-09-14 12:02:00 UTC (rev 125)
+@@ -32,14 +32,7 @@
+ endprogram
+ 
+ function Disengaged(npc, source)
+-	PrintTextAbove(npc, &quot;Disengaged -&gt;&quot;+source.name+&quot; Source.dead == &quot;+source.dead);
+-	PrintTextAbove(npc, &quot;Opponent == &quot;+(npc.opponent).name);
+ 	if ( npc.opponent == source )
+-		if ( source.dead )
+-			AI_Speak(npc, &quot;Killed ya! Neener!&quot;);
+-			AI_WarMode(npc, 0);
+-		else
+-			AI_Speak(npc, &quot;Wuss! Get back here and finish fighting me!&quot;);
+-		endif
++		AI_Speak(npc, &quot;Wuss! Get back here and finish fighting me!&quot;);
+ 	endif
+-endfunction
+\ No newline at end of file
++endfunction
+
+Added: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src	2005-09-14 05:05:00 UTC (rev 124)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src	2005-09-14 12:02:00 UTC (rev 125)
+@@ -0,0 +1,42 @@
++use uo;
++use os;
++use util;
++
++include &quot;:ai_brain:include/npcNerves&quot;;
++include &quot;:ai_brain:include/npcCommands&quot;;
++include &quot;:ai_brain:include/npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	//var event	:= params[3];
++	var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( !npc.opponent )
++			FindOpponent(npc, settings);
++		endif
++				
++		Sleep(3);
++	endwhile
++endprogram
++
++function FindOpponent(npc, byref settings)
++	var attack_list := array;
++	foreach mobile in ListMobilesInLineOfSight(npc, CInt(settings[&quot;AreaSize&quot;]))
++		if ( (mobile.ip) &amp;&amp; (!mobile.cmdlevel) )
++			attack_list.Append(mobile);
++		endif
++		sleepms(2);
++	endforeach
++	
++	if ( attack_list.size() &gt; 0 )
++		var victim := attack_list[RandomInt(attack_list.Size())+1];
++		AI_Attack(npc, victim);
++		return victim;
++	endif
++	
++	return 0;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-14 05:05:00 UTC (rev 124)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-14 12:02:00 UTC (rev 125)
+@@ -82,6 +82,20 @@
+ 				endif
+ 			endif
+ 			break;
++		
++		// Instructs the npc to run its disengage nerve.
++		// When something attacking it goes out of warmode, this is run.
++		// .source	: What was targetting this npc but has now left combat mode.
++		SYSEVENT_DISENGAGED:
++			if ( g_scripts.Exists(&quot;Disengaged&quot;) )
++				var process := GetNerveProcess(npc, &quot;Disengaged&quot;);
++				if ( !process )
++					StartNerve(npc, &quot;Disengaged&quot;, g_scripts[&quot;Disengaged&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Disengaged&quot;].flags);
++				else
++					process.SendEvent(event);
++				endif
++			endif
++			break;
+ 
+ 		// Sent when something targets the npc to begin combat or
+ 		// when something has damaged the npc.
+@@ -102,20 +116,6 @@
+ 			endif
+ 			break;
+ 
+-		// Instructs the npc to run its disengage nerve.
+-		// When something attacking it goes out of warmode, this is run.
+-		// .source	: What was targetting this npc but has now left combat mode.
+-		SYSEVENT_DISENGAGED:
+-			if ( g_scripts.Exists(&quot;Disengaged&quot;) )
+-				var process := GetNerveProcess(npc, &quot;Disengaged&quot;);
+-				if ( !process )
+-					StartNerve(npc, &quot;Disengaged&quot;, g_scripts[&quot;Disengaged&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Disengaged&quot;].flags);
+-				else
+-					process.SendEvent(event);
+-				endif
+-			endif
+-			break;
+-
+ 		// When speech is made by a mobile, this nerve is used.
+ 		// .source	: Where the speech originated.
+ 		// .text	: The actual speech
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-14 05:05:00 UTC (rev 124)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-14 12:02:00 UTC (rev 125)
+@@ -126,5 +126,9 @@
+ 		endif
+ 	endif
+ 	
++	if ( g_scripts.Exists(&quot;LookAround&quot;) )
++		StartNerve(npc, &quot;LookAround&quot;, g_scripts[&quot;LookAround&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;LookAround&quot;].flags);
++		
++	
+ 	return 1;
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc	2005-09-14 05:05:00 UTC (rev 124)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc	2005-09-14 12:02:00 UTC (rev 125)
+@@ -142,3 +142,30 @@
+ 	var watch_dict := NPC_LoadWatchList(npc);
+ 	return watch_dict.Exists(mobile);
+ endfunction
++
++/*
++ * NPC_ShouldWatch(npc, mobile, script_path)
++ *
++ * Purpose
++ * Checks if a mobile is in an npc's watch list.
++ *
++ * Parameters
++ * npc:		NPC that will do the checking
++ * mobile:	Mobile to check to be added to the watch list.
++ * settings:	Dictionary of the NPC's settings.
++ * scripts:	Dictionary of the npcs script settings.
++ *
++ * Return value
++ * Returns 1 if the mobile is a potential target.
++ *
++ */
++function NPC_ShouldWatch(npc, mobile, byref settings, byref scripts)
++	if ( !scripts[&quot;ShouldWatch&quot;] )
++		// Assume it wants to watch everything if it has no script.
++		return 1;
++	endif
++	
++	var result := Run_Script_To_Completion(scripts[&quot;ShouldWatch&quot;], {npc, mobile, settings});
++	
++	return result;
++endfunction
+
+Modified: trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-14 05:05:00 UTC (rev 124)
++++ trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-14 12:02:00 UTC (rev 125)
+@@ -33,8 +33,10 @@
+ 	AIScript	GoneCriminal	:ai_brain:complete/testNPC/goneCriminal
+ 	AIScript	ItemGiven	:ai_brain:complete/testNPC/itemGiven
+ 	AIScript	LeftArea	:ai_brain:complete/testNPC/leftArea
++	AIScript	LookAround	:ai_brain:complete/testNPC/lookAround
+ 	AIScript	Listen		:ai_brain:complete/testNPC/listen
+ 	AIScript	Restart		:ai_brain:complete/testNPC/restart
+ 	AIScript	Sleep		:ai_brain:complete/testNPC/sleep
++	AIScript	ShouldWatch	:ai_brain:complete/testNPC/shouldWatch
+ 	AIScript	Virtual		:ai_brain:complete/testNPC/virtual
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000106.html">[Poldistro-svn] r124 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000108.html">[Poldistro-svn] r126 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#107">[ date ]</a>
+              <a href="thread.html#107">[ thread ]</a>
+              <a href="subject.html#107">[ subject ]</a>
+              <a href="author.html#107">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

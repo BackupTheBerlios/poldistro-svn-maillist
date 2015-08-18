@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1424 - trunk/096/pkg/packetHooks/SkillLock/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1424%20-%20trunk/096/pkg/packetHooks/SkillLock/include&In-Reply-To=%3C200605141346.k4EDkVqc007447%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001392.html">
+   <LINK REL="Next"  HREF="001394.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1424 - trunk/096/pkg/packetHooks/SkillLock/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1424%20-%20trunk/096/pkg/packetHooks/SkillLock/include&In-Reply-To=%3C200605141346.k4EDkVqc007447%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1424 - trunk/096/pkg/packetHooks/SkillLock/include">austin at berlios.de
+       </A><BR>
+    <I>Sun May 14 15:46:31 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001392.html">[Poldistro-svn] r1423 - in trunk/096/pkg/packetHooks: . SkillLock SkillLock/config SkillLock/include
+</A></li>
+        <LI>Next message: <A HREF="001394.html">[Poldistro-svn] r1425 - in trunk/096/pkg: OLD/skills skills skills/anatomy skills/anatomy/config systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1393">[ date ]</a>
+              <a href="thread.html#1393">[ thread ]</a>
+              <a href="subject.html#1393">[ subject ]</a>
+              <a href="author.html#1393">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-14 15:46:30 +0200 (Sun, 14 May 2006)
+New Revision: 1424
+
+Modified:
+   trunk/096/pkg/packetHooks/SkillLock/include/skillLocks.inc
+Log:
+Major performance increase by giving each skill ID its own cprop in the data elem.
+
+Modified: trunk/096/pkg/packetHooks/SkillLock/include/skillLocks.inc
+===================================================================
+--- trunk/096/pkg/packetHooks/SkillLock/include/skillLocks.inc	2006-05-14 13:40:34 UTC (rev 1423)
++++ trunk/096/pkg/packetHooks/SkillLock/include/skillLocks.inc	2006-05-14 13:46:30 UTC (rev 1424)
+@@ -58,10 +58,12 @@
+  */
+ function SLPH_GetLockState(mobile, skill_id)
+ 	var data_elem := SLPH_GetDataElem(Hex(mobile.serial));
+-	var lock_list := data_elem.GetProp(&quot;SkillLocks&quot;);
+ 	
+ 	// +1 is added because skills start at 0 and arrays start at 1
+-	return CInt(lock_list[skill_id + 1]);
++	// Hex because cprop IDs need to be strings.
++	skill_id := Hex(CInt(skill_id)+1);
++	
++	return CInt(data_elem.GetProp(skill_id));
+ endfunction
+ 
+ /*
+@@ -76,27 +78,21 @@
+  * state:	State of the skill lock.
+  *
+  * Return Value
+- * An integer
++ * 1
+  *
+  */
+ function SLPH_SaveLockState(mobile, skill_id, state)
+ 	var data_elem := SLPH_GetDataElem(Hex(mobile.serial));
+-	var lock_list := data_elem.GetProp(&quot;SkillLocks&quot;);
+ 	
+-	if ( Lower(TypeOf(lock_list)) != &quot;array&quot; )
+-		lock_list := array{};
+-	endif
+-	
++	skill_id := Hex(CInt(skill_id)+1);
+ 	state := CInt(state);
+ 	
+-	// +1 is added because skills start at 0 and arrays start at 1
+ 	if ( state == 0 )
+-		// Keeps array smaller and more tidy.
+-		lock_list.Erase(skill_id + 1);
++		data_elem.EraseProp(skill_id);
+ 	else
+-		lock_list[skill_id + 1] := CInt(state);
++		data_elem.SetProp(skill_id, state);
+ 	endif
+-	
+-	return data_elem.SetProp(&quot;SkillLocks&quot;, lock_list);
++
++	return 1;
+ endfunction
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001392.html">[Poldistro-svn] r1423 - in trunk/096/pkg/packetHooks: . SkillLock SkillLock/config SkillLock/include
+</A></li>
+	<LI>Next message: <A HREF="001394.html">[Poldistro-svn] r1425 - in trunk/096/pkg: OLD/skills skills skills/anatomy skills/anatomy/config systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1393">[ date ]</a>
+              <a href="thread.html#1393">[ thread ]</a>
+              <a href="subject.html#1393">[ subject ]</a>
+              <a href="author.html#1393">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

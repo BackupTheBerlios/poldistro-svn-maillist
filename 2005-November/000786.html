@@ -1,0 +1,515 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r812 - in trunk/096/pkg/mobiles: npcutils oldAI oldAI/combat oldAI/main
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r812%20-%20in%20trunk/096/pkg/mobiles%3A%20npcutils%20oldAI%20oldAI/combat%20oldAI/main&In-Reply-To=%3C200511012231.jA1MV8HQ008428%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000785.html">
+   <LINK REL="Next"  HREF="000787.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r812 - in trunk/096/pkg/mobiles: npcutils oldAI oldAI/combat oldAI/main</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r812%20-%20in%20trunk/096/pkg/mobiles%3A%20npcutils%20oldAI%20oldAI/combat%20oldAI/main&In-Reply-To=%3C200511012231.jA1MV8HQ008428%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r812 - in trunk/096/pkg/mobiles: npcutils oldAI oldAI/combat oldAI/main">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 23:31:08 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000785.html">[Poldistro-svn] r811 - trunk/096/pkg/systems/attributes
+</A></li>
+        <LI>Next message: <A HREF="000787.html">[Poldistro-svn] r813 - trunk/096/scripts/util
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#786">[ date ]</a>
+              <a href="thread.html#786">[ thread ]</a>
+              <a href="subject.html#786">[ subject ]</a>
+              <a href="author.html#786">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 23:31:07 +0100 (Tue, 01 Nov 2005)
+New Revision: 812
+
+Modified:
+   trunk/096/pkg/mobiles/npcutils/trainSkill.inc
+   trunk/096/pkg/mobiles/oldAI/battleMage.src
+   trunk/096/pkg/mobiles/oldAI/bladeSpirit.src
+   trunk/096/pkg/mobiles/oldAI/combat/warriorcombatevent.inc
+   trunk/096/pkg/mobiles/oldAI/employed.src
+   trunk/096/pkg/mobiles/oldAI/escortee.src
+   trunk/096/pkg/mobiles/oldAI/firebreather.src
+   trunk/096/pkg/mobiles/oldAI/killPCs.src
+   trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc
+   trunk/096/pkg/mobiles/oldAI/packFirebreather.src
+   trunk/096/pkg/mobiles/oldAI/poisonElemental.src
+   trunk/096/pkg/mobiles/oldAI/spellFire.src
+   trunk/096/pkg/mobiles/oldAI/tamed.src
+   trunk/096/pkg/mobiles/oldAI/townGuard.src
+   trunk/096/pkg/mobiles/oldAI/undead.src
+Log:
+Attribute updates
+
+Modified: trunk/096/pkg/mobiles/npcutils/trainSkill.inc
+===================================================================
+--- trunk/096/pkg/mobiles/npcutils/trainSkill.inc	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/npcutils/trainSkill.inc	2005-11-01 22:31:07 UTC (rev 812)
+@@ -107,14 +107,14 @@
+   var currentnpccost := 0;
+   if((item.objtype == 0xeed) &amp;&amp; (item.amount != 0))
+     var trainmaxcost := GetObjProperty(who, &quot;TrainMaxCost&quot;);
+-    var attributeid := GetAttributeIDBySkillid(GetObjProperty(who, &quot;TrainSkillID&quot;));
++    var attributeid := AP_SkillIdToAttributeName(GetObjProperty(who, &quot;TrainSkillID&quot;));
+     if((!trainmaxcost || !attributeid) &amp;&amp; attributeid != 0)
+       say(&quot;I don't know what this is for, but thanks!&quot;);
+       DestroyItem(item);
+       return;
+     endif
+     npc_level    := GetAttribute(me, attributeid);
+-    pc_level     := GetBaseSkill(who, attributeid);
++    pc_level     := AP_GetTrueSkill(who, attributeid);
+     pc_level     := GetAttributeBaseValue(who, attributeid) / 10;
+     goldreceived := item.amount;
+     variance     := npc_level - pc_level;
+@@ -149,7 +149,6 @@
+       k.+type   := EVID_SKILLCAP;
+       k.+base   := new_level;
+       pid.sendevent(k);
+-      DoRecalcVitals(who);
+       DestroyItem(item);
+       SendSysMessage(who, &quot;Your skill increases.&quot;);
+     else
+
+Modified: trunk/096/pkg/mobiles/oldAI/battleMage.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/battleMage.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/battleMage.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -155,7 +155,7 @@
+   sleepms(100);
+   PlayLightningBoltEffect(opponent);
+   sleepms(100);
+-  ApplyRawDamage(opponent, GetHp(opponent) + 10);
++  ApplyRawDamage(opponent, AP_GetVital(opponent, &quot;Hits&quot;) + 10);
+   sleep(1);
+   PerformAction(me, 17);
+   sleepms(200);
+@@ -186,10 +186,10 @@
+     PlaySoundEffect(me, 0x31);
+     sleep(1);
+   endif
+-  if(AP_GetVital(me, &quot;Hits&quot;) &lt; GetStrength(me))
++  if(AP_GetVital(me, &quot;Hits&quot;) &lt; AP_GetVitalMaximumValue(me, &quot;Hits&quot;))
+     sleep(1);
+     PerformAction(me, 0x22);
+-    SetHp(me, me.strength);
++    AP_SetVital(me, &quot;Hits&quot;, AP_GetVitalMaximumValue(me, &quot;Hits&quot;));
+     PlaySoundEffect(me, 0x32);
+     sleep(1);
+   endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/bladeSpirit.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/bladeSpirit.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/bladeSpirit.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -129,7 +129,7 @@
+ function in_combat_event_loop(opponent, loops)
+   loops := loops;
+   if(Distance(me,opponent) &lt; 2)
+-    var dmg := RandomInt(CInt(GetStrength(opponent) / 25));
++    var dmg := RandomInt(CInt(AP_GetStat(opponent, &quot;Strength&quot;) / 25));
+     dmg := dmg * 2;
+     if(dmg &gt; 24)
+       dmg := 12;
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/warriorcombatevent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/warriorcombatevent.inc	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/combat/warriorcombatevent.inc	2005-11-01 22:31:07 UTC (rev 812)
+@@ -51,7 +51,7 @@
+   if((GetObjProperty(me,&quot;#nextheal&quot;) &lt; ReadGameClock()) || !GetObjProperty(me,&quot;#nextheal&quot;))
+     bandages := Cint(GetObjProperty(me, &quot;bandages&quot;));
+     if(bandages)
+-      SetHp(me, AP_GetVital(me, &quot;Hits&quot;) + (RandomInt(AP_GetVitalMaximumValue(me, &quot;Hits&quot;) - AP_GetVital(me, &quot;Hits&quot;))+1));
++      AP_SetVital(me, &quot;Hits&quot;, AP_GetVital(me, &quot;Hits&quot;) + (RandomInt(AP_GetVitalMaximumValue(me, &quot;Hits&quot;) - AP_GetVital(me, &quot;Hits&quot;))+1));
+       SetObjProperty(me,&quot;#nextheal&quot;, ReadGameClock()+20);
+       bandages := bandages - 1;
+       if(bandages &lt;= 0)
+
+Modified: trunk/096/pkg/mobiles/oldAI/employed.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/employed.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/employed.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -70,38 +70,35 @@
+ endprogram
+ 
+ function Adjustment(who, type)
+-  if(type == &quot;Mage&quot;)
+-    ExpandStats(who, 100, 80, 100);
+-    SetBaseSkillBaseValue(who, SKILLID_MAGERY,          1000);
+-    SetBaseSkillBaseValue(who, SKILLID_EVALINT,         1000);
+-    SetBaseSkillBaseValue(who, SKILLID_MAGICRESISTANCE, 900);
+-    SetBaseSkillBaseValue(who, SKILLID_TACTICS,         700);
+-    SetBaseSkillBaseValue(who, SKILLID_WRESTLING,       700);
+-  elseif(type == &quot;Thief&quot;)
+-    ExpandStats(who, 80, 100, 25);
+-    SetBaseSkillBaseValue(who, SKILLID_FENCING,         1000);
+-    SetBaseSkillBaseValue(who, SKILLID_MAGICRESISTANCE, 60);
+-    SetBaseSkillBaseValue(who, SKILLID_TACTICS,         80);
+-    SetBaseSkillBaseValue(who, SKILLID_ANATOMY,         600);
+-  elseif(type == &quot;Paladin&quot;)
+-    ExpandStats(who, 100, 100, 50);
+-    SetBaseSkillBaseValue(who, SKILLID_MAGICRESISTANCE, 800);
+-    SetBaseSkillBaseValue(who, SKILLID_TACTICS,         1000);
+-    SetBaseSkillBaseValue(who, SKILLID_SWORDSMANSHIP,   1000);
+-    SetBaseSkillBaseValue(who, SKILLID_MACEFIGHTING,    1000);
+-    SetBaseSkillBaseValue(who, SKILLID_FENCING,         1000);
+-    SetBaseSkillBaseValue(who, SKILLID_WRESTLING,       900);
+-    SetBaseSkillBaseValue(who, SKILLID_ANATOMY,         1000);
+-  elseif((type == &quot;Fighter1&quot;) || (type == &quot;Fighter2&quot;) || (type == &quot;Fighter3&quot;) || (type == &quot;Fighter4&quot;))
+-    ExpandStats(who, 90, 90, 20);
+-    SetBaseSkillBaseValue(who, SKILLID_MAGICRESISTANCE, 600);
+-    SetBaseSkillBaseValue(who, SKILLID_TACTICS,         900);
+-    SetBaseSkillBaseValue(who, SKILLID_SWORDSMANSHIP,   900);
+-    SetBaseSkillBaseValue(who, SKILLID_MACEFIGHTING,    900);
+-    SetBaseSkillBaseValue(who, SKILLID_FENCING,         900);
+-    SetBaseSkillBaseValue(who, SKILLID_WRESTLING,       900);
+-    SetBaseSkillBaseValue(who, SKILLID_ANATOMY,         900);
+-  endif
++if(type == &quot;Mage&quot;)
++		AP_SetTrueSkill(who, &quot;Magery&quot;, 100);
++		AP_SetTrueSkill(who, &quot;EvaluatingIntelligence&quot;, 100);
++		AP_SetTrueSkill(who, &quot;ResistingSpells&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Tactics&quot;, 70);
++		AP_SetTrueSkill(who, &quot;Wrestling&quot;, 70);
++	elseif(type == &quot;Thief&quot;)
++		AP_SetTrueSkill(who, &quot;Fencing&quot;, 100);
++		AP_SetTrueSkill(who, &quot;ResistingSpells&quot;, 60);
++		AP_SetTrueSkill(who, &quot;Tactics&quot;, 80);
++		AP_SetTrueSkill(who, &quot;Anatomy&quot;, 60);
++	elseif(type == &quot;Paladin&quot;)
++		AP_SetTrueSkill(who, &quot;ResistingSpells&quot;, 80);
++		AP_SetTrueSkill(who, &quot;Tactics&quot;, 100);
++		AP_SetTrueSkill(who, &quot;Swordsmanship&quot;, 100);
++		AP_SetTrueSkill(who, &quot;MaceFighting&quot;, 100);
++		AP_SetTrueSkill(who, &quot;Fencing&quot;, 100);
++		AP_SetTrueSkill(who, &quot;Wrestling&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Anatomy&quot;, 100);
++		AP_SetTrueStat(who, &quot;Strength&quot;, 80);
++	elseif((type == &quot;Fighter1&quot;) || (type == &quot;Fighter2&quot;) || (type == &quot;Fighter3&quot;) || (type == &quot;Fighter4&quot;))
++		AP_SetTrueSkill(who, &quot;ResistingSpells&quot;, 60);
++		AP_SetTrueSkill(who, &quot;Tactics&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Swordsmanship&quot;, 90);
++		AP_SetTrueSkill(who, &quot;MaceFighting&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Fencing&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Wrestling&quot;, 90);
++		AP_SetTrueSkill(who, &quot;Anatomy&quot;, 90);
++	endif
+ endfunction
+ 
+ function ExpandStats(me, st, dx, it)
+@@ -118,10 +115,10 @@
+   if(dx)
+     if(dx &lt;= 210)
+       SetBaseDexterity(me,dx);
+-      SetDexterityMod(me, 0);
++      AP_SetStatMod(me, &quot;Dexterity&quot;, 0);
+     else
+       SetBaseDexterity(me,210);
+-      SetDexterityMod(me, dx - 210);
++      AP_SetStatMod(me, &quot;Dexterity&quot;, dx - 210);
+     endif
+     SetStamina(me, dx);
+   endif
+@@ -133,7 +130,7 @@
+       SetBaseIntelligence(me,210);
+       SetIntelligenceMod(me, it - 210);
+     endif
+-    SetMana(me, it);
++    AP_SetVital(me, &quot;Mana&quot;, it);
+   endif
+ endfunction
+ 
+@@ -250,7 +247,7 @@
+   elseif (evtext[&quot;all guard&quot;])
+     say(&quot;Who should I guard?&quot;);
+ 	var what := Target(master, TGTOPT_HELPFUL + TGTOPT_CHECK_LOS);
+-	if(GetHp(what))
++	if(AP_GetVital(what, &quot;Hits&quot;))
+       AllCommand(SYSEVENT_ALL_GUARD_CMD, what);
+ 	endif
+   elseif(evtext[mename + &quot; fetch&quot;]  || (evtext[mename + &quot; get&quot;]))
+@@ -268,14 +265,14 @@
+ 
+ function Fight(opponent)
+   if(caster)
+-    if(GetMana(me) &lt; (GetIntelligence(me) / 2))
++    if(AP_GetVital(me, &quot;Mana&quot;) &lt; (AP_GetStat(me, &quot;Intelligence&quot;) / 2))
+       say(&quot;I must meditate first.&quot;);
+       meditationloop();
+       return;
+     endif
+   endif
+   var oldfollowing := following;
+-  SetDexterityMod(me, 0);
++  AP_SetStatMod(me, &quot;Dexterity&quot;, 0);
+   following := 0;
+   if (opponent.serial == me.serial)
+     return;
+@@ -337,7 +334,7 @@
+   SetWarMode(0);
+   opponent := 0;
+   if(caster)
+-    if(GetMana(me) &lt; (GetIntelligence(me) / 2))
++    if(AP_GetVital(me, &quot;Mana&quot;) &lt; (AP_GetStat(me, &quot;Intelligence&quot;) / 2))
+       say(&quot;I must meditate.&quot;);
+       meditationloop();
+       return;
+@@ -354,8 +351,8 @@
+   healparms[1] := &quot;#MOB&quot;;
+   healparms[2] := me;
+   healparms[3] := me;
+-  while(GetMana(me) &lt; GetIntelligence(me))
+-    SetMana(me, GetMana(me) + 2);
++  while(AP_GetVital(me, &quot;Mana&quot;) &lt; AP_GetStat(me, &quot;Intelligence&quot;))
++    AP_SetVital(me, &quot;Mana&quot;, AP_GetVital(me, &quot;Mana&quot;) + 2);
+ 	ev := wait_for_event(2);
+ 	case (ev.type)
+       EVID_DAMAGED: if(TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 1)
+@@ -465,7 +462,7 @@
+       return;
+     endforeach
+   endif
+-  if( (!GetStrength(guarding)) || (guarding.dead) || (dist(me,guarding) &gt; 15) )
++  if( (!AP_GetStat(guarding, &quot;Strength&quot;)) || (guarding.dead) || (dist(me,guarding) &gt; 15) )
+     guarding := 0;
+   endif
+ endfunction
+@@ -480,20 +477,20 @@
+     if(d &lt;= 2)
+        waittime := 1;
+     elseif(d &gt; 6)
+-      var ma := 200 - CInt(GetDexterity(me));
+-      SetDexterityMod(me, CInt(GetDexterityMod(me)) + ma);
++      var ma := 200 - CInt(AP_GetStat(me, &quot;Dexterity&quot;));
++      AP_SetStatMod(me, &quot;Dexterity&quot;, CInt(AP_GetStatMod(me, &quot;Dexterity&quot;)) + ma);
+       RunToward(escortee);
+-      SetDexterityMod(me, CInt(GetDexterityMod(me)) - ma);
++      AP_SetStatMod(me, &quot;Dexterity&quot;, CInt(AP_GetStatMod(me, &quot;Dexterity&quot;)) - ma);
+       waittime := 0;
+     else
+-      var ma := 200 - CInt(GetDexterity(me));
+-      SetDexterityMod(me, CInt(GetDexterityMod(me)) + ma);
++      var ma := 200 - CInt(AP_GetStat(me, &quot;Dexterity&quot;));
++      AP_SetStatMod(me, &quot;Dexterity&quot;, CInt(AP_GetStatMod(me, &quot;Dexterity&quot;)) + ma);
+       walktoward(escortee);
+-      SetDexterityMod(me, CInt(GetDexterityMod(me)) - ma);
++      AP_SetStatMod(me, &quot;Dexterity&quot;, CInt(AP_GetStatMod(me, &quot;Dexterity&quot;)) - ma);
+       waittime := 0;
+     endif
+   endif
+-  if( (!GetStrength(escortee)) || (escortee.dead) || (dist(me,escortee) &gt; 15) )
++  if( (!AP_GetStat(escortee, &quot;Strength&quot;)) || (escortee.dead) || (dist(me,escortee) &gt; 15) )
+     guarding := 0;
+   endif
+   if(guarding)
+
+Modified: trunk/096/pkg/mobiles/oldAI/escortee.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/escortee.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/escortee.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -187,14 +187,14 @@
+     if(GetObjProperty(me, &quot;Pause&quot;))
+       waittime := 2;
+     else
+-      var ma := 200 - CInt(GetDexterity(me));
+-      SetDexterityMod(me, CInt(GetDexterityMod(me)) + ma);
++      var ma := 200 - CInt(AP_GetStat(me, &quot;Dexterity&quot;));
++      AP_SetStatMod(me, &quot;Dexterity&quot;, CInt(AP_GetStatMod(me, &quot;Dexterity&quot;)) + ma);
+ 	  walkToward(escortee);
+-      SetDexterityMod(me, CInt(GetDexterityMod(me)) - ma);
++      AP_SetStatMod(me, &quot;Dexterity&quot;, CInt(AP_GetStatMod(me, &quot;Dexterity&quot;)) - ma);
+       waittime := 0;
+     endif
+   endif
+-  if((!GetStrength(escortee)) || (escortee.dead) || (dist(me,escortee) &gt; 15) )
++  if((!AP_GetStat(escortee, &quot;Strength&quot;)) || (escortee.dead) || (dist(me,escortee) &gt; 15) )
+     following := 0;
+   endif
+ endfunction
+
+Modified: trunk/096/pkg/mobiles/oldAI/firebreather.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/firebreather.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/firebreather.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -33,7 +33,7 @@
+ endprogram
+ 
+ function CloseDistance( opponent )
+-  var sleepdelay := 300 - (CInt(GetDexterity(me)) * 1.5);
++  var sleepdelay := 300 - (CInt(AP_GetStat(me, &quot;Dexterity&quot;)) * 1.5);
+   if (sleepdelay &lt; 0)
+ 	sleepdelay := 0;
+   endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/killPCs.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/killPCs.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/killPCs.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -36,7 +36,7 @@
+ 
+ function CloseDistance( opponent )
+ 
+-var sleepdelay := 400 - (CInt(GetDexterity(me)) * 1.5);
++var sleepdelay := 400 - (CInt(AP_GetStat(me, &quot;Dexterity&quot;)) * 1.5);
+ 
+ 	if (sleepdelay &lt; 0)
+ 		sleepdelay := 0;
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc	2005-11-01 22:31:07 UTC (rev 812)
+@@ -13,7 +13,7 @@
+   endif
+   EraseObjProperty(me,&quot;#flees&quot;);
+   DisableMainEvents();
+-  if(GetEffectiveSkill(me, 21) &gt; 0 )
++  if(AP_GetSkill(me, &quot;Hiding&quot;) &gt; 0 )
+     me.hidden := 1;
+   endif
+   EnableEvents(SYSEVENT_ENTEREDAREA,18);
+
+Modified: trunk/096/pkg/mobiles/oldAI/packFirebreather.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/packFirebreather.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/packFirebreather.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -33,7 +33,7 @@
+ endprogram
+ 
+ function CloseDistance( opponent )
+-  var sleepdelay := 300 - (CInt(GetDexterity(me)) * 1.5);
++  var sleepdelay := 300 - (CInt(AP_GetStat(me, &quot;Dexterity&quot;)) * 1.5);
+   if (sleepdelay &lt; 0)
+ 	sleepdelay := 0;
+   endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/poisonElemental.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/poisonElemental.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/poisonElemental.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -39,7 +39,7 @@
+ endprogram
+ 
+ function CloseDistance( opponent )
+-  var sleepdelay := 400 - (CInt(GetDexterity(me)) * 1.5);
++  var sleepdelay := 400 - (CInt(AP_GetStat(me, &quot;Dexterity&quot;)) * 1.5);
+   case (Distance( me, opponent ))
+     1:
+     0:       return 1;
+
+Modified: trunk/096/pkg/mobiles/oldAI/spellFire.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/spellFire.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/spellFire.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -39,7 +39,7 @@
+ endprogram
+ 
+ function CloseDistance( opponent )
+-  var sleepdelay := 400 - (CInt(GetDexterity(me)) * 1.5);
++  var sleepdelay := 400 - (CInt(AP_GetStat(me, &quot;Dexterity&quot;)) * 1.5);
+   case (Distance(me, opponent))
+     1:
+     0:       return 1;
+
+Modified: trunk/096/pkg/mobiles/oldAI/tamed.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/tamed.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/tamed.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -627,20 +627,20 @@
+     if(GetObjProperty(me, &quot;Pause&quot;))
+       waittime := 2;
+     else
+-      var ma := 200 - CInt(GetDexterity(me));
+-      SetDexterityMod(me, CInt(GetDexterityMod(me))+ ma);
++      var ma := 200 - CInt(AP_GetStat(me, &quot;Dexterity&quot;));
++      SetDexterityMod(me, CInt(AP_GetStatMod(me, &quot;Dexterity&quot;))+ ma);
+       RunToward(following);
+-      SetDexterityMod(me, CInt(GetDexterityMod(me))- ma);
++      SetDexterityMod(me, CInt(AP_GetStatMod(me, &quot;Dexterity&quot;))- ma);
+       waittime := 0;
+     endif
+   else
+     if(GetObjProperty(me, &quot;Pause&quot;))
+       waittime := 2;
+     else
+-      var ma := 200 - CInt(GetDexterity(me));
+-      SetDexterityMod(me, CInt(GetDexterityMod(me))+ ma);
++      var ma := 200 - CInt(AP_GetStat(me, &quot;Dexterity&quot;));
++      SetDexterityMod(me, CInt(AP_GetStatMod(me, &quot;Dexterity&quot;))+ ma);
+       walktoward(following);
+-      SetDexterityMod(me, CInt(GetDexterityMod(me))- ma);
++      SetDexterityMod(me, CInt(AP_GetStatMod(me, &quot;Dexterity&quot;))- ma);
+       waittime := 0;
+     endif
+   endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/townGuard.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/townGuard.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/townGuard.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -152,7 +152,7 @@
+   set_priority(50);
+   if(tries &gt;= 5)
+     PerformAction(me, 13);
+-    ApplyRawDamage(opponent, GetHP(opponent) + 10);
++    ApplyRawDamage(opponent, AP_GetVital(opponent, &quot;Hits&quot;) + 10);
+     return;
+   endif
+   SetOpponent(opponent);
+
+Modified: trunk/096/pkg/mobiles/oldAI/undead.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/undead.src	2005-11-01 22:15:18 UTC (rev 811)
++++ trunk/096/pkg/mobiles/oldAI/undead.src	2005-11-01 22:31:07 UTC (rev 812)
+@@ -191,7 +191,7 @@
+ endfunction
+ 
+ function CloseDistance(opponent)
+-  var sleepdelay := 400 - (CInt(GetDexterity(me)) * 1.5);
++  var sleepdelay := 400 - (CInt(AP_GetStat(me, &quot;Dexterity&quot;)) * 1.5);
+   if(sleepdelay &lt; 0)
+     sleepdelay := 0;
+   endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000785.html">[Poldistro-svn] r811 - trunk/096/pkg/systems/attributes
+</A></li>
+	<LI>Next message: <A HREF="000787.html">[Poldistro-svn] r813 - trunk/096/scripts/util
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#786">[ date ]</a>
+              <a href="thread.html#786">[ thread ]</a>
+              <a href="subject.html#786">[ subject ]</a>
+              <a href="author.html#786">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

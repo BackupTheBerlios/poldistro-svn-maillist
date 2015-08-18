@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1429 - trunk/096/pkg/systems/combat/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1429%20-%20trunk/096/pkg/systems/combat/include&In-Reply-To=%3C200605162329.k4GNTEkD000048%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001397.html">
+   <LINK REL="Next"  HREF="001399.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1429 - trunk/096/pkg/systems/combat/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1429%20-%20trunk/096/pkg/systems/combat/include&In-Reply-To=%3C200605162329.k4GNTEkD000048%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1429 - trunk/096/pkg/systems/combat/include">austin at berlios.de
+       </A><BR>
+    <I>Wed May 17 01:29:14 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001397.html">[Poldistro-svn] r1428 - trunk/096/docs
+</A></li>
+        <LI>Next message: <A HREF="001399.html">[Poldistro-svn] r1430 - trunk/096/pkg/systems/combat/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1398">[ date ]</a>
+              <a href="thread.html#1398">[ thread ]</a>
+              <a href="subject.html#1398">[ subject ]</a>
+              <a href="author.html#1398">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-17 01:28:59 +0200 (Wed, 17 May 2006)
+New Revision: 1429
+
+Added:
+   trunk/096/pkg/systems/combat/include/hitZones.inc
+Log:
+Helper functions for a combat hook.
+
+Added: trunk/096/pkg/systems/combat/include/hitZones.inc
+===================================================================
+--- trunk/096/pkg/systems/combat/include/hitZones.inc	2006-05-15 22:31:36 UTC (rev 1428)
++++ trunk/096/pkg/systems/combat/include/hitZones.inc	2006-05-16 23:28:59 UTC (rev 1429)
+@@ -0,0 +1,86 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++use util;
++use cfgfile;
++
++/*
++ * CS_GetHitZone(defender)
++ *
++ * Purpose
++ * Reads in pol/config/armrzone.cfg and based on the 'chance' settings,
++ * selects a zone that was hit.
++ *
++ * Parameters
++ * None
++ *
++ * Return Value
++ * String
++ *
++ */
++function CS_GetHitZone()
++	//This function assumes that the 'Chance' totals in
++	//armrzone.cfg all add up to 100.
++
++	var armrzones := ReadConfigFile(&quot;::armrzone&quot;);
++
++	//last_num stores the max roll for that zone
++	var last_num := 0;
++	var max_num := 0;
++
++	//Roll determines the layer we hit.
++	//In the future, we may want to have anatomy affect this?
++	var roll := RandomInt(100)+1;
++	foreach zone_name in ( GetConfigStringKeys(armrzones) )
++		var zone := armrzones[zone_name];
++		last_num := max_num;
++		max_num := last_num + CInt(zone.Chance);
++		
++		if ( roll &gt; last_num &amp;&amp; roll &lt;= max_num  )
++			return zone_name;
++		endif
++		sleepms(2);
++	endforeach
++	
++	return error{&quot;errortext&quot;:=&quot;Could not select a hit zone!&quot;};
++endfunction
++
++/*
++ * CS_GetEquipmentInArmorZone(defender)
++ *
++ * Purpose
++ * Returns a list of all equipment that a mobile is wearing
++ * that covers an armor zone.
++ *
++ * Parameters
++ * mobile:	Mobile to evaluate the equipment on.
++ * zone_name:	Armor zone to find equipment for.
++ *
++ * Return Value
++ * String
++ *
++ */
++function CS_GetEquipmentInArmorZone(mobile, zone_name)
++	var itemdesc_cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
++	var equip_list := array{};
++	
++	zone_name := Lower(zone_name);
++	
++	foreach item in ( ListEquippedItems(mobile) )
++		var item_info := itemdesc_cfg[item.objtype];
++		
++		foreach zone in ( GetConfigStringArray(item_info, &quot;Coverage&quot;) )
++			if ( Lower(zone) == zone_name )
++				equip_list.Append(item);
++				break;
++			endif
++		endforeach
++		
++		sleepms(2);
++	endforeach
++	
++	return equip_list;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001397.html">[Poldistro-svn] r1428 - trunk/096/docs
+</A></li>
+	<LI>Next message: <A HREF="001399.html">[Poldistro-svn] r1430 - trunk/096/pkg/systems/combat/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1398">[ date ]</a>
+              <a href="thread.html#1398">[ thread ]</a>
+              <a href="subject.html#1398">[ subject ]</a>
+              <a href="author.html#1398">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

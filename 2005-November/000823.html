@@ -1,0 +1,613 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r849 - in trunk/096: pkg/systems/combat/old pkg/systems/housing pkg/systems/spellcasting scripts/items scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r849%20-%20in%20trunk/096%3A%20pkg/systems/combat/old%20pkg/systems/housing%20pkg/systems/spellcasting%20scripts/items%20scripts/misc&In-Reply-To=%3C200511022109.jA2L98R0029509%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000822.html">
+   <LINK REL="Next"  HREF="000824.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r849 - in trunk/096: pkg/systems/combat/old pkg/systems/housing pkg/systems/spellcasting scripts/items scripts/misc</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r849%20-%20in%20trunk/096%3A%20pkg/systems/combat/old%20pkg/systems/housing%20pkg/systems/spellcasting%20scripts/items%20scripts/misc&In-Reply-To=%3C200511022109.jA2L98R0029509%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r849 - in trunk/096: pkg/systems/combat/old pkg/systems/housing pkg/systems/spellcasting scripts/items scripts/misc">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 22:09:08 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000822.html">[Poldistro-svn] r848 - in trunk/096/pkg/systems: attributes/include combat/old
+</A></li>
+        <LI>Next message: <A HREF="000824.html">[Poldistro-svn] r850 - in trunk/096/scripts: include misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#823">[ date ]</a>
+              <a href="thread.html#823">[ thread ]</a>
+              <a href="subject.html#823">[ subject ]</a>
+              <a href="author.html#823">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 22:09:07 +0100 (Wed, 02 Nov 2005)
+New Revision: 849
+
+Removed:
+   trunk/096/pkg/systems/combat/old/mainHitScript.src
+   trunk/096/scripts/items/dungTele.src
+   trunk/096/scripts/items/makeDTele.src
+Modified:
+   trunk/096/pkg/systems/combat/old/maceHit.src
+   trunk/096/pkg/systems/combat/old/poisonHit.src
+   trunk/096/pkg/systems/housing/signControl.src
+   trunk/096/pkg/systems/spellcasting/spellcast.src
+   trunk/096/pkg/systems/spellcasting/spellcastFunctions.inc
+   trunk/096/scripts/items/moongate.src
+   trunk/096/scripts/items/pickLock.src
+   trunk/096/scripts/misc/demod.src
+   trunk/096/scripts/misc/unmod.src
+Log:
+Last of the attribute updates!!!
+
+I dont guarantee everything works though
+
+There is a lot of redundant code to delete too let me tell you.
+
+Modified: trunk/096/pkg/systems/combat/old/maceHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/maceHit.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/pkg/systems/combat/old/maceHit.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -21,10 +21,10 @@
+     endif
+   endif
+   var sdr := RandomInt(3) + 3;
+-  if(GetStamina(defender) &gt;= sdr)
+-    SetStamina(defender, GetStamina(defender) - sdr);
++  if(AP_GetVital(defender, STAMINA) &gt;= sdr)
++    AP_SetVital(defender, STAMINA, AP_GetVital(defender, STAMINA) - sdr);
+   else
+-    SetStamina(defender, 0);
++    AP_SetVital(defender, STAMINA, 0);
+   endif
+ endprogram
+ 
+
+Deleted: trunk/096/pkg/systems/combat/old/mainHitScript.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/mainHitScript.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/pkg/systems/combat/old/mainHitScript.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -1,120 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-include &quot;hitScriptInc&quot;;
+-
+-var npccfgfile := ReadConfigFile(&quot;::npcdesc&quot;);
+-
+-program MainHitScript(attacker, defender, weapon, armor, basedamage, rawdamage)
+-  if(defender == attacker)
+-    SendSysMessage(attacker, &quot;No cheating!&quot;);
+-    ApplyRawDamage(attacker, 1000);
+-    return;
+-  endif
+-  if((defender.npctemplate == &quot;townguard&quot;) or (defender.npctemplate == &quot;playervendor&quot;))
+-    ApplyRawDamage(attacker, 1000);
+-    return;
+-  endif
+-  if((attacker.npctemplate == &quot;townguard&quot;) or (attacker.npctemplate == &quot;playervendor&quot;))
+-    ApplyRawDamage(defender, 1000);
+-    return;
+-  endif
+-  if(defender.isA(POLCLASS_NPC))
+-    var damagedsound := CInt(npccfgfile[defender.npctemplate].damagedsound);
+-    if(damagedsound)
+-      PlaySoundEffect(defender, damagedsound);
+-    endif
+-    PerformAction(defender, 0xa);
+-    basedamage := basedamage * 2;
+-    rawdamage := rawdamage * 2;
+-  else
+-    if(attacker.acctname &amp;&amp; defender.acctname)
+-      basedamage := basedamage / 2;
+-      rawdamage := rawdamage / 2;
+-    endif
+-  endif
+-  if(attacker.npctemplate == &quot;employee&quot;)
+-    basedamage := basedamage / 2;
+-    rawdamage := rawdamage / 2;
+-  endif
+-  SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon.name });
+-  var shield := GetEquipmentByLayer(defender, 2);
+-  if(shield)
+-    var bd;
+-    if(basedamage &gt; 100)
+-      bd := 100;
+-    else
+-      bd := basedamage;
+-    endif
+-    if(RandomInt(Cint(GetEffectiveSkill(defender, SKILLID_PARRY) / 2)) &gt;= bd)
+-      armor := shield;
+-    endif
+-  endif
+-  var weaponhit := GetObjProperty(weapon, &quot;OnHit&quot;);
+-  if(weapon.hp &gt; weapon.maxhp)
+-    DestroyItem(weapon);
+-    rawdamage := 0;
+-  endif
+-  var armorhit;
+-  if(armor == 0)
+-    armorhit := GetObjProperty(defender, &quot;ArmorHit&quot;);
+-  else
+-    armorhit := GetObjProperty(armor, &quot;ArmorHit&quot;);
+-  endif
+-  if(!weaponhit)
+-    if(!armorhit)
+-      run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-      if(GetObjProperty(weapon, &quot;SilverHit&quot;))
+-        run_script_to_completion(&quot;silverHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-        rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-      endif
+-      rawdamage := Cint(rawdamage + Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20));
+-      if(rawdamage &lt; 1)
+-        rawdamage := 1;
+-      endif
+-      DealDamage(defender, attacker, rawdamage);
+-      return;
+-    else
+-      SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-      foreach x in armorhit
+-        Detach();
+-        run_script_to_completion(x, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-        rawdamage := CInt(GetObjProperty(defender, &quot;TempDamage&quot;) );
+-      endforeach
+-      run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-      EraseObjProperty(defender, &quot;TempDamage&quot;);
+-      if(GetObjProperty(weapon, &quot;SilverHit&quot;))
+-        run_script_to_completion(&quot;silverHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-        rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-      endif
+-      rawdamage := Cint(rawdamage + Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20));
+-      if(rawdamage &lt; 1)
+-        rawdamage := 1;
+-      endif
+-      DealDamage(defender, attacker, rawdamage);
+-      return;
+-    endif
+-  else
+-    SetObjProperty(defender, &quot;TempDamage&quot;, rawdamage);
+-    foreach x in weaponhit
+-      Detach();
+-      run_script_to_completion(CStr(x), { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-    endforeach
+-    EraseObjProperty(defender, &quot;TempDamage&quot;);
+-    run_script_to_completion(&quot;reactiveArmorHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-    rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-    if(GetObjProperty(weapon, &quot;SilverHit&quot;))
+-      run_script_to_completion(&quot;silverHit&quot;, { attacker, defender, weapon, armor, basedamage, rawdamage } );
+-      rawdamage := GetObjProperty(defender, &quot;TempDamage&quot;);
+-    endif
+-    rawdamage := Cint(rawdamage + Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20));
+-    if(rawdamage &lt; 1)
+-      rawdamage := 1;
+-    endif
+-    DealDamage(defender, attacker, rawdamage);
+-    return;
+-  endif
+-endprogram
+
+Modified: trunk/096/pkg/systems/combat/old/poisonHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/poisonHit.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/pkg/systems/combat/old/poisonHit.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -35,7 +35,7 @@
+     duration := duration - 1;
+     SetObjProperty(weapon, &quot;d&quot;, duration);
+     var level := GetObjProperty(weapon, &quot;poison_level&quot;);
+-    if(CheckSkill(attacker, SKILLID_POISONING, 20, 20))
++    if( SkillCheck(attacker, POISONING, 20) &gt;0)
+       foreach mobile in ListMobilesInLineOfSight(defender, 8)
+         if(mobile != defender)
+           PrintTextAbovePrivate(defender, defender.name + &quot; has been poisoned!&quot;, mobile);
+
+Modified: trunk/096/pkg/systems/housing/signControl.src
+===================================================================
+--- trunk/096/pkg/systems/housing/signControl.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/pkg/systems/housing/signControl.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -104,7 +104,7 @@
+     if (!idiot)
+       SendSysMessage(who, &quot;Cancelled.&quot;);
+       return;
+-    elseif (GetMana(idiot) == error)
++    elseif (AP_GetVital(idiot, MANA) == error)
+       SendSysMessage(who,&quot;You cannot eject items.&quot;);
+       return;
+     endif
+@@ -467,7 +467,7 @@
+   var holder := 0;
+   foreach thing in lists
+     foreach thing in ListObjectsInBox(thing[1], thing[2], thing[3], thing[4], thing[5],thing[6], house.realm)
+-      if((GetStrength(thing)) and (thing.hidden))
++      if((AP_GetStat(thing, STRENGTH)) and (thing.hidden))
+         thing.hidden := 0;
+         holder := holder + 1;
+       endif
+
+Modified: trunk/096/pkg/systems/spellcasting/spellcast.src
+===================================================================
+--- trunk/096/pkg/systems/spellcasting/spellcast.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/pkg/systems/spellcasting/spellcast.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -28,11 +28,11 @@
+   var castSkill;
+   var circlecfg := ReadConfigFile(&quot;:*:magiccircles&quot;);
+   if (spellid &lt; 101)
+-    castSkill := SKILLID_MAGERY;
++    castSkill := MAGERY;
+   elseif (spellid &lt; 201)
+-    castSkill := SKILLID_NECROMANCY;
++    castSkill := NECROMANCY;
+   elseif (spellid &lt; 301)
+-    castSkill := SKILLID_CHIVALRY;
++    castSkill := CHIVALRY;
+   endif   
+   EraseObjProperty(who, &quot;IsMeditating&quot;);
+   EraseObjProperty(who, &quot;HealTimer&quot;);
+@@ -52,7 +52,7 @@
+ 
+   // Record starting conditions- if the caster is damaged or moves
+   // we can choose to interrupt the spell
+-  var starthp := GetHp(who);
++  var starthp := AP_GetVital(who, HITS);
+   var startx := who.x;
+   var starty := who.y;
+   var startz := who.z;
+@@ -61,9 +61,9 @@
+   var animation := spellcfg[spellid].Animation;
+   
+   if (!animation)
+-    animation := ANIM_CAST_DIR;
++    //animation := ANIM_CAST_DIR;
+   endif
+-  if (requiredMana &gt; GetMana(who))
++  if (requiredMana &gt; AP_GetVital(who, MANA))
+ //    who.frozen := 1;
+ //    PerformAction(who,animation);
+ //    sleepms(1200);
+@@ -91,7 +91,7 @@
+   var n;
+   PrintTextAbove(who, spellcfg[spellid].PowerWords);
+   for (n := 1; n &lt;= animReps; n := n+1)
+-    if ((starthp &gt; GetHp(who)) &amp;&amp; ((RandomInt(99)+1) &gt; (GetEffectiveSkill(who, SKILLID_WRESTLING)/2)))
++    if ((starthp &gt; AP_GetVital(who, HITS)) &amp;&amp; ((RandomInt(99)+1) &gt; (AP_GetSkill(who, WRESTLING)/2)))
+       SendSysMessage(who,&quot;You lost your concentration.&quot;, 3, 40);
+       // This costs you no mana or regs... should it?
+       PlaySoundEffect(who,0x005d);
+@@ -99,7 +99,7 @@
+       who.frozen :=0;
+       return 0;
+     endif
+-    PerformAction(who,ANIM_CAST_DIR);
++    //PerformAction(who,ANIM_CAST_DIR);
+     if (n &lt; animReps)
+       sleepms(750);
+     endif
+@@ -115,7 +115,7 @@
+   
+   var diff := circlecfg[circle].Difficulty;
+   if (CheckSkill(who,castSkill, diff, 0))
+-    if((starthp &gt; GetHp(who)) &amp;&amp; ((RandomInt(99)+1) &gt; (GetEffectiveSkill(who, SKILLID_WRESTLING)/2)))
++    if((starthp &gt; AP_GetVital(who, HITS)) &amp;&amp; ((RandomInt(99)+1) &gt; (AP_GetSkill(who, WRESTLING)/2)))
+       SendSysMessage(who,&quot;You lost your concentration.&quot;, 3, 40);
+       return 0;
+     endif
+@@ -134,7 +134,7 @@
+       return 0;
+     endif
+   endif
+-  if (GetMana(who) &lt; requiredMana)
++  if (AP_GetVital(who, MANA) &lt; requiredMana)
+     SendSysMessage(who, &quot;You do not have sufficient mana to cast this spell.&quot;, 3, 40);
+   endif
+   
+@@ -189,7 +189,7 @@
+   
+   // Now we consume regs and mana, award points, and go home.
+   set_critical(1);
+-    if (requiredMana &gt; GetMana(who))
++    if (requiredMana &gt; AP_GetVital(who, MANA))
+       SendSysMessage(who,&quot;You do not have enough mana to cast that.&quot;, 3, 40);
+       PlaySoundEffect(who,0x005d);
+       PlayObjectCenteredEffect(who, 0x3735,0x0a, 0x1e);
+@@ -205,14 +205,14 @@
+       endif
+       ConsumeReagents(who, spellid);    
+     endif
+-    SetMana(who, GetMana(who) - requiredMana);
++    AP_SetVital(who, MANA, AP_GetVital(who, MANA) - requiredMana);
+   set_critical(0);
+   if (scroll)
+     if (!subtractAmount(scroll, 1))
+       return 0;
+     endif
+   endif
+-  AwardRawSkillPoints(who, castSkill, getPointValue(who, (circlecfg[circle].PointValue), (spellcfg[spellid].Difficulty), castSkill));
++  //AwardRawSkillPoints(who, castSkill, getPointValue(who, (circlecfg[circle].PointValue), (spellcfg[spellid].Difficulty), castSkill));
+   var parms := struct;
+   parms.+caster;
+   parms.+castOn;
+
+Modified: trunk/096/pkg/systems/spellcasting/spellcastFunctions.inc
+===================================================================
+--- trunk/096/pkg/systems/spellcasting/spellcastFunctions.inc	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/pkg/systems/spellcasting/spellcastFunctions.inc	2005-11-02 21:09:07 UTC (rev 849)
+@@ -1,4 +1,7 @@
++use uo;
+ 
++include &quot;:attributes:attributes&quot;;
++
+ function mobspellcast(me, circle)
+   var diff, points, umana;
+   // replace case with cfg pulls
+@@ -12,12 +15,12 @@
+     7:   diff := 85;     points := 190;    umana :=  40;
+     8:   diff := 95;     points := 210;    umana :=  50;
+   endcase
+-  if(umana &gt; GetMana(me))
++  if(umana &gt; AP_GetVital(me, MANA))
+     return 0;
+   endif
+   if(CheckHands(me))
+-    if(CheckSkill(me, SKILLID_MAGERY, (diff - 10), points))
+-      SetMana(me, GetMana(me)-umana);
++    if( SkillCheck(me, MAGERY, (diff - 10)) &gt; 0 )
++      AP_SetVital(me, MANA, AP_GetVital(me, MANA)-umana);
+       return 1;
+     else
+       return 0;
+@@ -48,7 +51,7 @@
+ // challenging it is to the caster
+ // I'm not convinced all of it is necessary, but it was in the old system, so here it is.
+ function getPointValue(caster, points, diff, skill)
+-  skill := GetEffectiveSkill(caster, skill);
++  skill := AP_GetSkill(caster, skill);
+   if (skill &gt; (diff - 20))
+     if ((skill - diff) &lt;= 5)
+       return points;
+
+Deleted: trunk/096/scripts/items/dungTele.src
+===================================================================
+--- trunk/096/scripts/items/dungTele.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/scripts/items/dungTele.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -1,37 +0,0 @@
+-use os;
+-use uo;
+-
+-include &quot;include/client&quot;;
+-include &quot;:attributes:attributes&quot;;
+-
+-program walk_on_moongate(mobile, gate)
+-  if((mobile.npctemplate) &amp;&amp; (mobile.script != &quot;employed&quot;) &amp;&amp; (mobile.script != &quot;tamed&quot;) &amp;&amp; (mobile.script != &quot;escortee&quot;))
+-    return;
+-  endif
+-  var magery := CInt(GetObjProperty(gate,&quot;magery&quot;));
+-  if((magery) &amp;&amp; (mobile.acctname))
+-    if(GetEffectiveSkill(mobile, SKILLID_MAGERY) &lt; magery)
+-      SendSysMessage(mobile,&quot;Your knowledge of the arcane arts is too low to traverse this gate.&quot;);
+-      return;
+-    endif
+-  endif
+-  set_critical(1);
+-  if(GetObjProperty(mobile, &quot;#justgated&quot;))
+-	return;
+-  endif
+-  var x, y, z;
+-  x := GetObjProperty( gate, &quot;DestX&quot; );
+-  y := GetObjProperty( gate, &quot;DestY&quot; );
+-  z := GetObjProperty( gate, &quot;DestZ&quot; );
+-  foreach critter in ListMobilesNearLocation( gate.x, gate.y, gate.z, 8, gate.realm);
+-    if(((critter.script == &quot;employed&quot;) &amp;&amp; (CInt(GetObjProperty(critter, &quot;master&quot;)) == mobile.serial)) || ((critter.script == &quot;escortee&quot;) &amp;&amp; (CInt(GetObjProperty(critter, &quot;Escortee&quot;)) == mobile.serial)) || ((critter.script == &quot;tamed&quot;) &amp;&amp; (CInt(GetObjProperty(critter, &quot;master&quot;)) == mobile.serial)))
+-      SetObjProperty(critter, &quot;Pause&quot;, 1);
+-      MoveCharacterToLocation( critter, gate.x, gate.y, gate.z, MOVECHAR_FORCELOCATION);
+-      EraseObjProperty(critter, &quot;Pause&quot;);
+-    endif
+-  endforeach
+-  SetObjProperty(mobile,&quot;#justgated&quot;,1);
+-  MoveCharacterToLocation(mobile, x, y, z );
+-  sleep(1);
+-  EraseObjProperty(mobile,&quot;#justgated&quot;);
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/items/makeDTele.src
+===================================================================
+--- trunk/096/scripts/items/makeDTele.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/scripts/items/makeDTele.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -1,34 +0,0 @@
+-use os;
+-use uo;
+-
+-include &quot;include/client&quot;;
+-include &quot;:attributes:attributes&quot;;
+-
+-program walk_on_moongate( mobile, gate )
+-  var magery := CInt(GetObjProperty(gate,&quot;magery&quot;));
+-  if((magery) &amp;&amp; (mobile.acctname))
+-    if(GetEffectiveSkill(mobile, SKILLID_MAGERY) &lt; magery)
+-      SendSysMessage(mobile,&quot;Your knowledge of the arcane arts is too low to traverse this gate.&quot;);
+-      return;
+-    endif
+-  endif
+-  set_critical(1);
+-  if(GetObjProperty(mobile,&quot;#justgated&quot;) )
+-	return;
+-  endif
+-  var x, y, z;
+-  x := GetObjProperty( gate, &quot;DestX&quot; );
+-  y := GetObjProperty( gate, &quot;DestY&quot; );
+-  z := GetObjProperty( gate, &quot;DestZ&quot; );
+-  foreach critter in ListMobilesNearLocation( gate.x, gate.y, gate.z, 8, gate.realm);
+-    if(((critter.script == &quot;employed&quot;) &amp;&amp; (CInt(GetObjProperty(critter, &quot;master&quot;)) == mobile.serial)) || ((critter.script == &quot;escortee&quot;) &amp;&amp; (CInt(GetObjProperty(critter, &quot;Escortee&quot;)) == mobile.serial)) || ((critter.script == &quot;tamed&quot;) &amp;&amp; (CInt(GetObjProperty(critter, &quot;master&quot;)) == mobile.serial)))
+-      SetObjProperty(critter, &quot;Pause&quot;, 1);
+-      MoveCharacterToLocation( critter, gate.x, gate.y, gate.z, MOVECHAR_FORCELOCATION);
+-      EraseObjProperty(critter, &quot;Pause&quot;);
+-    endif
+-  endforeach
+-  SetObjProperty(mobile,&quot;#justgated&quot;,1);
+-  MoveCharacterToLocation(mobile, x, y, z );
+-  sleep(1);
+-  EraseObjProperty(mobile,&quot;#justgated&quot;);
+-endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/items/moongate.src
+===================================================================
+--- trunk/096/scripts/items/moongate.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/scripts/items/moongate.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -10,7 +10,7 @@
+   endif
+   var magery := CInt(GetObjProperty(gate,&quot;magery&quot;));
+   if((magery) &amp;&amp; (mobile.acctname))
+-    if(GetEffectiveSkill(mobile, SKILLID_MAGERY) &lt; magery)
++    if(AP_GetSkill(mobile, MAGERY) &lt; magery)
+       SendSysMessage(mobile,&quot;Your knowledge of the arcane arts is too low to traverse this gate.&quot;);
+       return;
+     endif
+
+Modified: trunk/096/scripts/items/pickLock.src
+===================================================================
+--- trunk/096/scripts/items/pickLock.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/scripts/items/pickLock.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -4,8 +4,8 @@
+ 
+ include &quot;include/client&quot;;
+ include &quot;include/sound&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+-
+ program picklock(who, lockpick)
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 	EraseObjProperty(who, &quot;HealTimer&quot;);
+@@ -55,7 +55,7 @@
+ 	endif
+ 	PlaySoundEffect(me, SFX_242);
+   sleep(1);
+-  if(CheckSkill(me, SKILLID_LOCKPICKING, diff,(diff * 2)))
++  if(CheckSkill(me, LOCKPICKING, diff,(diff * 2)))
+     PrintTextAbovePrivate(chest,&quot;*Unlocked!*&quot;,me);
+     EraseObjProperty(chest, &quot;MLockPickDiff&quot;);
+     chest.locked := 0;
+@@ -66,7 +66,7 @@
+     else
+       diff := diff -10;
+     endif
+-    if(!CheckSkill(me,SKILLID_LOCKPICKING,diff,0))
++    if(!CheckSkill(me,LOCKPICKING,diff,0))
+       PlaySoundEffect(chest,0xef);
+       SendSysMessage(me,&quot;Your pick breaks!&quot;);
+       SubtractAmount(lockpick,1);
+@@ -83,7 +83,7 @@
+   endif
+   PlaySoundEffect(me, SFX_242);
+   sleep(1);
+-  if(CheckSkill(me, SKILLID_LOCKPICKING, diff,(diff * 2)))
++  if( SkillCheck(me, LOCKPICKING, diff) &gt; 0 )
+     PrintTextAbovePrivate(chest,&quot;*Unlocked!*&quot;,me);
+   else
+     PrintTextAbovePrivate(chest,&quot;You fail to pick the lock.&quot;,me);
+@@ -92,7 +92,7 @@
+     else
+       diff := diff -10;
+     endif
+-    if(!CheckSkill(me,SKILLID_LOCKPICKING,diff,0))
++    if( SkillCheck(me,LOCKPICKING,diff) &lt; 0 )
+       PlaySoundEffect(chest,0xef);
+       SendSysMessage(me,&quot;Your pick breaks!&quot;);
+       SubtractAmount(lockpick,1);
+@@ -116,7 +116,7 @@
+   PlaySoundEffect(me, SFX_242);
+   sleep(1);
+   var diff :=(lvl * 20)+10;
+-  if(CheckSkill(me,SKILLID_LOCKPICKING,diff,(diff * 2)))
++  if(CheckSkill(me,LOCKPICKING,diff,(diff * 2)))
+     PlaySoundEffect(chest,SFX_200);
+     PrintTextAbovePrivate(chest,&quot;*Unlocked!*&quot;,me);
+     chest.locked := 0;
+@@ -127,7 +127,7 @@
+     else
+       diff := diff -10;
+     endif
+-    if(!CheckSkill(me,SKILLID_LOCKPICKING,diff,0))
++    if(!CheckSkill(me,LOCKPICKING,diff,0))
+       PlaySoundEffect(chest,0xef);
+       SendSysMessage(me,&quot;Your pick breaks!&quot;);
+       SubtractAmount(lockpick,1);
+
+Modified: trunk/096/scripts/misc/demod.src
+===================================================================
+--- trunk/096/scripts/misc/demod.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/scripts/misc/demod.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -19,9 +19,9 @@
+     who := SystemFindObjectBySerial(serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+   endif
+   case(mod)
+-    &quot;str&quot;: 	SetStrengthMod(who, GetStrengthMod(who) - amt);
+-    &quot;dex&quot;: 	SetDexterityMod(who, GetDexterityMod(who) - amt);
+-    &quot;int&quot;: 	SetIntelligenceMod(who, GetIntelligenceMod(who) - amt);
++    &quot;str&quot;: 	AP_SetStatMod(who, STRENGTH, AP_GetStatMod(who, STRENGTH) - amt);
++    &quot;dex&quot;: 	AP_SetStatMod(who, DEXTERITY, AP_GetStatMod(who, DEXTERITY) - amt);
++    &quot;int&quot;: 	AP_SetStatMod(who, INTELLIGENCE, AP_GetStatMod(who, DEXTERITY) - amt);
+     &quot;ar&quot; : 	who.ar_mod           := who.ar_mod - amt;
+     &quot;p&quot;  : 	who.frozen           := 0;
+             who.paralyzed        := 0;
+
+Modified: trunk/096/scripts/misc/unmod.src
+===================================================================
+--- trunk/096/scripts/misc/unmod.src	2005-11-02 20:54:39 UTC (rev 848)
++++ trunk/096/scripts/misc/unmod.src	2005-11-02 21:09:07 UTC (rev 849)
+@@ -17,9 +17,9 @@
+     who := SystemFindObjectBySerial(serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+   endif
+   case(mod)
+-    &quot;str&quot;: SetStrengthMod(who, GetStrengthMod(who) - amt);
+-    &quot;dex&quot;: SetDexterityMod(who, GetDexterityMod(who) - amt);
+-    &quot;int&quot;: SetIntelligenceMod(who, GetIntelligenceMod(who) - amt);
++    &quot;str&quot;: 	AP_SetStatMod(who, STRENGTH, AP_GetStatMod(who, STRENGTH) - amt);
++    &quot;dex&quot;: 	AP_SetStatMod(who, DEXTERITY, AP_GetStatMod(who, DEXTERITY) - amt);
++    &quot;int&quot;: 	AP_SetStatMod(who, INTELLIGENCE, AP_GetStatMod(who, DEXTERITY) - amt);
+     &quot;ar&quot;:  who.ar_mod := who.ar_mod - amt;
+     &quot;p&quot; :  who.setParalyzed(0);
+   endcase
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000822.html">[Poldistro-svn] r848 - in trunk/096/pkg/systems: attributes/include combat/old
+</A></li>
+	<LI>Next message: <A HREF="000824.html">[Poldistro-svn] r850 - in trunk/096/scripts: include misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#823">[ date ]</a>
+              <a href="thread.html#823">[ thread ]</a>
+              <a href="subject.html#823">[ subject ]</a>
+              <a href="author.html#823">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

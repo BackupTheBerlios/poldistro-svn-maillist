@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r752 - in trunk/096/pkg/mobiles/oldAI: . combat
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r752%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20combat&In-Reply-To=%3C200510312115.j9VLFCXk002358%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000725.html">
+   <LINK REL="Next"  HREF="000727.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r752 - in trunk/096/pkg/mobiles/oldAI: . combat</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r752%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20combat&In-Reply-To=%3C200510312115.j9VLFCXk002358%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r752 - in trunk/096/pkg/mobiles/oldAI: . combat">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 31 22:15:12 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000725.html">[Poldistro-svn] r751 - trunk/096/pkg/mobiles/npcutils
+</A></li>
+        <LI>Next message: <A HREF="000727.html">[Poldistro-svn] r753 - in trunk/096/pkg/mobiles/timedScripts: . commands/gm config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#726">[ date ]</a>
+              <a href="thread.html#726">[ thread ]</a>
+              <a href="subject.html#726">[ subject ]</a>
+              <a href="author.html#726">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-31 22:15:05 +0100 (Mon, 31 Oct 2005)
+New Revision: 752
+
+Modified:
+   trunk/096/pkg/mobiles/oldAI/battleMage.src
+   trunk/096/pkg/mobiles/oldAI/combat/spellCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/spellFireEvent.inc
+   trunk/096/pkg/mobiles/oldAI/townGuard.src
+Log:
+Updated for the timedScript package instead of poisonwatcher
+
+Modified: trunk/096/pkg/mobiles/oldAI/battleMage.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/battleMage.src	2005-10-31 21:00:56 UTC (rev 751)
++++ trunk/096/pkg/mobiles/oldAI/battleMage.src	2005-10-31 21:15:05 UTC (rev 752)
+@@ -13,7 +13,7 @@
+ include &quot;:npcutils:anchors&quot;;
+ include &quot;:npcutils:NPCBackpacks&quot;;
+ include &quot;include/skillLists&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ 
+ var flee_point := 0;
+ var npccfg := ReadConfigFile(&quot;::npcdesc&quot;);
+@@ -176,12 +176,12 @@
+   SetWarMode(0);
+   SetOpponent(0);
+   lookiehere();
+-  var allpoisons := GetAllPoisons(me);
++  var allpoisons := TS_GetTimerNames(me, &quot;P&quot;);
+   if(allpoisons.size() &gt; 0)
+     sleep(1);
+     PerformAction(me, 0x22);
+     foreach poison in allpoisons
+-      CureSpecific(me, poison, -1);
++      TS_LowerDuration(me, poison, -1);
+     endforeach
+     PlaySoundEffect(me, 0x31);
+     sleep(1);
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/spellCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/spellCombatEvent.inc	2005-10-31 21:00:56 UTC (rev 751)
++++ trunk/096/pkg/mobiles/oldAI/combat/spellCombatEvent.inc	2005-10-31 21:15:05 UTC (rev 752)
+@@ -1,10 +1,10 @@
+ include &quot;include/attributes&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ 
+ function process_combat_event(opponent)
+   if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(8) &gt;= 5))
+     CastSpell(me, me, &quot;gheal&quot;);
+-  elseif((ListPoisonsByType(me, &quot;defaultPoison&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 5))
++  elseif((TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 5))
+     CastSpell(me, me, &quot;cure&quot;);
+   else
+     spellattack(opponent);
+@@ -19,7 +19,7 @@
+   if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(8) &gt;= 3))
+     CastSpell(me, me, &quot;gheal&quot;);
+     return 0;
+-  elseif((ListPoisonsByType(me, &quot;defaultPoison&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 3))
++  elseif((TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 3))
+     CastSpell(me, me, &quot;cure&quot;);
+     return 0;
+   else
+@@ -52,7 +52,7 @@
+   if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(4) &gt;= 2))
+     CastSpell(me, me, &quot;gheal&quot;);
+   endif
+-  if(ListPoisonsByType(me, &quot;defaultPoison&quot;).size() &gt; 0)
++  if(TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0)
+     CastSpell(me, me, &quot;cure&quot;);
+   endif
+   DisableCombatEvents();
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/spellFireEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/spellFireEvent.inc	2005-10-31 21:00:56 UTC (rev 751)
++++ trunk/096/pkg/mobiles/oldAI/combat/spellFireEvent.inc	2005-10-31 21:15:05 UTC (rev 752)
+@@ -1,10 +1,10 @@
+ include &quot;include/attributes&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ 
+ function process_combat_event(opponent)
+   if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(8) &gt;= 5))
+     CastSpell(me, me, &quot;gheal&quot;);
+-  elseif((ListPoisonsByType(me, &quot;defaultPoison&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 5))
++  elseif((TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 5))
+     CastSpell(me, me, &quot;cure&quot;);
+   else
+     spellattack(opponent);
+@@ -19,7 +19,7 @@
+   if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(8) &gt;= 3))
+     CastSpell(me, me, &quot;gheal&quot;);
+     return 0;
+-  elseif((ListPoisonsByType(me, &quot;defaultPoison&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 3))
++  elseif((TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 3))
+     CastSpell(me, me, &quot;cure&quot;);
+     return 0;
+   else
+@@ -72,7 +72,7 @@
+   if ( GetHp(me) &lt; (GetStrength(me)-10))
+ 	CastSpell(me,me,&quot;gheal&quot;);
+   endif
+-  if (ListPoisonsByType(me, &quot;defaultPoison&quot;).size() &gt; 0)
++  if (TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0)
+     CastSpell(me, me, &quot;cure&quot;);
+     return 0;
+   endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/townGuard.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/townGuard.src	2005-10-31 21:00:56 UTC (rev 751)
++++ trunk/096/pkg/mobiles/oldAI/townGuard.src	2005-10-31 21:15:05 UTC (rev 752)
+@@ -14,7 +14,7 @@
+ include &quot;:npcutils:NPCBackpacks&quot;;
+ include &quot;:begging:begging&quot;;
+ include &quot;:npcutils:trainSkill&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ 
+ var flee_point := 0;
+ var npccfg := ReadConfigFile(&quot;::npcdesc&quot;);
+@@ -182,12 +182,12 @@
+   EnableMainEvents();
+   SetWarMode(0);
+   SetOpponent(0);
+-  var allpoisons := GetAllPoisons(me);
++  var allpoisons := TS_GetTimerNames(me, &quot;P&quot;);
+   if(allpoisons.size() &gt; 0)
+     sleep(1);
+     PerformAction(me, 0x22);
+     foreach poison in allpoisons
+-      CureSpecific(me, poison, -1);
++      TS_LowerDuration(me, poison, -1);
+     endforeach
+     PlaySoundEffect(me, 0x31);
+     sleep(1);
+@@ -258,12 +258,12 @@
+ 
+ function in_combat_event_loop(opponent, loops)
+   opponent := opponent;
+-  var allpoisons := GetAllPoisons(me);
++  var allpoisons := TS_GetTimerNames(me, &quot;P&quot;);
+   if(allpoisons.size() &gt; 0)
+     sleep(1);
+     PerformAction(me, 0x22);
+     foreach poison in allpoisons
+-      CureSpecific(me, poison, -1);
++	TS_LowerDuration(me, poison, -1);
+     endforeach
+     PlaySoundEffect(me, 0x31);
+     sleep(1);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000725.html">[Poldistro-svn] r751 - trunk/096/pkg/mobiles/npcutils
+</A></li>
+	<LI>Next message: <A HREF="000727.html">[Poldistro-svn] r753 - in trunk/096/pkg/mobiles/timedScripts: . commands/gm config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#726">[ date ]</a>
+              <a href="thread.html#726">[ thread ]</a>
+              <a href="subject.html#726">[ subject ]</a>
+              <a href="author.html#726">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

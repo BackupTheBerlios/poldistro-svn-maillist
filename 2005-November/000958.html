@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r985 - trunk/096/pkg/items/walkOn/teleport
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r985%20-%20trunk/096/pkg/items/walkOn/teleport&In-Reply-To=%3C200511140905.jAE95PSr019747%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000957.html">
+   <LINK REL="Next"  HREF="000959.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r985 - trunk/096/pkg/items/walkOn/teleport</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r985%20-%20trunk/096/pkg/items/walkOn/teleport&In-Reply-To=%3C200511140905.jAE95PSr019747%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r985 - trunk/096/pkg/items/walkOn/teleport">austin at berlios.de
+       </A><BR>
+    <I>Mon Nov 14 10:05:25 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000957.html">[Poldistro-svn] r984 - in trunk/096: pkg/items pkg/items/acid pkg/items/acid/acid pkg/items/acid/config pkg/items/acid/include scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000959.html">[Poldistro-svn] r986 - in trunk/096/pkg/skills/magery: . config recallRune
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#958">[ date ]</a>
+              <a href="thread.html#958">[ thread ]</a>
+              <a href="subject.html#958">[ subject ]</a>
+              <a href="author.html#958">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-14 10:05:16 +0100 (Mon, 14 Nov 2005)
+New Revision: 985
+
+Modified:
+   trunk/096/pkg/items/walkOn/teleport/walkOn.src
+Log:
+Updated to use MoveObjectToLocation()
+
+Modified: trunk/096/pkg/items/walkOn/teleport/walkOn.src
+===================================================================
+--- trunk/096/pkg/items/walkOn/teleport/walkOn.src	2005-11-14 09:02:34 UTC (rev 984)
++++ trunk/096/pkg/items/walkOn/teleport/walkOn.src	2005-11-14 09:05:16 UTC (rev 985)
+@@ -25,7 +25,7 @@
+ function JustTeleported(mobile)
+ 	var tele_time := CInt(GetObjProperty(mobile, &quot;#Teleported&quot;));
+ 	if ( tele_time &gt; ReadMillisecondClock()-500 )
+-		// Mobile just teleported Too soon to teleport again.
++		// Mobile just teleported. Too soon to teleport again.
+ 		return 1;
+ 	else
+ 		// Safe to teleport the mobile
+@@ -36,12 +36,7 @@
+ function TeleportMobile(mobile, byref dest)
+ 	SetObjProperty(mobile, &quot;#Teleported&quot;, ReadMillisecondClock());
+ 	
+-	var moved;
+-	if ( mobile.realm != dest.realm )
+-		moved := MoveObjectToRealm(mobile, dest.realm, dest.x, dest.y, dest.z, MOVECHAR_FORCELOCATION);
+-	else
+-		moved := MoveCharacterToLocation(mobile, dest.x, dest.y, dest.z, MOVECHAR_FORCELOCATION);
+-	endif
++	var moved := MoveObjectToLocation(mobile, dest.x, dest.y, dest.z, dest.realm, MOVECHAR_FORCELOCATION);
+ 	
+ 	if ( moved.errortext )
+ 		SendSysMessage(mobile, &quot;Teleport Error: &quot;+moved.errortext);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000957.html">[Poldistro-svn] r984 - in trunk/096: pkg/items pkg/items/acid pkg/items/acid/acid pkg/items/acid/config pkg/items/acid/include scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000959.html">[Poldistro-svn] r986 - in trunk/096/pkg/skills/magery: . config recallRune
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#958">[ date ]</a>
+              <a href="thread.html#958">[ thread ]</a>
+              <a href="subject.html#958">[ subject ]</a>
+              <a href="author.html#958">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

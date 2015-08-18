@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1036 - trunk/096/pkg/mobiles/death/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1036%20-%20trunk/096/pkg/mobiles/death/include&In-Reply-To=%3C200511200414.jAK4EFca014129%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001008.html">
+   <LINK REL="Next"  HREF="001010.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1036 - trunk/096/pkg/mobiles/death/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1036%20-%20trunk/096/pkg/mobiles/death/include&In-Reply-To=%3C200511200414.jAK4EFca014129%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1036 - trunk/096/pkg/mobiles/death/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 20 05:14:15 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001008.html">[Poldistro-svn] r1035 - in trunk/096/pkg: commands/coun commands/player mobiles/brainAI/commands/gm other/motd utils/gumps/commands/admin utils/gumps/config
+</A></li>
+        <LI>Next message: <A HREF="001010.html">[Poldistro-svn] r1037 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1009">[ date ]</a>
+              <a href="thread.html#1009">[ thread ]</a>
+              <a href="subject.html#1009">[ subject ]</a>
+              <a href="author.html#1009">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-20 05:14:13 +0100 (Sun, 20 Nov 2005)
+New Revision: 1036
+
+Modified:
+   trunk/096/pkg/mobiles/death/include/resurrection.inc
+Log:
+Little more progress on resurrection!
+
+Modified: trunk/096/pkg/mobiles/death/include/resurrection.inc
+===================================================================
+--- trunk/096/pkg/mobiles/death/include/resurrection.inc	2005-11-20 03:23:06 UTC (rev 1035)
++++ trunk/096/pkg/mobiles/death/include/resurrection.inc	2005-11-20 04:14:13 UTC (rev 1036)
+@@ -7,11 +7,13 @@
+ 
+ include &quot;:gumps:gumps&quot;;
+ include &quot;include/client&quot;;
++include &quot;include/sounds&quot;;
+ 
+ function ResurrectionGump(mobile)
+ 	var gump := GFCreateGump();
+ 	
+-	return gump;
++	var input := GFSendGump(who, gump);
++	return input[0];
+ endfunction
+ 
+ function Resurrection(mobile)
+@@ -21,6 +23,9 @@
+ 		return error{&quot;errortext&quot;:=&quot;mobile is not dead.&quot;};
+ 	endif
+ 	
++	mobile.graphic := mobile.trueobjtype;
++	PlaySoundEffect(mobile, SFX_RESURRECT);
++	PlayObjectCenteredEffect(mobile, GFX_BLUE_SPARKLES, 10,10);
+ 	return Resurrect(mobile);
+ endfunction
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001008.html">[Poldistro-svn] r1035 - in trunk/096/pkg: commands/coun commands/player mobiles/brainAI/commands/gm other/motd utils/gumps/commands/admin utils/gumps/config
+</A></li>
+	<LI>Next message: <A HREF="001010.html">[Poldistro-svn] r1037 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1009">[ date ]</a>
+              <a href="thread.html#1009">[ thread ]</a>
+              <a href="subject.html#1009">[ subject ]</a>
+              <a href="author.html#1009">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1390 - trunk/096/scripts/console
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1390%20-%20trunk/096/scripts/console&In-Reply-To=%3C200605131016.k4DAGjSd023507%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001358.html">
+   <LINK REL="Next"  HREF="001360.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1390 - trunk/096/scripts/console</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1390%20-%20trunk/096/scripts/console&In-Reply-To=%3C200605131016.k4DAGjSd023507%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1390 - trunk/096/scripts/console">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 12:16:45 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001358.html">[Poldistro-svn] r1389 - trunk/096/scripts/console
+</A></li>
+        <LI>Next message: <A HREF="001360.html">[Poldistro-svn] r1391 - in trunk/096/pkg/utils/control: . commands/coun config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1359">[ date ]</a>
+              <a href="thread.html#1359">[ thread ]</a>
+              <a href="subject.html#1359">[ subject ]</a>
+              <a href="author.html#1359">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 12:16:45 +0200 (Sat, 13 May 2006)
+New Revision: 1390
+
+Modified:
+   trunk/096/scripts/console/online.src
+   trunk/096/scripts/console/removeChars.src
+Log:
+
+
+Modified: trunk/096/scripts/console/online.src
+===================================================================
+--- trunk/096/scripts/console/online.src	2006-05-13 10:12:13 UTC (rev 1389)
++++ trunk/096/scripts/console/online.src	2006-05-13 10:16:45 UTC (rev 1390)
+@@ -2,45 +2,23 @@
+  *
+  */
+ use uo;
++use os;
+ 
+ program console_online(cmd)
+-
+ 	cmd := cmd;
+-
+-	var names := {};
+-	foreach chr in EnumerateOnlineCharacters()
+-		names.append( chr.name );
+-	endforeach
+-
+-	names.sort();
+-
+-	var msg := &quot;System Message: &quot; + names.size() + &quot; Character&quot;;
+-	if( names.size() == 1 )
+-		msg := msg + &quot; is&quot;;
+-	else
+-		msg := msg + &quot;s are&quot;;
+-	endif
+-	print(msg + &quot; online&quot;);
+-
+-	var namestr := &quot;&quot;;
+-	foreach name in names
+-		var toadd := &quot;&quot;;
+-		if(namestr == &quot;&quot; )
+-			toadd := name;
++	//if ( cmd == &quot;*&quot; ) // Can assign some letter here just to see a number. Edit console.cfg then this line.
++	//	print (&quot;Number of online players:&quot;+EnumerateOnlineCharacters().size());
++	//else
++		var online := EnumerateOnlineCharacters();
++		if ( online.Size() &gt; 0 )
++			foreach person in ( online )
++				Print (&quot;(&quot;+_person_iter+&quot;) Account:&quot; + person.acctname + &quot; Character:&quot; + person.name);
++				sleepms(2);
++			endforeach
+ 		else
+-			toadd := &quot;, &quot; + name;
++			Print(&quot;There is no one online.&quot;);
+ 		endif
+-		if( len(namestr+toadd) &lt; 80 )     // it'll fit
+-			namestr := namestr + toadd;
+-		else
+-			print(namestr);
+-			namestr := name;
+-		endif
+-	endforeach
+-	if( namestr != &quot;&quot; )
+-		print(namestr);
+-	endif
+-
++	//endif
++	
+ 	return 1;
+-
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/console/removeChars.src
+===================================================================
+--- trunk/096/scripts/console/removeChars.src	2006-05-13 10:12:13 UTC (rev 1389)
++++ trunk/096/scripts/console/removeChars.src	2006-05-13 10:16:45 UTC (rev 1390)
+@@ -13,9 +13,8 @@
+ 	print(&quot;System Message: Removing all online characters!&quot;);
+ 	foreach char in EnumerateOnlineCharacters()
+ 		DisconnectClient(char);
++		sleepms(2);
+ 	endforeach
+ 
+ 	return 1;
+-
+ endprogram
+-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001358.html">[Poldistro-svn] r1389 - trunk/096/scripts/console
+</A></li>
+	<LI>Next message: <A HREF="001360.html">[Poldistro-svn] r1391 - in trunk/096/pkg/utils/control: . commands/coun config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1359">[ date ]</a>
+              <a href="thread.html#1359">[ thread ]</a>
+              <a href="subject.html#1359">[ subject ]</a>
+              <a href="author.html#1359">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

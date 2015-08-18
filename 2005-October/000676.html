@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r702 - in trunk/096/pkg/skills: mining musicianship
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r702%20-%20in%20trunk/096/pkg/skills%3A%20mining%20musicianship&In-Reply-To=%3C200510292030.j9TKU4pe009092%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000675.html">
+   <LINK REL="Next"  HREF="000677.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r702 - in trunk/096/pkg/skills: mining musicianship</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r702%20-%20in%20trunk/096/pkg/skills%3A%20mining%20musicianship&In-Reply-To=%3C200510292030.j9TKU4pe009092%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r702 - in trunk/096/pkg/skills: mining musicianship">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sat Oct 29 22:30:04 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000675.html">[Poldistro-svn] r701 - in trunk/096/pkg/mobiles/oldAI: . main
+</A></li>
+        <LI>Next message: <A HREF="000677.html">[Poldistro-svn] r703 - trunk/096/pkg/utils/gumps/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#676">[ date ]</a>
+              <a href="thread.html#676">[ thread ]</a>
+              <a href="subject.html#676">[ subject ]</a>
+              <a href="author.html#676">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-29 22:30:02 +0200 (Sat, 29 Oct 2005)
+New Revision: 702
+
+Modified:
+   trunk/096/pkg/skills/mining/mining.src
+   trunk/096/pkg/skills/musicianship/discord.src
+Log:
+Fixed unused var reports.
+
+Modified: trunk/096/pkg/skills/mining/mining.src
+===================================================================
+--- trunk/096/pkg/skills/mining/mining.src	2005-10-29 20:22:50 UTC (rev 701)
++++ trunk/096/pkg/skills/mining/mining.src	2005-10-29 20:30:02 UTC (rev 702)
+@@ -71,7 +71,6 @@
+ 	  return;
+ 	endif
+ 	var info := GetMapInfo(use_on.x, use_on.y, who.realm);
+-    var type;
+     if(is_minable(info.landtile, use_on.objtype))
+       var checker := 0;
+       startx := who.x;
+@@ -112,10 +111,12 @@
+     if(themap == 0)
+       SendSysMessage(who, &quot;Target a location to dig.&quot;);
+       var dig := TargetCoordinates( who );
+-      PerformAction(who, 0x0b);
+-      PlaySoundEffect(who, 0x126);
+-      sleep(1);
+-      SendSysMessage(who,&quot;You dig and dig, but do not find any treasure.&quot;);
++      if( dig )
++        PerformAction(who, 0x0b);
++        PlaySoundEffect(who, 0x126);
++        sleep(1);
++        SendSysMessage(who,&quot;You dig and dig, but do not find any treasure.&quot;);
++      endif
+       return;
+     endif
+     if(GetObjProperty(map, &quot;Solved&quot;))
+@@ -150,8 +151,8 @@
+ 	PlaySoundEffect(who, 0x126);
+     var range := GetRange( who );
+     var distn := coordist( dig.x, dig.y, chestx, chesty );
+-    var dirns := &quot;None&quot;;
+-    var direw := &quot;None&quot;;
++//    var dirns := &quot;None&quot;;
++//    var direw := &quot;None&quot;;
+     var maxrange := 20;
+     var mobiles := ListMobilesNearLocation(dig.x, dig.y, dig.z, 0, who.realm);
+     if(distn &gt; maxrange)
+@@ -267,12 +268,12 @@
+       var num := GetConfigInt( elem, &quot;num&quot; );
+       var limit := RandomDiceRoll( total );
+       var rand;
+-      var template;
++      var mTemplate;
+       i := 1;
+       for( i := 1; i &lt;= limit; i := i + 1 )
+         rand := RandomInt( num ) + 1;
+-        template := GetConfigString( elem, (&quot;creature&quot; + rand) );
+-        CreateGuardian( chest, template );
++        mTemplate := GetConfigString( elem, (&quot;creature&quot; + rand) );
++        CreateGuardian( chest, mTemplate );
+       endfor
+       UnloadConfigFile(&quot;:treasuremap:guardians&quot;);
+       SendSysMessage( who, &quot;You unleash the treasure's guardians!&quot; );
+
+Modified: trunk/096/pkg/skills/musicianship/discord.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/discord.src	2005-10-29 20:22:50 UTC (rev 701)
++++ trunk/096/pkg/skills/musicianship/discord.src	2005-10-29 20:30:02 UTC (rev 702)
+@@ -2,7 +2,7 @@
+ 
+ 
+ program skill_Discordance(who)
+-
++	who := who;
+ 	return 0;
+ 
+ endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000675.html">[Poldistro-svn] r701 - in trunk/096/pkg/mobiles/oldAI: . main
+</A></li>
+	<LI>Next message: <A HREF="000677.html">[Poldistro-svn] r703 - trunk/096/pkg/utils/gumps/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#676">[ date ]</a>
+              <a href="thread.html#676">[ thread ]</a>
+              <a href="subject.html#676">[ subject ]</a>
+              <a href="author.html#676">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

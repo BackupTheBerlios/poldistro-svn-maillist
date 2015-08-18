@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1381 - trunk/096/pkg/items/moongates/systemMoonGate
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1381%20-%20trunk/096/pkg/items/moongates/systemMoonGate&In-Reply-To=%3C200605130607.k4D67lOh024849%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001349.html">
+   <LINK REL="Next"  HREF="001351.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1381 - trunk/096/pkg/items/moongates/systemMoonGate</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1381%20-%20trunk/096/pkg/items/moongates/systemMoonGate&In-Reply-To=%3C200605130607.k4D67lOh024849%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1381 - trunk/096/pkg/items/moongates/systemMoonGate">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 08:07:47 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001349.html">[Poldistro-svn] r1380 - in trunk/096/pkg/items/moongates: . include systemMoonGate
+</A></li>
+        <LI>Next message: <A HREF="001351.html">[Poldistro-svn] r1382 - trunk/096/pkg/commands/props
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1350">[ date ]</a>
+              <a href="thread.html#1350">[ thread ]</a>
+              <a href="subject.html#1350">[ subject ]</a>
+              <a href="author.html#1350">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 08:07:26 +0200 (Sat, 13 May 2006)
+New Revision: 1381
+
+Modified:
+   trunk/096/pkg/items/moongates/systemMoonGate/use.src
+Log:
+
+
+Modified: trunk/096/pkg/items/moongates/systemMoonGate/use.src
+===================================================================
+--- trunk/096/pkg/items/moongates/systemMoonGate/use.src	2006-05-13 05:59:13 UTC (rev 1380)
++++ trunk/096/pkg/items/moongates/systemMoonGate/use.src	2006-05-13 06:07:26 UTC (rev 1381)
+@@ -10,13 +10,7 @@
+ include &quot;:gumps:gumps_ex&quot;;
+ include &quot;:moongates:moongate&quot;;
+ 
+-program walkOnScript(mobile, tile)
+-	if ( mobile.npctemplate )
+-		return 0;
+-	elseif ( JustTeleported(mobile) )
+-		return 0;
+-	endif
+-	
++program useScript(mobile, tile)
+ 	var gump := tile.GetGump();
+ 	var input := GFSendGump(mobile, gump);
+ 	
+@@ -24,20 +18,20 @@
+ 		SendSysMessage(mobile, &quot;Cancelled.&quot;);
+ 		return 0;
+ 	elseif ( Distance(mobile, tile) &gt; 1 )
+-		SendSysMessage(mobile, &quot;No longer close enough to the moongate.&quot;);
++		SendSysMessage(mobile, &quot;Not close enough to the moongate.&quot;);
+ 		return 0;
+ 	endif
+ 	
+-	var select := 0;
++	var dest;
+ 	foreach key in ( input.Keys )
+ 		if ( key &gt;= MG_LOCATION_START )
+-			select := key-MG_LOCATION_START;
++			var temp := key-MG_LOCATION_START;
++			dest := MG_FindDestination(temp);
+ 			break;
+ 		endif
+ 		sleepms(2);
+ 	endforeach
+-	
+-	var dest := MG_FindDestination(select);
++
+ 	SetObjProperty(mobile, &quot;#Teleported&quot;, ReadMillisecondClock());
+ 	var result := MoveObjectToLocation(mobile, dest.x, dest.y, dest.z, dest.realm, MOVEOBJECT_NORMAL);				
+ 	if ( result.errortext )
+@@ -46,14 +40,3 @@
+ 		
+ 	return 1;
+ endprogram
+-
+-function JustTeleported(mobile)
+-	var tele_time := CInt(GetObjProperty(mobile, &quot;#Teleported&quot;));
+-	if ( tele_time &gt; ReadMillisecondClock()-800 )
+-		// Mobile just teleported. Too soon to teleport again.
+-		return 1;
+-	else
+-		// Safe to teleport the mobile
+-		return 0;
+-	endif
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001349.html">[Poldistro-svn] r1380 - in trunk/096/pkg/items/moongates: . include systemMoonGate
+</A></li>
+	<LI>Next message: <A HREF="001351.html">[Poldistro-svn] r1382 - trunk/096/pkg/commands/props
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1350">[ date ]</a>
+              <a href="thread.html#1350">[ thread ]</a>
+              <a href="subject.html#1350">[ subject ]</a>
+              <a href="author.html#1350">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r415 - in trunk/096/pkg/mobiles/death: . include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r415%20-%20in%20trunk/096/pkg/mobiles/death%3A%20.%20include&In-Reply-To=%3C200510051147.j95BlEsr027438%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000392.html">
+   <LINK REL="Next"  HREF="000394.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r415 - in trunk/096/pkg/mobiles/death: . include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r415%20-%20in%20trunk/096/pkg/mobiles/death%3A%20.%20include&In-Reply-To=%3C200510051147.j95BlEsr027438%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r415 - in trunk/096/pkg/mobiles/death: . include">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct  5 13:47:14 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000392.html">[Poldistro-svn] r414 - trunk/096/pkg/items/containers/include
+</A></li>
+        <LI>Next message: <A HREF="000394.html">[Poldistro-svn] r416 - in trunk/096/pkg: skills/musicianship skills/musicianship/config skills/musicianship/include systems/attributes systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#393">[ date ]</a>
+              <a href="thread.html#393">[ thread ]</a>
+              <a href="subject.html#393">[ subject ]</a>
+              <a href="author.html#393">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-05 13:47:09 +0200 (Wed, 05 Oct 2005)
+New Revision: 415
+
+Added:
+   trunk/096/pkg/mobiles/death/include/death.inc
+Modified:
+   trunk/096/pkg/mobiles/death/npcdeath.src
+Log:
+
+
+Added: trunk/096/pkg/mobiles/death/include/death.inc
+===================================================================
+--- trunk/096/pkg/mobiles/death/include/death.inc	2005-10-05 11:04:58 UTC (rev 414)
++++ trunk/096/pkg/mobiles/death/include/death.inc	2005-10-05 11:47:09 UTC (rev 415)
+@@ -0,0 +1,54 @@
++/*
++ * $Id$
++ *
++ */
++
++
++use uo;
++use os;
++use util;
++
++include &quot;:brainAI:npcUtil&quot;;
++
++/*
++ * DP_PlayDeathSound(corpse, ghost:=0)
++ *
++ * Purpose
++ * Plays a sound effect when something dies.
++ *
++ * Parameters
++ * object:	Either a corpse or a ghost to play the sound on.
++ *
++ * Return value
++ * Sound number that was played
++ */
++function DP_PlayDeathSound(object)
++	var death_sound := 0;
++	
++	if ( object.IsA(POLCLASS_CORPSE) )
++		var template := GetObjProperty(object, &quot;npctemplate&quot;); // Set by core
++		if ( template )
++			var cfg_info := NPC_GetNPCConfig(template);
++			var sounds := GetConfigStringArray(cfg_info, &quot;DeathSound&quot;);
++			death_sound := CInt(sounds[RandomInt(sounds.Size())+1]);
++		endif
++	endif
++	if ( !death_sound )
++		// No sound selected yet.
++		if ( object.graphic == 402 || object.corpsetype == 400 )
++			 // Male ghost / corpse
++			var sounds := array{347, 348, 349, 350};
++			death_sound := sounds[RandomInt(sounds.Size())+1];
++		elseif ( object.graphic == 403 || object.corpsetype == 401 )
++			 // Female ghost / corpse
++			var sounds := array{337, 338, 339, 340};
++			death_sound := sounds[RandomInt(sounds.Size())+1];
++		endif
++	endif
++
++	if ( death_sound )
++		PlaySoundEffect(object, death_sound);
++	endif
++	
++	return death_sound;
++endfunction
+
+Modified: trunk/096/pkg/mobiles/death/npcdeath.src
+===================================================================
+--- trunk/096/pkg/mobiles/death/npcdeath.src	2005-10-05 11:04:58 UTC (rev 414)
++++ trunk/096/pkg/mobiles/death/npcdeath.src	2005-10-05 11:47:09 UTC (rev 415)
+@@ -11,17 +11,85 @@
+ use util;
+ use cfgfile;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;:npcutils:NPCBackpacks&quot;;
+ include &quot;include/noto&quot;;
++include &quot;:containers:vendorUtil&quot;;
++include &quot;:death:death&quot;;
++include &quot;:mounts:mounts&quot;;
+ 
+-var cfg := ReadConfigFile(&quot;npcdesc&quot;);
+-
+-
+ program core_npcDeath(params)
+ 	var corpse := params[1];
+ 	
++	var template := GetObjProperty(corpse, &quot;npctemplate&quot;); // Set by the core.
++	var npc_cfg := NPC_GetNPCConfig(template);
++	var death_script := npc_cfg.DeathScript;
++	
++	if ( death_script )
++		params.Append(npc_cfg);
++		var result := Start_Script(death_script, params);
++		if ( result.errortext )
++			PrintTextAbove(corpse, &quot;Error::Death Script -&quot;+result.errortext);
++			SysLog(&quot;Error::Death Script Tmplt:[&quot;+template+&quot;] Desc:[&quot;+corpse.desc+&quot;] Ser:[&quot;+Hex(corpse.serial)+&quot;] - &quot;+result.errortext);
++		endif
++	endif
++		
++	DP_PlayDeathSound(corpse);
++	CPV_DeleteContainers(corpse);
++	
++	if ( GuardKillCheck(corpse) )
++		return 1;
++	elseif ( NoCorpseCheck(corpse, npc_cfg) )
++		return 1;
++	else
++		MP_DeathUnmount(corpse);
++	endif
++endprogram
++
++function GuardKillCheck(corpse)
++	if ( GetObjProperty(corpse, &quot;GuardKill&quot;) );
++		// Nothing
++	elseif ( GetObjProperty(corpse, &quot;guardkill&quot;) ); 
++		// Nothing - Old CProp
++	else
++		return 0;
++	endif
++	
++	// No corpse. Don't drop backpack contents.
++	//PrintTextAbove(corpse, &quot;*guardkilling*&quot;);
++	foreach item in (EnumerateItemsInContainer(corpse))
++		if ( item.container == corpse )
++			DestroyItem(item);
++		endif
++		sleepms(2);
++	endforeach
++	DestroyItem(corpse);
++	
++	return 1;
++endfunction
++
++function NoCorpseCheck(corpse, npc_cfg)
++	if ( npc_cfg.NoCorpse );
++		// Nothing
++	elseif ( GetObjProperty(corpse, &quot;NoCorpse&quot;) );
++		// Nothing
++	elseif ( GetObjProperty(corpse, &quot;summoned&quot;) );
++		// Nothing;
++	else
++		return 0;
++	endif
++	
++	// No corpse. Place backpack contents where the corpse is.
++	foreach item in (EnumerateItemsInContainer(corpse))
++		if ( item.container == corpse )
++			MoveItemToLocation(item, corpse.x, corpse.y, corpse.z, MOVEITEM_FORCELOCATION);
++		endif
++		sleepms(2);
++	endforeach
++	DestroyItem(corpse);
++	
++	return 1;
++endfunction
++
++/*	
+ 	// if he had things to restock, destroy them, he's dead now.
+ 	if (GetObjProperty(corpse, &quot;restockserial&quot;))
+ 		var stocklist := SystemFindObjectBySerial(CInt(GetObjProperty(corpse, &quot;restockserial&quot;)));
+@@ -163,75 +231,6 @@
+ 	return;
+ endprogram
+ 
+-
+-function dismount(corpse)
+-	var mount := 0;
+-	GetEquipmentByLayer( corpse, 25 );
+-	foreach item in EnumerateItemsInContainer(corpse)
+-		if (item.objtype == 0xf021)
+-			mount := item;
+-			break;
+-		endif
+-	endforeach
+-	if (!mount)
+-		return;
+-	endif
+-	var critter := &quot;&quot;;
+-	case (mount.graphic)
+-	0x3ea2: critter := &quot;horse&quot;;
+-	0x3e9f: critter := &quot;horse2&quot;;
+-	0x3ea0: critter := &quot;horse3&quot;;
+-	0x3ea1: critter := &quot;horse4&quot;;
+-	0x3ea6:	critter := &quot;llama&quot;;
+-	0x3ea3:	critter := &quot;desertostard&quot;;
+-	0x3ea4:	critter := &quot;frenziedostard&quot;;
+-	0x3ea5:	critter := &quot;forestostard&quot;;
+-	endcase
+-	if (mount.color == 1109)
+-		critter := &quot;nightmare&quot;;
+-	endif
+-	if (!GetObjProperty(corpse,&quot;doppelganger&quot;))
+-		var animal := CreateNpcFromTemplate(critter, corpse.x, corpse.y, corpse.z,0, corpse.realm);
+-		animal.color := mount.color;
+-	endif
+-	DestroyItem(mount);
+-
+-	return;
+-endfunction
+-
+-
+-function dismountme(who, corpse)
+-	var mount := GetEquipmentByLayer(who, 25 );
+-	var clone := GetObjProperty(corpse,&quot;npctemplate&quot;);
+-	var newcorpse := CreateNpcFromTemplate(clone, corpse.x, corpse.y, corpse.z, 0, corpse.realm);
+-	var serial := newcorpse.serial;
+-	SetObjProperty(newcorpse,&quot;myserial&quot;, serial);
+-	newcorpse.color := corpse.color;
+-	newcorpse.facing := who.facing;
+-	MoveCharacterToLocation(newcorpse, who.x, who.y, who.z, MOVECHAR_FORCELOCATION);
+-	var x := newcorpse.x;
+-	var y := newcorpse.y;
+-	var z := newcorpse.z;
+-	newcorpse.facing := who.facing;
+-	ApplyRawDamage(newcorpse, GetHp(newcorpse)+3);
+-	var contain;
+-	foreach cpse in ListItemsAtLocation(x, y, z, who.realm );
+-		if (CInt(GetObjProperty(cpse,&quot;myserial&quot;)) == serial)
+-			contain := cpse;
+-			break;
+-		endif
+-	endforeach
+-	contain.name := corpse.name;
+-	foreach item in ListRootItemsInContainer(corpse)
+-		MoveItemToContainer(item, contain);
+-	endforeach
+-	DestroyItem(corpse);
+-	DestroyItem(mount);
+-
+-	return;
+-endfunction
+-
+-
+ function ListRootItemsInContainer(container)
+ 	var ret := { };
+ 	foreach item in EnumerateItemsInContainer(container)
+@@ -242,3 +241,4 @@
+ 
+ 	return ret;
+ endfunction
++*/
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000392.html">[Poldistro-svn] r414 - trunk/096/pkg/items/containers/include
+</A></li>
+	<LI>Next message: <A HREF="000394.html">[Poldistro-svn] r416 - in trunk/096/pkg: skills/musicianship skills/musicianship/config skills/musicianship/include systems/attributes systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#393">[ date ]</a>
+              <a href="thread.html#393">[ thread ]</a>
+              <a href="subject.html#393">[ subject ]</a>
+              <a href="author.html#393">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

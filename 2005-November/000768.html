@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r794 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r794%20-%20trunk/096/scripts/include&In-Reply-To=%3C200511011857.jA1Ivqep012575%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000767.html">
+   <LINK REL="Next"  HREF="000769.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r794 - trunk/096/scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r794%20-%20trunk/096/scripts/include&In-Reply-To=%3C200511011857.jA1Ivqep012575%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r794 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 19:57:52 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000767.html">[Poldistro-svn] r793 - trunk/096/pkg/items/runebook
+</A></li>
+        <LI>Next message: <A HREF="000769.html">[Poldistro-svn] r795 - trunk/096/pkg/items
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#768">[ date ]</a>
+              <a href="thread.html#768">[ thread ]</a>
+              <a href="subject.html#768">[ subject ]</a>
+              <a href="author.html#768">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 19:57:40 +0100 (Tue, 01 Nov 2005)
+New Revision: 794
+
+Modified:
+   trunk/096/scripts/include/spellRestrictions.inc
+Log:
+Im 99% sure this is broken with the new attributes system.
+
+
+Modified: trunk/096/scripts/include/spellRestrictions.inc
+===================================================================
+--- trunk/096/scripts/include/spellRestrictions.inc	2005-11-01 18:56:44 UTC (rev 793)
++++ trunk/096/scripts/include/spellRestrictions.inc	2005-11-01 18:57:40 UTC (rev 794)
+@@ -4,7 +4,6 @@
+ use util;
+ 
+ include &quot;include/fields&quot;;
+-include &quot;include/attributes&quot;;
+ include &quot;include/client&quot;;
+ include &quot;include/tileEffects&quot;;
+ include &quot;include/sound&quot;;
+@@ -138,7 +137,7 @@
+     endif
+   endif
+   var points := getpoints(circle, spellscroll, SKILLID_MAGERY);
+-  AwardRawSkillPoints(caster, SKILLID_MAGERY, points);
++  //AwardRawSkillPoints(caster, SKILLID_MAGERY, points);
+   var newparms := {};
+   newparms[1] := caster;
+   newparms[2] := cast_on;
+@@ -241,9 +240,9 @@
+ 	// called by: most spells
+ 	// returns: amount of damage not resisted?
+ 
+-        var magery := CInt(GetEffectiveSkill(caster, SKILLID_MAGERY));
+-        var evalint := CInt(GetEffectiveSkill(caster, SKILLID_EVALINT));
+-        var resist := CInt(GetEffectiveSkill(cast_on, SKILLID_MAGICRESISTANCE));
++        var magery := CInt(AP_GetSkill(caster, SKILLID_MAGERY));
++        var evalint := CInt(AP_GetSkill(caster, SKILLID_EVALINT));
++        var resist := CInt(AP_GetSkill(cast_on, SKILLID_MAGICRESISTANCE));
+         
+         // chk1 relates to the resist ability.
+         var chk1 := (resist / 5);
+@@ -293,7 +292,7 @@
+ function CalcSpellDamage(circle, caster, cast_on)
+   var die_string := circle+&quot;d8&quot;;
+   var dmg := RandomDiceRoll(die_string);
+-  dmg := dmg + CInt(GetEffectiveSkill(caster, SKILLID_MAGERY)/10);
++  dmg := dmg + CInt(AP_GetSkill(caster, SKILLID_MAGERY)/10);
+   if(dmg &gt; (circle * 8))
+     dmg := circle * 8;
+   endif
+@@ -316,7 +315,7 @@
+   var val := SplitWords(spellcfg[id].val);
+   var times := CInt(val[1]);
+   var slp   := CInt(val[2]);
+-  var mhp := GetHp(me);
++  var mhp := AP_GetVital(me, &quot;Hits&quot;);
+   var umana, diff;
+   var n := 1;
+   if(scroll == 0)
+@@ -348,11 +347,11 @@
+   else
+     return 0;
+   endif
+-  if((mhp &gt; GetHp(me)) &amp;&amp; ((RandomInt(99)+1) &gt; (GetEffectiveSkill(me, SKILLID_WRESTLING)/2)))
++  if((mhp &gt; AP_GetVital(me, &quot;Hits&quot;)) &amp;&amp; ((RandomInt(99)+1) &gt; (AP_GetSkill(me, SKILLID_WRESTLING)/2)))
+     SendSysMessage(me,&quot;You lost your concentration.&quot;, 3, 40);
+     return 0;
+   endif
+-  if (umana &gt; GetMana(me))
++  if (umana &gt; AP_GetVital(me, &quot;Mana&quot;))
+     me.frozen :=1;
+     PerformAction(me,ANIM_CAST_DIR);
+     sleepms(1200);
+@@ -365,7 +364,7 @@
+   if(can_cast(me))
+     me.frozen :=1;
+     for (n:=1; n&lt;=times; n:=n+1)
+-      if((mhp &gt; GetHp(me)) &amp;&amp; ((RandomInt(99)+1) &gt; (GetEffectiveSkill(me, SKILLID_WRESTLING)/2)))
++      if((mhp &gt; AP_GetVital(me, &quot;Hits&quot;)) &amp;&amp; ((RandomInt(99)+1) &gt; (AP_GetSkill(me, SKILLID_WRESTLING)/2)))
+         SendSysMessage(me,&quot;You lost your concentration.&quot;, 3, 40);
+         PlaySoundEffect(me,0x005d);
+         PlayObjectCenteredEffect(me, 0x3735,0x0a, 0x1e);
+@@ -380,7 +379,7 @@
+     endif
+     me.frozen :=0;
+     if (CheckSkill(me,SKILLID_MAGERY, diff, 0))
+-      if((mhp &gt; GetHp(me)) &amp;&amp; ((RandomInt(99)+1) &gt; (GetEffectiveSkill(me, SKILLID_WRESTLING)/2)))
++      if((mhp &gt; AP_GetVital(me, &quot;Hits&quot;)) &amp;&amp; ((RandomInt(99)+1) &gt; (AP_GetSkill(me, SKILLID_WRESTLING)/2)))
+         SendSysMessage(me,&quot;You lost your concentration.&quot;, 3, 40);
+         return 0;
+       endif
+@@ -430,9 +429,9 @@
+     7: umana := 40;
+     8: umana := 50;
+   endcase
+-  var mana := GetMana(who);
++  var mana := AP_GetVital(who, &quot;Mana&quot;);
+   if(mana &gt;= umana)
+-    SetMana(who, Cint(mana - umana));
++    AP_SetVital(who, &quot;Mana&quot;, Cint(mana - umana));
+     return 1;
+   else
+     SendSysMessage(who,&quot;You do not have enough mana to cast that.&quot;, 3, 40);
+@@ -453,7 +452,7 @@
+     7:   diff := 85;     points := 190;    umana :=  40;
+     8:   diff := 95;     points := 210;    umana :=  50;
+   endcase
+-  if(umana &gt; GetMana(me))
++  if(umana &gt; AP_GetVital(me, &quot;Mana&quot;))
+     return 0;
+   endif
+   if(can_cast(me))
+@@ -491,7 +490,7 @@
+       8:   points := 180; diff := 100;
+     endcase
+   endif
+-  var skill := GetEffectiveSkill(caster, skillid);
++  var skill := AP_GetSkill(caster, skillid);
+   if(skill &gt; (diff - 20))
+     if((skill - diff) &lt;= 5)
+       points := points;
+@@ -521,7 +520,7 @@
+     7:   points := 160; diff := 86;
+     8:   points := 180; diff := 100;
+   endcase
+-  var skill := GetEffectiveSkill(victim, skillid);
++  var skill := AP_GetSkill(victim, skillid);
+   if(skill &gt; (diff - 20))
+     if((skill - diff) &lt;= 5)
+       points := points;
+@@ -583,9 +582,9 @@
+     9: umana :=  75;
+    10: umana := 100;
+   endcase
+-  var mana := GetMana(who);
++  var mana := AP_GetVital(who, &quot;Mana&quot;);
+   if(mana &gt;= umana)
+-    var ms := SetMana(who, Cint(mana - umana));
++    var ms := AP_SetVital(who, &quot;Mana&quot;, Cint(mana - umana));
+     return 1;
+   else
+     SendSysMessage(who,&quot;You do not have enough mana to cast that.&quot;, 3, 40);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000767.html">[Poldistro-svn] r793 - trunk/096/pkg/items/runebook
+</A></li>
+	<LI>Next message: <A HREF="000769.html">[Poldistro-svn] r795 - trunk/096/pkg/items
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#768">[ date ]</a>
+              <a href="thread.html#768">[ thread ]</a>
+              <a href="subject.html#768">[ subject ]</a>
+              <a href="author.html#768">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,762 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r228 - in trunk/096/pkg/systems/attributes: commands/test config hooks include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r228%20-%20in%20trunk/096/pkg/systems/attributes%3A%20commands/test%20config%20hooks%20include&In-Reply-To=%3C200509250000.j8P002V7000376%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000209.html">
+   <LINK REL="Next"  HREF="000211.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r228 - in trunk/096/pkg/systems/attributes: commands/test config hooks include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r228%20-%20in%20trunk/096/pkg/systems/attributes%3A%20commands/test%20config%20hooks%20include&In-Reply-To=%3C200509250000.j8P002V7000376%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r228 - in trunk/096/pkg/systems/attributes: commands/test config hooks include">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep 25 02:00:02 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000209.html">[Poldistro-svn] r227 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000211.html">[Poldistro-svn] r229 - in trunk/096/pkg/systems/attributes: config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#210">[ date ]</a>
+              <a href="thread.html#210">[ thread ]</a>
+              <a href="subject.html#210">[ subject ]</a>
+              <a href="author.html#210">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-25 01:59:50 +0200 (Sun, 25 Sep 2005)
+New Revision: 228
+
+Modified:
+   trunk/096/pkg/systems/attributes/commands/test/attribconvert.src
+   trunk/096/pkg/systems/attributes/config/settings.cfg
+   trunk/096/pkg/systems/attributes/hooks/vitalInit.src
+   trunk/096/pkg/systems/attributes/include/attributeConstants.inc
+   trunk/096/pkg/systems/attributes/include/attributes.inc
+   trunk/096/pkg/systems/attributes/include/attributes_ex.inc
+   trunk/096/pkg/systems/attributes/include/regen.inc
+   trunk/096/pkg/systems/attributes/include/skills.inc
+   trunk/096/pkg/systems/attributes/include/stats.inc
+   trunk/096/pkg/systems/attributes/include/vitals.inc
+Log:
+Working on using settings.cfg  :-D
+Newbie friendly.. probably need to cache some stuff in a datafile for faster access.
+
+Modified: trunk/096/pkg/systems/attributes/commands/test/attribconvert.src
+===================================================================
+--- trunk/096/pkg/systems/attributes/commands/test/attribconvert.src	2005-09-24 23:48:12 UTC (rev 227)
++++ trunk/096/pkg/systems/attributes/commands/test/attribconvert.src	2005-09-24 23:59:50 UTC (rev 228)
+@@ -2,15 +2,15 @@
+ use os;
+ 
+ include &quot;:attributes:include/attributeConstants&quot;;
+-include &quot;:attributes:include/attributes_ex&quot;;
++include &quot;:attributes:include/AP_ex&quot;;
+ 
+ program command_AttribConvert(who, input)
+ 	if ( !input )
+ 		SendSysMessage(who, &quot;Error - no skillID or attribute name was sent.&quot;);
+ 		return;
+ 	elseif ( Len(input) &lt;= 2 )
+-		SendSysMessage(who, &quot;SkillID [&quot;+input+&quot;] points to attribute &quot;+attributes_IDToAttributeName(input));
++		SendSysMessage(who, &quot;SkillID [&quot;+input+&quot;] points to attribute &quot;+AP_IDToAttributeName(input));
+ 	else
+-		SendSysMessage(who, &quot;Attribute [&quot;+input+&quot;] points to skillID &quot;+attributes_AttributeNameToSkillID(input));
++		SendSysMessage(who, &quot;Attribute [&quot;+input+&quot;] points to skillID &quot;+AP_AttributeNameToSkillID(input));
+ 	endif
+ endprogram
+
+Modified: trunk/096/pkg/systems/attributes/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/config/settings.cfg	2005-09-24 23:48:12 UTC (rev 227)
++++ trunk/096/pkg/systems/attributes/config/settings.cfg	2005-09-24 23:59:50 UTC (rev 228)
+@@ -1,14 +1,28 @@
+-Elem Vitals
++Elem Regen
+ {
+ 	# Base stat regenerating rates in points per minute.
+-	HitsRegenRate       20
+-	ManaRegenRate       10
+-	StamRegenRate       25	
++	Hits		20
++	Mana		10
++	Stamina		25	
+ }
+ 
+ Elem Skills
+ {
+-	AlwaysGainUntil	10.0	// Always award a part of the points when the base skill is lower than this.
+-	MinChance	0	// Min % of success.
+-	MaxChance	100	// Max % of success.
+-}
+\ No newline at end of file
++	FreeGainUntil	10.0	// Always award a part of the points when the base skill is lower than this.
++	MinChance		0		// Min % of success.
++	MaxChance		100		// Max % of success.
++	
++	// Maximum value of all skills combined.
++	TotalCap		7000.0
++}
++
++Elem Stats
++{
++	// Maximum value of all stats combined.
++	TotalCap			225.0
++	
++	// Individual stat caps - highest they are allowed to go.
++	Strength		100.0
++	Dexterity		100.0
++	Intelligence	100.0
++}
+
+Modified: trunk/096/pkg/systems/attributes/hooks/vitalInit.src
+===================================================================
+--- trunk/096/pkg/systems/attributes/hooks/vitalInit.src	2005-09-24 23:48:12 UTC (rev 227)
++++ trunk/096/pkg/systems/attributes/hooks/vitalInit.src	2005-09-24 23:59:50 UTC (rev 228)
+@@ -11,6 +11,7 @@
+ use util;
+ 
+ include &quot;:attributes:include/attributes&quot;;
++include &quot;:attributes:include/settings&quot;;
+ include &quot;:ai_brain:include/npcUtil&quot;;
+ include &quot;:config:include/config&quot;;
+ 
+@@ -19,13 +20,13 @@
+ 	return 1;
+ endprogram
+ 
+-
+-
+ // *****
+ // Hit Point Functions
+ // *****
+ exported function GetHitsRegenRate(mobile)
+-	return 1200 + attributes_GetVitalRegenRateMod(mobile, &quot;hits&quot;);
++	var base_regen := CInt(AP_GetSettingsCfgElem(&quot;Regen&quot;).Hits) * 100;
++
++	return base_regen + AP_GetVitalRegenRateMod(mobile, &quot;hits&quot;);
+ endfunction
+ 
+ exported function GetHitsMaximumValue(mobile)
+@@ -41,7 +42,9 @@
+ // Mana Functions
+ // *****
+ exported function GetManaRegenRate(mobile)
+-	return 1200 + attributes_GetVitalRegenRateMod(mobile, &quot;mana&quot;);
++	var base_regen := CInt(AP_GetSettingsCfgElem(&quot;Regen&quot;).Mana) * 100;
++	
++	return base_regen + AP_GetVitalRegenRateMod(mobile, &quot;mana&quot;);
+ endfunction
+ 
+ exported function GetManaMaximumValue(mobile)
+@@ -57,7 +60,9 @@
+ // Stamina Functions
+ // *****
+ exported function GetStaminaRegenRate(mobile)
+-	return 1200 + attributes_GetVitalRegenRateMod(mobile, &quot;stamina&quot;);
++	var base_regen := CInt(AP_GetSettingsCfgElem(&quot;Regen&quot;).Stamina) * 100;
++	
++	return base_regen + AP_GetVitalRegenRateMod(mobile, &quot;stamina&quot;);
+ endfunction
+ 
+ exported function GetStaminaMaximumValue(mobile)
+@@ -76,7 +81,7 @@
+ 	if ( !mobile.npctemplate )
+ 		return 0;
+ 	endif
+-	
++
+ 	var value := 0;
+ 
+ 	// CProp used if NPC had dice settings - so they dont change over and over.
+
+Modified: trunk/096/pkg/systems/attributes/include/attributeConstants.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributeConstants.inc	2005-09-24 23:48:12 UTC (rev 227)
++++ trunk/096/pkg/systems/attributes/include/attributeConstants.inc	2005-09-24 23:59:50 UTC (rev 228)
+@@ -27,7 +27,7 @@
+ 	ATTRIBUTE_PARRY                     := &quot;Parry&quot;,
+ 	ATTRIBUTE_BEGGING                   := &quot;Begging&quot;,
+ 	ATTRIBUTE_BLACKSMITHY               := &quot;Blacksmithy&quot;,
+-	ATTRIBUTE_BOWCRattributes_T_FLETCHING        := &quot;Bowcrattributes_tFletching&quot;,
++	ATTRIBUTE_BOWCRAP_T_FLETCHING        := &quot;BowcrAP_tFletching&quot;,
+ 	ATTRIBUTE_PEACEMAKING               := &quot;Peacemaking&quot;,
+ 	ATTRIBUTE_CAMPING                   := &quot;Camping&quot;,
+ 	ATTRIBUTE_CARPENTRY                 := &quot;Carpentry&quot;,
+
+Modified: trunk/096/pkg/systems/attributes/include/attributes.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-24 23:48:12 UTC (rev 227)
++++ trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-24 23:59:50 UTC (rev 228)
+@@ -18,7 +18,7 @@
+ include &quot;:attributes:include/vitals&quot;;
+ 
+ /*
+- * attributes_GetAttributeCfgElem(attribute)
++ * AP_GetAttributeCfgElem(attribute)
+  *
+  * Purpose
+  * Retrieves a config elem for an attribute in attributes.cfg
+@@ -30,22 +30,22 @@
+  * Returns a config file elem.
+  *
+  */
+-function attributes_GetAttributeCfgElem(attribute)
++function AP_GetAttributeCfgElem(attribute)
+ 	var cfg := ReadConfigFile(&quot;:attributes:attributes&quot;);
+ 	if ( cfg.errortext )
+-		SysLog(&quot;Error::attributes_GetAttributeCfgElem() - Unable to open attributes.cfg -&gt;&quot;+cfg.errortext);
++		SysLog(&quot;Error::AP_GetAttributeCfgElem() - Unable to open attributes.cfg -&gt;&quot;+cfg.errortext);
+ 	endif
+ 	
+ 	var cfg_elem := cfg[attribute];
+ 	if ( cfg_elem.errortext )
+-		SysLog(&quot;Error::attributes_GetAttributeCfgElem() - unable to find cfg elem [&quot;+attribute+&quot;] -&gt;&quot;+cfg_elem.errortext);
++		SysLog(&quot;Error::AP_GetAttributeCfgElem() - unable to find cfg elem [&quot;+attribute+&quot;] -&gt;&quot;+cfg_elem.errortext);
+ 	endif
+ 	
+ 	return cfg_elem;
+ endfunction
+ 
+ /*
+- * attributes_ListAttributesByType(type)
++ * AP_ListAttributesByType(type)
+  *
+  * Purpose
+  * Gets the name of all attributes of a certain type.
+@@ -57,7 +57,7 @@
+  * Returns an array
+  *
+  */
+-function attributes_ListAttributesByType(type)
++function AP_ListAttributesByType(type)
+ 	type := Lower(type);
+ 	
+ 	var list := array;
+
+Modified: trunk/096/pkg/systems/attributes/include/attributes_ex.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributes_ex.inc	2005-09-24 23:48:12 UTC (rev 227)
++++ trunk/096/pkg/systems/attributes/include/attributes_ex.inc	2005-09-24 23:59:50 UTC (rev 228)
+@@ -1,6 +1,6 @@
+ /*===============================================================
+ * Current Version
+-* ATTRIBUTES_EX.INC - v1.0
++* AP_EX.INC - v1.0
+ * Updated 9/20/2005 11:42AM
+ *
+ * -- Revision v1.0 --
+@@ -11,7 +11,7 @@
+ include &quot;:attributes:include/attributes&quot;;
+ 
+ /*
+- * attributes_SkillIDToAttributeName(skill_number)
++ * AP_SkillIDToAttributeName(skill_number)
+  *
+  * Purpose
+  * Gets the name of the attribute that is associated with a skill number.
+@@ -24,22 +24,22 @@
+  * Returns a string.
+  *
+  */
+-function attributes_IDToAttributeName(skill_number)
++function AP_IDToAttributeName(skill_number)
+ 	var skills_cfg := ReadConfigFile(&quot;:attributes:uoskills&quot;);
+ 	if ( skills_cfg.errortext )
+-		SysLog(&quot;Error::attributes_IDToAttributeName() - Unable to open :attributes:uoskills.cfg -&gt;&quot;+skills_cfg.errortext);
++		SysLog(&quot;Error::AP_IDToAttributeName() - Unable to open :attributes:uoskills.cfg -&gt;&quot;+skills_cfg.errortext);
+ 	endif
+ 	
+ 	var cfg_elem := skills_cfg[skill_number];
+ 	if ( cfg_elem.errortext )
+-		SysLog(&quot;Error::attributes_IDToAttributeName() - unable to find cfg elem [&quot;+skill_number+&quot;] -&gt;&quot;+cfg_elem.errortext);
++		SysLog(&quot;Error::AP_IDToAttributeName() - unable to find cfg elem [&quot;+skill_number+&quot;] -&gt;&quot;+cfg_elem.errortext);
+ 	endif
+ 	
+ 	return cfg_elem.Attribute;
+ endfunction
+ 
+ /*
+- * attributes_AttributeNameToSkillID(attribute_name)
++ * AP_AttributeNameToSkillID(attribute_name)
+  *
+  * Purpose
+  * Gets the skill number (ID) that an attribute name is associated with.
+@@ -52,8 +52,8 @@
+  * Returns an integer.
+  *
+  */
+-function attributes_AttributeNameToSkillID(attribute_name)
+-	var cfg_elem := attributes_GetAttributeCfgElem(attribute_name);
++function AP_AttributeNameToSkillID(attribute_name)
++	var cfg_elem := AP_GetAttributeCfgElem(attribute_name);
+ 	
+ 	return cfg_elem.SkillId;
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/attributes/include/regen.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/regen.inc	2005-09-24 23:48:12 UTC (rev 227)
++++ trunk/096/pkg/systems/attributes/include/regen.inc	2005-09-24 23:59:50 UTC (rev 228)
+@@ -11,11 +11,11 @@
+ use uo;
+ 
+ /*
+- * attributes_SetVitalRegenRate(mobile, vital_name, number)
++ * AP_SetVitalRegenRate(mobile, vital_name, number)
+  *
+  * Purpose
+  * Sets the regeneration rate modifier for an attribute.
+- * Base value is 1200 (unless you changed it)
++ * Base values are in settings.cfg (multiply by 100)
+  *
+  * Parameters
+  * mobile:	Mobile reference to set the modifier on.
+@@ -26,11 +26,11 @@
+  * Returns 1
+  *
+  */
+-function attributes_SetVitalRegenRateMod(mobile, vital_name, number)
++function AP_SetVitalRegenRateMod(mobile, vital_name, number)
+ 	vital_name := Lower(vital_name);
+ 	number := CInt(number);
+ 	
+-	var regen_prop := attributes_LoadVitalRegenRateProp(mobile);
++	var regen_prop := AP_LoadVitalRegenRateProp(mobile);
+ 		
+ 	if ( number == 0 )
+ 		// Remove keys with no modifier
+@@ -39,12 +39,12 @@
+ 		regen_prop[vital_name] := CInt(number);
+ 	endif
+ 	
+-	attributes_SaveVitalRegenRateProp(mobile, regen_prop);
++	AP_SaveVitalRegenRateProp(mobile, regen_prop);
+ 	return 1;
+ endfunction
+ 
+ /*
+- * attributes_GetVitalRegenRateMod(mobile, vital_name)
++ * AP_GetVitalRegenRateMod(mobile, vital_name)
+  *
+  * Purpose
+  * Gets the regeneration rate modifier for a vital.
+@@ -57,15 +57,15 @@
+  * Returns an integer.
+  *
+  */
+-function attributes_GetVitalRegenRateMod(mobile, vital_name)
++function AP_GetVitalRegenRateMod(mobile, vital_name)
+ 	vital_name := Lower(vital_name);
+ 	
+-	var regen_prop := attributes_LoadVitalRegenRateProp(mobile);
++	var regen_prop := AP_LoadVitalRegenRateProp(mobile);
+ 	return CInt(regen_prop[vital_name]);
+ endfunction
+ 
+ /*
+- * attributes_LoadVitalRegenRateProp(mobile)
++ * AP_LoadVitalRegenRateProp(mobile)
+  *
+  * Purpose
+  * Loads the dictionary of regeneration settings from a mobile.
+@@ -77,7 +77,7 @@
+  * Returns a dictionary
+  *
+  */
+-function attributes_LoadVitalRegenRateProp(mobile)
++function AP_LoadVitalRegenRateProp(mobile)
+ 	var regen_prop := GetObjProperty(mobile, &quot;%RegenRates%&quot;);
+ 	if ( Lower(TypeOf(regen_prop)) != &quot;dictionary&quot; )
+ 		regen_prop := dictionary;
+@@ -87,7 +87,7 @@
+ endfunction
+ 
+ /*
+- * attributes_SaveVitalRegenRateProp(mobile, regen_prop)
++ * AP_SaveVitalRegenRateProp(mobile, regen_prop)
+  *
+  * Purpose
+  * Saves the dictionary of regeneration settings on a mobile.
+@@ -100,7 +100,7 @@
+  * Returns the result of saving the property.
+  *
+  */
+-function attributes_SaveVitalRegenRateProp(mobile, byref regen_prop)
++function AP_SaveVitalRegenRateProp(mobile, byref regen_prop)
+ 	if ( Lower(TypeOf(regen_prop)) != &quot;dictionary&quot; )
+ 		return error{&quot;errortext&quot;:=&quot;Regen prop must be a dictionary.&quot;};
+ 	endif
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-24 23:48:12 UTC (rev 227)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-24 23:59:50 UTC (rev 228)
+@@ -11,7 +11,7 @@
+ use uo;
+ 
+ /*
+- * attributes_GetSkill(mobile, skill_name)
++ * AP_GetSkill(mobile, skill_name)
+  *
+  * Purpose
+  * Retrieves the base value of the skill plus its mod value.
+@@ -24,12 +24,12 @@
+  * Returns an integer.
+  *
+  */
+-function attributes_GetSkill(who, skill_name)
+-	return attributes_GetTrueSkill(who, skill_name)+attributes_GetSkillMod(who, skill_name);
++function AP_GetSkill(who, skill_name)
++	return AP_GetTrueSkill(who, skill_name)+AP_GetSkillMod(who, skill_name);
+ endfunction
+ 
+ /*
+- * attributes_GetTrueSkill(mobile, skill_name)
++ * AP_GetTrueSkill(mobile, skill_name)
+  *
+  * Purpose
+  * Retrieves the base value of the skill and turns it into a usable number.
+@@ -42,12 +42,12 @@
+  * Returns a double.
+  *
+  */
+-function attributes_GetTrueSkill(who, skill_name)
++function AP_GetTrueSkill(who, skill_name)
+ 	return CDbl(GetAttributeBaseValue(who, skill_name)) / 10.0;
+ endfunction
+ 
+ /*
+- * attributes_GetSkillMod(mobile, skill_name)
++ * AP_GetSkillMod(mobile, skill_name)
+  *
+  * Purpose
+  * Retrieves the base value of the skill mod and turns it into a usable number.
+@@ -60,16 +60,16 @@
+  * Returns a double.
+  *
+  */
+-function attributes_GetSkillMod(who, skill_name)
++function AP_GetSkillMod(who, skill_name)
+ 	return CDbl(GetAttributeTemporaryMod(who, skill_name)) / 10.0;
+ endfunction
+ 
+ /*
+- * attributes_SetTrueSkill(mobile, skill_name, points)
++ * AP_SetTrueSkill(mobile, skill_name, points)
+  *
+  * Purpose
+  * Sets the value of the skill.
+- * Example: attributes_SetTrueSkill(mobile, &quot;strength&quot;, 44.5)
++ * Example: AP_SetTrueSkill(mobile, &quot;strength&quot;, 44.5)
+  *
+  * Parameters
+  * mobile:	Mobile reference to set the points on.
+@@ -80,16 +80,16 @@
+  * Returns a double.
+  *
+  */
+-function attributes_SetTrueSkill(mobile, skill_name, points)
++function AP_SetTrueSkill(mobile, skill_name, points)
+ 	SetAttributeBaseValue(mobile, skill_name, CInt(CDbl(points) * 10.0));
+ endfunction
+ 
+ /*
+- * attributes_SetSkillMod(mobile, skill_name, points)
++ * AP_SetSkillMod(mobile, skill_name, points)
+  *
+  * Purpose
+  * Sets the modifier value for the skill.
+- * Example: attributes_SetSkillMod(mobile, &quot;strength&quot;, -15.3)
++ * Example: AP_SetSkillMod(mobile, &quot;strength&quot;, -15.3)
+  *
+  * Parameters
+  * mobile:	Mobile reference to set the modifier points on.
+@@ -100,12 +100,12 @@
+  * Returns a double.
+  *
+  */
+-function attributes_SetSkillMod(mobile, skill_name, points)
++function AP_SetSkillMod(mobile, skill_name, points)
+ 	SetAttributeTemporaryMod(mobile, skill_name, CInt(CDbl(points) * 10.0));
+ endfunction
+ 
+ /*
+- * attributes_SetSkillScript(attribute_name)
++ * AP_SetSkillScript(attribute_name)
+  *
+  * Purpose
+  * Gets the script that a skill uses.
+@@ -117,13 +117,13 @@
+  * Returns a string.
+  *
+  */
+-function attributes_GetSkillScript(attribute_name)
+-	var cfg := attributes_GetAttributeCfgElem(attribute_name);
++function AP_GetSkillScript(attribute_name)
++	var cfg := AP_GetAttributeCfgElem(attribute_name);
+ 	return cfg.Script;
+ endfunction
+ 
+ /*
+- * attributes_GetSkillStats(attribute_name)
++ * AP_GetSkillStats(attribute_name)
+  *
+  * Purpose
+  * Retrieves a dictionary from the attribute's config elem
+@@ -137,8 +137,8 @@
+  * Returns a dictionary.
+  *
+  */
+-function attributes_GetSkillStats(attribute_name)
+-	var cfg_elem := attributes_GetAttributeCfgElem(attribute_name);
++function AP_GetSkillStats(attribute_name)
++	var cfg_elem := AP_GetAttributeCfgElem(attribute_name);
+ 	var stat_entries := GetConfigStringDictionary(cfg_elem, &quot;StatCheck&quot;);
+ 	foreach textline in (stat_entries)
+ 		textline := SplitWords(textline);
+
+Modified: trunk/096/pkg/systems/attributes/include/stats.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/stats.inc	2005-09-24 23:48:12 UTC (rev 227)
++++ trunk/096/pkg/systems/attributes/include/stats.inc	2005-09-24 23:59:50 UTC (rev 228)
+@@ -11,7 +11,7 @@
+ use uo;
+ 
+ /*
+- * attributes_GetStat(mobile, stat_name)
++ * AP_GetStat(mobile, stat_name)
+  *
+  * Purpose
+  * Retrieves the base value of the stat plus its mod value.
+@@ -24,12 +24,12 @@
+  * Returns an integer.
+  *
+  */
+-function attributes_GetStat(who, stat_name)
+-	return attributes_GetTrueStat(who, stat_name)+attributes_GetStatMod(who, stat_name);
++function AP_GetStat(who, stat_name)
++	return AP_GetTrueStat(who, stat_name)+AP_GetStatMod(who, stat_name);
+ endfunction
+ 
+ /*
+- * attributes_GetTrueStat(mobile, stat_name)
++ * AP_GetTrueStat(mobile, stat_name)
+  *
+  * Purpose
+  * Retrieves the base value of the stat and turns it into a usable number.
+@@ -42,12 +42,12 @@
+  * Returns a double.
+  *
+  */
+-function attributes_GetTrueStat(who, stat_name)
++function AP_GetTrueStat(who, stat_name)
+ 	return CDbl(GetAttributeBaseValue(who, stat_name)) / 10.0;
+ endfunction
+ 
+ /*
+- * attributes_GetStatMod(mobile, stat_name)
++ * AP_GetStatMod(mobile, stat_name)
+  *
+  * Purpose
+  * Retrieves the base value of the stat mod and turns it into a usable number.
+@@ -60,16 +60,16 @@
+  * Returns a double.
+  *
+  */
+-function attributes_GetStatMod(who, stat_name)
++function AP_GetStatMod(who, stat_name)
+ 	return CDbl(GetAttributeTemporaryMod(who, stat_name)) / 10.0;
+ endfunction
+ 
+ /*
+- * attributes_SetTrueStat(mobile, stat_name, points)
++ * AP_SetTrueStat(mobile, stat_name, points)
+  *
+  * Purpose
+  * Sets the value of the stat.
+- * Example: attributes_SetTrueStat(mobile, &quot;strength&quot;, 44.5)
++ * Example: AP_SetTrueStat(mobile, &quot;strength&quot;, 44.5)
+  *
+  * Parameters
+  * mobile:	Mobile reference to set the points on.
+@@ -80,16 +80,16 @@
+  * Returns a double.
+  *
+  */
+-function attributes_SetTrueStat(mobile, stat_name, points)
++function AP_SetTrueStat(mobile, stat_name, points)
+ 	SetAttributeBaseValue(mobile, stat_name, CInt(CDbl(points) * 10.0));
+ endfunction
+ 
+ /*
+- * attributes_SetStatMod(mobile, stat_name, points)
++ * AP_SetStatMod(mobile, stat_name, points)
+  *
+  * Purpose
+  * Sets the modifier value for the stat.
+- * Example: attributes_SetStatMod(mobile, &quot;strength&quot;, -15.3)
++ * Example: AP_SetStatMod(mobile, &quot;strength&quot;, -15.3)
+  *
+  * Parameters
+  * mobile:	Mobile reference to set the modifier points on.
+@@ -100,6 +100,6 @@
+  * Returns a double.
+  *
+  */
+-function attributes_SetStatMod(mobile, stat_name, points)
++function AP_SetStatMod(mobile, stat_name, points)
+ 	SetAttributeTemporaryMod(mobile, stat_name, CInt(CDbl(points) * 10.0));
+ endfunction
+
+Modified: trunk/096/pkg/systems/attributes/include/vitals.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/vitals.inc	2005-09-24 23:48:12 UTC (rev 227)
++++ trunk/096/pkg/systems/attributes/include/vitals.inc	2005-09-24 23:59:50 UTC (rev 228)
+@@ -13,7 +13,7 @@
+ use cfgfile;
+ 
+ /*
+- * attributes_GetVitalCfgElem(vital)
++ * AP_GetVitalCfgElem(vital)
+  *
+  * Purpose
+  * Retrieves a config elem for an vital in vitals.cfg
+@@ -25,22 +25,22 @@
+  * Returns a config file elem.
+  *
+  */
+-function attributes_GetVitalCfgElem(vital)
++function AP_GetVitalCfgElem(vital)
+ 	var cfg := ReadConfigFile(&quot;:attributes:vitals&quot;);
+ 	if ( cfg.errortext )
+-		SysLog(&quot;Error::attributes_GetVitalCfgElem() - Unable to open vitals.cfg -&gt;&quot;+cfg.errortext);
++		SysLog(&quot;Error::AP_GetVitalCfgElem() - Unable to open vitals.cfg -&gt;&quot;+cfg.errortext);
+ 	endif
+ 	
+ 	var cfg_elem := cfg[vital];
+ 	if ( cfg_elem.errortext )
+-		SysLog(&quot;Error::attributes_GetVitalsCfgElem() - unable to find cfg elem [&quot;+vital+&quot;] -&gt;&quot;+cfg_elem.errortext);
++		SysLog(&quot;Error::AP_GetVitalsCfgElem() - unable to find cfg elem [&quot;+vital+&quot;] -&gt;&quot;+cfg_elem.errortext);
+ 	endif
+ 	
+ 	return cfg_elem;
+ endfunction
+ 
+ /*
+- * attributes_GetVital(mobile, vital_name)
++ * AP_GetVital(mobile, vital_name)
+  *
+  * Purpose
+  * Retrieves the number of vital points a mobile has.
+@@ -53,12 +53,12 @@
+  * Returns a double.
+  *
+  */
+-function attributes_GetVital(mobile, vital_name)
++function AP_GetVital(mobile, vital_name)
+ 	return (GetVital(mobile, vital_name) / 100);
+ endfunction
+ 
+ /*
+- * attributes_GetVital(mobile, vital_name)
++ * AP_GetVital(mobile, vital_name)
+  *
+  * Purpose
+  * Retrieves the maximum number of vital points a mobile can have.
+@@ -71,12 +71,12 @@
+  * Returns an integer.
+  *
+  */
+-function attributes_GetVitalMaximumValue(mobile, vital_name)
++function AP_GetVitalMaximumValue(mobile, vital_name)
+ 	return GetVitalMaximumValue(mobile, vital_name);
+ endfunction
+ 
+ /*
+- * attributes_GetVitalRegenRate(mobile, vital_name)
++ * AP_GetVitalRegenRate(mobile, vital_name)
+  *
+  * Purpose
+  * Retrieves the regen rate of a vital on a mobile.
+@@ -89,12 +89,12 @@
+  * Returns an integer.
+  *
+  */
+-function attributes_GetVitalRegenRate(mobile, vital_name)
++function AP_GetVitalRegenRate(mobile, vital_name)
+ 	return GetVitalRegenRate(mobile, vital_name);
+ endfunction
+ 
+ /*
+- * attributes_SetVital(mobile, vital_name, points)
++ * AP_SetVital(mobile, vital_name, points)
+  *
+  * Purpose
+  * Sets vital points on a mobile.
+@@ -108,12 +108,12 @@
+  * Returns result of the SetVital() core function.
+  *
+  */
+-function attributes_SetVital(mobile, vital_name, amount)
++function AP_SetVital(mobile, vital_name, amount)
+ 	return SetVital(mobile, vital_name, CInt(CDbl(amount)*100.0));
+ endfunction
+ 
+ /*
+- * attributes_RefreshVitals(mobile)
++ * AP_RefreshVitals(mobile)
+  *
+  * Purpose
+  * Sets all vitals on a mobile to their maximum values.
+@@ -125,10 +125,10 @@
+  * Returns 1
+  *
+  */
+-function attributes_RefreshVitals(mobile)
++function AP_RefreshVitals(mobile)
+ 	var vital_cfg := ReadConfigFile(&quot;:attributes:vitals&quot;);
+ 	foreach elem_name in GetConfigStringKeys(vital_cfg)
+-		attributes_SetVital(mobile, elem_name, attributes_GetVitalMaximumValue(mobile, elem_name));
++		AP_SetVital(mobile, elem_name, AP_GetVitalMaximumValue(mobile, elem_name));
+ 		sleepms(2);
+ 	endforeach
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000209.html">[Poldistro-svn] r227 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000211.html">[Poldistro-svn] r229 - in trunk/096/pkg/systems/attributes: config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#210">[ date ]</a>
+              <a href="thread.html#210">[ thread ]</a>
+              <a href="subject.html#210">[ subject ]</a>
+              <a href="author.html#210">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

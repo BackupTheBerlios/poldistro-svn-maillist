@@ -1,0 +1,685 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r389 - in trunk/096/pkg/mobiles/brainAI: . commands/gm commands/test complete complete/exampleNPC include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r389%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20commands/gm%20commands/test%20complete%20complete/exampleNPC%20include&In-Reply-To=%3C200510030105.j9315kUb005231%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000366.html">
+   <LINK REL="Next"  HREF="000368.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r389 - in trunk/096/pkg/mobiles/brainAI: . commands/gm commands/test complete complete/exampleNPC include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r389%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20commands/gm%20commands/test%20complete%20complete/exampleNPC%20include&In-Reply-To=%3C200510030105.j9315kUb005231%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r389 - in trunk/096/pkg/mobiles/brainAI: . commands/gm commands/test complete complete/exampleNPC include">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct  3 03:05:46 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000366.html">[Poldistro-svn] r388 - in trunk/096/pkg/mobiles/brainAI: . scripts
+</A></li>
+        <LI>Next message: <A HREF="000368.html">[Poldistro-svn] r390 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#367">[ date ]</a>
+              <a href="thread.html#367">[ thread ]</a>
+              <a href="subject.html#367">[ subject ]</a>
+              <a href="author.html#367">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-03 03:05:35 +0200 (Mon, 03 Oct 2005)
+New Revision: 389
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/merchant.src
+Removed:
+   trunk/096/pkg/mobiles/brainAI/complete/testnpc/
+Modified:
+   trunk/096/pkg/mobiles/brainAI/brain.src
+   trunk/096/pkg/mobiles/brainAI/commands/gm/cmassacre.src
+   trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src
+   trunk/096/pkg/mobiles/brainAI/commands/gm/makeswarm.src
+   trunk/096/pkg/mobiles/brainAI/commands/gm/massacre.src
+   trunk/096/pkg/mobiles/brainAI/commands/gm/npcsleep.src
+   trunk/096/pkg/mobiles/brainAI/commands/gm/npcwipe.src
+   trunk/096/pkg/mobiles/brainAI/commands/gm/removenpc.src
+   trunk/096/pkg/mobiles/brainAI/commands/gm/resetnpcs.src
+   trunk/096/pkg/mobiles/brainAI/commands/gm/sendevent.src
+   trunk/096/pkg/mobiles/brainAI/commands/test/cfgtest.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/combat.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/cycle.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/disengaged.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/doubleClick.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/enteredArea.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/goneCriminal.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/itemGiven.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/leftArea.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/lookAround.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/restart.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/shouldWatch.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/sleep.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/virtual.src
+   trunk/096/pkg/mobiles/brainAI/include/npcCommands.inc
+   trunk/096/pkg/mobiles/brainAI/include/npcInit.inc
+   trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc
+   trunk/096/pkg/mobiles/brainAI/include/npcSettings.inc
+   trunk/096/pkg/mobiles/brainAI/include/npcWatchList.inc
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/brainAI/brain.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/brain.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/brain.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -18,17 +18,17 @@
+ use polsys;
+ 
+ include &quot;include/sysEvent&quot;;
+-include &quot;:brainAI:include/braincore/error&quot;;
+-include &quot;:brainAI:include/braincore/cycleScript&quot;;
+-include &quot;:brainAI:include/braincore/eventProcessor&quot;;
+-include &quot;:brainAI:include/braincore/movement&quot;;
+-include &quot;:brainAI:include/braincore/setup&quot;;
+-include &quot;:brainAI:include/braincore/sleep&quot;;
+-include &quot;:brainAI:include/eventid&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcSettings&quot;;
+-include &quot;:brainAI:include/npcUtil&quot;;
++include &quot;:brainAI:braincore/error&quot;;
++include &quot;:brainAI:braincore/cycleScript&quot;;
++include &quot;:brainAI:braincore/eventProcessor&quot;;
++include &quot;:brainAI:braincore/movement&quot;;
++include &quot;:brainAI:braincore/setup&quot;;
++include &quot;:brainAI:braincore/sleep&quot;;
++include &quot;:brainAI:eventid&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcSettings&quot;;
++include &quot;:brainAI:npcUtil&quot;;
+ 
+ //
+ // * Global variables
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/cmassacre.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/cmassacre.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/cmassacre.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,7 +1,7 @@
+ //Example: .massacre [radius] - Kills npcs within the radius and leaves the corpses.
+ use uo;
+ 
+-include &quot;:gumps:include/requestgump&quot;;
++include &quot;:gumps:requestgump&quot;;
+ 
+ program Massacre(who, range)
+ 	
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -2,10 +2,10 @@
+ use os;
+ use polsys;
+ 
+-include &quot;:brainAI:include/npcUtil&quot;;
+-include &quot;:datafile:include/datafile&quot;;
+-include &quot;:gumps:include/gumps&quot;;
+-include &quot;:gumps:include/gumps_ex&quot;;
++include &quot;:brainAI:npcUtil&quot;;
++include &quot;:datafile:datafile&quot;;
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
+ 
+ const UNCACHE_BTN	:= 0xF000000;
+ const DEFAULT_CATEGORY	:= &quot;None&quot;;
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/makeswarm.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/makeswarm.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/makeswarm.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -4,7 +4,7 @@
+ use os;
+ use util;
+ 
+-include &quot;:gumps:include/requestgump&quot;;
++include &quot;:gumps:requestgump&quot;;
+ 
+ program MakeSwarm(who, text)
+ 
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/massacre.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/massacre.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/massacre.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -2,7 +2,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;:gumps:include/requestgump&quot;;
++include &quot;:gumps:requestgump&quot;;
+ 
+ program Massacre(who, range)
+ 	range := CInt(range);
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/npcsleep.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/npcsleep.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/npcsleep.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -3,8 +3,8 @@
+ use os;
+ use polsys;
+ 
+-include &quot;:gumps:include/requestgump&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:gumps:requestgump&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ 
+ program PutEveryNPCToSleep(who)
+ 	var realm_name := RequestGump(who, &quot;Enter the realm name to put npcs to sleep on.&quot;, &quot;&quot;, who.realm);
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/npcwipe.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/npcwipe.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/npcwipe.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -3,7 +3,7 @@
+ use os;
+ use polsys;
+ 
+-include &quot;:gumps:include/requestgump&quot;;
++include &quot;:gumps:requestgump&quot;;
+ 
+ program cmd_npcwipe(who)
+ 	Set_Priority(100);
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/removenpc.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/removenpc.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/removenpc.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -3,7 +3,7 @@
+ use os;
+ use polsys;
+ 
+-include &quot;:gumps:include/requestgump&quot;;
++include &quot;:gumps:requestgump&quot;;
+ 
+ program NPCWipe(who, template)
+ 	if ( !template )
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/resetnpcs.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/resetnpcs.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/resetnpcs.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -3,8 +3,8 @@
+ use os;
+ use polsys;
+ 
+-include &quot;:brainAI:include/npcCommands&quot;;
+-include &quot;:gumps:include/requestgump&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:gumps:requestgump&quot;;
+ 
+ program ResetAllNPCs(who)
+ 	var realm_name := RequestGump(who, &quot;Enter the realm name to perform the AI restarts on.&quot;, &quot;&quot;, who.realm);
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/sendevent.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/sendevent.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/sendevent.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -2,7 +2,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;:gumps:include/requestgump&quot;;
++include &quot;:gumps:requestgump&quot;;
+ 
+ program ControlNPC(who, event)
+ 	if ( !event )
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/test/cfgtest.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/test/cfgtest.src	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/commands/test/cfgtest.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -2,8 +2,8 @@
+ use os;
+ use cfgfile;
+ 
+-include &quot;:brainAI:include/npcSettings&quot;;
+-include &quot;:brainAI:include/npcUtil&quot;;
++include &quot;:brainAI:npcSettings&quot;;
++include &quot;:brainAI:npcUtil&quot;;
+ 
+ unload_scripts(&quot;&quot;);
+ 
+
+Copied: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC (from rev 386, trunk/096/pkg/mobiles/brainAI/complete/testnpc)
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/combat.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/combat.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/combat.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -3,8 +3,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ include &quot;:attributes:attributes&quot;;
+ 
+ program BrainNerve(params)
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/cycle.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/cycle.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/cycle.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,8 +1,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ 
+ program BrainCriticalScript(params)
+ 	//var npc		:= params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/disengaged.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/disengaged.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/disengaged.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,8 +1,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/doubleClick.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/doubleClick.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/doubleClick.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,8 +1,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/enteredArea.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/enteredArea.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/enteredArea.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,9 +1,9 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
+-include &quot;:brainAI:include/npcWatchList&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/goneCriminal.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/goneCriminal.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/goneCriminal.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,8 +1,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/itemGiven.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/itemGiven.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/itemGiven.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,8 +1,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/leftArea.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/leftArea.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/leftArea.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,9 +1,9 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
+-include &quot;:brainAI:include/npcWatchList&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/listen.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/listen.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,9 +1,9 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/eventid&quot;;
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:brainAI:eventid&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+@@ -47,5 +47,9 @@
+ 			break;
+ 	endcase
+ 	
++	if ( event.text[&quot;buy&quot;] )
++		SendBuyWindow(event.source, npc.backpack, npc, (event.source).backpack);
++	endif
++	
+ 	return 1;
+-endfunction
+\ No newline at end of file
++endfunction
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/lookAround.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/lookAround.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/lookAround.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -2,9 +2,9 @@
+ use os;
+ use util;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
+-include &quot;:brainAI:include/npcWatchList&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+
+Added: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/merchant.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/merchant.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/merchant.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -0,0 +1,16 @@
++use uo;
++use os;
++
++include &quot;:brainAI:eventid&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name:= params[2];
++	var event	:= params[3];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/restart.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/restart.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/restart.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,8 +1,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/shouldWatch.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/shouldWatch.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/shouldWatch.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -2,9 +2,9 @@
+ use os;
+ use util;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
+-include &quot;:brainAI:include/npcWatchList&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
+ 
+ program BrainCriticalScript(params)
+ 	//var npc := params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/sleep.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/sleep.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/sleep.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,8 +1,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/virtual.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/virtual.src	2005-10-03 00:22:39 UTC (rev 386)
++++ trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/virtual.src	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,8 +1,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcNerves&quot;;
+-include &quot;:brainAI:include/npcCommands&quot;;
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcCommands.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcCommands.inc	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/include/npcCommands.inc	2005-10-03 01:05:35 UTC (rev 389)
+@@ -12,7 +12,7 @@
+ use os;
+ 
+ include &quot;include/sysEvent&quot;;
+-include &quot;:brainAI:include/eventid&quot;;
++include &quot;:brainAI:eventid&quot;;
+ 
+ /////////////////////////////////////////////////////////////////
+ // * Function List *
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcInit.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcInit.inc	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/include/npcInit.inc	2005-10-03 01:05:35 UTC (rev 389)
+@@ -12,8 +12,8 @@
+ use util;
+ use cfgfile;
+ 
+-include &quot;:brainAI:include/npcUtil&quot;;
+-include &quot;:brainAI:include/npcError&quot;;
++include &quot;:brainAI:npcUtil&quot;;
++include &quot;:brainAI:npcError&quot;;
+ 
+ 
+ /////////////////////////////////////////////////////////////////
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc	2005-10-03 01:05:35 UTC (rev 389)
+@@ -11,7 +11,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcError&quot;;
++include &quot;:brainAI:npcError&quot;;
+ 
+ /////////////////////////////////////////////////////////////////
+ // * Function List *
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcSettings.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcSettings.inc	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/include/npcSettings.inc	2005-10-03 01:05:35 UTC (rev 389)
+@@ -12,7 +12,7 @@
+ use os;
+ use cfgfile;
+ 
+-include &quot;:brainAI:include/npcUtil&quot;;
++include &quot;:brainAI:npcUtil&quot;;
+ 
+ /*
+  * NPC_DefaultSettings(settings:=0)
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcWatchList.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcWatchList.inc	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/include/npcWatchList.inc	2005-10-03 01:05:35 UTC (rev 389)
+@@ -11,7 +11,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;:brainAI:include/npcError&quot;;
++include &quot;:brainAI:npcError&quot;;
+ 
+ /////////////////////////////////////////////////////////////////
+ // * Function List *
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-10-03 00:41:28 UTC (rev 388)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-10-03 01:05:35 UTC (rev 389)
+@@ -1,6 +1,6 @@
+-NPCTemplate TestNPC
++NPCTemplate ExampleNPC
+ {
+-	Name		&lt;Test NPC&gt;
++	Name		&lt;Example NPC&gt;
+ 	Script		:brainAI:brain
+ 	ObjType		0x190
+ 	Color		0
+@@ -26,20 +26,20 @@
+ 	AISetting	HearSpeech	i1
+ 	AISetting	HearGhosts	i1
+ 	
+-	AIScript	Combat		:ai_brain:complete/testNPC/combat
+-	//AIScript	Cycle		:ai_brain:complete/testNPC/cycle
+-	AIScript	DblClick	:ai_brain:complete/testNPC/doubleClick
+-	AIScript	Disengaged	:ai_brain:complete/testNPC/disengaged
+-	AIScript	EnterArea	:ai_brain:complete/testNPC/enteredArea
+-	AIScript	GoneCriminal	:ai_brain:complete/testNPC/goneCriminal
+-	AIScript	ItemGiven	:ai_brain:complete/testNPC/itemGiven
+-	AIScript	LeftArea	:ai_brain:complete/testNPC/leftArea
+-	AIScript	LookAround	:ai_brain:complete/testNPC/lookAround
+-	AIScript	Listen		:ai_brain:complete/testNPC/listen
+-	AISCript	Merchant	:ai_brain:complete/testNPC/merchant
+-	AIScript	Restart		:ai_brain:complete/testNPC/restart
+-	AIScript	Sleep		:ai_brain:complete/testNPC/sleep
+-	AIScript	ShouldWatch	:ai_brain:complete/testNPC/shouldWatch
+-	AIScript	Virtual		:ai_brain:complete/testNPC/virtual
+-	AIScript	WonFight	:ai_brain:complete/testNPC/wonFight
++	AIScript	Combat		:ai_brain:complete/exampleNPC/combat
++	AIScript	Cycle		:ai_brain:complete/exampleNPC/cycle
++	AIScript	DblClick	:ai_brain:complete/exampleNPC/doubleClick
++	AIScript	Disengaged	:ai_brain:complete/exampleNPC/disengaged
++	AIScript	EnterArea	:ai_brain:complete/exampleNPC/enteredArea
++	AIScript	GoneCriminal	:ai_brain:complete/exampleNPC/goneCriminal
++	AIScript	ItemGiven	:ai_brain:complete/exampleNPC/itemGiven
++	AIScript	LeftArea	:ai_brain:complete/exampleNPC/leftArea
++	AIScript	LookAround	:ai_brain:complete/exampleNPC/lookAround
++	AIScript	Listen		:ai_brain:complete/exampleNPC/listen
++	AISCript	Merchant	:ai_brain:complete/exampleNPC/merchant
++	AIScript	Restart		:ai_brain:complete/exampleNPC/restart
++	AIScript	Sleep		:ai_brain:complete/exampleNPC/sleep
++	AIScript	ShouldWatch	:ai_brain:complete/exampleNPC/shouldWatch
++	AIScript	Virtual		:ai_brain:complete/exampleNPC/virtual
++	AIScript	WonFight	:ai_brain:complete/exampleNPC/wonFight
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000366.html">[Poldistro-svn] r388 - in trunk/096/pkg/mobiles/brainAI: . scripts
+</A></li>
+	<LI>Next message: <A HREF="000368.html">[Poldistro-svn] r390 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#367">[ date ]</a>
+              <a href="thread.html#367">[ thread ]</a>
+              <a href="subject.html#367">[ subject ]</a>
+              <a href="author.html#367">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,1272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r416 - in trunk/096/pkg: skills/musicianship skills/musicianship/config skills/musicianship/include systems/attributes systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r416%20-%20in%20trunk/096/pkg%3A%20skills/musicianship%20skills/musicianship/config%20skills/musicianship/include%20systems/attributes%20systems/attributes/include&In-Reply-To=%3C200510051227.j95CRgaa013274%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000393.html">
+   <LINK REL="Next"  HREF="000395.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r416 - in trunk/096/pkg: skills/musicianship skills/musicianship/config skills/musicianship/include systems/attributes systems/attributes/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r416%20-%20in%20trunk/096/pkg%3A%20skills/musicianship%20skills/musicianship/config%20skills/musicianship/include%20systems/attributes%20systems/attributes/include&In-Reply-To=%3C200510051227.j95CRgaa013274%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r416 - in trunk/096/pkg: skills/musicianship skills/musicianship/config skills/musicianship/include systems/attributes systems/attributes/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Wed Oct  5 14:27:42 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000393.html">[Poldistro-svn] r415 - in trunk/096/pkg/mobiles/death: . include
+</A></li>
+        <LI>Next message: <A HREF="000395.html">[Poldistro-svn] r417 - trunk/096/pkg/skills/musicianship/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#394">[ date ]</a>
+              <a href="thread.html#394">[ thread ]</a>
+              <a href="subject.html#394">[ subject ]</a>
+              <a href="author.html#394">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-05 14:27:36 +0200 (Wed, 05 Oct 2005)
+New Revision: 416
+
+Added:
+   trunk/096/pkg/skills/musicianship/discord.src
+   trunk/096/pkg/skills/musicianship/include/
+   trunk/096/pkg/skills/musicianship/include/bard.inc
+   trunk/096/pkg/skills/musicianship/include/bardInstrument.inc
+   trunk/096/pkg/skills/musicianship/include/bardSkill.inc
+Removed:
+   trunk/096/pkg/skills/musicianship/entice.src
+   trunk/096/pkg/skills/musicianship/enticedAI.src
+Modified:
+   trunk/096/pkg/skills/musicianship/config/icp.cfg
+   trunk/096/pkg/skills/musicianship/musicianship.src
+   trunk/096/pkg/skills/musicianship/peacemaking.src
+   trunk/096/pkg/skills/musicianship/pkg.cfg
+   trunk/096/pkg/skills/musicianship/provocation.src
+   trunk/096/pkg/systems/attributes/include/skills.inc
+   trunk/096/pkg/systems/attributes/skills.cfg
+Log:
+
+
+Modified: trunk/096/pkg/skills/musicianship/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/skills/musicianship/config/icp.cfg	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/config/icp.cfg	2005-10-05 12:27:36 UTC (rev 416)
+@@ -4,8 +4,8 @@
+         Version         1.0
+         Description     Musicianship, Provocation, Discordance, and Peacemaking Skills
+ 
+-        Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++        Creator         MuadDib
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
+ 
+         Maintainer      Distro Team
+         M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+
+Added: trunk/096/pkg/skills/musicianship/discord.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/discord.src	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/discord.src	2005-10-05 12:27:36 UTC (rev 416)
+@@ -0,0 +1,9 @@
++// $Id$
++
++
++program skill_Discordance(who)
++
++	return 0;
++
++endprogram
++
+
+
+Property changes on: trunk/096/pkg/skills/musicianship/discord.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Deleted: trunk/096/pkg/skills/musicianship/entice.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/entice.src	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/entice.src	2005-10-05 12:27:36 UTC (rev 416)
+@@ -1,58 +0,0 @@
+-// $Id$
+-
+-use uo;
+-use os;
+-use util;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/objtype&quot;;
+-include &quot;include/bard&quot;;
+-include &quot;include/eventID&quot;;
+-
+-program enticement(who)
+-  var subject := Target(who, TGTOPT_NOCHECK_LOS );
+-  if ((!subject) || (!subject.npctemplate))
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  endif
+-  if(subject.script == &quot;:musicianship:enticedAI&quot;)
+-    SendSysMessage(who, &quot;Seems already under influence.&quot;);
+-    return;
+-  endif
+-  var cfg := ReadConfigFile(&quot;::npcdesc&quot;);
+-  var diff := Cint(cfg[subject.npctemplate].&quot;provoke&quot;);
+-  if(!diff)
+-    SendSysMessage(who, &quot;You can't entice him!&quot;);
+-    return;
+-  endif
+-  var instrument := findinstrument(who);
+-  if(!instrument)
+-    SendSysMessage(who, &quot;You don't have an instrument to play!&quot;);
+-    return;
+-  endif
+-  var success := play(who, diff, instrument, SKILLID_ENTICEMENT);
+-  if(success)
+-    var ev := array;
+-    ev.+type := EVID_ALL_FOLLOW_CMD;
+-    ev.+source := who;
+-    ev.+x := who.x;
+-    ev.+y := who.y;
+-    SetObjProperty( subject, &quot;oldai&quot;, subject.script);
+-    subject.script := &quot;:musicianship:enticedAI&quot;;
+-    RestartScript(subject);
+-    SendEvent(subject, ev);
+-    PrintTextAbove(subject, subject.name+&quot; seems enticed by the music.&quot;);
+-  else
+-    PrintTextAbovePrivate(subject, &quot;Your music doesn't seem to have any effect.&quot;, who);
+-    if ((Randomint(10)+1)&lt;= 3)
+-      var ev := {};
+-        ev.+source := who;
+-        ev.+type := EVID_PEACEMADE;
+-      SendEvent(subject,ev);
+-      ev.type := EVID_DAMAGED;
+-      SendEvent(subject, ev);
+-      PrintTextAbove(subject, subject.name+&quot; is irritated by the music of &quot;+who.name +&quot;.&quot;);
+-    endif
+-  endif
+-endprogram
+-
+
+Deleted: trunk/096/pkg/skills/musicianship/enticedAI.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/enticedAI.src	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/enticedAI.src	2005-10-05 12:27:36 UTC (rev 416)
+@@ -1,57 +0,0 @@
+-use npc;
+-use os;
+-use uo;
+-
+-include &quot;include/eventID&quot;;
+-include &quot;include/sysEvent&quot;;
+-
+-const HALT_THRESHOLD := 15;
+-const ENTICE_TIMEOUT := 15;
+-
+-var me := Self();
+-
+-program enticedai()
+-  DisableEvents( EVID_ENTEREDAREA + SYSEVENT_SPEECH + EVID_LEFTAREA + EVID_DISENGAGED + EVID_OPPONENT_MOVED);
+-  EnableEvents( EVID_ENGAGED + EVID_DAMAGED + EVID_ALL_FOLLOW_CMD, HALT_THRESHOLD );
+-  var ev;
+-  var timeout := ReadGameClock()+ ENTICE_TIMEOUT;
+-  while (ReadGameClock() &lt;= timeout)
+-    ev := os::wait_for_event( 2 );
+-    if (ev)
+-      case (ev.type)
+-        EVID_DAMAGED:
+-        EVID_ENGAGED:        unentice(me, ev);
+-                             return;
+-        EVID_ALL_FOLLOW_CMD: repeat
+-                               WalkTowardLocation( ev.x, ev.y );
+-                               var evn := os::wait_for_event( 1);
+-                               if (evn)
+-                                 case (evn.type)
+-                                   EVID_DAMAGED:
+-                                   EVID_ENGAGED: unentice(me, evn);
+-                                   return;
+-                                 endcase
+-                               endif
+-                             until ( ((me.x==ev.x) &amp;&amp; (me.y==ev.y)) || ((ReadGameClock() &gt; timeout)) );
+-                             unentice(me);
+-                             return;
+-      endcase
+-    endif
+-  endwhile
+-  unentice(me);
+-  return;
+-endprogram
+-
+-function unentice(me, ev :=0)
+-  var oldscript := GetObjProperty( me, &quot;oldai&quot;);
+-  if(!oldscript)
+-    return;
+-  endif
+-  me.script := oldscript;
+-  RestartScript(me);
+-  if (ev)
+-    sleepms(500);
+-    SendEvent(me, ev);
+-  endif
+-  return;
+-endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/musicianship/include/bard.inc
+===================================================================
+--- trunk/096/pkg/skills/musicianship/include/bard.inc	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/include/bard.inc	2005-10-05 12:27:36 UTC (rev 416)
+@@ -0,0 +1,119 @@
++// $Id$
++
++include &quot;bardSkill&quot;;
++include &quot;bardInstrument&quot;;
++include &quot;:brainAI:npcUtil&quot;;
++
++/*
++ * figureBardDifficulty(character, npc, instrument, attribute)
++ *
++ * Purpose
++ * Retrieves information about an NPC to figure the barding
++ * difficulty level of said NPC.
++ *
++ * Parameters
++ * character:	Mobile reference of player using bard skill.
++ * npc:		NPC to check for difficulty points.
++ * instrument:  Instrument character is using for skills.
++ * attribute:	Attribute of the skill that is being used.
++ *
++ * Return value
++ * Returns an integer.
++ *
++ */
++function figureBardDifficulty(who, peacee, instrument, attribute)
++
++	var pHP := CDbl(AP_GetVital(peacee, &quot;Hits&quot;) * 1.6);
++	var pSt := CDbl(AP_GetVital(peacee, &quot;Stamina&quot;));
++	var pMa := CDbl(AP_GetVital(peacee, &quot;Mana&quot;));
++	var pSkills := AP_CheckSkillsTotal(peacee);
++	var statSkillTotal := CInt(pHP+pSt+pMa+pSkills);
++
++	var abilityTotal := figureAbilityTotal(peacee);
++
++	var pPoison := GetObjProperty(peacee, &quot;poison_strength&quot;);
++	if( TypeOf(pPoison) != &quot;Integer&quot; )
++		pPoison := 0;
++	endif
++	pPoison := pPoison * 20;
++
++	var totalAdjustment := statSkillTotal+abilityTotal+pPoison;
++	var barding_difficulty;
++	if( statSkillTotal &gt; 700 )
++		totalAdjustment := totalAdjustment - 700;
++		totalAdjustment := CDbl(totalAdjustment) * 0.275;
++		totalAdjustment := totalAdjustment + 700;
++		barding_difficulty := CInt(totalAdjustment / 10);
++	else
++		barding_difficulty := CInt(totalAdjustment / 10);
++	endif
++
++	if( barding_difficulty &gt; 160 )
++		barding_difficulty := 160;
++	endif
++
++	if( CInt(GetObjProperty(instrument, &quot;Exceptional&quot;)) )
++		print( &quot;Debug Bard: Exceptional Check Passed&quot;);
++		barding_difficulty := barding_difficulty - 5;
++	endif
++	var musicianship := CInt(AP_GetSkill(who, ATTRIBUTE_MUSICIANSHIP));
++	if( musicianship &gt; 100 )
++		barding_difficulty := barding_difficulty - CInt((musicianship - 100) / 2);
++	endif
++	if( attribute == ATTRIBUTE_PROVOCATION )
++		barding_difficulty := barding_difficulty - 5;
++	elseif( attribute == ATTRIBUTE_PEACEMAKING || attribute == ATTRIBUTE_DISCORDANCE )
++		barding_difficulty := barding_difficulty - 10;
++	endif
++
++	return barding_difficulty;
++
++endfunction
++
++
++/*
++ * figureAbilityTotal(mobile)
++ *
++ * Purpose
++ * Retrieves the base value of the abilities * 100.
++ *
++ * Parameters
++ * mobile:	Mobile reference to retrieve the points from.
++ *
++ * Return value
++ * Returns an integer.
++ *
++ */
++function figureAbilityTotal(peacee)
++
++	var ability_total := 0;
++	var pTemplate := NPC_GetNPCConfig(peacee.template);
++	foreach ability in (Splitwords(pTemplate.Abilities))
++		// var = var used to stop unused var report in compile.
++		ability := ability;
++		ability_total := CInt(ability_total) + 100;
++	endforeach
++
++	return ability_total;
++
++endfunction
++
++
++function isBardable(character, thetarget, bard_skill, bard_difficulty)
++
++	if( CalcSuccessPercent(character, bard_skill, bard_difficulty, AP_GetSkill( character, bard_skill)) &lt; 50 )
++		return 0;
++	endif
++
++	var pTemplate := NPC_GetNPCConfig(thetarget.template);
++	var ifCanBard := 1;
++
++	case(bard_skill)
++		ATTRIBUTE_DISCORDANCE: ifCanBard := CInt(pTemplate.NoDiscord);
++		ATTRIBUTE_PEACEMAKING: ifCanBard := CInt(pTemplate.NoPeacmake);
++		ATTRIBUTE_PROVOCATION: ifCanBard := CInt(pTemplate.NoProvoke);
++	endcase
++
++	return ifCanBard;
++
++endfunction
+
+
+Property changes on: trunk/096/pkg/skills/musicianship/include/bard.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/skills/musicianship/include/bardInstrument.inc
+===================================================================
+--- trunk/096/pkg/skills/musicianship/include/bardInstrument.inc	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/include/bardInstrument.inc	2005-10-05 12:27:36 UTC (rev 416)
+@@ -0,0 +1,248 @@
++// $Id$
++
++/*
++ * findInstrument(character)
++ *
++ * Purpose
++ * Gets ItemRef via CProp for instrument character is
++ * using for barding. If none can be gotten, uses a
++ * target function to try to get one.
++ * instrument to use in Barding.
++ *
++ * Parameters
++ * character:	Mobile reference of player.
++ *
++ * Return value
++ * Returns a 0 or ItemRef on success.
++ *
++ */
++function findInstrument(character)
++
++	var myInstrument := GetObjProperty(character, &quot;#Instrument&quot;);
++	if( TypeOf(myInstrument) != &quot;Integer&quot;)
++		myInstrument := 0;
++	endif
++	if( myInstrument )
++		myInstrument := SystemFindObjectBySerial(myInstrument);
++	else
++		myInstrument := targetNewInstrument(character);
++	endif
++	if( !myInstrument.isA(POLCLASS_ITEM) )
++		SendSysMessage(character, &quot;Could not find your instrument!&quot;);
++		return 0;
++	elseif( !(myInstrument in EnumerateItemsInContainer(character.backpack)) )
++		SendSysMessage(character, &quot;Could not find your instrument!&quot;);
++		return 0;
++	endif
++
++	SetObjProperty(character, &quot;#Instrument&quot;, CInt(myInstrument.serial));
++
++	return myInstrument;
++
++
++endfunction
++
++
++/*
++ * targetNewInstrument(character)
++ *
++ * Purpose
++ * Gets new ItemRef via targetting by player for an
++ * instrument to use in Barding.
++ *
++ * Parameters
++ * character:	Mobile reference of player.
++ *
++ * Return value
++ * Returns a 0 or ItemRef on success.
++ *
++ */
++function targetNewInstrument(character)
++
++	var instrumentList := {0xeb1, 0xeb2, 0xeb3, 0xeb4, 0xe9c, 0xe9d, 0xe9e};
++
++	SendSysMessage(character, &quot;Target the instrument you wish to use.&quot;);
++
++	var instrument := Target(character);
++	if( !instrument.isA(POLCLASS_ITEM) )
++		SendSysMessage(character, &quot;Targetting Cancelled.&quot;);
++		return 0;
++	endif
++
++	if( instrument.graphic in instrumentList )
++		return instrument;
++	else
++		return 0;
++	endif
++
++endfunction
++
++
++/*
++ * bardSoundCheck(character, instrument, attribute)
++ *
++ * Purpose
++ * Gets the sound number to play based on
++ * instrument, skill type, and client version.
++ *
++ * Parameters
++ * character:	Mobile reference of player.
++ * instrument:	Instrument Item reference.
++ * attribute:	Attribute of skill being used.
++ *
++ * Return value
++ * Returns dictionary.
++ *
++ */
++function bardSoundCheck(character, instrument, bard_skill)
++
++	var retvalue := dictionary { &quot;success&quot;, &quot;fail&quot; };;
++
++	if( CInt(character.clientversion[1]) &gt; 2 )
++		case(instrument.graphic)
++			0xeb1:  retvalue[&quot;success&quot;] := playHarp(bard_skill);  retvalue[&quot;fail&quot;] := 0x45;
++			0xeb2:  retvalue[&quot;success&quot;] := playHarp(bard_skill, 2);  retvalue[&quot;fail&quot;] := 0x47;
++			0xeb3:  retvalue[&quot;success&quot;] := playLute(bard_skill);  retvalue[&quot;fail&quot;] := 0x4E;
++			0xeb4:  retvalue[&quot;success&quot;] := playLute(bard_skill);  retvalue[&quot;fail&quot;] := 0x4E;
++			0xe9c:  retvalue[&quot;success&quot;] := playDrum(bard_skill);  retvalue[&quot;fail&quot;] := 0x3A;
++			0xe9d:  retvalue[&quot;success&quot;] := playTamb(bard_skill);  retvalue[&quot;fail&quot;] := 0x54;
++			0xe9e:  retvalue[&quot;success&quot;] := playTamb(bard_skill);  retvalue[&quot;fail&quot;] := 0x54;
++		endcase
++	else
++		case(instrument.graphic)
++			0xeb1:  retvalue[&quot;success&quot;] := 0x44;  retvalue[&quot;fail&quot;] := 0x45;
++			0xeb2:  retvalue[&quot;success&quot;] := 0x46;  retvalue[&quot;fail&quot;] := 0x47;
++			0xeb3:  retvalue[&quot;success&quot;] := 0x4d;  retvalue[&quot;fail&quot;] := 0x4e;
++			0xeb4:  retvalue[&quot;success&quot;] := 0x4d;  retvalue[&quot;fail&quot;] := 0x4e;
++			0xe9c:  retvalue[&quot;success&quot;] := 0x39;  retvalue[&quot;fail&quot;] := 0x3a;
++			0xe9d:  retvalue[&quot;success&quot;] := 0x53;  retvalue[&quot;fail&quot;] := 0x54;
++			0xe9e:  retvalue[&quot;success&quot;] := 0x53;  retvalue[&quot;fail&quot;] := 0x54;
++		endcase
++	endif
++
++	return retvalue;
++
++endfunction
++
++
++/*
++ * playHarp(attribute, instrumentType)
++ *
++ * Purpose
++ * Returns sound for successful music playing
++ * based on skill attempting the music, for the
++ * Harp instrument.
++ *
++ * Parameters
++ * attribute:	Attribute attempting the music.
++ * iTtype:	lap hard 1, or standing harp 2.
++ * Return value
++ * Returns a 0 or +Integer on success.
++ *
++ */
++function playHarp(theskill, iType:=1)
++
++	case(theskill)
++		ATTRIBUTE_DISCORDANCE:  return 0x393;
++		ATTRIBUTE_PEACEMAKING: return 0x394;
++		ATTRIBUTE_PROVOCATION: return 0x392;
++	endcase
++
++	// If skill wasn't one of the three above,
++	// then play the standard music.
++	case(iType)
++		1: return 0x44;
++		2: return 0x46;
++	endcase
++
++endfunction
++
++
++/*
++ * playLute(attribute)
++ *
++ * Purpose
++ * Returns sound for successful music playing
++ * based on skill attempting the music, for the
++ * Lute instrument.
++ *
++ * Parameters
++ * attribute:	Attribute attempting the music.
++ *
++ * Return value
++ * Returns a 0 or +Integer on success.
++ *
++ */
++function playLute(theskill)
++
++	case(theskill)
++		ATTRIBUTE_DISCORDANCE:  return 0x40C;
++		ATTRIBUTE_PEACEMAKING: return 0x419;
++		ATTRIBUTE_PROVOCATION: return 0x404;
++	endcase
++
++	// If skill wasn't one of the three above,
++	// then play the standard music.
++	return 0x4d;
++
++endfunction
++
++
++/*
++ * playDrum(attribute)
++ *
++ * Purpose
++ * Returns sound for successful music playing
++ * based on skill attempting the music, for the
++ * Drum instrument.
++ *
++ * Parameters
++ * attribute:	Attribute attempting the music.
++ *
++ * Return value
++ * Returns a 0 or +Integer on success.
++ *
++ */
++function playDrum(theskill)
++
++	case(theskill)
++		ATTRIBUTE_DISCORDANCE:  return 0x2E9;
++		ATTRIBUTE_PEACEMAKING: return 0x2EA;
++		ATTRIBUTE_PROVOCATION: return 0x2E8;
++	endcase
++
++	// If skill wasn't one of the three above,
++	// then play the standard music.
++	return 0x39;
++
++endfunction
++
++
++/*
++ * playTamb(attribute)
++ *
++ * Purpose
++ * Returns sound for successful music playing
++ * based on skill attempting the music, for the
++ * Tambourine instrument.
++ *
++ * Parameters
++ * attribute:	Attribute attempting the music.
++ *
++ * Return value
++ * Returns a 0 or +Integer on success.
++ *
++ */
++function playTamb(theskill)
++
++	case(theskill)
++		ATTRIBUTE_DISCORDANCE:  return 0x4B7;
++		ATTRIBUTE_PEACEMAKING: return 0x4B8;
++		ATTRIBUTE_PROVOCATION: return 0x4B6;
++	endcase
++
++	// If skill wasn't one of the three above,
++	// then play the standard music.
++	return 0x53;
++
++endfunction
+
+
+Property changes on: trunk/096/pkg/skills/musicianship/include/bardInstrument.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/skills/musicianship/include/bardSkill.inc
+===================================================================
+--- trunk/096/pkg/skills/musicianship/include/bardSkill.inc	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/include/bardSkill.inc	2005-10-05 12:27:36 UTC (rev 416)
+@@ -0,0 +1,43 @@
++// $Id$
++
++/*
++ * bardSkillCheck(character, instrument, attribute, difficulty)
++ *
++ * Purpose
++ * Checks skill success/failure and plays appropriate sounds
++ * based on SkillCheck() function. Performs a Client Version
++ * check for playing a more broad selection of sounds if the
++ * client supports them.
++ *
++ * Parameters
++ * character:	Mobile reference of player using bard skill.
++ * instrument:  Instrument character is using for barding.
++ * attribute:	Attribute of the skill that is being used.
++ * difficulty:	Diffuculty to pass to SkillCheck() function.
++ *
++ * Return value
++ * Returns an integer. 1 on success, 0 on failure.
++ *
++ */
++function bardSkillCheck( character, instrument, bard_skill, bard_difficulty, award_diff:=0, advance_flags:=ADV_ALL)
++
++	// Gets a dictionary for success/fail.
++	var soundCheck := bardSoundCheck(character, instrument, bard_skill);
++
++	SkillCheck(character, ATTRIBUTE_MUSICIANSHIP, 1);
++	if( (AP_GetSkill(character, ATTRIBUTE_MUSICIANSHIP) &lt; 10) &amp;&amp; (bard_skill != ATTRIBUTE_MUSICIANSHIP) )
++		SendSysMessage(character, &quot;You are not skilled enough in the musical arts.&quot;);
++		return 0;
++	endif
++
++	if(SkillCheck(character, bard_skill, bard_difficulty, award_diff, advance_flags) &gt; 0 )
++		PlaySoundEffect( character, soundCheck.success );
++		return 1;
++	else
++		PlaySoundEffect( character, soundCheck.fail );
++		return 0;
++	endif
++
++	return 0;
++
++endfunction
+
+
+Property changes on: trunk/096/pkg/skills/musicianship/include/bardSkill.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/skills/musicianship/musicianship.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/musicianship.src	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/musicianship.src	2005-10-05 12:27:36 UTC (rev 416)
+@@ -1,43 +1,40 @@
+ // $Id$
+ 
+-use uo;
+ use os;
+-use util;
++use uo;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/objtype&quot;;
++include &quot;:musicianship:bard&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ include &quot;include/canAccess&quot;;
+ 
+ var config;
+ 
+-program play(who, item)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  if(Cint(GetObjProperty(who, &quot;LastMusic&quot;)) &gt; ReadGameClock())
+-    SendSysMessage(who, &quot;You must wait a moment before playing again.&quot;);
+-    return;
+-  endif
+-  SetObjProperty(who, &quot;LastMusic&quot;, Cint(ReadGameClock() + 2));
+-  if(!can_access(who, item))
+-    return;
+-  endif
+-  var success, fail;
+-  case(item.graphic)
+-    0x0eb1:  success := 0x44;  fail := 0x45;
+-    0x0eb2:  success := 0x46;  fail := 0x47;
+-    0x0eb3:  success := 0x4d;  fail := 0x4e;
+-    0x0eb4:  success := 0x4d;  fail := 0x4e;
+-    0x0e9c:  success := 0x39;  fail := 0x3a;
+-    0x0e9d:  success := 0x53;  fail := 0x54;
+-    0x0e9e:  success := 0x53;  fail := 0x54;
+-  endcase
+-  var pts := GetEffectiveSkill(who, SKILLID_MUSICIANSHIP) + 10;
+-  if(pts &lt; 10)
+-    pts := 10;
+-  endif
+-  if(CheckSkill(who,SKILLID_MUSICIANSHIP, -1, pts))
+-    PlaySoundEffect(who, success);
+-  else
+-    PlaySoundEffect(who, fail);
+-  endif
++program skill_Musicianship(who, instrument)
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++
++	if( Cint(GetObjProperty(who, &quot;#LastMusic&quot;)) &gt; ReadGameClock() )
++		SendSysMessage(who, &quot;You must wait a moment before playing again.&quot;);
++		return 0;
++	endif
++
++	if( instrument.container != who.backpack )
++		SendSysMessage( who, &quot;That instrument is not in your backpack.&quot;);
++		return 0;
++	endif
++	if(!can_access(who, instrument))
++		return 0;
++	endif
++
++	if( !bardSkillCheck(who, instrument, ATTRIBUTE_MUSICIANSHIP, -1) )
++		SendSysMessage(who, &quot;You fail in your attemp to play the instrument&quot;);
++	endif
++
++	SetObjProperty(who, &quot;#LastMusic&quot;, Cint(ReadGameClock() + 3));
++
++	return 1;
++
++
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/musicianship/peacemaking.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/peacemaking.src	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/peacemaking.src	2005-10-05 12:27:36 UTC (rev 416)
+@@ -1,3 +1,4 @@
++// $Id$
+ 
+ use os;
+ use uo;
+@@ -2,37 +3,92 @@
+ 
+-include &quot;include/bard&quot;;
+-include &quot;include/client&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ include &quot;include/eventID&quot;;
++include &quot;include/canAccess&quot;;
++include &quot;:musicianship:bard&quot;;
+ 
+-program bard_peacemake(who)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-    if(Cint(GetObjProperty(who, &quot;LastPeace&quot;)) &gt; ReadGameClock())
+-    SendSysMessage(who, &quot;You must wait a moment before playing again.&quot;);
+-    return;
+-  endif
+-  SetObjProperty(who, &quot;LastPeace&quot;, Cint(ReadGameClock() + 2));
+-  var instrument := findinstrument(who);
+-  if(!instrument)
+-    SendSysMessage(who, &quot;You don't have an instrument to play!&quot;);
+-    return;
+-  endif
+-  if(!ReserveItem(instrument))
+-    return;
+-  endif
+-  var success := play(who, -1, instrument, SKILLID_PEACEMAKING);
+-  var peace_length := CInt(GetBaseSkill(who, SKILLID_PEACEMAKING) / 20);
+-  var ev := array;
+-  ev.+ type;
+-  ev.type := EVID_PEACEMADE;
++program skill_Peacemaking(who)
+ 
+-  foreach thetarg in ListMobilesNearLocation(who.x, who.y, who.z, 8, who.realm)
+-    if(success)
+-      if (GetObjProperty(thetarg, &quot;Provoked&quot;))
+-        EraseObjProperty(thetarg, &quot;Provoked&quot;);
+-      endif
+-      SendEvent(thetarg, ev);
+-//      start_script(&quot;makePeace&quot;, { thetarg, peace_length } );
+-    endif
+-  endforeach
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 
+-endprogram 
++	if(Cint(GetObjProperty(who, &quot;#LastMusic&quot;)) &gt; ReadGameClock())
++		SendSysMessage(who, &quot;You must wait a moment before playing again.&quot;);
++		return 0;
++	endif
++
++	SetObjProperty(who, &quot;#LastMusic&quot;, Cint(ReadGameClock() + 2));
++
++	var instrument := findInstrument(who);
++	if(!instrument)
++		return 0;
++	endif
++	if( instrument.container != who.backpack )
++		SendSysMessage( who, &quot;That instrument is not in your backpack.&quot;);
++		return 0;
++	endif
++	if(!can_access(who, instrument))
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;Target the creature you would like to calm&quot;);
++	var peacee := Target(who, TGTOPT_CHECK_LOS);
++
++	if( !peacee.isA(POLCLASS_MOBILE || peacee.dead) )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++
++	var barding_difficulty := -1;
++	if( peacee.npctemplate )
++		barding_difficulty := figureBardDifficulty(who, peacee, instrument, ATTRIBUTE_PEACEMAKING);
++	endif
++
++	if ( !isBardable(who, peacee, ATTRIBUTE_PEACEMAKING, barding_difficulty) )
++		PrintTextAbovePrivate(peacee, &quot;You have no chance to calm that creature!&quot;, who);
++		return 0;
++	endif
++
++	if( bardSkillCheck(who, instrument, ATTRIBUTE_PEACEMAKING, barding_difficulty) )
++		calmDown( who, peacee );
++	else
++		return 0;
++	endif
++
++	return 1;
++
++endprogram
++
++
++function calmDown( who, peacee )
++
++	var peace_length_single := CInt(AP_GetSkill(who, ATTRIBUTE_PEACEMAKING) / 5);
++	var peace_length_ranged := CInt(AP_GetSkill(who, ATTRIBUTE_PEACEMAKING) / 20);
++
++	var ev := struct;
++	ev.+ type;
++	ev.type := EVID_PEACEMADE;
++	ev.+ source;
++	ev.source := who;
++
++	if( who == peacee )
++		foreach thetarg in ListMobilesNearLocation(who.x, who.y, who.z, 8, who.realm)
++			if( GetObjProperty(thetarg, &quot;#Provoked&quot;) )
++				EraseObjProperty(thetarg, &quot;#Provoked&quot;);
++			endif
++			if( thetarg.npctemplate )
++				ev.+ length;
++				ev.length := peace_length_ranged;
++				SendEvent(thetarg, ev);
++			endif
++		endforeach
++	elseif( peacee.npctemplate )
++		ev.+ length;
++		ev.length := peace_length_single;
++		SendEvent(peacee, ev);
++	endif
++	SetObjProperty(who, &quot;#LastMusic&quot;, Cint(ReadGameClock() + 5));
++
++	return 1;
++
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/musicianship/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/musicianship/pkg.cfg	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/pkg.cfg	2005-10-05 12:27:36 UTC (rev 416)
+@@ -1,5 +1,6 @@
+ Enabled         1
+ Name            musicianship
++Creator		MuadDib
+ Maintainer      Distro Team
+ Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.0
+
+Modified: trunk/096/pkg/skills/musicianship/provocation.src
+===================================================================
+--- trunk/096/pkg/skills/musicianship/provocation.src	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/skills/musicianship/provocation.src	2005-10-05 12:27:36 UTC (rev 416)
+@@ -1,119 +1,123 @@
+ // $Id$
+ 
++use os;
+ use uo;
+-use os;
+-use util;
+-use cfgfile;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/objtype&quot;;
+-include &quot;include/bard&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ include &quot;include/eventID&quot;;
+-include &quot;include/dist&quot;;
++include &quot;include/canAccess&quot;;
++include &quot;:musicianship:bard&quot;;
+ 
+ program bard_provoke(who)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-    if(Cint(GetObjProperty(who, &quot;LastProvoke&quot;)) &gt; ReadGameClock())
+-    SendSysMessage(who, &quot;You must wait a moment before playing again.&quot;);
+-    return;
+-  endif
+-  SetObjProperty(who, &quot;LastProvoke&quot;, Cint(ReadGameClock() + 2));
+-  var instrument := findinstrument(who);
+-  if(!instrument)
+-    SendSysMessage(who, &quot;You don't have an instrument.&quot;);
+-    return;
+-  endif
+-  if(!ReserveItem(instrument))
+-    return;
+-  endif
+-  SendSysMessage(who, &quot;Select the creature to provoke.&quot;);
+-  var thetarg := Target(who, TGTOPT_HARMFUL);
+-  if((!thetarg) || (!thetarg.npctemplate))
+-    SendSysMessage(who, &quot;Targetting cancelled.&quot;);
+-    return;
+-  endif
+-  if(dist(who, thetarg) &gt; 10)
+-    SendSysMessage(who, &quot;The target is too far away.&quot;);
+-    return;
+-  endif
+-  if (!canProvoke(thetarg.npctemplate))
+-    var ev := struct;
+-    ev.source := who;
+-    ev.type := EVID_DAMAGED;
+-    PrintTextAbovePrivate(thetarg, &quot;What made you think that was a good idea?&quot;, who);
+-    SendEvent(thetarg, ev);
+-  endif
+-  var configfile := ReadConfigFile(&quot;::npcdesc&quot;);
+-  var theobj:= thetarg.npctemplate;
+-  var elem := FindConfigElem(configfile, theobj);
+-  var difficulty;
+-  if(elem)
+-    difficulty := elem.provoke;
+-  else
+-    SendSysMessage(who, &quot;You can't provoke that.&quot;);
+-    return;
+-  endif
+-  if(!difficulty)
+-    difficulty := 100;
+-  endif
+-  var ev := array;
+-  ev.+ type;
+-  ev.+ source;
+-  if(difficulty &lt; 1)
+-    difficulty := 0;
+-  elseif(difficulty &gt; 100)
+-    difficulty := 110;
+-  endif
+-  if(play(who, difficulty, instrument, SKILLID_PROVOCATION))
+-    SendSysMessage(who, &quot;Select a target to provoke this onto.&quot;);
+-    var newtarg := Target(who, (TGTOPT_NOCHECK_LOS + TGTOPT_HARMFUL) );
+-    if(newtarg == thetarg)
+-      SendSysMessage(who, &quot;You can't provoke something onto itself!&quot;);
+-      return;
+-    endif
+-    if((dist(thetarg, newtarg) &gt; 10) || (dist(who, newtarg) &gt; 10))
+-      SendSysMessage(who, &quot;The target is too far away.&quot;);
+-      return;
+-    endif
+ 
+-    // This something I added. It keeps people from provoking
+-    // a creature to something OTHER than a mobile (like a metal chest...)
+-    if (!newtarg.isA(POLCLASS_MOBILE))
+-      SendSysMessage(who, &quot;You can't provoke the creature onto that!&quot;);
+-      return;
+-    endif
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 
+-    SendSysMessage(who, &quot;You provoke &quot; + thetarg.name + &quot; to attack &quot; + newtarg.name + &quot;.&quot;);
+-    ev.source := newtarg;
+-    if(newtarg.warmode)
+-      ev.type := EVID_PEACEMADE;
+-      SendEvent(thetarg, ev);
+-      SendEvent(newtarg, ev);
+-      sleep(1);
+-    endif
+-    ev.type := EVID_DAMAGED;
+-    SendEvent(thetarg, ev);
+-    ev.source := thetarg;
+-    SendEvent(newtarg, ev);
++	if(Cint(GetObjProperty(who, &quot;#LastMusic&quot;)) &gt; ReadGameClock())
++		SendSysMessage(who, &quot;You must wait a moment before playing again.&quot;);
++		return 0;
++	endif
+ 
+-    // Set CProp so death script can give karma/fame.
+-    SetObjProperty(thetarg, &quot;Provoked&quot;, {who.name, who.serial});
+-  else
+-   ev.source := who;
+-   if(thetarg.warmode)
+-     ev.type := EVID_PEACEMADE;
+-     SendEvent(thetarg, ev);
+-     sleepms(10);
+-   endif
+-   ev.type := EVID_DAMAGED;
+-   PrintTextAbovePrivate(thetarg, &quot;You enrage &quot; + thetarg.name + &quot;!&quot;, who);
+-    SendEvent(thetarg, ev);
+-  endif
+-endprogram
++	SetObjProperty(who, &quot;#LastMusic&quot;, Cint(ReadGameClock() + 2));
+ 
+-function canProvoke(template)
+-  case( template )
+-   &quot;townGuard&quot;: return 0;
+-   default: return 1;
+-  endcase
+-endfunction
++	var instrument := findInstrument(who);
++	if(!instrument)
++		return 0;
++	endif
++	if( instrument.container != who.backpack )
++		SendSysMessage( who, &quot;That instrument is not in your backpack.&quot;);
++		return 0;
++	endif
++	if(!can_access(who, instrument))
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;Select the creature to provoke.&quot;);
++	var thetarg := Target(who, TGTOPT_CHECK_LOS +  TGTOPT_HARMFUL);
++	if( !thetarg.isA(POLCLASS_MOBILE) || thetarg.acctname || thetarg.frozen )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++
++	if(distance(who, thetarg) &gt; 10)
++		SendSysMessage(who, &quot;The target is too far away.&quot;);
++		return 0;
++	endif
++
++	var barding_difficulty := -1;
++	if( thetarg.npctemplate )
++		barding_difficulty := figureBardDifficulty(who, thetarg, instrument, ATTRIBUTE_PROVOCATION);
++	endif
++
++	if ( !isBardable(who, thetarg, ATTRIBUTE_PROVOCATION, barding_difficulty) )
++		PrintTextAbovePrivate(thetarg, &quot;You have no chance to provoke that creature!&quot;, who);
++		return 0;
++	endif
++
++	if( bardSkillCheck(who, instrument, ATTRIBUTE_PROVOCATION, barding_difficulty) )
++		var ev := struct;
++		ev.+ type;
++		ev.+ source;
++
++		SendSysMessage(who, &quot;Select a target to provoke this onto.&quot;);
++		var newtarg := Target(who, (TGTOPT_NOCHECK_LOS + TGTOPT_HARMFUL) );
++		if(newtarg == thetarg)
++			SendSysMessage(who, &quot;You can't provoke something onto itself!&quot;);
++			return 0;
++		endif
++		if( (distance(thetarg, newtarg) &gt; 10) || (distance(who, newtarg) &gt; 10) )
++			SendSysMessage(who, &quot;The target is too far away.&quot;);
++			return 0;
++		endif
++		if( !newtarg.isA(POLCLASS_MOBILE) || newtarg.frozen )
++			SendSysMessage(who, &quot;You can't provoke the creature onto that!&quot;);
++			return 0;
++		endif
++		barding_difficulty := -1;
++		if( newtarg.npctemplate )
++			barding_difficulty := figureBardDifficulty(who, newtarg, instrument, ATTRIBUTE_PROVOCATION);
++		endif
++		if( bardSkillCheck(who, instrument, ATTRIBUTE_PROVOCATION, barding_difficulty, 0, ADV_DISABLE) )
++			SetObjProperty(who, &quot;#LastMusic&quot;, Cint(ReadGameClock() + 3));
++			SendSysMessage(who, &quot;You provoke &quot; + thetarg.name + &quot; to attack &quot; + newtarg.name + &quot;.&quot;);
++			ev.source := newtarg;
++			if(newtarg.warmode)
++				ev.type := EVID_PEACEMADE;
++				ev.+ length;
++				ev.length := 1;
++				SendEvent(thetarg, ev);
++				SendEvent(newtarg, ev);
++				sleep(1);
++			endif
++			ev.type := EVID_DAMAGED;
++			SendEvent(thetarg, ev);
++			ev.source := thetarg;
++			SendEvent(newtarg, ev);
++
++			// Set CProp so death script can give karma/fame.
++			SetObjProperty(thetarg, &quot;#Provoked&quot;, {who.name, who.serial});
++		else
++			SetObjProperty(who, &quot;#LastMusic&quot;, Cint(ReadGameClock() + 7));
++			if( barding_difficulty == -1 )
++				barding_difficulty := 50;
++			endif
++			if( RandomInt( barding_difficulty) &gt; AP_GetSkill(who, ATTRIBUTE_PROVOCATION) )
++				ev.source := who;
++				if( thetarg.warmode )
++					ev.type := EVID_PEACEMADE;
++					ev.+ length;
++					ev.length := 1;
++					SendEvent(thetarg, ev);
++					sleep(1);
++				endif
++				ev.type := EVID_DAMAGED;
++				PrintTextAbovePrivate(thetarg, &quot;You enrage &quot; + thetarg.name + &quot;!&quot;, who);
++				SendEvent(thetarg, ev);
++			else
++				SendSysMessage(who, &quot;You fail in your attempt to provoke the creatures.&quot;);
++			endif
++		endif
++	endif
++
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-10-05 12:27:36 UTC (rev 416)
+@@ -233,8 +233,6 @@
+  */
+ function AP_CheckSkillsTotal(mobile)
+ 
+-	var cfg_elem := AP_GetSettingsCfgElem(&quot;Skills&quot;);
+-
+ 	var total := 0.0;
+ 	foreach attribute_name in ( AP_ListAttributesByType(&quot;Skill&quot;) )
+ 		total := total + AP_GetTrueSkill(mobile, attribute_name);
+
+Modified: trunk/096/pkg/systems/attributes/skills.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/skills.cfg	2005-10-05 11:47:09 UTC (rev 415)
++++ trunk/096/pkg/systems/attributes/skills.cfg	2005-10-05 12:27:36 UTC (rev 416)
+@@ -135,7 +135,7 @@
+ {
+ 	Name	    Bowcraft
+ 	SkillId	 8
+-	Delay	   15
++	Delay	   5
+ 	StrAdv	  100 1d4+20
+ 	DexAdv	  100 1d3+20
+ 	default_points  100
+@@ -146,14 +146,14 @@
+ 
+ Skill 9
+ {
+-	Name	    Peacemaking
+-	SkillId	 9
+-	Script	  :musicianship:peacemaking
+-	IntAdv	  100 1d2
++	Name	    	Peacemaking
++	SkillId	 	9
++	Script	  	:musicianship:peacemaking
++	IntAdv	  	100 1d2
+ 	default_points  50
+-	title	   Bard
+-	Delay	   10
+-	Unhides	 1
++	title	   	Bard
++	Delay	   	2
++	Unhides	 	1
+ 	DropStat	str
+ }
+ 
+@@ -220,11 +220,11 @@
+ 
+ Skill 15
+ {
+-	Name	    Enticement
+-	SkillId	 15
+-	Script	  :musicianship:entice
+-	Delay	   10
+-	IntAdv	  20 2d4
++	Name	    	Discordance
++	SkillId	 	15
++	Script	  	:musicianship:discord
++	Delay	   	2
++	IntAdv	  	20 2d4
+ 	default_points  100
+ 	DropStat	str
+ }
+@@ -306,13 +306,13 @@
+ 
+ Skill 22
+ {
+-	Name	    Provocation
+-	SkillId	 22
+-	Script	  :musicianship:provocation
++	Name	    	Provocation
++	SkillId	 	22
++	Script	  	:musicianship:provocation
+ 	default_points  100
+-	dexadv	  100 1d2
+-	title	   Bard
+-	Unhides	 1
++	dexadv	  	100 1d2
++	title	  	Bard
++	Unhides	 	1
+ 	DropStat	str int
+ }
+ 
+@@ -385,14 +385,14 @@
+ 
+ Skill 29
+ {
+-	Name	    Musicianship
+-	SkillId	 29
+-	Delay	   15
+-	IntAdv	  100 1d2+10
+-	DexAdv	  100 1d4+20
++	Name	    	Musicianship
++	SkillId	 	29
++	Delay	   	2
++	IntAdv	  	100 1d2+10
++	DexAdv	  	100 1d4+20
+ 	default_points  100
+-	title	   Bard
+-	Unhides	 1
++	title	   	Bard
++	Unhides	 	1
+ 	DropStat	str
+ }
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000393.html">[Poldistro-svn] r415 - in trunk/096/pkg/mobiles/death: . include
+</A></li>
+	<LI>Next message: <A HREF="000395.html">[Poldistro-svn] r417 - trunk/096/pkg/skills/musicianship/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#394">[ date ]</a>
+              <a href="thread.html#394">[ thread ]</a>
+              <a href="subject.html#394">[ subject ]</a>
+              <a href="author.html#394">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

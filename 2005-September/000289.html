@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r311 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r311%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509292209.j8TM9NjL011842%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000288.html">
+   <LINK REL="Next"  HREF="000290.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r311 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r311%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509292209.j8TM9NjL011842%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r311 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Fri Sep 30 00:09:23 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000288.html">[Poldistro-svn] r310 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000290.html">[Poldistro-svn] r312 - trunk/096/pkg/items/sysbook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#289">[ date ]</a>
+              <a href="thread.html#289">[ thread ]</a>
+              <a href="subject.html#289">[ subject ]</a>
+              <a href="author.html#289">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-30 00:09:23 +0200 (Fri, 30 Sep 2005)
+New Revision: 311
+
+Modified:
+   trunk/096/pkg/systems/attributes/include/advanceCheck.inc
+   trunk/096/pkg/systems/attributes/include/skillCheck.inc
+Log:
+
+
+Modified: trunk/096/pkg/systems/attributes/include/advanceCheck.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/advanceCheck.inc	2005-09-29 21:57:49 UTC (rev 310)
++++ trunk/096/pkg/systems/attributes/include/advanceCheck.inc	2005-09-29 22:09:23 UTC (rev 311)
+@@ -14,6 +14,20 @@
+ use os;
+ use util;
+ 
++/*
++ * CheckStatsForSkill(mobile, skill_name)
++ *
++ * Purpose
++ * Performs a stat check on all stats that are listed within a skill's attributes.cfg elem.
++ *
++ * Parameters
++ * mobile:	Mobile to do the stat checks on.
++ * skill_name:	Skill to get the stat advance list from.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
+ function CheckStatsForSkill(mobile, skill_name)
+ 	var settings := AP_GetSettingsCfgElem(&quot;Stats&quot;);
+ 	
+@@ -43,7 +57,22 @@
+ 	return 1;
+ endfunction
+ 
+-
++/*
++ * CheckStatAdvancement(mobile, stat_name, stat_mult)
++ *
++ * Purpose
++ * Does an advancement check on a stat.
++ *
++ * Parameters
++ * mobile:	Mobile to do the stat advancement check on.
++ * stat_name:	Name of the stat to do the advancement check on.
++ * stat_mult:	Multiplier to effect the chance of a gain. 
++ *		(rolled dice from an attributes.cfg StatCheck entry)
++ *
++ * Return value
++ * Returns 1
++ *
++ */
+ function CheckStatAdvancement(mobile, stat_name, stat_mult)
+ 	if ( AP_CheckStatCap(mobile, stat_name) )
+ 		SkillDbgMsg(mobile, &quot;Stat cap for stat '&quot;+stat_name+&quot;' reached. No advance.&quot; );
+@@ -99,11 +128,25 @@
+ 	return 0;
+ endfunction
+ 
+-function CheckSkillAdvance(mobile, skill_name, award_diff, pass_chance, pass_success)
+-	if ( pass_success &lt; 0 )
+-		SkillDbgMsg(mobile, &quot;No skill advancement - skill check was not successful.&quot;);
+-		return 0;
+-	elseif ( AP_CheckSkillCap(mobile, skill_name) )
++/*
++ * CheckSkillAdvance(mobile, stat_name, stat_mult)
++ *
++ * Purpose
++ * Does an advancement check on a stat.
++ *
++ * Parameters
++ * mobile:	Mobile to do the skill advancement check on.
++ * skill_name:	Name of the skill to check.
++ * award_diff:	Difficulty to use for advancement award.
++ * pass_chance:	Chance of getting a gain check.
++ * 
++ *
++ * Return value
++ * Returns 1
++ *
++ */
++function CheckSkillAdvance(mobile, skill_name, award_diff, pass_chance)
++	if ( AP_CheckSkillCap(mobile, skill_name) )
+ 		SkillDbgMsg(mobile, &quot;Skill cap for attribute '&quot;+skill_name+&quot;' already reached.&quot;);
+ 		return 0;
+ 	elseif ( AP_CheckSkillCap(mobile) )
+
+Modified: trunk/096/pkg/systems/attributes/include/skillCheck.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skillCheck.inc	2005-09-29 21:57:49 UTC (rev 310)
++++ trunk/096/pkg/systems/attributes/include/skillCheck.inc	2005-09-29 22:09:23 UTC (rev 311)
+@@ -86,7 +86,7 @@
+ 	if ( !(advance_flags &amp; ADV_SKILL) )
+ 		SkillDbgMsg(mobile, &quot;Skill advance disabled.&quot;);
+ 	else
+-		CheckSkillAdvance(mobile, attrib_name, award_diff, pass_chance, pass_success);
++		CheckSkillAdvance(mobile, attrib_name, award_diff, pass_chance);
+ 	endif
+ 		
+ 	if ( !(advance_flags &amp; ADV_STATS) )
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000288.html">[Poldistro-svn] r310 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000290.html">[Poldistro-svn] r312 - trunk/096/pkg/items/sysbook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#289">[ date ]</a>
+              <a href="thread.html#289">[ thread ]</a>
+              <a href="subject.html#289">[ subject ]</a>
+              <a href="author.html#289">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

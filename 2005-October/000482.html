@@ -1,0 +1,830 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r509 - trunk/096/pkg/skills/carpentry
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r509%20-%20trunk/096/pkg/skills/carpentry&In-Reply-To=%3C200510092238.j99McCQC002467%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000480.html">
+   <LINK REL="Next"  HREF="000483.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r509 - trunk/096/pkg/skills/carpentry</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r509%20-%20trunk/096/pkg/skills/carpentry&In-Reply-To=%3C200510092238.j99McCQC002467%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r509 - trunk/096/pkg/skills/carpentry">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 00:38:12 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000480.html">[Poldistro-svn] r508 - trunk/096/pkg/skills/carpentry
+</A></li>
+        <LI>Next message: <A HREF="000483.html">[Poldistro-svn] r510 - trunk/096/pkg/skills/cooking
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#482">[ date ]</a>
+              <a href="thread.html#482">[ thread ]</a>
+              <a href="subject.html#482">[ subject ]</a>
+              <a href="author.html#482">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 00:38:09 +0200 (Mon, 10 Oct 2005)
+New Revision: 509
+
+Modified:
+   trunk/096/pkg/skills/carpentry/carpentry.src
+Log:
+
+
+Modified: trunk/096/pkg/skills/carpentry/carpentry.src
+===================================================================
+--- trunk/096/pkg/skills/carpentry/carpentry.src	2005-10-09 22:36:31 UTC (rev 508)
++++ trunk/096/pkg/skills/carpentry/carpentry.src	2005-10-09 22:38:09 UTC (rev 509)
+@@ -3,7 +3,6 @@
+ 
+ include &quot;:gumps:include/old/old-gumps&quot;;
+ include &quot;include/attributes&quot;;
+-include &quot;include/gumpUtil&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;util/repair&quot;;
+ include &quot;include/client&quot;;
+@@ -18,8 +17,8 @@
+ // These entries are unnecessary?  - HellRazor 19 Nov 02
+ // var itemcfg   := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+ // var smith_cfg := ReadConfigFile(&quot;blacksmithy&quot;);
+-gfref.x := 50;
+-gfref.y := 50;
++GFref.x := 50;
++GFref.y := 50;
+ var O := 501;
+ 
+ program carpentry(who, tool)
+@@ -34,90 +33,90 @@
+   if(!ReserveItem(tool))
+     return;
+   endif
+-  GFInitGump(0, 0);
+-  GFNoDispose();
+-  GFNoClose();
+-  GFPage(0);
+-  GFResizePic(0, 60, 2600, 500, 400);
+-  GFGumpPic( 20, 120, 5100);
+-  GFGumpPic( 28, 120, 5101);
+-  GFGumpPic(118, 120, 5101);
+-  GFGumpPic(208, 120, 5101);
+-  GFGumpPic(298, 120, 5101);
+-  GFGumpPic(370, 120, 5101);
+-  GFGumpPic(460, 120, 5102);
+-  GFGumpPic( 20, 128, 5103);
+-  GFGumpPic( 28, 128, 5104);
+-  GFGumpPic(118, 128, 5104);
+-  GFGumpPic(208, 128, 5104);
+-  GFGumpPic(298, 128, 5104);
+-  GFGumpPic(370, 128, 5104);
+-  GFGumpPic(460, 128, 5105);
+-  GFGumpPic( 20, 136, 5058);
+-  GFGumpPic(118, 136, 5058);
+-  GFGumpPic(232, 136, 5058);
+-  GFGumpPic(350, 136, 5058);
+-  GFGumpPic( 20, 136, 5106);
+-  GFGumpPic( 28, 136, 5107);
+-  GFGumpPic(118, 136, 5107);
+-  GFGumpPic(208, 136, 5107);
+-  GFGumpPic(298, 136, 5107);
+-  GFGumpPic(370, 136, 5107);
+-  GFGumpPic(460, 136, 5108);
+-  GFGumpPic( 28, 278, 5104);
+-  GFGumpPic(118, 278, 5104);
+-  GFGumpPic(208, 278, 5104);
+-  GFGumpPic(298, 278, 5104);
+-  GFGumpPic(368, 278, 5104);
+-  GFGumpPic( 20, 278, 5103);
+-  GFGumpPic(460, 278, 5105);
+-  GFGumpPic( 20, 226, 5058);
+-  GFGumpPic(118, 226, 5058);
+-  GFGumpPic(232, 226, 5058);
+-  GFGumpPic(350, 226, 5058);
+-  GFGumpPic( 20, 366, 5106);
+-  GFGumpPic( 28, 366, 5107);
+-  GFGumpPic(118, 366, 5107);
+-  GFGumpPic(208, 366, 5107);
+-  GFGumpPic(298, 366, 5107);
+-  GFGumpPic(370, 366, 5107);
+-  GFGumpPic(460, 366, 5108);
+-  GFGumpPic( 20, 350, 5100);
+-  GFGumpPic( 28, 350, 5101);
+-  GFGumpPic(118, 350, 5101);
+-  GFGumpPic(208, 350, 5101);
+-  GFGumpPic(298, 350, 5101);
+-  GFGumpPic(370, 350, 5101);
+-  GFGumpPic(460, 350, 5102);
+-  GFTextLine(110,  80, 900, &quot;CARPENTRY SELECTION MENU&quot;);
+-  GFTextLine( 30, 121,   0, &quot;Materials&quot;);
+-  GFTextLine(160, 121,   0, &quot;Tables&quot;);
+-  GFTextLine(260, 121,   0, &quot;Chairs&quot;);
+-  GFTextLine(350, 121,   0, &quot;Instruments&quot;);
+-  GFTextLine( 30, 351,   0, &quot;Shelves&quot;);
+-  GFTextLine(140, 351,   0, &quot;Containers&quot;);
+-  GFTextLine(265, 351,   0, &quot;Misc&quot;);
+-  GFTextLine(365, 351,   0, &quot;add-ons&quot;);
+-  GFTextLine( 90, 380, 900, &quot;Make Last&quot;);
+-  var lastitm := GFButtonID( 70, 384,   3, 4, 99);
+-  var close   := GFButtonID(410, 380, 242, 241, 1);
+-  GFButtonPage(110, 123, 5209, 5209,  2);
+-  GFButtonPage(210, 123, 5209, 5209,  3);
+-  GFButtonPage(310, 123, 5209, 5209,  4);
+-  GFButtonPage(440, 123, 5209, 5209,  5);
+-  GFButtonPage( 90, 353, 5209, 5209,  6);
+-  GFButtonPage(220, 353, 5209, 5209,  7);
+-  GFButtonPage(320, 353, 5209, 5209,  8);
+-  GFButtonPage(430, 353, 5209, 5209,  9);
+-  GFTextLine(  300, 420, 900, &quot;How Many?&quot;);
+-  GFGumpPic(390, 417, 2443);
++  OldGFInitGump(0, 0);
++  OldGFNoDispose();
++  OldGFNoClose();
++  OldGFPage(0);
++  OldGFResizePic(0, 60, 2600, 500, 400);
++  OldGFGumpPic( 20, 120, 5100);
++  OldGFGumpPic( 28, 120, 5101);
++  OldGFGumpPic(118, 120, 5101);
++  OldGFGumpPic(208, 120, 5101);
++  OldGFGumpPic(298, 120, 5101);
++  OldGFGumpPic(370, 120, 5101);
++  OldGFGumpPic(460, 120, 5102);
++  OldGFGumpPic( 20, 128, 5103);
++  OldGFGumpPic( 28, 128, 5104);
++  OldGFGumpPic(118, 128, 5104);
++  OldGFGumpPic(208, 128, 5104);
++  OldGFGumpPic(298, 128, 5104);
++  OldGFGumpPic(370, 128, 5104);
++  OldGFGumpPic(460, 128, 5105);
++  OldGFGumpPic( 20, 136, 5058);
++  OldGFGumpPic(118, 136, 5058);
++  OldGFGumpPic(232, 136, 5058);
++  OldGFGumpPic(350, 136, 5058);
++  OldGFGumpPic( 20, 136, 5106);
++  OldGFGumpPic( 28, 136, 5107);
++  OldGFGumpPic(118, 136, 5107);
++  OldGFGumpPic(208, 136, 5107);
++  OldGFGumpPic(298, 136, 5107);
++  OldGFGumpPic(370, 136, 5107);
++  OldGFGumpPic(460, 136, 5108);
++  OldGFGumpPic( 28, 278, 5104);
++  OldGFGumpPic(118, 278, 5104);
++  OldGFGumpPic(208, 278, 5104);
++  OldGFGumpPic(298, 278, 5104);
++  OldGFGumpPic(368, 278, 5104);
++  OldGFGumpPic( 20, 278, 5103);
++  OldGFGumpPic(460, 278, 5105);
++  OldGFGumpPic( 20, 226, 5058);
++  OldGFGumpPic(118, 226, 5058);
++  OldGFGumpPic(232, 226, 5058);
++  OldGFGumpPic(350, 226, 5058);
++  OldGFGumpPic( 20, 366, 5106);
++  OldGFGumpPic( 28, 366, 5107);
++  OldGFGumpPic(118, 366, 5107);
++  OldGFGumpPic(208, 366, 5107);
++  OldGFGumpPic(298, 366, 5107);
++  OldGFGumpPic(370, 366, 5107);
++  OldGFGumpPic(460, 366, 5108);
++  OldGFGumpPic( 20, 350, 5100);
++  OldGFGumpPic( 28, 350, 5101);
++  OldGFGumpPic(118, 350, 5101);
++  OldGFGumpPic(208, 350, 5101);
++  OldGFGumpPic(298, 350, 5101);
++  OldGFGumpPic(370, 350, 5101);
++  OldGFGumpPic(460, 350, 5102);
++  OldGFTextLine(110,  80, 900, &quot;CARPENTRY SELECTION MENU&quot;);
++  OldGFTextLine( 30, 121,   0, &quot;Materials&quot;);
++  OldGFTextLine(160, 121,   0, &quot;Tables&quot;);
++  OldGFTextLine(260, 121,   0, &quot;Chairs&quot;);
++  OldGFTextLine(350, 121,   0, &quot;Instruments&quot;);
++  OldGFTextLine( 30, 351,   0, &quot;Shelves&quot;);
++  OldGFTextLine(140, 351,   0, &quot;Containers&quot;);
++  OldGFTextLine(265, 351,   0, &quot;Misc&quot;);
++  OldGFTextLine(365, 351,   0, &quot;add-ons&quot;);
++  OldGFTextLine( 90, 380, 900, &quot;Make Last&quot;);
++  var lastitm := OldGFButtonID( 70, 384,   3, 4, 99);
++  var close   := OldGFButtonID(410, 380, 242, 241, 1);
++  OldGFButtonPage(110, 123, 5209, 5209,  2);
++  OldGFButtonPage(210, 123, 5209, 5209,  3);
++  OldGFButtonPage(310, 123, 5209, 5209,  4);
++  OldGFButtonPage(440, 123, 5209, 5209,  5);
++  OldGFButtonPage( 90, 353, 5209, 5209,  6);
++  OldGFButtonPage(220, 353, 5209, 5209,  7);
++  OldGFButtonPage(320, 353, 5209, 5209,  8);
++  OldGFButtonPage(430, 353, 5209, 5209,  9);
++  OldGFTextLine(  300, 420, 900, &quot;How Many?&quot;);
++  OldGFGumpPic(390, 417, 2443);
+   var sa := GetObjProperty(who, &quot;#CarpAmt&quot;);
+   if(!sa)
+     sa := 1;
+   endif
+-  var ct := GFTextEntry(400, 420, 100, 30, 0, sa);
++  var ct := OldGFTextEntry(400, 420, 100, 30, 0, sa);
+   ComposeSubMenu(who);
+-  var res := GFSendGump(who);
++  var res := OldGFSendGump(who);
+   if((res[0] == 999) || (res[close.keyid]))
+     SendSysMessage(who, &quot;Cancelled&quot;);
+     return;
+@@ -416,405 +415,405 @@
+   var cfg := ReadConfigFile(&quot;:carpentry:carpentry&quot;);
+   while(num &lt; 10)
+     case(num)
+-       2: GFPage(2);        // Page 2 (building materials)
++       2: OldGFPage(2);        // Page 2 (building materials)
+           if(skill &gt;= CInt(cfg[0x1bd7].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 200, 210, 211, 1, 7127);
++            OldGFButtonIDC(150, 200, 210, 211, 1, 7127);
+           endif
+-          GFTextLine(120, 175, color, &quot;boards&quot;);
+-          GFTilePic( 100, 200, 7127);
++          OldGFTextLine(120, 175, color, &quot;boards&quot;);
++          OldGFTilePic( 100, 200, 7127);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1db8].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 200, 210, 211, 1, 7608);
++            OldGFButtonIDC(300, 200, 210, 211, 1, 7608);
+           endif
+-          GFTextLine(250, 175, color, &quot;barrel lid&quot;);
+-          GFTilePic( 250, 200, 7608);
++          OldGFTextLine(250, 175, color, &quot;barrel lid&quot;);
++          OldGFTilePic( 250, 200, 7608);
+          color := 0;
+           if(skill &gt;= CInt(cfg[0x1eb2].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 295, 210, 211, 1, 7858);
++            OldGFButtonIDC(150, 295, 210, 211, 1, 7858);
+           endif
+-          GFTextLine( 90, 270, color, &quot;barrel staves&quot;);
+-          GFTilePic( 100, 295, 7858);
++          OldGFTextLine( 90, 270, color, &quot;barrel staves&quot;);
++          OldGFTilePic( 100, 295, 7858);
+           color := 0;
+-       3: GFPage(3);        // Page 3 (tables)
++       3: OldGFPage(3);        // Page 3 (tables)
+           if(skill &gt;= CInt(cfg[0xb3a].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 200, 210, 211, 1, 2874);
++            OldGFButtonIDC(150, 200, 210, 211, 1, 2874);
+           endif
+-          GFTextLine( 90, 175, color, &quot;small table&quot;);
+-          GFTilePic( 100, 200, 2874);
++          OldGFTextLine( 90, 175, color, &quot;small table&quot;);
++          OldGFTilePic( 100, 200, 2874);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0b3f].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 200, 210, 211, 1, 2879);
++            OldGFButtonIDC(300, 200, 210, 211, 1, 2879);
+           endif
+-          GFTextLine(260, 175, color, &quot;large counter&quot;);
+-          GFTilePic( 250, 195, 2879);
++          OldGFTextLine(260, 175, color, &quot;large counter&quot;);
++          OldGFTilePic( 250, 195, 2879);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0b7d].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 285, 210, 211, 1, 2941);
++            OldGFButtonIDC(150, 285, 210, 211, 1, 2941);
+           endif
+-          GFTextLine(100, 260, color, &quot;yew table&quot;);
+-          GFTilePic(  75, 280, 2941);
++          OldGFTextLine(100, 260, color, &quot;yew table&quot;);
++          OldGFTilePic(  75, 280, 2941);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0b7c].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 285, 210, 211, 1, 2940);
++            OldGFButtonIDC(300, 285, 210, 211, 1, 2940);
+           endif
+-          GFTextLine(260, 260, color, &quot;table&quot;);
+-          GFTilePic( 210, 280, 2940);
++          OldGFTextLine(260, 260, color, &quot;table&quot;);
++          OldGFTilePic( 210, 280, 2940);
+           color := 0;
+-       4: GFPage(4);        // Page 4 (chairs)
++       4: OldGFPage(4);        // Page 4 (chairs)
+           if(skill &gt;= CInt(cfg[0x0a2a].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 185, 210, 211, 1, 2602);
++            OldGFButtonIDC(110, 185, 210, 211, 1, 2602);
+           endif
+-          GFTextLine( 65, 160, color, &quot;stool&quot;);
+-          GFTilePic(  60, 185, 2602);
++          OldGFTextLine( 65, 160, color, &quot;stool&quot;);
++          OldGFTilePic(  60, 185, 2602);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0b2c].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(210, 185, 210, 211, 1, 2860);
++            OldGFButtonIDC(210, 185, 210, 211, 1, 2860);
+           endif
+-          GFTextLine(160, 160, color, &quot;bench&quot;);
+-          GFTilePic( 160, 185, 2860);
++          OldGFTextLine(160, 160, color, &quot;bench&quot;);
++          OldGFTilePic( 160, 185, 2860);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0b2e].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 185, 210, 211, 1, 2862);
++            OldGFButtonIDC(310, 185, 210, 211, 1, 2862);
+           endif
+-          GFTextLine(255, 160, color, &quot;wood throne&quot;);
+-          GFTilePic( 260, 185, 2862);
++          OldGFTextLine(255, 160, color, &quot;wood throne&quot;);
++          OldGFTilePic( 260, 185, 2862);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0b32].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 185, 210, 211, 1, 2866);
++            OldGFButtonIDC(410, 185, 210, 211, 1, 2866);
+           endif
+-          GFTextLine(370, 160, color, &quot;throne&quot;);
+-          GFTilePic( 345, 185, 2866);
++          OldGFTextLine(370, 160, color, &quot;throne&quot;);
++          OldGFTilePic( 345, 185, 2866);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0b4f].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 280, 210, 211, 1, 2895);
++            OldGFButtonIDC(110, 280, 210, 211, 1, 2895);
+           endif
+-          GFTextLine( 60, 255, color, &quot;fancy chair&quot;);
+-          GFTilePic(  45, 275, 2895);
++          OldGFTextLine( 60, 255, color, &quot;fancy chair&quot;);
++          OldGFTilePic(  45, 275, 2895);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0b57].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(210, 280, 210, 211, 1, 2903);
++            OldGFButtonIDC(210, 280, 210, 211, 1, 2903);
+           endif
+-          GFTextLine(160, 255, color, &quot;wood chair&quot;);
+-          GFTilePic( 170, 280, 2903);
++          OldGFTextLine(160, 255, color, &quot;wood chair&quot;);
++          OldGFTilePic( 170, 280, 2903);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0b5b].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 280, 210, 211, 1, 2907);
++            OldGFButtonIDC(310, 280, 210, 211, 1, 2907);
+           endif
+-          GFTextLine(260, 255, color, &quot;poor chair&quot;);
+-          GFTilePic( 275, 280, 2907);
++          OldGFTextLine(260, 255, color, &quot;poor chair&quot;);
++          OldGFTilePic( 275, 280, 2907);
+           color := 0;
+-       5: GFPage(5);        // Page 5 (instruments)
++       5: OldGFPage(5);        // Page 5 (instruments)
+           if(skill &gt;= CInt(cfg[0x0eb1].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 3761);
++            OldGFButtonIDC(110, 200, 210, 211, 1, 3761);
+           endif
+-          GFTextLine( 65, 175, color, &quot;standing harp&quot;);
+-          GFTilePic(  45, 200, 3761);
++          OldGFTextLine( 65, 175, color, &quot;standing harp&quot;);
++          OldGFTilePic(  45, 200, 3761);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0eb2].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 3762);
++            OldGFButtonIDC(210, 200, 210, 211, 1, 3762);
+           endif
+-          GFTextLine(180, 175, color, &quot;lap harp&quot;);
+-          GFTilePic( 160, 200, 3762);
++          OldGFTextLine(180, 175, color, &quot;lap harp&quot;);
++          OldGFTilePic( 160, 200, 3762);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0eb3].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 3763);
++            OldGFButtonIDC(310, 200, 210, 211, 1, 3763);
+           endif
+-          GFTextLine(285, 175, color, &quot;lute&quot;);
+-          GFTilePic( 260, 200, 3763);
++          OldGFTextLine(285, 175, color, &quot;lute&quot;);
++          OldGFTilePic( 260, 200, 3763);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e9c].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 3740);
++            OldGFButtonIDC(410, 200, 210, 211, 1, 3740);
+           endif
+-          GFTextLine(370, 175, color, &quot;drum&quot;);
+-          GFTilePic( 360, 200, 3740);
++          OldGFTextLine(370, 175, color, &quot;drum&quot;);
++          OldGFTilePic( 360, 200, 3740);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e9d].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 3741);
++            OldGFButtonIDC(110, 295, 210, 211, 1, 3741);
+           endif
+-          GFTextLine( 65, 270, color, &quot;tambourine&quot;);
+-          GFTilePic(  60, 295, 3741);
++          OldGFTextLine( 65, 270, color, &quot;tambourine&quot;);
++          OldGFTilePic(  60, 295, 3741);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e9d].&quot;skill&quot;))
+             color := 900;
+-           GFButtonIDC(210, 295, 210, 211, 1, 3742);
++           OldGFButtonIDC(210, 295, 210, 211, 1, 3742);
+           endif
+-          GFTextLine(160, 270, color, &quot;tasseled tambourine&quot;);
+-          GFTilePic( 160, 295, 3742);
++          OldGFTextLine(160, 270, color, &quot;tasseled tambourine&quot;);
++          OldGFTilePic( 160, 295, 3742);
+           color := 0;
+-       6: GFPage(6);        //Page 6 (large furniture)
++       6: OldGFPage(6);        //Page 6 (large furniture)
+           if(skill &gt;= CInt(cfg[0x0a34].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC( 70, 175, 210, 211, 1, 2612);
++            OldGFButtonIDC( 70, 175, 210, 211, 1, 2612);
+           endif
+-          GFTextLine( 20, 150, color, &quot;oak dresser&quot;);
+-          GFTilePic(  25, 175, 2612);
++          OldGFTextLine( 20, 150, color, &quot;oak dresser&quot;);
++          OldGFTilePic(  25, 175, 2612);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0a38].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC( 70, 275, 210, 211, 1, 2616);
++            OldGFButtonIDC( 70, 275, 210, 211, 1, 2616);
+           endif
+-          GFTextLine( 20, 250, color, &quot;cherry dresser&quot;);
+-          GFTilePic(  20, 275, 2616);
++          OldGFTextLine( 20, 250, color, &quot;cherry dresser&quot;);
++          OldGFTilePic(  20, 275, 2616);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0a53].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(200, 200, 210, 211, 1, 2643);
++            OldGFButtonIDC(200, 200, 210, 211, 1, 2643);
+           endif
+-          GFTextLine(150, 175, color, &quot;oak armoir&quot;);
+-          GFTilePic( 150, 200, 2643);
++          OldGFTextLine(150, 175, color, &quot;oak armoir&quot;);
++          OldGFTilePic( 150, 200, 2643);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0a51].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 200, 210, 211, 1, 2641);
++            OldGFButtonIDC(300, 200, 210, 211, 1, 2641);
+           endif
+-          GFTextLine(250, 175, color, &quot;cherry armoir&quot;);
+-          GFTilePic( 250, 200, 2641);
++          OldGFTextLine(250, 175, color, &quot;cherry armoir&quot;);
++          OldGFTilePic( 250, 200, 2641);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0a9d].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(400, 200, 210, 211, 1, 2717);
++            OldGFButtonIDC(400, 200, 210, 211, 1, 2717);
+           endif
+-          GFTextLine(360, 175, color, &quot;bookshelf&quot;);
+-          GFTilePic( 350, 200, 2717);
++          OldGFTextLine(360, 175, color, &quot;bookshelf&quot;);
++          OldGFTilePic( 350, 200, 2717);
+           color := 0;
+-       7: GFPage(7);        //Page 7 (Containers)
++       7: OldGFPage(7);        //Page 7 (Containers)
+           if(skill &gt;= CInt(cfg[0x0e7f].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 3711);
++            OldGFButtonIDC(110, 200, 210, 211, 1, 3711);
+           endif
+-          GFTextLine( 65, 175, color, &quot;open keg&quot;);
+-          GFTilePic(  60, 200, 3711);
++          OldGFTextLine( 65, 175, color, &quot;open keg&quot;);
++          OldGFTilePic(  60, 200, 3711);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x09aa].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 2474);
++            OldGFButtonIDC(210, 200, 210, 211, 1, 2474);
+           endif
+-          GFTextLine(160, 175, color, &quot;small box&quot;);
+-          GFTilePic( 160, 200, 2474);
++          OldGFTextLine(160, 175, color, &quot;small box&quot;);
++          OldGFTilePic( 160, 200, 2474);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e77].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 3703);
++            OldGFButtonIDC(310, 200, 210, 211, 1, 3703);
+           endif
+-          GFTextLine(275, 175, color, &quot;barrel&quot;);
+-          GFTilePic( 260, 200, 3703);
++          OldGFTextLine(275, 175, color, &quot;barrel&quot;);
++          OldGFTilePic( 260, 200, 3703);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e43].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 3651);
++            OldGFButtonIDC(410, 200, 210, 211, 1, 3651);
+           endif
+-          GFTextLine(360, 175, color, &quot;wooden chest&quot;);
+-          GFTilePic( 360, 200, 3651);
++          OldGFTextLine(360, 175, color, &quot;wooden chest&quot;);
++          OldGFTilePic( 360, 200, 3651);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x09a9].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 2473);
++            OldGFButtonIDC(110, 295, 210, 211, 1, 2473);
+           endif
+-          GFTextLine( 65, 270, color, &quot;small crate&quot;);
+-          GFTilePic(  60, 295, 2473);
++          OldGFTextLine( 65, 270, color, &quot;small crate&quot;);
++          OldGFTilePic(  60, 295, 2473);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e3f].&quot;skill&quot;))
+             color := 900;
+-           GFButtonIDC(210, 295, 210, 211, 1, 3647);
++           OldGFButtonIDC(210, 295, 210, 211, 1, 3647);
+           endif
+-          GFTextLine(160, 270, color, &quot;medium crate&quot;);
+-          GFTilePic( 160, 295, 3647);
++          OldGFTextLine(160, 270, color, &quot;medium crate&quot;);
++          OldGFTilePic( 160, 295, 3647);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e3c].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 295, 210, 211, 1, 3644);
++            OldGFButtonIDC(310, 295, 210, 211, 1, 3644);
+           endif
+-          GFTextLine(260, 270, color, &quot;large crate&quot;);
+-          GFTilePic( 260, 295, 3644);
++          OldGFTextLine(260, 270, color, &quot;large crate&quot;);
++          OldGFTilePic( 260, 295, 3644);
+           color := 0;
+-       8: GFPage(8);        //Page 8 (miscellaneous)
++       8: OldGFPage(8);        //Page 8 (miscellaneous)
+           if(skill &gt;= CInt(cfg[0x0dc0].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(100, 200, 210, 211, 1, 3520);
++            OldGFButtonIDC(100, 200, 210, 211, 1, 3520);
+           endif
+-          GFTextLine( 50, 175, color, &quot;fishing pole&quot;);
+-          GFTilePic(  45, 200, 3520);
++          OldGFTextLine( 50, 175, color, &quot;fishing pole&quot;);
++          OldGFTilePic(  45, 200, 3520);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13f9].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 5113);
++            OldGFButtonIDC(210, 200, 210, 211, 1, 5113);
+           endif
+-          GFTextLine(145, 175, color, &quot;gnarled staff&quot;);
+-          GFTilePic( 160, 200, 5113);
++          OldGFTextLine(145, 175, color, &quot;gnarled staff&quot;);
++          OldGFTilePic( 160, 200, 5113);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e81].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 3713);
++            OldGFButtonIDC(310, 200, 210, 211, 1, 3713);
+           endif
+-          GFTextLine(245, 175, color, &quot;shepherd's crook&quot;);
+-          GFTilePic( 260, 200, 3713);
++          OldGFTextLine(245, 175, color, &quot;shepherd's crook&quot;);
++          OldGFTilePic( 260, 200, 3713);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e8a].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 3722);
++            OldGFButtonIDC(410, 200, 210, 211, 1, 3722);
+           endif
+-          GFTextLine(365, 175, color, &quot;quarter staff&quot;);
+-          GFTilePic( 360, 200, 3722);
++          OldGFTextLine(365, 175, color, &quot;quarter staff&quot;);
++          OldGFTilePic( 360, 200, 3722);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0ec6].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 3782);
++            OldGFButtonIDC(110, 295, 210, 211, 1, 3782);
+           endif
+-          GFTextLine( 65, 270, color, &quot;dress form&quot;);
+-          GFTilePic(  80, 295, 3782);
++          OldGFTextLine( 65, 270, color, &quot;dress form&quot;);
++          OldGFTilePic(  80, 295, 3782);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0f64].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(210, 295, 210, 211, 1, 3940);
++            OldGFButtonIDC(210, 295, 210, 211, 1, 3940);
+           endif
+-          GFTextLine(185, 270, color, &quot;torch&quot;);
+-          GFTilePic( 160, 295, 3940);
++          OldGFTextLine(185, 270, color, &quot;torch&quot;);
++          OldGFTilePic( 160, 295, 3940);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13b3].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 295, 210, 211, 1, 5043);
++            OldGFButtonIDC(310, 295, 210, 211, 1, 5043);
+           endif
+-          GFTextLine(285, 270, color, &quot;club&quot;);
+-          GFTilePic( 270, 295, 5043);
++          OldGFTextLine(285, 270, color, &quot;club&quot;);
++          OldGFTilePic( 270, 295, 5043);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1b7a].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 295, 210, 211, 1, 7034);
++            OldGFButtonIDC(410, 295, 210, 211, 1, 7034);
+           endif
+-          GFTextLine(360, 270, color, &quot;wooden shield&quot;);
+-          GFTilePic( 360, 295, 7034);
++          OldGFTextLine(360, 270, color, &quot;wooden shield&quot;);
++          OldGFTilePic( 360, 295, 7034);
+           color := 0;
+-       9: GFPage(9);        //Page 9 (add-ons)
++       9: OldGFPage(9);        //Page 9 (add-ons)
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb002].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb002].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb002].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC( 20, 175, 210, 211, 1, 45058);
++            OldGFButtonIDC( 20, 175, 210, 211, 1, 45058);
+           endif
+-          GFTextLine( 45, 175, color, &quot;training dummy deed&quot;);
++          OldGFTextLine( 45, 175, color, &quot;training dummy deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb003].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb003].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb003].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC( 20, 200, 210, 211, 1, 45059);
++            OldGFButtonIDC( 20, 200, 210, 211, 1, 45059);
+           endif
+-          GFTextLine( 45, 200, color, &quot;pickpocket dip deed&quot;);
++          OldGFTextLine( 45, 200, color, &quot;pickpocket dip deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb004].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb004].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb004].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC( 20, 225, 210, 211, 1, 45060);
++            OldGFButtonIDC( 20, 225, 210, 211, 1, 45060);
+           endif
+-          GFTextLine( 45, 225, color, &quot;spinning wheel deed&quot;);
++          OldGFTextLine( 45, 225, color, &quot;spinning wheel deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb008].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb008].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb008].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC( 20, 250, 210, 211, 1, 45064);
++            OldGFButtonIDC( 20, 250, 210, 211, 1, 45064);
+           endif
+-          GFTextLine( 45, 250, color, &quot;loom deed&quot;);
++          OldGFTextLine( 45, 250, color, &quot;loom deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb009].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb009].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb009].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC( 20, 275, 210, 211, 1, 45065);
++            OldGFButtonIDC( 20, 275, 210, 211, 1, 45065);
+           endif
+-          GFTextLine( 45, 275, color, &quot;large bed deed&quot;);
++          OldGFTextLine( 45, 275, color, &quot;large bed deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb006].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb006].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb006].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC( 20, 300, 210, 211, 1, 45062);
++            OldGFButtonIDC( 20, 300, 210, 211, 1, 45062);
+           endif
+-          GFTextLine( 45, 300, color, &quot;abbatoir deed&quot;);
++          OldGFTextLine( 45, 300, color, &quot;abbatoir deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb005].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb005].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb005].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC( 20, 325, 210, 211, 1, 45061);
++            OldGFButtonIDC( 20, 325, 210, 211, 1, 45061);
+           endif
+-          GFTextLine( 45, 325, color, &quot;pentagram deed&quot;);
++          OldGFTextLine( 45, 325, color, &quot;pentagram deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb00a].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb00a].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb00a].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC(260, 175, 210, 211, 1, 45066);
++            OldGFButtonIDC(260, 175, 210, 211, 1, 45066);
+           endif
+-          GFTextLine(285, 175, color, &quot;water trough deed&quot;);
++          OldGFTextLine(285, 175, color, &quot;water trough deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb00b].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb00b].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb00b].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC(260, 200, 210, 211, 1, 45067);
++            OldGFButtonIDC(260, 200, 210, 211, 1, 45067);
+           endif
+-          GFTextLine(285, 200, color, &quot;mill deed&quot;);
++          OldGFTextLine(285, 200, color, &quot;mill deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb00c].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb00c].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb00c].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC(260, 225, 210, 211, 1, 45068);
++            OldGFButtonIDC(260, 225, 210, 211, 1, 45068);
+           endif
+-          GFTextLine(285, 225, color, &quot;stone oven deed&quot;);
++          OldGFTextLine(285, 225, color, &quot;stone oven deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb000].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb000].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb000].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC(260, 250, 210, 211, 1, 45056);
++            OldGFButtonIDC(260, 250, 210, 211, 1, 45056);
+           endif
+-          GFTextLine(285, 250, color, &quot;anvil deed&quot;);
++          OldGFTextLine(285, 250, color, &quot;anvil deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb001].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb001].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb001].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC(260, 275, 210, 211, 1, 45057);
++            OldGFButtonIDC(260, 275, 210, 211, 1, 45057);
+           endif
+-          GFTextLine(285, 275, color, &quot;small forge deed&quot;);
++          OldGFTextLine(285, 275, color, &quot;small forge deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb007].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb007].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb007].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC(260, 300, 210, 211, 1, 45063);
++            OldGFButtonIDC(260, 300, 210, 211, 1, 45063);
+           endif
+-          GFTextLine(285, 300, color, &quot;large forge deed&quot;);
++          OldGFTextLine(285, 300, color, &quot;large forge deed&quot;);
+           color := 0;
+           skill2 := GetEffectiveSkill(who, CInt(cfg[0xb011].&quot;skillID&quot;));
+           if((skill &gt;= CInt(cfg[0xb011].&quot;skill&quot;)) &amp;&amp; (skill2 &gt;= CInt(cfg[0xb011].&quot;skill2&quot;)))
+             color := 900;
+-            GFButtonIDC(260, 325, 210, 211, 1, 45073);
++            OldGFButtonIDC(260, 325, 210, 211, 1, 45073);
+           endif
+-          GFTextLine(285, 325, color, &quot;small bed deed&quot;);
++          OldGFTextLine(285, 325, color, &quot;small bed deed&quot;);
+     endcase
+     num := num + 1;
+   endwhile
+   return;
+ endfunction
+ 
+-function GFButtonIDC(x, y, release, press, close, retval)
++function OldGFButtonIDC(x, y, release, press, close, retval)
+   close := close;
+-  var line := &quot;button &quot; + CStr(gfref.x + CInt(x)) + &quot; &quot; + CStr(gfref.y + CInt(y));
++  var line := &quot;button &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+   line := line + &quot; &quot; + CStr(CInt(release)) + &quot; &quot; + CStr(CInt(press)) + &quot; &quot;;
+   line := line + &quot;1 0 &quot;;
+   line := line + CStr(retval);
+-  gflayout.append( line );
+-  return XGFRetVal( gflayout.size(), -1, gfbutid - 1 );
++  GFlayout.append( line );
++  return XGFRetVal( GFlayout.size(), -1, GFbutid - 1 );
+ endfunction
+ 
+ function makewooditems(who, tool, objtype, lop, cont)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000480.html">[Poldistro-svn] r508 - trunk/096/pkg/skills/carpentry
+</A></li>
+	<LI>Next message: <A HREF="000483.html">[Poldistro-svn] r510 - trunk/096/pkg/skills/cooking
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#482">[ date ]</a>
+              <a href="thread.html#482">[ thread ]</a>
+              <a href="subject.html#482">[ subject ]</a>
+              <a href="author.html#482">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

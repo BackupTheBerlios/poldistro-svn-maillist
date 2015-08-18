@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r715 - trunk/096/pkg/mobiles/brainAI/scripts/combat
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r715%20-%20trunk/096/pkg/mobiles/brainAI/scripts/combat&In-Reply-To=%3C200510300949.j9U9n3XN019599%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000688.html">
+   <LINK REL="Next"  HREF="000690.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r715 - trunk/096/pkg/mobiles/brainAI/scripts/combat</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r715%20-%20trunk/096/pkg/mobiles/brainAI/scripts/combat&In-Reply-To=%3C200510300949.j9U9n3XN019599%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r715 - trunk/096/pkg/mobiles/brainAI/scripts/combat">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct 30 10:49:03 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000688.html">[Poldistro-svn] r714 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC
+</A></li>
+        <LI>Next message: <A HREF="000690.html">[Poldistro-svn] r716 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#689">[ date ]</a>
+              <a href="thread.html#689">[ thread ]</a>
+              <a href="subject.html#689">[ subject ]</a>
+              <a href="author.html#689">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-30 10:49:03 +0100 (Sun, 30 Oct 2005)
+New Revision: 715
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/scripts/combat/rigger.src
+Log:
+Throws poop at opponents! ewwwww
+
+Added: trunk/096/pkg/mobiles/brainAI/scripts/combat/rigger.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/combat/rigger.src	2005-10-30 09:37:07 UTC (rev 714)
++++ trunk/096/pkg/mobiles/brainAI/scripts/combat/rigger.src	2005-10-30 09:49:03 UTC (rev 715)
+@@ -0,0 +1,98 @@
++// $Id: combat.src 475 2005-10-09 10:53:16Z austin $
++
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:poisonwatcher:poisons&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	var nerve_name	:= params[2];
++	var event	:= params[3];
++	var settings	:= params[4];
++	var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++
++	//Store it here so it does not have to do the math over and over.
++	var flee_level := AP_GetVitalMaximumValue(npc, &quot;Hits&quot;) * (CDbl(settings[&quot;FleeLevel&quot;])/100.0);
++
++	var opponent := event.source;
++	var flee_mode := 0;
++
++	AI_SetOpponent(npc, opponent);
++
++	while ( npc )
++		var dist := Distance(npc, opponent);
++		if ( ShouldFlee(npc, flee_level, flee_mode) )
++			flee_mode := 1;
++			AI_WarMode(npc, 0);
++			AI_Move(npc, opponent, NEMOVE_AWAY, NEMOVE_RUN, WAKEUP, 100);
++		elseif ( DoneFighting(npc, opponent, dist) )
++			if ( scripts.Exists(&quot;EonFight&quot;) )
++				params := array{opponent, settings, scripts};
++				AI_StartNerve(npc, &quot;EndFight&quot;, scripts[&quot;EndFight&quot;].script, params);
++			else
++				AI_WarMode(npc, 0);
++			endif
++			AI_EndNerve(npc, nerve_name);
++		elseif( dist &gt; 1 )
++			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, dist+1);
++		endif
++		
++		ShitToss(npc, opponent, dist);
++
++		sleepms(400);
++		AI_ClearThoughts(npc, CLR_NERVE);
++	endwhile
++endprogram
++
++function DoneFighting(npc, opponent, byref dist)
++	if ( opponent.dead )
++		return 1;
++	elseif ( !opponent )
++		return 1;
++	elseif ( opponent.hidden )
++		return 1;
++	elseif ( opponent.concealed &gt; npc.cmdlevel )
++		return 1;
++	elseif ( dist &gt; 20 )
++		return 1;
++	elseif ( dist &gt; 10 &amp;&amp; !CheckLineOfSight(npc, opponent) )
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++function ShouldFlee(npc, byref flee_level, byref flee_mode)
++	if ( flee_mode )
++		return 1;
++	elseif ( AP_GetVital(npc, &quot;Hits&quot;) &lt; flee_level )
++		if ( !flee_mode )
++			AI_Speak(npc, &quot;Meez wuntz no moooore of dis!&quot;);
++		endif
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++function ShitToss(npc, opponent, byref dist)
++	if ( CInt( GetObjProperty(npc, &quot;#NextShoot&quot;) ) &lt; ReadGameClock() )
++		if ( RandomInt(10) == 1 )
++			if ( dist &lt;= 8 )
++				if ( CheckLineOfSight(npc, opponent) )
++					AI_Speak(npc, &quot;Take dat yuuz stinkar!!!&quot;, SPEAK_TEXTTYPE_YELL);
++					AI_Turn(npc, opponent, NETURN_TOWARD);
++					PlayMovingEffect(npc, opponent, 3900, 10, 10);
++					PrintTextAbove(opponent, &quot;*SPLAT!*&quot;);
++					AddPoison(opponent, &quot;poostink&quot;, 30, npc);
++					SetObjProperty(npc, &quot;#NextShoot&quot;, ReadGameClock()+30);
++				endif
++			endif
++		endif
++	endif
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000688.html">[Poldistro-svn] r714 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC
+</A></li>
+	<LI>Next message: <A HREF="000690.html">[Poldistro-svn] r716 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#689">[ date ]</a>
+              <a href="thread.html#689">[ thread ]</a>
+              <a href="subject.html#689">[ subject ]</a>
+              <a href="author.html#689">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

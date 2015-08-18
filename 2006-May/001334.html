@@ -1,0 +1,688 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1365 - in trunk/096/pkg/OLD/systems: . config config/config config/include scheduler scheduler/config scheduler/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1365%20-%20in%20trunk/096/pkg/OLD/systems%3A%20.%20config%20config/config%20config/include%20scheduler%20scheduler/config%20scheduler/include&In-Reply-To=%3C200605122121.k4CLLNU6032538%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001333.html">
+   <LINK REL="Next"  HREF="001335.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1365 - in trunk/096/pkg/OLD/systems: . config config/config config/include scheduler scheduler/config scheduler/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1365%20-%20in%20trunk/096/pkg/OLD/systems%3A%20.%20config%20config/config%20config/include%20scheduler%20scheduler/config%20scheduler/include&In-Reply-To=%3C200605122121.k4CLLNU6032538%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1365 - in trunk/096/pkg/OLD/systems: . config config/config config/include scheduler scheduler/config scheduler/include">austin at berlios.de
+       </A><BR>
+    <I>Fri May 12 23:21:23 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001333.html">[Poldistro-svn] r1364 - in trunk/096/pkg/OLD: . utils utils/utilsdate
+</A></li>
+        <LI>Next message: <A HREF="001335.html">[Poldistro-svn] r1366 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1334">[ date ]</a>
+              <a href="thread.html#1334">[ thread ]</a>
+              <a href="subject.html#1334">[ subject ]</a>
+              <a href="author.html#1334">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-12 23:21:22 +0200 (Fri, 12 May 2006)
+New Revision: 1365
+
+Added:
+   trunk/096/pkg/OLD/systems/config/
+   trunk/096/pkg/OLD/systems/config/config/
+   trunk/096/pkg/OLD/systems/config/config/icp.cfg
+   trunk/096/pkg/OLD/systems/config/config/shardconfig.cfg
+   trunk/096/pkg/OLD/systems/config/include/
+   trunk/096/pkg/OLD/systems/config/include/config.inc
+   trunk/096/pkg/OLD/systems/config/pkg.cfg
+   trunk/096/pkg/OLD/systems/config/uoclient.cfg
+   trunk/096/pkg/OLD/systems/scheduler/
+   trunk/096/pkg/OLD/systems/scheduler/config/
+   trunk/096/pkg/OLD/systems/scheduler/config/icp.cfg
+   trunk/096/pkg/OLD/systems/scheduler/include/
+   trunk/096/pkg/OLD/systems/scheduler/include/scheduler.inc
+   trunk/096/pkg/OLD/systems/scheduler/pkg.cfg
+   trunk/096/pkg/OLD/systems/scheduler/scheduler.src
+   trunk/096/pkg/OLD/systems/scheduler/start.src
+Log:
+
+
+Added: trunk/096/pkg/OLD/systems/config/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/OLD/systems/config/config/icp.cfg	2006-05-12 21:16:24 UTC (rev 1364)
++++ trunk/096/pkg/OLD/systems/config/config/icp.cfg	2006-05-12 21:21:22 UTC (rev 1365)
+@@ -0,0 +1,13 @@
++# $Id: icp.cfg 259 2005-09-26 08:25:45Z panosl $
++ICP Register
++{
++        Name            Shard Config
++        Version         1.0
++        Description     Configures various shard behaviours such as Shard Name, logout timers, etc.
++
++        Creator         Hesinde-Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+
+Added: trunk/096/pkg/OLD/systems/config/config/shardconfig.cfg
+===================================================================
+--- trunk/096/pkg/OLD/systems/config/config/shardconfig.cfg	2006-05-12 21:16:24 UTC (rev 1364)
++++ trunk/096/pkg/OLD/systems/config/config/shardconfig.cfg	2006-05-12 21:21:22 UTC (rev 1365)
+@@ -0,0 +1,21 @@
++# $Id: shardconfig.cfg 236 2005-09-25 09:06:19Z panosl $
++#
++# Purpose
++# Configure various shard behaviours
++#
++
++ShardConfig Main
++{
++	ShardName           &quot;Your Shard&quot;
++
++	# Linger times: The linger time is the time in seconds which has to pass before a character can logout.
++	StaffLingerTime     0
++	PlayerLingerTime    300
++
++	# Offset from GMT
++	TimeZone            1
++
++	# Time between saves in minutes, time of announcement before save in minutes
++	SaveTime            60
++	SaveAnnounce        2
++}
+
+Added: trunk/096/pkg/OLD/systems/config/include/config.inc
+===================================================================
+--- trunk/096/pkg/OLD/systems/config/include/config.inc	2006-05-12 21:16:24 UTC (rev 1364)
++++ trunk/096/pkg/OLD/systems/config/include/config.inc	2006-05-12 21:21:22 UTC (rev 1365)
+@@ -0,0 +1,210 @@
++/* $Id: config.inc 896 2005-11-04 07:03:59Z muaddiblsd $
++ *
++ * Purpose
++ * Provide various functions and constants for the shard's behaviour.
++ *
++ */
++use cfgfile;
++use os;
++
++include &quot;:logger:exception&quot;;
++
++CONST SHARD_CFG     := &quot;:config:config/shardconfig&quot;;
++CONST DEFAULT_KEY   := &quot;Main&quot;;
++
++enum CFG_ENTRIES
++    SHARD_NAME      := &quot;ShardName&quot;,
++    SHARD_TIMEZONE  := &quot;TimeZone&quot;,
++
++    LINGER_STAFF    := &quot;StaffLingerTime&quot;,
++    LINGER_PLAYER   := &quot;PlayerLingerTime&quot;,
++
++    REGEN_HITS      := &quot;HitsRegenRate&quot;,
++    REGEN_MANA      := &quot;ManaRegenRate&quot;,
++    REGEN_STAM      := &quot;StamRegenRate&quot;,
++
++    SAVE_TIME       := &quot;SaveTime&quot;,
++    SAVE_ANNOUNCE   := &quot;SaveAnnounce&quot;
++endenum
++
++
++/*
++ * QueryConfigString(what)
++ *
++ * Purpose
++ * Returns a config string from the config file passed. If no
++ * config file, or elem name, is passed, it uses the defaults.
++ * shardconfig.cfg is the default config file, Main is the
++ * default elem name.
++ *
++ * Parameters
++ * what:	The name of the config elem to return
++ * cfg_file:	Optional. Packaged name of the config file.
++ * elem_name:	Optional. Elem name to look up in the config.
++ *
++ * Return value
++ * The config file's value for the desired elem.
++ *
++ */
++function QueryConfigString(what, cfg_file:=SHARD_CFG, elem_name:=DEFAULT_KEY)
++	var ret_value := GetConfigString(FindConfigElem(ReadConfigFile(cfg_file), elem_name), what);
++	if( ret_value.errortext )
++		SysLog(&quot;Error::QueryConfigString() - Unable to open [&quot;+cfg_file+&quot;] -&gt;&quot;+ret_value.errortext);
++	endif
++	return ret_value;
++endfunction
++
++
++/*
++ * QueryConfigInt(what)
++ *
++ * Returns a config integer from the config file passed. If no
++ * config file, or elem name, is passed, it uses the defaults.
++ * shardconfig.cfg is the default config file, Main is the
++ * default elem name.
++ *
++ * Parameters
++ * what:	The name of the config elem to return
++ * cfg_file:	Optional. Packaged name of the config file.
++ * elem_name:	Optional. Elem name to look up in the config.
++ *
++ * Return value
++ * The config file's value for the desired elem.
++ *
++ */
++function QueryConfigInt(what, cfg_file:=SHARD_CFG, elem_name:=DEFAULT_KEY)
++	var ret_value := GetConfigInt(FindConfigElem(ReadConfigFile(cfg_file), elem_name), what);
++	if( ret_value.errortext )
++		SysLog(&quot;Error::QueryConfigInt() - Unable to open [&quot;+cfg_file+&quot;] -&gt;&quot;+ret_value.errortext);
++	endif
++	return ret_value;
++endfunction
++
++
++/*
++ * GetShardName()
++ *
++ * Purpose
++ * Returns the shard's name as specified in the config file.
++ *
++ * Parameters
++ * No parameters.
++ *
++ * Return value
++ * The shard's name.
++ *
++ */
++function GetShardName()
++    return(QueryConfigString(SHARD_NAME));
++endfunction
++
++
++/*
++ * GetStaffLingerTime()
++ *
++ * Purpose
++ * Returns the linger time for staff in seconds.
++ *
++ * Parameters
++ * No parameters.
++ *
++ * Return value
++ * The staff linger time in seconds.
++ *
++ */
++function GetStaffLingerTime()
++    return(QueryConfigInt(LINGER_STAFF));
++endfunction
++
++
++/*
++ * GetPlayerLingerTime()
++ *
++ * Purpose
++ * Returns the linger time for players in seconds.
++ *
++ * Parameters
++ * No parameters.
++ *
++ * Return value
++ * The player linger time in seconds.
++ *
++ */
++function GetPlayerLingerTime()
++    return(QueryConfigInt(LINGER_PLAYER));
++endfunction
++
++
++/*
++ * GetTimeZone()
++ *
++ * Purpose
++ * Returns the timezone offset from the GMT time.
++ *
++ * Parameters
++ * No parameters.
++ *
++ * Return value
++ * The offset from GMT
++ *
++ */
++function GetTimeZone()
++    return(QueryConfigInt(SHARD_TIMEZONE));
++endfunction
++
++
++/*
++ * GetDefaultRegenRate(stat)
++ *
++ * Purpose
++ * Returns the default regen rate of a stat
++ *
++ * Parameters
++ * stat:    The stat to query
++ *
++ * Return value
++ * The default stat regen rate
++ *
++ */
++function GetDefaultRegenRate(stat)
++    if(stat != REGEN_HITS &amp;&amp; stat != REGEN_MANA &amp;&amp; stat != REGEN_STAM)
++        return(Exception(&quot;config::GetDefaultRegenRate: Invalid stat '&quot; + CStr(stat) + &quot;'.&quot;));
++    endif
++    return(QueryConfigInt(stat));
++endfunction
++
++
++/*
++ * GetSaveTime()
++ *
++ * Purpose
++ * Returns the time between saves in minutes
++ *
++ * Parameters
++ * No parameters
++ *
++ * Return value
++ * The time between saves in minutes
++ *
++ */
++function GetSaveTime()
++    return(QueryConfigInt(SAVE_TIME));
++endfunction
++
++
++/*
++ * GetSaveAnnounceTime()
++ *
++ * Purpose
++ * Returns the time of the save announcement before a save in minutes
++ *
++ * Parameters
++ * No parameters
++ *
++ * Return value
++ * The offset of the save time and announce time
++ *
++ */
++function GetSaveAnnounceTime()
++    return(QueryConfigInt(SAVE_ANNOUNCE));
++endfunction
+
+Added: trunk/096/pkg/OLD/systems/config/pkg.cfg
+===================================================================
+--- trunk/096/pkg/OLD/systems/config/pkg.cfg	2006-05-12 21:16:24 UTC (rev 1364)
++++ trunk/096/pkg/OLD/systems/config/pkg.cfg	2006-05-12 21:21:22 UTC (rev 1365)
+@@ -0,0 +1,14 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled         0
++Name		config
++Version         1.0
++
++CoreRequired    96
++
++Creator		Hesinde-Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+\ No newline at end of file
+
+Added: trunk/096/pkg/OLD/systems/config/uoclient.cfg
+===================================================================
+--- trunk/096/pkg/OLD/systems/config/uoclient.cfg	2006-05-12 21:16:24 UTC (rev 1364)
++++ trunk/096/pkg/OLD/systems/config/uoclient.cfg	2006-05-12 21:21:22 UTC (rev 1365)
+@@ -0,0 +1,47 @@
++# Protocol
++# {
++#   # EnableFlowControlPackets: use the 0x33 (0x00 / 0x01) pause/restart packets.
++#   # Though OSI seems to no longer send these packets, they seem to help with smoothness,
++#   # particularly with boat movement.
++#   # NOTE: causes clients 4.0.0e and newer to fail login
++#   EnableFlowControlPackets    1
++# }
++#
++# Listener
++# {
++#   Port (int port number 1024..65535)
++#   Encryption (string encryption type)
++# }
++#
++# Explanation:
++# The left-hand-side &quot;Strength&quot;, &quot;Intelligence&quot;, and &quot;Dexterity&quot; are Attribute names that
++# MUST be defined in attributes.cfg.
++# The right-hand-side &quot;Life&quot;, &quot;Mana&quot;, and &quot;Stamina&quot; are Vital names that
++# MUST be defined in vitals.cfg.
++# MaxSkillID allows you to use new client skills, but setting it too high can crash older clients.
++# You must define skills.cfg entries for each skillID up to MaxSkillID (default 51).
++# The Protocol and Listener sections are optional.
++# Each Listener section allows you to listen for different client encryption types on different ports.
++# This means you can listen for &quot;1.26.4&quot; clients on port 5003 and &quot;ignition&quot; clients on port 5555.
++# Valid encryption types are found in the pol.cfg section. If you use Listeners set ListenPort
++# in pol.cfg to 0.
++
++Protocol Protocol
++{
++	EnableFlowControlPackets 0
++}
++
++
++Listener 2.0.0
++{
++	#
++	# Enabled mostly for development purposes
++	# Will be removed when distro goes final
++	Port		5002
++	Encryption	2.0.0
++}
++Listener None
++{
++	Port		5003
++	Encryption	none
++}
+
+Added: trunk/096/pkg/OLD/systems/scheduler/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/OLD/systems/scheduler/config/icp.cfg	2006-05-12 21:16:24 UTC (rev 1364)
++++ trunk/096/pkg/OLD/systems/scheduler/config/icp.cfg	2006-05-12 21:21:22 UTC (rev 1365)
+@@ -0,0 +1,13 @@
++ICP Register
++{
++	Name		Scheduler
++	Version		1.0
++
++	Description	Handles startup scripts. Keeps the startup system more organized.
++
++	Creator		Hesinde-Team
++	Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/OLD/systems/scheduler/include/scheduler.inc
+===================================================================
+--- trunk/096/pkg/OLD/systems/scheduler/include/scheduler.inc	2006-05-12 21:16:24 UTC (rev 1364)
++++ trunk/096/pkg/OLD/systems/scheduler/include/scheduler.inc	2006-05-12 21:21:22 UTC (rev 1365)
+@@ -0,0 +1,86 @@
++/* $Id: scheduler.inc 981 2005-11-14 01:58:17Z austin $
++ *
++ * Purpose
++ * Provide various functions and constants for the automatic script loader / scheduler
++ *
++ * Notes
++ * A PKG can register multiple scripts which are to be loaded when the server is started.
++ * I decided to use this method instead of start.src because start.src starts all scripts
++ * at the same time unless you run them critically.
++ * To register scripts, simply add a file &quot;autoload.cfg&quot; to your PKG and add entries in this
++ * form:
++ *
++ * Autoload PKGName
++ * {
++ *     Script       ScriptName      // The script to be started
++ *     Resistent    1/0             // Does the script finish or loop?
++ *     Name         FriendlyName    // A short, one word name for the action, like &quot;Saver&quot;
++ *     Priority     0-255           // Priority, higher = started earlier
++ * }
++ *
++ * When a script is started by the scheduler, it has to call Wait(SCHED_LOAD) immediately in
++ * order to wait for it's scheduling time.
++ * After that, let the script do it's work. If it's a resistent script, call Send(SCHED_LOOP)
++ * right before you enter the script's loop.
++ * If the script is not resistent, call Send(SCHED_DONE) before returning. *Always* send it,
++ * even if the script fails, else the scheduler won't start the other scripts because it will
++ * wait for yours!
++ *
++ */
++use os;
++
++include &quot;:logger:exception&quot;;
++include &quot;include/properties&quot;;
++
++const SCHED_TIMEOUT := 5;               // Timeout for Wait_For_Event()
++
++enum SCHED_EVENTS
++    SCHED_LOAD  := 1,
++    SCHED_DONE  := 2,
++    SCHED_LOOP  := 3
++endenum
++
++
++/*
++ * Wait(what)
++ *
++ * Purpose
++ * Waits for a signal.
++ *
++ * Parameters
++ * what:    The signal to wait for
++ *
++ * Return value
++ * No return value.
++ *
++ */
++function Wait(what, time := SCHED_TIMEOUT)
++	while( Wait_For_Event(time) != what )
++	endwhile
++
++	return 1;
++endfunction
++
++
++/*
++ * Send(what)
++ *
++ * Purpose
++ * Send a signal to the scheduler.
++ *
++ * Parameters
++ * what:    The signal to send
++ *
++ * Return value
++ * No return value.
++ *
++ */
++function Send(what)
++	var sched := GetProcess(GetGlobalProperty(TEMPPROP_SCHED_PID));
++	if (!sched)
++		return(Exception(&quot;Send(): Couldn't query scheduler&quot;));
++	endif
++	sched.sendevent(what);
++
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/OLD/systems/scheduler/pkg.cfg
+===================================================================
+--- trunk/096/pkg/OLD/systems/scheduler/pkg.cfg	2006-05-12 21:16:24 UTC (rev 1364)
++++ trunk/096/pkg/OLD/systems/scheduler/pkg.cfg	2006-05-12 21:21:22 UTC (rev 1365)
+@@ -0,0 +1,14 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled		0
++Name		scheduler
++Version		1.0
++
++Creator		Hesinde-Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++CoreRequired	96
+
+Added: trunk/096/pkg/OLD/systems/scheduler/scheduler.src
+===================================================================
+--- trunk/096/pkg/OLD/systems/scheduler/scheduler.src	2006-05-12 21:16:24 UTC (rev 1364)
++++ trunk/096/pkg/OLD/systems/scheduler/scheduler.src	2006-05-12 21:21:22 UTC (rev 1365)
+@@ -0,0 +1,97 @@
++/* $Id: scheduler.src 981 2005-11-14 01:58:17Z austin $
++ *
++ * Purpose
++ * This script is called by the main start script.
++ * It will start all other autostart scripts and optionally register their PIDs.
++ *
++ */
++use uo;
++use polsys;
++use cfgfile;
++use os;
++
++include &quot;:logger:exception&quot;;
++include &quot;:scheduler:scheduler&quot;;
++
++
++program StartScheduler()
++	var cfg;
++	var glob_desc := array{};
++
++	set_script_option(SCRIPTOPT_NO_RUNAWAY, 1);
++	SetGlobalProperty(TEMPPROP_SCHED_PID, GetPID());
++	print(&quot;Starting script scheduler...&quot;);
++	foreach pkg in ( Packages() )
++		cfg := ReadConfigFile(&quot;:&quot; + pkg.name + &quot;:config/autoLoad&quot;);
++		if ( cfg != error )
++			Process(pkg, cfg, glob_desc);
++		endif
++	endforeach
++	Sort(glob_desc);
++	Schedule(glob_desc);
++	SetGlobalProperty(PROP_PID, glob_desc);
++	print(&quot;All automatically loaded scripts running.&quot;);
++	EraseGlobalProperty(TEMPPROP_SCHED_PID);
++
++	return 1;
++endprogram
++
++function Process(byref pkg, byref cfg, byref glob_desc)
++	foreach entry in ( GetConfigStringKeys(cfg) )
++		var script;
++		var desc := struct;
++		var elem := FindConfigElem(cfg, entry);
++
++		print(&quot;Loading &quot; + elem.Name + &quot;...&quot;);
++		script := start_script(&quot;:&quot; + pkg.name + &quot;:&quot; + elem.Script);
++		if ( !script )
++			Exception(&quot;Scheduler::Process(): Couldn't start auto script '&quot; + pkg.Name + &quot;:&quot; + elem.Script + &quot;'&quot;);
++		else
++			desc.+Name := elem.Name;
++			desc.+Script := elem.Script;
++			desc.+Resistent := elem.Resistent;
++			desc.+Priority := elem.Priority;
++			desc.+PID := script.pid;
++			glob_desc.Append(desc);
++		endif
++	endforeach
++
++	return 1;
++endfunction
++
++
++function Sort(byref scripts)
++	var i, j;
++
++	for ( i := 1; i &lt;= scripts.Size(); i := i + 1 )
++		for ( j := scripts.Size(); j &gt; i; j := j - 1 )
++			if ( scripts[j].Priority &gt;= scripts[j - 1].Priority )
++				var temp := scripts[j];
++				scripts[j] := scripts[j - 1];
++				scripts[j - 1] := temp;
++			endif
++		endfor
++	endfor
++
++	return 1;
++endfunction
++
++
++function Schedule(byref scripts)
++	var start := 1;
++	while ( scripts.Size() &gt;= start )
++		var script := scripts[start];
++
++		print(&quot;Starting &quot; + script.Name + &quot;...&quot;);
++		GetProcess(script.PID).sendevent(SCHED_LOAD);
++		if ( !script.Resistent )
++			Wait(SCHED_DONE);
++			scripts.Erase(start);
++		else
++			Wait(SCHED_LOOP);
++			start := start + 1;
++		endif
++	endwhile
++
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/OLD/systems/scheduler/start.src
+===================================================================
+--- trunk/096/pkg/OLD/systems/scheduler/start.src	2006-05-12 21:16:24 UTC (rev 1364)
++++ trunk/096/pkg/OLD/systems/scheduler/start.src	2006-05-12 21:21:22 UTC (rev 1365)
+@@ -0,0 +1,26 @@
++/* $Id: start.src 1005 2005-11-15 09:20:06Z muaddiblsd $
++ *
++ * Purpose
++ * This script is called when the server starts up.
++ * It will start the script scheduler which will in turn start other start scripts.
++ *
++ * Parameters: None
++ *
++ * Return value: Ignored
++ *
++ */
++use uo;
++use os;
++
++include &quot;:logger:exception&quot;;
++include &quot;:logger:log&quot;;
++include &quot;include/time&quot;;
++
++program StartServer()
++	Log(LOG_MAIN, &quot;Server started.&quot;);
++	if ( !start_script(&quot;scheduler&quot;) )
++		Exception(&quot;::start:StartServer(): Couldn't start the script scheduler.&quot;);
++	endif
++	
++	return 1;
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001333.html">[Poldistro-svn] r1364 - in trunk/096/pkg/OLD: . utils utils/utilsdate
+</A></li>
+	<LI>Next message: <A HREF="001335.html">[Poldistro-svn] r1366 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1334">[ date ]</a>
+              <a href="thread.html#1334">[ thread ]</a>
+              <a href="subject.html#1334">[ subject ]</a>
+              <a href="author.html#1334">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

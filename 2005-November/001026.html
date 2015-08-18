@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1053 - trunk/096/pkg/systems/attributes/startup
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1053%20-%20trunk/096/pkg/systems/attributes/startup&In-Reply-To=%3C200511240554.jAO5sjBR029073%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001025.html">
+   <LINK REL="Next"  HREF="001027.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1053 - trunk/096/pkg/systems/attributes/startup</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1053%20-%20trunk/096/pkg/systems/attributes/startup&In-Reply-To=%3C200511240554.jAO5sjBR029073%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1053 - trunk/096/pkg/systems/attributes/startup">austin at berlios.de
+       </A><BR>
+    <I>Thu Nov 24 06:54:45 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001025.html">[Poldistro-svn] r1052 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001027.html">[Poldistro-svn] r1054 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1026">[ date ]</a>
+              <a href="thread.html#1026">[ thread ]</a>
+              <a href="subject.html#1026">[ subject ]</a>
+              <a href="author.html#1026">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-24 06:54:35 +0100 (Thu, 24 Nov 2005)
+New Revision: 1053
+
+Modified:
+   trunk/096/pkg/systems/attributes/startup/attributeCache.src
+Log:
+Fixes a bug with caching categories.
+The type names are now properly stored in lowercase.
+
+Modified: trunk/096/pkg/systems/attributes/startup/attributeCache.src
+===================================================================
+--- trunk/096/pkg/systems/attributes/startup/attributeCache.src	2005-11-24 05:42:10 UTC (rev 1052)
++++ trunk/096/pkg/systems/attributes/startup/attributeCache.src	2005-11-24 05:54:35 UTC (rev 1053)
+@@ -18,9 +18,9 @@
+ 	var cfg_file := AP_GetAttributesCfgFile();
+ 	foreach elem_name in ( GetConfigStringKeys(cfg_file) )
+ 		var cfg_elem := AP_GetAttributeCfgElem(elem_name, cfg_file);
+-		var type_name := cfg_elem.AttributeType;
++		var type_name := Lower(cfg_elem.AttributeType);
+ 		if ( !type_name )
+-			type_name := &quot;Unknown&quot;;
++			type_name := &quot;unknown&quot;;
+ 		endif
+ 		
+ 		var type_list := data_elem.GetProp(type_name);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001025.html">[Poldistro-svn] r1052 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001027.html">[Poldistro-svn] r1054 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1026">[ date ]</a>
+              <a href="thread.html#1026">[ thread ]</a>
+              <a href="subject.html#1026">[ subject ]</a>
+              <a href="author.html#1026">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

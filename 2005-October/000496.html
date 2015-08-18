@@ -1,0 +1,1990 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r523 - in trunk/096/pkg/commands: . admin building gm seer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r523%20-%20in%20trunk/096/pkg/commands%3A%20.%20admin%20building%20gm%20seer&In-Reply-To=%3C200510101533.j9AFX3FW026311%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000495.html">
+   <LINK REL="Next"  HREF="000497.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r523 - in trunk/096/pkg/commands: . admin building gm seer</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r523%20-%20in%20trunk/096/pkg/commands%3A%20.%20admin%20building%20gm%20seer&In-Reply-To=%3C200510101533.j9AFX3FW026311%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r523 - in trunk/096/pkg/commands: . admin building gm seer">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 17:33:03 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000495.html">[Poldistro-svn] r522 - trunk/096/config
+</A></li>
+        <LI>Next message: <A HREF="000497.html">[Poldistro-svn] r524 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#496">[ date ]</a>
+              <a href="thread.html#496">[ thread ]</a>
+              <a href="subject.html#496">[ subject ]</a>
+              <a href="author.html#496">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 17:33:01 +0200 (Mon, 10 Oct 2005)
+New Revision: 523
+
+Added:
+   trunk/096/pkg/commands/building/
+   trunk/096/pkg/commands/building/addset.src
+   trunk/096/pkg/commands/building/colorRect.src
+   trunk/096/pkg/commands/building/create.src
+   trunk/096/pkg/commands/building/createAt.src
+   trunk/096/pkg/commands/building/createRect.src
+   trunk/096/pkg/commands/building/createStack.src
+   trunk/096/pkg/commands/building/destroy.src
+   trunk/096/pkg/commands/building/destroyFloor.src
+   trunk/096/pkg/commands/building/destroyRadius.src
+   trunk/096/pkg/commands/building/destroyRect.src
+   trunk/096/pkg/commands/building/destroyType.src
+   trunk/096/pkg/commands/building/lockRadius.src
+   trunk/096/pkg/commands/building/los.src
+   trunk/096/pkg/commands/building/losAt.src
+   trunk/096/pkg/commands/building/makeFloor.src
+   trunk/096/pkg/commands/building/makeSet.src
+   trunk/096/pkg/commands/building/moveItem.src
+   trunk/096/pkg/commands/building/moveRect.src
+   trunk/096/pkg/commands/building/mpx.src
+   trunk/096/pkg/commands/building/mpy.src
+   trunk/096/pkg/commands/building/mpz.src
+   trunk/096/pkg/commands/building/rangeRect.src
+   trunk/096/pkg/commands/building/skinner.src
+   trunk/096/pkg/commands/building/tileInfo.src
+   trunk/096/pkg/commands/building/unlockRadius.src
+Removed:
+   trunk/096/pkg/commands/admin/restart.src
+   trunk/096/pkg/commands/admin/restartall.src
+   trunk/096/pkg/commands/gm/addset.src
+   trunk/096/pkg/commands/gm/attack.src
+   trunk/096/pkg/commands/gm/makeset.src
+   trunk/096/pkg/commands/gm/mdestroy.src
+   trunk/096/pkg/commands/seer/create.src
+   trunk/096/pkg/commands/seer/createat.src
+   trunk/096/pkg/commands/seer/createnpc.src
+   trunk/096/pkg/commands/seer/createstack.src
+   trunk/096/pkg/commands/seer/mpx.src
+   trunk/096/pkg/commands/seer/mpy.src
+   trunk/096/pkg/commands/seer/mpz.src
+Modified:
+   trunk/096/pkg/commands/gm/powerup.src
+Log:
+
+
+Deleted: trunk/096/pkg/commands/admin/restart.src
+===================================================================
+--- trunk/096/pkg/commands/admin/restart.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/admin/restart.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,17 +0,0 @@
+-
+-use uo;
+-
+-program textcmd_action( who, newscript )
+-    SendSysMessage( who, &quot;Target an NPC to restart&quot; );
+-
+-    var npc := Target( who, TGTOPT_NOCHECK_LOS );
+-    if (npc)
+-        if (newscript)
+-            npc.script := newscript;
+-        endif
+-        var res := RestartScript( npc );
+-        if (!res)
+-            SendSysMessage( who, &quot;Unable to restart: &quot; + res.errortext );
+-        endif
+-    endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/admin/restartall.src
+===================================================================
+--- trunk/096/pkg/commands/admin/restartall.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/admin/restartall.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,23 +0,0 @@
+-use uo;
+-use os;
+-
+-var number := 0;
+-program npcres( you )
+-
+-set_critical(0);
+-
+-var x, y, z;
+-for( x := 6144; x &gt; 16; x := x  - 32) //FIXME realm
+-   SendSysMessage(you, &quot;Restarting NPCs, X=&quot; + x );
+-    for( y := 16; y &lt; 4096; y := y + 32 )
+-        for( z := -60; z &lt;= 60; z := z + 30 )
+-            foreach npc in ListMobilesNearLocation( x, y, z, 32, you.realm )
+-		RestartScript( npc );
+-		number := number + 1;
+-            endforeach
+-        endfor
+-    endfor
+-    SendSysMessage(you, &quot;Total NPCs restarted:&quot; + number);
+-endfor
+-
+-endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/building/addset.src
+===================================================================
+--- trunk/096/pkg/commands/building/addset.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/addset.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,85 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:gumps:yesno&quot;;
++
++program textcmd_MakeSet(who , text)
++	if( !text )
++		SendSysMessage(who, &quot;Syntax: .addset [name]&quot;);
++		return;
++	else
++		if(!yesno(who, &quot;Do you wish to name this set: &quot; + text))
++			return 0;
++		endif
++	endif
++	
++	SendSysMessage(who, &quot;Select the North West corner of what you wish to template.&quot;);
++	var nw_targ := TargetCoordinates(who);
++	if( !nw_targ )
++		SendSysMessage(who, &quot;Missing NW coordinate. Aborting.&quot;, 3, 40);
++		return 0;
++	endif
++		
++	SendSysMessage(who, &quot;Select the South East corner of what you wish to template.&quot;);
++	var se_targ := TargetCoordinates(who);
++	if( !se_targ )
++		SendSysMessage(who, &quot;Missing SE coordinate. Aborting.&quot;, 3, 40);
++		return 0;
++	endif
++	
++	var startx, starty, endx, endy;
++	if( nw_targ.x &lt;= se_targ.x )
++		startx := nw_targ.x;
++		endx	 := se_targ.x;
++	else
++		startx := se_targ.x;
++		endx	 := nw_targ.x;
++	endif
++	if( nw_targ.y &lt;= se_targ.y )
++		starty := nw_targ.y;
++		endy	 := se_targ.y;
++	else
++		starty := se_targ.y;
++		endy	 := nw_targ.y;
++	endif
++	
++	var config := readconfigfile(&quot;::sets&quot;);
++	if( config[text] )
++		SendSysMessage(who, &quot;Error: There is already a set called &quot; + text, 3, 40);
++		return;
++	endif
++	
++	var itemlist := struct;
++	var iteminfo := struct;
++	iteminfo.+name;
++	iteminfo.+value;
++	
++	SendSysMessage(who, &quot;Target a piece of the item you wish to use as a reference point.&quot;);
++	SendSysMessage(who, &quot;The reference point will be used for recreating this set.&quot;);
++	
++	var targ := TargetCoordinates(who);
++	if( !targ )
++		return 0;
++	endif
++	
++	foreach item in (ListObjectsInBox(startx, starty, -100, endx, endy, 100, who.realm))
++		if ( item.ISA(POLCLASS_ITEM) )
++			iteminfo.name := &quot;item&quot;;
++			iteminfo.value := CInt(item.objtype) + &quot; &quot; + item.graphic + &quot; &quot; + item.color + &quot; &quot; + (item.x-targ.x) + &quot; &quot; + (item.y-targ.y) + &quot; &quot; + (item.z-targ.z) + &quot; \/\/&quot; + item.desc;
++			
++			itemlist.Append(iteminfo);
++			sleepms(2);
++		endif
++	endforeach
++	
++	AppendConfigFileElem( &quot;::sets&quot;, &quot;set&quot;, text, itemlist);
++	UnloadConfigFile(&quot;::sets&quot;);
++	
++	SendSysMessage(who, &quot;Done!&quot;);
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/building/colorRect.src
+===================================================================
+--- trunk/096/pkg/commands/building/colorRect.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/colorRect.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,52 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++program textcmd_ColorRect(who, text)
++	
++	text := SplitWords(text);
++	
++	var color := text[1];
++	var zheight := CInt(text[2]);
++	var objtype := CInt(text[3]);
++	
++	if ( !color )
++		SendSysMessage(who, &quot;Syntax: .colorrect &lt;color #&gt; (zheight) (objtype)&quot;);
++		return;
++	elseif ( !zheight )
++		zheight := who.z;
++	endif
++	
++	color := CInt(color);
++
++	SendSysMessage(who, &quot;Target the top-left corner&quot;);
++	var topleft := TargetCoordinates( who );
++	if ( !topleft )
++		return 0;
++	endif
++	SendSysMessage(who, &quot;Target the bottom-left corner&quot;);
++	var botright := TargetCoordinates( who );
++	if ( !botright )
++		return 0;
++	endif
++	
++	if ( (topleft.x &lt;= botright.x) &amp;&amp; (topleft.y &lt;= botright.y) )
++		var x, y;
++		for( x := topleft.x; x &lt;= botright.x; x := x + 1 )
++			for( y := topleft.y; y &lt;= botright.y; y := y + 1 )
++				foreach item in ListItemsNearLocation(x, y, zheight, 0, who.realm)
++					if ( item.objtype == objtype || !objtype )
++						item.color := color;
++					endif
++					sleepms(2);
++				endforeach
++				sleepms(2);
++			endfor
++			sleepms(2);
++		endfor
++	endif
++endprogram
+
+Added: trunk/096/pkg/commands/building/create.src
+===================================================================
+--- trunk/096/pkg/commands/building/create.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/create.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,38 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++program textcmd_Create(who, text)
++	text := SplitWords(text);
++	var item := text[1];
++	var amount := CInt(text[2]);
++	
++	if ( GetObjTypeByName(text[1]) )
++		item := GetObjTypeByName(text[1]);
++	else
++		item := CInt(item);
++	endif
++	
++	if (amount &lt; 1)
++		amount := 1;
++	endif
++	
++	var created := CreateItemAtLocation(who.x, who.y, who.z, item, amount, who.realm);
++	if ( !created )
++		if ( amount &gt; 10 )
++			SendSysMessage(who, &quot;Item is not stackable. No more than 10 will be created at a time.&quot;);
++			amount := 10;
++		endif
++		
++		for( amount; amount &gt; 0; amount := amount-1 )
++			created := CreateItemAtLocation(who.x, who.y, who.z, item, 1, who.realm);
++		endfor	
++	endif
++	
++	if ( !created )
++		SendSysMessage(who, &quot;Error: Could not create &quot;+Hex(item));
++	endif
++endprogram
+
+Added: trunk/096/pkg/commands/building/createAt.src
+===================================================================
+--- trunk/096/pkg/commands/building/createAt.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/createAt.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,56 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++include &quot;:gumps:requestgump&quot;;
++
++program textcmd_Create(who, text)
++	var item, amount;
++
++	if ( !text )
++		item := RequestGump(who, &quot;Item ObjType or Name&quot;);
++		if ( !item )
++			SendSysMessage(who, &quot;Cancelled&quot;);
++			return;
++		endif
++		amount := CInt(RequestGump(who, &quot;Amount to create&quot;));
++	else
++		text := SplitWords(text);
++		item := text[1];
++		amount := text[2];
++		if ( !amount )
++			amount := 1;
++		endif
++	endif
++
++	amount := CInt(amount);
++	if ( GetObjTypeByName(item) )
++		item := GetObjTypeByName(item);
++	else
++		item := CInt(item);
++	endif
++
++	if ( !item )
++		SendSysMessage(who, &quot;Syntax: .createat &lt;objtype&gt; (amount)&quot;);
++		return;
++	endif
++
++	for( amount; amount &gt; 0; amount := amount-1 )
++		var targ := TargetCoordinates(who);
++		var created := CreateItemAtLocation(targ.x, targ.y, targ.z, item, 1, who.realm);
++
++		if ( !created )
++			SendSysMessage(who, &quot;Error: Could not create &quot; + Hex(item));
++			return 0;
++		elseif ( !targ )
++			SendSysMessage(who, &quot;Cancelled&quot;);
++			return 0;
++		endif
++	endfor
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/commands/building/createRect.src
+===================================================================
+--- trunk/096/pkg/commands/building/createRect.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/createRect.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,62 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:gumps:requestgump&quot;;
++
++program textcmd_Create(who, params)
++	var objtype, zheight;
++	if ( !params )
++		objtype := RequestGump(who, &quot;Item objtype/name to create&quot;);
++		zheight := RequestGump(who, &quot;Z height&quot;, &quot;&quot;, who.z);
++	else
++		params := SplitWords(params);
++		objtype := params[1];
++		zheight := params[2];
++	endif
++
++	if ( GetObjTypeByName(objtype) )
++		objtype := CInt(GetObjTypeByName(objtype));
++	else
++		objtype := CInt(objtype);
++	endif
++	zheight := CInt(zheight);
++
++	if ( !objtype )
++		SendSysMessage(who, &quot;Syntax: .createrect &lt;objtype&gt; (zheight)&quot;);
++		return 0;
++	elseif ( !zheight )
++		zheight := who.z;
++	endif
++
++	SendSysMessage( who, &quot;Target the top-left corner&quot; );
++	var topleft := TargetCoordinates(who);
++	if ( !topleft )
++		return 0;
++	endif
++	SendSysMessage( who, &quot;Target the bottom-left corner&quot; );
++	var botright := TargetCoordinates(who);
++	if ( !botright )
++		return 0;
++	endif
++
++	if ( topleft.x &lt;= botright.x and topleft.y &lt;= botright.y )
++		var x, y;
++		for( x := topleft.x; x &lt;= botright.x; x := x + 1 )
++			for( y := topleft.y; y &lt;= botright.y; y := y + 1 )
++				var item := CreateItemAtLocation(x, y, zheight, objtype, 1, who.realm);
++				item.decayat := 0;
++				sleepms(2);
++			endfor
++		endfor
++		sleepms(2);
++	endif
++
++	SendSysMessage(who, &quot;Done.&quot;);
++
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/commands/building/createStack.src
+===================================================================
+--- trunk/096/pkg/commands/building/createStack.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/createStack.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,38 @@
++/*
++ * $Id$
++ *
++ */
++ 
++use uo;
++
++program textcmd_CreateStack(who, text)
++	text := SplitWords(text);
++	var item := text[1];
++	var amount := CInt(text[2]);
++	
++	if ( GetObjTypeByName(text[1]) )
++		item := GetObjTypeByName(text[1]);
++	else
++		item := CInt(item);
++	endif
++	
++	if ( amount &lt; 1 )
++		amount := 1;
++	endif
++	
++	var created := CreateItemInBackPack(who, item, amount);
++	if ( !created )
++		if ( amount &gt; 10 )
++			SendSysMessage(who, &quot;Item is not stackable. No more than 10 will be created at a time.&quot;);
++			amount := 10;
++		endif
++		
++		for( amount; amount &gt; 0; amount := amount-1 )
++			created := CreateItemInBackPack(who, item, 1);
++		endfor	
++	endif
++	
++	if ( !created )
++		SendSysMessage(who, &quot;Error: Could not create &quot;+Hex(item));
++	endif
++endprogram
+
+Added: trunk/096/pkg/commands/building/destroy.src
+===================================================================
+--- trunk/096/pkg/commands/building/destroy.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/destroy.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,13 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++
++program textcmd_Destroy(who)
++	SendSysMessage(who, &quot;What do you want to destroy?&quot;);
++	
++	DestroyItem(target(who));
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/building/destroyFloor.src
+===================================================================
+--- trunk/096/pkg/commands/building/destroyFloor.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/destroyFloor.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,80 @@
++/*
++ * $Id$
++ *
++ */
++
++use os;
++use uo;
++
++CONST MAX_DISTANCE := 10;
++
++program textcmd_MakeFloor(who, text)
++	text := SplitWords(text);
++	var dist := CInt(text[1]);
++	var graphic := CInt(text[2]);
++	
++	if ( !dist )
++		SendSysMessage(who, &quot;.destroyfloor &lt;distance&gt; (graphic) - graphic is optional.&quot;);
++		return 0;
++	endif
++	
++	if ( dist &gt; MAX_DISTANCE )
++		dist := MAX_DISTANCE;
++		SendSysMessage (who,&quot;You have exceeded &quot;+MAX_DISTANCE+&quot; tiles. Distance will be lowered.&quot;);
++	endif
++	
++	var xdiff := 0, ydiff := 0;
++	case ( who.facing )
++		0:
++			xdiff := 0;
++			ydiff := -1;
++			break;
++		1:
++			xdiff := +1;
++			ydiff := -1;
++			break;
++		2:
++			xdiff := +1;
++			ydiff := 0;
++			break;
++		3:
++			xdiff := +1;
++			ydiff := +1;
++			break;
++		4:
++			xdiff := 0;
++			ydiff := +1;
++			break;
++		5:
++			xdiff := -1;
++			ydiff := +1;
++			break;
++		6:
++			xdiff := -1;
++			ydiff := 0;
++			break;
++		7:
++			xdiff := -1;
++			ydiff := -1;
++			break;
++		default:
++			SendSysMessage(who, &quot;Cant figure out your facing!&quot;);
++			return 0;
++			break;
++	endcase
++	
++	var i;
++	for( i := 1; i &lt;= dist; i := i + 1 )
++		foreach object in ListItemsNearLocation(who.x + i*xdiff, who.y + i*ydiff, who.z, 0, who.realm)
++			if ( graphic )
++				if ( object.graphic == graphic )
++					DestroyItem(object);
++				endif
++			else
++				DestroyItem(object);
++			endif
++		endforeach
++	endfor
++	
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/building/destroyRadius.src
+===================================================================
+--- trunk/096/pkg/commands/building/destroyRadius.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/destroyRadius.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,33 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++CONST MAX_RANGE := 5;
++
++program textcmd_DestroyRadius(who, text)
++	text := SplitWords(text);
++	var ranget := CInt(text[1]);
++	var show := CStr(text[2]);
++	var num_destroyed := 0;
++
++	if ( ranget &gt; MAX_RANGE )
++		SendSysMessage(who, &quot;Range has been set to the maximum distance of &quot;+MAX_RANGE);
++		ranget := MAX_RANGE;
++	endif
++
++	foreach thingie in ListItemsNearLocation(who.x, who.y, who.z, ranget, who.realm)
++		if ( show == &quot;show&quot; )
++			SendSysMessage(who, &quot;Destroying &quot; + thingie.desc);
++		endif
++
++		DestroyItem( thingie );
++		num_destroyed := num_destroyed+1;
++	endforeach
++
++	SendSysMessage(who, &quot;Destroyed &quot; + num_destroyed + &quot; items in a radius of &quot; + ranget);
++
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/commands/building/destroyRect.src
+===================================================================
+--- trunk/096/pkg/commands/building/destroyRect.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/destroyRect.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,56 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++program textcmd_DestroyRect(who, params)
++	var objtype, zheight;
++
++	params := SplitWords(params);
++
++	objtype := params[1];
++	if ( CInt(objtype) )
++		objtype := CInt(objtype);
++	endif
++
++	if ( Len(params) &gt;= 2 )
++		zheight := CInt( params[2] );
++	else
++		zheight := who.z;
++	endif
++
++	SendSysMessage(who, &quot;Target the top-left corner&quot;);
++	var topleft := TargetCoordinates(who);
++	if ( !topleft )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++
++	SendSysMessage( who, &quot;Target the bottom-left corner&quot; );
++	var botright := TargetCoordinates(who);
++	if ( !botright )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++
++	if ( (topleft.x &lt;= botright.x) &amp;&amp; (topleft.y &lt;= botright.y) )
++		var x, y;
++		for( x := topleft.x; x &lt;= botright.x; x := x + 1 )
++			for( y := topleft.y; y &lt;= botright.y; y := y + 1 )
++				foreach item in ListItemsNearLocation( x, y, zheight, 0, who.realm);
++					if ( !objtype || item.objtype == objtype )
++						DestroyItem(item);
++					endif
++					sleepms(2);
++				endforeach
++				sleepms(2);
++			endfor
++			sleepms(2);
++		endfor
++	endif
++
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/commands/building/destroyType.src
+===================================================================
+--- trunk/096/pkg/commands/building/destroyType.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/destroyType.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,28 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++program textcmd_DestroyType(who, text)
++	text := SplitWords(text);
++	var ranget := CInt(text[1]);
++	var graphic := CInt(text[2]);
++
++    	if ( ranget &gt; 20 )
++    		SendSysMessage(who, &quot;Range exceeded 20. Setting range to 20.&quot;);
++    		ranget := 20;
++    	endif
++
++	foreach object in ListItemsNearLocation(who.x, who.y, who.z, ranget, who.realm);
++		if ( graphic == object.graphic )
++			DestroyItem(object);
++		endif
++
++		sleepms(2);
++	endforeach
++
++	SendSysMessage(who, &quot;Destroyed every &quot; + graphic + &quot; tile over a range of &quot; + ranget);
++endprogram
+
+Added: trunk/096/pkg/commands/building/lockRadius.src
+===================================================================
+--- trunk/096/pkg/commands/building/lockRadius.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/lockRadius.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,23 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++program textcmd_LockRadius(who, text)
++	if ( !text )
++		SendSysMessage(who, &quot;Syntax: .lockradius &lt;radius&gt;&quot;);
++		return 0;
++	endif
++
++	var range := CInt(text);
++	foreach item in ListItemsNearLocation(who.x, who.y, who.z, range, who.realm)
++		item.movable := 0;
++		sleepms(2);
++	endforeach
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/commands/building/los.src
+===================================================================
+--- trunk/096/pkg/commands/building/los.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/los.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,21 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++Program textcmd_LineOfSight(who)
++	var targ := target(who);
++
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	elseif ( CheckLineOfSight(who, targ) )
++		SendSysMessage(who, &quot;You have LOS to that.&quot;);
++		return 1;
++	else
++		SendSysMessage(who, &quot;You dont have LOS to that.&quot;);
++		return 0;
++	endif
++endprogram
+
+Added: trunk/096/pkg/commands/building/losAt.src
+===================================================================
+--- trunk/096/pkg/commands/building/losAt.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/losAt.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,21 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++program textcmd_LineOfSightAt(who)
++	var targ := TargetCoordinates(who);
++
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	elseif ( CheckLosAt(who, targ.x, targ.y, targ.z) ) // Note: Core doesnt have realm support here, yet. 
++		SendSysMessage(who, &quot;You have LOS to that spot.&quot;);
++		return 1;
++	else
++		SendSysMessage(who, &quot;You dont have LOS to that spot.&quot;);
++		return 1;
++	endif
++endprogram
+
+Added: trunk/096/pkg/commands/building/makeFloor.src
+===================================================================
+--- trunk/096/pkg/commands/building/makeFloor.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/makeFloor.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,78 @@
++/*
++ * $Id$
++ *
++ */
++
++use os;
++use uo;
++
++CONST MAX_DISTANCE := 10;
++
++program textcmd_MakeFloor(who, input)
++	input := SplitWords(input);
++	var dist := CInt(input[1]);
++	var graphic := CInt(input[2]);
++
++	if ( !dist || !graphic )
++		SendSysMessage(who, &quot;Syntax: .makefloor &lt;distance&gt; &lt;graphic #&gt;&quot;);
++		return;
++	endif
++
++	if ( graphic &lt; 1 || graphic &gt; 16382 )
++		SendSysMessage(who, &quot;Invalid graphic number.&quot;);
++		return 0;
++	endif
++
++	if ( dist &gt; MAX_DISTANCE )
++		dist := MAX_DISTANCE;
++		SendSysMessage (who,&quot;You have gone over &quot; + MAX_DISTANCE + &quot; tiles. Distance has been adjusted.&quot;);
++	endif
++
++	var xdiff := 0, ydiff := 0;
++	case ( who.facing )
++		0:
++			xdiff := 0;
++			ydiff := -1;
++			break;
++		1:
++			xdiff := +1;
++			ydiff := -1;
++			break;
++		2:
++			xdiff := +1;
++			ydiff := 0;
++			break;
++		3:
++			xdiff := +1;
++			ydiff := +1;
++			break;
++		4:
++			xdiff := 0;
++			ydiff := +1;
++			break;
++		5:
++			xdiff := -1;
++			ydiff := +1;
++			break;
++		6:
++			xdiff := -1;
++			ydiff := 0;
++			break;
++		7:
++			xdiff := -1;
++			ydiff := -1;
++			break;
++		default:
++			SendSysMessage(who, &quot;Cant figure out your facing!&quot;);
++			return 0;
++			break;
++	endcase
++
++	var i;
++	for( i := 1; i &lt;= dist; i := i + 1 )
++		var created := CreateItemAtLocation(who.x + i*xdiff, who.y + i*ydiff, who.z, graphic, 1, who.realm);
++		created.decayat := 0;
++		sleepms(1);
++	endfor
++
++endprogram
+
+Added: trunk/096/pkg/commands/building/makeSet.src
+===================================================================
+--- trunk/096/pkg/commands/building/makeSet.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/makeSet.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,90 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
++
++program textcmd_MakeSet(who, set_name)
++	var config := ReadConfigFile(&quot;::sets&quot;);
++
++	if ( !set_name )
++		set_name := SetNamesGump(who, config);
++		if ( !set_name )
++			SendSysMessage(who, &quot;Cancelled.&quot;);
++			return 0;
++		endif
++	elseif ( !config[set_name] )
++		SendSysMessage(who, &quot;Could not find set name &quot; + set_name);
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;Target where you want to place &quot; + set_name);
++	var targ := TargetCoordinates(who);
++
++	foreach line in GetConfigStringArray(config[set_name], &quot;item&quot;)
++		line := SplitWords(line);
++		var objtype := CInt(line[1]), graphic := CInt(line[2]), color := CInt(line[3]);
++		var x := CInt(line[4]), y := CInt(line[5]), z := CInt(line[6]);
++
++		var item := CreateItemAtLocation(targ.x+x, targ.y+y, targ.z+z, objtype, 1, who.realm);
++		item.color := color;
++		item.graphic := graphic;
++		item.movable := 0;
++		if ( !item )
++			SendSysMessage(who, &quot;Error creating line! &quot; + item.errortext);
++		else
++			//SendSysMessage(who, &quot;Created &quot; + item.desc + &quot; at &quot; + item.x + &quot; &quot; + item.y + &quot; &quot; + item.z);
++		endif
++
++		sleepms(2);
++	endforeach
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++endprogram
++
++function SetNamesGump(byref who, byref config)
++	var elem_names := GetConfigStringKeys(config);
++
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 250, 450);
++	GFResizePic(gump, 10, 10, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 230, 430);
++	GFPage(gump, 1);
++
++	var y_pos := 25;
++	var page_num := 1;
++	var counter := 1;
++	foreach elem_name in ( elem_names )
++		GFAddButton(gump, 20, y_pos+5, 2103, 2104, GF_CLOSE_BTN, _elem_name_iter);
++		GFTextLine(gump, 40, y_pos, 2100, elem_name);
++
++		y_pos := y_pos+25;
++		counter := counter+1;
++
++		if ( counter &gt; 16 )
++			y_pos := 25;
++			counter := 1;
++			GFAddButton(gump, 210, 410, 2648, 2649, GF_PAGE_BTN, page_num+1);
++			page_num := page_num+1;
++			GFPage(gump, page_num);
++			GFAddButton(gump, 210, 20, 2650, 2651, GF_PAGE_BTN, page_num-1);
++		endif
++
++		sleepms(2);
++	endforeach
++
++	var input := GFSendGump(who, gump);
++	input := input[0];
++	if ( !input )
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;-&gt;&quot;+elem_names[input]);
++	return elem_names[input];
++endfunction
+
+Added: trunk/096/pkg/commands/building/moveItem.src
+===================================================================
+--- trunk/096/pkg/commands/building/moveItem.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/moveItem.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,38 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++
++program textcmd_MoveItem(who)
++	SendSysMessage(who, &quot;Select an item to move.&quot;);
++	var targ := Target(who);
++	if ( !targ.IsA(POLCLASS_ITEM) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;Select where to move object to.&quot;);
++	var where := TargetCoordinates(who);
++	if ( !where )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++
++	var was_movable := 1;
++	if ( !targ.movable )
++		was_movable := 0;
++		targ.movable := 1;
++	endif
++
++	MoveItemToLocation(targ, where.x, where.y, where.z, MOVEITEM_FORCELOCATION);
++
++	if ( !was_movable )
++		targ.movable := 0;
++	endif
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/commands/building/moveRect.src
+===================================================================
+--- trunk/096/pkg/commands/building/moveRect.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/moveRect.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,66 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++
++program textcmd_MoveRect( who, params )
++	var x_diff, y_diff, z_diff, objtype;
++
++	params := SplitWords(params);
++	x_diff := FindIntArg(params, &quot;x&quot;);
++	y_diff := FindIntArg(params, &quot;y&quot;);
++	z_diff := FindIntArg(params, &quot;z&quot;);
++	objtype := FindIntArg(params, &quot;objtype=&quot;);
++
++	SendSysMessage( who, &quot;Target the top-left corner&quot; );
++	var topleft := TargetCoordinates( who );
++	if ( !topleft )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++
++	SendSysMessage( who, &quot;Target the bottom-left corner&quot; );
++	var botright := TargetCoordinates( who );
++	if ( !botright )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++
++	var lowz, highz;
++	if (topleft.z &gt; botright.z)
++		lowz := botright.z;
++		highz := topleft.z;
++	else
++		lowz := topleft.z;
++		highz := botright.z;
++	endif
++
++	foreach item in ListObjectsInBox(topleft.x, topleft.y, lowz, botright.x, botright.y, highz, who.realm)
++		if ( objtype == 0 || item.objtype == objtype )
++			MoveItemToLocation(item, (item.x+x_diff), (item.y+y_diff), (item.z+z_diff), MOVEITEM_FORCELOCATION);
++		endif
++		sleepms(2);
++	endforeach
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++endprogram
++
++function FindIntArg(params, prefix)
++	var pfxlen := Len(prefix);
++
++	foreach param in params
++		if ( Lower(param[1,pfxlen]) == Lower(prefix) )
++			param[prefix] := &quot;&quot;;
++			return CInt(param);
++		endif
++
++		sleepms(2);
++	endforeach
++
++	return 0;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/building/mpx.src
+===================================================================
+--- trunk/096/pkg/commands/building/mpx.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/mpx.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,35 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++program textcmd_MoveX(who, howfar)
++	var targ := Target(who, TGTOPT_NOCHECK_LOS);
++	if( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++
++	if( howfar == &quot;&quot; )
++		howfar := 1;
++	else
++		howfar := CInt(howfar);
++	endif
++
++	while( targ )
++		if( targ.movable == 0 )
++			targ.movable := 1;
++		endif
++
++		MoveItemToLocation(targ, targ.x+howfar, targ.y, targ.z, MOVEITEM_FORCELOCATION);
++
++		targ.movable := 0;
++
++		targ := Target(who, TGTOPT_NOCHECK_LOS);
++	endwhile
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/building/mpy.src
+===================================================================
+--- trunk/096/pkg/commands/building/mpy.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/mpy.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,35 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++program textcmd_MoveY(who, howfar)
++	var targ := Target(who, TGTOPT_NOCHECK_LOS);
++	if( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++
++	if( howfar == &quot;&quot; )
++		howfar := 1;
++	else
++		howfar := CInt(howfar);
++	endif
++
++	while( targ )
++		if( targ.movable == 0 )
++			targ.movable := 1;
++		endif
++
++		MoveItemToLocation(targ, targ.x, targ.y+howfar, targ.z, MOVEITEM_FORCELOCATION);
++
++		targ.movable := 0;
++
++		targ := Target(who, TGTOPT_NOCHECK_LOS);
++	endwhile
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/building/mpz.src
+===================================================================
+--- trunk/096/pkg/commands/building/mpz.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/mpz.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,35 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++program textcmd_MoveZ(who, howfar)
++	var targ := Target(who, TGTOPT_NOCHECK_LOS);
++	if( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++
++	if( howfar == &quot;&quot; )
++		howfar := 1;
++	else
++		howfar := CInt(howfar);
++	endif
++
++	while( targ )
++		if( targ.movable == 0 )
++			targ.movable := 1;
++		endif
++
++		MoveItemToLocation(targ, targ.x, targ.y, targ.z+howfar, MOVEITEM_FORCELOCATION);
++
++		targ.movable := 0;
++
++		targ := Target(who, TGTOPT_NOCHECK_LOS);
++	endwhile
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/building/rangeRect.src
+===================================================================
+--- trunk/096/pkg/commands/building/rangeRect.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/rangeRect.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,79 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use util;
++
++program textcmd_RangeRect(who, parms)
++	if ( !parms )
++		SendSysMessage(who, &quot;Useage: rangerect &lt;tile1&gt; &lt;tile2&gt; &lt;z coord&gt;&quot;);
++		return 0;
++	endif
++
++	var stuff := SplitWords(parms);
++	var lbound := CInt(stuff[1]);
++	var ubound := CInt(stuff[2]);
++	var z := CInt(stuff[3]);
++
++	if ( !z )
++		z := who.z;
++	endif
++
++	SendSysMessage(who, &quot;Select coordinate #1&quot;);
++	var targ_a := TargetCoordinates(who);
++
++	SendSysMessage(who, &quot;Select coordinate #2&quot;);
++	var targ_b := TargetCoordinates(who);
++
++	if ( ( !targ_a) || ( !targ_b) )
++		// check that we got two valid coordstructs.
++		SendSysMessage(who, &quot;Missing coordinate. Aborting.&quot;);
++		return 0;
++	endif
++
++	// dummy variables, won't be needed after rewrite of command.
++	var start_x;
++	var start_y;
++	var end_x;
++	var end_y;
++
++	if ( targ_a.x &lt;= targ_b.x )
++		start_x  := targ_a.x;
++		end_x    := targ_b.x;
++	else
++		start_x  := targ_b.x;
++		end_x    := targ_a.x;
++	endif
++
++	if ( targ_a.y &lt;= targ_b.y )
++		start_y  := targ_a.y;
++		end_y    := targ_b.y;
++	else
++		start_y  := targ_b.y;
++		end_y    := targ_a.y;
++	endif
++
++	var temp_y := start_y; // store the original start_y for use after each iteration.
++
++	while ( start_x &lt;= end_x )
++		// var tileitem := lbound  + randomint(ubound - lbound);
++		while ( start_y &lt;= end_y )
++			var tileitem := lbound  + randomint(ubound - lbound);
++			var item := CreateItemAtLocation(start_x , start_y , z, tileItem , 1, who.realm);
++			item.decayat := ReadGameClock() + 2700; // 45 minutes
++			start_y := start_y + 1;
++
++			sleepms(2);
++		endwhile
++
++		start_y := temp_y;
++		start_x := start_x + 1;
++	endwhile
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++
++ endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/building/skinner.src
+===================================================================
+--- trunk/096/pkg/commands/building/skinner.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/skinner.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,87 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:gumps:yesno&quot;;
++include &quot;:gumps:requestgump&quot;;
++
++program textcmd_Skinner(who)
++
++	SendSysMessage(who, &quot;Select coordinate #1&quot;);
++	var targ_a := TargetCoordinates(who);
++	if( !targ_a )
++		SendSysMessage(who, &quot;Missing coordinate. Aborting.&quot;);
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;Select coordinate #2&quot;);
++	var targ_b := TargetCoordinates(who);
++	if( !targ_b )
++		SendSysMessage(who, &quot;Missing coordinate. Aborting.&quot;);
++		return 0;
++	endif
++
++	var startx, starty, endx, endy;
++	if( targ_a.x &lt;= targ_b.x )
++		startx := targ_a.x;
++		endx	 := targ_b.x;
++	else
++		startx := targ_b.x;
++		endx	 := targ_a.x;
++	endif
++
++	if(targ_a.y &lt;= targ_b.y)
++		starty := targ_a.y;
++		endy	 := targ_b.y;
++	else
++		starty := targ_b.y;
++		endy	 := targ_a.y;
++	endif
++
++	SendSysMessage(who, &quot;Target an item that has the graphic you wish to change.&quot;);
++	var targ_item := Target(who);
++	if ( !targ_item.IsA(POLCLASS_ITEM) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++
++	var orig_graphic := targ_item.graphic;
++
++	var new_graphic := Cint(RequestGump(who, &quot;Enter the new graphic&quot;));
++	if( new_graphic &lt;= 1 )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;Current Graphic is: &quot; + orig_graphic);
++	SendSysMessage(who, &quot;New Graphic is:     &quot; + new_graphic);
++
++	var change_list := array;
++	foreach thing in ListObjectsInBox(startx, starty, -100, endx, endy, 100, who.realm)
++		if( thing.graphic == orig_graphic )
++			thing.graphic := new_graphic;
++			change_list.Append(thing);
++		endif
++	endforeach
++
++	sleep(2);
++
++	if( !YesNo(who, &quot;Keep these changes?&quot;) )
++		foreach thing in change_list
++			thing.graphic := orig_graphic;
++			sleepms(2);
++		endforeach
++	endif
++
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++endprogram
++
++
++
++
+
+Added: trunk/096/pkg/commands/building/tileInfo.src
+===================================================================
+--- trunk/096/pkg/commands/building/tileInfo.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/tileInfo.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,23 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++
++program textcmd_TileInfo(who)
++	SendSysMessage(who, &quot;Click a tile&quot;);
++
++	var targ := TargetCoordinates(who);
++
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return;
++	endif
++
++	SendSysMessage(who, &quot;Graphic: &quot;+targ.objtype);
++	SendSysMessage(who, &quot;Objtype: &quot;+Hex(targ.objtype));
++	SendSysMessage(who, &quot;Color: &quot;+targ.color);
++	SendSysMessage(who, &quot;Landscape Tile: &quot;+GetMapInfo(targ.x, targ.y, who.realm).landtile);
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/building/unlockRadius.src
+===================================================================
+--- trunk/096/pkg/commands/building/unlockRadius.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/building/unlockRadius.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -0,0 +1,23 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++program textcmd_UnlockRadius(who, text)
++	text := SplitWords(text);
++	var range := CInt(text[1]);
++	var objtype := CInt(text[2]);
++
++	foreach object in ListItemsNearLocation(who.x, who.y, who.z, range, who.realm);
++		if ( object.objtype == objtype || !objtype )
++			object.movable := 1;
++		endif
++		sleepms(2);
++	endforeach
++
++	SendSysMessage(who, &quot;Everything in a radius of &quot; + range + &quot; is now movable.&quot; );
++	return 1;
++endprogram
+
+Deleted: trunk/096/pkg/commands/gm/addset.src
+===================================================================
+--- trunk/096/pkg/commands/gm/addset.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/gm/addset.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,90 +0,0 @@
+-use uo;
+-use cfgfile;
+-
+- 
+-program makeset( who )
+-  var prop2 := array;
+-  var props2 := array;
+-  prop2.+ name;
+-  prop2.+ value;
+-  var cfg := ReadConfigfile(&quot;sets&quot;);
+-  var numprops2 := 1;
+-  var numthings := 0;
+-  var things := array;
+-  var theitem:= array;
+-  var ttype;
+-  sendsysmessage(who, &quot;Select the center of the set area:&quot;);
+-  var wherecenter := targetcoordinates(who);
+-  sendsysmessage(who, &quot;Select the upper left corner of the set area.&quot;);
+-  sendsysmessage(who, &quot;Remember to take the 45 degree tilt into account!&quot;);
+-  var whereleft := targetcoordinates(who);
+-  sendsysmessage(who, &quot;Select the lower right corner of the set area:&quot;);
+-  var whereright := targetcoordinates(who);
+-  var lowerz := Requestinput(who, who.backpack , &quot;Type the lower z coordinate of the set area:&quot;);
+-  var upperz := Requestinput(who, who.backpack , &quot;Type the upper z coordinate of the set area:&quot;);
+-  lowerz := CInt(lowerz);
+-  upperz := CInt(upperz);
+-  var thesetname := Requestinput(who, who.backpack , &quot;What would you like to call this set?&quot;);
+-  if (cfg[thesetname])
+-    sendsysmessage(who, &quot;That set name is already taken!&quot;);
+-    return;
+-  endif
+-  var stuff := ListObjectsInBox( whereleft.x,whereleft.y,lowerz,whereright.x,whereright.y,upperz, who.realm);
+-  theitem.+ objtype;
+-  theitem.+ x;
+-  theitem.+ y;
+-  theitem.+ z;
+-  theitem.+ color;
+-  theitem.+ key;
+-  foreach thing in stuff
+-    if (!thing.IsA(POLCLASS_ITEM))
+-      continue;
+-    endif          
+-    theitem.objtype := thing.objtype;
+-    numthings := numthings + 1;                
+-    theitem.x := wherecenter.x - thing.x;
+-    theitem.y := wherecenter.y - thing.y;
+-    theitem.z := lowerz - thing.z;
+-    theitem.color := thing.color;
+-    things[numthings] := theitem;
+-  endforeach
+-  var intkey := GetConfigMaxIntKey( cfg);      
+-  intkey := intkey + 1;      
+-  foreach item in things   
+-    var prop := array;
+-    var props := array;
+-    prop.+ name;
+-    prop.+ value;
+-    var num_props := 1;    
+-    prop.name := &quot;objtype&quot;;
+-    prop.value := item.objtype;
+-    props[num_props] := prop;
+-    num_props := num_props + 1;            
+-    prop.name := &quot;x&quot;;
+-    prop.value := item.x;
+-    props[num_props] := prop;
+-    num_props := num_props + 1;     
+-    prop.name := &quot;y&quot;;
+-    prop.value := item.y;
+-    props[num_props] := prop;
+-    num_props := num_props + 1; 
+-    prop.name := &quot;z&quot;;
+-    prop.value := item.z;
+-    props[num_props] := prop;
+-    num_props := num_props + 1;  
+-    prop.name := &quot;color&quot;;
+-    prop.value := item.color;
+-    props[num_props] := prop;
+-    num_props := num_props + 1;  
+-    ttype := &quot;setitem&quot;;  
+-    AppendConfigFileElem( &quot;sets&quot;, ttype, intkey, props );
+-    item.key := intkey;           
+-    prop2.name := &quot;item&quot;;
+-    prop2.value := intkey;
+-    intkey := intkey + 1;
+-    props2[numprops2] := prop2;
+-    numprops2 := numprops2 + 1; 
+-  endforeach      
+-  AppendConfigFileElem( &quot;sets&quot;, &quot;set&quot;, thesetname, props2 );
+-  unloadconfigfile(&quot;sets&quot;);
+-endprogram
+
+Deleted: trunk/096/pkg/commands/gm/attack.src
+===================================================================
+--- trunk/096/pkg/commands/gm/attack.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/gm/attack.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,33 +0,0 @@
+-// $Id$
+-
+-use uo;
+-use util;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/objtype&quot;;
+-include &quot;include/bard&quot;;
+-include &quot;include/eventID&quot;;
+-
+-program bard_provoke(character)
+-  SendSysMessage(character, &quot;Select a creature you wish to provoke.&quot;);
+-  var thetarg := Target(character);
+-  if (!thetarg)
+-        SendSysMessage(character, &quot;Targetting cancelled.&quot;);
+-        return;
+-  endif
+-  SendSysMessage(character, &quot;Select the target.&quot;);
+-  var newtarg := Target(character);
+-  var ev := array;
+-  ev.+ type;
+-  ev.+ source;
+-  ev.type := EVID_PEACEMADE;
+-  ev.source := newtarg;
+-  SendEvent(thetarg, ev);
+-  ev.source := thetarg;
+-  SendEvent(newtarg, ev);
+-  ev.type := EVID_ENGAGED;
+-  ev.source := newtarg;
+-  SendEvent(thetarg, ev);
+-  ev.source := thetarg;
+-  SendEvent(newtarg, ev);
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/gm/makeset.src
+===================================================================
+--- trunk/096/pkg/commands/gm/makeset.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/gm/makeset.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,22 +0,0 @@
+-use uo;
+-use cfgfile;
+-
+-program makeset(who, tsetname  )
+-  var cfg  := readconfigfile(&quot;sets&quot;);
+-  if (!cfg[tsetname])
+-    sendsysmessage(who, &quot;Invalid set!&quot;);
+-    return;
+-  endif
+-  var where := targetcoordinates(who);
+-  if (!where.x)
+-    return;
+-  endif
+-  foreach entry in GetConfigStringArray( cfg[tsetname], &quot;item&quot; )
+-    var it := cfg[entry];
+-    var item := createitematlocation(where.x - cint(it.x) , where.y - cint(it.y) ,where.z -  cint(it.z) , cint(it.objtype), 1, who.realm);
+-    if (it.color)
+-      item.color := cint(it.color);
+-    endif
+-    item.movable := 0;
+-  endforeach
+-endprogram
+
+Deleted: trunk/096/pkg/commands/gm/mdestroy.src
+===================================================================
+--- trunk/096/pkg/commands/gm/mdestroy.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/gm/mdestroy.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,17 +0,0 @@
+-//
+-// Destroy an item
+-//
+-
+-use uo;
+-
+-program textcmd_destroy( who, range )
+-
+-    if (!range)
+-        range := 1;
+-    endif
+-    range := CInt(range);
+-    var tgt := ListItemsNearLocation(who.x, who.y, who.z, range, who.realm );
+-    foreach x in tgt
+-            DestroyItem( x );
+-    endforeach
+-endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/commands/gm/powerup.src
+===================================================================
+--- trunk/096/pkg/commands/gm/powerup.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/gm/powerup.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,19 +1,21 @@
++/*
++ * $Id$
++ *
++ */
++
+ use os;
+ use uo;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+-program textcmd_setskill( who )
+-var i;
+-for (i := 0; i &lt;= SKILLID__HIGHEST; i := i + 1)
+-
+-        print( &quot;Setting Skill &quot; + i + &quot; to 100&quot; );
+-        var res := SetBaseSkillBaseValue( who, i, 1000 );
+-        if (res == error)
+-            SendSysMessage( who, &quot;Unable to set skill: &quot; + res.errortext );
+-        else
+-            SendSysMessage( who, &quot;New Effective Skill: &quot; + GetEffectiveSkill(who,i) );
+-        endif
+-    endfor
++program textcmd_PowerUp(who, level)
++	level := CInt(level);
++	foreach attrib_name in AP_ListAttributesByType()
++		AP_SetTrueSkill(who, attrib_name, level);
++		SendSysMessage(who, &quot;Setting &quot;+attrib_name+&quot; to &quot;+level);
++		sleepms(10);
++	endforeach
++	
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
+ endprogram
+
+Deleted: trunk/096/pkg/commands/seer/create.src
+===================================================================
+--- trunk/096/pkg/commands/seer/create.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/seer/create.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,33 +0,0 @@
+-use uo;
+-
+-program textcmd_create( who, text )
+-  if(text)
+-    var params := SplitWords( text );
+-    var objtype := CInt( params[1] );
+-    var amount := CInt( params[2] );
+-    if (!objtype)
+-        objtype := GetObjtypeByName( params[1] );
+-    endif
+-    if (!amount)
+-        amount := 1;
+-    endif
+-    if(amount &gt; 10)
+-      SendSysMessage(who, &quot;Bad Manner GM! [create 10 or less]&quot;);
+-      return;
+-    endif
+-    SendSysMessage(who, &quot;Objtype: &quot; + CInt(objtype));
+-    var i, item;
+-    for( i := 1; i &lt;= amount; i := i + 1 )
+-      item := CreateItemAtLocation( who.x, who.y, who.z, objtype, 1, who.realm );
+-      if(item)
+-        SetObjProperty(item, &quot;Created&quot;, who.name);
+-        item.decayAt := 0;
+-      else
+-        SendSysMessage( who, &quot;Unable to create: &quot; + item.errortext );
+-      endif
+-    endfor
+-  else
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/seer/createat.src
+===================================================================
+--- trunk/096/pkg/commands/seer/createat.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/seer/createat.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,45 +0,0 @@
+-//
+-// .create command - create items
+-// Items created with this command will not decay.
+-// Two forms:
+-//   &quot;.create [objtype] [amount]&quot; - specify object type and amount
+-//       amount defaults to 1
+-//   &quot;.create&quot; - show the item creation menu, create one of that item
+-//
+-use uo;
+-
+-program textcmd_create( who, text )
+-    if (text)
+-        var params := SplitWords( text );
+-        var objtype := params[1];
+-        var amount := CInt( params[2] );
+-
+-        if (CInt(objtype))
+-            objtype := CInt(objtype);
+-        endif
+-
+-        if (!amount)
+-            amount := 1;
+-        endif
+-
+-        // print( &quot;objtype=&quot; + Hex(objtype) + &quot;, amount=&quot; + amount );
+-       
+-        var i;
+-        for( i := 1; i &lt;= amount; i := i + 1 )
+-            SendSysMessage( who, &quot;Now select a location on the ground, where you want the item to appear.&quot; );
+-            var place := TargetCoordinates( who );
+-            var item := CreateItemAtLocation( place.x, place.y, place.z, objtype, 1, who.realm );
+-            item.decayAt := 0;
+-        endfor
+-    else
+-        var selection := SelectMenuItem2( who, &quot;ItemCreation&quot; );
+-        if (selection)
+-            SendSysMessage( who, &quot;Now select a location on the ground, where you want the item to appear.&quot; );
+-            var place := TargetCoordinates( who );
+-            var created := CreateItemAtLocation( place.x, place.y, place.z, selection.objtype, 1, who.realm );
+-            created.color := selection.color;
+-            created.decayAt := 0;
+-            SetObjProperty(created, &quot;Created&quot;, who.name);
+-        endif
+-    endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/seer/createnpc.src
+===================================================================
+--- trunk/096/pkg/commands/seer/createnpc.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/seer/createnpc.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,15 +0,0 @@
+-use uo;
+-
+-
+-program command_createNPC(who, template)
+-	var props := struct; // CHANGE BACK TO STRUCT FOR 096
+-	props.+facing := who.facing;
+-	var loc := TargetCoordinates(who);
+-	var result := CreateNpcFromTemplate( template, loc.x, loc.y, loc.z, props, who.realm );
+-
+-	if (!result)
+-		SendSysMessage( who, &quot;NPC Creation Failed: &quot; + result.errortext );
+-	endif
+-
+-	return;
+-endprogram
+
+Deleted: trunk/096/pkg/commands/seer/createstack.src
+===================================================================
+--- trunk/096/pkg/commands/seer/createstack.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/seer/createstack.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,23 +0,0 @@
+-use uo;
+-
+-program textcmd_createstack( who, text )
+-    var params := SplitWords( text );
+-    var objtype := params[1];
+-    var amount := CInt( params[2] );
+-
+-    if (CInt(objtype))
+-        objtype := CInt(objtype);
+-    endif
+-
+-    if (!amount)
+-        amount := 1;
+-    endif
+-
+-    var what := CreateItemInBackpack( who, objtype, amount );
+-    if (what)
+-      SetObjProperty(what, &quot;Created&quot;, who.name);
+-        PrintTextAbovePrivate( who, &quot;Created &quot; + what.desc + &quot; in my backpack.&quot;, who );
+-    else
+-        PrintTextAbovePrivate( who, &quot;Couldn't create that: &quot; + what.errortext, who );
+-    endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/seer/mpx.src
+===================================================================
+--- trunk/096/pkg/commands/seer/mpx.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/seer/mpx.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,26 +0,0 @@
+-use uo;
+-
+-program  textcmd_z(who, howfar)
+-  var what := Target(who, TGTOPT_NOCHECK_LOS);
+-  if(!what)
+-    return;
+-  endif
+-  var tdist;
+-  if(howfar == &quot;&quot;)
+-    tdist := 1;
+-  else
+-    tdist := CInt(howfar);
+-  endif
+-  while(what)
+-    if (what.isA(POLCLASS_ITEM))
+-      if(what.movable == 0)
+-        what.movable := 1;
+-      endif
+-      MoveItemToLocation(what, what.x + tdist, what.y, what.z, MOVEITEM_FORCELOCATION);
+-      what.movable := 0;
+-    elseif (what.isA(POLCLASS_MOBILE))
+-      MoveCharacterToLocation(what, what.x+tdist, what.y, what.z, MOVECHAR_FORCELOCATION);
+-    endif
+-    what := Target(who, TGTOPT_NOCHECK_LOS);
+-  endwhile
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/seer/mpy.src
+===================================================================
+--- trunk/096/pkg/commands/seer/mpy.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/seer/mpy.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,26 +0,0 @@
+-use uo;
+-
+-program  textcmd_z(who, howfar)
+-  var what := Target(who, TGTOPT_NOCHECK_LOS);
+-  if(!what)
+-    return;
+-  endif
+-  var tdist;
+-  if(howfar == &quot;&quot;)
+-    tdist := 1;
+-  else
+-    tdist := CInt(howfar);
+-  endif
+-  while(what)
+-    if (what.isA(POLCLASS_ITEM))
+-      if(what.movable == 0)
+-        what.movable := 1;
+-      endif
+-      MoveItemToLocation(what, what.x, what.y + tdist, what.z, MOVEITEM_FORCELOCATION);
+-      what.movable := 0;
+-    elseif(what.isA(POLCLASS_MOBILE))
+-      MoveCharacterToLocation(what, what.x, what.y+tdist, what.z, MOVECHAR_FORCELOCATION);
+-    endif
+-    what := Target(who, TGTOPT_NOCHECK_LOS);
+-  endwhile
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/seer/mpz.src
+===================================================================
+--- trunk/096/pkg/commands/seer/mpz.src	2005-10-10 14:53:03 UTC (rev 522)
++++ trunk/096/pkg/commands/seer/mpz.src	2005-10-10 15:33:01 UTC (rev 523)
+@@ -1,26 +0,0 @@
+-use uo;
+-
+-program  textcmd_z(who, howfar)
+-  var what := Target(who, TGTOPT_NOCHECK_LOS);
+-  if(!what)
+-    return;
+-  endif
+-  var tdist;
+-  if(howfar == &quot;&quot;)
+-    tdist := 1;
+-  else
+-    tdist := CInt(howfar);
+-  endif
+-  while(what)
+-    if (what.isA(POLCLASS_ITEM))
+-      if(what.movable == 0)
+-        what.movable := 1;
+-      endif
+-      MoveItemToLocation(what, what.x, what.y, what.z + tdist, MOVEITEM_FORCELOCATION);
+-      what.movable := 0;
+-    elseif (what.isA(POLCLASS_MOBILE))
+-      MoveCharacterToLocation(what, what.x, what.y, what.z+tdist, MOVECHAR_FORCELOCATION);
+-    endif
+-    what := Target(who, TGTOPT_NOCHECK_LOS);
+-  endwhile
+-endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000495.html">[Poldistro-svn] r522 - trunk/096/config
+</A></li>
+	<LI>Next message: <A HREF="000497.html">[Poldistro-svn] r524 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#496">[ date ]</a>
+              <a href="thread.html#496">[ thread ]</a>
+              <a href="subject.html#496">[ subject ]</a>
+              <a href="author.html#496">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r408 - trunk/096/scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r408%20-%20trunk/096/scripts/misc&In-Reply-To=%3C200510051009.j95A9fGc009089%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000385.html">
+   <LINK REL="Next"  HREF="000387.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r408 - trunk/096/scripts/misc</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r408%20-%20trunk/096/scripts/misc&In-Reply-To=%3C200510051009.j95A9fGc009089%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r408 - trunk/096/scripts/misc">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct  5 12:09:41 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000385.html">[Poldistro-svn] r407 - in trunk/096/pkg/mobiles: . death death/commands death/config
+</A></li>
+        <LI>Next message: <A HREF="000387.html">[Poldistro-svn] r409 - trunk/096/scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#386">[ date ]</a>
+              <a href="thread.html#386">[ thread ]</a>
+              <a href="subject.html#386">[ subject ]</a>
+              <a href="author.html#386">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-05 12:09:41 +0200 (Wed, 05 Oct 2005)
+New Revision: 408
+
+Modified:
+   trunk/096/scripts/misc/chrdeath.src
+   trunk/096/scripts/misc/death.src
+Log:
+
+
+Modified: trunk/096/scripts/misc/chrdeath.src
+===================================================================
+--- trunk/096/scripts/misc/chrdeath.src	2005-10-05 10:04:29 UTC (rev 407)
++++ trunk/096/scripts/misc/chrdeath.src	2005-10-05 10:09:41 UTC (rev 408)
+@@ -1,85 +1,19 @@
+ /* $Id$
+  *
+  * Purpose
+- * This script allows side effects to be triggered as a result of Player death,
+- * like unmounting players off their mount, allowing ghosts to report their murderer,
+- * Auto-Resurrect choices, etc.
+  *
+  */
+ use uo;
+ use os;
+-use util;
+ 
+-include &quot;:npcutils:NPCBackpacks&quot;;
+-//include &quot;include/attributes&quot;;
+-include &quot;:attributes:attributes&quot;;
+-include &quot;include/statMod&quot;;
+-include &quot;include/noto&quot;;
+-include &quot;include/reportMurder&quot;;
+-
+-
+ program core_chrDeath(corpse, ghost)
+-	EraseObjProperty(ghost, &quot;IsMeditating&quot;);
+-	//  ghost.SetPoisoned(0);
+-  	var killer := GetObjProperty(ghost, &quot;LastHit&quot;);
+-  	if (killer != error)
+-		AdjustNoto((SystemFindObjectBySerial(killer[2], SYSFIND_SEARCH_OFFLINE_MOBILES)), ghost);
++	var params := array{corpse, ghost};
++	var script := Start_Script(&quot;:death:plyrdeath&quot;, params);
++	
++	if ( script.errortext )
++		SysLog(&quot;Error::Start_Script(:death:plyrdeath) - &quot;+script.errortext);
++		return 0;
+ 	endif
+-	var fame := CInt(GetObjProperty(ghost, &quot;Fame&quot;));
+-	fame := (fame - CInt(fame / 20));
+-	SetObjProperty(ghost, &quot;Fame&quot;, fame);
+-	SetObjProperty(corpse,&quot;serial&quot;, ghost.serial);
+-	dismount(corpse);
+-	CheckForAutoRes(ghost, corpse);
+-	var corpsenamearray := SplitWords(corpse.name);
+-	var corpsenamearraylen := len(corpsenamearray);
+-	var x, corpsename := &quot;&quot;;
+-	for (x := 4; x &lt;= corpsenamearraylen; x := x + 1)
+-		corpsename := corpsename + &quot; &quot; + corpsenamearray[x];
+-	endfor
+-	if (len(ghost.reportables) &gt; 0)
+-		SendReportGump(ghost);
+-	endif
++	
++	return 1;
+ endprogram
+-
+-
+-function CheckForAutoRes(who, corpse)
+-	if(CInt(GetObjProperty(corpse, &quot;AutoRes&quot;)) == 1)
+-		Resurrect(who);
+-		AP_RefreshVitals(who);	
+-		var mypack := who.backpack;
+-		if (!mypack)
+-			return;
+-		endif
+-		foreach thing in EnumerateItemsInContainer(corpse)
+-			if (thing.container == corpse)
+-				if (!EquipItem(who, thing))
+-					MoveItemToContainer(thing, mypack);
+-				endif
+-			endif
+-		endforeach
+-	endif
+-
+-	return;
+-endfunction
+-
+-function dismount(corpse)
+-	var mount := GetEquipmentByLayer( corpse, 25 );
+-	foreach item in EnumerateItemsInContainer(corpse)
+-		if (item.objtype == 0xf021)
+-			mount := item;
+-			break;
+-		endif
+-	endforeach
+-	if (!mount)
+-		return;
+-	endif
+-	var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
+-	animal.facing := corpse.facing;
+-	EraseObjProperty(animal, &quot;mounted&quot;);
+-	EraseObjProperty(animal, &quot;mounted_on&quot;);
+-	MoveCharacterToLocation( animal, corpse.x, corpse.y, corpse.z, MOVECHAR_FORCELOCATION);
+-	DestroyItem(mount);
+-
+-	return;
+-endfunction
+
+Modified: trunk/096/scripts/misc/death.src
+===================================================================
+--- trunk/096/scripts/misc/death.src	2005-10-05 10:04:29 UTC (rev 407)
++++ trunk/096/scripts/misc/death.src	2005-10-05 10:09:41 UTC (rev 408)
+@@ -2,241 +2,18 @@
+  *
+  * Purpose
+  * This script allows side effects to be triggered as a result of NPC death, like unmounting
+- * players off their dying mount, playing death sounds, etc. This script is common for all NPCs,
+- * and is called for each.
+  *
+  */
+ use uo;
+ use os;
+-use util;
+-use cfgfile;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;:npcutils:NPCBackpacks&quot;;
+-include &quot;include/noto&quot;;
+-
+-var cfg := ReadConfigFile(&quot;npcdesc&quot;);
+-
+-
+ program core_npcDeath(corpse)
+-	// if he had things to restock, destroy them, he's dead now.
+-	if (GetObjProperty(corpse, &quot;restockserial&quot;))
+-		var stocklist := SystemFindObjectBySerial(CInt(GetObjProperty(corpse, &quot;restockserial&quot;)));
+-		DestroyItem(stocklist);
++	var script := Start_Script(&quot;:death:npcdeath&quot;, corpse);
++	
++	if ( script.errortext )
++		SysLog(&quot;Error::Start_Script(:death:npcdeath) - &quot;+script.errortext);
++		return 0;
+ 	endif
+-
+-	// give noto and fame to the killer as appropriate.
+-	var killer := GetObjProperty(corpse, &quot;LastHit&quot;);
+-	if ((killer != error) &amp;&amp; (!GetObjProperty(corpse, &quot;guardkill&quot;)))
+-		var kwho := SystemFindObjectBySerial(killer[2], SYSFIND_SEARCH_OFFLINE_MOBILES);
+-		AdjustNoto(kwho, corpse);
+-
+-		// If killer was provoked, give noto to provoker
+-		var provoked := array;
+-		provoked := GetObjProperty(kwho, &quot;Provoked&quot;); 
+-		if (provoked) 
+-			kwho := SystemFindObjectBySerial(provoked[2], SYSFIND_SEARCH_OFFLINE_MOBILES);
+-			AdjustNoto(kwho, corpse);
+-			EraseObjProperty(killer[2], &quot;Provoked&quot;);
+-		endif
+-	endif
+-
+-	// A convoluted way to dismount the dead, if it was a player.
+-	var char;
+-	var mounted_char;
+-	var onchars := EnumerateOnlineCharacters();
+-	if (GetObjProperty(corpse,&quot;mounted&quot;))
+-		char := GetObjProperty(corpse,&quot;mounted_on&quot;);
+-		foreach person in onchars
+-			if (person.serial == CInt(char))
+-				mounted_char := person;
+-				break;
+-			endif
+-		endforeach
+-		dismountme(mounted_char, corpse);
+-	endif
+-
+-	// Play the death sound!
+-	var elem := GetObjProperty(corpse, &quot;npctemplate&quot;);
+-	var deathsound := 0;
+-	var graphic := GetObjProperty(corpse, &quot;Graphic&quot;);
+-	if ((graphic != 0x190) &amp;&amp; (graphic != 0x191))
+-		deathsound := cfg[elem].&quot;deathsound&quot;;
+-		if (deathsound)
+-			PlaySoundEffect(corpse, deathsound);
+-		endif
+-	endif
+-
+-	set_critical(1);
+-	// Dismount NPCs.
+-	dismount(corpse);
+-
+-	// Tell spawnregion that the recently deceased is dead.
+-	Run_Script_To_Completion(&quot;:spawnregion:death&quot;, corpse);
+-	if(GetObjProperty(corpse, &quot;regspawn&quot;))
+-		var spawnname := GetObjProperty(corpse, &quot;regspawn&quot;);
+-		var numspawns := CInt(GetGlobalProperty(spawnname))-1;
+-		SetGlobalProperty(spawnname,numspawns);
+-	endif
+-	set_critical(0);
+-
+-	// Destroy the corpse if it was guardkilled. No easy looting.
+-	if(GetObjProperty(corpse, &quot;guardkill&quot;))
+-		DestroyItem(corpse);
+-		return;
+-	endif
+-
+-	// Destroy weapons and armor on employee, though I'm not sure why,
+-	// and then move their backpack into their corpse.
+-	if (GetObjProperty(corpse,&quot;npctemplate&quot;) == &quot;employee&quot;)
+-		foreach thing in EnumerateItemsInContainer(corpse)
+-			if ((thing.layer) &amp;&amp; (thing.isa(POLCLASS_WEAPON) || thing.isa(POLCLASS_ARMOR)))
+-				DestroyItem(thing);
+-			endif
+-		endforeach
+-	endif
+-	MoveBackpackToCorpse(corpse);
+-  
+-	// Deal with playervendors
+-	if (GetObjProperty(corpse, &quot;npctemplate&quot;) == &quot;playervendor&quot;)
+-		var itemdesc := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-		var elm, dsc;
+-		foreach thing in EnumerateItemsInContainer(corpse)
+-			EraseObjProperty(thing, &quot;Vendored&quot;);
+-			if (GetObjProperty(thing, &quot;Vendor&quot;))
+-				DestroyItem(thing);
+-			else
+-				var oldname := GetObjProperty(thing, &quot;OldName&quot;);
+-				if (oldname)
+-					SetName(thing, oldname);
+-				else
+-					elm := FindConfigElem(itemdesc, thing.objtype);
+-					dsc := itemdesc[thing.objtype].desc;
+-					SetName(thing, dsc);
+-				endif
+-				EraseObjProperty(thing, &quot;Master&quot;);
+-				EraseObjProperty(thing, &quot;OldName&quot;);
+-				EraseObjProperty(thing, &quot;price&quot;);
+-			endif
+-		endforeach
+-	endif
+-
+-	// summoned creatures leave no corpse
+-	if (GetObjProperty(corpse, &quot;summoned&quot;))
+-		DestroyItem(corpse);
+-		// if the creature has no corpse, move all the stuff in the corpse to the ground
+-		// and then destroy the corpse.
+-	elseif (GetObjProperty(corpse, &quot;nocorpse&quot;))
+-		foreach item in EnumerateItemsInContainer(corpse);
+-			MoveItemToLocation(item, corpse.x, corpse.y, corpse.z, MOVEITEM_FORCELOCATION);
+-		endforeach
+-		DestroyItem(corpse);
+-	else
+-	// This was here but I'm not sure what it was meant to do... doesn't so anything
+-	// right now, so I'm commenting out to remove the 'unused var' warning, but I'll
+-	// leave the code here in case anyone can figure out what it was meant for.
+-	//    var corpseof := GetObjProperty(corpse,&quot;npctemplate&quot;);
+-	endif
+-  
+-	// This requires NPCKeeper. Destroy storage areas associated with the NPC.
+-	var theserial := CInt(GetObjProperty(corpse, &quot;AiSerial&quot;));
+-	var thestorage, inv_fs, inv_pb, inv_1c;
+-	var cont := &quot;Bankbox  &quot;+ Hex(theserial);
+-	thestorage := FindStorageArea(&quot;Tamed Storage&quot;);
+-	if (DestroyRootItemInStorageArea(thestorage, cont))
+-		print(&quot;Tamed storage for &quot;+ Hex(theserial) +&quot; destroyed.&quot;);
+-	else
+-		thestorage := FindStorageArea(&quot;Merchant Storage&quot;);
+-		inv_fs := theserial +&quot; FS&quot;;
+-		inv_pb := theserial +&quot; PB&quot;;
+-		inv_1c := theserial +&quot; 1C&quot;;
+-		if (DestroyRootItemInStorageArea(thestorage, inv_fs))
+-			DestroyRootItemInStorageArea(thestorage, inv_pb);
+-			DestroyRootItemInStorageArea(thestorage, inv_1c);
+-			print(&quot;Merchant storage for &quot;+ Hex(theserial) +&quot; destroyed.&quot;);
+-		endif
+-	endif 
+-
+-	return;
++	
++	return 1;
+ endprogram
+-
+-
+-function dismount(corpse)
+-	var mount := 0;
+-	GetEquipmentByLayer( corpse, 25 );
+-	foreach item in EnumerateItemsInContainer(corpse)
+-		if (item.objtype == 0xf021)
+-			mount := item;
+-			break;
+-		endif
+-	endforeach
+-	if (!mount)
+-		return;
+-	endif
+-	var critter := &quot;&quot;;
+-	case (mount.graphic)
+-	0x3ea2: critter := &quot;horse&quot;;
+-	0x3e9f: critter := &quot;horse2&quot;;
+-	0x3ea0: critter := &quot;horse3&quot;;
+-	0x3ea1: critter := &quot;horse4&quot;;
+-	0x3ea6:	critter := &quot;llama&quot;;
+-	0x3ea3:	critter := &quot;desertostard&quot;;
+-	0x3ea4:	critter := &quot;frenziedostard&quot;;
+-	0x3ea5:	critter := &quot;forestostard&quot;;
+-	endcase
+-	if (mount.color == 1109)
+-		critter := &quot;nightmare&quot;;
+-	endif
+-	if (!GetObjProperty(corpse,&quot;doppelganger&quot;))
+-		var animal := CreateNpcFromTemplate(critter, corpse.x, corpse.y, corpse.z,0, corpse.realm);
+-		animal.color := mount.color;
+-	endif
+-	DestroyItem(mount);
+-
+-	return;
+-endfunction
+-
+-
+-function dismountme(who, corpse)
+-	var mount := GetEquipmentByLayer(who, 25 );
+-	var clone := GetObjProperty(corpse,&quot;npctemplate&quot;);
+-	var newcorpse := CreateNpcFromTemplate(clone, corpse.x, corpse.y, corpse.z, 0, corpse.realm);
+-	var serial := newcorpse.serial;
+-	SetObjProperty(newcorpse,&quot;myserial&quot;, serial);
+-	newcorpse.color := corpse.color;
+-	newcorpse.facing := who.facing;
+-	MoveCharacterToLocation(newcorpse, who.x, who.y, who.z, MOVECHAR_FORCELOCATION);
+-	var x := newcorpse.x;
+-	var y := newcorpse.y;
+-	var z := newcorpse.z;
+-	newcorpse.facing := who.facing;
+-	ApplyRawDamage(newcorpse, GetHp(newcorpse)+3);
+-	var contain;
+-	foreach cpse in ListItemsAtLocation(x, y, z, who.realm );
+-		if (CInt(GetObjProperty(cpse,&quot;myserial&quot;)) == serial)
+-			contain := cpse;
+-			break;
+-		endif
+-	endforeach
+-	contain.name := corpse.name;
+-	foreach item in ListRootItemsInContainer(corpse)
+-		MoveItemToContainer(item, contain);
+-	endforeach
+-	DestroyItem(corpse);
+-	DestroyItem(mount);
+-
+-	return;
+-endfunction
+-
+-
+-function ListRootItemsInContainer(container)
+-	var ret := { };
+-	foreach item in EnumerateItemsInContainer(container)
+-		if (item.container.serial == container.serial)
+-			ret[len(ret)+1] := item;
+-		endif
+-	endforeach
+-
+-	return ret;
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000385.html">[Poldistro-svn] r407 - in trunk/096/pkg/mobiles: . death death/commands death/config
+</A></li>
+	<LI>Next message: <A HREF="000387.html">[Poldistro-svn] r409 - trunk/096/scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#386">[ date ]</a>
+              <a href="thread.html#386">[ thread ]</a>
+              <a href="subject.html#386">[ subject ]</a>
+              <a href="author.html#386">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

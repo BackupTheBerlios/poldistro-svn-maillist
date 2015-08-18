@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1050 - in trunk/096/pkg/commands: config gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1050%20-%20in%20trunk/096/pkg/commands%3A%20config%20gm&In-Reply-To=%3C200511240339.jAO3dGsp015515%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001022.html">
+   <LINK REL="Next"  HREF="001024.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1050 - in trunk/096/pkg/commands: config gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1050%20-%20in%20trunk/096/pkg/commands%3A%20config%20gm&In-Reply-To=%3C200511240339.jAO3dGsp015515%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1050 - in trunk/096/pkg/commands: config gm">austin at berlios.de
+       </A><BR>
+    <I>Thu Nov 24 04:39:16 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001022.html">[Poldistro-svn] r1049 - trunk/096/config
+</A></li>
+        <LI>Next message: <A HREF="001024.html">[Poldistro-svn] r1051 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1023">[ date ]</a>
+              <a href="thread.html#1023">[ thread ]</a>
+              <a href="subject.html#1023">[ subject ]</a>
+              <a href="author.html#1023">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-24 04:39:13 +0100 (Thu, 24 Nov 2005)
+New Revision: 1050
+
+Modified:
+   trunk/096/pkg/commands/config/info.cfg
+   trunk/096/pkg/commands/gm/info.src
+Log:
+.info updates
+
+Modified: trunk/096/pkg/commands/config/info.cfg
+===================================================================
+--- trunk/096/pkg/commands/config/info.cfg	2005-11-24 03:14:34 UTC (rev 1049)
++++ trunk/096/pkg/commands/config/info.cfg	2005-11-24 03:39:13 UTC (rev 1050)
+@@ -87,7 +87,7 @@
+ 
+ Group	WeaponInfo
+ {
+-	Entry	member	Weapon_Name	weapon.name	0
++	Entry	member	Weapon_Name	weapon.desc	0
+ 	Entry	member	Weapon_Serial	weapon.serial	0
+ 	Entry	member	Weapon_Objtype	weapon.objtype	0
+ 	Entry	blank
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-11-24 03:14:34 UTC (rev 1049)
++++ trunk/096/pkg/commands/gm/info.src	2005-11-24 03:39:13 UTC (rev 1050)
+@@ -42,7 +42,7 @@
+ 		index_list := GetConfigStringArray(info_cfg[&quot;Index&quot;], &quot;Index&quot;);
+ 	endif
+ 
+-	var targ := who;
++	var targ;
+ 	if ( serial )
+ 		targ := SystemFindObjectBySerial(CInt(serial));
+ 	elseif ( !targ )
+@@ -56,7 +56,15 @@
+ 	template := GumpTemplate(targ);
+ 	var cur_gump := 1;
+ 	
+-	GFSendGump(who, BuildGump(targ, 2));
++	while ( 1 )
++		cur_gump := GFSendGump(who, BuildGump(targ, cur_gump));
++		cur_gump := cur_gump[0];
++		if ( !who.connected )
++			break;
++		elseif ( !cur_gump )
++			break;
++		endif
++	endwhile
+ endprogram
+ 
+ function BuildGump(targ, index_num)
+@@ -68,6 +76,7 @@
+ 	foreach group in ( groups )
+ 		var group_elem := info_cfg[group];
+ 		BuildEntries(targ, gump, group_elem, y_pos);
++		y_pos := y_pos+5;
+ 		sleepms(2);
+ 	endforeach
+ 	
+@@ -80,7 +89,7 @@
+ 
+ 	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, (num_entries*20));
+ 	foreach entry in ( entries )
+-		entry := SplitWords(entry);
++		entry := SplitWords(entry, &quot; &quot;);
+ 		case ( Lower(entry[1]) )
+ 			&quot;member&quot;: 
+ 				AddMemberEntry(targ, gump, entry, y_pos);
+@@ -103,12 +112,37 @@
+ 	if ( entry[4] )
+ 		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+ 	endif
+-	GFTextLine(gump, 175, y_pos, 2100, entry[2]);
+-	GFTextRight(gump, 480, y_pos, 2100, targ.Get_Member(entry[3]));
++	GFTextLine(gump, 175, y_pos, 2100, ParseEntryName(entry[2]));
++	GFTextRight(gump, 480, y_pos, 2100, ParseMembers(targ, entry[3]));
+ 		
+ 	y_pos := y_pos+20;
+ endfunction
+ 
++function ParseEntryName(entry_name)
++	while ( entry_name[&quot;_&quot;] )
++		entry_name[&quot;_&quot;] := &quot; &quot;;
++		sleepms(2);
++	endwhile
++	return entry_name;
++endfunction
++
++function ParseMembers(targ, members)
++	members := SplitWords(members, &quot;.&quot;);
++	var result := targ;
++	foreach member in ( members )
++		var temp := result.Get_Member(member);
++		if ( temp != error ) 
++			result := temp;
++		else
++			result := &quot;error&quot;;
++			break;
++		endif
++		
++		sleepms(2);
++	endforeach
++	return CStr(result);
++endfunction
++
+ function GumpTemplate(targ)
+ 
+ 	var gump := GFCreateGump();
+@@ -127,7 +161,7 @@
+ 	endif
+ 
+ 	GFResizePic(gump, 15, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 125, 410);
+-	var index := info_cfg[&quot;Index&quot;];
++	
+ 	var y_pos := 60;
+ 	foreach entry in ( index_list )
+ 		GFAddButton(gump, 20, (y_pos+3), 2117, 2118, GF_CLOSE_BTN, _entry_iter);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001022.html">[Poldistro-svn] r1049 - trunk/096/config
+</A></li>
+	<LI>Next message: <A HREF="001024.html">[Poldistro-svn] r1051 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1023">[ date ]</a>
+              <a href="thread.html#1023">[ thread ]</a>
+              <a href="subject.html#1023">[ subject ]</a>
+              <a href="author.html#1023">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

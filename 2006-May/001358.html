@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1389 - trunk/096/scripts/console
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1389%20-%20trunk/096/scripts/console&In-Reply-To=%3C200605131012.k4DACDbf023222%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001357.html">
+   <LINK REL="Next"  HREF="001359.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1389 - trunk/096/scripts/console</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1389%20-%20trunk/096/scripts/console&In-Reply-To=%3C200605131012.k4DACDbf023222%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1389 - trunk/096/scripts/console">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 12:12:13 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001357.html">[Poldistro-svn] r1388 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+        <LI>Next message: <A HREF="001359.html">[Poldistro-svn] r1390 - trunk/096/scripts/console
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1358">[ date ]</a>
+              <a href="thread.html#1358">[ thread ]</a>
+              <a href="subject.html#1358">[ subject ]</a>
+              <a href="author.html#1358">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 12:12:13 +0200 (Sat, 13 May 2006)
+New Revision: 1389
+
+Modified:
+   trunk/096/scripts/console/save.src
+   trunk/096/scripts/console/shutdown.src
+Log:
+Updated to support new saver system.
+
+Modified: trunk/096/scripts/console/save.src
+===================================================================
+--- trunk/096/scripts/console/save.src	2006-05-13 10:03:55 UTC (rev 1388)
++++ trunk/096/scripts/console/save.src	2006-05-13 10:12:13 UTC (rev 1389)
+@@ -4,20 +4,10 @@
+ use uo;
+ use os;
+ 
++include &quot;:worldsaver:saver&quot;;
+ 
+-program console_save()
+-
+-	var res;
+-	print(&quot;System Message: Saving World State&quot;);
+-	Broadcast(&quot;Saving World State&quot;);
+-
+-	if( !(res := SaveWorldState()) )
+-		print(&quot;System Message: Done saving, &quot; + res);
+-		Broadcast(&quot;Done saving&quot;);
+-		return 1;
+-	else
+-		print(&quot;System Message: Save error, &quot; + res);
+-		return 0;
+-	endif
+-
++program console_Save()
++	SVR_SendCommand(EVENT_SAVE_NOW);
++	
++	return 1;
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/scripts/console/shutdown.src
+===================================================================
+--- trunk/096/scripts/console/shutdown.src	2006-05-13 10:03:55 UTC (rev 1388)
++++ trunk/096/scripts/console/shutdown.src	2006-05-13 10:12:13 UTC (rev 1389)
+@@ -3,34 +3,25 @@
+  */
+ use uo;
+ use os;
+-use util;
+ 
+-program cmd_shutdown( cmd )
++include &quot;:worldsaver:saver&quot;;
+ 
+-	cmd := CInt(cmd);
+-	var basetime;
+-	var nexttime;
+-	var i;
+-	case (cmd)
+-		0:  basetime := 60;
+-		1:  basetime := 6;
+-		2:  basetime := 12;
+-		3:  basetime := 18;
+-		4:  basetime := 24;
+-		5:  basetime := 30;
+-		6:  basetime := 36;
+-		7:  basetime := 42;
+-		8:  basetime := 48;
+-		9:  basetime := 54;
++program console_ShutDown(cmd)
++	var basetime:=1;
++	case ( CInt(cmd) )
++		0:  basetime := 60; break;
++		1:  basetime := 6;  break;
++		2:  basetime := 12;  break;
++		3:  basetime := 18;  break;
++		4:  basetime := 24;  break;
++		5:  basetime := 30;  break;
++		6:  basetime := 36;  break;
++		7:  basetime := 42;  break;
++		8:  basetime := 48;  break;
++		9:  basetime := 54;  break;
+ 	endcase
+-	for(i := 1; i &lt;= 3; i := i + 1)
+-		nexttime := basetime - ((basetime/3) * (i-1));
+-		print(&quot;System Message: &quot; + nexttime +&quot; minutes to shutdown!&quot;);
+-		foreach onlinechr in EnumerateOnlineCharacters()
+-			SendSysMessage(onlinechr, &quot;System Message: &quot; + nexttime +&quot; minutes to shutdown!&quot;,3,38);
+-		endforeach
+-		sleep( 60 * basetime / 3 );
+-	endfor
+-	Shutdown();
+-
++	
++	SVR_SendCommand(EVENT_START_SHUTDOWN, basetime);
++	
++	return 1;
+ endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001357.html">[Poldistro-svn] r1388 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+	<LI>Next message: <A HREF="001359.html">[Poldistro-svn] r1390 - trunk/096/scripts/console
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1358">[ date ]</a>
+              <a href="thread.html#1358">[ thread ]</a>
+              <a href="subject.html#1358">[ subject ]</a>
+              <a href="author.html#1358">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

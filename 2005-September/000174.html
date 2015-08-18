@@ -1,0 +1,799 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r192 - trunk/096/pkg/systems/attributes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r192%20-%20trunk/096/pkg/systems/attributes&In-Reply-To=%3C200509202046.j8KKkUpD007349%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000173.html">
+   <LINK REL="Next"  HREF="000175.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r192 - trunk/096/pkg/systems/attributes</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r192%20-%20trunk/096/pkg/systems/attributes&In-Reply-To=%3C200509202046.j8KKkUpD007349%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r192 - trunk/096/pkg/systems/attributes">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep 20 22:46:30 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000173.html">[Poldistro-svn] r191 - trunk/096/pkg/other/hooks
+</A></li>
+        <LI>Next message: <A HREF="000175.html">[Poldistro-svn] r193 - trunk/096/pkg/systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#174">[ date ]</a>
+              <a href="thread.html#174">[ thread ]</a>
+              <a href="subject.html#174">[ subject ]</a>
+              <a href="author.html#174">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-20 22:46:29 +0200 (Tue, 20 Sep 2005)
+New Revision: 192
+
+Modified:
+   trunk/096/pkg/systems/attributes/skills.cfg
+   trunk/096/pkg/systems/attributes/uoskills.cfg
+Log:
+
+
+Modified: trunk/096/pkg/systems/attributes/skills.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/skills.cfg	2005-09-20 20:31:07 UTC (rev 191)
++++ trunk/096/pkg/systems/attributes/skills.cfg	2005-09-20 20:46:29 UTC (rev 192)
+@@ -8,8 +8,8 @@
+ //
+ //  The following can be defined for a Skill:
+ //
+-//      Name        Skill name [will be used to read/write data files]
+-//      SkillId     0-[max skill]
++//  	Name	    Skill name [will be used to read/write data files]
++//  	SkillId	    0-[max skill]
+ //      Script      Script to run when skill is clicked in skills window
+ //      Delay       Number of seconds skills cannot be used after this one
+ //      Unhides     Using this skill unhides user if hidden (default: 1)
+@@ -26,11 +26,19 @@
+ //      chance is a floating point percentage, from 0.0 to 100.0
+ //
+ /////////////////////////////////////////////////////////////////////////////
++// 
++// *** NOTICE ***
++// 
++// As of POL 094, this file is only used to start up a skill Script	when a
++// client uses one.
++//
++/////////////////////////////////////////////////////////////////////////////
+ 
+ Skill 0
+ {
+-    Name           Alchemy
+-    SkillId        0
++	Name	       Alchemy
++	SkillId	       0
++   
+     IntAdv         100 1d4+20
+     DexAdv         100 1d1+20
+     default_points 100
+@@ -40,9 +48,10 @@
+ 
+ Skill 1
+ {
+-    Name    Anatomy
+-    SkillId 1
+-    Script  anatomy
++	Name	Anatomy
++	SkillId	1
++	Script	:anatomy:anatomy
++  
+     Delay 10
+     IntAdv  100 1d2+10
+     default_points 50
+@@ -52,10 +61,11 @@
+ 
+ Skill 2
+ {
+-    Name    AnimalLore
+-    SkillId 2
+-    Script animalLore
+-    Delay   10
++	Name	AnimalLore
++	SkillId	2
++	Script	animalLore
++ 
++   Delay   10
+     IntAdv  100 1d4+20
+     default_points 100
+     title   Ranger
+@@ -64,9 +74,10 @@
+ 
+ Skill 3
+ {
+-    Name    ItemId
+-    SkillId 3
+-    Script  itemID
++	Name	ItemId
++	SkillId	3
++	Script	itemID
++ 
+     Delay   10
+     IntAdv  100 1d3+15
+     default_points 50
+@@ -76,9 +87,10 @@
+ 
+ Skill 4
+ {
+-    Name    ArmsLore
+-    SkillId 4
+-    Script  armsLore
++	Name	ArmsLore
++	SkillId	4
++	Script	armsLore
++ 
+     Delay   10
+     IntAdv  100 1d1+10
+     StrAdv  100 1d2+10
+@@ -89,8 +101,9 @@
+ 
+ Skill 5
+ {
+-    Name    Parry
+-    SkillId 5
++	Name	Parry
++	SkillId	5
++  
+     StrAdv  100 1d2+20
+     default_points 100
+     title   Shieldsfighter
+@@ -99,21 +112,23 @@
+ 
+ Skill 6
+ {
+-	Name			Begging
+-	SkillId			6
+-	Delay			10
+-	IntAdv			100 1d1+20
+-	default_points	100
+-	title			Beggar
+-	Unhides			1
+-	DropStat		str dex
+-	Script			begging
++	Name	Begging
++	SkillId	6
++	Script	:begging:begging
++	
++  Delay			10
++  IntAdv			100 1d1+20
++  default_points	100
++  title			Beggar
++  Unhides			1
++  DropStat		str dex
+ }
+ 
+ Skill 7
+ {
+-    Name    Blacksmithy
+-    SkillId 7
++	Name	Blacksmithy
++	SkillId	7
++	
+     Delay   10
+     StrAdv  100 1d4+20
+     default_points 100
+@@ -123,8 +138,9 @@
+ 
+ Skill 8
+ {
+-    Name    Bowcraft
+-    SkillId 8
++	Name	Bowcraft
++	SkillId	8
++	
+     Delay   15
+     StrAdv  100 1d4+20
+     DexAdv  100 1d3+20
+@@ -136,9 +152,10 @@
+ 
+ Skill 9
+ {
+-    Name    Peacemaking
+-    SkillId 9
+-    Script  peacemaking
++	Name	Peacemaking
++	SkillId	9
++	Script	:musicianship:peacemaking
++	
+     IntAdv  100 1d2
+     default_points 50
+     title   Bard
+@@ -148,8 +165,9 @@
+ 
+ Skill 10
+ {
+-    Name    Camping
+-    SkillId 10
++	Name	Camping
++	SkillId	10
++	
+     Delay   10
+     StrAdv  100 1d2+10
+     IntAdv  100 1d2+10
+@@ -161,8 +179,9 @@
+ 
+ Skill 11
+ {
+-    Name    Carpentry
+-    SkillId 11
++	Name	Carpentry
++	SkillId	11
++	
+     Delay   10
+     StrAdv  100 1d4+25
+     default_points 100
+@@ -172,9 +191,10 @@
+ 
+ Skill 12
+ {
+-    Name    Cartography
+-    SkillId 12
+-    Script  cartography
++	Name	Cartography
++	SkillId	12
++	Script	:cartography:cartography
++		
+     Delay   15
+     IntAdv  100 1d2+10
+     default_points 100
+@@ -184,8 +204,9 @@
+ 
+ Skill 13
+ {
+-    Name    Cooking
+-    SkillId 13
++	Name	Cooking
++	SkillId	13
++	
+     Delay   15
+     IntAdv  100 1d2+10
+     default_points 100
+@@ -196,9 +217,10 @@
+ 
+ Skill 14
+ {
+-    Name    DetectingHidden
+-    SkillId 14
+-    Script  detectHidden
++	Name	DetectingHidden
++	SkillId	14
++	Script	:detecthidden:detectHidden
++	
+     Delay   10
+     IntAdv  100 1d4+20
+     default_points 50
+@@ -208,9 +230,10 @@
+ 
+ Skill 15
+ {
+-    Name    Enticement
+-    SkillId 15
+-    Script  entice
++	Name	Enticement
++	SkillId	15
++	Script	:musicianship:entice
++	
+     Delay   10
+     IntAdv  20 2d4
+     default_points 100
+@@ -219,9 +242,10 @@
+ 
+ Skill 16
+ {
+-    Name    EvaluatingIntelligence
+-    SkillId 16
+-    Script  evalInt
++	Name	EvaluatingIntelligence
++	SkillId	16
++	Script	:evalint:evalInt
++	
+     Delay   10
+     IntAdv  100 1d4+20
+     default_points 50
+@@ -232,8 +256,9 @@
+ 
+ Skill 17
+ {
+-    Name    Healing
+-    SkillId 17
++	Name	Healing
++	SkillId	17
++	
+     Delay   10
+     DexAdv  100 1d1+10
+     default_points 100
+@@ -244,8 +269,9 @@
+ 
+ Skill 18
+ {
+-    Name    Fishing
+-    SkillId 18
++	Name	Fishing
++	SkillId	18
++	
+     Delay   5
+     DexAdv  100 1d4+20
+     StrAdv  100 1d4+20
+@@ -256,20 +282,23 @@
+ 
+ Skill 19
+ {
+-    Name    ForensicEvaluation
+-    SkillId 19
++	Name	ForensicEvaluation
++	SkillId	19
++	Script	:forensicevaluation:forensic
++	
+     Delay   15
+     IntAdv  100 1d4+20
+     default_points 100
+-    script forensic
++	
+     title   Detective
+     DropStat       str dex
+ }
+ 
+ Skill 20
+ {
+-    Name    Herding
+-    SkillId 20
++	Name	Herding
++	SkillId	20
++	
+     StrAdv  100 1d4+20
+     default_points 100
+     title   Shepherd
+@@ -279,9 +308,10 @@
+ 
+ Skill 21
+ {
+-    Name    Hiding
+-    SkillId 21
+-    Script  hiding
++	Name	Hiding
++	SkillId	21
++	Script	:hiding:hiding
++	
+     Delay   10
+     DexAdv  100 1d4+20
+     default_points 50
+@@ -291,20 +321,22 @@
+ 
+ Skill 22
+ {
+-    Name    Provocation
+-    SkillId 22
++	Name	Provocation
++	SkillId	22
++	Script	:musicianship:provocation
++	
+     default_points 100
+     dexadv 100 1d2
+-    script provocation
+     title   Bard
+     DropStat       str int
+ }
+ 
+ Skill 23
+ {
+-    Name    Inscription
+-    SkillId 23
+-    Script  inscription
++	Name	Inscription
++	SkillId	23
++	Script	:inscription:inscription
++	
+     Delay   0
+     IntAdv  100 1d4+20
+     default_points 100
+@@ -314,8 +346,9 @@
+ 
+ Skill 24
+ {
+-    Name    Lockpicking
+-    SkillId 24
++	Name	Lockpicking
++	SkillId	24
++	
+     Delay   15
+     DexAdv  100 1d3+10
+     default_points 100
+@@ -326,8 +359,9 @@
+ 
+ Skill 25
+ {
+-    Name    Magery
+-    SkillId 25
++	Name	Magery
++	SkillId	25
++	
+     IntAdv  100 1d4+20
+     default_points 100
+     title   Mage
+@@ -337,8 +371,9 @@
+ 
+ Skill 26
+ {
+-    Name    MagicResistance
+-    SkillId 26
++	Name	MagicResistance
++	SkillId	26
++	
+     default_points 100
+     title   Mage
+     Unhides 1
+@@ -347,8 +382,9 @@
+ 
+ Skill 27
+ {
+-    Name    Tactics
+-    SkillId 27
++	Name	Tactics
++	SkillId	27
++	
+     default_points 40
+     title   Warrior
+     DropStat       dex
+@@ -356,8 +392,9 @@
+ 
+ Skill 28
+ {
+-    Name    Snooping
+-    SkillId 28
++	Name	Snooping
++	SkillId	28
++	
+     Delay 5
+     Unhides 0
+     DexAdv  80 4d6+10
+@@ -367,8 +404,9 @@
+ 
+ Skill 29
+ {
+-    Name    Musicianship
+-    SkillId 29
++	Name	Musicianship
++	SkillId	29
++	
+     Delay   15
+     IntAdv  100 1d2+10
+     DexAdv  100 1d4+20
+@@ -380,9 +418,10 @@
+ 
+ Skill 30
+ {
+-	Name    Poisoning
+-	SkillId 30
+-	Script  poisonSkill
++	Name	Poisoning
++	SkillId	30
++	Script	:poisoning:poisonSkill
++	
+ 	Delay   10
+ 	IntAdv  100 1d2+10
+ 	DexAdv  100 1d4+20
+@@ -393,8 +432,9 @@
+ 
+ Skill 31
+ {
+-    Name    Archery
+-    SkillId 31
++	Name	Archery
++	SkillId	31
++	
+     DexAdv  100 1d4+20
+     StrAdv  100 1d2+10
+     title   Archer
+@@ -404,9 +444,10 @@
+ 
+ Skill 32
+ {
+-    Name    SpiritSpeak
+-    SkillId 32
+-    Script  spiritSpeak
++	Name	SpiritSpeak
++	SkillId	32
++	Script	:spiritspeak:spiritSpeak
++	
+     Delay   10
+     IntAdv  100 1d4+20
+     default_points 50
+@@ -416,8 +457,9 @@
+ 
+ Skill 33
+ {
+-    Name    Stealing
+-    SkillId 33
++	Name	Stealing
++	SkillId	33
++	
+     Delay   15
+     Unhides 0
+     DexAdv  90 3d4+9
+@@ -427,8 +469,9 @@
+ 
+ Skill 34
+ {
+-    Name    Tailoring
+-    SkillId 34
++	Name	Tailoring
++	SkillId	34
++	
+     Delay   15
+     DexAdv  100 1d1+10
+     default_points 100
+@@ -439,9 +482,10 @@
+ 
+ Skill 35
+ {
+-    Name    AnimalTaming
+-    SkillId 35
+-    Script  taming
++	Name	AnimalTaming
++	SkillId	35
++	Script	:taming:taming
++	
+     Delay   10
+     StrAdv  100 1d4+20
+     IntAdv  100 1d3+10
+@@ -452,9 +496,10 @@
+ 
+ Skill 36
+ {
+-	Name			TasteIdentification
+-	SkillId			36
+-	Script			tasteID
++	Name	TasteIdentification
++	SkillId	36
++	Script	:tasteid:tasteID
++	
+ 	Delay			10
+ 	IntAdv			100 1d4+20
+ 	default_points	50
+@@ -464,8 +509,9 @@
+ 
+ Skill 37
+ {
+-    Name    Tinkering
+-    SkillId 37
++	Name	Tinkering
++	SkillId	37
++	
+     Delay   10
+     StrAdv  100 1d4+20
+     IntAdv  100 1d4+20
+@@ -476,9 +522,10 @@
+ 
+ Skill 38
+ {
+-    Name    Tracking
+-    SkillId 38
+-    Script tracking
++	Name	Tracking
++	SkillId	38
++	Script	:tracking:tracking
++	
+     Delay   10
+     IntAdv  100 1d4+20
+     DexAdv  100 1d2+10
+@@ -488,8 +535,9 @@
+ 
+ Skill 39
+ {
+-    Name    Veterinary
+-    SkillId 39
++	Name	Veterinary
++	SkillId	39
++	
+     Delay   10
+     IntAdv  100 1d2+10
+     default_points 100
+@@ -500,8 +548,9 @@
+ 
+ Skill 40
+ {
+-    Name    Swordsmanship
+-    SkillId 40
++	Name	Swordsmanship
++	SkillId	40
++	
+     StrAdv  100 1d3+20
+     DexAdv  100 1d3
+     title   Swordsman
+@@ -511,8 +560,9 @@
+ 
+ Skill 41
+ {
+-    Name    Macefighting
+-    SkillId 41
++	Name	Macefighting
++	SkillId	41
++	
+     StrAdv  100 1d4+30
+     DexAdv  100 1d2
+     title   Armsman
+@@ -522,8 +572,9 @@
+ 
+ Skill 42
+ {
+-    Name    Fencing
+-    SkillId 42
++	Name	Fencing
++	SkillId	42
++	
+     StrAdv  100 1d2+10
+     DexAdv  100 1d3+10
+     title   Fencer
+@@ -533,8 +584,9 @@
+ 
+ Skill 43
+ {
+-    Name    Wrestling
+-    SkillId 43
++	Name	Wrestling
++	SkillId	43
++	
+     StrAdv  100 1d2+20
+     DexAdv  100 1d4
+     title   Wrestler
+@@ -544,8 +596,9 @@
+ 
+ Skill 44
+ {
+-    Name    Lumberjacking
+-    SkillId 44
++	Name	Lumberjacking
++	SkillId	44
++	
+     Delay   10
+     StrAdv  100 1d4+20
+     default_points 100
+@@ -556,8 +609,9 @@
+ 
+ Skill 45
+ {
+-    Name    Mining
+-    SkillId 45
++	Name	Mining
++	SkillId	45
++	
+     Delay   10
+     StrAdv  100 1d4+20
+     default_points 100
+@@ -568,10 +622,11 @@
+ 
+ Skill 46
+ {
+-    Name    Meditation
+-    SkillId 46
++	Name	Meditation
++	SkillId	46
++	Script	:meditation:meditation
++    
+     Delay   10
+-    Script  meditation
+     IntAdv  100 1d4+20
+     default_points 100
+     title   Stoic
+@@ -580,11 +635,12 @@
+ 
+ Skill 47
+ {
+-    Name    Stealth
+-    SkillId 47
++	Name	Stealth
++	SkillId	47
++	Script	:stealth:stealth
++	
+     Delay   10
+     Unhides 0
+-    script  stealth
+     DexAdv  100 1d4+20
+     default_points 50
+     title   Rogue
+@@ -593,10 +649,11 @@
+ 
+ Skill 48
+ {
+-    Name    RemoveTrap
+-    SkillId 48
++	Name	RemoveTrap
++	SkillId	48
++	Script	removeTrap
++		
+     Delay   10
+-    Script  removeTrap
+     DexAdv  100 1d4+20
+     default_points 50
+     title   Rogue
+@@ -605,8 +662,9 @@
+ 
+ Skill 49
+ {
+-    Name    Necromancy
+-    SkillId 49
++	Name	Necromancy
++	SkillId	49
++	
+     IntAdv  100 1d4+20
+     default_points 100
+     title   Necromancer
+@@ -616,8 +674,9 @@
+ 
+ Skill 50
+ {
+-    Name    Focus
+-    SkillId 50
++	Name	Focus
++	SkillId	50
++	
+     IntAdv  100 1d4+20
+     default_points 100
+     title   Monk
+@@ -627,8 +686,9 @@
+ 
+ Skill 51
+ {
+-    Name    Chivalry
+-    SkillId 51
++	Name	Chivalry
++	SkillId	51
++	
+     IntAdv  100 1d4+20
+     default_points 100
+     title   Paladin
+
+Modified: trunk/096/pkg/systems/attributes/uoskills.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/uoskills.cfg	2005-09-20 20:31:07 UTC (rev 191)
++++ trunk/096/pkg/systems/attributes/uoskills.cfg	2005-09-20 20:46:29 UTC (rev 192)
+@@ -15,6 +15,9 @@
+ # Only one attribute may be mapped to a skill id. Attribute_name must be found in attributes.cfg!
+ # SkillID must be an integer between 0 and 500, though any entries past the maximum UO skill id
+ # will not be sent to the UO client.
++# 
++# ** Used to handle the blue skill messages that player's see when they change. **
++#
+ 
+ Skill 0
+ {
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000173.html">[Poldistro-svn] r191 - trunk/096/pkg/other/hooks
+</A></li>
+	<LI>Next message: <A HREF="000175.html">[Poldistro-svn] r193 - trunk/096/pkg/systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#174">[ date ]</a>
+              <a href="thread.html#174">[ thread ]</a>
+              <a href="subject.html#174">[ subject ]</a>
+              <a href="author.html#174">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

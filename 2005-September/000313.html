@@ -1,0 +1,838 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r335 - in trunk/096/pkg: skills/bowcraft systems/combat systems/crafting/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r335%20-%20in%20trunk/096/pkg%3A%20skills/bowcraft%20systems/combat%20systems/crafting/include&In-Reply-To=%3C200509301505.j8UF5MUZ020965%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000312.html">
+   <LINK REL="Next"  HREF="000314.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r335 - in trunk/096/pkg: skills/bowcraft systems/combat systems/crafting/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r335%20-%20in%20trunk/096/pkg%3A%20skills/bowcraft%20systems/combat%20systems/crafting/include&In-Reply-To=%3C200509301505.j8UF5MUZ020965%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r335 - in trunk/096/pkg: skills/bowcraft systems/combat systems/crafting/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Fri Sep 30 17:05:22 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000312.html">[Poldistro-svn] r334 - in trunk/096/scripts: ai include misc
+</A></li>
+        <LI>Next message: <A HREF="000314.html">[Poldistro-svn] r336 - in trunk/096/pkg: items/containers/container items/sysbook/book other/hooks skills/armslore skills/magery
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#313">[ date ]</a>
+              <a href="thread.html#313">[ thread ]</a>
+              <a href="subject.html#313">[ subject ]</a>
+              <a href="author.html#313">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-30 17:05:18 +0200 (Fri, 30 Sep 2005)
+New Revision: 335
+
+Added:
+   trunk/096/pkg/skills/bowcraft/FletchMenu.cfg
+   trunk/096/pkg/skills/bowcraft/bowcraft.src
+Removed:
+   trunk/096/pkg/skills/bowcraft/bowcraftFunctions.inc
+   trunk/096/pkg/skills/bowcraft/fletch.src
+Modified:
+   trunk/096/pkg/skills/bowcraft/bowcraft.cfg
+   trunk/096/pkg/skills/bowcraft/itemdesc.cfg
+   trunk/096/pkg/systems/combat/bladed.src
+   trunk/096/pkg/systems/crafting/include/crafting.inc
+Log:
+
+
+Added: trunk/096/pkg/skills/bowcraft/FletchMenu.cfg
+===================================================================
+--- trunk/096/pkg/skills/bowcraft/FletchMenu.cfg	2005-09-30 12:52:24 UTC (rev 334)
++++ trunk/096/pkg/skills/bowcraft/FletchMenu.cfg	2005-09-30 15:05:18 UTC (rev 335)
+@@ -0,0 +1,50 @@
++##########################################################################
++# Format for Crafting Menus Config Files:
++#
++#  Index Entry for Config:
++#
++#     Craftitem Index      &lt;- This is the Index. Contains the Sub Menu Names
++#     {
++#      Title	   Example &lt;- HTML Name of the Menu
++#      Skill       blacksmithy  &lt;- Skill the menu is for. Same as the ID's in pol
++#      SkillID     7       &lt;- SkillID of the skill listed in Skill.
++#      Group       Axes    &lt;- Used for each Sub Menu Name
++#     }
++#
++#  Sub Menu Entry for Config:
++#
++#     Craftitem RingMail   &lt;- Should match the Sub-Menu Group name in Index
++#     {
++#     	Item	RingmailGloves   &lt;- For each item in the sub-menu. You use the
++#                                   objtype name here, not the objtype.
++#     }
++#
++##########################################################################
++
++Craftitem Index
++{
++        Title   &lt;center&gt;Bowcraft Selection Menu&lt;/center&gt;
++        Skill   BowcraftFletching
++        SkillID BowcraftFletching
++	Group	Materials
++	Group	Ammunition
++	Group	Weapons
++}
++
++Craftitem Materials
++{
++	Item	ArrowShaft
++}
++
++Craftitem Ammunition
++{
++	Item	Arrow
++	Item	Bolt
++}
++
++Craftitem Weapons
++{
++	Item	Bow
++	Item	Crossbow
++	Item	HeavyCrossbow
++}
+
+Modified: trunk/096/pkg/skills/bowcraft/bowcraft.cfg
+===================================================================
+--- trunk/096/pkg/skills/bowcraft/bowcraft.cfg	2005-09-30 12:52:24 UTC (rev 334)
++++ trunk/096/pkg/skills/bowcraft/bowcraft.cfg	2005-09-30 15:05:18 UTC (rev 335)
+@@ -1,35 +1,104 @@
++# //$Id$
++
++##########################################################################
++# Format for bowcraft.cfg:
++#
++#     Element    0xf3f      &lt;- Objtype of the item
++#     {
++#      Name             arrow       &lt;- Name of the item
++#      material         1           &lt;- Material Amount Required
++#      skill            0.0         &lt;- Skill Required of Carpentry to make xx.x formated
++#      difficulty       1.0         &lt;- Difficulty of creating this item xx.x formated
++#      points           1.0         &lt;- Points given for crafting this item, xx.x formated
++#      parts            0x0 0x0 3 1 &lt;- list of Objtypes of parts for an assemble item
++#                                      &lt;objtype&gt; &lt;objtype&gt; &lt;amount&gt; &lt;amount&gt;
++#      type             wood        &lt;- Type of material used to craft this
++#      exceptional 1                &lt;- 0/1 Flag. 1 = Can be exceptional
++#      mark        1                &lt;- 0/1 Flag. 1 = Can retain maker's mark
++#      retain      1                &lt;- 0/1 Flag. 1 = Can retain color of ore used
++#      assemble    1                &lt;- Used in tinker/carpentry for items marked
++#     }                                as assemblies. This includes making boards.
++#
++# Notes: 1.) Objtype in entry header must NOT use 0x0aaa format, but 0xaaa
++##########################################################################
+ Element 0x1BD4
+ {
+-    Name    Shafts
+-    Material    1
+-    SkillRequired 0
+-    Difficulty  5
+-    PointValue  10
++	name		arrow shaft
++	material	1
++	skill		0.0
++	difficulty	1.0
++	points		5.0
++	type		wood
++	exceptional	0
++	mark		0
++	retain		0
+ }
+ 
++Element 0xf3f
++{
++	name		arrow
++	material	1
++	skill		0.0
++	difficulty	1.0
++	points		1.0
++	parts		0x1BD4 0x1BD1 1 1
++	type		wood
++	exceptional	0
++	mark		0
++	retain		0
++	assemble	1
++}
++
++Element 0x1bfb
++{
++	name		bolt
++	material	1
++	skill		0.0
++	difficulty	1.0
++	points		1.0
++	parts		0x1BD4 0x1BD1 1 1
++	type		wood
++	exceptional	0
++	mark		0
++	retain		0
++	assemble	1
++}
++
+ Element 0x13B2
+ {
+-	Name		Bow
+-	Material	7
+-	SkillRequired	0
+-	Difficulty  10
+-	PointValue  40
++	name		bow
++	material	7
++	skill		10.0
++	difficulty	5.0
++	points		20.0
++	type		wood
++	exceptional	1
++	mark		1
++	retain		1
+ }
+ 
+-Element 0x0f4f
++Element 0xf4f
+ {
+-    Name    Crossbow
+-    Material    7
+-    SkillRequired 20
+-    Difficulty  40
+-    PointValue  60
++    name             crossbow
++    material         10
++    skill            60.0
++    difficulty       35.0
++    points           80.0
++    type             wood
++    exceptional      1
++    mark             1
++    retain           1
+ }
+ 
+ Element 0x13fd
+ {
+-    Name    Heavy Crossbow
+-    Material    15
+-    SkillRequired 55
+-    Difficulty  80
+-    PointValue  100
+-}
++    name             heavy crossbow
++    material         15
++    skill            80.0
++    difficulty       55.0
++    points           100.0
++    type             wood
++    exceptional      1
++    mark             1
++    retain           1
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/bowcraft/bowcraft.src
+===================================================================
+--- trunk/096/pkg/skills/bowcraft/bowcraft.src	2005-09-30 12:52:24 UTC (rev 334)
++++ trunk/096/pkg/skills/bowcraft/bowcraft.src	2005-09-30 15:05:18 UTC (rev 335)
+@@ -0,0 +1,120 @@
++// //$Id$
++
++use cfgfile;
++use util;
++
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
++include &quot;:crafting:crafting&quot;;
++include &quot;:crafting:craftingRepair&quot;;
++include &quot;:crafting:toolWear&quot;;
++include &quot;include/canAccess&quot;;
++
++var item_config     := ReadConfigFile(&quot;:*:itemdesc&quot;);
++var craft_config    := ReadConfigFile(&quot;:bowcraft:bowcraft&quot;);
++
++program use_FletchTool(who, tool)
++
++	if(!can_access(who, tool))
++		return 0;
++	endif
++	if((!tool.movable) or !ReserveItem(tool))
++		SendSysMessage(who, &quot;You cannot use that&quot;);
++		return 0;
++	endif
++	if(tool.container.serial != who.backpack.serial)
++		SendSysMessage(who, &quot;That item is not in your backpack.&quot;);
++		return 0;
++	endif
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	var rinfo := sendCraftGump(who, ATTRIBUTE_BOWCRAP_T_FLETCHING);
++
++	// OK was pressed, close it on out
++	if(rinfo == 0)
++		return 0;
++	endif
++
++	var the_objtype := rinfo[1];
++	var amt         := rinfo[2];
++	var repairit    := rinfo[3];
++
++	if(repairit)
++		repair_this(who, craft_skill);
++		return 0;
++	endif
++
++	if(craft_config[Hex(the_objtype)].assemble == 1)
++		CraftAssembly(who, ATTRIBUTE_BOWCRAP_T_FLETCHING, tool, the_objtype, amt);
++	else
++		makeBowcraftItems(who, the_objtype, amt, tool);
++	endif
++
++endprogram
++
++function makeBowcraftItems(who, what, amt, tool)
++
++	if(!what)
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++
++	// Metal is sent for the ResourceList entry type.
++	var itemchk := MaterialSelection(who, craft_skill, lower(&quot;Wood&quot;));
++	if(!itemchk)
++		return 0;
++	endif
++	var use_on := itemchk[1];
++	var ptmod := itemchk[3];
++
++	var num, theitem;
++	var itemname := craft_config[what].name;
++	var material := Cint(craft_config[what].material);
++	var reqd := Cint(craft_config[what].skill);
++	var diff := Cint(craft_config[what].difficulty);
++	var pts  := Cint(craft_config[what].points);
++	pts      := CInt(pts + ptmod);
++	var counter := 0, x := who.x, y := who.y;
++
++	while(counter &lt; amt)
++		if((who.x != x) || (who.y != y))
++			SendSysMessage(who, &quot;You stop fletching.&quot;);
++			break;
++		endif
++		if(!tool)
++			break;
++		endif
++
++		sleep(2);
++
++		if(GetAmount(use_on) &gt;= material)
++			if(CraftCheckSkill(who, craft_skill, diff, pts))
++				theitem := CreateCraftItem(who, craft_skill, use_on, use_on.objtype, what, material, itemname, reqd);
++				if( TypeOf(theitem) != &quot;ItemRef&quot; )
++					SubtractAmount(use_on, (material / 2));
++					SendSysMessage(who, &quot;You failed to create the item, and some of your materials are lost.&quot;);
++					counter := counter + 1;
++					continue;
++				else
++					CheckToolWear (who, tool, craft_skill);
++				endif
++			else
++				num := CInt(randomint(material)/2) + 1;
++				if(SubtractAmount(use_on, num))
++					SendSysMessage(who, &quot;You lost some material&quot;);
++				endif
++			endif
++		else
++			SendSysMessage(who, &quot;You don't have the resources required to make that item.&quot;);
++			counter := 100;
++			break;
++		endif
++		counter := counter + 1;
++	endwhile
++
++	return 0;
++
++endfunction
+
+Deleted: trunk/096/pkg/skills/bowcraft/bowcraftFunctions.inc
+===================================================================
+--- trunk/096/pkg/skills/bowcraft/bowcraftFunctions.inc	2005-09-30 12:52:24 UTC (rev 334)
++++ trunk/096/pkg/skills/bowcraft/bowcraftFunctions.inc	2005-09-30 15:05:18 UTC (rev 335)
+@@ -1,113 +0,0 @@
+-
+-function CarveLogs(who, blade, logs)
+-  if(logs.movable == 0)
+-    SendSysMessage(who, &quot;You cannot use those logs.&quot;);
+-    return;
+-  endif
+-  if((!Accessible(who, logs)) or (!CheckLineOfSight(who, logs)) or (dist(who, logs) &gt; 2))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  if(!logs.container)
+-    if(Distance(who, logs) &gt; 2)
+-      SendSysMessage(who, &quot;That is too far away.&quot;);
+-      return;
+-    endif
+-  endif
+-  var creatable := CreatableObjects(who, blade, logs);
+-  var selection := SelectMenuItem2(who, &quot;BowcraftCarving&quot;);
+-  if(!selection)
+-    return;
+-  endif
+-  var what := selection.objtype;
+-  if(!Accessible(who, logs))
+-    SendSysMessage(who, &quot;I can't access the logs to make that.&quot;);
+-    return;
+-  endif
+-  var objectconfig := FindConfigElem(bowcraftconfigfile, what);
+-  if(!objectconfig)
+-    return;
+-  endif
+-  var material := CInt(GetConfigString(objectconfig, &quot;Material&quot;));
+-  if(material &gt; logs.amount)
+-    SendSysMessage(who, &quot;You don't have enough logs to make that.&quot;);
+-    return;
+-  endif
+-  var difficulty := GetConfigInt(objectconfig, &quot;Difficulty&quot;);
+-  var pointvalue := GetConfigInt(objectconfig, &quot;PointValue&quot;);
+-  var bow := 0;
+-  Detach();
+-  PlaySoundEffect(who, 0x5a);
+-  PerformAction(who, 0x021);
+-  sleep(2);
+-  PlaySoundEffect(who, 0x5a);
+-  PerformAction(who, 0x021);
+-  sleep(2);
+-  PlaySoundEffect(who, 0x5a);
+-  PerformAction(who, 0x021);
+-  sleep(2);
+-  PlaySoundEffect(who, 0x5a);
+-  PerformAction(who, 0x021);
+-  sleep(2);
+-  if(CheckSkill(who, SKILLID_BOWCRAFT, difficulty, pointvalue))
+-    if(what == UOBJ_SHAFTS)
+-      var amt := logs.amount;
+-      if(DestroyItem(logs))
+-        CreateItemInBackpack(who, what, amt);
+-        CheckToolWear (who, blade, SKILLID_BOWCRAFT);
+-        SendSysMessage(who, &quot;You create some shafts and place them in your pack.&quot; );
+-      endif
+-    elseif (what == UOBJ_BOW)
+-      if(SubtractAmount(logs, material))
+-        bow := CreateItemInBackpack(who, what);
+-        CheckToolWear (who, blade, SKILLID_BOWCRAFT);
+-        SendSysMessage(who, &quot;You create a bow and place it in your pack.&quot;);
+-        SetName(bow, &quot;a bow&quot;);
+-      endif
+-    elseif (what == UOBJ_XBOW)
+-      if(SubtractAmount(logs, material))
+-        bow := CreateItemInBackpack(who, what);
+-        CheckToolWear (who, blade, SKILLID_BOWCRAFT);
+-        SendSysMessage(who, &quot;You create a crossbow and place it in your pack.&quot;);
+-        SetName(bow, &quot;a crossbow&quot;);
+-      endif
+-    elseif (what == UOBJ_HEAVY_XBOW)
+-      if(SubtractAmount(logs, material))
+-        bow := CreateItemInBackpack(who, what);
+-        CheckToolWear (who, blade, SKILLID_BOWCRAFT);
+-        SendSysMessage(who, &quot;You create a heavy crossbow and place it in your pack.&quot;);
+-        SetName(bow, &quot;a heavy crossbow&quot;);
+-      endif
+-    else
+-      SendSysMessage(who, &quot;I don't know how to make that.&quot;);
+-      return;
+-    endif
+-    if((RandomInt(CInt(GetEffectiveSkill(who,SKILLID_BOWCRAFT)) + 1) &gt; (difficulty + 20)) &amp;&amp; (bow != 0))
+-      setquality(who, bow);
+-//      var skill := GetEffectiveSkill(who, SKILLID_BOWCRAFT);
+-//      ExceptionalFameMod(who, skill, difficulty, pointvalue);
+-    endif
+-  else
+-    SubtractAmount(logs, (RandomInt(5) + 1));
+-    SendSysMessage(who, &quot;You destroy some logs.&quot;);
+-  endif
+-endfunction
+-
+-function setquality(who, bow)
+-  var tname := TruncateArticle(bow.name);
+-  if(CInt(GetEffectiveSkill(who, SKILLID_BOWCRAFT)) &gt;= 99)
+-    bow.name := &quot;an exceptional &quot; + tname + &quot; [crafted by &quot; + who.name + &quot;]&quot;;
+-  else
+-    bow.name := &quot;an exceptional &quot; + tname;
+-  endif
+-  bow.quality := bow.quality + 0.2;
+-  bow.hp := bow.maxhp;
+-  SendSysMessage(who, &quot;You created an exceptional item.&quot;);
+-endfunction
+-
+-function CreatableObjects( who, blade, logs )
+-  var objtypes := GetMenuObjTypes( &quot;BowcraftCarving&quot; );
+-  objtypes := ApplyConstraint( objtypes, bowcraftconfigfile, &quot;material&quot;, GetAmount(logs) );
+-  return objtypes;
+-endfunction
+-
+
+Deleted: trunk/096/pkg/skills/bowcraft/fletch.src
+===================================================================
+--- trunk/096/pkg/skills/bowcraft/fletch.src	2005-09-30 12:52:24 UTC (rev 334)
++++ trunk/096/pkg/skills/bowcraft/fletch.src	2005-09-30 15:05:18 UTC (rev 335)
+@@ -1,74 +0,0 @@
+-use uo;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/objtype&quot;;
+-include &quot;include/utility&quot;;
+-include &quot;include/skillPoints&quot;;
+-include &quot;include/canAccess&quot;;
+-
+-program on_fletch(who, shafts)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-    EraseObjProperty(who, &quot;HealTimer&quot;);
+-  if(!can_access(who, shafts))
+-    return;
+-  endif
+-  var thepoints := GetEffectiveSkill(who, SKILLID_BOWCRAFT) / 2;
+-  if(thepoints &lt; 10)
+-    thepoints := 10;
+-  endif
+-  if(shafts.objtype == 0x1BD4)
+-    SendSysMessage(who, &quot;Select feathers to use.&quot;);
+-  else
+-    SendSysMessage(who, &quot;Select shafts to use.&quot;);
+-  endif
+-  var feathers := Target(who);
+-  if(!feathers)
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  endif
+-  if(!can_access(who, feathers))
+-    return;
+-  endif
+-  if(shafts.objtype == 0x1bd1)
+-    if(GetObjType(feathers) != 0x1bd4)
+-      SendSysMessage(who, &quot;You can only make arrows from shafts and feathers.&quot;);
+-      return;
+-    endif
+-  elseif(shafts.objtype == 0x1bd4)
+-    if(GetObjType(feathers) != 0x1bd1)
+-      SendSysMessage(who, &quot;You can only make arrows from shafts and feathers.&quot;);
+-      return;
+-    endif
+-  else
+-    SendSysMessage(who, &quot;You can only make arrows from shafts and feathers.&quot;);
+-  endif
+-  var choice := SelectMenuItem2(who, &quot;fletching&quot;);
+-  if(!Accessible(who, shafts))
+-    SendSysMessage(who, &quot;You can't use those shafts.&quot;);
+-    return;
+-  endif
+-  if(!Accessible(who, feathers))
+-    SendSysMessage(who, &quot;You can't use those feathers.&quot;);
+-    return;
+-  endif
+-  if(choice == 0)
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  endif
+-  if(CheckSkill(who, SKILLID_BOWCRAFT, -1, thepoints))
+-    var num_to_make := Min(GetAmount(shafts), GetAmount(feathers));
+-    if((SubtractAmount(shafts, num_to_make)) &amp;&amp; (SubtractAmount(feathers, num_to_make)))
+-      var arrows := CreateItemInBackpack(who, choice.objtype, num_to_make);
+-      if (arrows)
+-        SendSysMessage(who, &quot;You create some arrows and put them in your pack.&quot;);
+-      else
+-        SendSysMessage(who, &quot;You were unable to find anywhere to put the arrows.&quot;);
+-      endif
+-    endif
+-  else
+-    SubtractAmount(shafts, 1);
+-    SubtractAmount(feathers, 1);
+-    SendSysMessage(who, &quot;You destroy some materials.&quot;);
+-  endif
+-endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/bowcraft/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/bowcraft/itemdesc.cfg	2005-09-30 12:52:24 UTC (rev 334)
++++ trunk/096/pkg/skills/bowcraft/itemdesc.cfg	2005-09-30 15:05:18 UTC (rev 335)
+@@ -2,18 +2,33 @@
+ 
+ Item 0x1BD4
+ {
+-    Name                ArrowShaft
+-    desc                arrow shaft%s%
+-    Script              fletch
+-    VendorSellsFor      3
+-    VendorBuysFor       1
++	Name		arrowshaft
++	desc		arrow shaft%s%
++	VendorSellsFor	3
++	VendorBuysFor	1
+ }
+ 
+-Item 0x1bd1
++Item 0x1BD1
+ {
+-    Name                feather
+-    desc                feather%s%
+-    Script              fletch
+-    VendorSellsFor      3
+-    VendorBuysFor       1
++	Name		feather
++	desc		feather%s%
++	VendorSellsFor	3
++	VendorBuysFor	1
+ }
++
++Item 0x1022
++{
++	Name		fletchtools
++	Desc		fletching tools
++	VendorSellsFor	8
++	Script		:bowcraft:bowcraft
++}
++
++Item 0x1023
++{
++	Name		fletchtools2
++	Desc		fletching tools
++	VendorSellsFor	8
++	Script		:bowcraft:bowcraft
++}
++
+
+Modified: trunk/096/pkg/systems/combat/bladed.src
+===================================================================
+--- trunk/096/pkg/systems/combat/bladed.src	2005-09-30 12:52:24 UTC (rev 334)
++++ trunk/096/pkg/systems/combat/bladed.src	2005-09-30 15:05:18 UTC (rev 335)
+@@ -15,7 +15,6 @@
+ include &quot;include/dist&quot;;
+ include &quot;include/toolWear&quot;;
+ include &quot;include/noto&quot;;
+-include &quot;:bowcraft:bowcraftFunctions&quot;;
+ include &quot;:tailoring:tailoringFunctions&quot;;
+ include &quot;:fishing:fishingFunctions&quot;;
+ include &quot;:containers:corpse/corpseFunctions&quot;;
+@@ -24,63 +23,71 @@
+ 
+ 
+ program use_blade(who, blade)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  if(!can_access(who, blade))
+-    return;
+-  endif
+-  if(!ReserveItem(blade))
+-    return;
+-  endif
+-  SendSysMessage(who, &quot;What would you like to use that on?&quot;);
+-  var use_on := TargetCoordinates(who);
+-  if(!use_on)
+-    return;
+-  endif
+-  if(use_on.item)
+-    if(!can_access(who, use_on.item, &quot;unmovable&quot;))
+-      return;
+-    endif
+-  endif
+-  var checkme := use_on.item.objtype;
+-  if((checkme == UOBJ_LOGS) || (checkme == 0x1bd7))
+-    CarveLogs( who, blade, use_on.item );
+-  elseif(use_on.mobile.npctemplate == &quot;sheep&quot;)
+-    process_wool(who, blade, use_on.mobile);
+-  elseif(use_on.item.objtype == UOBJ_CORPSE)
+-    ReleaseItem(blade);
+-    Carve_Corpse(who, use_on.item);
+-  elseif(is_fish(checkme))
+-    CarveFish(who, blade, use_on.item);
+-  elseif (is_tree(use_on.objtype ))
+-    CarveTree(who, blade, use_on.item);
+-  else
+-    SendSysMessage(who, &quot;I don't know how to use those items together.&quot;);
+-  endif
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	if(!can_access(who, blade))
++		return;
++	endif
++	if(!ReserveItem(blade))
++		return;
++	endif
++
++	SendSysMessage(who, &quot;What would you like to use that on?&quot;);
++	var use_on := TargetCoordinates(who);
++	if(!use_on)
++		return;
++	endif
++	if(use_on.item)
++		if(!can_access(who, use_on.item, &quot;unmovable&quot;))
++			return;
++		endif
++	endif
++	var checkme := use_on.item.objtype;
++	if(use_on.mobile.npctemplate == &quot;sheep&quot;)
++		process_wool(who, blade, use_on.mobile);
++	elseif(use_on.item.objtype == UOBJ_CORPSE)
++		ReleaseItem(blade);
++		Carve_Corpse(who, use_on.item);
++	elseif(is_fish(checkme))
++		CarveFish(who, blade, use_on.item);
++	elseif (is_tree(use_on.objtype ))
++		CarveTree(who, blade, use_on.item);
++	else
++		SendSysMessage(who, &quot;I don't know how to use those items together.&quot;);
++	endif
++
+ endprogram
+ 
++
+ function is_tree(theobj)
+-  if((theobj == 0x0c9e) || (theobj == 0x0ca8) || (theobj == 0x0caa))
+-    return 1;
+-  elseif (theobj == 0x0cab)
+-    return 1;
+-  elseif ((theobj &gt;= 0x0c99) &amp;&amp; (theobj &lt;= 0x0cea))
+-    return 1;
+-  elseif ((theobj &gt;= 0x0cf3) &amp;&amp; (theobj &lt;= 0x0d03))
+-    return 1;
+-  elseif ((theobj &gt;= 0x0d41) &amp;&amp; (theobj &lt;= 0x0dab))
+-    return 1;
+-  else
+-    return 0;
+-  endif
++
++	if((theobj == 0x0c9e) || (theobj == 0x0ca8) || (theobj == 0x0caa))
++		return 1;
++	elseif (theobj == 0x0cab)
++		return 1;
++	elseif ((theobj &gt;= 0x0c99) &amp;&amp; (theobj &lt;= 0x0cea))
++		return 1;
++	elseif ((theobj &gt;= 0x0cf3) &amp;&amp; (theobj &lt;= 0x0d03))
++		return 1;
++	elseif ((theobj &gt;= 0x0d41) &amp;&amp; (theobj &lt;= 0x0dab))
++		return 1;
++	else
++		return 0;
++	endif
++
+ endfunction
+ 
++
+ function CarveTree(who, blade, use_on)
+-  if(dist(who, use_on) &gt; 2)
+-    SendSysMessage(who, &quot;You cannot use that&quot;);
+-    return;
+-  endif
+-  CreateItemInBackpack(who, UOBJ_KINDLING, 1);
+-  DestroyItem(use_on);
+-  SendSysMessage(who, &quot;You chip off some kindling and put it in your backpack.&quot;);
++
++	if(dist(who, use_on) &gt; 2)
++		SendSysMessage(who, &quot;You cannot use that&quot;);
++		return;
++	endif
++	CreateItemInBackpack(who, UOBJ_KINDLING, 1);
++	DestroyItem(use_on);
++	SendSysMessage(who, &quot;You chip off some kindling and put it in your backpack.&quot;);
++
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/crafting/include/crafting.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/crafting.inc	2005-09-30 12:52:24 UTC (rev 334)
++++ trunk/096/pkg/systems/crafting/include/crafting.inc	2005-09-30 15:05:18 UTC (rev 335)
+@@ -292,7 +292,7 @@
+ 	endif
+ 	var temp_list := dictionary;
+ 	for i := 1 to (parts_list.size()/2)
+-		temp_list[CInt(parts_list[i])] := parts_list[i+(parts_list.size()/2)];
++		temp_list[CInt(parts_list[i])] := CInt(parts_list[i+(parts_list.size()/2)]);
+ 	endfor
+ 	parts_list := temp_list;
+ 
+@@ -315,17 +315,13 @@
+ 			var thing_objtype := CInt(thing.objtype);
+ 			if( thing_objtype in parts_list.keys() )
+ 				if( CInt(material_list[thing_objtype]) &lt; CInt(parts_list[thing_objtype]) )
+-					if( ReserveItem(thing) )
+-						material_list[thing_objtype] := CInt(material_list[thing_objtype]) + 1;
+-					endif
++					material_list[thing_objtype] := CInt(material_list[thing_objtype]) + thing.amount;
+ 				endif
+ 			endif
+ 		endforeach
+ 
+ 		foreach part in ( parts_list.keys() )
+-print(material_list[part]);
+-print(parts_list[part]);
+-			if( material_list[part] != parts_list[part] )
++			if( material_list[part] &lt; parts_list[part] )
+ 				SendSysMessage(who, &quot;You do not have the required materials to make that.&quot;);
+ 				return 0;
+ 			endif
+@@ -334,16 +330,17 @@
+ 		sleep(1);
+ 		if(CraftCheckSkill(who, craft_skill, diff, pts))
+ 			playCraftWork(who, craft_sound, craft_loops, craft_delay, craft_action);
+-			foreach material_objtype in (material_list.keys())
+-				var amount := material_list[material_objtype];
++			set_critical(1);
++			foreach material_objtype in (parts_list.keys())
++				var amount := parts_list[material_objtype];
+ 				if ( amount &gt; 0 )
+ 					if( !ConsumeSubstance(who.backpack, material_objtype, amount) )
+ 						SendSysMessage(who, &quot;Error - Unable to consume [&quot;+amount+&quot;] of material [&quot;+material_objtype+&quot;]&quot;);
+ 						return 0;
+ 					endif
+ 				endif
+-				sleepms(2);
+ 			endforeach
++			set_critical(0);
+ 			theitem := CreateItemInBackpack(who, objtype, 1);
+ 			if(!theitem)
+ 				SendSysMessage(who, &quot;You don't have enough room in your backpack!&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000312.html">[Poldistro-svn] r334 - in trunk/096/scripts: ai include misc
+</A></li>
+	<LI>Next message: <A HREF="000314.html">[Poldistro-svn] r336 - in trunk/096/pkg: items/containers/container items/sysbook/book other/hooks skills/armslore skills/magery
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#313">[ date ]</a>
+              <a href="thread.html#313">[ thread ]</a>
+              <a href="subject.html#313">[ subject ]</a>
+              <a href="author.html#313">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r23 - trunk/096/pkg/utils/control
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-August/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r23%20-%20trunk/096/pkg/utils/control&In-Reply-To=%3C200508312129.j7VLTda4006699%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000006.html">
+   <LINK REL="Next"  HREF="000008.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r23 - trunk/096/pkg/utils/control</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r23%20-%20trunk/096/pkg/utils/control&In-Reply-To=%3C200508312129.j7VLTda4006699%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r23 - trunk/096/pkg/utils/control">austin at berlios.de
+       </A><BR>
+    <I>Wed Aug 31 23:29:39 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000006.html">[Poldistro-svn] r22 - trunk/096/pkg/utils/control
+</A></li>
+        <LI>Next message: <A HREF="000008.html">[Poldistro-svn] r24 - trunk/096/pkg/utils/control/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#7">[ date ]</a>
+              <a href="thread.html#7">[ thread ]</a>
+              <a href="subject.html#7">[ subject ]</a>
+              <a href="author.html#7">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-08-31 23:29:39 +0200 (Wed, 31 Aug 2005)
+New Revision: 23
+
+Modified:
+   trunk/096/pkg/utils/control/checkpackages.src
+Log:
+
+
+Modified: trunk/096/pkg/utils/control/checkpackages.src
+===================================================================
+--- trunk/096/pkg/utils/control/checkpackages.src	2005-08-31 21:28:31 UTC (rev 22)
++++ trunk/096/pkg/utils/control/checkpackages.src	2005-08-31 21:29:39 UTC (rev 23)
+@@ -37,12 +37,18 @@
+ 		if ( icp_cfg )
+ 			temp_info.+Name := GetCfgValue(icp_cfg, &quot;Name&quot;);
+ 			temp_info.+Version := CDbl(GetCfgValue(icp_cfg, &quot;Version&quot;));
+-			temp_info.+Description := GetCfgValue(icp_cfg, &quot;Description&quot;);
+ 			temp_info.+Creator := GetCfgValue(icp_cfg, &quot;Creator&quot;);
+ 			temp_info.+C_Email := GetCfgValue(icp_cfg, &quot;C_Email&quot;);
+ 			temp_info.+Maintainer := GetCfgValue(icp_cfg, &quot;Maintainer&quot;);
+ 			temp_info.+M_Email := GetCfgValue(icp_cfg, &quot;M_Email&quot;);
+-
++			
++			var description := &quot;&quot;;
++			foreach line in  GetConfigStringArray(icp_cfg, &quot;Description&quot;)
++				description := description + line + &quot; &quot;;
++				sleepms(2);
++			endforeach
++			temp_info.+Description := description;
++			
+ 			// Makes a list of scripts and text commands that will be on the gump.
+ 			var script_list := GetConfigStringArray(icp_cfg, &quot;Script&quot;);
+ 			var cmd_list := GetConfigStringArray(icp_cfg, &quot;TextCmd&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000006.html">[Poldistro-svn] r22 - trunk/096/pkg/utils/control
+</A></li>
+	<LI>Next message: <A HREF="000008.html">[Poldistro-svn] r24 - trunk/096/pkg/utils/control/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#7">[ date ]</a>
+              <a href="thread.html#7">[ thread ]</a>
+              <a href="subject.html#7">[ subject ]</a>
+              <a href="author.html#7">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

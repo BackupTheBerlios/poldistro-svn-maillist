@@ -1,0 +1,451 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r935 - in trunk/096: pkg/items/walkOn pkg/items/walkOn/energyField pkg/items/walkOn/fireField pkg/items/walkOn/paraField pkg/items/walkOn/poisonField pkg/items/walkOn/spiderWeb pkg/mobiles/timedScripts/subScripts/poison scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r935%20-%20in%20trunk/096%3A%20pkg/items/walkOn%20pkg/items/walkOn/energyField%20pkg/items/walkOn/fireField%20pkg/items/walkOn/paraField%20pkg/items/walkOn/poisonField%20pkg/items/walkOn/spiderWeb%20pkg/mobiles/timedScripts/subScripts/poison%20scripts/include&In-Reply-To=%3C200511070034.jA70YxmY013085%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000908.html">
+   <LINK REL="Next"  HREF="000910.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r935 - in trunk/096: pkg/items/walkOn pkg/items/walkOn/energyField pkg/items/walkOn/fireField pkg/items/walkOn/paraField pkg/items/walkOn/poisonField pkg/items/walkOn/spiderWeb pkg/mobiles/timedScripts/subScripts/poison scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r935%20-%20in%20trunk/096%3A%20pkg/items/walkOn%20pkg/items/walkOn/energyField%20pkg/items/walkOn/fireField%20pkg/items/walkOn/paraField%20pkg/items/walkOn/poisonField%20pkg/items/walkOn/spiderWeb%20pkg/mobiles/timedScripts/subScripts/poison%20scripts/include&In-Reply-To=%3C200511070034.jA70YxmY013085%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r935 - in trunk/096: pkg/items/walkOn pkg/items/walkOn/energyField pkg/items/walkOn/fireField pkg/items/walkOn/paraField pkg/items/walkOn/poisonField pkg/items/walkOn/spiderWeb pkg/mobiles/timedScripts/subScripts/poison scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Mon Nov  7 01:34:59 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000908.html">[Poldistro-svn] r934 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000910.html">[Poldistro-svn] r936 - in trunk/096: pkg/mobiles/brainAI/scripts/combat pkg/mobiles/oldAI pkg/mobiles/oldAI/combat pkg/systems/combat pkg/systems/combat/config scripts/items
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#909">[ date ]</a>
+              <a href="thread.html#909">[ thread ]</a>
+              <a href="subject.html#909">[ subject ]</a>
+              <a href="author.html#909">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-07 01:34:53 +0100 (Mon, 07 Nov 2005)
+New Revision: 935
+
+Modified:
+   trunk/096/pkg/items/walkOn/energyField/methods.src
+   trunk/096/pkg/items/walkOn/fireField/control.src
+   trunk/096/pkg/items/walkOn/fireField/methods.src
+   trunk/096/pkg/items/walkOn/itemdesc.cfg
+   trunk/096/pkg/items/walkOn/paraField/control.src
+   trunk/096/pkg/items/walkOn/paraField/methods.src
+   trunk/096/pkg/items/walkOn/poisonField/control.src
+   trunk/096/pkg/items/walkOn/poisonField/methods.src
+   trunk/096/pkg/items/walkOn/spiderWeb/methods.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src
+   trunk/096/scripts/include/damage.inc
+Log:
+Updated fields and defaultPoison to use damage.inc
+Updated methods to support field ownership.
+
+Added additional name to some tiles where the _ is omitted 
+example: FireField_NS and FireFieldNS
+
+
+
+Modified: trunk/096/pkg/items/walkOn/energyField/methods.src
+===================================================================
+--- trunk/096/pkg/items/walkOn/energyField/methods.src	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/pkg/items/walkOn/energyField/methods.src	2005-11-07 00:34:53 UTC (rev 935)
+@@ -9,6 +9,10 @@
+ 	return 1;
+ endprogram
+ 
++exported function IsEnergyField(field)
++	return 1;
++endfunction
++
+ exported function SetDuration(field, seconds)
+ 	seconds := CInt(seconds);
+ 	
+@@ -29,3 +33,20 @@
+ 	
+ 	return ( duration &lt; ReadGameClock() );
+ endfunction
++
++exported function SetOwner(field, serial)
++	if ( serial.IsA(POLCLASS_UOBJECT) )
++		serial := serial.serial;
++	endif
++	
++	return SetObjProperty(field, &quot;Owner&quot;, serial);
++endfunction
++
++exported function GetOwner(field)
++	var owner := CInt(GetObjProperty(field, &quot;Owner&quot;));
++	if ( owner )
++		owner := SystemFindObjectBySerial(owner);
++	endif
++	
++	return owner;
++endfunction
+
+Modified: trunk/096/pkg/items/walkOn/fireField/control.src
+===================================================================
+--- trunk/096/pkg/items/walkOn/fireField/control.src	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/pkg/items/walkOn/fireField/control.src	2005-11-07 00:34:53 UTC (rev 935)
+@@ -7,12 +7,13 @@
+ use os;
+ use util;
+ 
++include &quot;include/damage&quot;;
++
+ program controlScript(field)
+ 	SetObjProperty(field, &quot;#PID&quot;, GetPid());
+ 
+-	var creator := CInt(GetObjProperty(field, &quot;Creator&quot;));
+-	if ( creator.IsA(POLCLASS_MOBILE) )
+-		creator := SystemFindObjectBySerial(creator);
++	var creator := field.GetOwner();
++	if ( creator )
+ 		SetScriptController(creator);
+ 	endif
+ 
+@@ -55,7 +56,7 @@
+ 
+ function BurnMobile(mobile, dmg_dice)
+ 	var dmg := RandomDiceRoll(dmg_dice); // - resistance ?
+-	ApplyRawDamage(mobile, dmg);
++	ApplyRawDamageEX(mobile, dmg, DMG_FIRE);
+ 
+ 	return 1;
+ endfunction
+
+Modified: trunk/096/pkg/items/walkOn/fireField/methods.src
+===================================================================
+--- trunk/096/pkg/items/walkOn/fireField/methods.src	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/pkg/items/walkOn/fireField/methods.src	2005-11-07 00:34:53 UTC (rev 935)
+@@ -9,6 +9,10 @@
+ 	return 1;
+ endprogram
+ 
++exported function IsFireField(field)
++	return 1;
++endfunction
++
+ exported function SetDuration(field, seconds)
+ 	seconds := CInt(seconds);
+ 	
+@@ -29,3 +33,20 @@
+ 	
+ 	return ( duration &lt; ReadGameClock() );
+ endfunction
++
++exported function SetOwner(field, serial)
++	if ( serial.IsA(POLCLASS_UOBJECT) )
++		serial := serial.serial;
++	endif
++	
++	return SetObjProperty(field, &quot;Owner&quot;, serial);
++endfunction
++
++exported function GetOwner(field)
++	var owner := CInt(GetObjProperty(field, &quot;Owner&quot;));
++	if ( owner )
++		owner := SystemFindObjectBySerial(owner);
++	endif
++	
++	return owner;
++endfunction
+
+Modified: trunk/096/pkg/items/walkOn/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/walkOn/itemdesc.cfg	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/pkg/items/walkOn/itemdesc.cfg	2005-11-07 00:34:53 UTC (rev 935)
+@@ -16,7 +16,8 @@
+ 
+ Item 0x398C
+ {
+-	Name		firefield_ew
++	Name		FireField_EW
++	Name		fireFieldEW
+ 
+ 	Facing		2
+ 
+@@ -29,7 +30,8 @@
+ }
+ Item 0x3996
+ {
+-	Name		firefield_ns
++	Name		FireField_NS
++	Name		FireFieldNS
+ 
+ 	Facing		2
+ 
+@@ -43,7 +45,8 @@
+ 
+ Item 0x3915
+ {
+-	Name		poisonfield_ns
++	Name		PoisonField_NS
++	Name		PoisonFieldNS
+ 	Facing		2
+ 
+ 	SaveOnExit	0
+@@ -55,7 +58,8 @@
+ }
+ Item 0x3920
+ {
+-	Name		poisonfield_ew
++	Name		PoisonField_EW
++	Name		PoisonFieldEW
+ 	Facing		2
+ 
+ 	SaveOnExit	0
+@@ -68,7 +72,7 @@
+ 
+ Item 0x3967
+ {
+-	Name		parafield_ew
++	Name		ParaField_EW
+ 	Facing		29
+ 
+ 	Movable		0
+@@ -80,7 +84,7 @@
+ 
+ Item 0x3979
+ {
+-	Name		parafield_ns
++	Name		ParaField_NS
+ 	Facing		29
+ 
+ 	Movable		0
+
+Modified: trunk/096/pkg/items/walkOn/paraField/control.src
+===================================================================
+--- trunk/096/pkg/items/walkOn/paraField/control.src	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/pkg/items/walkOn/paraField/control.src	2005-11-07 00:34:53 UTC (rev 935)
+@@ -12,9 +12,8 @@
+ program controlScript(field)
+ 	SetObjProperty(field, &quot;#PID&quot;, GetPid());
+ 
+-	var creator := CInt(GetObjProperty(field, &quot;Creator&quot;));
++	var creator := field.GetOwner();
+ 	if ( creator.IsA(POLCLASS_MOBILE) )
+-		creator := SystemFindObjectBySerial(creator);
+ 		SetScriptController(creator);
+ 	endif
+ 
+
+Modified: trunk/096/pkg/items/walkOn/paraField/methods.src
+===================================================================
+--- trunk/096/pkg/items/walkOn/paraField/methods.src	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/pkg/items/walkOn/paraField/methods.src	2005-11-07 00:34:53 UTC (rev 935)
+@@ -9,6 +9,10 @@
+ 	return 1;
+ endprogram
+ 
++exported function IsParalyzeField(field)
++	return 1;
++endfunction
++
+ exported function SetDuration(field, seconds)
+ 	seconds := CInt(seconds);
+ 	
+@@ -29,3 +33,20 @@
+ 	
+ 	return ( duration &lt; ReadGameClock() );
+ endfunction
++
++exported function SetOwner(field, serial)
++	if ( serial.IsA(POLCLASS_UOBJECT) )
++		serial := serial.serial;
++	endif
++	
++	return SetObjProperty(field, &quot;Owner&quot;, serial);
++endfunction
++
++exported function GetOwner(field)
++	var owner := CInt(GetObjProperty(field, &quot;Owner&quot;));
++	if ( owner )
++		owner := SystemFindObjectBySerial(owner);
++	endif
++	
++	return owner;
++endfunction
+
+Modified: trunk/096/pkg/items/walkOn/poisonField/control.src
+===================================================================
+--- trunk/096/pkg/items/walkOn/poisonField/control.src	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/pkg/items/walkOn/poisonField/control.src	2005-11-07 00:34:53 UTC (rev 935)
+@@ -12,9 +12,8 @@
+ program controlScript(field)
+ 	SetObjProperty(field, &quot;#PID&quot;, GetPid());
+ 
+-	var creator := CInt(GetObjProperty(field, &quot;Creator&quot;));
++	var creator := field.GetOwner();
+ 	if ( creator.IsA(POLCLASS_MOBILE) )
+-		creator := SystemFindObjectBySerial(creator);
+ 		SetScriptController(creator);
+ 	endif
+ 
+
+Modified: trunk/096/pkg/items/walkOn/poisonField/methods.src
+===================================================================
+--- trunk/096/pkg/items/walkOn/poisonField/methods.src	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/pkg/items/walkOn/poisonField/methods.src	2005-11-07 00:34:53 UTC (rev 935)
+@@ -9,6 +9,10 @@
+ 	return 1;
+ endprogram
+ 
++exported function IsPoisonField(field)
++	return 1;
++endfunction
++
+ exported function SetDuration(field, seconds)
+ 	seconds := CInt(seconds);
+ 	
+@@ -29,3 +33,20 @@
+ 	
+ 	return ( duration &lt; ReadGameClock() );
+ endfunction
++
++exported function SetOwner(field, serial)
++	if ( serial.IsA(POLCLASS_UOBJECT) )
++		serial := serial.serial;
++	endif
++	
++	return SetObjProperty(field, &quot;Owner&quot;, serial);
++endfunction
++
++exported function GetOwner(field)
++	var owner := CInt(GetObjProperty(field, &quot;Owner&quot;));
++	if ( owner )
++		owner := SystemFindObjectBySerial(owner);
++	endif
++	
++	return owner;
++endfunction
+
+Modified: trunk/096/pkg/items/walkOn/spiderWeb/methods.src
+===================================================================
+--- trunk/096/pkg/items/walkOn/spiderWeb/methods.src	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/pkg/items/walkOn/spiderWeb/methods.src	2005-11-07 00:34:53 UTC (rev 935)
+@@ -9,6 +9,10 @@
+ 	return 1;
+ endprogram
+ 
++exported function IsSpiderWeb(field)
++	return 1;
++endfunction
++
+ exported function SetDuration(field, seconds)
+ 	seconds := CInt(seconds);
+ 	
+@@ -29,3 +33,21 @@
+ 	
+ 	return ( duration &lt; ReadGameClock() );
+ endfunction
++
++exported function SetOwner(field, serial)
++	if ( serial.IsA(POLCLASS_UOBJECT) )
++		serial := serial.serial;
++	endif
++	
++	return SetObjProperty(field, &quot;Owner&quot;, serial);
++endfunction
++
++exported function GetOwner(field)
++	var owner := CInt(GetObjProperty(field, &quot;Owner&quot;));
++	if ( owner )
++		owner := SystemFindObjectBySerial(owner);
++	endif
++	
++	return owner;
++endfunction
++
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src	2005-11-07 00:34:53 UTC (rev 935)
+@@ -3,8 +3,8 @@
+ 
+ include &quot;:attributes:attributes&quot;;
+ include &quot;:timedscripts:timedScripts&quot;;
++include &quot;include/damage&quot;;
+ 
+-
+ program default_poison(params)
+ 	var who := params[1];
+ 	var attacker := params[2];
+@@ -73,7 +73,7 @@
+ 			sleepms(2);
+ 		endforeach		
+ 		
+-		ApplyRawDamage(who, dmg);
++		ApplyRawDamageEX(who, dmg, DMG_POISON, attacker);
+ 
+ 		Set_Critical(1);
+ 		var curr := CInt(AP_GetVital(who, &quot;Stamina&quot;));
+
+Modified: trunk/096/scripts/include/damage.inc
+===================================================================
+--- trunk/096/scripts/include/damage.inc	2005-11-06 18:43:41 UTC (rev 934)
++++ trunk/096/scripts/include/damage.inc	2005-11-07 00:34:53 UTC (rev 935)
+@@ -6,11 +6,12 @@
+ include &quot;:brainAI:npcUtil&quot;;
+ 
+ enum DAMAGE_TYPES
++	DMG_FORCED	:= -1, // Ignores resistance
+ 	DMG_DEFAULT	:= &quot;Default&quot;,
+ 	DMG_COLD	:= &quot;Cold&quot;,
+ 	DMG_FIRE	:= &quot;Fire&quot;,
+ 	DMG_POISON	:= &quot;Poison&quot;,
+-	DMG_MAGERY	:= &quot;Magery&quot;,
++	DMG_MAGERY	:= &quot;Magery&quot;
+ endenum
+ 
+ /* 
+@@ -94,6 +95,9 @@
+  */
+ function CalcDamageAmount(mobile, amount, type)
+ 	amount := CInt(amount);
++	if ( type == DMG_FORCED )
++		return amount;
++	endif
+ 	
+ 	var resistance_mult := error;
+ 	var res_prop := GetObjProperty(mobile, &quot;Resistances&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000908.html">[Poldistro-svn] r934 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000910.html">[Poldistro-svn] r936 - in trunk/096: pkg/mobiles/brainAI/scripts/combat pkg/mobiles/oldAI pkg/mobiles/oldAI/combat pkg/systems/combat pkg/systems/combat/config scripts/items
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#909">[ date ]</a>
+              <a href="thread.html#909">[ thread ]</a>
+              <a href="subject.html#909">[ subject ]</a>
+              <a href="author.html#909">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

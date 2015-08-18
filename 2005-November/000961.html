@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r988 - in trunk/096: config pkg/skills/lumberjacking pkg/skills/lumberjacking/config pkg/skills/lumberjacking/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r988%20-%20in%20trunk/096%3A%20config%20pkg/skills/lumberjacking%20pkg/skills/lumberjacking/config%20pkg/skills/lumberjacking/include&In-Reply-To=%3C200511140942.jAE9gniE024320%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000960.html">
+   <LINK REL="Next"  HREF="000962.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r988 - in trunk/096: config pkg/skills/lumberjacking pkg/skills/lumberjacking/config pkg/skills/lumberjacking/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r988%20-%20in%20trunk/096%3A%20config%20pkg/skills/lumberjacking%20pkg/skills/lumberjacking/config%20pkg/skills/lumberjacking/include&In-Reply-To=%3C200511140942.jAE9gniE024320%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r988 - in trunk/096: config pkg/skills/lumberjacking pkg/skills/lumberjacking/config pkg/skills/lumberjacking/include">austin at berlios.de
+       </A><BR>
+    <I>Mon Nov 14 10:42:49 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000960.html">[Poldistro-svn] r987 - in trunk/096/pkg: items/keys/key skills/magery skills/magery/recallRune
+</A></li>
+        <LI>Next message: <A HREF="000962.html">[Poldistro-svn] r989 - trunk/096/pkg/items/moongates/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#961">[ date ]</a>
+              <a href="thread.html#961">[ thread ]</a>
+              <a href="subject.html#961">[ subject ]</a>
+              <a href="author.html#961">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-14 10:42:48 +0100 (Mon, 14 Nov 2005)
+New Revision: 988
+
+Added:
+   trunk/096/pkg/skills/lumberjacking/config/wood-britannia.cfg
+   trunk/096/pkg/skills/lumberjacking/itemdesc.cfg
+Removed:
+   trunk/096/pkg/skills/lumberjacking/config/woodRegions.cfg
+Modified:
+   trunk/096/config/itemdesc.cfg
+   trunk/096/pkg/skills/lumberjacking/include/lumberJack.inc
+Log:
+Updated so each realm has its own config file for wood regions.
+Moved log item from config/itemdesc.cfg to lumberjacking.
+
+Modified: trunk/096/config/itemdesc.cfg
+===================================================================
+--- trunk/096/config/itemdesc.cfg	2005-11-14 09:27:34 UTC (rev 987)
++++ trunk/096/config/itemdesc.cfg	2005-11-14 09:42:48 UTC (rev 988)
+@@ -145,15 +145,6 @@
+ 	CanRemoveScript		:containers:container/noRemove
+ }
+ 
+-Item 0x1BDD
+-{
+-	Name			log
+-	Name			logs
+-	Desc			log%s%
+-	VendorSellsFor		5
+-	VendorBuysFor		1
+-}
+-
+ Item 0x1BD7
+ {
+ 	Name			board
+
+Copied: trunk/096/pkg/skills/lumberjacking/config/wood-britannia.cfg (from rev 987, trunk/096/pkg/skills/lumberjacking/config/woodRegions.cfg)
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/config/woodRegions.cfg	2005-11-14 09:27:34 UTC (rev 987)
++++ trunk/096/pkg/skills/lumberjacking/config/wood-britannia.cfg	2005-11-14 09:42:48 UTC (rev 988)
+@@ -0,0 +1,6 @@
++
++Region Global
++{
++	Rect		0 0 6138 4090
++	WoodType	Log
++}
+
+Deleted: trunk/096/pkg/skills/lumberjacking/config/woodRegions.cfg
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/config/woodRegions.cfg	2005-11-14 09:27:34 UTC (rev 987)
++++ trunk/096/pkg/skills/lumberjacking/config/woodRegions.cfg	2005-11-14 09:42:48 UTC (rev 988)
+@@ -1,10 +0,0 @@
+-Realm	Britannia
+-{
+-	Region	Britannia-Global
+-}
+-
+-Region Britannia-Global
+-{
+-	Rect		0 0 6138 4090
+-	WoodType	Log
+-}
+
+Modified: trunk/096/pkg/skills/lumberjacking/include/lumberJack.inc
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/include/lumberJack.inc	2005-11-14 09:27:34 UTC (rev 987)
++++ trunk/096/pkg/skills/lumberjacking/include/lumberJack.inc	2005-11-14 09:42:48 UTC (rev 988)
+@@ -234,18 +234,13 @@
+  *
+  */
+ function LJ_PickWoodType(realm, x_pos, y_pos)
+-	var wood_cfg := ReadConfigFile(&quot;:lumberjacking:config/woodRegions&quot;);
++	var wood_cfg := ReadConfigFile(&quot;:lumberjacking:config/wood-&quot;+realm);
+ 	if ( !wood_cfg )
+ 		return GetObjTypeByName(&quot;Log&quot;);
+ 	endif
+ 
+-	var realm_elem := wood_cfg[realm];
+-	if ( !realm_elem )
+-		return GetObjTypeByName(&quot;Log&quot;);
+-	endif
+-
+ 	var wood_found := array{&quot;Log&quot;};
+-	foreach region_name in ( GetConfigStringArray(realm_elem, &quot;Region&quot;) )
++	foreach region_name in ( GetConfigStringKeys(wood_cfg) )
+ 		var region_elem := wood_cfg[region_name];
+ 		if ( !LJ_InRect(x_pos, y_pos, region_elem.Rect) )
+ 			continue;
+@@ -259,6 +254,10 @@
+ 	endforeach
+ 
+ 	var selected_wood := wood_found[RandomInt(wood_found.Size())+1];
+-	return GetObjTypeByName(selected_wood);
++	selected_wood := GetObjTypeByName(selected_wood);
++	if ( !selected_wood )
++		return GetObjTypeByName(&quot;Log&quot;);
++	endif
++	
+ endfunction
+ 
+
+Added: trunk/096/pkg/skills/lumberjacking/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/itemdesc.cfg	2005-11-14 09:27:34 UTC (rev 987)
++++ trunk/096/pkg/skills/lumberjacking/itemdesc.cfg	2005-11-14 09:42:48 UTC (rev 988)
+@@ -0,0 +1,11 @@
++Item 0x1BDD
++{
++	Name			log
++	Name			logs
++	Desc			log%s%
++	
++	Weight			1
++	
++	VendorSellsFor		5
++	VendorBuysFor		1
++}
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000960.html">[Poldistro-svn] r987 - in trunk/096/pkg: items/keys/key skills/magery skills/magery/recallRune
+</A></li>
+	<LI>Next message: <A HREF="000962.html">[Poldistro-svn] r989 - trunk/096/pkg/items/moongates/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#961">[ date ]</a>
+              <a href="thread.html#961">[ thread ]</a>
+              <a href="subject.html#961">[ subject ]</a>
+              <a href="author.html#961">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r829 - trunk/096/pkg/skills/inscription
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r829%20-%20trunk/096/pkg/skills/inscription&In-Reply-To=%3C200511020932.jA29WYDg017404%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000802.html">
+   <LINK REL="Next"  HREF="000804.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r829 - trunk/096/pkg/skills/inscription</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r829%20-%20trunk/096/pkg/skills/inscription&In-Reply-To=%3C200511020932.jA29WYDg017404%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r829 - trunk/096/pkg/skills/inscription">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 10:32:34 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000802.html">[Poldistro-svn] r828 - trunk/096/pkg/skills/healing
+</A></li>
+        <LI>Next message: <A HREF="000804.html">[Poldistro-svn] r830 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#803">[ date ]</a>
+              <a href="thread.html#803">[ thread ]</a>
+              <a href="subject.html#803">[ subject ]</a>
+              <a href="author.html#803">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 10:32:32 +0100 (Wed, 02 Nov 2005)
+New Revision: 829
+
+Modified:
+   trunk/096/pkg/skills/inscription/inscription.src
+Log:
+Attribute updates
+
+Modified: trunk/096/pkg/skills/inscription/inscription.src
+===================================================================
+--- trunk/096/pkg/skills/inscription/inscription.src	2005-11-02 09:30:10 UTC (rev 828)
++++ trunk/096/pkg/skills/inscription/inscription.src	2005-11-02 09:32:32 UTC (rev 829)
+@@ -75,9 +75,9 @@
+       SendSysMessage(who,&quot;You do not have enough mana.&quot;);
+       return;
+     endif
+-    if((ConsumeReagents(who, spellnum)) &amp;&amp; (GetMana(who) &gt;= themana))
+-      SetMana(who, GetMana(who) - themana);
+-      if(CheckSkill(who, SKILLID_INSCRIPTION, skill, points))
++    if((ConsumeReagents(who, spellnum)) &amp;&amp; (AP_GetVital(who, &quot;Mana&quot;) &gt;= themana))
++      AP_SetVital(who, &quot;Mana&quot;, AP_GetVital(who, &quot;Mana&quot;) - themana);
++      if(SkillCheck(who, &quot;Inscription&quot;, skill, points) &gt; 0)
+         PlaySoundEffect(who, 0x24a);
+         if(SubtractAmount(the_item,1))
+           var thescroll := CreateItemInBackpack(who, product);
+@@ -85,7 +85,7 @@
+             SendSysMessage(who,&quot;Your backpack is too full to create the scroll.&quot;);
+             return;
+           endif
+-          var myskill := CInt(GetEffectiveSkill(who, SKILLID_INSCRIPTION));
++          var myskill := CInt(AP_GetSkill(who, &quot;Inscription&quot;));
+           var modpts := 0;
+           if(myskill &gt;=  skill)
+             modpts := (myskill - (skill - 10));
+@@ -165,9 +165,9 @@
+     SendSysMessage(who,&quot;That is not a gate scroll.&quot;);
+     return;
+   endif
+-  if(CheckSkill(who, SKILLID_INSCRIPTION, 70, 900))
++  if( SkillCheck(who, &quot;Inscription&quot;, 70, 900) &gt;0 )
+     if(SubtractAmount(the_item, 1) &amp;&amp; SubtractAmount(scrolls, 8) &amp;&amp; SubtractAmount(recall, 1) &amp;&amp; SubtractAmount(gate, 1))
+-      var myskill := CInt(GetEffectiveSkill(who, SKILLID_CARPENTRY));
++      var myskill := CInt(AP_GetSkill(who, &quot;Carpentry&quot;));
+       var modpts := 0;
+       if(myskill &gt;=  90)
+         modpts := (myskill - 80);
+@@ -244,7 +244,7 @@
+     7: umana :=  40;
+     8: umana :=  50;
+   endcase
+-  if(GetMana(who) &gt;= umana)
++  if(AP_GetVital(who, &quot;Mana&quot;) &gt;= umana)
+     return umana;
+   else
+     return 0;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000802.html">[Poldistro-svn] r828 - trunk/096/pkg/skills/healing
+</A></li>
+	<LI>Next message: <A HREF="000804.html">[Poldistro-svn] r830 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#803">[ date ]</a>
+              <a href="thread.html#803">[ thread ]</a>
+              <a href="subject.html#803">[ subject ]</a>
+              <a href="author.html#803">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

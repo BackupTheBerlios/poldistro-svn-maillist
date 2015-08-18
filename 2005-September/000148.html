@@ -1,0 +1,337 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r166 - trunk/096/pkg/commands/seer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r166%20-%20trunk/096/pkg/commands/seer&In-Reply-To=%3C200509200400.j8K40TIO031630%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000147.html">
+   <LINK REL="Next"  HREF="000149.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r166 - trunk/096/pkg/commands/seer</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r166%20-%20trunk/096/pkg/commands/seer&In-Reply-To=%3C200509200400.j8K40TIO031630%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r166 - trunk/096/pkg/commands/seer">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Sep 20 06:00:29 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000147.html">[Poldistro-svn] r165 - in trunk/096/pkg/commands: . include
+</A></li>
+        <LI>Next message: <A HREF="000149.html">[Poldistro-svn] r167 - trunk/096/pkg/items/decorations
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#148">[ date ]</a>
+              <a href="thread.html#148">[ thread ]</a>
+              <a href="subject.html#148">[ subject ]</a>
+              <a href="author.html#148">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-20 06:00:26 +0200 (Tue, 20 Sep 2005)
+New Revision: 166
+
+Modified:
+   trunk/096/pkg/commands/seer/go.src
+Log:
+New .go command that saves lists in DataFiles instead of Config Files for easier handling. Allows you to add, remove, and edit entries. It also gives you a &quot;base&quot; list of locations that everyone can see. As you add locations, they are all &quot;account&quot; specific if added while viewing your Private locations. Only the adder will see his personal list that has been added to the locations. If you are viewing the &quot;public&quot; list when you use Add, it will add it to the Public list instead! You can also add locations from the &quot;base&quot; list to the personal list via Copy. Then simply select the location from the list given via gump.
+
+Modified: trunk/096/pkg/commands/seer/go.src
+===================================================================
+--- trunk/096/pkg/commands/seer/go.src	2005-09-20 03:56:04 UTC (rev 165)
++++ trunk/096/pkg/commands/seer/go.src	2005-09-20 04:00:26 UTC (rev 166)
+@@ -1,176 +1,98 @@
+-// Go v2.0
+-// Author: Unknown
+-// Updated by: Sentack
+-// Updates:
+-//   1/13/2000 : v2.0
+-//     - displays gump of all available locations (Stole from .goto command)
+-//     - Can now teleport other mobles with &quot;Send&quot; button in gump window (Got some help from .info Command)
+-//     - Updated and editied golocs.cfg to better work with gump
+-
+-use os;
++////////////////////////////////////////////////////////////////////////////////////////////////////
++//
++//  name:    go.src - Player Textcommand
++//  version: 2.0a
++//  author:  MuadDib
++//
++//  Purpose: New .go command that saves lists in DataFiles instead of Config Files for easier
++//           handling. Allows you to add, remove, and edit entries. It also gives you a &quot;base&quot;
++//           list of locations that everyone can see. As you add locations, they are all &quot;account&quot;
++//           specific if added while viewing your Private locations. Only the adder will see his
++//           personal list that has been added to the locations. If you are viewing the &quot;public&quot;
++//           list when you use Add, it will add it to the Public list instead! You can also add
++//           locations from the &quot;base&quot; list to the personal list via Copy. Then simply select the
++//           location from the list given via gump.
++//
++//  To-Do:   Optimize gump functions within includes.
++//           Add more &quot;text&quot; checks at beginning of the script. Possibly in /include/go_text.inc
++//
++////////////////////////////////////////////////////////////////////////////////////////////////////
+ use uo;
+-use cfgfile;
+-use util;
++use os;
++use datafile;
+ 
+-include &quot;include/math&quot;; // Used for Mod
+-include &quot;include/attributes&quot;;
++include &quot;:datafile:datafile&quot;;
++include &quot;include/math&quot;;
++include &quot;:gumps:include/gumpprompt&quot;;
++include &quot;:gumps:include/gumps&quot;;
++include &quot;:gumps:include/gumps_ex&quot;;
++include &quot;:gumps:include/yesno&quot;;
++include &quot;:commands:include/go-add&quot;;
++include &quot;:commands:include/go-edit&quot;;
++include &quot;:commands:include/go-gumps&quot;;
++include &quot;:commands:include/go-template&quot;;
+ 
+-const TEXTSTARTLOCY :=  70;  // The location of the top of the gump
++CONST ADD_NEW_PUBLIC      := 0x20001;
++CONST ADD_NEW_PRIVATE     := 0x20002;
++CONST COPY_PUBLIC_ITEM    := 0x20003;
++CONST COPY_PRIVATE_ITEM   := 0x20004;
++CONST EDIT_PUBLIC_ITEM    := 0x20005;
++CONST EDIT_PRIVATE_ITEM   := 0x20006;
++CONST UPDATE_BUTTON       := 0x20007;
++CONST DELETE_BUTTON       := 0x20008;
++CONST SHOW_PUBLIC_INDEX   := 0x20009;
++CONST SHOW_PRIVATE_INDEX  := 0x2000A;
+ 
+-var locationscount := 0;  // The number of locations found for this user
+-var pagecount := 1;       // The current developing page
++CONST BUILD_FROM_OLD      := 0x1;
+ 
+-var layout := array(      // The layout of the gump with text notes to be added later
++var go_data_gumps := DFOpenDataFile(&quot;:commands:GoGumps&quot;, DF_CREATE);
++var go_data_file  := DFOpenDataFile(&quot;:commands:GoFile&quot;, DF_CREATE);
++var go_elem       := DFFindElement(go_data_file, &quot;GoList&quot;, DF_CREATE);
++var go_prop_base  := go_elem.GetProp(&quot;base_Distro&quot;);
++var go_keys_base  := go_prop_base.keys();
++var go_prop;
++var go_keys;
++var num_keys;
++var edit_name;
++var edit_update;
++var edit_delete;
++var x_pos;
++var y_pos;
++var z_pos;
+ 
+-&quot;page 0&quot;,
+-&quot;nodispose&quot;,
+-&quot;gumppic 0 50 2620&quot;,
+-&quot;gumppic 20 50 2621&quot;,
+-&quot;gumppic 290 50 2622&quot;,
+-&quot;gumppic 0 68 2623&quot;,
+-&quot;gumppic 22 68 2624&quot;,
+-&quot;gumppic 288 68 2625&quot;,
+-&quot;gumppic 0 272 2623&quot;,
+-&quot;gumppic 22 272 2624&quot;,
+-&quot;gumppic 288 272 2625&quot;,
+-&quot;gumppic 0 476 2626&quot;,
+-&quot;gumppic 20 476 2627&quot;,
+-&quot;gumppic 290 476 2628&quot;,
+-&quot;gumppic 20 80 2621&quot;,
+-
+-&quot;text 20 59 40 0&quot;,
+-&quot;text 200 59 40 1&quot;,
+-&quot;text 260 59 40 2&quot;
+-);
+-
+-var data := array(      // The data array that holds all the text to be displayed in the gump
+-       &quot;Location&quot;,         //0
+-       &quot;Goto&quot;,
+-       &quot;Send&quot;
+-);
+-
+ program textcmd_go( who, text )
+-  // Test to see if the user sent a location via command text.  if not show gump, else attempt travel to that location
+-  if(!text)
+-    // The name of the current user of this command
+-    var tname := lower(who.name);
+-    // Create the Array
+-    FillInArrays( tname );
+-    // Display the array and receive a responce from the player
+-    var result := SendDialogGump( who, layout, data );
+-    // If the user canceled, quit
+-    if (result[0] == 0)
+-      return;
+-    endif
+-    // Open files and set veriables
+-    var locs    := ReadConfigFile(&quot;golocs&quot;);
+-    var MaxLocs := GetConfigMaxIntKey(locs)+1;
+-    var dest    := locs[mod(result[0], MaxLocs)];
+-    var traveler;
+-    // Determine if we are teleporting ourselves or someone other and set the traveler variable
+-    if ( result[0] &gt; MaxLocs ) // teleporting someone else
+-       SendSysMessage( who, &quot;Select a MOBILE.&quot; );
+-       traveler :=  Target( who, TGTOPT_NOCHECK_LOS );
+-       if(!traveler || !GetStrength(traveler))
+-         SendSysMessage( who, &quot;Invalid selection.&quot; );
+-         return;
+-       endif
+-    else
+-      // Teleporting ourself
+-      traveler := who;
+-    endif
+-    // Teleport moble
+-    MoveCharacterToLocation(traveler, dest.x, dest.y, GetMapInfo(dest.x, dest.y, who.realm).z);
+-  else
+-    text := lower( text );
+-    // Open files and set veriables
+-    var cfg := ReadConfigFile(&quot;:*:golocs&quot;);
+-    var tname := lower(who.name);
+-    var elem;
+-    var cfglength := GetConfigMaxIntKey(cfg);
+-    var i;
+-    // Manual search through each text entry to see if it's the one
+-    for( i := 1; i &lt;= cfglength; i := i + 1  )
+-      elem := cfg[i];
+-      if (elem.Name == text)
+-        // If name matches, make sure type does as well
+-        if ((elem.TYPE == &quot;all&quot;) || (elem.TYPE == tname))
+-          // If so, teleport user
+-          MoveCharacterToLocation(who, elem.x, elem.y, elem.z);
++
++        if( lower(text) == &quot;refresh&quot; )
++          Go_RefreshGump(&quot;LocationIndex&quot;, &quot;base_Distro&quot;);
++          Go_RefreshGump(&quot;LocationIndex&quot;, who.acctname);
++          Go_RefreshGump(&quot;CopyIndex&quot;, &quot;base_Distro&quot;);
++          Go_RefreshGump(&quot;CopyIndex&quot;, who.acctname);
++          SendSysMessage(who, &quot;Gump Cache emptied for base and personal.&quot;);
+           return;
+         endif
+-      endif
+-    endfor
+-    // Warn user that command failed.
+-    SendSysMessage(who, &quot;Unknown Location&quot;);
+-  endif
+-    UnloadConfigFile(&quot;:*:golocs&quot;);
+-endprogram
+ 
++        Go_CheckInit(who);
++        // See if there is an element in the DataFile that matches their
++        // account name.
++        go_prop := go_elem.GetProp( who.acctname );
+ 
+-function FillInArrays( tname )
+-
+-    var telelocations := ReadConfigFile(&quot;:*:golocs&quot;);
+-    var datalen;
+-    var layoutlen;
+-    var prev_y := CInt(TEXTSTARTLOCY);
+-    var datindx := 2;
+-    var buttonret := 1;
+-    var i;
+-    var numlocations := GetConfigMaxIntKey(telelocations);
+-    var currloc;
+-
+-    for( i := 1; i &lt;= numlocations; i := i + 1  )
+-      currloc := telelocations[i];
+-
+-      if ((currloc.TYPE == &quot;all&quot;) || (currloc.TYPE == tname))
+-        locationscount := locationscount + 1;
+-
+-        datalen := GetDataLength();
+-        layoutlen := GetLayoutLength();
+-
+-        // Store Name
+-        datindx := datalen+1;
+-        data[datindx] := currloc.Name;
+-
+-        if (mod(locationscount, 19) == 1)
+-
+-          // Pointer Down
+-          if (locationscount &gt;= 19)
+-            layout[GetLayoutLength()+1] := &quot;button 285 465 2648 2647 0 &quot; + (pagecount);
+-          endif
+-
+-          // Set Page Number
+-          layout[GetLayoutLength()+1] := &quot;page &quot; + pagecount;
+-          pagecount := pagecount + 1;
+-          prev_y := TEXTSTARTLOCY;
+-
+-          if (locationscount &gt; 19)
+-            // Pointer Up
+-            if( i &gt; 19)
+-              layout[GetLayoutLength()+1] := &quot;button 285 85 2650 2651 0 &quot; + (pagecount - 2);
+-            endif
+-          endif
++        // If there is no Element in the DataFile that matches their account name
++        // let's create it now.
++        if ( !go_prop )
++                SendSysMessage(who, &quot;Creating personal go list dictionary...&quot;);
++                var temp := dictionary;
++                go_elem.SetProp(who.acctname, temp);
++                go_prop  := go_elem.GetProp(who.acctname);
+         endif
++        
++        go_keys  := go_prop.keys();
++        
++        var gump_Open := GetObjProperty(who, &quot;#Go_Gump&quot;);
++        case(gump_Open)
++          1: Go_LocationIndex(who);
++          2: Go_LocationIndex(who, who.acctname);
++          default: Go_LocationIndex(who);
++        endcase
+ 
+-        layout[GetLayoutLength()+1] := (&quot;text 20 &quot; + CStr(prev_y + 20) + &quot; 40 &quot; + datalen);
+-        layout[GetLayoutLength()+1] := (&quot;button 200 &quot; + CStr(prev_y + 20) + &quot; 2640 2641 1 0 &quot; + ((buttonret+1) / 2)); // Go Button
+-        layout[GetLayoutLength()+1] := (&quot;button 260 &quot; + CStr(prev_y + 20) + &quot; 2640 2641 1 0 &quot; + (((buttonret+1) / 2) + numlocations+1)); // Send Button
+ 
+-        prev_y := prev_y + 20;
+-      endif
+-
+-      buttonret := buttonret + 2;
+-    endfor
+-
+-endfunction
+-
+-// Returns the Length of the Layout Gump Array
+-function GetLayoutLength();
+-    return (len(layout));
+-endfunction
+-
+-// Returns the length of the Names Array that populates the gump.
+-function GetDataLength();
+-    return (len(data));
+-endfunction
+\ No newline at end of file
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000147.html">[Poldistro-svn] r165 - in trunk/096/pkg/commands: . include
+</A></li>
+	<LI>Next message: <A HREF="000149.html">[Poldistro-svn] r167 - trunk/096/pkg/items/decorations
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#148">[ date ]</a>
+              <a href="thread.html#148">[ thread ]</a>
+              <a href="subject.html#148">[ subject ]</a>
+              <a href="author.html#148">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

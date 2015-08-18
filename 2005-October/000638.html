@@ -1,0 +1,1616 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r664 - in trunk/096/pkg: commands/gm items/bountyboard items/bulletinboard items/containers/config items/containers/include items/interiordecoratortool items/mounts items/mounts/commands/seer items/mounts/config items/mounts/include items/mounts/mount items/sysbook/config items/walkOn items/walkOn/commands/seer items/walkOn/config items/walkOn/energyField items/walkOn/fireField items/walkOn/paraField items/walkOn/poisonField items/walkOn/resurrect items/walkOn/spiderWeb items/walkOn/teleport mobiles/brainAI/complete/exampleNPC mobiles/brainAI/docs mobiles/death mobiles/death/commands/seer mobiles/death/config mobiles/death/include other/motd other/motd/commands/player other/motd/config skills/animallore skills/animallore/docs skills/begging/include skills/itemid systems/attributes/commands/seer systems/crafting/commands/test systems/daynight/config systems/daynight/include systems/housing/commands/gm systems/loot systems/loot/configs systems/loot/includes systems/na! ture/config systems/poisonwatcher/config systems/poisonwatcher/include systems/poisonwatcher/poisonscripts/paralysis systems/spawnSystem systems/spawnSystem/commands/gm systems/spawnSystem/config systems/spawnSystem/engines/itemFill systems/spawnSystem/engines/npcFill systems/spawnSystem/engines/prox systems/spawnSystem/include systems/spawnSystem/initializer systems/spawnSystem/www
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r664%20-%20in%20trunk/096/pkg%3A%20commands/gm%20items/bountyboard%20items/bulletinboard%20items/containers/config%20items/containers/include%20items/interiordecoratortool%20items/mounts%20items/mounts/commands/seer%20items/mounts/config%20items/mounts/include%20items/mounts/mount%20items/sysbook/config%20items/walkOn%20items/walkOn/commands/seer%20items/walkOn/config%20items/walkOn/energyField%20items/walkOn/fireField%20items/walkOn/paraField%20items/walkOn/poisonField%20items/walkOn/resurrect%20items/walkOn/spiderWeb%20items/walkOn/teleport%20mobiles/brainAI/complete/exampleNPC%20mobiles/brainAI/docs%20mobiles/death%20mobiles/death/commands/seer%20mobiles/death/config%20mobiles/death/include%20other/motd%20other/motd/commands/player%20other/motd/config%20skills/animallore%20skills/animallore/docs%20skills/begging/include%20skills/itemid%20systems/attributes/commands/seer%20systems/crafting/commands/test%20systems/daynight/config%20systems/daynight/include%20systems/housing/commands/gm%20systems/loot%20systems/loot/configs%20systems/loot/includes%20systems/na%21%0A%20ture/config%20systems/poisonwatcher/config%20systems/poisonwatcher/include%20systems/poisonwatcher/poisonscripts/paralysis%20systems/spawnSystem%20systems/spawnSystem/commands/gm%20systems/spawnSystem/config%20systems/spawnSystem/engines/itemFill%20systems/spawnSystem/engines/npcFill%20systems/spawnSystem/engines/prox%20systems/spawnSystem/include%20systems/spawnSystem/initializer%20systems/spawnSystem/www&In-Reply-To=%3C200510270336.j9R3aYwL014397%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000637.html">
+   <LINK REL="Next"  HREF="000639.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r664 - in trunk/096/pkg: commands/gm items/bountyboard items/bulletinboard items/containers/config items/containers/include items/interiordecoratortool items/mounts items/mounts/commands/seer items/mounts/config items/mounts/include items/mounts/mount items/sysbook/config items/walkOn items/walkOn/commands/seer items/walkOn/config items/walkOn/energyField items/walkOn/fireField items/walkOn/paraField items/walkOn/poisonField items/walkOn/resurrect items/walkOn/spiderWeb items/walkOn/teleport mobiles/brainAI/complete/exampleNPC mobiles/brainAI/docs mobiles/death mobiles/death/commands/seer mobiles/death/config mobiles/death/include other/motd other/motd/commands/player other/motd/config skills/animallore skills/animallore/docs skills/begging/include skills/itemid systems/attributes/commands/seer systems/crafting/commands/test systems/daynight/config systems/daynight/include systems/housing/commands/gm systems/loot systems/loot/configs systems/loot/includes systems/na! ture/config systems/poisonwatcher/config systems/poisonwatcher/include systems/poisonwatcher/poisonscripts/paralysis systems/spawnSystem systems/spawnSystem/commands/gm systems/spawnSystem/config systems/spawnSystem/engines/itemFill systems/spawnSystem/engines/npcFill systems/spawnSystem/engines/prox systems/spawnSystem/include systems/spawnSystem/initializer systems/spawnSystem/www</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r664%20-%20in%20trunk/096/pkg%3A%20commands/gm%20items/bountyboard%20items/bulletinboard%20items/containers/config%20items/containers/include%20items/interiordecoratortool%20items/mounts%20items/mounts/commands/seer%20items/mounts/config%20items/mounts/include%20items/mounts/mount%20items/sysbook/config%20items/walkOn%20items/walkOn/commands/seer%20items/walkOn/config%20items/walkOn/energyField%20items/walkOn/fireField%20items/walkOn/paraField%20items/walkOn/poisonField%20items/walkOn/resurrect%20items/walkOn/spiderWeb%20items/walkOn/teleport%20mobiles/brainAI/complete/exampleNPC%20mobiles/brainAI/docs%20mobiles/death%20mobiles/death/commands/seer%20mobiles/death/config%20mobiles/death/include%20other/motd%20other/motd/commands/player%20other/motd/config%20skills/animallore%20skills/animallore/docs%20skills/begging/include%20skills/itemid%20systems/attributes/commands/seer%20systems/crafting/commands/test%20systems/daynight/config%20systems/daynight/include%20systems/housing/commands/gm%20systems/loot%20systems/loot/configs%20systems/loot/includes%20systems/na%21%0A%20ture/config%20systems/poisonwatcher/config%20systems/poisonwatcher/include%20systems/poisonwatcher/poisonscripts/paralysis%20systems/spawnSystem%20systems/spawnSystem/commands/gm%20systems/spawnSystem/config%20systems/spawnSystem/engines/itemFill%20systems/spawnSystem/engines/npcFill%20systems/spawnSystem/engines/prox%20systems/spawnSystem/include%20systems/spawnSystem/initializer%20systems/spawnSystem/www&In-Reply-To=%3C200510270336.j9R3aYwL014397%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r664 - in trunk/096/pkg: commands/gm items/bountyboard items/bulletinboard items/containers/config items/containers/include items/interiordecoratortool items/mounts items/mounts/commands/seer items/mounts/config items/mounts/include items/mounts/mount items/sysbook/config items/walkOn items/walkOn/commands/seer items/walkOn/config items/walkOn/energyField items/walkOn/fireField items/walkOn/paraField items/walkOn/poisonField items/walkOn/resurrect items/walkOn/spiderWeb items/walkOn/teleport mobiles/brainAI/complete/exampleNPC mobiles/brainAI/docs mobiles/death mobiles/death/commands/seer mobiles/death/config mobiles/death/include other/motd other/motd/commands/player other/motd/config skills/animallore skills/animallore/docs skills/begging/include skills/itemid systems/attributes/commands/seer systems/crafting/commands/test systems/daynight/config systems/daynight/include systems/housing/commands/gm systems/loot systems/loot/configs systems/loot/includes systems/na! ture/config systems/poisonwatcher/config systems/poisonwatcher/include systems/poisonwatcher/poisonscripts/paralysis systems/spawnSystem systems/spawnSystem/commands/gm systems/spawnSystem/config systems/spawnSystem/engines/itemFill systems/spawnSystem/engines/npcFill systems/spawnSystem/engines/prox systems/spawnSystem/include systems/spawnSystem/initializer systems/spawnSystem/www">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Thu Oct 27 05:36:34 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000637.html">[Poldistro-svn] r663 - in trunk/096/pkg/commands: building config coun gm player seer
+</A></li>
+        <LI>Next message: <A HREF="000639.html">[Poldistro-svn] r665 - in trunk/096/pkg/commands: coun helptext
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#638">[ date ]</a>
+              <a href="thread.html#638">[ thread ]</a>
+              <a href="subject.html#638">[ subject ]</a>
+              <a href="author.html#638">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-27 05:36:13 +0200 (Thu, 27 Oct 2005)
+New Revision: 664
+
+Modified:
+   trunk/096/pkg/commands/gm/info.src
+   trunk/096/pkg/commands/gm/kick.src
+   trunk/096/pkg/commands/gm/tile.src
+   trunk/096/pkg/items/bountyboard/bounty.src
+   trunk/096/pkg/items/bountyboard/bountyboard.src
+   trunk/096/pkg/items/bulletinboard/bulletinboard.src
+   trunk/096/pkg/items/containers/config/icp.cfg
+   trunk/096/pkg/items/containers/config/insertsound.cfg
+   trunk/096/pkg/items/containers/include/insertSound.inc
+   trunk/096/pkg/items/containers/include/merchantUtil.inc
+   trunk/096/pkg/items/interiordecoratortool/interiordecorator.src
+   trunk/096/pkg/items/mounts/commands/seer/mount.src
+   trunk/096/pkg/items/mounts/commands/seer/unmount.src
+   trunk/096/pkg/items/mounts/config/mounts.cfg
+   trunk/096/pkg/items/mounts/include/mounts.inc
+   trunk/096/pkg/items/mounts/itemdesc.cfg
+   trunk/096/pkg/items/mounts/mount/equip.src
+   trunk/096/pkg/items/mounts/mount/unequip.src
+   trunk/096/pkg/items/mounts/pkg.cfg
+   trunk/096/pkg/items/sysbook/config/bookstorage.cfg
+   trunk/096/pkg/items/walkOn/commands/seer/makeTele.src
+   trunk/096/pkg/items/walkOn/config/icp.cfg
+   trunk/096/pkg/items/walkOn/energyField/walkOn.src
+   trunk/096/pkg/items/walkOn/fireField/control.src
+   trunk/096/pkg/items/walkOn/fireField/walkOn.src
+   trunk/096/pkg/items/walkOn/itemdesc.cfg
+   trunk/096/pkg/items/walkOn/paraField/control.src
+   trunk/096/pkg/items/walkOn/paraField/walkOn.src
+   trunk/096/pkg/items/walkOn/pkg.cfg
+   trunk/096/pkg/items/walkOn/poisonField/control.src
+   trunk/096/pkg/items/walkOn/poisonField/walkOn.src
+   trunk/096/pkg/items/walkOn/resurrect/walkOn.src
+   trunk/096/pkg/items/walkOn/spiderWeb/walkOn.src
+   trunk/096/pkg/items/walkOn/teleport/control.src
+   trunk/096/pkg/items/walkOn/teleport/use.src
+   trunk/096/pkg/items/walkOn/teleport/walkOn.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/init.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/merchant.src
+   trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/wonFight.src
+   trunk/096/pkg/mobiles/brainAI/docs/changeLog.htm
+   trunk/096/pkg/mobiles/brainAI/docs/configSettings.htm
+   trunk/096/pkg/mobiles/brainAI/docs/conversion.htm
+   trunk/096/pkg/mobiles/brainAI/docs/eventId.htm
+   trunk/096/pkg/mobiles/brainAI/docs/index.htm
+   trunk/096/pkg/mobiles/brainAI/docs/npcCommands.htm
+   trunk/096/pkg/mobiles/brainAI/docs/npcError.htm
+   trunk/096/pkg/mobiles/brainAI/docs/npcInit.htm
+   trunk/096/pkg/mobiles/brainAI/docs/npcNerves.htm
+   trunk/096/pkg/mobiles/brainAI/docs/npcSettings.htm
+   trunk/096/pkg/mobiles/brainAI/docs/npcUtil.htm
+   trunk/096/pkg/mobiles/brainAI/docs/npcWatchList.htm
+   trunk/096/pkg/mobiles/brainAI/docs/scriptTypes.htm
+   trunk/096/pkg/mobiles/brainAI/docs/template.htm
+   trunk/096/pkg/mobiles/death/commands/seer/resurrect.src
+   trunk/096/pkg/mobiles/death/config/icp.cfg
+   trunk/096/pkg/mobiles/death/include/death.inc
+   trunk/096/pkg/mobiles/death/npcdeath.src
+   trunk/096/pkg/mobiles/death/pkg.cfg
+   trunk/096/pkg/mobiles/death/plyrdeath.src
+   trunk/096/pkg/other/motd/commands/player/motd.src
+   trunk/096/pkg/other/motd/config/icp.cfg
+   trunk/096/pkg/other/motd/logon.src
+   trunk/096/pkg/other/motd/motd.src
+   trunk/096/pkg/other/motd/motd.txt
+   trunk/096/pkg/other/motd/pkg.cfg
+   trunk/096/pkg/skills/animallore/docs/example-food.cfg
+   trunk/096/pkg/skills/animallore/docs/example-npcdesc.cfg
+   trunk/096/pkg/skills/animallore/foodtypes.cfg
+   trunk/096/pkg/skills/animallore/packtypes.cfg
+   trunk/096/pkg/skills/begging/include/begging.inc
+   trunk/096/pkg/skills/itemid/itemID.src
+   trunk/096/pkg/systems/attributes/commands/seer/powerup.src
+   trunk/096/pkg/systems/attributes/commands/seer/refresh.src
+   trunk/096/pkg/systems/crafting/commands/test/muadDice.src
+   trunk/096/pkg/systems/daynight/config/days.cfg
+   trunk/096/pkg/systems/daynight/include/moonlight.inc
+   trunk/096/pkg/systems/daynight/include/weather.inc
+   trunk/096/pkg/systems/housing/commands/gm/destroyMulti.src
+   trunk/096/pkg/systems/housing/commands/gm/makeMulti.src
+   trunk/096/pkg/systems/loot/configs/icp.cfg
+   trunk/096/pkg/systems/loot/configs/loot-groups.cfg
+   trunk/096/pkg/systems/loot/configs/loot-index.cfg
+   trunk/096/pkg/systems/loot/includes/lootParser.inc
+   trunk/096/pkg/systems/loot/pkg.cfg
+   trunk/096/pkg/systems/nature/config/days.cfg
+   trunk/096/pkg/systems/poisonwatcher/config/icp.cfg
+   trunk/096/pkg/systems/poisonwatcher/config/poisons.cfg
+   trunk/096/pkg/systems/poisonwatcher/include/poisons.inc
+   trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/endParalysis.src
+   trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/paralysis.src
+   trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+   trunk/096/pkg/systems/spawnSystem/config/firstRun.cfg
+   trunk/096/pkg/systems/spawnSystem/config/icp.cfg
+   trunk/096/pkg/systems/spawnSystem/config/settings.cfg
+   trunk/096/pkg/systems/spawnSystem/engines/itemFill/settings.cfg
+   trunk/096/pkg/systems/spawnSystem/engines/itemFill/spawnCycle.src
+   trunk/096/pkg/systems/spawnSystem/engines/npcFill/settings.cfg
+   trunk/096/pkg/systems/spawnSystem/engines/npcFill/spawnCycle.src
+   trunk/096/pkg/systems/spawnSystem/engines/prox/settings.cfg
+   trunk/096/pkg/systems/spawnSystem/engines/prox/spawnCycle.src
+   trunk/096/pkg/systems/spawnSystem/include/commonTasks.inc
+   trunk/096/pkg/systems/spawnSystem/include/engines.inc
+   trunk/096/pkg/systems/spawnSystem/include/events.inc
+   trunk/096/pkg/systems/spawnSystem/include/groups.inc
+   trunk/096/pkg/systems/spawnSystem/include/realms.inc
+   trunk/096/pkg/systems/spawnSystem/include/regions.inc
+   trunk/096/pkg/systems/spawnSystem/include/report.inc
+   trunk/096/pkg/systems/spawnSystem/include/settings.inc
+   trunk/096/pkg/systems/spawnSystem/include/spawnerUtil.inc
+   trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src
+   trunk/096/pkg/systems/spawnSystem/pkg.cfg
+   trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+   trunk/096/pkg/systems/spawnSystem/start.src
+   trunk/096/pkg/systems/spawnSystem/www/spawnControl.src
+Log:
+Updated some scripts to fix ecompile errors.
+Updated scripts for svn:keyword Id.
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-10-27 02:43:27 UTC (rev 663)
++++ trunk/096/pkg/commands/gm/info.src	2005-10-27 03:36:13 UTC (rev 664)
+@@ -29,7 +29,9 @@
+ 
+ 
+ program textcmd_Info(who, serial)
+-	var targ := who;;
++
++	var targ := who;
++
+ 	if ( serial )
+ 		targ := SystemFindObjectBySerial(CInt(serial));
+ 	else
+@@ -40,13 +42,32 @@
+ 		//return 0;
+ 		targ := who;
+ 	endif
+-	
+ 
+-	var gump := PropertiesGump(who, targ);
++	var gump := PropertyGump(who, targ);
+ 	GFSendGump(who, gump);
++
+ endprogram
+ 
++
++function PropertyGump(who, targ)
++	var gump := GumpTemplate(targ);
++
++	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 95);
++	GFTextLine(gump, 185, 60, 2100, &quot;X&quot;);
++	GFTextRight(gump, 475, 60, 2100, targ.x);
++	GFTextLine(gump, 185, 80, 2100, &quot;Y&quot;);
++	GFTextRight(gump, 475, 80, 2100, targ.y);
++	GFTextLine(gump, 185, 100, 2100, &quot;Z&quot;);
++	GFTextRight(gump, 475, 100, 2100, targ.z);
++	GFTextLine(gump, 185, 120, 2100, &quot;Realm&quot;);
++	GFTextRight(gump, 475, 120, 2100, targ.realm);
++
++	return gump;
++endfunction
++
++
+ function GumpTemplate(targ)
++
+ 	var gump := GFCreateGump();
+ 
+ 	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 500, 480);
+@@ -89,7 +110,7 @@
+ 
+ 	GFAddButton(gump, 20, 223, 2117, 2118, GF_CLOSE_BTN, 1);
+ 	GFTextLine(gump, 40, 220, 2100, &quot;Storage&quot;);
+-	
++
+ 	GFAddButton(gump, 20, 243, 2117, 2118, GF_CLOSE_BTN, 1);
+ 	GFTextLine(gump, 40, 240, 2100, &quot;Miscellaneous&quot;);
+ 
+@@ -166,14 +187,14 @@
+ 	GFAddButton(gump, 165, 103, 2117, 2118, GF_DUMMY_BTN);
+ 	GFTextLine(gump, 185, 100, 2100, &quot;AR Mod&quot;);
+ 	GFTextRight(gump, 475, 100, 2100, targ.ar_mod);
+-	
++
+ 	GFAddButton(gump, 165, 123, 2117, 2118, GF_DUMMY_BTN);
+ 	GFTextLine(gump, 185, 120, 2100, &quot;Attack Speed Mod&quot;);
+ 	GFTextRight(gump, 475, 120, 2100, targ.delay_mod);
+ 
+ 	GFResizePic(gump, 160, 155, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 195);
+ 	GFTextLine(gump, 170, 160, 2100, &quot;Weapon Information&quot;);
+-	
++
+ 	var weapon := targ.weapon;
+ 	var wpn_name, wpn_speed, wpn_dice;
+ 	if ( targ.IsA(POLCLASS_NPC) &amp;&amp; ((targ.weapon).objtype == 0xF020) )
+@@ -200,14 +221,14 @@
+ 	Z := Z+CInt((targ.weapon).dmg_mod);
+ 	// (x*((1+y)/2))+z average formula
+ 	var average := (X*((1+Y)/2))+Z;
+-	
++
+ 	GFTextLine(gump, 185, 180, 2100, &quot;Weapon Name&quot;);
+-	GFTextRight(gump, 475, 180, 2100, wpn_name);	
++	GFTextRight(gump, 475, 180, 2100, wpn_name);
+ 	GFTextLine(gump, 185, 200, 2100, &quot;Weapon Serial&quot;);
+ 	GFTextRight(gump, 475, 200, 2100, Hex(weapon.serial));
+ 	GFTextLine(gump, 185, 220, 2100, &quot;Weapon Objtype&quot;);
+ 	GFTextRight(gump, 475, 220, 2100, Hex(weapon.objtype));
+-	
++
+ 	GFTextLine(gump, 185, 260, 2100, &quot;Weapon Speed&quot;);
+ 	GFTextRight(gump, 475, 260, 2100, CInt(wpn_speed));
+ 	GFTextLine(gump, 185, 280, 2100, &quot;Damage Modifier&quot;);
+@@ -216,7 +237,7 @@
+ 	GFTextRight(gump, 475, 300, 2100, wpn_dice);
+ 	GFTextLine(gump, 185, 320, 2100, &quot;Average Damage&quot;);
+ 	GFTextRight(gump, 475, 320, 2100, average);
+-	
++
+ 	return gump;
+ endfunction
+ 
+@@ -228,7 +249,7 @@
+ 	GFTextRight(gump, 475, 60, 2100, GetScriptName((targ.attached).name));
+ 	GFTextLine(gump, 175, 80, 2100, &quot;Attached PID&quot;);
+ 	GFTextRight(gump, 475, 80, 2100, CInt((targ.attached).pid));
+-	
++
+ 	GFResizePic(gump, 160, 115, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 95);
+ 	GFTextLine(gump, 175, 120, 2100, &quot;AI Script&quot;);
+ 	GFTextRight(gump, 475, 120, 2100, GetScriptName(targ.script));
+@@ -238,7 +259,7 @@
+ 	GFTextRight(gump, 475, 160, 2100, Hex(CInt(targ.eventmask)));
+ 	GFTextLine(gump, 175, 180, 2100, &quot;Master Serial&quot;);
+ 	GFTextRight(gump, 475, 180, 2100, Hex(CInt((targ.master).serial)));
+-		
++
+ 	return gump;
+ endfunction
+ 
+@@ -252,7 +273,7 @@
+ 	GFAddButton(gump, 165, 83, 2117, 2118, GF_DUMMY_BTN);
+ 	GFTextLine(gump, 185, 80, 2100, &quot;Murderer&quot;);
+ 	GFTextRight(gump, 475, 80, 2100, targ.murderer);
+-	
++
+ 	GFResizePic(gump, 163, 115, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 315, 245);
+ 	var client_info := targ.clientinfo;
+ 	var info_string := &quot;&lt;U&gt;Reportables&lt;/U&gt;&lt;BR&gt;&quot;;
+@@ -266,33 +287,17 @@
+ 	return gump;
+ endfunction
+ 
+-function PropertyGump(who, targ)
+-	var gump := GumpTemplate(targ);
+-
+-	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 95);
+-	GFTextLine(gump, 185, 60, 2100, &quot;X&quot;);
+-	GFTextRight(gump, 475, 60, 2100, targ.x);
+-	GFTextLine(gump, 185, 80, 2100, &quot;Y&quot;);
+-	GFTextRight(gump, 475, 80, 2100, targ.y);
+-	GFTextLine(gump, 185, 100, 2100, &quot;Z&quot;);
+-	GFTextRight(gump, 475, 100, 2100, targ.z);
+-	GFTextLine(gump, 185, 120, 2100, &quot;Realm&quot;);
+-	GFTextRight(gump, 475, 120, 2100, targ.realm);
+-
+-	return gump;
+-endfunction
+-
+ function GetScriptName(path)
+ 	if ( !path )
+ 		return &quot;None&quot;;
+ 	endif
+-	
++
+ 	while ( path[&quot;/&quot;] )
+ 		// Breaks it down to just the file name.
+ 		var pos := Find(path, &quot;/&quot;, 1);
+ 		path[1, pos] := &quot;&quot;;
+ 		sleepms(2);
+ 	endwhile
+-	
++
+ 	return path;
+ endfunction
+
+Modified: trunk/096/pkg/commands/gm/kick.src
+===================================================================
+--- trunk/096/pkg/commands/gm/kick.src	2005-10-27 02:43:27 UTC (rev 663)
++++ trunk/096/pkg/commands/gm/kick.src	2005-10-27 03:36:13 UTC (rev 664)
+@@ -9,25 +9,23 @@
+ 
+ 
+ program command_kick(who)
+-	var mobile;
+ 
+ 	SendMessage(who, MSG_TARGET_MOB, {}, MSG_COMMAND);
++	var mobile := Target(who, TGTOPT_NOCHECK_LOS);
+ 
+-	if ((mobile := Target(who, TGTOPT_NOCHECK_LOS)) == 0)
++	if( !mobile.acctname || mobile.isA(POLCLASS_NPC) )
+ 		SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
+ 	else
+-		if (!mobile.isA(POLCLASS_MOBILE) || mobile.isA(POLCLASS_NPC))
+-			SendMessage(who, MSG_NO_CHAR, {}, MSG_COMMAND);
++		if (mobile == who)
++			SendSysMessage(who, &quot;You cannot kick yourself.&quot;);
+ 		else
+-			if (mobile == who)
+-				SendSysMessage(who, &quot;You cannot kick yourself.&quot;);
+-			else
+-				Log(LOG_COMMAND, GetLogInfo(who) + &quot;invoking 'kick' command on: &quot;
+-					+ GetLogInfo(mobile));
+-				DisconnectClient(mobile);
+-				SendMessage(who, MSG_DONE, {}, MSG_COMMAND);
+-			endif
++			Log(LOG_COMMAND, GetLogInfo(who) + &quot;invoking 'kick' command on: &quot;
++				+ GetLogInfo(mobile));
++			DisconnectClient(mobile);
++			SendMessage(who, MSG_DONE, {}, MSG_COMMAND);
++		endif
+ 	endif
+ 
+-	return;
+-endprogram
++	return 1;
++
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/commands/gm/tile.src
+===================================================================
+--- trunk/096/pkg/commands/gm/tile.src	2005-10-27 02:43:27 UTC (rev 663)
++++ trunk/096/pkg/commands/gm/tile.src	2005-10-27 03:36:13 UTC (rev 664)
+@@ -40,7 +40,7 @@
+ 	SendSysMessage( who, &quot;Select coordinate #2&quot; );
+ 	var coordstructtwo := TargetCoordinates( who );
+ 
+-	if ((!coordstructonu) || (!coordstructtwo)) // check that we got two valid coordstructs.
++	if( (!coordstructone) || (!coordstructtwo)) // check that we got two valid coordstructs.
+ 		SendSysMessage( who, &quot;Missing coordinate. Aborting.&quot; );
+ 		return;
+ 	endif
+
+Modified: trunk/096/pkg/items/bountyboard/bounty.src
+===================================================================
+--- trunk/096/pkg/items/bountyboard/bounty.src	2005-10-27 02:43:27 UTC (rev 663)
++++ trunk/096/pkg/items/bountyboard/bounty.src	2005-10-27 03:36:13 UTC (rev 664)
+@@ -6,7 +6,7 @@
+ include &quot;include/bounty&quot;;
+ include &quot;:datafile:datafile&quot;;
+ include &quot;:containers:storageAreas&quot;;
+-include &quot;:gumps:include/old/old-gumps&quot;;
++include &quot;:gumps:gumps&quot;;
+ include &quot;include/client&quot;;
+ 
+ 
+@@ -48,20 +48,20 @@
+ 
+ 
+ function GetBountyAmount(mobile, mygold, name)
+-	GFInitGump();
+-	GFPage(0);
+-	GFResizePic(50,  50, 5120, 500, 200);
+-	GFResizePic(60,  60, 5054, 480, 180);
+-	GFTextLine(247,  68, 0, &quot;Bounty Menu&quot;);
+-	GFTextLine(250,  70, COLOR_YELLOW, &quot;Bounty Menu&quot;);
+-	GFTextLine( 80, 120, 0, &quot;Your bank box contains &quot; + mygold + &quot; gold coins from which you&quot;);
+-	GFTextLine( 80, 140, 0, &quot;may place a bounty on &quot; + name + &quot;'s head.&quot;);
+-	GFTextLine( 80, 160, 0, &quot;Simply enter the bounty amount you wish to place below.&quot;);
+-	GFResizePic(90, 185, 2620, 120, 30);
+-	var amt := GFTextEntry( 100, 190, 100, 20, 900, &quot;0&quot;);
+-	GFButtonID(380, 190, 2121, 2120, 0);
+-	GFButtonID(440, 190, 2130, 2129, 1, 1);
+-	var ret := GFSendGump(mobile);
++
++	var gump := GFCreateGump();
++	GFResizePic(gump, 50,  50, 5120, 500, 200);
++	GFResizePic(gump, 60,  60, 5054, 480, 180);
++	GFTextLine(gump, 247,  68, 0, &quot;Bounty Menu&quot;);
++	GFTextLine(gump, 250,  70, COLOR_YELLOW, &quot;Bounty Menu&quot;);
++	GFTextLine(gump, 80, 120, 0, &quot;Your bank box contains &quot; + mygold + &quot; gold coins from which you&quot;);
++	GFTextLine(gump, 80, 140, 0, &quot;may place a bounty on &quot; + name + &quot;'s head.&quot;);
++	GFTextLine(gump, 80, 160, 0, &quot;Simply enter the bounty amount you wish to place below.&quot;);
++	GFResizePic(gump, 90, 185, 2620, 120, 30);
++	var amt := GFTextEntry(gump, 100, 190, 100, 20, 900, &quot;0&quot;);
++	GFAddButton(gump, 380, 190, 2121, 2120, GF_CLOSE_BTN, 9998);
++	GFAddButton(gump, 440, 190, 2130, 2129, GF_CLOSE_BTN, 1);
++	var ret := GFSendGump(mobile, gump);
+ 	if (ret[0] == 1)
+ 		amt := Cint(SplitWords(ret[amt.keyid])[2]);
+ 	else
+@@ -70,10 +70,12 @@
+ 	endif
+ 
+ 	return amt;
++
+ endfunction
+ 
+ 
+ function FindMyGold(box)
++
+ 	var amt := 0;
+ 	var piles := array{};
+ 
+@@ -89,5 +91,6 @@
+ 	print(holder);
+ 
+ 	return holder;
++
+ endfunction
+ 
+
+Modified: trunk/096/pkg/items/bountyboard/bountyboard.src
+===================================================================
+--- trunk/096/pkg/items/bountyboard/bountyboard.src	2005-10-27 02:43:27 UTC (rev 663)
++++ trunk/096/pkg/items/bountyboard/bountyboard.src	2005-10-27 03:36:13 UTC (rev 664)
+@@ -17,38 +17,38 @@
+ endprogram
+ 
+ function generateBoard(byref who)
+-  GFInitGump();
+-  GFPage(0);
+-  GfGumpPic(0, 0, 2170);
+-  GFTextLine(197, 38, 0, &quot;Bounty Board&quot;);
+-  GFTextLine(200, 40, COLOR_YELLOW, &quot;Bounty Board&quot;);
++  OldGFInitGump();
++  OldGFPage(0);
++  OldGFGumpPic(0, 0, 2170);
++  OldGFTextLine(197, 38, 0, &quot;Bounty Board&quot;);
++  OldGFTextLine(200, 40, COLOR_YELLOW, &quot;Bounty Board&quot;);
+   var data := ComposeBountyBoard();
+   data.reverse();
+   var count := 0, page := 2, ct := 0;
+   var ymod  := 160;
+-  GFPage(1);
+-  GFTextLine(130, 345, 0, &quot;Page: 1&quot;);
++  OldGFPage(1);
++  OldGFTextLine(130, 345, 0, &quot;Page: 1&quot;);
+   foreach thing in data
+     if(ct &gt;= 10)
+       ct := 0;
+-      GFButtonPage(354, 319, 2085, 2085, page);
+-      GFPage(page);
+-      GFTextLine(130, 345, 0, &quot;Page: &quot; + page);
+-      GFButtonPage(355, 144, 2084, 2084, page-1);
++      OldGFButtonPage(354, 319, 2085, 2085, page);
++      OldGFPage(page);
++      OldGFTextLine(130, 345, 0, &quot;Page: &quot; + page);
++      OldGFButtonPage(355, 144, 2084, 2084, page-1);
+       ymod := 160;
+       page := page + 1;
+     endif
+     if(count &gt;= 50)
+       break;
+     else
+-      GFButtonID(110, ymod+3, 0x1523, 0x1523, 1, thing[2]);
+-      GFTextLine(130, ymod, 0, thing[1] + &quot;:   &quot; + thing[3] + &quot; gold&quot;);
++      OldGFButtonID(110, ymod+3, 0x1523, 0x1523, 1, thing[2]);
++      OldGFTextLine(130, ymod, 0, thing[1] + &quot;:   &quot; + thing[3] + &quot; gold&quot;);
+       count := count + 1;
+       ct := ct + 1;
+       ymod := ymod + 16;
+     endif
+   endforeach
+-  var ret := GFSendGump(who);
++  var ret := OldGFSendGump(who);
+   if(ret[0]);
+     loop := 1;
+     ComposeDetailPage(who, ret[0]);
+@@ -59,46 +59,46 @@
+ endfunction
+ 
+ function ComposeDetailPage(byref who, serial)
+-  GFInitGump();
+-  GFPage(0);
+-  GFGumpPic(83,  63, 0x820);
+-  GFGumpPic(100, 100, 0x821);
+-  GFGumpPic(100, 170, 0x822);
+-  GFGumpPic(100, 240, 0x821);
+-  GFGumpPic(100, 310, 0x822);
+-  GFGumpPic(100, 380, 0x823);
+-  GFGumpPic(120, 100, 0x82b);
+-  GFGumpPic(120, 365, 0x82b);
+-  GFGumpPic(120, 170, 0x39);
+-  GFGumpPic(150, 170, 0x3a);
+-  GFGumpPic(165, 170, 0x3a);
+-  GFGumpPic(180, 170, 0x3a);
+-  GFGumpPic(195, 170, 0x3a);
+-  GFGumpPic(210, 170, 0x3a);
+-  GFGumpPic(225, 170, 0x3a);
+-  GFGumpPic(240, 170, 0x3a);
+-  GFGumpPic(255, 170, 0x3a);
+-  GFGumpPic(270, 170, 0x3a);
+-  GFGumpPic(285, 170, 0x3a);
+-  GFGumpPic(300, 170, 0x3b);
++  OldGFInitGump();
++  OldGFPage(0);
++  OldGFGumpPic(83,  63, 0x820);
++  OldGFGumpPic(100, 100, 0x821);
++  OldGFGumpPic(100, 170, 0x822);
++  OldGFGumpPic(100, 240, 0x821);
++  OldGFGumpPic(100, 310, 0x822);
++  OldGFGumpPic(100, 380, 0x823);
++  OldGFGumpPic(120, 100, 0x82b);
++  OldGFGumpPic(120, 365, 0x82b);
++  OldGFGumpPic(120, 170, 0x39);
++  OldGFGumpPic(150, 170, 0x3a);
++  OldGFGumpPic(165, 170, 0x3a);
++  OldGFGumpPic(180, 170, 0x3a);
++  OldGFGumpPic(195, 170, 0x3a);
++  OldGFGumpPic(210, 170, 0x3a);
++  OldGFGumpPic(225, 170, 0x3a);
++  OldGFGumpPic(240, 170, 0x3a);
++  OldGFGumpPic(255, 170, 0x3a);
++  OldGFGumpPic(270, 170, 0x3a);
++  OldGFGumpPic(285, 170, 0x3a);
++  OldGFGumpPic(300, 170, 0x3b);
+   var elem := DFFindElement(bountyfile, Cstr(serial));
+   var name   := DFGetProp(elem, &quot;Name&quot;);
+   var murder := DFGetProp(elem, &quot;Murders&quot;);
+   var bounty := DFGetProp(elem, &quot;Bounty&quot;);
+-  GFTextLine(110, 110, 0, &quot;Name:    &quot; + name);
+-  GFTextLine(110, 130, 0, &quot;Murders: &quot; + murder);
+-  GFTextLine(110, 150, 0, &quot;Bounty:  &quot; + bounty);
+-  GFTextLine(110, 190, 0, &quot;The foul scum known as&quot;);
+-  GFTextLine(110, 210, 0, name + &quot; cannot continue&quot;);
+-  GFTextLine(110, 230, 0, &quot;to kill! For he is responsible&quot;);
++  OldGFTextLine(110, 110, 0, &quot;Name:    &quot; + name);
++  OldGFTextLine(110, 130, 0, &quot;Murders: &quot; + murder);
++  OldGFTextLine(110, 150, 0, &quot;Bounty:  &quot; + bounty);
++  OldGFTextLine(110, 190, 0, &quot;The foul scum known as&quot;);
++  OldGFTextLine(110, 210, 0, name + &quot; cannot continue&quot;);
++  OldGFTextLine(110, 230, 0, &quot;to kill! For he is responsible&quot;);
+   if(murder == 1)
+-    GFTextLine(110, 250, 0, &quot;for 1 murder. Lord British's&quot;);
++    OldGFTextLine(110, 250, 0, &quot;for 1 murder. Lord British's&quot;);
+   else
+-    GFTextLine(110, 250, 0, &quot;for &quot; + murder + &quot; murders. Lord British's&quot;);
++    OldGFTextLine(110, 250, 0, &quot;for &quot; + murder + &quot; murders. Lord British's&quot;);
+   endif
+-  GFTextLine(110, 270, 0, &quot;bounty of &quot; + bounty + &quot; gold pieces&quot;);
+-  GFTextLine(110, 290, 0, &quot;will be rewarded to the first&quot;);
+-  GFTextLine(110, 310, 0, &quot;citizen to bring his head to&quot;);
+-  GFTextLine(110, 330, 0, &quot;any of the city guards.&quot;);
+-  GFSendGump(who);
++  OldGFTextLine(110, 270, 0, &quot;bounty of &quot; + bounty + &quot; gold pieces&quot;);
++  OldGFTextLine(110, 290, 0, &quot;will be rewarded to the first&quot;);
++  OldGFTextLine(110, 310, 0, &quot;citizen to bring his head to&quot;);
++  OldGFTextLine(110, 330, 0, &quot;any of the city guards.&quot;);
++  OldGFSendGump(who);
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/bulletinboard/bulletinboard.src
+===================================================================
+--- trunk/096/pkg/items/bulletinboard/bulletinboard.src	2005-10-27 02:43:27 UTC (rev 663)
++++ trunk/096/pkg/items/bulletinboard/bulletinboard.src	2005-10-27 03:36:13 UTC (rev 664)
+@@ -16,7 +16,7 @@
+ // History
+ // Feb. 13, 2003 - Austin
+ // A lot of code cleanup.
+-// Reading posts now uses the new gumps.inc function GFHTMLArea()
++// Reading posts now uses the new gumps.inc function OldGFHTMLArea()
+ //
+ // Sep. 04, 2001 - Austin
+ // Package is created.
+@@ -40,30 +40,30 @@
+ 		board_data_file := DFOpenDataFile(&quot;MessageBoards&quot;, DF_CREATE);
+ 		board_elem := DFFindElement(board_data_file, hex(board.serial), DF_CREATE);
+ 
+-		GFInitGump();
++		OldGFInitGump();
+ 
+-		GFButtonPage(40, 195, 0x1B6B, 0x1B6B, 500);
+-		GFGumpPic(20, 20, 0x87A);
+-		GFTextMid(260, 57, 0, GF_STDCOLOR, &quot;Message Board&quot;);
++		OldGFButtonPage(40, 195, 0x1B6B, 0x1B6B, 500);
++		OldGFGumpPic(20, 20, 0x87A);
++		OldGFTextMid(260, 57, 0, GF_STDCOLOR, &quot;Message Board&quot;);
+ 
+ 		BoardIndex(board);
+ 
+ 		var subject := &quot;&quot;, msg_lines := array;
+ 		NewPost(who, subject, msg_lines);
+ 
+-		input := GFSendGump(who);
++		input := OldGFSendGump(who);
+ 		if ( !GetObjProperty(who, &quot;#Online&quot;) )
+ 			//If the player goes offline, terminate the script.
+ 			exit;
+ 		endif
+ 
+ 		if ( input[ADD_POST_BTN] )
+-			subject := GFExtractData(subject.keyid, input);
++			subject := OldGFExtractData(subject.keyid, input);
+ 
+ 			//Take the 'lines' from the post and put them into 1 string.
+ 			var msg_string := &quot;&quot;;
+ 			foreach line in msg_lines
+-				line := GFExtractData(line.keyid, input);
++				line := OldGFExtractData(line.keyid, input);
+ 				if ( line )
+ 					msg_string := msg_string+&quot; &quot;+line;
+ 				endif
+@@ -106,12 +106,12 @@
+ 			var subject := board_elem.GetProp(postnum).Subject;
+ 			var message := board_elem.GetProp(postnum).Message;
+ 
+-			GFPage(page_num);
+-			GFButtonPage(135, y_pos+3, 0xFC1, 0xFC1, post_page_num);
+-			GFTextLine(155, y_pos, GF_STDCOLOR, subject);
++			OldGFPage(page_num);
++			OldGFButtonPage(135, y_pos+3, 0xFC1, 0xFC1, post_page_num);
++			OldGFTextLine(155, y_pos, GF_STDCOLOR, subject);
+ 			y_pos := y_pos+20;
+ 
+-			GFPage(post_page_num);
++			OldGFPage(post_page_num);
+ 
+ 			var msg := &quot;&lt;basefont color=#111111&gt;&quot;
+ 				+&quot;From: &quot;+name+&quot;&lt;br&gt;&quot;
+@@ -126,27 +126,27 @@
+ 			else
+ 				msg := msg+&quot; &quot;+message;
+ 			endif
+-			GFHTMLArea(130, 180, 263, 160, 0, 1, msg);
++			OldGFHTMLArea(130, 180, 263, 160, 0, 1, msg);
+ 
+ 			post_page_num := post_page_num+1;
+ 
+-			GFButtonPage(135, 367, 0x15E3, 0x15E7, page_num);
+-			GFTextLine(155, 365, GF_STDCOLOR, &quot;Index&quot;);
++			OldGFButtonPage(135, 367, 0x15E3, 0x15E7, page_num);
++			OldGFTextLine(155, 365, GF_STDCOLOR, &quot;Index&quot;);
+ 
+-			GFTextLine(350, 364, GF_STDCOLOR, &quot;Delete&quot;);
+-			GFButtonID(395, 367, 2117, 2118, 1, (CInt(postnum)+DELETE_BTN));
++			OldGFTextLine(350, 364, GF_STDCOLOR, &quot;Delete&quot;);
++			OldGFButtonID(395, 367, 2117, 2118, 1, (CInt(postnum)+DELETE_BTN));
+ 
+ 			counter := counter+1;
+ 			total := total+1;
+ 
+ 			if ( counter &gt; 8 &amp;&amp; total &lt; (prop_list.size()-1) )
+-				GFPage(page_num);
++				OldGFPage(page_num);
+ 				//Down arrow
+-				GFButtonPage(377, 336, 0xFC, 0xFD, page_num+1);
++				OldGFButtonPage(377, 336, 0xFC, 0xFD, page_num+1);
+ 				page_num := page_num+1;
+-				GFPage(page_num);
++				OldGFPage(page_num);
+ 				//Up arrow
+-				GFButtonPage(377, 160, 0xFA, 0xFB, page_num-1);
++				OldGFButtonPage(377, 160, 0xFA, 0xFB, page_num-1);
+ 				y_pos := 180;
+ 				counter := 1;
+ 			endif
+@@ -156,26 +156,26 @@
+ endfunction
+ 
+ function NewPost(who, byref subject, byref msg_lines)
+-	GFPage(500);
++	OldGFPage(500);
+ 
+-	GFTextLine(130, 180, GF_STDCOLOR, &quot;From: &quot; + who.name);
+-	GFTextLine(130, 200, GF_STDCOLOR, &quot;Subject: &quot;);
+-	subject := GFTextEntry(193, 200, 105, 20, GF_STDCOLOR, &quot;New Message&quot;);
++	OldGFTextLine(130, 180, GF_STDCOLOR, &quot;From: &quot; + who.name);
++	OldGFTextLine(130, 200, GF_STDCOLOR, &quot;Subject: &quot;);
++	subject := OldGFTextEntry(193, 200, 105, 20, GF_STDCOLOR, &quot;New Message&quot;);
+ 
+-	GFTextLine(130, 230, GF_STDCOLOR, &quot;Message:&quot;);
++	OldGFTextLine(130, 230, GF_STDCOLOR, &quot;Message:&quot;);
+ 
+ 	var i;
+ 	var y_pos := 250;
+ 	//Five message lines.
+ 	for (i:=0; i &lt; 5; i:=i+1)
+-		msg_lines.append(GFTextEntry(130, y_pos, 255, 20, GF_STDCOLOR));
++		msg_lines.append(OldGFTextEntry(130, y_pos, 255, 20, GF_STDCOLOR));
+ 		y_pos := y_pos+20;
+ 	endfor
+ 
+-	GFButtonPage(135, 367, 0x15E3, 0x15E7, 1);
+-	GFTextLine(155, 365, GF_STDCOLOR, &quot;Index&quot;);
++	OldGFButtonPage(135, 367, 0x15E3, 0x15E7, 1);
++	OldGFTextLine(155, 365, GF_STDCOLOR, &quot;Index&quot;);
+ 
+-	GFTextLine(355, 364, GF_STDCOLOR, &quot;Post&quot;);
+-	GFButtonID(395, 367, 2117, 2118, 1, ADD_POST_BTN);
++	OldGFTextLine(355, 364, GF_STDCOLOR, &quot;Post&quot;);
++	OldGFButtonID(395, 367, 2117, 2118, 1, ADD_POST_BTN);
+ endfunction
+ 
+
+
+Property changes on: trunk/096/pkg/items/containers/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/containers/config/insertsound.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/containers/include/insertSound.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/containers/include/merchantUtil.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/items/interiordecoratortool/interiordecorator.src
+===================================================================
+--- trunk/096/pkg/items/interiordecoratortool/interiordecorator.src	2005-10-27 02:43:27 UTC (rev 663)
++++ trunk/096/pkg/items/interiordecoratortool/interiordecorator.src	2005-10-27 03:36:13 UTC (rev 664)
+@@ -4,8 +4,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;:gumps:include/old/old-gumps&quot;;
+ include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
+ include &quot;include/client&quot;;
+ 
+ CONST CMD_LEVEL_OVERRIDE := 2;
+@@ -129,8 +129,8 @@
+ function ChangeManipulation(who, theDecorator, currManipulation)
+ 
+ 
+-	//var BKGND_SILVERTRIM := GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;);
+-	//var BKGND_DARK_STONE := GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;);
++	var BKGND_SILVERTRIM := GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;);
++	var BKGND_DARK_STONE := GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;);
+ 
+ 	var theCancelButton;
+ 	var theOkButton;
+
+
+Property changes on: trunk/096/pkg/items/mounts/commands/seer/mount.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/mounts/commands/seer/unmount.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/mounts/config/mounts.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/mounts/include/mounts.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/mounts/itemdesc.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/mounts/mount/equip.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/mounts/mount/unequip.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/mounts/pkg.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/sysbook/config/bookstorage.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/commands/seer/makeTele.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/energyField/walkOn.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/fireField/control.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/fireField/walkOn.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/itemdesc.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/paraField/control.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/paraField/walkOn.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/pkg.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/poisonField/control.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/poisonField/walkOn.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/resurrect/walkOn.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/spiderWeb/walkOn.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/teleport/control.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/teleport/use.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/walkOn/teleport/walkOn.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/init.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/merchant.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/complete/exampleNPC/wonFight.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/changeLog.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/configSettings.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/conversion.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/eventId.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/index.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/npcCommands.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/npcError.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/npcInit.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/npcNerves.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/npcSettings.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/npcUtil.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/npcWatchList.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/scriptTypes.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/brainAI/docs/template.htm
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/death/commands/seer/resurrect.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/death/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/death/include/death.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/death/npcdeath.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/death/pkg.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/mobiles/death/plyrdeath.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/other/motd/commands/player/motd.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/other/motd/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/other/motd/logon.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/other/motd/motd.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/other/motd/motd.txt
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/other/motd/pkg.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/skills/animallore/docs/example-food.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/skills/animallore/docs/example-npcdesc.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/skills/animallore/foodtypes.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/skills/animallore/packtypes.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/skills/begging/include/begging.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/skills/itemid/itemID.src
+===================================================================
+--- trunk/096/pkg/skills/itemid/itemID.src	2005-10-27 02:43:27 UTC (rev 663)
++++ trunk/096/pkg/skills/itemid/itemID.src	2005-10-27 03:36:13 UTC (rev 664)
+@@ -5,91 +5,100 @@
+ use basic;
+ use cfgfile;
+ 
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ include &quot;include/client&quot;;
+ 
+-program do_itemid( who )
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  var thepoints := get_default_points(SKILLID_ITEMID);
+-  var the_item;
+-  var ncharges;
+-  SendSysMessage( who, &quot;Select an object to identify.&quot; );
+-  the_item := Target(who, TGTOPT_CHECK_LOS);
+-  if(!the_item)
+-    SendSysMessage(who, &quot;Targetting cancelled.&quot;);
+-    return;
+-  endif
+-  if(the_item.isA(POLCLASS_MOBILE))
+-    SendSysMessage(who, &quot;That's not an item!&quot;);
+-    return;
+-  endif
+-  if(CheckSkill(who, SKILLID_ITEMID, -1, thepoints))
+-    var name := &quot;&quot;;
+-    var itsname := the_item.name;
+-    if (!itsname)
+-	    var cfgfile := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-    	var elem := FindConfigElem(cfgfile, the_item.objtype);
+-    	itsname := elem.desc;
+-    endif
+-    if(GetObjProperty(the_item, &quot;silvermod&quot;))
+-      name :=  &quot;silver&quot; + name;
+-    endif
+-    if(GetObjProperty(the_item, &quot;durability&quot;))
+-      name := name + &quot; &quot; + GetObjProperty(the_item, &quot;durability&quot;);
+-    endif
+-    if(GetObjProperty(the_item, &quot;accuracy&quot;))
+-      name := name + &quot; &quot; + GetObjProperty(the_item, &quot;accuracy&quot;);
+-    endif
+-    itsname[&quot;a &quot;] := &quot;&quot;;
+-    itsname[&quot;an &quot;] := &quot;&quot;;
+-    itsname[&quot;magic &quot;] := &quot;&quot;;
+-    name := name + &quot; &quot; + itsname;
+-    if(GetObjProperty(the_item, &quot;damagemod&quot;))
+-      name := name + &quot; &quot; + GetObjProperty(the_item, &quot;damagemod&quot;);
+-    endif
+-    name.erase(1);
+-    if((!GetObjProperty(the_item, &quot;IDed&quot;)) and (name != &quot;&quot;))
+-      SetName(the_item, name);
+-    endif
+-    var msg := &quot;It appears to be&quot;;
+-    itsname := the_item.desc;
+-    if(itsname[1] == &quot; &quot;)
+-      if(Cint(itsname[2]) == 0)
+-        case(Cstr(itsname[2]))
+-          &quot;a&quot;: msg := msg + &quot; an&quot;;
+-          &quot;e&quot;: msg := msg + &quot; an&quot;;
+-          &quot;i&quot;: msg := msg + &quot; an&quot;;
+-          &quot;o&quot;: msg := msg + &quot; an&quot;;
+-          &quot;u&quot;: msg := msg + &quot; an&quot;;
+-        endcase
+-      endif
+-    else
+-      msg := msg + &quot; &quot;;
+-      if(Cint(itsname[1]) == 0)
+-        case(Cstr(itsname[1]))
+-          &quot;a&quot;: msg := msg + &quot; an &quot;;
+-          &quot;e&quot;: msg := msg + &quot; an &quot;;
+-          &quot;i&quot;: msg := msg + &quot; an &quot;;
+-          &quot;o&quot;: msg := msg + &quot; an &quot;;
+-          &quot;u&quot;: msg := msg + &quot; an &quot;;
+-        endcase
+-      endif
+-    endif
+-    msg := msg + itsname;
+-    SendSysMessage( who, msg);
+-    SetObjProperty( the_item, &quot;IDed&quot;, 1 );
+-    if(GetObjProperty(the_item, &quot;charges&quot;) )
+-	  ncharges := CStr(GetObjProperty(the_item, &quot;charges&quot;) );
+-	  if(ncharges)
+-	    SendSysMessage(who, &quot;It has &quot; + ncharges + &quot; charges.&quot;);
+-  	  endif
+-    endif
+-    if(GetObjProperty(the_item, &quot;type&quot;) == &quot;cursed&quot;)
+-	  if(CheckSkill(who, SKILLID_ITEMID, 65, 0) )
+-	    SendSysMessage(who, &quot;* This item is cursed! *&quot;);
+-	  endif
+-    endif
+-  else
+-    SendSysMessage(who, &quot;I'm not sure . . .&quot;);
+-  endif
++program skill_ItemID( who )
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	var the_item;
++	var ncharges;
++	SendSysMessage( who, &quot;Select an object to identify.&quot; );
++	the_item := Target(who, TGTOPT_CHECK_LOS);
++	if( !the_item )
++		SendSysMessage(who, &quot;Targetting cancelled.&quot;);
++		return 0;
++	endif
++	if( the_item.isA(POLCLASS_MOBILE) )
++		SendSysMessage(who, &quot;That's not an item!&quot;);
++		return 0;
++	endif
++
++	if( SkillCheck(who, ATTRIBUTE_ITEM_IDENTIFICATION, -1) &gt; 0 )
++		var name := &quot;&quot;;
++		var itsname := the_item.name;
++		if( !itsname )
++			var cfgfile := ReadConfigFile(&quot;:*:itemdesc&quot;);
++			var elem := FindConfigElem(cfgfile, the_item.objtype);
++			itsname := elem.desc;
++		endif
++		if( GetObjProperty(the_item, &quot;silvermod&quot;) )
++			name :=  &quot;silver&quot; + name;
++		endif
++		if( GetObjProperty(the_item, &quot;durability&quot;) )
++			name := name + &quot; &quot; + GetObjProperty(the_item, &quot;durability&quot;);
++		endif
++		if( GetObjProperty(the_item, &quot;accuracy&quot;) )
++			name := name + &quot; &quot; + GetObjProperty(the_item, &quot;accuracy&quot;);
++		endif
++		itsname[&quot;a &quot;] := &quot;&quot;;
++		itsname[&quot;an &quot;] := &quot;&quot;;
++		itsname[&quot;magic &quot;] := &quot;&quot;;
++		name := name + &quot; &quot; + itsname;
++		if( GetObjProperty(the_item, &quot;damagemod&quot;) )
++			name := name + &quot; &quot; + GetObjProperty(the_item, &quot;damagemod&quot;);
++		endif
++		name.erase(1);
++		if( (!GetObjProperty(the_item, &quot;IDed&quot;)) and (name != &quot;&quot;) )
++			SetName(the_item, name);
++		endif
++		var msg := &quot;It appears to be&quot;;
++		itsname := the_item.desc;
++		if( itsname[1] == &quot; &quot; )
++			if( Cint(itsname[2]) == 0 )
++				case(Cstr(itsname[2]))
++					&quot;a&quot;: msg := msg + &quot; an&quot;;
++					&quot;e&quot;: msg := msg + &quot; an&quot;;
++					&quot;i&quot;: msg := msg + &quot; an&quot;;
++					&quot;o&quot;: msg := msg + &quot; an&quot;;
++					&quot;u&quot;: msg := msg + &quot; an&quot;;
++				endcase
++			endif
++		else
++			msg := msg + &quot; &quot;;
++			if( Cint(itsname[1]) == 0 )
++				case(Cstr(itsname[1]))
++					&quot;a&quot;: msg := msg + &quot; an &quot;;
++					&quot;e&quot;: msg := msg + &quot; an &quot;;
++					&quot;i&quot;: msg := msg + &quot; an &quot;;
++					&quot;o&quot;: msg := msg + &quot; an &quot;;
++					&quot;u&quot;: msg := msg + &quot; an &quot;;
++				endcase
++			endif
++		endif
++		msg := msg + itsname;
++		SendSysMessage( who, msg);
++		SetObjProperty( the_item, &quot;IDed&quot;, 1 );
++		if( GetObjProperty(the_item, &quot;charges&quot;) )
++			ncharges := CStr(GetObjProperty(the_item, &quot;charges&quot;) );
++			if( ncharges )
++				SendSysMessage(who, &quot;It has &quot; + ncharges + &quot; charges.&quot;);
++			endif
++		endif
++		if( GetObjProperty(the_item, &quot;type&quot;) == &quot;cursed&quot; )
++			if( SkillCheck(who, ATTRIBUTE_ITEM_IDENTIFICATION, 65) &gt; 0 )
++				SendSysMessage(who, &quot;* This item is cursed! *&quot;);
++			endif
++		endif
++		return 1;
++	else
++		SendSysMessage(who, &quot;I'm not sure . . .&quot;);
++		return 0;
++	endif
++
++
+ endprogram
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/systems/attributes/commands/seer/powerup.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/attributes/commands/seer/refresh.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/crafting/commands/test/muadDice.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/daynight/config/days.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/daynight/include/moonlight.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/daynight/include/weather.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/housing/commands/gm/destroyMulti.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/housing/commands/gm/makeMulti.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/loot/configs/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/loot/configs/loot-groups.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/loot/configs/loot-index.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/loot/includes/lootParser.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/loot/pkg.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/nature/config/days.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/poisonwatcher/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/poisonwatcher/config/poisons.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/poisonwatcher/include/poisons.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/endParalysis.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/paralysis.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/config/firstRun.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/config/settings.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/engines/itemFill/settings.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/engines/itemFill/spawnCycle.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/engines/npcFill/settings.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/engines/npcFill/spawnCycle.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/engines/prox/settings.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/engines/prox/spawnCycle.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/include/commonTasks.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/include/engines.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/include/events.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/include/groups.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/include/realms.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/include/regions.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/include/report.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/include/settings.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/include/spawnerUtil.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/pkg.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/start.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/systems/spawnSystem/www/spawnControl.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000637.html">[Poldistro-svn] r663 - in trunk/096/pkg/commands: building config coun gm player seer
+</A></li>
+	<LI>Next message: <A HREF="000639.html">[Poldistro-svn] r665 - in trunk/096/pkg/commands: coun helptext
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#638">[ date ]</a>
+              <a href="thread.html#638">[ thread ]</a>
+              <a href="subject.html#638">[ subject ]</a>
+              <a href="author.html#638">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

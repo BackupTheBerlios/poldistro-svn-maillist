@@ -1,0 +1,1323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r26 - in trunk/096/pkg/mobiles: . ai_brain ai_brain/config ai_brain/include ai_brain/include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r26%20-%20in%20trunk/096/pkg/mobiles%3A%20.%20ai_brain%20ai_brain/config%20ai_brain/include%20ai_brain/include/braincore&In-Reply-To=%3C200508312200.j7VM0NMt008696%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000004.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r26 - in trunk/096/pkg/mobiles: . ai_brain ai_brain/config ai_brain/include ai_brain/include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r26%20-%20in%20trunk/096/pkg/mobiles%3A%20.%20ai_brain%20ai_brain/config%20ai_brain/include%20ai_brain/include/braincore&In-Reply-To=%3C200508312200.j7VM0NMt008696%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r26 - in trunk/096/pkg/mobiles: . ai_brain ai_brain/config ai_brain/include ai_brain/include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep  1 00:00:23 CEST 2005</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000004.html">[Poldistro-svn] r27 - in trunk/096/pkg/mobiles/ai_brain: . commands commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#3">[ date ]</a>
+              <a href="thread.html#3">[ thread ]</a>
+              <a href="subject.html#3">[ subject ]</a>
+              <a href="author.html#3">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-01 00:00:23 +0200 (Thu, 01 Sep 2005)
+New Revision: 26
+
+Added:
+   trunk/096/pkg/mobiles/ai_brain/
+   trunk/096/pkg/mobiles/ai_brain/brain.src
+   trunk/096/pkg/mobiles/ai_brain/config/
+   trunk/096/pkg/mobiles/ai_brain/config/hatelist.cfg
+   trunk/096/pkg/mobiles/ai_brain/config/icp.cfg
+   trunk/096/pkg/mobiles/ai_brain/docs/
+   trunk/096/pkg/mobiles/ai_brain/include/
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/error.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+   trunk/096/pkg/mobiles/ai_brain/include/eventid.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npc_util.inc
+   trunk/096/pkg/mobiles/ai_brain/pkg.cfg
+Log:
+
+
+Added: trunk/096/pkg/mobiles/ai_brain/brain.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/brain.src	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/brain.src	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,324 @@
++/*===============================================================
++* Current Version
++* BRAIN.SRC - v5.0
++* Updated 8/31/2005 7:48AM
++*
++* NPC AI-Script to control all non-setup actions. Acts as the &quot;brain&quot;
++* and fires off external scripts that act as the &quot;nerves&quot; of the NPC.
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++use npc;
++use cfgfile;
++use polsys;
++
++include &quot;include/sysevent&quot;;
++include &quot;:ai_brain:include/eventid&quot;;
++include &quot;:ai_brain:include/npc_commands&quot;;
++include &quot;:ai_brain:include/npc_settings&quot;;
++include &quot;:ai_brain:include/npc_util&quot;;
++include &quot;:ai_brain:include/braincore/error&quot;;
++include &quot;:ai_brain:include/braincore/movement&quot;;
++include &quot;:ai_brain:include/braincore/setup&quot;;
++
++//
++// * Global variables
++//
++var npc := Self();
++var idle_ticks := 0;
++var sleep_mode := 0;
++var g_settings := dictionary;
++
++program BrainAI()
++	//Run setup steps for the npc.
++	set_critical(1);
++	InitializeSettings();
++	InitializeEvents();
++	set_critical(1);
++	StartupScripts();
++	
++	while ( npc )
++		var ev := wait_for_event(g_settings[&quot;cycle_wait&quot;]);
++		
++		if ( sleep_mode )
++			
++		ProcessEvent(ev);
++	endwhile
++endprogram
++
++function ProcessEvent(byref ev)
++	var old_priority := set_priority(25);
++	
++	case( ev.type )
++		//Check movement first, since its the event
++		//that seems to be sent most often.
++
++		// Move NPC
++		// .source	: From/To whom/what?
++		// .speed	: Walk/Run
++		// .direction	: Away/Towards
++		// .loop	: Number of times to attempt to loop the movement.
++		NPCEVENT_MOVE:
++			Movement(ev);
++		
++		// Instructs the npc to walk toward an XY coordinate.
++		// .x and .y	: From/To  coordinates
++		// .speed	: Walk/Run
++		// .direction	: Away/Towards
++		// .loop	: Number of times to attempt to loop the movement.
++		NPCEVENT_MOVE_XY:
++			MovementXY(ev);
++		
++		// Triggered when a mobile enter's the npcs &quot;reaction_range&quot;.
++		// .source	: What entered the area
++		SYSEVENT_ENTEREDAREA:
++			if ( g_settings.exists(&quot;enter_react_script&quot;) )
++				var process := 0; //GetNerve(&quot;EnterReaction&quot;);
++				if ( !process )
++					//StartNerve(&quot;EnterReaction&quot;, g_settings[&quot;enter_react_script&quot;], {me, ev, settings});
++				else
++					process.SendEvent(ev);
++				endif
++			endif
++		
++		// Triggered when a mobile leaves the npc's &quot;leave_react_range&quot;.
++		// .source	: What left the area
++		SYSEVENT_LEFTAREA:
++			if ( g_settings.exists(&quot;leave_react_script&quot;) )
++				var process := 0; //GetNerve(&quot;LeaveReaction&quot;);
++				if ( !process )
++					//StartNerve(&quot;LeaveReaction&quot;, g_settings[&quot;leave_react_script&quot;], {me, ev, settings});
++				else
++					process.SendEvent(ev);
++				endif
++			endif
++		
++		// Sent when something targets the npc to begin combat or
++		// when something has damaged the npc.
++		// .source	: What caused the damage or engaged the npc
++		// For SYSEVENT_DAMAGED
++		// .damaged	: Integer amount of damage.
++		SYSEVENT_ENGAGED:
++		SYSEVENT_DAMAGED:
++			if ( g_settings.exists(&quot;combat_script&quot;) )
++				if ( (ev.source).ISA(POLCLASS_MOBILE) )
++					var process := 0; //GetNerve(&quot;Combat&quot;);
++					if ( !process )
++						//StartNerve(&quot;Combat&quot;, g_settings[&quot;combat_script&quot;], {me, ev, settings});
++					else
++						process.SendEvent(ev);
++					endif
++				endif
++			endif
++		
++		// Instructs the npc to run its disengage nerve.
++		// When something attacking it goes out of warmode, this is run.
++		// .source	: What was targetting this npc but has now left combat mode.
++		SYSEVENT_DISENGAGED:
++			if ( g_settings.exists(&quot;disengage_script&quot;) )
++				var process := 0; //GetNerve(&quot;Disengage&quot;);
++				if ( !process )
++					//StartNerve(&quot;Disengage&quot;, g_settings[&quot;disengage_script&quot;], {me, ev, settings});
++				else
++					process.SendEvent(ev);
++				endif
++			endif
++		
++		// When speech is made by a player, this nerve is used.
++		// Note: The NPC function Say() doesnt yet pass around the speech event.
++		// .source	: Where the speech originated.
++		// .text	: The actual speech
++		// extra 095 stuff
++		// .uc_text	: a &quot;Unicode array&quot; of 2-byte &quot;Big Endian&quot; integers.
++		// .langcode	: a 3-character, uppercase language code.
++		// .texttype	: &quot;yell&quot;, &quot;whisper&quot;, &quot;emote&quot;, &quot;default&quot;.
++		SYSEVENT_SPEECH:
++			if( g_settings.exists(&quot;listen_script&quot;) )
++				var process := 0; //GetNerve(&quot;Speech&quot;);
++				if ( !process )
++					//StartNerve(&quot;Speech&quot;, g_settings[&quot;listen_script&quot;], {me, ev, settings});
++				else
++					process.SendEvent(ev);
++				endif
++			endif
++		
++		// Instructs the npc to run its double click script.
++		// Run when the npc is double clicked by a player.
++		// .source	: What sent the double click
++		SYSEVENT_DOUBLECLICKED:
++			if ( g_settings.exists(&quot;dbl_click_script&quot;) )
++				if ( Distance(ev.source, npc) &lt;= g_settings[&quot;dbl_click_range&quot;] )
++					var process := 0; //GetNerve(&quot;DblClick&quot;);
++					if ( !process )
++						//StartNerve(&quot;DblClick&quot;, g_settings[&quot;dbl_click_script&quot;], {npc, ev, settings});
++					else
++						process.SendEvent(ev);
++					endif
++				endif
++			endif
++			
++		// The NPC is a merchant, and has sold or purchased something.
++		// Both sold and bought events are sent to this same nerve.
++		// The best thing to do is fork it into two functions inside the
++		// nerve script to handle each event type.
++		// MERCHANT_SOLD means the merchant sold an item to the player.
++		// MERCHANT_BOUGHT means the merchatn bought something from the player.
++		//
++		// .source	: Who the merchant is selling to/buying from.
++		// .amount	: Gold amount for the sale/purchase.
++		SYSEVENT_MERCHANT_SOLD:
++		SYSEVENT_MERCHANT_BOUGHT:
++			if ( g_settings.exists(&quot;merchant_script&quot;) )
++				var process := 0; //GetNerve(&quot;Merchant&quot;);
++				if ( !process )
++					//StartNerve(&quot;Merchant&quot;, g_settings[&quot;merchant_script&quot;], {npc, ev, settings});
++				else
++					process.SendEvent(ev);
++				endif
++			endif
++		
++		// Someone has dragged an item onto the npc.
++		// .source	: What dragged the item over the npc.
++		// .item	: The item being given to the npc.
++		SYSEVENT_ITEM_GIVEN:
++			if ( g_settings.exists(&quot;give_item_script&quot;) )
++				var process := 0; //GetNerve(&quot;GiveItem&quot;);
++				if ( !process )
++					//StartNerve(&quot;GiveItem&quot;, g_settings[&quot;give_item_script&quot;], {npc, ev, settings});
++				else
++					process.SendEvent(ev);
++				endif
++			endif
++				
++		// Instructs the npc to run its flee script.
++		// .source	: What to flee from.
++		NPCEVENT_FLEE:
++			if ( g_settings.exists(&quot;flee_script&quot;) )
++				var process := 0; //GetNerve(&quot;Flee&quot;);
++				if ( !process )
++					//StartNerve(&quot;Flee&quot;, g_settings[&quot;flee_script&quot;], {npc, ev, settings});
++				else
++					process.SendEvent(ev);
++				endif
++			endif
++			
++		// The npc has killed its opponent and
++		// the combat script has sent the winfight event
++		// .source	: Defeated foe!
++		NPCEVENT_WINFIGHT:
++			if ( g_settings.exists(&quot;win_script&quot;) )
++				var process := 0; //GetNerve(&quot;Win&quot;);
++				if ( !process )
++					//StartNerve(&quot;Win&quot;, g_settings[&quot;win_script&quot;], {npc, ev, settings});
++				else
++					process.SendEvent(ev);
++				endif
++			endif
++			
++		//A nerve has instructed the brain to kill another nerve or its self.
++		// .name	: Nerve name
++		NPCEVENT_ENDNERVE:
++			//KillNerve(ev.name);
++			
++		//A nerve has instructed the brain to start another nerve.
++		// .name	: Nerve name
++		// .script	: Nerve script
++		// .data	: array of goodies
++		NPCEVENT_STARTNERVE:
++			//StartNerve(ev.name, ev.script, ev.data);
++		
++		// Set a new opponent!
++		// NOTE: Auto-sets Warmode=1!
++		// .source	: Opponent (mobile)
++		NPCEVENT_OPPONENT:
++			SetOpponent(ev.source);
++		
++		// Say something
++		// .text	: Speech content
++		NPCEVENT_SPEAK:
++			say(ev.text);
++		
++		// Turn toward something
++		// .source	: Target (anything)
++		// .direction	: NETURN_TOWARD or NETURN_AWAY
++		NPCEVENT_TURN:
++			case (ev.direction)
++				NETURN_TOWARD:
++					TurnToward(ev.source);
++				NETURN_AWAY:
++					TurnAwayFrom(ev.source);
++			endcase
++		
++		// Face towards or away from XY coordinates.
++		// .x and .y replace .source for TURN_XY
++		// .direction	: NETURN_TOWARD or NETURN_AWAY
++		NPCEVENT_TURN_XY:
++			case (ev.direction)
++				NETURN_TOWARD:
++					TurnTowardLocation(ev.x, ev.y);
++				NETURN_AWAY:
++					TurnAwayFromLocation(ev.x, ev.y);
++			endcase
++		
++		// Set WarMode state
++		// NOTE: Auto-clears Opponent if turned off!
++		// .value : 0=Off. 1=On.
++		NPCEVENT_WARMODE:
++			SetWarmode( ev.value );
++		
++		// Wander somewhere
++		NPCEVENT_WANDER:
++	   		Wander();
++	   	
++	   	// Force the npc to go into its sleep mode.
++	   	// If the next event in the queue tells it to wake up,
++	   	// this command will be useless.
++	   	NPCEVENT_SLEEP:
++	   		//idle_ticks := g_settings[&quot;idle_ticks&quot;]+1;
++	   	
++	   	// Force the npc out of sleep mode.
++	   	NPCEVENT_WAKEUP:
++	   		//sleep_mode := 0;
++	   		//idle_ticks := 0;
++	   		
++	   	// Forward an event from one nerve to another.
++	   	// .NerveName	: The name of the nerve to forward the event to.
++	   	// .mask	: Type of event for the nerve to receive.
++	   	// .data	: Data to forward to the nerve.
++	   	NPCEVENT_FWDNERVE:
++	   		var process := 0; //GetNerve(ev.NerveName);
++			if ( process )
++				process.SendEvent(ev);
++			endif
++			
++		// If the event .type is unknown, send it to the
++		// npc's &quot;virtual&quot; nerve if it has one.
++	   	default:
++	   		if ( g_settings.exists(&quot;virtual_nerve&quot;) )
++	   			var process := 0; //GetNerve(&quot;Virtual&quot;);
++				if ( !process )
++					//StartNerve(&quot;Virtual&quot;, g_g_settings[&quot;virtual_nerve&quot;], {npc, ev, settings});
++				else
++					process.SendEvent(ev);
++				endif
++			endif
++	   endcase
++
++	   // If the event has a .process, reply to it by sending
++	   // an event with .type being the NPCEVENT_DONE constant
++	   // and telling it what event it sent that has finished
++	   // being processed.
++	   if ( ev.process )
++	   	var temp := struct;
++	   	temp.+type := NPCEVENT_DONE;
++	   	temp.+source := ev.type;
++	   	(ev.process).SendEvent(temp);
++	   endif
++	   
++	   set_priority(old_priority);
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/ai_brain/config/hatelist.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/config/hatelist.cfg	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/config/hatelist.cfg	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,10 @@
++HateList Dog
++{
++	Hates	cat
++	Hates	bird
++	Hates	chicken
++}
++
++HateList Wolf
++{
++	Hates	C
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/ai_brain/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/config/icp.cfg	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/config/icp.cfg	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,30 @@
++ICP Register
++{
++	Name		Brain AI - Krane Edition
++	Version		5.0
++	Description	Advanced artificial intelligence system that allows NPCs to perform multiple actions at the same time. [P]
++	Description	The name gives credit to the Ninja Turtle's villian [P] 
++	Description	sometimes the bad guys deserve respect because of all the crap they put up with.
++	
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
++	
++	Maintainer	Austin
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
++	
++	//Script	cmdlevel path
++			
++	//TextCmd	cmdlevel path
++	TextCmd		3 :control:textcmd/gm/attack
++	TextCmd		3 :control:textcmd/gm/cmassacre
++	TextCmd		3 :control:textcmd/gm/createnpc
++	TextCmd		3 :control:textcmd/gm/makeswarm
++	TextCmd		3 :control:textcmd/gm/massacre
++	TextCmd		3 :control:textcmd/gm/npcsleep
++	TextCmd		3 :control:textcmd/gm/npcwipe
++	TextCmd		3 :control:textcmd/gm/puttosleep
++	TextCmd		3 :control:textcmd/gm/removenpc
++	TextCmd		3 :control:textcmd/gm/resetnpcs
++	TextCmd		3 :control:textcmd/gm/restartnpc
++	TextCmd		3 :control:textcmd/gm/sendevent
++}
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/braincore/error.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/error.inc	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/error.inc	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,66 @@
++/*===============================================================
++* Current Version
++* ERROR.INC - v1.0
++* Updated 8/31/2005 5:08AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++
++/*
++ * FatalError(errmsg)
++ *
++ * Purpose
++ * Logs an error message and then kills the npc.
++ *
++ * Parameters
++ * errmsg:	Error message - reason for removing the npc.
++ *
++ * Return value
++ * Always returns 1
++ *
++ */
++function FatalError(errmsg)
++	set_critical(1);
++	
++	PrintTextAbove(npc, errmsg, _DEFAULT_TEXT_FONT, 32);
++	
++	BrainSysLog(errmsg);
++	
++	npc.cmdlevel := 1;
++	npc.concealed := 1;
++	
++	npc.disable(&quot;invul&quot;);
++	SetObjProperty(npc, &quot;GuardKill&quot;, 1);
++	ApplyRawDamage(npc, GetVitalMaximumValue(npc, &quot;Hits&quot;));
++	
++	set_critical(0);
++	
++	return 1;
++endfunction
++
++/*
++ * FatalError(errmsg)
++ *
++ * Purpose
++ * Logs an error message.
++ *
++ * Parameters
++ * errmsg:	Error message
++ *
++ * Return value
++ * Always returns 1
++ *
++ */
++function BrainSysLog( errmsg )
++	SysLog(&quot;NPC Template: &quot; + npc.npctemplate);
++	SysLog(&quot;NPC Name    : &quot; + npc.name);
++	SysLog(errmsg );
++	SysLog(&quot;------------&quot;);
++	
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,152 @@
++/*===============================================================
++* Current Version
++* MOVEMENT.INC - v1.0
++* Updated 8/30/2005 6:52AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++use npc;
++
++/*
++ * Movement(ev)
++ *
++ * Purpose
++ * Handles NPC movenpcnt to/from an object for the brain.
++ *
++ * Parameters
++ * ev:	Strucuture containing event information.
++ *
++ * Return value
++ * Always returns 1
++ *
++ */
++function Movement(ev)
++	var old_pri := set_priority(50);
++	
++	case ( ev.speed )
++		NEMOVE_WALK:
++			case ( ev.direction )
++				NEMOVE_AWAY:
++					repeat
++						WalkAwayFrom(ev.source);
++						sleepms(3);
++					until ( !MoveLoopCheck(ev) );
++				NEMOVE_TOWARD:
++					repeat
++						WalkToward(ev.source);
++						sleepms(3);
++					until ( !MoveLoopCheck(ev) );
++			endcase	
++		NEMOVE_RUN:
++			case( ev.direction )
++				NEMOVE_AWAY:
++					repeat
++						RunAWayFrom(ev.source);
++						sleepms(3);
++					until ( !MoveLoopCheck(ev) );	
++				NEMOVE_TOWARD:
++					repeat
++						RunToward(ev.source);
++						sleepms(3);
++					until ( !MoveLoopCheck(ev) );
++			endcase
++	endcase
++	
++	set_priority(old_pri);
++	
++	return 1;
++endfunction
++
++/*
++ * MovementXY(ev)
++ *
++ * Purpose
++ * Handles NPC movement to/from a coordinate for the brain.
++ *
++ * Parameters
++ * ev:	Strucuture containing event information.
++ *
++ * Return value
++ * Always returns 1
++ *
++ */
++function MovementXY(ev)
++	var old_pri := set_priority(50);
++	
++	case ( ev.speed )
++		NEMOVE_WALK:
++			case ( ev.direction )
++				NEMOVE_AWAY:
++					repeat
++						WalkAwayFromLocation(ev.x, ev.y);
++						sleepms(3);
++					until ( !MoveLoopCheck(ev) );
++				NEMOVE_TOWARD:
++					repeat
++						WalkTowardLocation(ev.x, ev.y);
++						sleepms(3);
++					until ( !MoveLoopCheck(ev) );
++			endcase	
++		NEMOVE_RUN:
++			case( ev.direction )
++				NEMOVE_AWAY:
++					repeat
++						RunAwayFromLocation(ev.x, ev.y);
++						sleepms(3);
++					until ( !MoveLoopCheck(ev) );	
++				NEMOVE_TOWARD:
++					repeat
++						RunTowardLocation(ev.x, ev.y);
++						sleepms(3);
++					until ( !MoveLoopCheck(ev) );
++			endcase
++	endcase
++	
++	set_priority(old_pri);
++	
++	return 1;
++endfunction
++
++/*
++ * MoveLoop(ev)
++ *
++ * Purpose
++ * Determines if the npc should continue trying to move
++ * or if something else needs the brain's attention.
++ *
++ * Parameters
++ * ev:	Strucuture containing event information.
++ *
++ * Return value
++ * Returns 1 if the npc may continue moving.
++ *
++ */
++function MoveLoopCheck(byref ev)
++	if ( Events_Waiting() )
++		return 0;
++	elseif ( ev.loop &lt; 1 )
++		return 0;
++	elseif ( npc.frozen )
++		return 0;
++	elseif ( npc.paralyzed )
++		return 0;
++	endif
++	if ( ev.source )
++		// Dont need to worry about distance in an XY movement check. 
++		// It wont run in circles around XY coordinates like it does an object.
++		if ( ev.direction == NEMOVE_TOWARD )
++			if ( Distance(npc, ev.source) &lt;= 1 )
++				return 0;
++			endif
++		endif
++	endif
++	
++	ev.loop := ev.loop-1;
++	
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,130 @@
++/*===============================================================
++* Current Version
++* SETUP.INC - v1.0
++* Updated 8/31/2005 4:54AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++/*
++ * InitializeSettings()
++ * 
++ * Purpose
++ * Initializes g_settings in the brain.
++ *
++ * Parameters
++ *
++ * Return value
++ * Always returns 1
++ *
++ */
++function InitializeSettings()
++	g_settings := NPC_LoadCfgDefaults(npc.npctemplate);
++	g_settings := NPC_LoadCustomSettings(npc, g_settings);
++	g_settings := NPC_GetDefaultSettings(g_settings);
++	
++	return 1;
++endfunction
++
++/*
++ * InitializeEvents()
++ *
++ * Purpose
++ * Enables system events the core sends based on g_settings
++ *
++ * Parameters
++ *
++ * Return value
++ * Always returns 1
++ *
++ */
++function InitializeEvents()
++	//
++	// * Events that use the core 'speech' range.
++	//
++	if ( g_settings.exists(&quot;listen_script&quot;) )
++		EnableEvents(SYSEVENT_SPEECH, g_settings[&quot;listen_range&quot;]);
++	endif
++	if ( g_settings.exists(&quot;ghost_listen_script&quot;) )
++		EnableEvents(SYSEVENT_GHOST_SPEECH, g_settings[&quot;listen_range&quot;]);
++	endif
++	
++	//
++	// * Events that use the core 'area size' range.
++	//
++	if ( g_settings.exists(&quot;enter_react_script&quot;) )
++		EnableEvents(SYSEVENT_ENTEREDAREA, g_settings[&quot;area_size&quot;]);
++	endif
++	if ( g_settings.exists(&quot;leave_react_script&quot;) )
++		EnableEvents(SYSEVENT_LEFTAREA, g_settings[&quot;area_size&quot;]);
++	endif
++	if ( g_settings.exists(&quot;gone_criminal_script&quot;) )
++		EnableEvents(SYSEVENT_GONE_CRIMINAL, g_settings[&quot;area_size&quot;]);
++	endif
++	
++	//
++	// * Events that do not have a core range check.
++	//
++	if ( g_settings.exists(&quot;dbl_click_script&quot;) )
++		EnableEvents(SYSEVENT_DOUBLECLICKED, g_settings[&quot;dbl_click_range&quot;]);
++	endif
++	if ( g_settings.exists(&quot;given_item_script&quot;) )
++		EnableEvents(SYSEVENT_ITEM_GIVEN);
++	endif
++	if ( g_settings.exists(&quot;disengage_script&quot;) )
++		EnableEvents(SYSEVENT_DISENGAGED);
++	endif
++	if ( g_settings.exists(&quot;merchant_script&quot;) )
++		EnableEvents(SYSEVENT_MERCHANT_BOUGHT);
++		EnableEvents(SYSEVENT_MERCHANT_SOLD);
++	endif
++	if ( g_settings.exists(&quot;combat_script&quot;) )
++		EnableEvents(SYSEVENT_ENGAGED+SYSEVENT_DAMAGED);
++	endif
++	
++	return 1;
++endfunction
++
++/*
++ * StartupScripts()
++ *
++ * Purpose
++ * Runs the restart_script or init_script. Sets up the npc_info cprop.
++ *
++ * Parameters
++ *
++ * Return value
++ * Always returns 1
++ *
++ */
++function StartupScripts()
++	if ( GetObjProperty(npc, &quot;npc_info&quot;) )
++		//This can only happen if restart() was done on the npc or when POL starts up.
++		
++		SetWarmode(0);
++		//StopNerves();
++		
++		if ( g_settings.exists(&quot;restart_script&quot;) )
++			var restart_script := Run_Script_To_Completion(g_settings[&quot;restart_script&quot;], {npc, g_settings});
++			if ( restart_script.errortext )
++				//KillMe(&quot;Restart script failed:&quot;+restart_script.errortext);
++				return 0;
++			endif
++		endif
++	else
++		var npc_info := struct{&quot;npctemplate&quot;:=npc.npctemplate, &quot;serial&quot;:=npc.serial};
++		SetObjProperty(npc, &quot;npc_info&quot;, npc_info);
++		
++		if ( g_settings.exists(&quot;init_script&quot;) )
++			var init_script := Run_Script_To_Completion(g_settings[&quot;init_script&quot;], {npc, g_settings});
++			if ( init_script.errortext )
++				//KillMe(&quot;Init script failed:&quot;+init_script.errortext);
++				return 0;
++			endif
++		endif
++	endif
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/eventid.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/eventid.inc	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/include/eventid.inc	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,72 @@
++/*===============================================================
++* Current Version
++* EVENTID.INC - v1.0
++* Updated 8/31/2005 5:50AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++//
++// * Custom brain AI event IDs
++//
++const NPCEVENT_MOVE				:= 0xA00003;	// Has NEMOVE_* helper constants
++const NPCEVENT_OPPONENT				:= 0xA00004;	// Set New Opponent (.source)
++const NPCEVENT_SPEAK				:= 0xA00005;	// Speak (.text)
++const NPCEVENT_TURN				:= 0xA00006;	// Turn towards or away from an object
++const NPCEVENT_WARMODE				:= 0xA00007;	// Set WarMode state (.value=0|1)
++const NPCEVENT_WINFIGHT				:= 0xA00008;	// NPC killed '.source' mobile
++const NPCEVENT_FLEE				:= 0xA00009;	// Tell the NPC to flee
++const NPCEVENT_ATTACK				:= 0xA0000A;	// Tell the npc to attack something
++const NPCEVENT_MOVE_XY				:= 0xA0000B;	// Tell the NPC to move to coordinates
++const NPCEVENT_TURN_XY				:= 0xA0000C;	// Tell the NPC to turn towards coordinates
++const NPCEVENT_WANDER				:= 0xA0000D;	// Tell the npc to wander
++
++const NPCEVENT_ENDNERVE				:= 0xA0000F;	// Tell the brain to stop a nerve.
++const NPCEVENT_STARTNERVE			:= 0xA00010;	// Tell the brain to start a nerve.
++const NPCEVENT_DONE				:= 0xA00011;	// Brain tells a nerve that its instruction is done.
++
++const NPCEVENT_SLEEP				:= 0xA00012;	// Tell the brain to go to sleep.
++const NPCEVENT_WAKEUP				:= 0xA00013;	// Tell the brain to wake up.
++
++const NPCEVENT_FWDNERVE				:= 0xA00014;	// Tell the brain to forward an event to a nerve.
++
++//
++// * NPCEVENT_MOVE helper constants (.source = object)
++//
++const NEMOVE_WALK				:= 1;	// .speed (default)
++const NEMOVE_RUN				:= 2;	// .speed
++const NEMOVE_TOWARD 				:= 1;	// .direction (default)
++const NEMOVE_AWAY				:= 2;	// .direction
++
++//
++// * NE_TURN helper constants
++//
++const NETURN_TOWARD				:= 1;
++const NETURN_AWAY				:= 2;
++
++//
++// * AWAKEN CONSTANTS
++// 
++const WAKEUP					:= 0;
++const NOWAKE					:= 1;
++
++//
++// * CLEAR THOUGHT CONSTANTS
++//
++const CLR_BRAIN					:= 1;
++const CLR_NERVE					:= 2;
++const CLR_BOTH					:= 3;
++
++//
++//* NPC.EM constants (only brain can access npc.em)
++//
++// Constants for texttype flags in the AI_Speak() function
++const SPEAK_TEXTTYPE_DEFAULT			:= &quot;default&quot;;
++const SPEAK_TEXTTYPE_WHISPER			:= &quot;whisper&quot;;
++const SPEAK_TEXTTYPE_YELL			:= &quot;yell&quot;;
++
++// Constants for doevent flag in AI_Speak() function
++const SPEAK_DOEVENT_DISABLE			:= 0x0;
++const SPEAK_DOEVENT_ENABLE			:= 0x1;
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,202 @@
++/*===============================================================
++* Current Version
++* NPC_COMMANDS.INC - v1.0
++* Updated 8/31/2005 6:38AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++
++include &quot;include/sysevent&quot;;
++include &quot;:ai_brain:include/eventid&quot;;
++
++function AI_ClearThoughts(mobile, flags)
++	var brain	:= flags &amp; CLR_BRAIN;
++	var nerve	:= flags &amp; CLR_NERVE;
++	var both	:= flags &amp; CLR_BOTH;
++	
++	if ( both || brain )
++		brain := mobile.process;
++		brain.clear_event_queue();
++	endif
++	
++	if ( both || nerve )
++		nerve := GetProcess(GetPid());
++		nerve.clear_event_queue();
++	endif
++endfunction
++
++function AI_Move(mobile, object, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_MOVE;
++	ev.+source	:= object;
++	ev.+direction	:= to_from;
++	ev.+speed	:= speed;
++	ev.+WakeUp	:= no_wake;
++	ev.+loop	:= loop;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_MoveXY(mobile, x, y, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_MOVE_XY;
++	ev.+x		:= x;
++	ev.+y		:= y;
++	ev.+direction	:= to_from;
++	ev.+speed	:= speed;
++	ev.+WakeUp	:= no_wake;
++	ev.+loop	:= loop;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_Wander(mobile, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_WANDER;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_Turn(mobile, turn_to, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_TURN;
++	ev.+source	:= turn_to;
++	ev.+direction	:= direction;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_TurnXY(mobile, x, y, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_TURN_XY;
++	ev.+x		:= x;
++	ev.+y		:= y;
++	ev.+direction	:= direction;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_SetOpponent(mobile, opponent, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_OPPONENT;
++	ev.+source	:= opponent;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_Warmode(mobile, mode:=1, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_WARMODE;
++	ev.+value	:= mode;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_Speak(mobile, text:=&quot;!?&quot;, text_type:=SPEAK_TEXTTYPE_DEFAULT, do_event:=SPEAK_DOEVENT_DISABLE, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_SPEAK;
++	ev.+text	:= text;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_StartNerve(mobile, nerve_name, script_name, data, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_STARTNERVE;
++	ev.+name	:= nerve_name;
++	ev.+script	:= script_name;
++	ev.+data	:= data;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_EndNerve(mobile, nerve_name, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_ENDNERVE;
++	ev.+name	:= nerve_name;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_WinFight(mobile, opponent, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_WINFIGHT;
++	ev.+source	:= opponent;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_Attack(mobile, opponent, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= SYSEVENT_ENGAGED;
++	ev.+source	:= opponent;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_Flee(mobile, opponent, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_FLEE;
++	ev.+source	:= opponent;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_FowardEvent(mobile, nerve_name, mask, data, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_FWDNERVE;
++	ev.+NerveName	:= nerve_name;
++	ev.+mask	:= mask;
++	ev.+data	:= data;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_Sleep(mobile)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_SLEEP;
++	ev.+WakeUp	:= NOWAKE;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
++
++function AI_WakeUp(mobile)
++	var ev		:= struct;
++	ev.+type	:= NPCEVENT_WAKEUP;
++	ev.+WakeUp	:= WAKEUP;
++	ev.+process	:= GetProcess(GetPid());
++	
++	SendEvent(mobile, ev);
++endfunction
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,126 @@
++/*===============================================================
++* Current Version
++* NPC_SETTINGS.INC - v1.0
++* Updated 8/30/2005 7:28AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:ai_brain:include/npc_util&quot;;
++
++/*
++ * NPC_LoadCfgDefaults(template_name)
++ *
++ * Purpose
++ * Loads settings for a template from npcdesc.cfg
++ *
++ * Parameters
++ * template:	Name of the npc template to load settings for.
++ *
++ * Return value
++ * Returns a dictionary
++ *
++ */
++function NPC_LoadCfgDefaults(template)
++	if ( !template.package )
++		template := NPC_ParseTemplateName(template);
++	endif
++	
++	var npc_cfg := ReadConfigFile(template.package+&quot;npcdesc&quot;);
++	var npc_elem := npc_cfg[template];
++	
++	var settings := dictionary;
++	/*
++	 * NPC Settings - Step 1 - npcdesc.cfg defaults.
++	 * Reads in the AISetting lines from the npcdesc.cfg elem.
++	 * Values are stored in packed form.
++	 */
++	foreach setting in GetConfigStringArray(npc_elem, &quot;AISetting&quot;)
++		setting := SplitWords(setting);
++		var key := setting[1];
++		var value := setting[2];
++
++		settings[key] := UnPack(value);
++
++		sleepms(2);
++	endforeach
++
++	return settings;
++endfunction
++
++/*
++ * NPC_LoadCustomSettings(npc_ref, settings:=0)
++ * 
++ * Purpose
++ * Loads custom settings that are set on a specific npc.
++ *
++ * Parameters
++ * npc_ref:		Mobile reference
++ * settings:	Optional parameter
++ *		Dictionary read in from LoadNPCCfgDefaults()
++ *		Existing keys will be overwritten with any custom settings.
++ * 
++ * Return value
++ * Returns a dictionary
++ *		
++ */
++function NPC_LoadCustomSettings(npc_ref, settings:=0)
++	if ( Lower(TypeOf(settings)) != &quot;dictionary&quot; )
++		settings := dictionary;
++	endif
++	
++	var cstm_settings := GetObjProperty(npc_ref, &quot;AI_Settings&quot;);
++	foreach key in (cstm_settings.keys())
++		var value := cstm_settings[key];
++		if ( value == error )
++			settings.erase(key);
++		else
++			settings[key] := value;
++		endif
++		
++		sleepms(2);
++	endforeach
++	
++	return settings;
++endfunction
++
++/*
++ * NPC_DefaultSettings(settings:=0)
++ *
++ * Purpose
++ * Checks the settings dictionary to make sure required values are set.
++ * If a dictionary is passed, it will check it for required parameters.
++ * If they are not present, they will be set. 
++ * Nothing will be overwritten in this function.
++ *
++ * Parameters
++ * settings:	Optional parameter
++ *		Dictionary read in from NPC_GetDefaultSettings()
++ *
++ * Return value
++ * Returns a dictionary 
++ *
++ */
++function NPC_GetDefaultSettings(settings:=0)
++	if ( Lower(TypeOf(settings)) != &quot;dictionary&quot; )
++		settings := dictionary;
++	endif
++	
++	if ( CInt(settings.exists(&quot;cycle_wait&quot;)) &lt;= 0 )
++		settings[&quot;cycle_wait&quot;] := 10;
++	endif
++	if ( CInt(settings.exists(&quot;sleep_time&quot;)) &lt;= 0 )
++		settings[&quot;sleep_time&quot;] := 1024;
++	endif
++	if ( CInt(settings.exists(&quot;idle_ticks&quot;)) &lt;= 0 )
++		settings[&quot;idle_ticks&quot;] := 5;
++	endif
++		
++	return settings;
++endfunction
+
+Added: trunk/096/pkg/mobiles/ai_brain/include/npc_util.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_util.inc	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_util.inc	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,45 @@
++/*===============================================================
++* Current Version
++* NPC_UTIL.INC - v1.0
++* Updated 8/31/2005 4:23AM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++/*
++ * NPC_ParseTemplateName(template_name)
++ *
++ * Purpose
++ * Finds the appropriate npcdesc.cfg to load.
++ * This enables npcs to be placed in packages and not just the ::npcdesc file.
++ * ReadConfigFile(&quot;:*:npcdesc&quot;) does not work in this case because packaged npcs
++ * have the package name at the begining of their .npctemplate member. Reading the
++ * specific config file - helps to avoid possible elem name collisions.
++ *
++ * Parameters
++ * template_name:	Name of the npc template to parse
++ *
++ * Return value
++ * Returns struct .package .template
++ *
++ */
++function NPC_ParseTemplateName(template_name)
++	//Find positions of &quot;:&quot; characters
++	var colon_a := Find(template_name, &quot;:&quot;, 1);
++	var colon_b := Find(template_name, &quot;:&quot;, 2);
++
++	var parsed := struct{&quot;package&quot;, &quot;template&quot;};
++
++	if ( !colon_a || !colon_b )
++		//Not a complete package name - use default npcdesc.cfg
++		parsed.package := &quot;::&quot;;
++		parsed.template := template_name;
++	else
++		parsed.package := template_name[colon_a, colon_b];
++		parsed.template := template_name[colon_b+1, Len(template_name)];
++	endif
++
++	return parsed;
++endfunction
+
+Added: trunk/096/pkg/mobiles/ai_brain/pkg.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/pkg.cfg	2005-08-31 21:40:47 UTC (rev 25)
++++ trunk/096/pkg/mobiles/ai_brain/pkg.cfg	2005-08-31 22:00:23 UTC (rev 26)
+@@ -0,0 +1,14 @@
++Enabled		1
++Name		ai_brain
++
++Version		5.0
++
++CoreRequired	96
++Requires	gumps 1.5
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
++Maintainer	Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
++
++#Conflicts none
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000004.html">[Poldistro-svn] r27 - in trunk/096/pkg/mobiles/ai_brain: . commands commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#3">[ date ]</a>
+              <a href="thread.html#3">[ thread ]</a>
+              <a href="subject.html#3">[ subject ]</a>
+              <a href="author.html#3">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

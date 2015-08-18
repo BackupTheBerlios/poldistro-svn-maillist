@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r958 - trunk/096/pkg/items/keys/key
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r958%20-%20trunk/096/pkg/items/keys/key&In-Reply-To=%3C200511131235.jADCZEV4005292%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000931.html">
+   <LINK REL="Next"  HREF="000933.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r958 - trunk/096/pkg/items/keys/key</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r958%20-%20trunk/096/pkg/items/keys/key&In-Reply-To=%3C200511131235.jADCZEV4005292%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r958 - trunk/096/pkg/items/keys/key">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 13 13:35:14 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000931.html">[Poldistro-svn] r957 - trunk/096/scripts
+</A></li>
+        <LI>Next message: <A HREF="000933.html">[Poldistro-svn] r959 - in trunk/096/pkg/mobiles/brainAI: . include include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#932">[ date ]</a>
+              <a href="thread.html#932">[ thread ]</a>
+              <a href="subject.html#932">[ subject ]</a>
+              <a href="author.html#932">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-13 13:35:12 +0100 (Sun, 13 Nov 2005)
+New Revision: 958
+
+Modified:
+   trunk/096/pkg/items/keys/key/use.src
+Log:
+Added support for key copying.
+
+Modified: trunk/096/pkg/items/keys/key/use.src
+===================================================================
+--- trunk/096/pkg/items/keys/key/use.src	2005-11-13 11:43:44 UTC (rev 957)
++++ trunk/096/pkg/items/keys/key/use.src	2005-11-13 12:35:12 UTC (rev 958)
+@@ -7,6 +7,7 @@
+ 
+ include &quot;:keys:key&quot;;
+ include &quot;:gumps:requestgump&quot;;
++include &quot;include/string&quot;;
+ 
+ program UseKey(who, key)
+ 	SendSysMessage(who, &quot;What do you want to use this on?&quot;);
+@@ -18,6 +19,9 @@
+ 	elseif ( targ == key )
+ 		RenameKey(who, key);
+ 		return 1;
++	elseif ( targ.IsKey() )
++		CopyKey(who, key, targ);
++		return 1;
+ 	elseif ( !KP_IsLockable(targ) )
+ 		SendSysMessage(who, &quot;That is not lockable.&quot;);
+ 		return 0;
+@@ -33,12 +37,38 @@
+ endprogram
+ 
+ function RenameKey(who, key)
+-	var new_name := RequestGump(who, &quot;Enter a name for this key&quot;, &quot;&quot;, key.desc);
++	var new_name := RequestGump(who, &quot;Enter a name for this key&quot;, &quot;Maximum length is 20 characters.&quot;, key.desc);
++	var name_len := Len(new_name);
+ 	
+-	if ( new_name )
++	if ( name_len &gt; 20 )
++		SendSysMessage(who, &quot;Name is too long.&quot;);
++		return 0;
++	elseif ( name_len &lt; 1 )
++		SendSysMessage(who, &quot;Name is too short.&quot;);
++		return 0;
++	elseif ( new_name )
+ 		SetName(key, new_name);
+-	else
+-		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 1;
++	endif
++endfunction
++
++function CopyKey(who, key, targ)
++	if ( !(targ in EnumerateItemsInContainer(who.backpack)) )
++		SendSysMessage(who, &quot;The destination key must be in your backpack.&quot;);
+ 		return 0;
+ 	endif
++	
++	var key_id := key.GetLockId();
++	if ( !key_id )
++		SendSysMessage(who, &quot;You can not copy a blank key.&quot;);
++		return 0;
++	elseif ( targ.GetLockId() )
++		SendSysMessage(who, &quot;The destination key is not blank.&quot;);
++		return 0;
++	endif
++	
++	targ.SetLockId(key_id);
++	SendSysMessage(who, &quot;Done copying keys.&quot;);
++	
++	return 1;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000931.html">[Poldistro-svn] r957 - trunk/096/scripts
+</A></li>
+	<LI>Next message: <A HREF="000933.html">[Poldistro-svn] r959 - in trunk/096/pkg/mobiles/brainAI: . include include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#932">[ date ]</a>
+              <a href="thread.html#932">[ thread ]</a>
+              <a href="subject.html#932">[ subject ]</a>
+              <a href="author.html#932">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

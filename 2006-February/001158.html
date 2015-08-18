@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1187 - trunk/096/pkg/items/doors/door
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1187%20-%20trunk/096/pkg/items/doors/door&In-Reply-To=%3C200602102048.k1AKmB7l026216%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001157.html">
+   <LINK REL="Next"  HREF="001159.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1187 - trunk/096/pkg/items/doors/door</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1187%20-%20trunk/096/pkg/items/doors/door&In-Reply-To=%3C200602102048.k1AKmB7l026216%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1187 - trunk/096/pkg/items/doors/door">austin at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 21:48:11 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001157.html">[Poldistro-svn] r1186 - trunk/096/pkg/items/keys/keyring
+</A></li>
+        <LI>Next message: <A HREF="001159.html">[Poldistro-svn] r1188 - trunk/096/pkg/items/doors/door
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1158">[ date ]</a>
+              <a href="thread.html#1158">[ thread ]</a>
+              <a href="subject.html#1158">[ subject ]</a>
+              <a href="author.html#1158">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-10 21:48:08 +0100 (Fri, 10 Feb 2006)
+New Revision: 1187
+
+Modified:
+   trunk/096/pkg/items/doors/door/method.src
+   trunk/096/pkg/items/doors/door/use.src
+Log:
+Uses the ymod and xmod to possibly work better as a flow control (to see if the user is on the 'inside')
+
+Modified: trunk/096/pkg/items/doors/door/method.src
+===================================================================
+--- trunk/096/pkg/items/doors/door/method.src	2006-02-10 19:42:11 UTC (rev 1186)
++++ trunk/096/pkg/items/doors/door/method.src	2006-02-10 20:48:08 UTC (rev 1187)
+@@ -66,9 +66,26 @@
+ 	return CInt(GetObjProperty(door, &quot;Open&quot;));
+ endfunction
+ 
+-exported function Occupied(x, y, z)
+-	// Used to prevent a door slamming closed if a character is in the way.
+-	return ListMobilesNearLocationEX(x, y, z, 0, LISTEX_FLAG_HIDDEN+LISTEX_FLAG_NORMAL);
++exported function IsInside(door, object)
++	//Purpose is to make doors on a multi be unlocked from the inside.
++	if ( !door.multi )
++		return error{&quot;errortext&quot;:=&quot;Door is not on a multi.&quot;};
++	elseif ( IsOpen(door) )
++		return error{&quot;errortext&quot;:=&quot;Door is already open.&quot;};
++	endif
++		
++	var door_info := ConfigInfo(door);
++	var new_x := door.x+CInt(door_info.xmod);
++	var new_y := door.y+CInt(door_info.ymod);
++	
++	var cur_dist := CoordinateDistance(object.x, object.y, door.x, door.y);
++	var new_dist := CoordinateDistance(object.x, object.y, new_x, new_y);
++	
++	if ( new_dist &gt; cur_dist )
++		return 1;
++	else
++		return 0;
++	endif
+ endfunction
+ 
+ /***********
+@@ -76,6 +93,11 @@
+  * Private functions
+  *
+  **********/
++ 
++ function Occupied(x, y, z)
++	// Used to prevent a door slamming closed if a character is in the way.
++	return ListMobilesNearLocationEX(x, y, z, 0, LISTEX_FLAG_HIDDEN+LISTEX_FLAG_NORMAL);
++endfunction
+ 
+ function ChangeDoor(door)
+ 	if ( door.container )
+@@ -90,7 +112,10 @@
+ 	door.movable := 1;
+ 	door.graphic := door_info.ChangeTo;
+ 	
+-	MoveObjectToLocation(door, door.x+CInt(door_info.xmod), door.y+CInt(door_info.ymod), door.z, door.realm, MOVEOBJECT_FORCELOCATION);
++	var result := MoveObjectToLocation(door, door.x+CInt(door_info.xmod), door.y+CInt(door_info.ymod), door.z, door.realm, MOVEOBJECT_FORCELOCATION);
++	if ( result.errortext )
++		PrintTextAbove(door, &quot;Error moving door -&quot;+result.errortext);
++	endif
+ 		
+ 	door.movable := move_state;
+ 	
+
+Modified: trunk/096/pkg/items/doors/door/use.src
+===================================================================
+--- trunk/096/pkg/items/doors/door/use.src	2006-02-10 19:42:11 UTC (rev 1186)
++++ trunk/096/pkg/items/doors/door/use.src	2006-02-10 20:48:08 UTC (rev 1187)
+@@ -1,14 +1,34 @@
+ /* $Id$
+- * 
++ *
+  * Purpose:
+  * Closes doors on startup.
+  *
+  */
+ 
+ use uo;
+-use os;
+-use cfgfile;
+ 
++include &quot;:keys:key&quot;;
++
+ program useScript(mobile, door)
++	if ( DoorIsLocked(mobile, door) )
++		return 0;
++	endif
++
+ 	door.Toggle();
+ endprogram
++
++function DoorIsLocked(mobile, door)
++	if ( !door.locked )
++		// Nothing to worry about
++		return 0;
++	elseif ( door.IsInside(mobile) )
++		SendSysMessage(mobile, &quot;You open the door from the inside.&quot;);
++		return 0;
++	elseif ( KP_HasKeyForLock(mobile, door) )
++		SendSysMessage(mobile, &quot;You use your key to open the door.&quot;);
++		return 0;
++	else
++		PrintTextAbove(door, &quot;That is locked.&quot;);
++		return 1;
++	endif
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001157.html">[Poldistro-svn] r1186 - trunk/096/pkg/items/keys/keyring
+</A></li>
+	<LI>Next message: <A HREF="001159.html">[Poldistro-svn] r1188 - trunk/096/pkg/items/doors/door
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1158">[ date ]</a>
+              <a href="thread.html#1158">[ thread ]</a>
+              <a href="subject.html#1158">[ subject ]</a>
+              <a href="author.html#1158">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

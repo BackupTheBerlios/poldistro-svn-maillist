@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r605 - trunk/096/pkg/systems/spawnSystem/www
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r605%20-%20trunk/096/pkg/systems/spawnSystem/www&In-Reply-To=%3C200510141938.j9EJcpOF023759%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000574.html">
+   <LINK REL="Next"  HREF="000576.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r605 - trunk/096/pkg/systems/spawnSystem/www</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r605%20-%20trunk/096/pkg/systems/spawnSystem/www&In-Reply-To=%3C200510141938.j9EJcpOF023759%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r605 - trunk/096/pkg/systems/spawnSystem/www">austin at berlios.de
+       </A><BR>
+    <I>Fri Oct 14 21:38:51 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000574.html">[Poldistro-svn] r604 - trunk/096/pkg/systems/spawnSystem/www
+</A></li>
+        <LI>Next message: <A HREF="000576.html">[Poldistro-svn] r606 - trunk/096/pkg/skills/musicianship/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#575">[ date ]</a>
+              <a href="thread.html#575">[ thread ]</a>
+              <a href="subject.html#575">[ subject ]</a>
+              <a href="author.html#575">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-14 21:38:50 +0200 (Fri, 14 Oct 2005)
+New Revision: 605
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/www/spawnControl.src
+Log:
+Fixed up HTML for forms.
+Added more CSS commands.
+
+Modified: trunk/096/pkg/systems/spawnSystem/www/spawnControl.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/www/spawnControl.src	2005-10-14 08:50:12 UTC (rev 604)
++++ trunk/096/pkg/systems/spawnSystem/www/spawnControl.src	2005-10-14 19:38:50 UTC (rev 605)
+@@ -10,9 +10,9 @@
+ unload_scripts(&quot;&quot;);
+ 
+ program www_SpawnControl()
+-	var realm_name := QueryParam(&quot;Realm&quot;);
+-	var region_name := QueryParam(&quot;Region&quot;);
+-	var group_name := QueryParam(&quot;Group&quot;);
++	var realm_name := QueryParam(&quot;RealmName&quot;);
++	var region_name := QueryParam(&quot;RegionName&quot;);
++	var group_name := QueryParam(&quot;GroupName&quot;);
+ 
+ 	WriteHTML(&quot;&lt;HTML&gt;&quot;);
+ 	WriteHTML(&quot;&lt;HEAD&gt;&quot;);
+@@ -22,7 +22,7 @@
+ 	WriteHTML(&quot;&lt;/HEAD&gt;&quot;);
+ 
+ 	if ( realm_name )
+-		WriteHTML(&quot;&lt;B&gt;*&lt;/B&gt; &quot;+MakeAHref(&quot;&quot;)+&quot;Realm List&lt;/A&gt;&quot;);
++		WriteHTML(&quot;&lt;B&gt;*&lt;/B&gt; &quot;+MakeAHref(&quot;&quot;)+&quot;Index&lt;/A&gt;&quot;);
+ 		if ( region_name )
+ 			WriteHTML(&quot;&lt;B&gt;&#187;&lt;/B&gt; &quot;+MakeAHref(realm_name)+realm_name+&quot;&lt;/A&gt;&quot;);
+ 			if ( group_name );
+@@ -38,8 +38,9 @@
+ 			ShowRegionsInRealm(realm_name);
+ 		endif
+ 	else
+-		WriteHTML(&quot;&lt;B&gt;*&lt;/B&gt; Realm List&quot;);
+-		ListRealms();
++		WriteHTML(&quot;&lt;B&gt;*&lt;/B&gt; Index&quot;);
++		ShowRealmList();
++		ShowGroupList();
+ 	endif
+ 
+ 	WriteHTML(&quot;&lt;/HTML&gt;&quot;);
+@@ -47,7 +48,7 @@
+ 	return 1;
+ endprogram
+ 
+-function ListRealms()
++function ShowRealmList()
+ 	WriteHTML(&quot;&lt;BR&gt;&lt;BR&gt;&lt;TABLE&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TR&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TD CLASS='header' COLSPAN='2'&gt;Realms List&lt;/TD&gt;&quot;);
+@@ -73,8 +74,9 @@
+ 	WriteHTML(&quot;&lt;TR&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TD COLSPAN='2' CLASS='addform'&gt;&quot;);
+ 	WriteHTML(&quot;&lt;FORM METHOD='GET' NAME='FORM'&gt;&quot;);
+-	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='Name' VALUE=''&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='RealmName' VALUE=''&gt;&quot;);
+ 	WriteHTML(&quot;&lt;INPUT TYPE='SUBMIT' Name='AddRealm' VALUE='Add Realm'&gt;&quot;);
++	WriteHTML(&quot;&lt;/FORM&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TR&gt;&quot;);
+ 
+@@ -83,7 +85,44 @@
+ 	return 1;
+ endfunction
+ 
++function ShowGroupList()
++	WriteHTML(&quot;&lt;BR&gt;&lt;BR&gt;&lt;TABLE&gt;&quot;);
++	WriteHTML(&quot;&lt;TR&gt;&quot;);
++	WriteHTML(&quot;&lt;TD CLASS='header' COLSPAN='3'&gt;Spawn Group List&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;/TR&gt;&quot;);
++	WriteHTML(&quot;&lt;TR&gt;&quot;);
++	WriteHTML(&quot;&lt;TD CLASS='delete'&gt;Delete&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;TD CLASS='edit'&gt;Edit&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;TD CLASS='normal'&gt;Group Name&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;/TR&gt;&quot;);
++
++	foreach group_name in SS_GetGroupNames()
++		WriteHTML(&quot;&lt;TR&gt;&quot;);
++		WriteHTMLRaw(&quot;&lt;TD CLASS='delete'&gt;&lt;INPUT TYPE='SUBMIT' NAME='DELETE' VALUE='Delete' CLASS='delete'&gt;&lt;/TD&gt;&quot;);
++		WriteHTMLRaw(&quot;&lt;TD CLASS='edit'&gt;&lt;INPUT TYPE='SUBMIT' NAME='DELETE' VALUE='Edit' CLASS='edit'&gt;&lt;/TD&gt;&quot;);
++		WriteHTMLRaw(&quot;&lt;TD CLASS='normal'&gt;&quot;);
++		var group_link := MakeAHref(&quot;&quot;, &quot;&quot;, group_name);
++		WriteHTML(group_link+group_name+&quot;&lt;/A&gt;&lt;/TD&gt;&quot;);
++		WriteHTML(&quot;&lt;/TR&gt;&quot;);
++		sleepms(2);
++	endforeach
++
++	WriteHTML(&quot;&lt;TR&gt;&quot;);
++	WriteHTML(&quot;&lt;TD COLSPAN='3' CLASS='addform'&gt;&quot;);
++	WriteHTML(&quot;&lt;FORM METHOD='GET' NAME='FORM'&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='GroupName' VALUE=''&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='SUBMIT' Name='AddGroup' VALUE='Add Group'&gt;&quot;);
++	WriteHTML(&quot;&lt;/FORM&gt;&quot;);
++	WriteHTML(&quot;&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;/TR&gt;&quot;);
++
++	WriteHTML(&quot;&lt;/TABLE&gt;&quot;);
++
++	return 1;
++endfunction
++
+ function ShowRegionsInRealm(realm_name)
++	
+ 	WriteHTML(&quot;&lt;BR&gt;&lt;BR&gt;&lt;TABLE&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TR&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TD COLSPAN='3' CLASS='header'&gt;Spawn Regions in Realm '&quot;+realm_name+&quot;'&lt;/TD&gt;&quot;);
+@@ -109,28 +148,37 @@
+ 	WriteHTML(&quot;&lt;TR&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TD COLSPAN='3' CLASS='addform'&gt;&quot;);
+ 	WriteHTML(&quot;&lt;FORM METHOD='GET' NAME='FORM'&gt;&quot;);
+-	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='Name' VALUE=''&gt;&quot;);
+-	WriteHTML(&quot;&lt;INPUT TYPE='HIDDEN' NAME='Realm' Value='&quot;+realm_name+&quot;'&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='HIDDEN' NAME='RealmName' VALUE='&quot;+realm_name+&quot;'&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='RegionName' VALUE=''&gt;&quot;);
+ 	WriteHTML(&quot;&lt;INPUT TYPE='SUBMIT' Name='AddRegion' VALUE='Add Region'&gt;&quot;);
++	WriteHTML(&quot;&lt;/FORM&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TR&gt;&quot;);
+ 
+ 	WriteHTML(&quot;&lt;/TABLE&gt;&quot;);
+-
++	
+ 	return 1;
+ endfunction
+ 
+ function ShowRegionInfo(realm_name, region_name)
+ 	WriteHTML(&quot;&lt;BR&gt;&lt;BR&gt;&lt;TABLE&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TR&gt;&quot;);
+-	WriteHTML(&quot;&lt;TD COLSPAN='3' CLASS='header'&gt;Spawn Groups in Region '&quot;+region_name+&quot;'&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;TD COLSPAN='3' CLASS='header'&gt;Spawn Region '&quot;+region_name+&quot;'&lt;/TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TR&gt;&quot;);
++	
+ 	WriteHTML(&quot;&lt;TR&gt;&quot;);
+-	WriteHTML(&quot;&lt;TD CLASS='delete'&gt;Delete&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;TD CLASS='delete'&gt;&nbsp;&lt;/TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TD CLASS='edit'&gt;Edit&lt;/TD&gt;&quot;);
++	var coords := SS_GetRegionCoordinates(region_name);
++	coords := coords.x1+&quot; &quot;+coords.y1+&quot; : &quot;+coords.x2+&quot; &quot;+coords.y2;
++	WriteHTML(&quot;&lt;TD CLASS='normal'&gt;Coordinates: &quot;+coords+&quot;&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;/TR&gt;&quot;);
++	
++	WriteHTML(&quot;&lt;TR&gt;&quot;);
++	WriteHTML(&quot;&lt;TD CLASS='delete'&gt;&nbsp;&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;TD CLASS='edit'&gt;&nbsp;&lt;/TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TD CLASS='normal'&gt;Group Name&lt;/TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TR&gt;&quot;);
+-
+ 	var spawn_regions := SS_GetGroupsInRegion(region_name);
+ 	foreach group_name in (spawn_regions.Keys())
+ 		WriteHTML(&quot;&lt;TR&gt;&quot;);
+@@ -146,9 +194,11 @@
+ 	WriteHTML(&quot;&lt;TR&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TD COLSPAN='3' CLASS='addform'&gt;&quot;);
+ 	WriteHTML(&quot;&lt;FORM METHOD='GET' NAME='FORM'&gt;&quot;);
+-	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='Name' VALUE=''&gt;&quot;);
+-	WriteHTML(&quot;&lt;INPUT TYPE='HIDDEN' NAME='Region' Value='&quot;+region_name+&quot;'&gt;&quot;);
+-	WriteHTML(&quot;&lt;INPUT TYPE='SUBMIT' Name='AddRegion' VALUE='Add Group'&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='HIDDEN' NAME='RealmName' Value='&quot;+realm_name+&quot;'&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='HIDDEN' NAME='RegionName' Value='&quot;+region_name+&quot;'&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='GroupName' VALUE=''&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='SUBMIT' Name='AddGroup' VALUE='Add Group'&gt;&quot;);
++	WriteHTML(&quot;&lt;/FORM&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TR&gt;&quot;);
+ 
+@@ -183,8 +233,9 @@
+ 	WriteHTML(&quot;&lt;TD COLSPAN='3' CLASS='addform'&gt;&quot;);
+ 	WriteHTML(&quot;&lt;FORM METHOD='GET' NAME='FORM'&gt;&quot;);
+ 	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='Name' VALUE=''&gt;&quot;);
+-	WriteHTML(&quot;&lt;INPUT TYPE='HIDDEN' NAME='Group' Value='&quot;+group_name+&quot;'&gt;&quot;);
+-	WriteHTML(&quot;&lt;INPUT TYPE='SUBMIT' Name='AddRegion' VALUE='Add Entry'&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='HIDDEN' NAME='GroupName' Value='&quot;+group_name+&quot;'&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='SUBMIT' Name='AddEntry' VALUE='Add Entry'&gt;&quot;);
++	WriteHTML(&quot;&lt;/FORM&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TR&gt;&quot;);
+ 
+@@ -194,15 +245,23 @@
+ endfunction
+ 
+ function MakeAHref(realm_name, region_name:=&quot;&quot;, group_name:=&quot;&quot;)
+-	var link_text := &quot;&lt;A HREF=?Realm=&quot;+realm_name;
++	var link_text := &quot;&lt;A HREF=?&quot;;
++	if ( realm_name )
++		link_text := link_text+&quot;RealmName=&quot;+realm_name+&quot;&amp;&quot;;
++	endif
+ 	if ( region_name )
+-		link_text := link_text+&quot;&amp;Region=&quot;+region_name;
++		link_text := link_text+&quot;RegionName=&quot;+region_name+&quot;&amp;&quot;;
+ 	endif
+ 	if ( group_name )
+-		link_text := link_text+&quot;&amp;Group=&quot;+group_name;
++		link_text := link_text+&quot;GroupName=&quot;+group_name+&quot;&amp;&quot;;
+ 	endif
++	var length := Len(link_text);
++	if ( link_text[length] == &quot;&amp;&quot; )
++		link_text[length] := &quot;&quot;;
++	endif
++		
+ 	link_text := link_text+&quot;&gt;&quot;;
+-
++	
+ 	return link_text;
+ endfunction
+ 
+@@ -221,12 +280,12 @@
+ 	WriteHTML(&quot;table{border-collapse: collapse}&quot;);
+ 	WriteHTML(&quot;td{border-style:solid; border-width:1; border-color:#000000; padding:2}&quot;);
+ 	WriteHTML(&quot;td.header{width: 400; text-align:center; font-weight:bold; color:#000000; background-color:808080; column-span:2}&quot;);
+-	WriteHTML(&quot;td.normal{color: #000000; background-color: #C0C0C0}&quot;);
++	WriteHTML(&quot;td.normal{color: #000000; background-color: #C0C0C0; padding-left:3}&quot;);
+ 	WriteHTML(&quot;td.delete{width:50; text-align:center; color: #FFFFFF; background-color: DARKRED}&quot;);
+ 	WriteHTML(&quot;td.edit{width:30; text-align:center; color: #FFFFFF; background-color: DARKGREEN}&quot;);
+ 	WriteHTML(&quot;td.addform{text-align:center}&quot;);
+ 	
+-	WriteHTML(&quot;input.delete{color: #FFFFFF; background-color: DARKRED; border-style:none; padding:1}&quot;);
+-	WriteHTML(&quot;input.edit{color: #FFFFFF; background-color: DARKGREEN; border-style:none; padding:1}&quot;);
++	WriteHTML(&quot;input.delete{color: #FFFFFF; background-color: DARKRED; border-style:dotted; border-width:1; padding:0}&quot;);
++	WriteHTML(&quot;input.edit{color: #FFFFFF; background-color: DARKGREEN; border-style:dotted; border-width:1; padding:0}&quot;);
+ 	WriteHTML(&quot;&lt;/STYLE&gt;&quot;);
+ endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000574.html">[Poldistro-svn] r604 - trunk/096/pkg/systems/spawnSystem/www
+</A></li>
+	<LI>Next message: <A HREF="000576.html">[Poldistro-svn] r606 - trunk/096/pkg/skills/musicianship/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#575">[ date ]</a>
+              <a href="thread.html#575">[ thread ]</a>
+              <a href="subject.html#575">[ subject ]</a>
+              <a href="author.html#575">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

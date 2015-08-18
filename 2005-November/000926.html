@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r952 - in trunk/096/pkg/items/keys: include key keyring
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r952%20-%20in%20trunk/096/pkg/items/keys%3A%20include%20key%20keyring&In-Reply-To=%3C200511131032.jADAWJQJ026648%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000925.html">
+   <LINK REL="Next"  HREF="000927.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r952 - in trunk/096/pkg/items/keys: include key keyring</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r952%20-%20in%20trunk/096/pkg/items/keys%3A%20include%20key%20keyring&In-Reply-To=%3C200511131032.jADAWJQJ026648%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r952 - in trunk/096/pkg/items/keys: include key keyring">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 13 11:32:19 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000925.html">[Poldistro-svn] r951 - in trunk/096: config pkg/items/keys
+</A></li>
+        <LI>Next message: <A HREF="000927.html">[Poldistro-svn] r953 - in trunk/096/pkg/items/keys: . key keyring
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#926">[ date ]</a>
+              <a href="thread.html#926">[ thread ]</a>
+              <a href="subject.html#926">[ subject ]</a>
+              <a href="author.html#926">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-13 11:32:16 +0100 (Sun, 13 Nov 2005)
+New Revision: 952
+
+Added:
+   trunk/096/pkg/items/keys/include/key.inc
+Modified:
+   trunk/096/pkg/items/keys/key/methods.src
+   trunk/096/pkg/items/keys/key/use.src
+   trunk/096/pkg/items/keys/keyring/use.src
+Log:
+mmm updates
+
+Added: trunk/096/pkg/items/keys/include/key.inc
+===================================================================
+--- trunk/096/pkg/items/keys/include/key.inc	2005-11-13 10:04:43 UTC (rev 951)
++++ trunk/096/pkg/items/keys/include/key.inc	2005-11-13 10:32:16 UTC (rev 952)
+@@ -0,0 +1,56 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++include &quot;:itemutils:itemdesc&quot;;
++
++/*
++ * KP_ToggleLock(object)
++ *
++ * Purpose
++ * Toggles the locked member of an object.
++ *
++ * Parameters
++ * object:	Container or door to toggle the locked status on.
++ * mobile:	Optional - Mobile to show the locked status to.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
++function KP_ToggleLock(object, mobile:=0)
++	if ( object.locked )
++		PrintTextAbovePrivate(object, &quot;*unlocked*&quot;, mobile);
++		object.locked := 0;
++	else
++		PrintTextAbovePrivate(object, &quot;*locked*&quot;, mobile);
++		object.locked := 1;
++	endif
++	
++	return 1;
++endfunction
++
++/*
++ * KP_IsLockable(object)
++ * 
++ * Purpose
++ * Determines if an item is lockable or not.
++ *
++ * Parameters
++ * Object:	Object to check.
++ *
++ * Return value
++ * Returns 1 if the object is lockable
++ * Returns 0 if the object is not lockable.
++ *
++ */
++function KP_IsLockable(object)
++	if ( object.IsA(POLCLASS_ITEM) )
++		object := object.objtype;
++	endif
++	
++	return GetItemDescInfo(object).Lockable;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/keys/key/methods.src
+===================================================================
+--- trunk/096/pkg/items/keys/key/methods.src	2005-11-13 10:04:43 UTC (rev 951)
++++ trunk/096/pkg/items/keys/key/methods.src	2005-11-13 10:32:16 UTC (rev 952)
+@@ -4,3 +4,47 @@
+  */
+  
+ use uo;
++
++program Install()
++	return 1;
++endprogram
++
++exported function IsKey(key)
++	key := key; // Avoid compiler warning
++	return 1;
++endfunction
++
++exported function GetLockId(key)
++	return GetObjProperty(key, &quot;LockId&quot;);
++endfunction
++
++exported function SetLockId(key, lock_id)
++	SetObjProperty(key, &quot;LockId&quot;, CStr(lock_id));
++endfunction
++
++exported function KeyMatchesLock(key, lock)
++	if ( lock == error )
++		return 0;
++	endif
++	
++	var lock_id := error;
++	if ( lock.GetLockId() )
++		lock_id := lock.GetLockId();
++	elseif ( TypeOf(lock) == &quot;String&quot; )
++		lock_id := lock;
++	else
++		lock_id := GetObjProperty(lock, &quot;LockId&quot;);
++		if ( lock_id == error )
++			return 0;
++		endif
++	endif
++	
++	var key_id := GetLockId(key);
++	if ( key_id == error )
++		return 0;
++	elseif ( key_id != lock_id )
++		return 0;
++	else
++		return 1;
++	endif
++endfunction
+
+Modified: trunk/096/pkg/items/keys/key/use.src
+===================================================================
+--- trunk/096/pkg/items/keys/key/use.src	2005-11-13 10:04:43 UTC (rev 951)
++++ trunk/096/pkg/items/keys/key/use.src	2005-11-13 10:32:16 UTC (rev 952)
+@@ -4,3 +4,26 @@
+  */
+  
+ use uo;
++
++include &quot;:keys:key&quot;;
++
++program UseKey(who, key)
++	SendSysMessage(who, &quot;What do you want to use this on?&quot;);
++	var targ := Target(who);
++	
++	if ( !targ.IsA(POLCLASS_ITEM) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	elseif ( !KP_IsLockable(targ) )
++		SendSysMessage(who, &quot;That is not lockable.&quot;);
++		return 0;
++	endif
++	
++	if ( key.KeyMatchesLock(targ) )
++		KP_ToggleLock(targ, who);
++	else
++		SendSysMessage(who, &quot;This key does not match that lock.&quot;);
++	endif
++	
++	return 1;
++endprogram
+
+Modified: trunk/096/pkg/items/keys/keyring/use.src
+===================================================================
+--- trunk/096/pkg/items/keys/keyring/use.src	2005-11-13 10:04:43 UTC (rev 951)
++++ trunk/096/pkg/items/keys/keyring/use.src	2005-11-13 10:32:16 UTC (rev 952)
+@@ -4,3 +4,36 @@
+  */
+  
+ use uo;
++use os;
++
++include &quot;:keys:key&quot;;
++
++program UseKeyRing(who, keyring)
++	SendSysMessage(who, &quot;What do you want to use that on?&quot;);
++	
++	var targ := Target(who);
++	if ( !targ.IsA(POLCLASS_ITEM) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	elseif ( !KP_IsLockable(targ) )
++		SendSysMessage(who, &quot;That is not lockable.&quot;);
++		return 0;
++	endif
++	
++	var matched := 0;
++	foreach key in ( EnumerateItemsInContainer(keyring) )
++		if ( key.KeyMatchesLock(targ) )
++			KP_ToggleLock(targ, who);
++			matched := 1;
++			break;
++		endif
++		sleepms(2);
++	endforeach
++	
++	if ( !matched )
++		SendSysMessage(who, &quot;You do not have a key for that lock.&quot;);
++		return 0;
++	else
++		return 1;
++	endif
++endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000925.html">[Poldistro-svn] r951 - in trunk/096: config pkg/items/keys
+</A></li>
+	<LI>Next message: <A HREF="000927.html">[Poldistro-svn] r953 - in trunk/096/pkg/items/keys: . key keyring
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#926">[ date ]</a>
+              <a href="thread.html#926">[ thread ]</a>
+              <a href="subject.html#926">[ subject ]</a>
+              <a href="author.html#926">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r754 - in trunk/096/pkg/mobiles/timedScripts: . config subScripts/poison
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r754%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20.%20config%20subScripts/poison&In-Reply-To=%3C200510312132.j9VLWrop004187%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000727.html">
+   <LINK REL="Next"  HREF="000729.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r754 - in trunk/096/pkg/mobiles/timedScripts: . config subScripts/poison</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r754%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20.%20config%20subScripts/poison&In-Reply-To=%3C200510312132.j9VLWrop004187%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r754 - in trunk/096/pkg/mobiles/timedScripts: . config subScripts/poison">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 31 22:32:53 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000727.html">[Poldistro-svn] r753 - in trunk/096/pkg/mobiles/timedScripts: . commands/gm config include
+</A></li>
+        <LI>Next message: <A HREF="000729.html">[Poldistro-svn] r755 - trunk/096/pkg/commands/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#728">[ date ]</a>
+              <a href="thread.html#728">[ thread ]</a>
+              <a href="subject.html#728">[ subject ]</a>
+              <a href="author.html#728">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-31 22:32:52 +0100 (Mon, 31 Oct 2005)
+New Revision: 754
+
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+   trunk/096/pkg/mobiles/timedScripts/logon.src
+   trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src
+   trunk/096/pkg/mobiles/timedScripts/timerControl.src
+Log:
+Fixed logon.src to start the controller up.
+Updated defaultPoison to be type &quot;P&quot; 
+Updated defaultPoison.src to use the new attributes system.
+
+Modified: trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2005-10-31 21:22:07 UTC (rev 753)
++++ trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2005-10-31 21:32:52 UTC (rev 754)
+@@ -69,7 +69,7 @@
+ TimerElem defaultPoison
+ {
+ 	Name			DefaultPoison
+-	Script			subScripts/defaultPoison
++	Script			subScripts/poison/defaultPoison
+ 	IndicatePoison		1
+ 	EndMessage		You have been cured of poison.
+ 	Cumulative		0
+
+Modified: trunk/096/pkg/mobiles/timedScripts/logon.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/logon.src	2005-10-31 21:22:07 UTC (rev 753)
++++ trunk/096/pkg/mobiles/timedScripts/logon.src	2005-10-31 21:32:52 UTC (rev 754)
+@@ -1,3 +1,8 @@
++/*
++ * $Id$
++ *
++ */
++ 
+ use uo;
+ use os;
+ 
+
+Modified: trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src	2005-10-31 21:22:07 UTC (rev 753)
++++ trunk/096/pkg/mobiles/timedScripts/subScripts/poison/defaultPoison.src	2005-10-31 21:32:52 UTC (rev 754)
+@@ -1,8 +1,8 @@
+ use uo;
+ use os;
+ 
+-include &quot;include/attributes&quot;;
+-include &quot;:poisonwatcher:poisons&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ 
+ 
+ program default_poison(params)
+@@ -25,40 +25,40 @@
+ 	var time := 15;
+ 	case (level)
+ 		default:
+-		1: dmg := Cint(GetMaxHp(who) / 40);
++		1: dmg := Cint(AP_GetVitalMaximumValue(who, &quot;Hits&quot;) / 40);
+ 		   if (dmg &lt; 3)
+ 			dmg := 3;
+ 		   endif
+ 		   poisonedmsg := &quot;You feel a bit nauseous.&quot;;
+ 		   viewermsg := &quot;* - &quot; + who.name + &quot; looks ill. - *&quot;;
+-		2: dmg := Cint(GetMaxHp(who) / 32);
++		2: dmg := Cint(AP_GetVitalMaximumValue(who, &quot;Hits&quot;) / 32);
+ 		   if(dmg &lt; 5)
+ 			dmg := 5;
+   		   endif
+ 		   poisonedmsg := &quot;You feel disoriented and nauseous.&quot;;
+ 		   viewermsg := &quot;* - &quot; + who.name + &quot; looks extremely ill. - *&quot;;
+ 		   time := 12;
+-		3: dmg := Cint(GetMaxHp(who) / 16);
++		3: dmg := Cint(AP_GetVitalMaximumValue(who, &quot;Hits&quot;) / 16);
+ 		   if(dmg &lt; 7)
+ 			dmg := 7;
+ 		   endif
+-		   stam := Cint(GetMaxStamina(who) / 30);
++		   stam := Cint(AP_GetVitalMaximumValue(who, &quot;Stamina&quot;) / 30);
+ 		   poisonedmsg := &quot;You begin to feel pain throughout your body.&quot;;
+ 		   viewermsg := &quot;* - &quot; + who.name + &quot; stumbles around in confusion and pain. - *&quot;;
+ 		   time := 10;
+-		4: dmg := Cint(GetMaxHp(who) / 8);
++		4: dmg := Cint(AP_GetVitalMaximumValue(who, &quot;Hits&quot;) / 8);
+ 		   if(dmg &lt; 6)
+ 			dmg := 6;
+ 		   endif
+-		   stam := Cint(GetMaxStamina(who) / 20);
++		   stam := Cint(AP_GetVitalMaximumValue(who, &quot;Stamina&quot;) / 20);
+ 		   poisonedmsg := &quot;You feel extremely weak and are in severe pain!&quot;;
+ 		   viewermsg := &quot;* - &quot; + who.name + &quot; is wracked with extreme pain! - *&quot;;
+ 		   time := 5;
+-		5: dmg := Cint(GetMaxHp(who) / 4);
++		5: dmg := Cint(AP_GetVitalMaximumValue(who, &quot;Hits&quot;) / 4);
+ 		   if(dmg &lt; 12)
+ 			dmg := 12;
+ 		   endif
+-		   stam := Cint(GetMaxStamina(who) / 10);
++		   stam := Cint(AP_GetVitalMaximumValue(who, &quot;Stamina&quot;) / 10);
+ 		   poisonedmsg := &quot;You are in extreme pain, and require immediate aid!&quot;;
+ 		   viewermsg := &quot;* - &quot; + who.name + &quot; begins to spasm uncontrollably! - *&quot;;
+ 		   time := 5;
+@@ -77,11 +77,11 @@
+ 		ApplyRawDamage(who, dmg);
+ 
+ 		Set_Critical(1);
+-			var curr := CInt(GetStamina(who));
++			var curr := CInt(AP_GetVital(who, &quot;Stamina&quot;));
+ 			if (curr &gt;= stam)
+-				SetStamina(who, (curr-stam));
++				AP_SetVital(who, &quot;Stamina&quot;, (curr-stam));
+ 			else
+-				SetStamina(who, 0);
++				AP_SetVital(who, &quot;Stamina&quot;, 0);
+ 			endif
+ 		Set_Critical(0);
+ 		RecalcVitals(who);
+
+Modified: trunk/096/pkg/mobiles/timedScripts/timerControl.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/timerControl.src	2005-10-31 21:22:07 UTC (rev 753)
++++ trunk/096/pkg/mobiles/timedScripts/timerControl.src	2005-10-31 21:32:52 UTC (rev 754)
+@@ -96,7 +96,7 @@
+ 	foreach timer in ( timer_list )
+ 		timer := timer; // So the compiler doesn't warn.
+ 		var elem_info := TS_GetCfgElem(_timer_iter);
+-		KillTimedScript(timer_list.pid, timer_list, _timer_iter);
++		KillTimedScript(mobile, timer_list.pid, timer_list, _timer_iter);
+ 
+ 		if( elem_info.LogOffScript )
+ 			var script := start_script(elem_info.LogOffScript, {mobile});
+@@ -180,7 +180,7 @@
+ 			if ( level &gt;= event.level )
+ 				event.amount := duration + amt;
+ 			else
+-				KillTimedScript(timer_list[event.name].pid, timer_list, event.name);
++				KillTimedScript(mobile, timer_list[event.name].pid, timer_list, event.name);
+ 				event.amount := amt;
+ 				AddTimer(mobile, event, timer_list, num_poisons);
+ 				return 1;
+@@ -193,7 +193,7 @@
+ 			if ( (level == event.level) &amp;&amp; (amt &gt; duration) )
+ 				event.amount := amt;
+ 			elseif ( event.level &gt; level )
+-				KillTimedScript(timer_list[event.name].pid, timer_list, event.name);
++				KillTimedScript(mobile, timer_list[event.name].pid, timer_list, event.name);
+ 				event.amount := amt;
+ 				AddTimer(mobile, event, timer_list, num_poisons);
+ 				return 1;
+@@ -250,7 +250,7 @@
+ 	
+ 	if ( event.amount == -1 )
+ 		EndTimedScript(mobile, event.name, num_poisons);
+-		KillTimedScript(timer_info.pid, timer_list, event.name);
++		KillTimedScript(mobile, timer_info.pid, timer_list, event.name);
+ 		return 1;
+ 	endif
+ 	
+@@ -259,7 +259,7 @@
+ 	
+ 	if ( duration &lt;= 0 )
+ 		EndTimedScript(mobile, event.name, num_poisons);
+-		KillTimedScript(timer_info.pid, timer_list, event.name);
++		KillTimedScript(mobile, timer_info.pid, timer_list, event.name);
+ 	endif
+ 	
+ 	return 1;
+@@ -304,10 +304,12 @@
+ 	endif
+ endfunction
+ 
+-function KillTimedScript(byref pid, byref timer_list, timer_name)
++function KillTimedScript(mobile, byref pid, byref timer_list, timer_name)
+ 	var script := GetProcess(pid);
+ 	script.kill();
+ 	timer_list.Erase(timer_name);
+ 	
++	SaveState(mobile, timer_list);
++	
+ 	return 1;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000727.html">[Poldistro-svn] r753 - in trunk/096/pkg/mobiles/timedScripts: . commands/gm config include
+</A></li>
+	<LI>Next message: <A HREF="000729.html">[Poldistro-svn] r755 - trunk/096/pkg/commands/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#728">[ date ]</a>
+              <a href="thread.html#728">[ thread ]</a>
+              <a href="subject.html#728">[ subject ]</a>
+              <a href="author.html#728">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

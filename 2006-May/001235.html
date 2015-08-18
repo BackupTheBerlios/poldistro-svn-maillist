@@ -1,0 +1,243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1263 - in trunk/096/pkg: commands/coun mobiles/brainAI/bundled/exampleNPC mobiles/brainAI/commands/gm mobiles/brainAI/config mobiles/brainAI/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1263%20-%20in%20trunk/096/pkg%3A%20commands/coun%20mobiles/brainAI/bundled/exampleNPC%20mobiles/brainAI/commands/gm%20mobiles/brainAI/config%20mobiles/brainAI/include&In-Reply-To=%3C200605030330.k433U6aP019841%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001234.html">
+   <LINK REL="Next"  HREF="001236.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1263 - in trunk/096/pkg: commands/coun mobiles/brainAI/bundled/exampleNPC mobiles/brainAI/commands/gm mobiles/brainAI/config mobiles/brainAI/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1263%20-%20in%20trunk/096/pkg%3A%20commands/coun%20mobiles/brainAI/bundled/exampleNPC%20mobiles/brainAI/commands/gm%20mobiles/brainAI/config%20mobiles/brainAI/include&In-Reply-To=%3C200605030330.k433U6aP019841%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1263 - in trunk/096/pkg: commands/coun mobiles/brainAI/bundled/exampleNPC mobiles/brainAI/commands/gm mobiles/brainAI/config mobiles/brainAI/include">austin at berlios.de
+       </A><BR>
+    <I>Wed May  3 05:30:06 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001234.html">[Poldistro-svn] r1262 - in trunk/096/pkg/mobiles/brainAI: bundled/exampleNPC bundled/gUnicorn scripts/lookAround
+</A></li>
+        <LI>Next message: <A HREF="001236.html">[Poldistro-svn] r1264 - trunk
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1235">[ date ]</a>
+              <a href="thread.html#1235">[ thread ]</a>
+              <a href="subject.html#1235">[ subject ]</a>
+              <a href="author.html#1235">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-03 05:29:48 +0200 (Wed, 03 May 2006)
+New Revision: 1263
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/commands/gm/npcstatus.src
+Modified:
+   trunk/096/pkg/commands/coun/conceal.src
+   trunk/096/pkg/mobiles/brainAI/bundled/exampleNPC/shouldWatch.src
+   trunk/096/pkg/mobiles/brainAI/config/icp.cfg
+   trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc
+Log:
+Made the .conceal command more useful.
+Allowed the example npc to 'watch' unconcealed GMs.
+Added a command '.npcstatus' to help see who an npc is watching and what the nerves are doing.
+Added the new command to icp.cfg in the brain package.
+
+Modified: trunk/096/pkg/commands/coun/conceal.src
+===================================================================
+--- trunk/096/pkg/commands/coun/conceal.src	2006-05-03 01:15:15 UTC (rev 1262)
++++ trunk/096/pkg/commands/coun/conceal.src	2006-05-03 03:29:48 UTC (rev 1263)
+@@ -1,46 +1,22 @@
+ /* $Id$
+  *
+- * TODO: convert the remaining SendSysMessage()
+- * must check agaist cmdlevel within the script
++ * Example: .conceal [level] - Conceals you
++ *
++ * Level is: &lt;hide level&gt; (default: 0 [unconceal])
++ *			** can't be higher than cmdlevel! **
++ *
+  */
+ use uo;
++use polsys;
+ 
+-include &quot;:logger:log&quot;;
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
+-
+-
+-program command_conceal(who, params)
+-	var mobile;
+-
+-	if (!params)
+-		SendMessage(who, MSG_TARGET_MOB, array{}, MSG_COMMAND);
+-		mobile := Target(who, TGTOPT_NOCHECK_LOS);
+-		if (mobile == 0)
+-			SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
+-		else
+-			if (!mobile.isA(POLCLASS_MOBILE))
+-				SendMessage(who, MSG_NO_MOB, array{}, MSG_COMMAND);
+-			else
+-				if (mobile.concealed == 1)
+-					SendSysMessage(who, &quot;Mobile is already concealed.&quot;);
+-				else
+-					mobile.concealed := 1;
+-					SendMessage(who, MSG_DONE, array{}, MSG_COMMAND);
+-				endif
+-			endif
+-		endif
+-	elseif (params == &quot;me&quot;)
+-		if (who.concealed == 1)
+-			SendSysMessage(who, &quot;You are already concealed.&quot;);
+-		else
+-			who.concealed := 1;
+-			SendMessage(who, MSG_DONE, array{}, MSG_COMMAND);
+-		endif
+-	else
+-		SendMessage(who, MSG_USE_HELP, array{&quot;conceal&quot;}, MSG_COMMAND);
++program textcmd_Conceal(who, number)
++	number := CInt(number);
++	if ( number &gt; who.cmdlevel )
++		number := who.cmdlevel;
++		SendSysMessage(who, &quot;Conceal level too high; resetting to &quot; + number + &quot;.&quot;);
+ 	endif
+-
+-	return;
++		
++	SendSysMessage(who, &quot;Concealed:&quot;+number+&quot; [&quot;+GetCmdLevelName(number)+&quot;]&quot;);
++	who.concealed := number;
+ endprogram
+ 
+
+Modified: trunk/096/pkg/mobiles/brainAI/bundled/exampleNPC/shouldWatch.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/exampleNPC/shouldWatch.src	2006-05-03 01:15:15 UTC (rev 1262)
++++ trunk/096/pkg/mobiles/brainAI/bundled/exampleNPC/shouldWatch.src	2006-05-03 03:29:48 UTC (rev 1263)
+@@ -12,7 +12,7 @@
+ 	//var settings := params[3];
+ 	params := 0; // Not needed anymore
+ 	
+-	if ( mobile.cmdlevel )
++	if ( mobile.cmdlevel &amp;&amp; mobile.concealed )
+ 		return 0;
+ 	elseif ( mobile.npctemplate )
+ 		return 0;
+
+Added: trunk/096/pkg/mobiles/brainAI/commands/gm/npcstatus.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/npcstatus.src	2006-05-03 01:15:15 UTC (rev 1262)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/npcstatus.src	2006-05-03 03:29:48 UTC (rev 1263)
+@@ -0,0 +1,52 @@
++/*
++ * 
++ */
++ 
++use uo;
++use os;
++use polsys;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
++
++program NPCStatus(who)
++	var targ := Target(who);
++	if ( !targ.IsA(POLCLASS_NPC) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 400, 480);
++	GFResizePic(gump, 15, 15, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 370, 450);
++	GFTextMid(gump, 0, 15, 300, 2100, &quot;Brain NPC Info&quot;);
++	
++	var text := &quot;&lt;B&gt;NERVES&lt;/B&gt;&lt;BR&gt;&quot;;			
++	foreach nerve in (LoadNerves(targ))
++		var state := GetProcess(nerve.pid).state;
++		if ( !state )
++			state := &quot;Killed&quot;;
++		endif
++		
++		text := text+&quot;&lt;U&gt;&quot;+_nerve_iter+&quot;&lt;/U&gt;&lt;BR&gt;&quot;+
++			&quot;Pid: &quot;+nerve.pid+&quot;&lt;BR&gt;&quot;+
++			&quot;Flags: &quot;+nerve.flags+&quot;&lt;BR&gt;&quot;+
++			&quot;Status: &quot;+state+&quot;&lt;BR&gt;&quot;;
++			
++		sleepms(2);
++	endforeach
++	
++	text := text+&quot;&lt;BR&gt;&lt;B&gt;WATCH LIST&lt;/B&gt;&lt;BR&gt;&quot;;
++	foreach serial in ( NPC_LoadWatchList(targ).keys() )
++		var name := SystemFindObjectBySerial(CInt(serial)).name;
++		text := text+Hex(serial)+&quot; &quot;+name+&quot;&lt;BR&gt;&quot;;
++		sleepms(2);
++	endforeach
++	
++	GFHTMLArea(gump, 25, 40, 357, 423, text, 0, 1);
++	
++	GFSendGump(who, gump);
++	return 1;
++endprogram
+
+Modified: trunk/096/pkg/mobiles/brainAI/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/config/icp.cfg	2006-05-03 01:15:15 UTC (rev 1262)
++++ trunk/096/pkg/mobiles/brainAI/config/icp.cfg	2006-05-03 03:29:48 UTC (rev 1263)
+@@ -29,4 +29,5 @@
+ 	TextCmd		3 :brainai:commands/gm/resetnpcs
+ 	TextCmd		3 :brainai:commands/gm/restartnpc
+ 	TextCmd		3 :brainai:commands/gm/sendevent
++	TextCmd		2 :brainai:commands/gm/npcstatus
+ }
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc	2006-05-03 01:15:15 UTC (rev 1262)
++++ trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc	2006-05-03 03:29:48 UTC (rev 1263)
+@@ -28,8 +28,8 @@
+ // * Global Varibles *
+ //
+ // Nerve flags
+-const NF_NO_FLAGS		:= 0x0;
+-const NF_CONTINUE_ON_SLEEP	:= 0x1;
++CONST NF_NO_FLAGS		:= 0x0;
++CONST NF_CONTINUE_ON_SLEEP	:= 0x1;
+ //
+ /////////////////////////////////////////////////////////////////
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001234.html">[Poldistro-svn] r1262 - in trunk/096/pkg/mobiles/brainAI: bundled/exampleNPC bundled/gUnicorn scripts/lookAround
+</A></li>
+	<LI>Next message: <A HREF="001236.html">[Poldistro-svn] r1264 - trunk
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1235">[ date ]</a>
+              <a href="thread.html#1235">[ thread ]</a>
+              <a href="subject.html#1235">[ subject ]</a>
+              <a href="author.html#1235">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

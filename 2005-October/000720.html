@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r746 - in trunk/096/pkg/mobiles/timedScripts: . config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r746%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20.%20config&In-Reply-To=%3C200510311938.j9VJckua027834%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000719.html">
+   <LINK REL="Next"  HREF="000721.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r746 - in trunk/096/pkg/mobiles/timedScripts: . config</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r746%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20.%20config&In-Reply-To=%3C200510311938.j9VJckua027834%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r746 - in trunk/096/pkg/mobiles/timedScripts: . config">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 31 20:38:46 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000719.html">[Poldistro-svn] r745 - trunk/096/pkg/mobiles/timedScripts/include
+</A></li>
+        <LI>Next message: <A HREF="000721.html">[Poldistro-svn] r747 - trunk/096/pkg/mobiles/timedScripts/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#720">[ date ]</a>
+              <a href="thread.html#720">[ thread ]</a>
+              <a href="subject.html#720">[ subject ]</a>
+              <a href="author.html#720">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-31 20:38:46 +0100 (Mon, 31 Oct 2005)
+New Revision: 746
+
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+   trunk/096/pkg/mobiles/timedScripts/timerControl.src
+Log:
+Think its done...
+
+Modified: trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2005-10-31 18:11:06 UTC (rev 745)
++++ trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2005-10-31 19:38:46 UTC (rev 746)
+@@ -30,8 +30,8 @@
+ #		1 - If the script won't time out normally.
+ #		This means the duration (timer) never lowers on its own.
+ #
+-#	CureOnEnd: 0 -Default
+-#		1 - When script terminates its self or something stops it,
++#	StopOnEnd: 0 -Default
++#		1 - When script terminates its self or something stops it (no longer has a process)
+ #		the script will be removed from the mobile's timer list.
+ #
+ #	IndicatePoison: 0 - Default
+@@ -100,7 +100,7 @@
+ 	Name			Poo Stink
+ 	Script			subScripts/odors/poostink
+ 	NoCure			1
+-	CureOnDeath		0
++	EndOnDeath		0
+ 	EndMessage		The horrid stench of poo fades away.
+ 	MaxDuration		300	// 5 minutes
+ }
+
+Modified: trunk/096/pkg/mobiles/timedScripts/timerControl.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/timerControl.src	2005-10-31 18:11:06 UTC (rev 745)
++++ trunk/096/pkg/mobiles/timedScripts/timerControl.src	2005-10-31 19:38:46 UTC (rev 746)
+@@ -22,6 +22,10 @@
+ 		 * 1. Mobile was an NPC and died.
+ 		 * 2. Was a player character but got deleted.
+ 		 */
++		if ( ReadGameClock()%30 == 0 )
++			SaveState(mobile, timer_list);
++		endif
++			
+ 		 
+ 		var event := 0;
+ 		if ( timer_list.size() &gt; 0 )
+@@ -34,16 +38,16 @@
+ 		
+ 		if( event.type == EVENT_ADD_TIMER )
+ 			AddTimer(mobile, event, timer_list, num_poisons);
+-		elseif( event.type == EVENT_CURE_TIMER )
+-			CureTimer(mobile, event, timer_list, num_poisons);
+-		elseif( event.type == EVENT_CURE_SPECIFIC_TIMER )
+-			//Cure_Specific(mobile, event, timer_list, num_poisons, 1);
++		elseif( event.type == EVENT_LOWER_TIMER )
++			LowerDuration(mobile, event, timer_list, num_poisons);
+ 		elseif( event.type == EVENT_DEAD )
+-			//Cure_Death(mobile, timer_list, num_poisons);
++			Death(mobile, timer_list, num_poisons);
+ 		elseif ( event.type == EVENT_LOGOFF )
+ 			LogOff(mobile, timer_list);
+ 			break;
+ 		endif
++		
++		CheckTimerStatus(mobile, timer_list, num_poisons);
+ 	endwhile
+ 	
+ 	return 1;
+@@ -215,23 +219,85 @@
+ 	return 1;
+ endfunction
+ 
++function CheckTimerStatus(mobile, byref timer_list, byref num_poisons)
++	foreach timer in ( timer_list )
++		var cfg_info := TS_GetCfgElem(_timer_iter);
++		if ( cfg_info.StopOnEnd )
++			if ( !GetProcess(timer.pid) )
++				var event := struct;
++				event.+name := _timer_iter;
++				event.+amount := -1;
++			
++				LowerDuration(mobile, event, timer_list, num_poisons);
++				continue;
++			endif
++		endif
++		if ( timer.endtime &gt; ReadGameClock() )
++			var event := struct;
++			event.+name := _timer_iter;
++			event.+amount := -1;
++			
++			LowerDuration(mobile, event, timer_list, num_poisons);
++			continue;
++		endif
++	endforeach
++	
++	return 1;
++endfunction	
++
+ function LowerDuration(mobile, byref event, byref timer_list, byref num_poisons)
++	var timer_info := timer_list[event.name];
++	
++	if ( event.amount == -1 )
++		EndTimedScript(mobile, event.name, num_poisons);
++		KillTimedScript(timer_info.pid, timer_list, event.name);
++		return 1;
++	endif
++	
++	var duration := timer_info.endtime - ReadGameClock();
++	duration := duration - event.amount;
++	
++	if ( duration &lt;= 0 )
++		EndTimedScript(mobile, event.name, num_poisons);
++		KillTimedScript(timer_info.pid, timer_list, event.name);
++	endif
++	
+ 	return 1;
+ endfunction
+ 
++function Death(mobile, byref timer_list, byref num_poisons)
++	set_critical(1);
++	foreach timer in ( timer_list )
++		timer := timer; // So the compiler does not issue warnings.
++		var elem_info := TS_GetCfgElem(_timer_iter);
++		if ( elem_info.ContinueOnDeath )
++			continue;
++		endif
++		
++		var event := struct;
++		event.+name := _timer_iter;
++		event.+amount := -1;
++		
++		LowerDuration(mobile, event, timer_list, num_poisons);
++	endforeach
++	set_critical(0);
++	
++	return 1;
++endfunction
++
+ function EndTimedScript(mobile, timer_name, byref num_poisons)
+-	var cfg_elem := TS_GetCfgElem(timer_name);
++	var elem_info := TS_GetCfgElem(timer_name);
+ 	
+-	if( cfg_elem.IndicatePoison )
++	if( elem_info.IndicatePoison )
+ 		num_poisons := num_poisons-1;
+ 	endif
+ 
+-	if( cfg_elem.EndMessage )
+-		SendSysMessage(mobile, elem.EndMessage);
++	if( elem_info.EndMessage )
++		SendSysMessage(mobile, elem_info.EndMessage);
+ 	endif
+ 
+-	if( PW_CfgInfo(poison_name).CureScript )
+-		var script := start_script(elem_info.EndScript, {mobile});
++	if( elem_info.CureScript )
++		var script := start_script(elem_info.EndScript, mobile);
+ 		if( script.errortext )
+ 			SysLog(&quot;Error::EndTimedScript() - &quot;+script.errortext);
+ 		endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000719.html">[Poldistro-svn] r745 - trunk/096/pkg/mobiles/timedScripts/include
+</A></li>
+	<LI>Next message: <A HREF="000721.html">[Poldistro-svn] r747 - trunk/096/pkg/mobiles/timedScripts/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#720">[ date ]</a>
+              <a href="thread.html#720">[ thread ]</a>
+              <a href="subject.html#720">[ subject ]</a>
+              <a href="author.html#720">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

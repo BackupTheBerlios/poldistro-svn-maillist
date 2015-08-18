@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1426 - in trunk/096/pkg: OLD/skills skills skills/armslore skills/armslore/config systems/attributes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1426%20-%20in%20trunk/096/pkg%3A%20OLD/skills%20skills%20skills/armslore%20skills/armslore/config%20systems/attributes&In-Reply-To=%3C200605151634.k4FGYdj5006877%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001394.html">
+   <LINK REL="Next"  HREF="001396.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1426 - in trunk/096/pkg: OLD/skills skills skills/armslore skills/armslore/config systems/attributes</H1>
+    <B>muaddiblsd at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1426%20-%20in%20trunk/096/pkg%3A%20OLD/skills%20skills%20skills/armslore%20skills/armslore/config%20systems/attributes&In-Reply-To=%3C200605151634.k4FGYdj5006877%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1426 - in trunk/096/pkg: OLD/skills skills skills/armslore skills/armslore/config systems/attributes">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon May 15 18:34:39 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001394.html">[Poldistro-svn] r1425 - in trunk/096/pkg: OLD/skills skills skills/anatomy skills/anatomy/config systems/attributes
+</A></li>
+        <LI>Next message: <A HREF="001396.html">[Poldistro-svn] r1427 - in trunk/096/pkg: OLD/skills skills skills/spiritspeak skills/spiritspeak/config systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1395">[ date ]</a>
+              <a href="thread.html#1395">[ thread ]</a>
+              <a href="subject.html#1395">[ subject ]</a>
+              <a href="author.html#1395">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2006-05-15 18:34:38 +0200 (Mon, 15 May 2006)
+New Revision: 1426
+
+Added:
+   trunk/096/pkg/skills/armslore/
+   trunk/096/pkg/skills/armslore/armsLore.src
+   trunk/096/pkg/skills/armslore/config/
+   trunk/096/pkg/skills/armslore/config/icp.cfg
+   trunk/096/pkg/skills/armslore/pkg.cfg
+Removed:
+   trunk/096/pkg/OLD/skills/armslore/
+Modified:
+   trunk/096/pkg/systems/attributes/skills.cfg
+Log:
+Reintroduction of base Arms Lore package and new delay.
+
+Added: trunk/096/pkg/skills/armslore/armsLore.src
+===================================================================
+--- trunk/096/pkg/skills/armslore/armsLore.src	2006-05-15 04:56:12 UTC (rev 1425)
++++ trunk/096/pkg/skills/armslore/armsLore.src	2006-05-15 16:34:38 UTC (rev 1426)
+@@ -0,0 +1,71 @@
++use cfgfile;
++use uo;
++
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
++
++program skill_armslore(who)
++
++	EraseObjProperty(who, &quot;#IsMeditating&quot;);
++	EraseObjProperty(who, &quot;#HealTimer&quot;);
++
++	var quality_descr, damage_descr;
++	SendSysMessage(who, &quot;Select an object to evaluate.&quot;);
++	var the_item := Target(who, TGTOPT_CHECK_LOS);
++	if (!the_item)
++		SendSysMessage(who, &quot;Targetting cancelled.&quot;);
++		return;
++	endif
++	var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
++	var entry := cfg[the_item.objtype];
++	if (!entry)
++		SendSysMessage(who, &quot;You can only use this skill on weapons or armor!&quot;);
++		return;
++	endif
++	if(SkillCheck(who, ARMS_LORE, -1) &gt; 0)
++		var item_max_hp := the_item.maxhp;
++		var max_hp := item_max_hp;
++		var hp := the_item.hp;
++		if (hp == 0)
++			hp := 1;
++		endif
++		if (max_hp == 0)
++			max_hp := 1;
++		endif
++		if (item_max_hp == 0)
++			item_max_hp := 1;
++		endif
++
++		var damage_real := (hp  * 100) / max_hp;
++		var damage_nbr := CInt(damage_real);
++		var quality_real :=  (the_item.quality  * 100);
++		var quality_nbr := CInt(quality_real);
++
++		if(damage_nbr &gt; 90)
++			damage_descr := &quot;good&quot;;
++		elseif (damage_nbr &gt;= 60)
++			damage_descr := &quot;acceptable&quot;;
++		elseif (damage_nbr &gt;= 40)
++			damage_descr := &quot;fair&quot;;
++		else
++			damage_descr := &quot;poor&quot;;
++		endif
++
++		if (quality_nbr &gt; 100)
++			quality_descr := &quot;exceptional&quot;;
++		elseif (quality_nbr &gt;= 80)
++			quality_descr := &quot;excellent&quot;;
++		elseif (quality_nbr &gt;= 60)
++			quality_descr := &quot;decent&quot;;
++		elseif (quality_nbr &gt;= 40)
++			quality_descr := &quot;moderate&quot;;
++		else
++			quality_descr := &quot;low&quot;;
++		endif
++		SendSysMessage(who, &quot;This item is of &quot; + quality_descr + &quot; quality, and is in &quot; + damage_descr + &quot; condition.&quot;);
++	else
++		SendSysMessage(who, &quot;You can't quite tell . . .&quot;);
++	endif
++
++endprogram
+
+Added: trunk/096/pkg/skills/armslore/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/skills/armslore/config/icp.cfg	2006-05-15 04:56:12 UTC (rev 1425)
++++ trunk/096/pkg/skills/armslore/config/icp.cfg	2006-05-15 16:34:38 UTC (rev 1426)
+@@ -0,0 +1,12 @@
++ICP Register
++{
++        Name            Arms Lore
++        Version         1.0
++        Description     Arms Lore Skill
++
++        Creator         Distro Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+
+Added: trunk/096/pkg/skills/armslore/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/armslore/pkg.cfg	2006-05-15 04:56:12 UTC (rev 1425)
++++ trunk/096/pkg/skills/armslore/pkg.cfg	2006-05-15 16:34:38 UTC (rev 1426)
+@@ -0,0 +1,8 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled         1
++Name		armslore
++Maintainer      Distro Team
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version         1.0
+
+Modified: trunk/096/pkg/systems/attributes/skills.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/skills.cfg	2006-05-15 04:56:12 UTC (rev 1425)
++++ trunk/096/pkg/systems/attributes/skills.cfg	2006-05-15 16:34:38 UTC (rev 1426)
+@@ -78,8 +78,8 @@
+ {
+ 	Name		ArmsLore
+ 	SkillId		4
+-	//Script		:armslore:armsLore
+-	Delay		10
++	Script		:armslore:armsLore
++	Delay		2
+ 
+ 	Unhides		0
+ 	DropStat	dex
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001394.html">[Poldistro-svn] r1425 - in trunk/096/pkg: OLD/skills skills skills/anatomy skills/anatomy/config systems/attributes
+</A></li>
+	<LI>Next message: <A HREF="001396.html">[Poldistro-svn] r1427 - in trunk/096/pkg: OLD/skills skills skills/spiritspeak skills/spiritspeak/config systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1395">[ date ]</a>
+              <a href="thread.html#1395">[ thread ]</a>
+              <a href="subject.html#1395">[ subject ]</a>
+              <a href="author.html#1395">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

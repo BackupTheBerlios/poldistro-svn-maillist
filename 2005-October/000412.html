@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r434 - trunk/096/pkg/items/containers/commands/admin
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r434%20-%20trunk/096/pkg/items/containers/commands/admin&In-Reply-To=%3C200510061031.j96AVlQA020675%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000411.html">
+   <LINK REL="Next"  HREF="000413.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r434 - trunk/096/pkg/items/containers/commands/admin</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r434%20-%20trunk/096/pkg/items/containers/commands/admin&In-Reply-To=%3C200510061031.j96AVlQA020675%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r434 - trunk/096/pkg/items/containers/commands/admin">austin at berlios.de
+       </A><BR>
+    <I>Thu Oct  6 12:31:47 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000411.html">[Poldistro-svn] r433 - trunk/096/pkg/utils/gumps/include
+</A></li>
+        <LI>Next message: <A HREF="000413.html">[Poldistro-svn] r435 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#412">[ date ]</a>
+              <a href="thread.html#412">[ thread ]</a>
+              <a href="subject.html#412">[ subject ]</a>
+              <a href="author.html#412">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-06 12:31:41 +0200 (Thu, 06 Oct 2005)
+New Revision: 434
+
+Modified:
+   trunk/096/pkg/items/containers/commands/admin/storageAreas.src
+Log:
+
+
+Modified: trunk/096/pkg/items/containers/commands/admin/storageAreas.src
+===================================================================
+--- trunk/096/pkg/items/containers/commands/admin/storageAreas.src	2005-10-06 09:34:03 UTC (rev 433)
++++ trunk/096/pkg/items/containers/commands/admin/storageAreas.src	2005-10-06 10:31:41 UTC (rev 434)
+@@ -8,8 +8,6 @@
+ include &quot;:gumps:gumps&quot;;
+ include &quot;:gumps:gumps_ex&quot;;
+ 
+-unload_scripts(&quot;&quot;);
+-
+ program command_StorageAreas(mobile)
+ 	var area_name := AreaNamesGump(mobile);
+ 	if ( !area_name )
+@@ -46,6 +44,15 @@
+ 		
+ 		counter := counter+1;
+ 		y_pos := y_pos+20;
++		if ( counter &gt; 21 )
++			counter := 1;
++			y_pos := 40;
++			GFAddButton(gump, 265, 445, 2648, 2649, GF_PAGE_BTN, page_num+1);
++			page_num := page_num+1;
++			GFPage(gump, page_num);
++			GFAddButton(gump, 265, 15, 2650, 2651, GF_PAGE_BTN, page_num-1);
++		endif
++		sleepms(2);
+ 	endforeach
+ 	
+ 	var input := GFSendGump(mobile, gump);
+@@ -54,7 +61,6 @@
+ endfunction
+ 
+ function RootContainersGump(mobile, area_name)
+-	var storage_areas := StorageAreas();
+ 	var root_containers := CP_GetRootContainersInStorageArea(area_name);
+ 	
+ 	var gump := GFCreateGump();
+@@ -68,7 +74,17 @@
+ 	foreach container in (root_containers)
+ 		GFAddButton(gump, 20, y_pos+3, 2117, 2118, GF_CLOSE_BTN, _container_iter);
+ 		GFTextLine(gump, 40, y_pos, 2100, container.desc);
++		
+ 		y_pos := y_pos+20;
++		counter := counter+1;
++		if ( counter &gt; 21 )
++			counter := 1;
++			y_pos := 40;
++			GFAddButton(gump, 265, 445, 2648, 2649, GF_PAGE_BTN, page_num+1);
++			page_num := page_num+1;
++			GFPage(gump, page_num);
++			GFAddButton(gump, 265, 15, 2650, 2651, GF_PAGE_BTN, page_num-1);
++		endif
+ 		sleepms(2);
+ 	endforeach
+ 	
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000411.html">[Poldistro-svn] r433 - trunk/096/pkg/utils/gumps/include
+</A></li>
+	<LI>Next message: <A HREF="000413.html">[Poldistro-svn] r435 - trunk/096/pkg/mobiles/brainAI/complete/exampleNPC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#412">[ date ]</a>
+              <a href="thread.html#412">[ thread ]</a>
+              <a href="subject.html#412">[ subject ]</a>
+              <a href="author.html#412">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

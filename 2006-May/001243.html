@@ -1,0 +1,341 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1271 - trunk/096/config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1271%20-%20trunk/096/config&In-Reply-To=%3C200605060113.k461Dvtb013522%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001242.html">
+   <LINK REL="Next"  HREF="001244.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1271 - trunk/096/config</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1271%20-%20trunk/096/config&In-Reply-To=%3C200605060113.k461Dvtb013522%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1271 - trunk/096/config">austin at berlios.de
+       </A><BR>
+    <I>Sat May  6 03:13:57 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001242.html">[Poldistro-svn] r1270 - in trunk/096/pkg/systems/spawnSystem: . commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001244.html">[Poldistro-svn] r1272 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1243">[ date ]</a>
+              <a href="thread.html#1243">[ thread ]</a>
+              <a href="subject.html#1243">[ subject ]</a>
+              <a href="author.html#1243">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-06 03:13:46 +0200 (Sat, 06 May 2006)
+New Revision: 1271
+
+Modified:
+   trunk/096/config/animxlate.cfg
+   trunk/096/config/armrzone.cfg
+   trunk/096/config/console.cfg
+   trunk/096/config/fileaccess.cfg
+   trunk/096/config/movecost.cfg
+   trunk/096/config/repsys.cfg
+   trunk/096/config/servers.cfg
+   trunk/096/config/stacking.cfg
+   trunk/096/config/startloc.cfg
+Log:
+Assigned elem names so they can be read.
+
+Modified: trunk/096/config/animxlate.cfg
+===================================================================
+--- trunk/096/config/animxlate.cfg	2006-05-06 00:22:03 UTC (rev 1270)
++++ trunk/096/config/animxlate.cfg	2006-05-06 01:13:46 UTC (rev 1271)
+@@ -15,7 +15,7 @@
+ # don't do illegal things and turn invisible.
+ 
+ 
+-OnMount
++OnMount OnMount
+ {
+ 	0x00 0x17	# Walk (unarmed) / Ride - slow
+ 	0x01 0x17	# Walk (armed) / Ride - slow
+
+Modified: trunk/096/config/armrzone.cfg
+===================================================================
+--- trunk/096/config/armrzone.cfg	2006-05-06 00:22:03 UTC (rev 1270)
++++ trunk/096/config/armrzone.cfg	2006-05-06 01:13:46 UTC (rev 1271)
+@@ -19,7 +19,7 @@
+ # You may define multiple layers per zone.
+ #
+ 
+-ArmorZone
++ArmorZone Body
+ {
+ 	Name	Body
+ 	Chance	44
+@@ -30,21 +30,21 @@
+ 	Layer	17
+ }
+ 
+-ArmorZone
++ArmorZone Arms
+ {
+ 	Name	Arms
+ 	Chance	14
+ 	Layer	19
+ }
+ 
+-ArmorZone
++ArmorZone Head
+ {
+ 	Name	Head
+ 	Chance	14
+ 	Layer	6
+ }
+ 
+-ArmorZone
++ArmorZone Legs/Feet
+ {
+ 	Name	Legs/feet
+ 	Chance	14
+@@ -53,14 +53,14 @@
+ 	Layer	24
+ }
+ 
+-ArmorZone
++ArmorZone Neck
+ {
+ 	Name	Neck
+ 	Chance	7
+ 	Layer	10
+ }
+ 
+-ArmorZone
++ArmorZone Hands
+ {
+ 	Name	Hands
+ 	Chance	7
+
+Modified: trunk/096/config/console.cfg
+===================================================================
+--- trunk/096/config/console.cfg	2006-05-06 00:22:03 UTC (rev 1270)
++++ trunk/096/config/console.cfg	2006-05-06 01:13:46 UTC (rev 1271)
+@@ -25,7 +25,7 @@
+ # Reloadable with ReloadConfiguration() (polsys.em) or SIGHUP under linux
+ #
+ 
+-Commands
++Commands Commands
+ {
+ 	CMD a about About POL
+ #	CMD A
+
+Modified: trunk/096/config/fileaccess.cfg
+===================================================================
+--- trunk/096/config/fileaccess.cfg	2006-05-06 00:22:03 UTC (rev 1270)
++++ trunk/096/config/fileaccess.cfg	2006-05-06 01:13:46 UTC (rev 1271)
+@@ -26,7 +26,7 @@
+ ##
+ 
+ # Everything may log stuff
+-FileAccess
++FileAccess LogFiles
+ {
+ 	Package		*
+ 	Extension	.log
+@@ -35,7 +35,7 @@
+ 	AllowAppend	1
+ }
+ 
+-FileAccess
++FileAccess MOTD
+ {
+ 	Package		motd
+ 	Extension	.txt
+
+Modified: trunk/096/config/movecost.cfg
+===================================================================
+--- trunk/096/config/movecost.cfg	2006-05-06 00:22:03 UTC (rev 1270)
++++ trunk/096/config/movecost.cfg	2006-05-06 01:13:46 UTC (rev 1271)
+@@ -16,7 +16,7 @@
+ #####################################
+ 
+ 
+-Walking
++Walking Walking
+ {
+ 	1	0.10
+ 	25	0.25
+@@ -27,7 +27,7 @@
+ 	Over	60.0
+ }
+ 
+-Running
++Running Running
+ {
+ 	1	0.25
+ 	25	0.50
+
+Modified: trunk/096/config/repsys.cfg
+===================================================================
+--- trunk/096/config/repsys.cfg	2006-05-06 00:22:03 UTC (rev 1270)
++++ trunk/096/config/repsys.cfg	2006-05-06 01:13:46 UTC (rev 1271)
+@@ -8,7 +8,7 @@
+ #
+ #####################################
+ 
+-General
++General General
+ {
+ 	CriminalFlagInterval	120		# Time, in seconds, for which you will be marked criminal
+ 	AggressorFlagTimeout	120		# Time, in seconds, for which you will be marked an aggressor
+
+Modified: trunk/096/config/servers.cfg
+===================================================================
+--- trunk/096/config/servers.cfg	2006-05-06 00:22:03 UTC (rev 1270)
++++ trunk/096/config/servers.cfg	2006-05-06 01:13:46 UTC (rev 1271)
+@@ -21,19 +21,19 @@
+ #
+ #####################################
+ 
+-GameServer
++GameServer POL-LOCAL
+ {
+ 	Name	POL local
+ 	IP	127.0.0.1
+ 	Port	5003
+ }
+-GameServer
++GameServer POL-LAN
+ {
+ 	Name	POL
+ 	IP	--lan--
+ 	Port	5003
+ }
+-GameServer
++GameServer POL-WAN
+ {
+ 	Name	POL-ip
+ 	IP	--ip--
+
+Modified: trunk/096/config/stacking.cfg
+===================================================================
+--- trunk/096/config/stacking.cfg	2006-05-06 00:22:03 UTC (rev 1270)
++++ trunk/096/config/stacking.cfg	2006-05-06 01:13:46 UTC (rev 1271)
+@@ -1,5 +1,5 @@
+ 
+-Stacking 
++Stacking Stacking
+ {
+ 	IgnoreCprops lockeddown
+ }
+
+Modified: trunk/096/config/startloc.cfg
+===================================================================
+--- trunk/096/config/startloc.cfg	2006-05-06 00:22:03 UTC (rev 1270)
++++ trunk/096/config/startloc.cfg	2006-05-06 01:13:46 UTC (rev 1271)
+@@ -19,21 +19,21 @@
+ # You could set all the locations to the same coordinate to force players to start in one town.
+ 
+ 
+-StartingLocation
++StartingLocation Yew
+ {
+ 	City		Yew
+ 	Description	Town Center
+ 	Coordinate	535,992,0
+ }
+ 
+-StartingLocation
++StartingLocation Minoc
+ {
+ 	City		Minoc
+ 	Description	East Bridge
+ 	Coordinate	2539,501,30
+ }
+ 
+-StartingLocation
++StartingLocation Britain
+ {
+ 	City		Britain
+ 	Description	Castle Britania
+@@ -41,42 +41,42 @@
+ }
+ 
+ 
+-StartingLocation
++StartingLocation Moonglow
+ {
+ 	City		Moonglow
+ 	Description	Docks
+ 	Coordinate	4407,1045,0
+ }
+ 
+-StartingLocation
++StartingLocation Trinsic
+ {
+ 	City		Trinsic
+ 	Description	West Gate
+ 	Coordinate	1832,2779,0
+ }
+ 
+-StartingLocation
++StartingLocation Magincia
+ {
+ 	City		Magincia
+ 	Description	Docks
+ 	Coordinate	3675,2259,20
+ }
+ 
+-StartingLocation
++StartingLocation Jhelom
+ {
+ 	City		Jhelom
+ 	Description	Docks
+ 	Coordinate	1492,3696,0
+ }
+ 
+-StartingLocation
++StartingLocation Skara Brae
+ {
+ 	City		Skara Brae
+ 	Description	Docks
+ 	Coordinate	639,2236,0
+ }
+ 
+-StartingLocation
++StartingLocation Vesper
+ {
+ 	City		Vesper
+ 	Description	Docks
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001242.html">[Poldistro-svn] r1270 - in trunk/096/pkg/systems/spawnSystem: . commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001244.html">[Poldistro-svn] r1272 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1243">[ date ]</a>
+              <a href="thread.html#1243">[ thread ]</a>
+              <a href="subject.html#1243">[ subject ]</a>
+              <a href="author.html#1243">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

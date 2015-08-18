@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r621 - in trunk/096/pkg/systems/housing: . commands commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r621%20-%20in%20trunk/096/pkg/systems/housing%3A%20.%20commands%20commands/gm&In-Reply-To=%3C200510172238.j9HMcokU020420%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000588.html">
+   <LINK REL="Next"  HREF="000595.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r621 - in trunk/096/pkg/systems/housing: . commands commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r621%20-%20in%20trunk/096/pkg/systems/housing%3A%20.%20commands%20commands/gm&In-Reply-To=%3C200510172238.j9HMcokU020420%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r621 - in trunk/096/pkg/systems/housing: . commands commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Tue Oct 18 00:38:50 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000588.html">[Poldistro-svn] r618 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000595.html">[Poldistro-svn] r622 - trunk/096/pkg/systems/housing/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#594">[ date ]</a>
+              <a href="thread.html#594">[ thread ]</a>
+              <a href="subject.html#594">[ subject ]</a>
+              <a href="author.html#594">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-18 00:38:46 +0200 (Tue, 18 Oct 2005)
+New Revision: 621
+
+Added:
+   trunk/096/pkg/systems/housing/commands/
+   trunk/096/pkg/systems/housing/commands/gm/
+   trunk/096/pkg/systems/housing/commands/gm/destroyMulti.src
+   trunk/096/pkg/systems/housing/commands/gm/makeMulti.src
+Log:
+Commands for making and removing multis.
+
+Added: trunk/096/pkg/systems/housing/commands/gm/destroyMulti.src
+===================================================================
+--- trunk/096/pkg/systems/housing/commands/gm/destroyMulti.src	2005-10-17 22:32:58 UTC (rev 620)
++++ trunk/096/pkg/systems/housing/commands/gm/destroyMulti.src	2005-10-17 22:38:46 UTC (rev 621)
+@@ -0,0 +1,34 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++
++program textcmd_DestroyMulti(who, serial)
++	serial := CInt(serial);
++	var multi;
++	
++	if ( !serial )
++		SendSysMessage(who, &quot;Target an item in the multi.&quot;);
++		var targ := target(who);
++	
++		if ( targ.multi )
++			multi := targ.multi;
++		else
++			PrintTextAbovePrivate(targ, &quot;I dont have a multi property.&quot;, who);
++			return 0;
++		endif
++	else
++		multi := SystemFindObjectBySerial(serial);
++	endif
++	
++	var destroyed := DestroyMulti(multi);
++	
++	if ( destroyed.errortext )
++		SendSysMessage(who, &quot;Error: &quot;+destroyed.errortext);
++	endif
++	
++	return destroyed;
++endprogram
+
+Added: trunk/096/pkg/systems/housing/commands/gm/makeMulti.src
+===================================================================
+--- trunk/096/pkg/systems/housing/commands/gm/makeMulti.src	2005-10-17 22:32:58 UTC (rev 620)
++++ trunk/096/pkg/systems/housing/commands/gm/makeMulti.src	2005-10-17 22:38:46 UTC (rev 621)
+@@ -0,0 +1,27 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++
++program textcmd_MakeMulti(who, text)
++	if ( !CInt(text) )
++		text := GetObjTypeByName(text);
++	endif
++	
++	var targ := TargetMultiPlacement(who, text);
++	
++	if ( targ == error )
++		SendSysMessage(who, &quot;[&quot;+text+&quot;] -&gt;&quot;+targ.errortext);
++		return 0;
++	endif
++	
++	var multi := CreateMultiAtLocation(targ.x, targ.y, targ.z, text, CRMULTI_IGNORE_ALL);
++	if ( multi.errortext )
++		SendSysMessage(who, &quot;Error:&quot;+multi.errortext);
++	endif
++	
++	return multi;
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000588.html">[Poldistro-svn] r618 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000595.html">[Poldistro-svn] r622 - trunk/096/pkg/systems/housing/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#594">[ date ]</a>
+              <a href="thread.html#594">[ thread ]</a>
+              <a href="subject.html#594">[ subject ]</a>
+              <a href="author.html#594">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

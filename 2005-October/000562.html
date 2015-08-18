@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r592 - in trunk/096/pkg/systems/crafting: . commands commands/test
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r592%20-%20in%20trunk/096/pkg/systems/crafting%3A%20.%20commands%20commands/test&In-Reply-To=%3C200510130344.j9D3iBpn018400%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000561.html">
+   <LINK REL="Next"  HREF="000563.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r592 - in trunk/096/pkg/systems/crafting: . commands commands/test</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r592%20-%20in%20trunk/096/pkg/systems/crafting%3A%20.%20commands%20commands/test&In-Reply-To=%3C200510130344.j9D3iBpn018400%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r592 - in trunk/096/pkg/systems/crafting: . commands commands/test">austin at berlios.de
+       </A><BR>
+    <I>Thu Oct 13 05:44:11 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000561.html">[Poldistro-svn] r591 - trunk/096/pkg/utils/datafile/include
+</A></li>
+        <LI>Next message: <A HREF="000563.html">[Poldistro-svn] r593 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#562">[ date ]</a>
+              <a href="thread.html#562">[ thread ]</a>
+              <a href="subject.html#562">[ subject ]</a>
+              <a href="author.html#562">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-13 05:44:06 +0200 (Thu, 13 Oct 2005)
+New Revision: 592
+
+Added:
+   trunk/096/pkg/systems/crafting/commands/
+   trunk/096/pkg/systems/crafting/commands/test/
+   trunk/096/pkg/systems/crafting/commands/test/muadDice.src
+Log:
+Command to generate a string for RandomDiceRoll()
+Its not quite finished - this thing involves quadratics from hell :-P
+
+Added: trunk/096/pkg/systems/crafting/commands/test/muadDice.src
+===================================================================
+--- trunk/096/pkg/systems/crafting/commands/test/muadDice.src	2005-10-13 01:01:43 UTC (rev 591)
++++ trunk/096/pkg/systems/crafting/commands/test/muadDice.src	2005-10-13 03:44:06 UTC (rev 592)
+@@ -0,0 +1,55 @@
++/*
++ * $Id$
++ *
++ * Purpose
++ * Temporary script by Austin so Muad can be a lazy bitch and get dice strings.
++ * 
++ * Examples:
++ * 7 7 = 7d1
++ * 5 25 = 5d5
++ * 1 11 = 1d11
++ * 3 14 = 1d12+2 or 3d5-1
++ * 13 55 = 
++ */
++
++use uo;
++use os;
++use math;
++use file;
++
++program command_IWantADiceString(who, text)
++	text := SplitWords(text);
++	
++	var min := CInt(text[1]);
++	var max := CInt(text[2]);
++	if ( min &lt; 0 )
++		SendSysMessage(who, &quot;Error - Min value is &lt;= 0. Must be 1 or higher.&quot;);
++		return 0;
++	elseif ( max &lt; min )
++		SendSysMessage(who, &quot;Error - Max value must be greater than the min value.&quot;);
++		return 0;
++	endif
++	
++	DieOutputInfo(who, &quot;Generating dice. Min='&quot;+min+&quot;' Max='&quot;+max+&quot;'&quot;);
++	var difference := CDbl(max-min);
++	var division := CDbl(CDbl(max) / CDbl(min));
++	var floor_val := Floor(division); // Turns something like 44.5 to 44.0 78.3333 to 78.0
++	
++	if ( difference == 0.0 )
++		DieOutputInfo(who, min+&quot;d1&quot;);
++		return 1;
++	elseif ( floor_val == division ) // Perfect roll
++		DieOutputInfo(who, min+&quot;d&quot;+max);
++		return 1;
++	else
++		DieOutputInfo(who, &quot;I hate you!&quot;);
++		return 0;
++	endif	
++endprogram
++
++function DieOutputInfo(who, text)
++	SendSysMessage(who, &quot;&quot;+text);
++	LogToFile(&quot;::log/muadDice.log&quot;, &quot;&quot;+text);
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000561.html">[Poldistro-svn] r591 - trunk/096/pkg/utils/datafile/include
+</A></li>
+	<LI>Next message: <A HREF="000563.html">[Poldistro-svn] r593 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#562">[ date ]</a>
+              <a href="thread.html#562">[ thread ]</a>
+              <a href="subject.html#562">[ subject ]</a>
+              <a href="author.html#562">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r488 - trunk/096/pkg/items/walkon/teleport
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r488%20-%20trunk/096/pkg/items/walkon/teleport&In-Reply-To=%3C200510091455.j99EtDjw023798%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000460.html">
+   <LINK REL="Next"  HREF="000462.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r488 - trunk/096/pkg/items/walkon/teleport</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r488%20-%20trunk/096/pkg/items/walkon/teleport&In-Reply-To=%3C200510091455.j99EtDjw023798%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r488 - trunk/096/pkg/items/walkon/teleport">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct  9 16:55:13 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000460.html">[Poldistro-svn] r487 - trunk/096/pkg/items/walkon/teleport
+</A></li>
+        <LI>Next message: <A HREF="000462.html">[Poldistro-svn] r489 - trunk/096/pkg/items
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#461">[ date ]</a>
+              <a href="thread.html#461">[ thread ]</a>
+              <a href="subject.html#461">[ subject ]</a>
+              <a href="author.html#461">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-09 16:55:12 +0200 (Sun, 09 Oct 2005)
+New Revision: 488
+
+Modified:
+   trunk/096/pkg/items/walkon/teleport/use.src
+Log:
+
+
+Modified: trunk/096/pkg/items/walkon/teleport/use.src
+===================================================================
+--- trunk/096/pkg/items/walkon/teleport/use.src	2005-10-09 14:11:36 UTC (rev 487)
++++ trunk/096/pkg/items/walkon/teleport/use.src	2005-10-09 14:55:12 UTC (rev 488)
+@@ -0,0 +1,76 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use polsys;
++
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumps_ex&quot;;
++
++unload_scripts(&quot;&quot;);
++
++const REALM_TEXT	:= 0xA001;
++const X_TEXT		:= 0xA002;
++const Y_TEXT		:= 0xA003;
++const Z_TEXT		:= 0xA004;
++
++const CANCEL_BTN	:= 0xB000;
++const OKAY_BTN		:= 0xB001;
++
++program useScript(who, tile)
++	var dest := GetObjProperty(tile, &quot;Destination&quot;);
++	if ( !dest )
++		dest := struct;
++		dest.+realm:=tile.realm;
++		dest.+x:=tile.x;
++		dest.+y:=tile.y;
++		dest.+z:=tile.z;
++	endif
++	
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 450, 230);
++	GFResizePic(gump, 10, 10, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 430, 40);
++	GFTextMid(gump, 10, 20, 430, 2100, &quot;Teleporter Setup Menu&quot;);
++	
++	GFResizePic(gump, 10, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 430, 50);
++	GFTextLine(gump, 20, 60, 2100, &quot;Use the fields below to change the coordinates the&quot;);
++	GFTextLine(gump, 20, 80, 2100, &quot;teleporter sends any mobiles to that walk over it.&quot;);
++	
++	GFResizePic(gump, 10, 110, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 430, 111);
++	GFTextLine(gump, 20, 120, 2100, &quot;Realm&quot;);
++	GFResizePic(gump, 120, 115, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 100, 30);
++	GFTextEntry(gump, 127, 120, 80, 20, 2100, dest.realm, REALM_TEXT);
++	
++	GFTextLine(gump, 20, 143, 2100, &quot;X Coordinate&quot;);
++	GFResizePic(gump, 120, 138, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 100, 30);
++	GFTextEntry(gump, 127, 143, 80, 20, 2100, CInt(dest.x), X_TEXT);
++	
++	GFTextLine(gump, 20, 166, 2100, &quot;Y Coordinate&quot;);
++	GFResizePic(gump, 120, 161, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 100, 30);
++	GFTextEntry(gump, 127, 166, 80, 20, 2100, CInt(dest.y), Y_TEXT);
++	
++	GFTextLine(gump, 20, 189, 2100, &quot;Z Coordinate&quot;);
++	GFResizePic(gump, 120, 184, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 100, 30);
++	GFTextEntry(gump, 127, 189, 80, 20, 2100, CInt(dest.z), Z_TEXT);
++	
++	GFAddButton(gump, 304, 135, 2076, 2075, GF_CLOSE_BTN, OKAY_BTN);
++	GFAddButton(gump, 300, 175, 2121, 2120, GF_CLOSE_BTN, CANCEL_BTN);
++	
++	var input := GFSendGump(who, gump);
++	if ( input[OKAY_BTN] )
++		dest.realm := CStr(GFExtractData(input, REALM_TEXT));
++		dest.x := CInt(GFExtractData(input, X_TEXT));
++		dest.y := CInt(GFExtractData(input, Y_TEXT));
++		dest.z := CInt(GFExtractData(input, Z_TEXT));
++		
++		SetObjProperty(tile, &quot;Destination&quot;, dest);
++		SendSysMessage(who, &quot;Done.&quot;);
++		return 1;
++	else
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000460.html">[Poldistro-svn] r487 - trunk/096/pkg/items/walkon/teleport
+</A></li>
+	<LI>Next message: <A HREF="000462.html">[Poldistro-svn] r489 - trunk/096/pkg/items
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#461">[ date ]</a>
+              <a href="thread.html#461">[ thread ]</a>
+              <a href="subject.html#461">[ subject ]</a>
+              <a href="author.html#461">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

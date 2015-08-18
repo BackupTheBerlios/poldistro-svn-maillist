@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r670 - trunk/096/pkg/commands/seer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r670%20-%20trunk/096/pkg/commands/seer&In-Reply-To=%3C200510270420.j9R4K55Y018568%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000643.html">
+   <LINK REL="Next"  HREF="000646.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r670 - trunk/096/pkg/commands/seer</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r670%20-%20trunk/096/pkg/commands/seer&In-Reply-To=%3C200510270420.j9R4K55Y018568%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r670 - trunk/096/pkg/commands/seer">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Thu Oct 27 06:20:05 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000643.html">[Poldistro-svn] r669 - trunk/096/config
+</A></li>
+        <LI>Next message: <A HREF="000646.html">[Poldistro-svn] r671 - trunk/096/pkg/items/containers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#644">[ date ]</a>
+              <a href="thread.html#644">[ thread ]</a>
+              <a href="subject.html#644">[ subject ]</a>
+              <a href="author.html#644">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-27 06:20:03 +0200 (Thu, 27 Oct 2005)
+New Revision: 670
+
+Modified:
+   trunk/096/pkg/commands/seer/createlightsource.src
+Log:
+
+
+Modified: trunk/096/pkg/commands/seer/createlightsource.src
+===================================================================
+--- trunk/096/pkg/commands/seer/createlightsource.src	2005-10-27 04:19:34 UTC (rev 669)
++++ trunk/096/pkg/commands/seer/createlightsource.src	2005-10-27 04:20:03 UTC (rev 670)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ use os;
+ 
+@@ -4,27 +7,27 @@
+ include &quot;include/sound&quot;;
+ include &quot;include/attributes&quot;;
+ 
++program command_CreateLightsource(caster)
+ 
+-program createlightsource(caster)
+ 	var cast_loc := TargetCoordinates( caster );
+ 	if (!cast_loc.x)
+-		return;
++		return 0;
+ 	endif
+ 
+-    if (!CheckLosAt( caster, cast_loc.x, cast_loc.y, cast_loc.z ))
+-        SendSysMessage( caster, &quot;You don't have line of sight to that.&quot; );
+-        return;
+-    endif
+-    var thecritter;
++	if( !CheckLosAt( caster, cast_loc.x, cast_loc.y, cast_loc.z ) )
++		SendSysMessage( caster, &quot;You don't have line of sight to that.&quot; );
++		return 0;
++	endif
+ 
+-    var parms := {};
++	var thecritter;
++	var parms := {};
+ 
+-    parms .+ script := &quot;tamed&quot;;
++	parms .+ script := &quot;tamed&quot;;
+ 	parms .+ name := &quot;a magical lightsource&quot;;
+ 
+-    thecritter := CreateNpcFromTemplate(&quot;wisp&quot;, cast_loc.x, cast_loc.y,cast_loc.z, parms, caster.realm);
+-    SetObjProperty(thecritter,&quot;master&quot;, caster.serial);
+-    SetObjProperty(thecritter, &quot;summoned&quot;,1);
++	thecritter := CreateNpcFromTemplate(&quot;wisp&quot;, cast_loc.x, cast_loc.y,cast_loc.z, parms, caster.realm);
++	SetObjProperty(thecritter,&quot;master&quot;, caster.serial);
++	SetObjProperty(thecritter, &quot;summoned&quot;,1);
+ 	var thelight := CreateItemAtLocation(1, 1, 1, 0xa22, 1, thecritter.realm);
+ 	thelight.newbie := 1;
+ 	EquipItem(thecritter, thelight);
+@@ -32,9 +35,9 @@
+ 	SetBaseStrength(thecritter,1);
+ 	SetMana(thecritter, 1);
+ 	SetBaseIntelligence(thecritter,1);
+-    PlaySoundEffect(caster, SFX_SPELL_SUMMON_ELEMENTAL);
+-    Detach();
+-    sleep(120);
+-    ApplyRawDamage(thecritter, GetHp(thecritter) + 3); //should kill it off
++	PlaySoundEffect(caster, SFX_SPELL_SUMMON_ELEMENTAL);
++	Detach();
++	sleep(120);
++	ApplyRawDamage(thecritter, GetHp(thecritter) + 3); //should kill it off
+ 
+ endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000643.html">[Poldistro-svn] r669 - trunk/096/config
+</A></li>
+	<LI>Next message: <A HREF="000646.html">[Poldistro-svn] r671 - trunk/096/pkg/items/containers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#644">[ date ]</a>
+              <a href="thread.html#644">[ thread ]</a>
+              <a href="subject.html#644">[ subject ]</a>
+              <a href="author.html#644">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

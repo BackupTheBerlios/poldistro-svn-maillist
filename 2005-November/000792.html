@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r818 - trunk/096/pkg/systems/combat
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r818%20-%20trunk/096/pkg/systems/combat&In-Reply-To=%3C200511020404.jA244Cg6009923%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000791.html">
+   <LINK REL="Next"  HREF="000793.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r818 - trunk/096/pkg/systems/combat</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r818%20-%20trunk/096/pkg/systems/combat&In-Reply-To=%3C200511020404.jA244Cg6009923%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r818 - trunk/096/pkg/systems/combat">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 05:04:12 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000791.html">[Poldistro-svn] r817 - in trunk/096/pkg/systems/combat: . config include
+</A></li>
+        <LI>Next message: <A HREF="000793.html">[Poldistro-svn] r819 - trunk/096/pkg/systems/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#792">[ date ]</a>
+              <a href="thread.html#792">[ thread ]</a>
+              <a href="subject.html#792">[ subject ]</a>
+              <a href="author.html#792">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 05:04:02 +0100 (Wed, 02 Nov 2005)
+New Revision: 818
+
+Modified:
+   trunk/096/pkg/systems/combat/mainHitScript.src
+Log:
+Updated ParryCheck() to not do reverse checks (eliminating the need for as much indenting)
+
+Modified: trunk/096/pkg/systems/combat/mainHitScript.src
+===================================================================
+--- trunk/096/pkg/systems/combat/mainHitScript.src	2005-11-02 04:00:32 UTC (rev 817)
++++ trunk/096/pkg/systems/combat/mainHitScript.src	2005-11-02 04:04:02 UTC (rev 818)
+@@ -215,42 +215,43 @@
+ 		shield := GetEquipmentByLayer(defender, LAYER_HAND1);
+ 	endif
+ 	
+-	if ( shield.IsA(POLCLASS_ARMOR) )
+-		var parry_elem := CS_GetSettingsCfgElem(&quot;Parry&quot;);
+-		var divisor := CDbl(parry_elem.ParryDivisor);
+-		var roll := CDbl(parry_elem.ParryRoll);
+-		var parry_chance := CDbl(AP_GetSkill(attacker, &quot;Tactics&quot;)) / divisor;
++	if ( !shield.IsA(POLCLASS_ARMOR) )
++		return 0;
++	endif
++	
++	var parry_elem := CS_GetSettingsCfgElem(&quot;Parry&quot;);
++	var divisor := CDbl(parry_elem.ParryDivisor);
++	var roll := CDbl(parry_elem.ParryRoll);
++	var parry_chance := CDbl(AP_GetSkill(attacker, &quot;Tactics&quot;)) / divisor;
++	
++	if ( RandomFloat(roll) &gt; parry_chance ) // Failed
++		return 0;
++	endif
++	
++	//PerformAction(defender, ANIM_TWIST_DODGE);
++	SendSysMessage(defender, &quot;You deflect some damage using your shield.&quot;);
++	var decrease := RandomInt(shield.ar)+1;
++	var new_dmg := rawdamage - decrease;
++	
++	if ( attacker.cmdlevel )
++		PrintTextAbovePrivate(defender, &quot;Parry! Lowering damage from [&quot;+rawdamage+&quot;] to [&quot;+new_dmg+&quot;]&quot;, attacker);
++	endif
++	if ( defender.cmdlevel )
++		PrintTextAbovePrivate(defender, &quot;Parry! Lowering damage from [&quot;+rawdamage+&quot;] to [&quot;+new_dmg+&quot;]&quot;, defender);
++	endif
++	
++	rawdamage := new_dmg;
+ 		
+-		if ( RandomFloat(roll) &lt; parry_chance )
+-			//PerformAction(defender, ANIM_TWIST_DODGE);
+-			SendSysMessage(defender, &quot;You deflect some damage using your shield.&quot;);
+-			var decrease := RandomInt(shield.ar)+1;
+-			var new_dmg := rawdamage - decrease;
+-			
+-			if ( attacker.cmdlevel )
+-				PrintTextAbovePrivate(defender, &quot;Parry! Lowering damage from [&quot;+rawdamage+&quot;] to [&quot;+new_dmg+&quot;]&quot;, attacker);
+-			endif
+-			if ( defender.cmdlevel )
+-				PrintTextAbovePrivate(defender, &quot;Parry! Lowering damage from [&quot;+rawdamage+&quot;] to [&quot;+new_dmg+&quot;]&quot;, defender);
+-			endif
+-			
+-			rawdamage := new_dmg;
+-				
+-			if ( rawdamage &gt; CInt(0.15*shield.hp) )
+-				SendSysMessage(defender, shield.desc+&quot; takes some damage.&quot;);
+-				shield.quality := shield.quality * CDbl(CS_GetSettingsCfgElem(&quot;Parry&quot;).WearRate);
+-				if ( shield.quality &lt;= 0.1 )
+-					SendSysMessage(defender, shield.desc+&quot; has been destroyed.&quot;);
+-					MoveObjectToLocation(shield, 1, 1, 1, defender.realm, MOVEOBJECT_FORCELOCATION);
+-					DestroyItem(shield);
+-				elseif ( shield.hp &gt; shield.maxhp )
+-					shield.hp := shield.maxhp;
+-				endif
+-			endif
+-			
+-			return 1;
++	if ( rawdamage &gt; CInt(0.15*shield.hp) )
++		SendSysMessage(defender, shield.desc+&quot; takes some damage.&quot;);
++		shield.quality := shield.quality * CDbl(CS_GetSettingsCfgElem(&quot;Parry&quot;).WearRate);
++		if ( shield.quality &lt;= 0.1 )
++			SendSysMessage(defender, shield.desc+&quot; has been destroyed.&quot;);
++			MoveObjectToLocation(shield, 1, 1, 1, defender.realm, MOVEOBJECT_FORCELOCATION);
++			DestroyItem(shield);
++		elseif ( shield.hp &gt; shield.maxhp )
++			shield.hp := shield.maxhp;
+ 		endif
+ 	endif
+-	
+-	return 0;
++	return 1;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000791.html">[Poldistro-svn] r817 - in trunk/096/pkg/systems/combat: . config include
+</A></li>
+	<LI>Next message: <A HREF="000793.html">[Poldistro-svn] r819 - trunk/096/pkg/systems/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#792">[ date ]</a>
+              <a href="thread.html#792">[ thread ]</a>
+              <a href="subject.html#792">[ subject ]</a>
+              <a href="author.html#792">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

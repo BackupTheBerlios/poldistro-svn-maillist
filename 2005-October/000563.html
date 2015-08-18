@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r593 - trunk/096/pkg/systems/spawnSystem/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r593%20-%20trunk/096/pkg/systems/spawnSystem/include&In-Reply-To=%3C200510130417.j9D4HkAw024466%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000562.html">
+   <LINK REL="Next"  HREF="000564.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r593 - trunk/096/pkg/systems/spawnSystem/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r593%20-%20trunk/096/pkg/systems/spawnSystem/include&In-Reply-To=%3C200510130417.j9D4HkAw024466%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r593 - trunk/096/pkg/systems/spawnSystem/include">austin at berlios.de
+       </A><BR>
+    <I>Thu Oct 13 06:17:46 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000562.html">[Poldistro-svn] r592 - in trunk/096/pkg/systems/crafting: . commands commands/test
+</A></li>
+        <LI>Next message: <A HREF="000564.html">[Poldistro-svn] r594 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#563">[ date ]</a>
+              <a href="thread.html#563">[ thread ]</a>
+              <a href="subject.html#563">[ subject ]</a>
+              <a href="author.html#563">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-13 06:17:43 +0200 (Thu, 13 Oct 2005)
+New Revision: 593
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/include/realms.inc
+Log:
+Verifies the realm name being added is valid in polsys::Realms()
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/realms.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/realms.inc	2005-10-13 03:44:06 UTC (rev 592)
++++ trunk/096/pkg/systems/spawnSystem/include/realms.inc	2005-10-13 04:17:43 UTC (rev 593)
+@@ -1,7 +1,8 @@
+ use uo;
+ use os;
++use polsys;
+ 
+-include &quot;:datafile:include/datafile&quot;;
++include &quot;:datafile:datafile&quot;;
+ 
+ /*
+  * SS_GetRealmDataFile()
+@@ -54,6 +55,11 @@
+  *
+  */
+ function SS_AddRealm(realm_name)
++	var core_realms := Realms();
++	if ( !core_realms[realm_name] )
++		return error{&quot;errortext&quot;:=&quot;'&quot;+realm_name+&quot;' is not a valid realm name.&quot;};
++	endif
++	
+ 	var data_file := SS_GetRealmDataFile();
+ 	return data_file.CreateElement(realm_name);
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000562.html">[Poldistro-svn] r592 - in trunk/096/pkg/systems/crafting: . commands commands/test
+</A></li>
+	<LI>Next message: <A HREF="000564.html">[Poldistro-svn] r594 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#563">[ date ]</a>
+              <a href="thread.html#563">[ thread ]</a>
+              <a href="subject.html#563">[ subject ]</a>
+              <a href="author.html#563">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

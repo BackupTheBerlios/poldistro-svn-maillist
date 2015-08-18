@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r421 - trunk/096/pkg/mobiles/brainAI/include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r421%20-%20trunk/096/pkg/mobiles/brainAI/include/braincore&In-Reply-To=%3C200510051308.j95D8cdo017854%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000398.html">
+   <LINK REL="Next"  HREF="000400.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r421 - trunk/096/pkg/mobiles/brainAI/include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r421%20-%20trunk/096/pkg/mobiles/brainAI/include/braincore&In-Reply-To=%3C200510051308.j95D8cdo017854%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r421 - trunk/096/pkg/mobiles/brainAI/include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct  5 15:08:38 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000398.html">[Poldistro-svn] r420 - trunk/096/pkg/items/containers/include
+</A></li>
+        <LI>Next message: <A HREF="000400.html">[Poldistro-svn] r422 - trunk/096/pkg/items/containers/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#399">[ date ]</a>
+              <a href="thread.html#399">[ thread ]</a>
+              <a href="subject.html#399">[ subject ]</a>
+              <a href="author.html#399">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-05 15:08:36 +0200 (Wed, 05 Oct 2005)
+New Revision: 421
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/include/braincore/setup.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/braincore/setup.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/braincore/setup.inc	2005-10-05 13:02:33 UTC (rev 420)
++++ trunk/096/pkg/mobiles/brainAI/include/braincore/setup.inc	2005-10-05 13:08:36 UTC (rev 421)
+@@ -103,7 +103,7 @@
+  *
+  */
+ function StartupScripts()
+-	if ( GetObjProperty(npc, &quot;npc_info&quot;) )
++	if ( GetObjProperty(npc, &quot;Initialized&quot;) )
+ 		//This can only happen if restart() was done on the npc or when POL starts up.
+ 		
+ 		if ( g_scripts.Exists(&quot;Restart&quot;) )
+@@ -114,8 +114,7 @@
+ 			endif
+ 		endif
+ 	else
+-		var npc_info := struct{&quot;npctemplate&quot;:=npc.npctemplate, &quot;serial&quot;:=npc.serial};
+-		SetObjProperty(npc, &quot;npc_info&quot;, npc_info);
++		SetObjProperty(npc, &quot;Initiaized&quot;, polcore().systime);
+ 		
+ 		if ( g_scripts.Exists(&quot;Init&quot;) )
+ 			var init_script := Run_Script_To_Completion(g_scripts[&quot;Init&quot;].script, {npc, g_settings, g_scripts});
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000398.html">[Poldistro-svn] r420 - trunk/096/pkg/items/containers/include
+</A></li>
+	<LI>Next message: <A HREF="000400.html">[Poldistro-svn] r422 - trunk/096/pkg/items/containers/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#399">[ date ]</a>
+              <a href="thread.html#399">[ thread ]</a>
+              <a href="subject.html#399">[ subject ]</a>
+              <a href="author.html#399">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

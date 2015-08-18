@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r137 - trunk/096/batchfiles
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r137%20-%20trunk/096/batchfiles&In-Reply-To=%3C200509160157.j8G1vUVr027206%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000118.html">
+   <LINK REL="Next"  HREF="000120.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r137 - trunk/096/batchfiles</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r137%20-%20trunk/096/batchfiles&In-Reply-To=%3C200509160157.j8G1vUVr027206%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r137 - trunk/096/batchfiles">austin at berlios.de
+       </A><BR>
+    <I>Fri Sep 16 03:57:30 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000118.html">[Poldistro-svn] r136 - trunk/096/pkg/utils/gumps/include
+</A></li>
+        <LI>Next message: <A HREF="000120.html">[Poldistro-svn] r138 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#119">[ date ]</a>
+              <a href="thread.html#119">[ thread ]</a>
+              <a href="subject.html#119">[ subject ]</a>
+              <a href="author.html#119">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-16 03:57:27 +0200 (Fri, 16 Sep 2005)
+New Revision: 137
+
+Modified:
+   trunk/096/batchfiles/realmgen.bat
+Log:
+Has a function for copying client files to pol\mul\
+
+Modified: trunk/096/batchfiles/realmgen.bat
+===================================================================
+--- trunk/096/batchfiles/realmgen.bat	2005-09-15 04:26:37 UTC (rev 136)
++++ trunk/096/batchfiles/realmgen.bat	2005-09-16 01:57:27 UTC (rev 137)
+@@ -24,6 +24,8 @@
+ ECHO  [ i ] - Build 'Tokuno' realm        (mapid=4)
+ ECHO  [ j ] - Build all realms - Takes a very long time!
+ ECHO.
++ECHO  [ o ] - Copy needed client files to pol\MUL\
++ECHO.
+ ECHO  [ x ] - Back
+ 
+ SET /p CMD=Command:
+@@ -38,6 +40,7 @@
+ IF /i &quot;%CMD%&quot; == &quot;h&quot; GOTO :REALM_MALAS()
+ IF /i &quot;%CMD%&quot; == &quot;i&quot; GOTO :REALM_TOKUNO()
+ IF /i &quot;%CMD%&quot; == &quot;j&quot; GOTO :BUILD_ALL_REALMS()
++IF /i &quot;%CMD%&quot; == &quot;o&quot; GOTO :COPY_CLIENT_FILES()
+ 
+ IF &quot;%CMD%&quot; == &quot;x&quot; GOTO :QUIT()
+ 
+@@ -136,5 +139,19 @@
+ %UOCNVRT_PATH% maptile realm=tokuno
+ GOTO :RETURN_TO_MENU()
+ 
++REM -- COPY_CLIENT_FILES() FUNCTION
++:COPY_CLIENT_FILES()
++SET /p UOPATH=Full path to UO directory:
++IF &quot;%UOPATH%&quot; == &quot;&quot; GOTO :RETURN_TO_MENU()
++IF NOT EXIST MUL\ MKDIR MUL
+<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">+ at ECHO</A> ON
++COPY %UOPATH%\multi.* MUL\
++COPY %UOPATH%\map* MUL\
++COPY %UOPATH%\staidx* MUL\
++COPY %UOPATH%\statics* MUL\
++COPY %UOPATH%\tiledata.mul MUL\
+<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">+ at ECHO</A> OFF
++GOTO :RETURN_TO_MENU()
++
+ REM -- QUIT FUNCTION
+ :QUIT()
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000118.html">[Poldistro-svn] r136 - trunk/096/pkg/utils/gumps/include
+</A></li>
+	<LI>Next message: <A HREF="000120.html">[Poldistro-svn] r138 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#119">[ date ]</a>
+              <a href="thread.html#119">[ thread ]</a>
+              <a href="subject.html#119">[ subject ]</a>
+              <a href="author.html#119">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

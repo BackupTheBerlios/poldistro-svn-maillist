@@ -1,0 +1,425 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r643 - in trunk/096/pkg/systems: . loot loot/commands loot/configs loot/includes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r643%20-%20in%20trunk/096/pkg/systems%3A%20.%20loot%20loot/commands%20loot/configs%20loot/includes&In-Reply-To=%3C200510241607.j9OG7AkV010107%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000615.html">
+   <LINK REL="Next"  HREF="000618.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r643 - in trunk/096/pkg/systems: . loot loot/commands loot/configs loot/includes</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r643%20-%20in%20trunk/096/pkg/systems%3A%20.%20loot%20loot/commands%20loot/configs%20loot/includes&In-Reply-To=%3C200510241607.j9OG7AkV010107%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r643 - in trunk/096/pkg/systems: . loot loot/commands loot/configs loot/includes">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 24 18:07:10 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000615.html">[Poldistro-svn] r642 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000618.html">[Poldistro-svn] r644 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#617">[ date ]</a>
+              <a href="thread.html#617">[ thread ]</a>
+              <a href="subject.html#617">[ subject ]</a>
+              <a href="author.html#617">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-24 18:07:09 +0200 (Mon, 24 Oct 2005)
+New Revision: 643
+
+Added:
+   trunk/096/pkg/systems/loot/
+   trunk/096/pkg/systems/loot/commands/
+   trunk/096/pkg/systems/loot/commands/gm/
+   trunk/096/pkg/systems/loot/commands/player/
+   trunk/096/pkg/systems/loot/commands/test/
+   trunk/096/pkg/systems/loot/configs/
+   trunk/096/pkg/systems/loot/configs/icp.cfg
+   trunk/096/pkg/systems/loot/configs/loot-groups.cfg
+   trunk/096/pkg/systems/loot/configs/loot-index.cfg
+   trunk/096/pkg/systems/loot/includes/
+   trunk/096/pkg/systems/loot/includes/lootParser.inc
+   trunk/096/pkg/systems/loot/pkg.cfg
+Log:
+An existing loot generation system I wrote.. cleaned up just a little.
+
+Added: trunk/096/pkg/systems/loot/configs/icp.cfg
+===================================================================
+--- trunk/096/pkg/systems/loot/configs/icp.cfg	2005-10-23 09:51:20 UTC (rev 642)
++++ trunk/096/pkg/systems/loot/configs/icp.cfg	2005-10-24 16:07:09 UTC (rev 643)
+@@ -0,0 +1,17 @@
++ICP Register
++{
++	Name		Loot
++	Version		1.0
++	Description	Used to control loot generating.
++	
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++	
++	Maintainer	Austin
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++	
++	//Script	cmdlevel path
++			
++	//TextCmd	cmdlevel path
++
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/loot/configs/loot-groups.cfg
+===================================================================
+--- trunk/096/pkg/systems/loot/configs/loot-groups.cfg	2005-10-23 09:51:20 UTC (rev 642)
++++ trunk/096/pkg/systems/loot/configs/loot-groups.cfg	2005-10-24 16:07:09 UTC (rev 643)
+@@ -0,0 +1,76 @@
++######################################################
++#
++# loot-groups.cfg
++#
++# These are groups where items can be randomly selected from.
++#
++# LootGroup GroupName
++# {
++# 	Item	&lt;Amount&gt;	&lt;ItemName&gt;
++# }
++#
++######################################################
++
++Group BigWeapons
++{
++	Item	1	LongBow
++	Item	1	WarAxe
++	Item	1	BattleAxe
++	Item	1	LargeBattleAxe
++	Item	1	TwoHandedAxe
++	Item	1	WarHammer
++	Item	1	WarMace
++	Item	1	Bardiche
++	Item	1	Halberd
++	Item	1	BroadSword
++	Item	1	BlackStaff
++}
++
++Group Booze
++{
++	Item	1d2 BottleOfLiquor
++	Item	1d2 BottleOfAle
++	Item	1d2 BottleOfWine
++	Item	1d2 BottleOfRum
++}
++
++Group Reagents
++{
++	Item	1d6 Batwing
++	Item	1d6 Nightshade
++	Item	1d6 Garlic
++	Item	1d6 SpiderSilk
++	Item	1d6 MandrakeRoot
++	Item	1d6 SulphurousAsh
++	Item	1d6 Ginseng
++	Item	1d6 BloodMoss
++	Item	1d6 Bone
++	Item	1d6 VialOfBlood
++	Item	1d6 EyeOfNewt
++	Item	1d6 Pumice
++	Item	1d6 SerpentScale
++	Item	1d6 DeadWood
++	Item	1d6 FertileDirt
++	Item	1d6 ExecutionersCap
++}
++
++Group Writing
++{
++	Item	1	book1
++	Item	1	book2
++	Item	1	book3
++	Item	1	book4
++	Item	1	book5
++	Item	1	book6
++	Item	1	PenAndInk
++	Item	1d10	BlankScroll
++}
++
++Group Jewelry
++{
++	Item	1	Ring
++	Item	1	Bracelet
++	Item	1	Earrings
++	Item	1	SolidNecklace
++	Item	1	BeadedNecklace
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/loot/configs/loot-index.cfg
+===================================================================
+--- trunk/096/pkg/systems/loot/configs/loot-index.cfg	2005-10-23 09:51:20 UTC (rev 642)
++++ trunk/096/pkg/systems/loot/configs/loot-index.cfg	2005-10-24 16:07:09 UTC (rev 643)
+@@ -0,0 +1,77 @@
++######################################################
++#
++# loot-index.cfg
++# 
++# This is the index for the loot system.
++# Options per element are specified below.
++#
++# [Chance] - This reflects a 100% chance. By default, it is 100 unless you specify
++# otherwise. Setting chance to '20' gives it a 20% chance of being used in the loot
++# generation process. Chance can range from 0.1 [1] to 100 [1000]. 
++# (1000 &lt;= (chance*10)) == 1 - Generates item
++#
++# Dice - This is a dice string. XdY(+-)Z. 
++#          Examples: 1d3+2   5d9-2
++#          Rolls X number of dice with Y sides. Modifies result by Z.
++#          To force a specific amount, put 0d0+Z
++#
++# LootIndex GroupName
++# {
++# 	Item	&lt;N Dice&gt;	&lt;ItemName&gt;	[Chance]	// Includes 'N' of ItemName
++#	Stack	&lt;N Dice&gt;	&lt;ItemName&gt;	[Chance]	// Stacks 'N' of ItemName
++#	Random	&lt;N Dice&gt;	&lt;Group&gt;		[Chance]	// Pick 'N' items from 'Group' randomly
++#	Group	[GroupName]					// Append another index group to the current one
++#	
++#	MagicTable	[Table]	[Amount]	[Bias]	// Not yet implemented.
++#							// Creates a magic item. [Table] can be set to a specific one or to Random. 
++#							//Bias will affect things like damage and armor modifiers. You could set it to to +5 or -5.
++# }
++#
++######################################################
++
++LootGroup Dog
++{
++	Item	1	Bone	3
++}
++
++LootGroup ElementalFire
++{
++	Stack	1d6+4	SulfurousAsh	100
++}
++
++LootGroup ElementalEarth
++{
++	Item	2d5+5	FertileDirt	100
++}
++
++LootGroup ElementalWater
++{
++	Stack	1d4	BlackPearl	100
++}
++
++LootGroup ElementalAir
++{
++	Stack	1d6+3	SpiderSilk	100
++}
++
++LootGroup Liche
++{
++	Item	2d3+2	GoldCoin	100
++	Item	1d8	GoldCoin	30
++	Item	1d10	GoldCoin	30
++	Item	2d4 	VialOfBlood	50
++	Item	1	heartofevil	0.5
++	Item	1d10	Bone		50
++	Random	2d10	Reagents	100
++	Random	2d12+10	Reagents	60	
++	Random	1d2	Writing		15
++	Random	1	Jewelry		40
++}
++
++LootIndex Rabbit
++{
++	Stack	1	Seeds	5
++	Stack	1d3	Carrot		5
++	Stack	1d3	Turnip		3
++	Stack	1d2	HeadOfLettuce	2
++}
+
+Added: trunk/096/pkg/systems/loot/includes/lootParser.inc
+===================================================================
+--- trunk/096/pkg/systems/loot/includes/lootParser.inc	2005-10-23 09:51:20 UTC (rev 642)
++++ trunk/096/pkg/systems/loot/includes/lootParser.inc	2005-10-24 16:07:09 UTC (rev 643)
+@@ -0,0 +1,129 @@
++use uo;
++use util;
++use cfgfile;
++use os;
++
++function Loot_Generate(container, loot_index)
++	if ( !container.IsA(POLCLASS_CONTAINER) )
++		return error{&quot;errortext&quot; := &quot;Object passed was not a container.&quot;};
++	endif
++
++	var index_cfg := ReadConfigFile(&quot;:loot:configs/loot-index&quot;);
++	if ( index_cfg.errortext )
++		return error{&quot;errortext&quot; := &quot;Error - Could not open loot-index.cfg -&gt; &quot;+index_cfg.errortext};
++	endif
++
++	var index_elem := index_cfg[loot_index];
++	if ( !index_elem )
++		return error{&quot;errortext&quot; := &quot;Error - loot-index.cfg elem [&quot;+index_elem+&quot;] does not exist.&quot;};
++	endif
++
++	foreach line in GetConfigStringArray(index_elem, &quot;Item&quot;)
++		Loot_CreateItem(container, line);
++		sleepms(2);
++	endforeach
++
++	foreach line in GetConfigStringArray(index_elem, &quot;Stack&quot;)
++		Loot_CreateStack(container, line);
++		sleepms(2);
++	endforeach
++
++	foreach line in GetConfigStringArray(index_elem, &quot;Random&quot;)
++		Loot_CreateRandom(container, line);
++		sleepms(2);
++	endforeach
++	
++	foreach line in GetConfigStringArray(index_elem, &quot;Group&quot;)
++		if ( line != loot_index )
++			//To do:
++			// Check to make sure were not going back into the same group
++			// to avoid a potential endless loop!
++			Loot_Generate(container, line);
++		endif
++		sleepms(2);
++	endforeach
++	
++	return 1;
++endfunction
++
++function Loot_CreateItem(container, line)
++	var parsed := Loot_ParseString(line);
++
++	if ( Loot_ChanceCheck(parsed.chance) )
++		var i;
++		for ( i:=1; i&lt;= parsed.amount; i:=i+1 )
++			var item := CreateItemInContainer(container, parsed.name);
++			if ( item.errortext )
++				return error{&quot;errortext&quot; := &quot;Error - Could not create [&quot;+parsed.name+&quot;] -&gt;&quot;+item.errortext};
++			endif
++			sleepms(2);
++		endfor
++	endif
++	
++	return 1;
++endfunction
++
++function Loot_CreateStack(container, line)
++	var parsed := Loot_ParseString(line);
++	if ( Loot_ChanceCheck(parsed.chance) )
++		var item := CreateItemInContainer(container, parsed.name, parsed.amount);
++		if ( item.errortext )
++			return error{&quot;errortext&quot; := &quot;Error - Could not create [&quot;+parsed.name+&quot;] -&gt;&quot;+item.errortext};
++		endif
++	endif
++	
++	return 1;
++endfunction
++
++function Loot_CreateRandom(container, line)
++	var parsed := Loot_ParseString(line);
++	var groups_cfg := ReadConfigFile(&quot;:loot:configs/loot-groups&quot;);
++	if ( groups_cfg.errortext )
++		return error{&quot;errortext&quot; := &quot;Error - Could not open loot-groups.cfg -&gt; &quot;+groups_cfg.errortext};
++	endif
++	
++	var groups_elem := groups_cfg[parsed.name];
++	if ( !groups_elem )
++		return error{&quot;errortext&quot; := &quot;Error - loot-groups.cfg elem [&quot;+parsed.name+&quot;] does not exist.&quot;};
++	endif
++	
++	if ( Loot_ChanceCheck(parsed.chance) )
++		var items := GetConfigStringArray(groups_elem, &quot;Item&quot;);
++		var num_items := items.size();
++		var i;
++		for ( i:=1; i&lt;=parsed.amount; i:=i+1 )
++			Loot_CreateItem(container, items[RandomInt(num_items)+1]);
++			sleepms(2);
++		endfor
++	endif
++	
++	return 1;
++endfunction
++
++function Loot_ChanceCheck(chance)
++	if ( RandomInt(1000)+1 &lt;= CInt(CDbl(chance)*10.0) )
++		return 1;
++	else
++		return 0;
++	endif
++endfunction
++
++function Loot_ParseString(line)
++	line := SplitWords(line);
++	var amount := CStr(line[1]);
++	amount := RandomDiceRoll(amount);
++
++	var name := CStr(line[2]);
++	
++	var chance := CDbl(line[3]);
++	if ( !chance )
++		chance := 100.0;
++	endif
++
++	var result := struct;
++	result.+amount := amount;
++	result.+name := name;
++	result.+chance := chance;
++
++	return result;
++endfunction
+
+Added: trunk/096/pkg/systems/loot/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/loot/pkg.cfg	2005-10-23 09:51:20 UTC (rev 642)
++++ trunk/096/pkg/systems/loot/pkg.cfg	2005-10-24 16:07:09 UTC (rev 643)
+@@ -0,0 +1,13 @@
++Enabled		1
++Name		loot
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++Maintainer	Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++#Conflicts none
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000615.html">[Poldistro-svn] r642 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000618.html">[Poldistro-svn] r644 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#617">[ date ]</a>
+              <a href="thread.html#617">[ thread ]</a>
+              <a href="subject.html#617">[ subject ]</a>
+              <a href="author.html#617">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

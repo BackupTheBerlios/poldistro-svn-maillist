@@ -1,0 +1,374 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r29 - trunk/096/pkg/mobiles/ai_brain
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r29%20-%20trunk/096/pkg/mobiles/ai_brain&In-Reply-To=%3C200509011321.j81DLqKo023786%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000011.html">
+   <LINK REL="Next"  HREF="000013.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r29 - trunk/096/pkg/mobiles/ai_brain</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r29%20-%20trunk/096/pkg/mobiles/ai_brain&In-Reply-To=%3C200509011321.j81DLqKo023786%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r29 - trunk/096/pkg/mobiles/ai_brain">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep  1 15:21:52 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000011.html">[Poldistro-svn] r28 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+        <LI>Next message: <A HREF="000013.html">[Poldistro-svn] r30 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#12">[ date ]</a>
+              <a href="thread.html#12">[ thread ]</a>
+              <a href="subject.html#12">[ subject ]</a>
+              <a href="author.html#12">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-01 15:21:52 +0200 (Thu, 01 Sep 2005)
+New Revision: 29
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/brain.src
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/brain.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/brain.src	2005-09-01 13:15:58 UTC (rev 28)
++++ trunk/096/pkg/mobiles/ai_brain/brain.src	2005-09-01 13:21:52 UTC (rev 29)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * BRAIN.SRC - v5.0
+-* Updated 8/31/2005 7:48AM
++* Updated 9/1/2005 6:20AM
+ *
+ * NPC AI-Script to control all non-setup actions. Acts as the &quot;brain&quot;
+ * and fires off external scripts that act as the &quot;nerves&quot; of the NPC.
+@@ -23,6 +23,7 @@
+ include &quot;:ai_brain:include/npc_settings&quot;;
+ include &quot;:ai_brain:include/npc_util&quot;;
+ include &quot;:ai_brain:include/braincore/error&quot;;
++include &quot;:ai_brain:include/braincore/eventprocessor&quot;;
+ include &quot;:ai_brain:include/braincore/movement&quot;;
+ include &quot;:ai_brain:include/braincore/setup&quot;;
+ 
+@@ -45,280 +46,6 @@
+ 	while ( npc )
+ 		var ev := wait_for_event(g_settings[&quot;cycle_wait&quot;]);
+ 		
+-		if ( sleep_mode )
+-			
+ 		ProcessEvent(ev);
+ 	endwhile
+ endprogram
+-
+-function ProcessEvent(byref ev)
+-	var old_priority := set_priority(25);
+-	
+-	case( ev.type )
+-		//Check movement first, since its the event
+-		//that seems to be sent most often.
+-
+-		// Move NPC
+-		// .source	: From/To whom/what?
+-		// .speed	: Walk/Run
+-		// .direction	: Away/Towards
+-		// .loop	: Number of times to attempt to loop the movement.
+-		NPCEVENT_MOVE:
+-			Movement(ev);
+-		
+-		// Instructs the npc to walk toward an XY coordinate.
+-		// .x and .y	: From/To  coordinates
+-		// .speed	: Walk/Run
+-		// .direction	: Away/Towards
+-		// .loop	: Number of times to attempt to loop the movement.
+-		NPCEVENT_MOVE_XY:
+-			MovementXY(ev);
+-		
+-		// Triggered when a mobile enter's the npcs &quot;reaction_range&quot;.
+-		// .source	: What entered the area
+-		SYSEVENT_ENTEREDAREA:
+-			if ( g_settings.exists(&quot;enter_react_script&quot;) )
+-				var process := 0; //GetNerve(&quot;EnterReaction&quot;);
+-				if ( !process )
+-					//StartNerve(&quot;EnterReaction&quot;, g_settings[&quot;enter_react_script&quot;], {me, ev, settings});
+-				else
+-					process.SendEvent(ev);
+-				endif
+-			endif
+-		
+-		// Triggered when a mobile leaves the npc's &quot;leave_react_range&quot;.
+-		// .source	: What left the area
+-		SYSEVENT_LEFTAREA:
+-			if ( g_settings.exists(&quot;leave_react_script&quot;) )
+-				var process := 0; //GetNerve(&quot;LeaveReaction&quot;);
+-				if ( !process )
+-					//StartNerve(&quot;LeaveReaction&quot;, g_settings[&quot;leave_react_script&quot;], {me, ev, settings});
+-				else
+-					process.SendEvent(ev);
+-				endif
+-			endif
+-		
+-		// Sent when something targets the npc to begin combat or
+-		// when something has damaged the npc.
+-		// .source	: What caused the damage or engaged the npc
+-		// For SYSEVENT_DAMAGED
+-		// .damaged	: Integer amount of damage.
+-		SYSEVENT_ENGAGED:
+-		SYSEVENT_DAMAGED:
+-			if ( g_settings.exists(&quot;combat_script&quot;) )
+-				if ( (ev.source).ISA(POLCLASS_MOBILE) )
+-					var process := 0; //GetNerve(&quot;Combat&quot;);
+-					if ( !process )
+-						//StartNerve(&quot;Combat&quot;, g_settings[&quot;combat_script&quot;], {me, ev, settings});
+-					else
+-						process.SendEvent(ev);
+-					endif
+-				endif
+-			endif
+-		
+-		// Instructs the npc to run its disengage nerve.
+-		// When something attacking it goes out of warmode, this is run.
+-		// .source	: What was targetting this npc but has now left combat mode.
+-		SYSEVENT_DISENGAGED:
+-			if ( g_settings.exists(&quot;disengage_script&quot;) )
+-				var process := 0; //GetNerve(&quot;Disengage&quot;);
+-				if ( !process )
+-					//StartNerve(&quot;Disengage&quot;, g_settings[&quot;disengage_script&quot;], {me, ev, settings});
+-				else
+-					process.SendEvent(ev);
+-				endif
+-			endif
+-		
+-		// When speech is made by a player, this nerve is used.
+-		// Note: The NPC function Say() doesnt yet pass around the speech event.
+-		// .source	: Where the speech originated.
+-		// .text	: The actual speech
+-		// extra 095 stuff
+-		// .uc_text	: a &quot;Unicode array&quot; of 2-byte &quot;Big Endian&quot; integers.
+-		// .langcode	: a 3-character, uppercase language code.
+-		// .texttype	: &quot;yell&quot;, &quot;whisper&quot;, &quot;emote&quot;, &quot;default&quot;.
+-		SYSEVENT_SPEECH:
+-			if( g_settings.exists(&quot;listen_script&quot;) )
+-				var process := 0; //GetNerve(&quot;Speech&quot;);
+-				if ( !process )
+-					//StartNerve(&quot;Speech&quot;, g_settings[&quot;listen_script&quot;], {me, ev, settings});
+-				else
+-					process.SendEvent(ev);
+-				endif
+-			endif
+-		
+-		// Instructs the npc to run its double click script.
+-		// Run when the npc is double clicked by a player.
+-		// .source	: What sent the double click
+-		SYSEVENT_DOUBLECLICKED:
+-			if ( g_settings.exists(&quot;dbl_click_script&quot;) )
+-				if ( Distance(ev.source, npc) &lt;= g_settings[&quot;dbl_click_range&quot;] )
+-					var process := 0; //GetNerve(&quot;DblClick&quot;);
+-					if ( !process )
+-						//StartNerve(&quot;DblClick&quot;, g_settings[&quot;dbl_click_script&quot;], {npc, ev, settings});
+-					else
+-						process.SendEvent(ev);
+-					endif
+-				endif
+-			endif
+-			
+-		// The NPC is a merchant, and has sold or purchased something.
+-		// Both sold and bought events are sent to this same nerve.
+-		// The best thing to do is fork it into two functions inside the
+-		// nerve script to handle each event type.
+-		// MERCHANT_SOLD means the merchant sold an item to the player.
+-		// MERCHANT_BOUGHT means the merchatn bought something from the player.
+-		//
+-		// .source	: Who the merchant is selling to/buying from.
+-		// .amount	: Gold amount for the sale/purchase.
+-		SYSEVENT_MERCHANT_SOLD:
+-		SYSEVENT_MERCHANT_BOUGHT:
+-			if ( g_settings.exists(&quot;merchant_script&quot;) )
+-				var process := 0; //GetNerve(&quot;Merchant&quot;);
+-				if ( !process )
+-					//StartNerve(&quot;Merchant&quot;, g_settings[&quot;merchant_script&quot;], {npc, ev, settings});
+-				else
+-					process.SendEvent(ev);
+-				endif
+-			endif
+-		
+-		// Someone has dragged an item onto the npc.
+-		// .source	: What dragged the item over the npc.
+-		// .item	: The item being given to the npc.
+-		SYSEVENT_ITEM_GIVEN:
+-			if ( g_settings.exists(&quot;give_item_script&quot;) )
+-				var process := 0; //GetNerve(&quot;GiveItem&quot;);
+-				if ( !process )
+-					//StartNerve(&quot;GiveItem&quot;, g_settings[&quot;give_item_script&quot;], {npc, ev, settings});
+-				else
+-					process.SendEvent(ev);
+-				endif
+-			endif
+-				
+-		// Instructs the npc to run its flee script.
+-		// .source	: What to flee from.
+-		NPCEVENT_FLEE:
+-			if ( g_settings.exists(&quot;flee_script&quot;) )
+-				var process := 0; //GetNerve(&quot;Flee&quot;);
+-				if ( !process )
+-					//StartNerve(&quot;Flee&quot;, g_settings[&quot;flee_script&quot;], {npc, ev, settings});
+-				else
+-					process.SendEvent(ev);
+-				endif
+-			endif
+-			
+-		// The npc has killed its opponent and
+-		// the combat script has sent the winfight event
+-		// .source	: Defeated foe!
+-		NPCEVENT_WINFIGHT:
+-			if ( g_settings.exists(&quot;win_script&quot;) )
+-				var process := 0; //GetNerve(&quot;Win&quot;);
+-				if ( !process )
+-					//StartNerve(&quot;Win&quot;, g_settings[&quot;win_script&quot;], {npc, ev, settings});
+-				else
+-					process.SendEvent(ev);
+-				endif
+-			endif
+-			
+-		//A nerve has instructed the brain to kill another nerve or its self.
+-		// .name	: Nerve name
+-		NPCEVENT_ENDNERVE:
+-			//KillNerve(ev.name);
+-			
+-		//A nerve has instructed the brain to start another nerve.
+-		// .name	: Nerve name
+-		// .script	: Nerve script
+-		// .data	: array of goodies
+-		NPCEVENT_STARTNERVE:
+-			//StartNerve(ev.name, ev.script, ev.data);
+-		
+-		// Set a new opponent!
+-		// NOTE: Auto-sets Warmode=1!
+-		// .source	: Opponent (mobile)
+-		NPCEVENT_OPPONENT:
+-			SetOpponent(ev.source);
+-		
+-		// Say something
+-		// .text	: Speech content
+-		NPCEVENT_SPEAK:
+-			say(ev.text);
+-		
+-		// Turn toward something
+-		// .source	: Target (anything)
+-		// .direction	: NETURN_TOWARD or NETURN_AWAY
+-		NPCEVENT_TURN:
+-			case (ev.direction)
+-				NETURN_TOWARD:
+-					TurnToward(ev.source);
+-				NETURN_AWAY:
+-					TurnAwayFrom(ev.source);
+-			endcase
+-		
+-		// Face towards or away from XY coordinates.
+-		// .x and .y replace .source for TURN_XY
+-		// .direction	: NETURN_TOWARD or NETURN_AWAY
+-		NPCEVENT_TURN_XY:
+-			case (ev.direction)
+-				NETURN_TOWARD:
+-					TurnTowardLocation(ev.x, ev.y);
+-				NETURN_AWAY:
+-					TurnAwayFromLocation(ev.x, ev.y);
+-			endcase
+-		
+-		// Set WarMode state
+-		// NOTE: Auto-clears Opponent if turned off!
+-		// .value : 0=Off. 1=On.
+-		NPCEVENT_WARMODE:
+-			SetWarmode( ev.value );
+-		
+-		// Wander somewhere
+-		NPCEVENT_WANDER:
+-	   		Wander();
+-	   	
+-	   	// Force the npc to go into its sleep mode.
+-	   	// If the next event in the queue tells it to wake up,
+-	   	// this command will be useless.
+-	   	NPCEVENT_SLEEP:
+-	   		//idle_ticks := g_settings[&quot;idle_ticks&quot;]+1;
+-	   	
+-	   	// Force the npc out of sleep mode.
+-	   	NPCEVENT_WAKEUP:
+-	   		//sleep_mode := 0;
+-	   		//idle_ticks := 0;
+-	   		
+-	   	// Forward an event from one nerve to another.
+-	   	// .NerveName	: The name of the nerve to forward the event to.
+-	   	// .mask	: Type of event for the nerve to receive.
+-	   	// .data	: Data to forward to the nerve.
+-	   	NPCEVENT_FWDNERVE:
+-	   		var process := 0; //GetNerve(ev.NerveName);
+-			if ( process )
+-				process.SendEvent(ev);
+-			endif
+-			
+-		// If the event .type is unknown, send it to the
+-		// npc's &quot;virtual&quot; nerve if it has one.
+-	   	default:
+-	   		if ( g_settings.exists(&quot;virtual_nerve&quot;) )
+-	   			var process := 0; //GetNerve(&quot;Virtual&quot;);
+-				if ( !process )
+-					//StartNerve(&quot;Virtual&quot;, g_g_settings[&quot;virtual_nerve&quot;], {npc, ev, settings});
+-				else
+-					process.SendEvent(ev);
+-				endif
+-			endif
+-	   endcase
+-
+-	   // If the event has a .process, reply to it by sending
+-	   // an event with .type being the NPCEVENT_DONE constant
+-	   // and telling it what event it sent that has finished
+-	   // being processed.
+-	   if ( ev.process )
+-	   	var temp := struct;
+-	   	temp.+type := NPCEVENT_DONE;
+-	   	temp.+source := ev.type;
+-	   	(ev.process).SendEvent(temp);
+-	   endif
+-	   
+-	   set_priority(old_priority);
+-endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000011.html">[Poldistro-svn] r28 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+	<LI>Next message: <A HREF="000013.html">[Poldistro-svn] r30 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#12">[ date ]</a>
+              <a href="thread.html#12">[ thread ]</a>
+              <a href="subject.html#12">[ subject ]</a>
+              <a href="author.html#12">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

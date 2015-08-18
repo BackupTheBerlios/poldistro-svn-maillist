@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r589 - in trunk/096/pkg/systems/spawnSystem: . include initializer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r589%20-%20in%20trunk/096/pkg/systems/spawnSystem%3A%20.%20include%20initializer&In-Reply-To=%3C200510120752.j9C7qhsT003629%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000558.html">
+   <LINK REL="Next"  HREF="000560.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r589 - in trunk/096/pkg/systems/spawnSystem: . include initializer</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r589%20-%20in%20trunk/096/pkg/systems/spawnSystem%3A%20.%20include%20initializer&In-Reply-To=%3C200510120752.j9C7qhsT003629%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r589 - in trunk/096/pkg/systems/spawnSystem: . include initializer">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct 12 09:52:43 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000558.html">[Poldistro-svn] r588 - in trunk/096/pkg/systems: . spawnSystem spawnSystem/commands spawnSystem/commands/gm spawnSystem/config spawnSystem/engines spawnSystem/engines/item spawnSystem/engines/npc spawnSystem/engines/prox spawnSystem/include spawnSystem/initializer spawnSystem/www
+</A></li>
+        <LI>Next message: <A HREF="000560.html">[Poldistro-svn] r590 - in trunk/096/pkg/systems/spawnSystem: . include initializer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#559">[ date ]</a>
+              <a href="thread.html#559">[ thread ]</a>
+              <a href="subject.html#559">[ subject ]</a>
+              <a href="author.html#559">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-12 09:52:42 +0200 (Wed, 12 Oct 2005)
+New Revision: 589
+
+Added:
+   trunk/096/pkg/systems/spawnSystem/include/report.inc
+Removed:
+   trunk/096/pkg/systems/spawnSystem/include/errors.inc
+Modified:
+   trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src
+   trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+Log:
+Renamed errors.inc to report.inc
+Function SS_ErrorReport() is now SS_ReportText()
+SPAWN_REPORT_SYSLOG will now log to pol/log/spawnSystem.log rather than to the console and pol.log.
+
+Deleted: trunk/096/pkg/systems/spawnSystem/include/errors.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/errors.inc	2005-10-12 07:36:17 UTC (rev 588)
++++ trunk/096/pkg/systems/spawnSystem/include/errors.inc	2005-10-12 07:52:42 UTC (rev 589)
+@@ -1,28 +0,0 @@
+-use uo;
+-use os;
+-
+-CONST SPAWN_ERROR_DISABLE	:= 0;
+-CONST SPAWN_ERROR_PRINT		:= 1;
+-CONST SPAWN_ERROR_SYSLOG	:= 2;
+-CONST SPAWN_ERROR_BROADCAST	:= 4;
+-
+-function SS_ErrorReport(error_text, err_report:=SPAWN_ERROR_DISABLE)
+-		if ( err_report &amp; SPAWN_ERROR_PRINT )
+-		Print(&quot;&quot;+error_text);
+-	endif
+-	
+-	if ( err_report &amp; SPAWN_ERROR_SYSLOG )
+-		SysLog(&quot;&quot;+error_text);
+-	endif
+-	
+-	if ( err_report &amp; SPAWN_ERROR_BROADCAST )
+-		foreach mobile in EnumerateOnlineCharacters()
+-			if ( mobile.cmdlevel )
+-				SendSysMessage(mobile, &quot;&quot;+error_text);
+-			endif
+-			sleepms(5);
+-		endforeach
+-	endif
+-	
+-	return 1;
+-endfunction
+
+Copied: trunk/096/pkg/systems/spawnSystem/include/report.inc (from rev 588, trunk/096/pkg/systems/spawnSystem/include/errors.inc)
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/errors.inc	2005-10-12 07:36:17 UTC (rev 588)
++++ trunk/096/pkg/systems/spawnSystem/include/report.inc	2005-10-12 07:52:42 UTC (rev 589)
+@@ -0,0 +1,29 @@
++use uo;
++use os;
++use file;
++
++CONST SPAWN_REPORT_DISABLE	:= 0;
++CONST SPAWN_REPORT_CONSOLE	:= 1;
++CONST SPAWN_REPORT_SYSLOG	:= 2;
++CONST SPAWN_REPORT_BROADCAST	:= 4;
++
++function SS_ReportText(report_text, flags:=SPAWN_REPORT_DISABLE)
++	if ( flags &amp; SPAWN_REPORT_CONSOLE )
++		Print(&quot;&quot;+report_text);
++	endif
++	
++	if ( flags &amp; SPAWN_REPORT_SYSLOG )
++		LogToFile(&quot;::log/spawnSystem&quot;, report_text, LOG_DATETIME);
++	endif
++	
++	if ( flags &amp; SPAWN_REPORT_BROADCAST )
++		foreach mobile in EnumerateOnlineCharacters()
++			if ( mobile.cmdlevel )
++				SendSysMessage(mobile, &quot;&quot;+report_text);
++			endif
++			sleepms(5);
++		endforeach
++	endif
++	
++	return 1;
++endfunction
+
+Modified: trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src	2005-10-12 07:36:17 UTC (rev 588)
++++ trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src	2005-10-12 07:52:42 UTC (rev 589)
+@@ -4,18 +4,18 @@
+ include &quot;:spawnsystem:include/groups&quot;;
+ include &quot;:spawnsystem:include/realms&quot;;
+ include &quot;:spawnsystem:include/regions&quot;;
+-include &quot;:spawnsystem:include/errors&quot;;
++include &quot;:spawnsystem:include/report&quot;;
+ 
+ program FirstRun()
+ 	var start_cfg := ReadConfigFile(&quot;:spawnsystem:config/firstrun&quot;);
+-	if ( start_cfg.errortext )
+-		SS_ErrorReport(start_cfg.errortext, SPAWN_ERROR_SYSLOG);
++	if ( start_cfg.REPORTtext )
++		SS_ReportText(start_cfg.REPORTtext, SPAWN_REPORT_SYSLOG);
+ 		return 0;
+ 	endif
+ 
+ 	var realm_list := start_cfg[&quot;Realms&quot;];
+-	if ( realm_list.errortext)
+-		SS_ErrorReport(start_cfg.errortext, SPAWN_ERROR_SYSLOG);
++	if ( realm_list.REPORTtext)
++		SS_ReportText(start_cfg.REPORTtext, SPAWN_REPORT_SYSLOG);
+ 		return 0;
+ 	endif
+ 
+@@ -39,8 +39,8 @@
+ 
+ function SetupRealm(realm_name, start_cfg)
+ 	var realm_info := start_cfg[realm_name];
+-	if ( realm_info.errortext )
+-		SS_ErrorReport(&quot;No cfg elem for realm (&quot;+realm_name+&quot;) -&gt; &quot;+realm_info.errortext, SPAWN_ERROR_SYSLOG);
++	if ( realm_info.REPORTtext )
++		SS_ReportText(&quot;No cfg elem for realm (&quot;+realm_name+&quot;) -&gt; &quot;+realm_info.REPORTtext, SPAWN_REPORT_SYSLOG);
+ 		return 0;
+ 	endif
+ 	
+@@ -68,8 +68,8 @@
+ 
+ function SetupRegion(region_name, realm_name, start_cfg)
+ 	var region_info := start_cfg[region_name];
+-	if ( region_info.errortext )
+-		SS_ErrorReport(&quot;No cfg elem for region (&quot;+region_name+&quot;) -&gt; &quot;+region_info.errortext, SPAWN_ERROR_SYSLOG);
++	if ( region_info.REPORTtext )
++		SS_ReportText(&quot;No cfg elem for region (&quot;+region_name+&quot;) -&gt; &quot;+region_info.REPORTtext, SPAWN_REPORT_SYSLOG);
+ 		return 0;
+ 	endif
+ 
+@@ -110,11 +110,11 @@
+ 	SysLog(&quot;Setting up spawner group (&quot;+group_name+&quot;)&quot;);
+ 	
+ 	var group_info := start_cfg[group_name];
+-	if ( group_info.errortext )
+-		SS_ErrorReport(&quot;No cfg elem for group (&quot;+group_name+&quot;) -&gt; &quot;+group_info.errortext, SPAWN_ERROR_SYSLOG);
++	if ( group_info.REPORTtext )
++		SS_ReportText(&quot;No cfg elem for group (&quot;+group_name+&quot;) -&gt; &quot;+group_info.REPORTtext, SPAWN_REPORT_SYSLOG);
+ 		return 0;
+ 	elseif ( !group_info.Engine )
+-		SS_ErrorReport(&quot;No valid engine name was set for group (&quot;+group_name+&quot;)&quot;, SPAWN_ERROR_SYSLOG);
++		SS_ReportText(&quot;No valid engine name was set for group (&quot;+group_name+&quot;)&quot;, SPAWN_REPORT_SYSLOG);
+ 		return 0;
+ 	endif
+ 	
+
+Modified: trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/spawnSystem.src	2005-10-12 07:36:17 UTC (rev 588)
++++ trunk/096/pkg/systems/spawnSystem/spawnSystem.src	2005-10-12 07:52:42 UTC (rev 589)
+@@ -4,13 +4,16 @@
+ include &quot;:spawnsystem:include/groups&quot;;
+ include &quot;:spawnsystem:include/realms&quot;;
+ include &quot;:spawnsystem:include/regions&quot;;
+-include &quot;:spawnsystem:include/errors&quot;;
++include &quot;:spawnsystem:include/report&quot;;
+ 
+ program SpawnSystem()
++	SS_ReportText(&quot;-------------------------&quot;, SPAWN_REPORT_SYSLOG);
++	SS_ReportText(&quot;[ Spawner has started up ]&quot;, SPAWN_REPORT_SYSLOG);
++	
+ 	if ( !GetGlobalProperty(&quot;SpawnSystem&quot;) )
+ 		var script := Start_Script(&quot;:spawnsystem:initializer/firstrun&quot;);
+ 		if ( script.errortext )
+-			SS_ErrorReport(script.errortext, SPAWN_ERROR_SYSLOG);
++			SS_ReportText(script.errortext, SPAWN_REPORT_SYSLOG);
+ 			return 0;
+ 		endif
+ 	endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000558.html">[Poldistro-svn] r588 - in trunk/096/pkg/systems: . spawnSystem spawnSystem/commands spawnSystem/commands/gm spawnSystem/config spawnSystem/engines spawnSystem/engines/item spawnSystem/engines/npc spawnSystem/engines/prox spawnSystem/include spawnSystem/initializer spawnSystem/www
+</A></li>
+	<LI>Next message: <A HREF="000560.html">[Poldistro-svn] r590 - in trunk/096/pkg/systems/spawnSystem: . include initializer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#559">[ date ]</a>
+              <a href="thread.html#559">[ thread ]</a>
+              <a href="subject.html#559">[ subject ]</a>
+              <a href="author.html#559">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

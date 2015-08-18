@@ -1,0 +1,388 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r738 - in trunk/096/pkg/mobiles/timedScripts: . config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r738%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20.%20config%20include&In-Reply-To=%3C200510310324.j9V3OkQE028632%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000711.html">
+   <LINK REL="Next"  HREF="000713.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r738 - in trunk/096/pkg/mobiles/timedScripts: . config include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r738%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20.%20config%20include&In-Reply-To=%3C200510310324.j9V3OkQE028632%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r738 - in trunk/096/pkg/mobiles/timedScripts: . config include">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 31 04:24:46 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000711.html">[Poldistro-svn] r737 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="000713.html">[Poldistro-svn] r739 - in trunk/096/pkg: commands/coun items/containers/corpse items/doors/config items/food/config skills/blacksmithy skills/bowcraft skills/carpentry skills/cartography skills/cartography/config skills/fishing systems/crafting/config systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#712">[ date ]</a>
+              <a href="thread.html#712">[ thread ]</a>
+              <a href="subject.html#712">[ subject ]</a>
+              <a href="author.html#712">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-31 04:24:45 +0100 (Mon, 31 Oct 2005)
+New Revision: 738
+
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+   trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc
+   trunk/096/pkg/mobiles/timedScripts/timerControl.src
+Log:
+Getting there...
+
+
+Modified: trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2005-10-31 00:53:13 UTC (rev 737)
++++ trunk/096/pkg/mobiles/timedScripts/config/timedScripts.cfg	2005-10-31 03:24:45 UTC (rev 738)
+@@ -13,7 +13,7 @@
+ #
+ #	EndScript: The script that will run when the timer has expired.
+ #
+-#	LogOutScript: Script that is run if the player logs out.
++#	LogOffScript: Script that is run if the player logs out.
+ #
+ #	Virulence: How much curing is nullified by the poison. Cint(curing/virulence)
+ #		A virulence of 4 means that 3 points of cure are lost and 1 point cures.
+
+Modified: trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc	2005-10-31 00:53:13 UTC (rev 737)
++++ trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc	2005-10-31 03:24:45 UTC (rev 738)
+@@ -7,8 +7,12 @@
+ const EVENT_CURE_TIMER			:= 0x2;
+ const EVENT_CURE_SPECIFIC_TIMER		:= 0x4;
+ const EVENT_DEAD			:= 0x8;
+-const EVENT_LOGOUT			:= 0x10;
++const EVENT_LOGOFF			:= 0x10;
+ 
++// Constants
++const NOSTART_CONTROLLER		:= 0x0;
++const START_CONTROLLER			:= 0x1;
++
+ /*
+  * TS_GetCfgFile()
+  *
+@@ -61,24 +65,56 @@
+ endfunction
+ 
+ /* 
+- * TS_GetControllerProcess(mobile)
++ * TS_GetControllerProcess(mobile, start)
+  *
+  * Purpose
+  * Retrieves a script reference to the timer controller for a mobile.
+  *
+  * Parameters
+  * mobile:	Mobile to get the timer controll process for.
++ * start:	Optional parameter. Default is NOSTART_CONTROLLER.
++ *		NOSTART_CONTROLLER - Will only try to get a reference to the script.
++ *		START_CONTROLLER - Will start the controller if it is not running.
+  *
+  * Return value
+  * Returns a script reference.
+  * Returns an error the controller is not running.
+  *
+  */
+-function TS_GetControllerProcess(mobile)
++function TS_GetControllerProcess(mobile, start:=NOSTART_CONTROLLER)
+ 	var pid := CInt(GetObjProperty(mobile, &quot;#TimerControlPid&quot;));
+-	return GetProcess(pid);
++	var process := GetProcess(pid);
++	if ( !process )
++		if ( start )
++			process := TS_StartController(mobile);
++		endif
++	endif
++	
++	return process;
+ endfunction
+ 
++/*
++ * TS_StartController(mobile)
++ *
++ * Purpose
++ * Starts the timer controller for a mobile.
++ *
++ * Parameters
++ * mobile:	Mobile to start the controller on.
++ *
++ * Return value
++ * Returns a script reference.
++ *
++ */
++function TS_StartController(mobile)
++	var script := start_script(&quot;:timedscripts:timerControl&quot;, mobile);
++	if ( script.errortext )
++		SysLog(&quot;Error::TS_StartController() -&gt;&quot;+script.errortext);
++	endif
++	
++	return script;
++endfunction
++
+ /* 
+  * TS_GetTimerList(mobile)
+  *
+
+Modified: trunk/096/pkg/mobiles/timedScripts/timerControl.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/timerControl.src	2005-10-31 00:53:13 UTC (rev 737)
++++ trunk/096/pkg/mobiles/timedScripts/timerControl.src	2005-10-31 03:24:45 UTC (rev 738)
+@@ -17,8 +17,54 @@
+ 	var timer_list := dictionary;
+ 	StartUp(mobile, timer_list, num_poisons);
+ 	
++	while ( mobile.IsA(POLCLASS_MOBILE) )
++		/* ^- Will terminate if:
++		 * 1. Mobile was an NPC and died.
++		 * 2. Was a player character but got deleted.
++		 */
++		 
++		var event := 0;
++		if ( timer_list.size() &gt; 0 )
++			event := wait_for_event(1);
++		else // sleep-mode
++			event := wait_for_event(900000);
++		endif
++		
++		mobile.SetPoisoned(num_poisons);
++		
++		if( event.type == EVENT_ADD_TIMER )
++			AddTimer(mobile, event, timer_list, num_poisons);
++		elseif( event.type == EVENT_CURE_TIMER )
++			CureTimer(mobile, event, timer_list, num_poisons);
++		elseif( event.type == EVENT_CURE_SPECIFIC_TIMER )
++			//Cure_Specific(mobile, event, timer_list, num_poisons, 1);
++		elseif( event.type == EVENT_DEAD )
++			//Cure_Death(mobile, timer_list, num_poisons);
++		elseif ( event.type == EVENT_LOGOFF )
++			LogOff(mobile, timer_list);
++			break;
++		endif
++	endwhile
++	
++	return 1;
+ endprogram
+ 
++function SaveState(mobile, byref timer_list)
++	var save_dict := dictionary;
++	// Need a new dictionary to save the remaining time
++	// Example ( timer.endtime - ReadGameClock() ) == duration
++	foreach timer in (timer_list)
++		var duration := timer.endtime - ReadGameClock();
++		timer.+duration := duration;
++		timer.Erase(&quot;endtime&quot;);
++		save_dict[_timer_iter] := timer;
++	endforeach
++	
++	TS_SaveTimerList(mobile, timer_list);
++	
++	return 1;
++endfunction	
++
+ function StartUp(mobile, byref timer_list, byref num_poisons)
+ 	// The controller just started. 
+ 	// Take in any timers in the dictionary and start the scripts.
+@@ -37,6 +83,29 @@
+ 	return 1;
+ endfunction
+ 
++function LogOff(mobile, byref timer_list)
++	//On Logout, save the status of timers. Then stop the scripts.
++	
++	Set_Critical(1);
++	SaveState(mobile, timer_list);
++	
++	foreach timer in ( timer_list )
++		timer := timer; // So the compiler doesn't warn.
++		var elem_info := TS_GetCfgElem(_timer_iter);
++		KillTimedScript(timer_list.pid, timer_list, _timer_iter);
++
++		if( elem_info.LogOffScript )
++			var script := start_script(elem_info.LogOffScript, {mobile});
++			if( script.errortext )
++				Print(&quot;Error::LogOff() - [&quot;+elem_info.LogOffScript+&quot;] &quot;+script.errortext);
++			endif
++		endif
++	endforeach
++	Set_Critical(0);
++	
++	return 1;
++endfunction
++
+ function AddTimer(mobile, byref event, byref timer_list, byref num_poisons)
+ 	// Check if a poison exists. If it does, increase its duration.
+ 	// If it does not exist, add it to the list on the mobile. 
+@@ -47,11 +116,18 @@
+ 		return 0;
+ 	endif
+ 	
++	var result := 0;
+ 	if ( !timer_list.Exists(event.name) )
+-		return AddNewTimer(mobile, event, timer_list, num_poisons);
++		result := AddNewTimer(mobile, event, timer_list, num_poisons);
+ 	else
+-		return AddExistingTimer(mobile, event, timer_list, num_poisons);
++		result := AddExistingTimer(mobile, event, timer_list, num_poisons);
+ 	endif
++	
++	if ( result )
++		SaveState(mobile, timer_list);
++	endif
++	
++	return 1;
+ endfunction
+ 
+ function AddNewTimer(mobile, byref event, byref timer_list, byref num_poisons)
+@@ -98,43 +174,94 @@
+ 		if ( (event.level) &amp;&amp; level )
+ 			amt := CInt(CDbl(amt) * (CDbl(event.level) / CDbl(timer_list[event.name].level)));
+ 			if ( level &gt;= event.level )
+-				duration := duration + amt;
+-				timer_list[event.name].endtime := ReadGameClock()+duration;
++				event.amount := duration + amt;
+ 			else
+-				StopTimedScript(timer_list[event.name].pid, timer_list, event.name);
++				KillTimedScript(timer_list[event.name].pid, timer_list, event.name);
+ 				event.amount := amt;
+ 				AddTimer(mobile, event, timer_list, num_poisons);
++				return 1;
+ 			endif
+ 		else
+-			timer_list[event.name].endtime := (duration+amt)+ReadGameClock();
++			event.amount := (duration + amt);
+ 		endif
+ 	else
+ 		if ( (event.level) &amp;&amp; level )
+-			if ( (level == event.level) &amp;&amp; (amt &gt; timer_list[event.name].duration) )
+-				timer_list[event.name].duration := amt;
++			if ( (level == event.level) &amp;&amp; (amt &gt; duration) )
++				event.amount := amt;
+ 			elseif ( event.level &gt; level )
+-				StopTimedScript(timer_list[event.name].pid, timer_list, event.name);
+-				event.amt := amt;
++				KillTimedScript(timer_list[event.name].pid, timer_list, event.name);
++				event.amount := amt;
+ 				AddTimer(mobile, event, timer_list, num_poisons);
++				return 1;
+ 			endif					
+ 		else
+-			if ( amt &gt; timer_list[event.name].duration )
+-				timer_list[event.name].duration := amt;
++			if ( amt &gt; duration )
++				event.amount := amt;
+ 			endif
+ 		endif
+ 	endif
+-	var maxdur := elem_info.MaxDuration;
+-	if ( maxdur &lt; timer_list[event.name].duration )
+-		timer_list[event.name].duration := maxdur;
++	
++	var maxdur := CInt(elem_info.MaxDuration);
++	if ( maxdur &gt; 0 )
++		if ( (duration+event.amount) &gt; maxdur )
++			duration := maxdur;
++		else
++			duration := duration+event.amount;
++		endif
+ 	endif
+ 	
++	timer_list[event.name].endtime := ReadGameClock()+duration;
++	
+ 	return 1;
+ endfunction
+ 
+-function StopTimedScript(byref pid, byref timer_list, timer_name)
++function CureTimer(mobile, byref event, byref timer_list, byref num_poisons)
++	//Run through all curable poisons, and keep curing until it runs out of curing power.
++
++	var cure_type := Lower(event.curetype);
++	foreach timer in ( timer_list )
++		var elem_info := TS_GetCfgElem(_timer_iter);
++		if ( !elem_info.NoCure ) // Its curable
++			if ( !cure_type || cure_type == Lower(elem_info.Type) )
++				event.name := _timer_iter;
++				LowerDuration(mobile, event, timer_list, num_poisons);
++			endif
++
++			if( event.amount &lt;= 0 ) // All out of cure power
++				break;
++			endif
++			sleepms(2);
++		endif
++	endforeach
++endfunction
++
++function LowerDuration(mobile, byref event, byref timer_list, byref num_poisons)
++	return 1;
++endfunction
++
++function EndTimedScript(mobile, timer_name, byref num_poisons)
++	var cfg_elem := TS_GetCfgElem(timer_name);
++	
++	if( cfg_elem.IndicatePoison )
++		num_poisons := num_poisons-1;
++	endif
++
++	if( cfg_elem.EndMessage )
++		SendSysMessage(mobile, elem.EndMessage);
++	endif
++
++	if( PW_CfgInfo(poison_name).CureScript )
++		var script := start_script(elem_info.EndScript, {mobile});
++		if( script.errortext )
++			SysLog(&quot;Error::EndTimedScript() - &quot;+script.errortext);
++		endif
++	endif
++endfunction
++
++function KillTimedScript(byref pid, byref timer_list, timer_name)
+ 	var script := GetProcess(pid);
+ 	script.kill();
+ 	timer_list.Erase(timer_name);
+ 	
+ 	return 1;
+-endfunction
+\ No newline at end of file
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000711.html">[Poldistro-svn] r737 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="000713.html">[Poldistro-svn] r739 - in trunk/096/pkg: commands/coun items/containers/corpse items/doors/config items/food/config skills/blacksmithy skills/bowcraft skills/carpentry skills/cartography skills/cartography/config skills/fishing systems/crafting/config systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#712">[ date ]</a>
+              <a href="thread.html#712">[ thread ]</a>
+              <a href="subject.html#712">[ subject ]</a>
+              <a href="author.html#712">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

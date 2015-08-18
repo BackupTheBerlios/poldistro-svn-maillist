@@ -1,0 +1,461 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r979 - in trunk/096/pkg/items/moongates: . config systemMoonGate
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r979%20-%20in%20trunk/096/pkg/items/moongates%3A%20.%20config%20systemMoonGate&In-Reply-To=%3C200511140136.jAE1ar4f002826%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000951.html">
+   <LINK REL="Next"  HREF="000953.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r979 - in trunk/096/pkg/items/moongates: . config systemMoonGate</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r979%20-%20in%20trunk/096/pkg/items/moongates%3A%20.%20config%20systemMoonGate&In-Reply-To=%3C200511140136.jAE1ar4f002826%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r979 - in trunk/096/pkg/items/moongates: . config systemMoonGate">austin at berlios.de
+       </A><BR>
+    <I>Mon Nov 14 02:36:53 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000951.html">[Poldistro-svn] r978 - trunk/096/pkg/items/walkOn
+</A></li>
+        <LI>Next message: <A HREF="000953.html">[Poldistro-svn] r980 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#952">[ date ]</a>
+              <a href="thread.html#952">[ thread ]</a>
+              <a href="subject.html#952">[ subject ]</a>
+              <a href="author.html#952">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-14 02:36:40 +0100 (Mon, 14 Nov 2005)
+New Revision: 979
+
+Added:
+   trunk/096/pkg/items/moongates/config/autoload.cfg
+   trunk/096/pkg/items/moongates/systemMoonGate/
+   trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src
+   trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src
+Removed:
+   trunk/096/pkg/items/moongates/autoload.cfg
+   trunk/096/pkg/items/moongates/moongateInit.src
+   trunk/096/pkg/items/moongates/systemMoongate.src
+Modified:
+   trunk/096/pkg/items/moongates/itemdesc.cfg
+Log:
+Sorted files in moongates package.
+Moved config/itemdesc.cfg moongates entries to moongates package.
+
+Deleted: trunk/096/pkg/items/moongates/autoload.cfg
+===================================================================
+--- trunk/096/pkg/items/moongates/autoload.cfg	2005-11-14 01:18:40 UTC (rev 978)
++++ trunk/096/pkg/items/moongates/autoload.cfg	2005-11-14 01:36:40 UTC (rev 979)
+@@ -1,9 +0,0 @@
+-# $Id$
+-
+-Autoload moongateInit
+-{
+-	Script      moongateInit
+-	Resistent   1
+-	Name        Town Moongate Initializer
+-	Priority    0
+-}
+
+Added: trunk/096/pkg/items/moongates/config/autoload.cfg
+===================================================================
+--- trunk/096/pkg/items/moongates/config/autoload.cfg	2005-11-14 01:18:40 UTC (rev 978)
++++ trunk/096/pkg/items/moongates/config/autoload.cfg	2005-11-14 01:36:40 UTC (rev 979)
+@@ -0,0 +1,9 @@
++# $Id: autoload.cfg 938 2005-11-07 06:22:45Z muaddiblsd $
++
++Autoload moongateInit
++{
++	Script      moongateInit
++	Resistent   1
++	Name        Town Moongate Initializer
++	Priority    0
++}
+
+Modified: trunk/096/pkg/items/moongates/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/moongates/itemdesc.cfg	2005-11-14 01:18:40 UTC (rev 978)
++++ trunk/096/pkg/items/moongates/itemdesc.cfg	2005-11-14 01:36:40 UTC (rev 979)
+@@ -1,11 +1,49 @@
+ # System moongate
+ Item 0x6201
+ {
+-    Name            systemmoongate
+-    Desc            magical moongate
+-    Script          systemMoongate
+-    Graphic         0x0F6C
+-    Facing          29
+-    WalkOnScript    systemMoongate
+-    SaveOnExit      0
++	Name           		SystemMoonGate
++	Desc			magical moongate
++       	Graphic			0x0F6C
++	Facing			29
++	
++	SaveOnExit		0
++
++	WalkOnScript		systemMoonGate/walkOn
+ }
++
++Item 0xF6C
++{
++	Name			BlueMoonGate
++	Desc			blue moon gate
++	Facing			2
++	
++	Movable			0
++}
++
++Item 0xDDA
++{
++	Name			RedMoonGate
++	Desc			red moon gate
++	Facing			2
++	
++	Movable			0
++}
++
++Item 0x1FD4
++{
++	Name			BlackMoonGate
++	Desc			black moon gate
++	Facing			2
++	
++	Movable			0
++}
++
++Item 0x1fe7
++{
++	Name			WhiteMoonGate
++	Desc			white moon gate
++	
++	Facing			2
++	
++	Movable			0
++}
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/items/moongates/moongateInit.src
+===================================================================
+--- trunk/096/pkg/items/moongates/moongateInit.src	2005-11-14 01:18:40 UTC (rev 978)
++++ trunk/096/pkg/items/moongates/moongateInit.src	2005-11-14 01:36:40 UTC (rev 979)
+@@ -1,47 +0,0 @@
+-use uo;
+-use os;
+-
+-include &quot;:logger:log&quot;;
+-
+-var mgate_config := ReadConfigFile(&quot;:moongates:config/moongate&quot;);
+-
+-program CreateMoongates()
+-	var facet_list := GetConfigStringKeys(mgate_config);
+-	if( facet_list.errortext )
+-        	Log(LOG_ERROR, &quot;Moongate Facet List Failed Config Read '&quot; + GetLogInfo(facet_list) + &quot;'&quot;);
+-		return 0;
+-	endif
+-  	syslog( &quot;Creating moongates.&quot; );
+-	foreach key_name in facet_list
+-		var key_elem := FindConfigElem(mgate_config, key_name);
+-		if( GetConfigInt(key_elem, &quot;Active&quot;) == 1 )
+-			var gate_realm := GetConfigString(key_elem, &quot;Realm&quot;);
+-			var gate_towns := GetConfigStringArray(key_elem, &quot;Town&quot;);
+-			foreach town_entry in gate_towns
+-				var gate := SplitWords(town_entry);
+-				RemoveOldGates(gate, gate_realm);
+-				CreateNewGates(gate, gate_realm);
+-			endforeach
+-		endif
+-	endforeach
+-endprogram
+-
+-
+-function RemoveOldGates(gate, gate_realm)
+-	foreach thing in ListItemsNearLocation(CInt(gate[1]), CInt(gate[2]), CInt(gate[3]), 0, gate_realm);
+-		if(thing.objtype != 0x887b)
+-			DestroyItem(thing);
+-		endif
+-	endforeach
+-	return 1;
+-endfunction
+-
+-
+-function CreateNewGates(gate, gate_realm)
+-	var moongate := CreateItemAtLocation(CInt(gate[1]), CInt(gate[2]), CInt(gate[3]), &quot;systemmoongate&quot;, 1, gate_realm);
+-	SetObjProperty(moongate, &quot;City&quot;, gate[4]);
+-	moongate.facing := 29;
+-	moongate.decayAt := 0;
+-	moongate.movable := 0;
+-	return 1;
+-endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src
+===================================================================
+--- trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src	2005-11-14 01:18:40 UTC (rev 978)
++++ trunk/096/pkg/items/moongates/systemMoonGate/moongateInit.src	2005-11-14 01:36:40 UTC (rev 979)
+@@ -0,0 +1,47 @@
++use uo;
++use os;
++
++include &quot;:logger:log&quot;;
++
++var mgate_config := ReadConfigFile(&quot;:moongates:config/moongate&quot;);
++
++program CreateMoongates()
++	var facet_list := GetConfigStringKeys(mgate_config);
++	if( facet_list.errortext )
++        	Log(LOG_ERROR, &quot;Moongate Facet List Failed Config Read '&quot; + GetLogInfo(facet_list) + &quot;'&quot;);
++		return 0;
++	endif
++  	syslog( &quot;Creating moongates.&quot; );
++	foreach key_name in facet_list
++		var key_elem := FindConfigElem(mgate_config, key_name);
++		if( GetConfigInt(key_elem, &quot;Active&quot;) == 1 )
++			var gate_realm := GetConfigString(key_elem, &quot;Realm&quot;);
++			var gate_towns := GetConfigStringArray(key_elem, &quot;Town&quot;);
++			foreach town_entry in gate_towns
++				var gate := SplitWords(town_entry);
++				RemoveOldGates(gate, gate_realm);
++				CreateNewGates(gate, gate_realm);
++			endforeach
++		endif
++	endforeach
++endprogram
++
++
++function RemoveOldGates(gate, gate_realm)
++	foreach thing in ListItemsNearLocation(CInt(gate[1]), CInt(gate[2]), CInt(gate[3]), 0, gate_realm);
++		if(thing.objtype != 0x887b)
++			DestroyItem(thing);
++		endif
++	endforeach
++	return 1;
++endfunction
++
++
++function CreateNewGates(gate, gate_realm)
++	var moongate := CreateItemAtLocation(CInt(gate[1]), CInt(gate[2]), CInt(gate[3]), &quot;systemmoongate&quot;, 1, gate_realm);
++	SetObjProperty(moongate, &quot;City&quot;, gate[4]);
++	moongate.facing := 29;
++	moongate.decayAt := 0;
++	moongate.movable := 0;
++	return 1;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src
+===================================================================
+--- trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src	2005-11-14 01:18:40 UTC (rev 978)
++++ trunk/096/pkg/items/moongates/systemMoonGate/walkOn.src	2005-11-14 01:36:40 UTC (rev 979)
+@@ -0,0 +1,83 @@
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:gumps:include/old/old-gumps&quot;;
++
++GFref.x := 50;
++GFref.y := 50;
++
++var townarray := {};
++
++program gumptest(who, item)
++  var city := GetObjProperty(item, &quot;City&quot;);
++  if(!city)
++    return;
++  endif
++  var cfg := ReadConfigFile(&quot;:moongates:moongate&quot;);
++  var lands := Cint(cfg[&quot;Facets&quot;].value);
++  if(!lands)
++    return;
++  endif
++  case(city)
++    &quot;Moonglow&quot;: townarray := array(&quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
++    &quot;Britain&quot;:  townarray := array(&quot;Moonglow&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
++    &quot;Jhelom&quot;:   townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
++    &quot;Yew&quot;:      townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
++    &quot;Minoc&quot;:    townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
++    &quot;Trinsic&quot;:  townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
++    &quot;Skara&quot;:    townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Magincia&quot;);
++    &quot;Magincia&quot;: townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;);
++  endcase
++  OldGFInitGump(0, 0);
++  OldGFPage(0);
++  OldGFResizePic(100, 100, BKGND_STONESLAB, 350, 300);
++  OldGFTextLine(110, 110, 0, &quot;Pick your destination:&quot;);
++  OldGFSetRadioGroup(1);
++  OldGFRadioButton(300, 140, 210, 211, 1);
++  OldGFRadioButton(300, 165, 210, 211, 0);
++  OldGFRadioButton(300, 190, 210, 211, 0);
++  OldGFRadioButton(300, 215, 210, 211, 0);
++  OldGFRadioButton(300, 240, 210, 211, 0);
++  OldGFRadioButton(300, 265, 210, 211, 0);
++  OldGFRadioButton(300, 290, 210, 211, 0);
++  OldGFTextLine(330, 140,   0, townarray[1]);
++  OldGFTextLine(330, 165,   0, townarray[2]);
++  OldGFTextLine(330, 190,   0, townarray[3]);
++  OldGFTextLine(330, 215,   0, townarray[4]);
++  OldGFTextLine(330, 240,   0, townarray[5]);
++  OldGFTextLine(330, 265,   0, townarray[6]);
++  OldGFTextLine(330, 290,   0, townarray[7]);
++  var ok := OldGFButtonID(110, 315, 4005, 4007, 1);
++  var cancel := OldGFButtonID(110, 340, 4005, 4007, 1);
++  OldGFTextLine(145, 315,   0, &quot;OKAY&quot;);
++  OldGFTextLine(145, 340,   0, &quot;CANCEL&quot;);
++  var res := OldGFSendGump(who);
++  if(res[cancel.keyid] || !res[ok.keyid])
++    SendSysMessage(who, &quot;Cancelled.&quot;);
++    return;
++  else
++    var holder;
++    foreach thing in (res.keys)
++      if((thing != 0) and (thing != 1025))
++        holder := thing;
++        break;
++      endif
++    endforeach
++    if((who.x == item.x) and (who.y == item.y) and (who.z == item.z))
++      case(townarray[Cint(holder - 2048)])
++        &quot;Moonglow&quot;:   MoveCharacterToLocation(who, 4467, 1284,   5, MOVECHAR_FORCELOCATION);
++        &quot;Britain&quot;:    MoveCharacterToLocation(who, 1336, 1998,   5, MOVECHAR_FORCELOCATION);
++        &quot;Jhelom&quot;:     MoveCharacterToLocation(who, 1499, 3772,   5, MOVECHAR_FORCELOCATION);
++        &quot;Yew&quot;:        MoveCharacterToLocation(who,  771,  754,   5, MOVECHAR_FORCELOCATION);
++        &quot;Minoc&quot;:      MoveCharacterToLocation(who, 2701,  694,   5, MOVECHAR_FORCELOCATION);
++        &quot;Trinsic&quot;:    MoveCharacterToLocation(who, 1828, 2949, -20, MOVECHAR_FORCELOCATION);
++        &quot;Skara Brae&quot;: MoveCharacterToLocation(who,  643, 2068,   5, MOVECHAR_FORCELOCATION);
++        &quot;Magincia&quot;:   MoveCharacterToLocation(who, 3564, 2141,  33, MOVECHAR_FORCELOCATION);
++      endcase
++    else
++      SendSysMessage(who, &quot;Cancelled.&quot;);
++      return;
++    endif
++  endif
++endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/items/moongates/systemMoongate.src
+===================================================================
+--- trunk/096/pkg/items/moongates/systemMoongate.src	2005-11-14 01:18:40 UTC (rev 978)
++++ trunk/096/pkg/items/moongates/systemMoongate.src	2005-11-14 01:36:40 UTC (rev 979)
+@@ -1,83 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-
+-include &quot;:gumps:include/old/old-gumps&quot;;
+-
+-GFref.x := 50;
+-GFref.y := 50;
+-
+-var townarray := {};
+-
+-program gumptest(who, item)
+-  var city := GetObjProperty(item, &quot;City&quot;);
+-  if(!city)
+-    return;
+-  endif
+-  var cfg := ReadConfigFile(&quot;:moongates:moongate&quot;);
+-  var lands := Cint(cfg[&quot;Facets&quot;].value);
+-  if(!lands)
+-    return;
+-  endif
+-  case(city)
+-    &quot;Moonglow&quot;: townarray := array(&quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Britain&quot;:  townarray := array(&quot;Moonglow&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Jhelom&quot;:   townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Yew&quot;:      townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Minoc&quot;:    townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Trinsic&quot;:  townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Skara Brae&quot;, &quot;Magincia&quot;);
+-    &quot;Skara&quot;:    townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Magincia&quot;);
+-    &quot;Magincia&quot;: townarray := array(&quot;Moonglow&quot;, &quot;Britain&quot;, &quot;Jhelom&quot;, &quot;Yew&quot;, &quot;Minoc&quot;, &quot;Trinsic&quot;, &quot;Skara Brae&quot;);
+-  endcase
+-  OldGFInitGump(0, 0);
+-  OldGFPage(0);
+-  OldGFResizePic(100, 100, BKGND_STONESLAB, 350, 300);
+-  OldGFTextLine(110, 110, 0, &quot;Pick your destination:&quot;);
+-  OldGFSetRadioGroup(1);
+-  OldGFRadioButton(300, 140, 210, 211, 1);
+-  OldGFRadioButton(300, 165, 210, 211, 0);
+-  OldGFRadioButton(300, 190, 210, 211, 0);
+-  OldGFRadioButton(300, 215, 210, 211, 0);
+-  OldGFRadioButton(300, 240, 210, 211, 0);
+-  OldGFRadioButton(300, 265, 210, 211, 0);
+-  OldGFRadioButton(300, 290, 210, 211, 0);
+-  OldGFTextLine(330, 140,   0, townarray[1]);
+-  OldGFTextLine(330, 165,   0, townarray[2]);
+-  OldGFTextLine(330, 190,   0, townarray[3]);
+-  OldGFTextLine(330, 215,   0, townarray[4]);
+-  OldGFTextLine(330, 240,   0, townarray[5]);
+-  OldGFTextLine(330, 265,   0, townarray[6]);
+-  OldGFTextLine(330, 290,   0, townarray[7]);
+-  var ok := OldGFButtonID(110, 315, 4005, 4007, 1);
+-  var cancel := OldGFButtonID(110, 340, 4005, 4007, 1);
+-  OldGFTextLine(145, 315,   0, &quot;OKAY&quot;);
+-  OldGFTextLine(145, 340,   0, &quot;CANCEL&quot;);
+-  var res := OldGFSendGump(who);
+-  if(res[cancel.keyid] || !res[ok.keyid])
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  else
+-    var holder;
+-    foreach thing in (res.keys)
+-      if((thing != 0) and (thing != 1025))
+-        holder := thing;
+-        break;
+-      endif
+-    endforeach
+-    if((who.x == item.x) and (who.y == item.y) and (who.z == item.z))
+-      case(townarray[Cint(holder - 2048)])
+-        &quot;Moonglow&quot;:   MoveCharacterToLocation(who, 4467, 1284,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Britain&quot;:    MoveCharacterToLocation(who, 1336, 1998,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Jhelom&quot;:     MoveCharacterToLocation(who, 1499, 3772,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Yew&quot;:        MoveCharacterToLocation(who,  771,  754,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Minoc&quot;:      MoveCharacterToLocation(who, 2701,  694,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Trinsic&quot;:    MoveCharacterToLocation(who, 1828, 2949, -20, MOVECHAR_FORCELOCATION);
+-        &quot;Skara Brae&quot;: MoveCharacterToLocation(who,  643, 2068,   5, MOVECHAR_FORCELOCATION);
+-        &quot;Magincia&quot;:   MoveCharacterToLocation(who, 3564, 2141,  33, MOVECHAR_FORCELOCATION);
+-      endcase
+-    else
+-      SendSysMessage(who, &quot;Cancelled.&quot;);
+-      return;
+-    endif
+-  endif
+-endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000951.html">[Poldistro-svn] r978 - trunk/096/pkg/items/walkOn
+</A></li>
+	<LI>Next message: <A HREF="000953.html">[Poldistro-svn] r980 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#952">[ date ]</a>
+              <a href="thread.html#952">[ thread ]</a>
+              <a href="subject.html#952">[ subject ]</a>
+              <a href="author.html#952">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

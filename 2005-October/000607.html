@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r634 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r634%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200510191415.j9JEFuCa019975%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000606.html">
+   <LINK REL="Next"  HREF="000608.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r634 - trunk/096/pkg/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r634%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200510191415.j9JEFuCa019975%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r634 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct 19 16:15:56 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000606.html">[Poldistro-svn] r633 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="000608.html">[Poldistro-svn] r635 - in trunk/096: config pkg/skills/animallore pkg/skills/animallore/docs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#607">[ date ]</a>
+              <a href="thread.html#607">[ thread ]</a>
+              <a href="subject.html#607">[ subject ]</a>
+              <a href="author.html#607">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-19 16:15:56 +0200 (Wed, 19 Oct 2005)
+New Revision: 634
+
+Modified:
+   trunk/096/pkg/commands/gm/info.src
+Log:
+Reputation system gump finished.
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-10-19 13:39:42 UTC (rev 633)
++++ trunk/096/pkg/commands/gm/info.src	2005-10-19 14:15:56 UTC (rev 634)
+@@ -42,7 +42,7 @@
+ 	endif
+ 	
+ 
+-	var gump := ScriptGump(who, targ);
++	var gump := RepSysGump(who, targ);
+ 	GFSendGump(who, gump);
+ endprogram
+ 
+@@ -239,6 +239,30 @@
+ 	return gump;
+ endfunction
+ 
++function RepSysGump(who, targ)
++	var gump := GumpTemplate(targ);
++
++	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 55);
++	GFAddButton(gump, 165, 63, 2117, 2118, GF_DUMMY_BTN);
++	GFTextLine(gump, 185, 60, 2100, &quot;Criminal&quot;);
++	GFTextRight(gump, 475, 60, 2100, targ.criminal);
++	GFAddButton(gump, 165, 83, 2117, 2118, GF_DUMMY_BTN);
++	GFTextLine(gump, 185, 80, 2100, &quot;Murderer&quot;);
++	GFTextRight(gump, 475, 80, 2100, targ.murderer);
++	
++	GFResizePic(gump, 163, 115, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 315, 245);
++	var client_info := targ.clientinfo;
++	var info_string := &quot;&lt;U&gt;Reportables&lt;/U&gt;&lt;BR&gt;&quot;;
++	foreach entry in ( targ.reportables )
++		info_string := info_string + &quot;&lt;B&gt;o&lt;/B&gt; &quot;+ entry + &quot;&lt;BR&gt;&quot;;
++		sleepms(2);
++	endforeach
++
++	GFHTMLArea(gump, 170, 122, 303, 231, info_string, 0, 1);
++
++	return gump;
++endfunction
++
+ function PropertyGump(who, targ)
+ 	var gump := GumpTemplate(targ);
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000606.html">[Poldistro-svn] r633 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="000608.html">[Poldistro-svn] r635 - in trunk/096: config pkg/skills/animallore pkg/skills/animallore/docs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#607">[ date ]</a>
+              <a href="thread.html#607">[ thread ]</a>
+              <a href="subject.html#607">[ subject ]</a>
+              <a href="author.html#607">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

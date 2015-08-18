@@ -1,0 +1,854 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r174 - in trunk/096/pkg/commands: . config include seer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r174%20-%20in%20trunk/096/pkg/commands%3A%20.%20config%20include%20seer&In-Reply-To=%3C200509201727.j8KHRLhA016332%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000155.html">
+   <LINK REL="Next"  HREF="000157.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r174 - in trunk/096/pkg/commands: . config include seer</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r174%20-%20in%20trunk/096/pkg/commands%3A%20.%20config%20include%20seer&In-Reply-To=%3C200509201727.j8KHRLhA016332%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r174 - in trunk/096/pkg/commands: . config include seer">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Sep 20 19:27:21 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000155.html">[Poldistro-svn] r173 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000157.html">[Poldistro-svn] r175 - in trunk/096: config pkg/skills/blacksmithy pkg/skills/carpentry pkg/skills/tailoring scripts/include scripts/util
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#156">[ date ]</a>
+              <a href="thread.html#156">[ thread ]</a>
+              <a href="subject.html#156">[ subject ]</a>
+              <a href="author.html#156">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-20 19:27:16 +0200 (Tue, 20 Sep 2005)
+New Revision: 174
+
+Added:
+   trunk/096/pkg/commands/config/
+   trunk/096/pkg/commands/config/icp.cfg
+   trunk/096/pkg/commands/include/go-text.inc
+Removed:
+   trunk/096/pkg/commands/seer/goxyz.src
+Modified:
+   trunk/096/pkg/commands/include/go-add.inc
+   trunk/096/pkg/commands/include/go-edit.inc
+   trunk/096/pkg/commands/include/go-gumps.inc
+   trunk/096/pkg/commands/include/go-template.inc
+   trunk/096/pkg/commands/seer/go.src
+Log:
+Upgraded commands pkg to be ICP compliant.
+Added .go to ICP Commands.
+Updated .go for text parsing and other features.
+Upgraded .go for full realm support.
+Deleted .goxyz.src and combined it with .go.
+
+
+Added: trunk/096/pkg/commands/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/commands/config/icp.cfg	2005-09-20 16:29:13 UTC (rev 173)
++++ trunk/096/pkg/commands/config/icp.cfg	2005-09-20 17:27:16 UTC (rev 174)
+@@ -0,0 +1,15 @@
++ICP Register
++{
++        Name            Text Commands
++        Version         1.0
++        Description     Main Package for Text Commands.
++
++        Creator         Distro Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++        //TextCmd       cmdlevel path
++        TextCmd         2 :commands:seer/go
++}
+
+Modified: trunk/096/pkg/commands/include/go-add.inc
+===================================================================
+--- trunk/096/pkg/commands/include/go-add.inc	2005-09-20 16:29:13 UTC (rev 173)
++++ trunk/096/pkg/commands/include/go-add.inc	2005-09-20 17:27:16 UTC (rev 174)
+@@ -5,24 +5,26 @@
+ 
+         if (!targ)
+                 SendSysMessage(who, &quot;Cancelled&quot;);
+-                return;
++                return 0;
+         endif
+ 
+         var name := RequestInput(who, who.backpack, &quot;What do you want to call this go location?&quot;);
+ 
+         if ( !name )
+                 SendSysMessage(who, &quot;Cancelled&quot;);
+-                return;
++                return 0;
+         endif
+ 
+         go_prop := go_elem.GetProp(who.acctname);
+-        if ( go_prop.exists(lower(name)) )
+-                SendSysMessage(who, &quot;You already have a go location named [&quot;+name+&quot;]&quot;);
+-                return;
++        if ( go_prop.Exists(lower(name)) )
++                GumpPrompt(who, &quot;You already have a go location named [&quot;+name+&quot;]&quot;);
++                return 0;
+         endif
+ 
+         Go_SetLocation(who.acctname, who, name, targ.realm, targ.x, targ.y, targ.z);
+ 
++        return 0;
++
+ endfunction
+ 
+ function Go_AddPublicLocation(who)
+@@ -32,24 +34,26 @@
+ 
+         if (!targ)
+                 SendSysMessage(who, &quot;Cancelled&quot;);
+-                return;
++                return 0;
+         endif
+ 
+         var name := RequestInput(who, who.backpack, &quot;What do you want to call this go location?&quot;);
+ 
+         if ( !name )
+                 SendSysMessage(who, &quot;Cancelled&quot;);
+-                return;
++                return 0;
+         endif
+ 
+         go_prop_base := go_elem.GetProp(&quot;base_Distro&quot;);
+-        if ( go_prop_base.exists(lower(name)) )
+-                SendSysMessage(who, &quot;You already have a go location named [&quot;+name+&quot;]&quot;);
+-                return;
++        if ( go_prop_base.Exists(lower(name)) )
++                GumpPrompt(who, &quot;You already have a go location named [&quot;+name+&quot;]&quot;);
++                return 0;
+         endif
+ 
+         Go_SetLocation(&quot;base_Distro&quot;, who, name, targ.realm, targ.x, targ.y, targ.z);
+ 
++        return 0;
++
+ endfunction
+ 
+ function Go_CopyPublicLocation(who)
+@@ -57,7 +61,6 @@
+         var gump := Go_RetrieveGump(&quot;CopyIndex&quot;, &quot;base_Distro&quot;);
+         num_keys := go_keys_base.size();
+         if  ( !gump )
+-                SendSysMessage(who, &quot;Building go public copy gump...&quot;);
+                 gump := Go_PublicCopyGump();
+                 Go_SaveGump(&quot;CopyIndex&quot;, gump, &quot;base_Distro&quot;);
+         endif
+@@ -70,24 +73,26 @@
+                 send_Location := go_prop_base[lower(go_keys_base[input])];
+                 if ( send_Location )
+                         go_prop_base := go_elem.GetProp(&quot;base_Distro&quot;);
+-                        if ( go_prop.exists(lower(send_Location.Name)) )
+-                                SendSysMessage(who, &quot;You already have a go location named [&quot;+send_Location.Name+&quot;]&quot;);
+-                                return;
++                        if ( go_prop.Exists(lower(send_Location.Name)) )
++                                GumpPrompt(who, &quot;You already have a go location named [&quot;+send_Location.Name+&quot;]&quot;);
++                                return 0;
+                         endif
+                         SendSysMessage(who, &quot;Copying [&quot; + send_Location.Name + &quot;] to your personal menu.&quot;);
+                         Go_SetLocation(who.acctname, who, send_Location.Name, send_Location.Realm, send_Location.X, send_Location.Y, send_Location.Z);
+-                        return;
++                        return 0;
+                 else
+-                        SendSysMessage(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
++                        GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
+                         Go_RefreshMyGumps(who);
+-                        return;
++                        return 0;
+                 endif
+         else
+                 SendSysMessage(who, &quot;Copying Cancelled&quot;);
+                 Go_RefreshMyGumps(who);
+-                return;
++                return 0;
+         endif
+ 
++        return 0;
++
+ endfunction
+ 
+ function Go_CopyPrivateLocation(who)
+@@ -95,7 +100,6 @@
+         var gump := Go_RetrieveGump(&quot;CopyIndex&quot;, who.acctname);
+         num_keys := go_keys.size();
+         if  ( !gump )
+-                SendSysMessage(who, &quot;Building go private copy gump...&quot;);
+                 gump := Go_PrivateCopyGump();
+                 Go_SaveGump(&quot;CopyIndex&quot;, gump, who.acctname);
+         endif
+@@ -108,24 +112,26 @@
+                 send_Location := go_prop[lower(go_keys[input])];
+                 if ( send_Location )
+                         go_prop := go_elem.GetProp(who.acctname);
+-                        if ( go_prop_base.exists(lower(send_Location.Name)) )
+-                                SendSysMessage(who, &quot;You already have a public go location named [&quot;+send_Location.Name+&quot;]&quot;);
+-                                return;
++                        if ( go_prop_base.Exists(lower(send_Location.Name)) )
++                                GumpPrompt(who, &quot;You already have a public go location named [&quot;+send_Location.Name+&quot;]&quot;);
++                                return 0;
+                         endif
+                         SendSysMessage(who, &quot;Copying [&quot; + send_Location.Name + &quot;] to the public menu.&quot;);
+                         Go_SetLocation(&quot;base_Distro&quot;, who, send_Location.Name, send_Location.Realm, send_Location.X, send_Location.Y, send_Location.Z);
+-                        return;
++                        return 0;
+                 else
+-                        SendSysMessage(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
++                        GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
+                         Go_RefreshMyGumps(who);
+-                        return;
++                        return 0;
+                 endif
+         else
+                 SendSysMessage(who, &quot;Copying Cancelled&quot;);
+                 Go_RefreshMyGumps(who);
+-                return;
++                return 0;
+         endif
+ 
++        return 0;
++
+ endfunction
+ 
+ function Go_SetLocation(gump_Type, who, name, realm, x, y, z)
+@@ -138,7 +144,7 @@
+ 
+         var temp := dictionary;
+         temp.+Name := lower(name);
+-        temp.+Realm := realm;
++        temp.+Realm := lower(realm);
+         temp.+X := x;
+         temp.+Y := y;
+         temp.+Z := z;
+@@ -150,6 +156,8 @@
+         endcase
+         Go_RefreshMyGumps(who);
+ 
++        return 0;
++
+ endfunction
+ 
+ function Go_PublicCopyGump()
+
+Modified: trunk/096/pkg/commands/include/go-edit.inc
+===================================================================
+--- trunk/096/pkg/commands/include/go-edit.inc	2005-09-20 16:29:13 UTC (rev 173)
++++ trunk/096/pkg/commands/include/go-edit.inc	2005-09-20 17:27:16 UTC (rev 174)
+@@ -14,24 +14,24 @@
+ 
+                         if ( edit_input[edit_update] )
+                                 edit_name := GFExtractData(edit_input, edit_name);
+-                                x_pos := CInt(GFExtractData(edit_input, x_pos));
+-                                y_pos := CInt(GFExtractData(edit_input, y_pos));
+-                                z_pos := CInt(GFExtractData(edit_input, z_pos));
++                                xg_pos := CInt(GFExtractData(edit_input, xg_pos));
++                                yg_pos := CInt(GFExtractData(edit_input, yg_pos));
++                                zg_pos := CInt(GFExtractData(edit_input, zg_pos));
+ 
+                                 if ( !edit_name )
+-                                        SendSysMessage(who, &quot;Cancelled - No name entered&quot;);
+-                                        return;
++                                        GumpPrompt(who, &quot;Cancelled - No name entered&quot;);
++                                        return 0;
+                                 elseif ( lower(edit_name) != send_Location.Name )
+-                                        if ( go_prop_base.exists( Lower(edit_name) ) )
+-                                                SendSysMessage(who, &quot;Cancelled - location already exists with the name [&quot;+edit_name+&quot;]&quot;);
+-                                                return;
++                                        if ( go_prop_base.Exists( Lower(edit_name) ) )
++                                                GumpPrompt(who, &quot;Cancelled - location already exists with the name [&quot;+edit_name+&quot;]&quot;);
++                                                return 0;
+                                         endif
+                                 endif
+ 
+                                 var original_Realm := send_Location.Realm;
+                                 go_prop_base.erase(lower(send_Location.Name));
+                                 go_elem.SetProp(&quot;base_Distro&quot;, go_prop_base);
+-                                Go_SetLocation(&quot;base_Distro&quot;, who, edit_name, original_Realm, x_pos, y_pos, z_pos);
++                                Go_SetLocation(&quot;base_Distro&quot;, who, edit_name, original_Realm, xg_pos, yg_pos, zg_pos);
+                                 SendSysMessage(who, &quot;Updated [&quot;+edit_name+&quot;]&quot;);
+                                 Go_RefreshMyGumps(who);
+                         elseif ( edit_input[edit_delete] )
+@@ -43,14 +43,16 @@
+                                 SendSysMessage(who, &quot;Cancelled&quot;);
+                         endif
+                 else
+-                        SendSysMessage(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
+-                        return;
++                        GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
++                        return 0;
+                 endif
+         else
+                 SendSysMessage(who, &quot;Editing Cancelled&quot;);
+-                return;
++                return 0;
+         endif
+ 
++        return 0;
++
+ endfunction
+ 
+ function Go_EditPrivateLocation(who)
+@@ -69,24 +71,24 @@
+ 
+                         if ( edit_input[edit_update] )
+                                 edit_name := GFExtractData(edit_input, edit_name);
+-                                x_pos := CInt(GFExtractData(edit_input, x_pos));
+-                                y_pos := CInt(GFExtractData(edit_input, y_pos));
+-                                z_pos := CInt(GFExtractData(edit_input, z_pos));
++                                xg_pos := CInt(GFExtractData(edit_input, xg_pos));
++                                yg_pos := CInt(GFExtractData(edit_input, yg_pos));
++                                zg_pos := CInt(GFExtractData(edit_input, zg_pos));
+ 
+                                 if ( !edit_name )
+-                                        SendSysMessage(who, &quot;Cancelled - No name entered&quot;);
+-                                        return;
++                                        GumpPrompt(who, &quot;Cancelled - No name entered&quot;);
++                                        return 0;
+                                 elseif ( lower(edit_name) != send_Location.Name )
+-                                        if ( go_prop_base.exists( Lower(edit_name) ) )
+-                                                SendSysMessage(who, &quot;Cancelled - location already exists with the name [&quot;+edit_name+&quot;]&quot;);
+-                                                return;
++                                        if ( go_prop_base.Exists( Lower(edit_name) ) )
++                                                GumpPrompt(who, &quot;Cancelled - location already exists with the name [&quot;+edit_name+&quot;]&quot;);
++                                                return 0;
+                                         endif
+                                 endif
+ 
+                                 var original_Realm := send_Location.Realm;
+                                 go_prop.erase(lower(send_Location.Name));
+                                 go_elem.SetProp(who.acctname, go_prop);
+-                                Go_SetLocation(who.acctname, who, edit_name, original_Realm, x_pos, y_pos, z_pos);
++                                Go_SetLocation(who.acctname, who, edit_name, original_Realm, xg_pos, yg_pos, zg_pos);
+                                 SendSysMessage(who, &quot;Updated [&quot;+edit_name+&quot;]&quot;);
+                                 Go_RefreshMyGumps(who);
+                         elseif ( edit_input[edit_delete] )
+@@ -98,14 +100,16 @@
+                                 SendSysMessage(who, &quot;Cancelled&quot;);
+                         endif
+                 else
+-                        SendSysMessage(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
+-                        return;
++                        GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
++                        return 0;
+                 endif
+         else
+                 SendSysMessage(who, &quot;Editing Cancelled&quot;);
+-                return;
++                return 0;
+         endif
+ 
++        return 0;
++
+ endfunction
+ 
+ function Go_PublicEditGump()
+@@ -215,15 +219,15 @@
+ 
+         GFTextLine(gump, 20, 143, 2100, &quot;X Coordinate&quot;);
+         GFResizePic(gump, 120, 140, 2620, 100, 30);
+-        x_pos := GFTextEntry(gump, 130, 145, 80, 25, 2100, send_Location.X);
++        xg_pos := GFTextEntry(gump, 130, 145, 80, 25, 2100, send_Location.X);
+ 
+         GFTextLine(gump, 20, 166, 2100, &quot;Y Coordinate&quot;);
+         GFResizePic(gump, 120, 163, 2620, 100, 30);
+-        y_pos := GFTextEntry(gump, 130, 168, 80, 25, 2100, send_Location.Y);
++        yg_pos := GFTextEntry(gump, 130, 168, 80, 25, 2100, send_Location.Y);
+ 
+         GFTextLine(gump, 20, 189, 2100, &quot;Z Coordinate&quot;);
+         GFResizePic(gump, 120, 186, 2620, 100, 30);
+-        z_pos := GFTextEntry(gump, 130, 191, 80, 25, 2100, send_Location.Z);
++        zg_pos := GFTextEntry(gump, 130, 191, 80, 25, 2100, send_Location.Z);
+ 
+         return gump;
+ 
+@@ -248,15 +252,15 @@
+ 
+         GFTextLine(gump, 20, 143, 2100, &quot;X Coordinate&quot;);
+         GFResizePic(gump, 120, 140, 2620, 100, 30);
+-        x_pos := GFTextEntry(gump, 130, 145, 80, 25, 2100, send_Location.X);
++        xg_pos := GFTextEntry(gump, 130, 145, 80, 25, 2100, send_Location.X);
+ 
+         GFTextLine(gump, 20, 166, 2100, &quot;Y Coordinate&quot;);
+         GFResizePic(gump, 120, 163, 2620, 100, 30);
+-        y_pos := GFTextEntry(gump, 130, 168, 80, 25, 2100, send_Location.Y);
++        yg_pos := GFTextEntry(gump, 130, 168, 80, 25, 2100, send_Location.Y);
+ 
+         GFTextLine(gump, 20, 189, 2100, &quot;Z Coordinate&quot;);
+         GFResizePic(gump, 120, 186, 2620, 100, 30);
+-        z_pos := GFTextEntry(gump, 130, 191, 80, 25, 2100, send_Location.Z);
++        zg_pos := GFTextEntry(gump, 130, 191, 80, 25, 2100, send_Location.Z);
+ 
+         return gump;
+ 
+
+Modified: trunk/096/pkg/commands/include/go-gumps.inc
+===================================================================
+--- trunk/096/pkg/commands/include/go-gumps.inc	2005-09-20 16:29:13 UTC (rev 173)
++++ trunk/096/pkg/commands/include/go-gumps.inc	2005-09-20 17:27:16 UTC (rev 174)
+@@ -1,6 +1,6 @@
+ // Gump backgrounds - Used in various functions - easier to use globally.
+-var BKGND_SILVERTRIM := GFCfgConst(&quot;BackGrounds&quot;, &quot;SILVERTRIM&quot;);
+-var BKGND_DARK_STONE := GFCfgConst(&quot;BackGrounds&quot;, &quot;DARK_STONE&quot;);
++var BKGND_SILVERTRIM := GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;);
++var BKGND_DARK_STONE := GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;);
+ 
+ 
+ function Go_LocationIndex(who, gump_Type:=&quot;base_Distro&quot;)
+@@ -12,7 +12,6 @@
+                 num_keys := go_keys.size();
+         endif
+         if  ( !gump )
+-                SendSysMessage(who, &quot;Building go index gump...&quot;);
+                 if(gump_Type == &quot;base_Distro&quot;)
+                         gump := Go_PublicIndexGump();
+                 else
+@@ -26,25 +25,25 @@
+ 
+         case(input)
+           0: SendSysMessage(who, &quot;Closed&quot;);
+-             return;
+-          ADD_NEW_PUBLIC: Go_AddPublicLocation(who);
+-                   return;
+-          ADD_NEW_PRIVATE: Go_AddPrivateLocation(who);
+-                   return;
+-          COPY_PUBLIC_ITEM: Go_CopyPublicLocation(who);
+-                   return;
+-          COPY_PRIVATE_ITEM: Go_CopyPrivateLocation(who);
+-                   return;
+-          EDIT_PUBLIC_ITEM: Go_EditPublicLocation(who);
+-                   return;
+-          EDIT_PRIVATE_ITEM: Go_EditPrivateLocation(who);
+-                   return;
+-          SHOW_PUBLIC_INDEX: SetObjProperty(who, &quot;#Go_Gump&quot;, 1);
+-                             Go_LocationIndex(who);
+-                   return;
++             return 0;
++          ADD_NEW_PUBLIC:     Go_AddPublicLocation(who);
++                              return 0;
++          ADD_NEW_PRIVATE:    Go_AddPrivateLocation(who);
++                              return 0;
++          COPY_PUBLIC_ITEM:   Go_CopyPublicLocation(who);
++                              return 0;
++          COPY_PRIVATE_ITEM:  Go_CopyPrivateLocation(who);
++                              return 0;
++          EDIT_PUBLIC_ITEM:   Go_EditPublicLocation(who);
++                              return 0;
++          EDIT_PRIVATE_ITEM:  Go_EditPrivateLocation(who);
++                              return 0;
++          SHOW_PUBLIC_INDEX:  SetObjProperty(who, &quot;#Go_Gump&quot;, 1);
++                              Go_LocationIndex(who);
++                              return 0;
+           SHOW_PRIVATE_INDEX: SetObjProperty(who, &quot;#Go_Gump&quot;, 2);
+                               Go_LocationIndex(who, who.acctname);
+-                   return;
++                              return 0;
+           default:
+         endcase
+ 
+@@ -59,7 +58,7 @@
+                         SendSysMessage(who, &quot;Who do you want to send to &quot; + send_Location.Name);
+                         moved := target(who);
+                         if (!moved)
+-                                return;
++                                return 0;
+                         endif
+                 else
+                         input := input - num_keys;
+@@ -72,19 +71,26 @@
+                 if ( send_Location )
+                         var move;
+                         SendSysMessage(who, &quot;Going to [&quot; + send_Location.Name + &quot;]&quot;);
+-                        if ( moved.IsA(POLCLASS_ITEM) )
+-                                move := MoveItemToLocation(moved, CInt(send_Location.X), CInt(send_Location.Y), CInt(send_Location.Z), MOVEITEM_FORCELOCATION);
++                        if( moved.realm == send_Location.Realm )
++                                if ( moved.IsA(POLCLASS_ITEM) )
++                                        move := MoveItemToLocation(moved, CInt(send_Location.X), CInt(send_Location.Y), CInt(send_Location.Z), MOVEITEM_FORCELOCATION);
++                                else
++                                        move := MoveCharacterToLocation(moved, CInt(send_Location.X), CInt(send_Location.Y), CInt(send_Location.Z), MOVECHAR_FORCELOCATION);
++                                endif
+                         else
+-                                move := MoveCharacterToLocation(moved, CInt(send_Location.X), CInt(send_Location.Y), CInt(send_Location.Z), MOVECHAR_FORCELOCATION);
++                                move := MoveObjectToRealm( who, send_Location.Realm, send_Location.X, send_Location.Y, send_Location.Z, MOVECHAR_FORCELOCATION );
+                         endif
++
+                         if ( TypeOf(move) != &quot;Integer&quot; )
+-                                SendSysMessage(who, &quot;Error moving: X[&quot; + send_Location.X +&quot;] Y[&quot; + send_Location.Y + &quot;] Z[&quot; + send_Location.Z + &quot;]&quot;);
++                                GumpPrompt(who, &quot;Error moving: X[&quot; + send_Location.X +&quot;] Y[&quot; + send_Location.Y + &quot;] Z[&quot; + send_Location.Z + &quot;]&quot;);
+                         endif
+                 else
+-                        SendSysMessage(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
++                        GumpPrompt(who, &quot;Location [&quot; + send_Location.Name + &quot;] does not exist.&quot;);
+                 endif
+         endif
+ 
++        return 0;
++
+ endfunction
+ 
+ function Go_PersonalIndexGump()
+
+Modified: trunk/096/pkg/commands/include/go-template.inc
+===================================================================
+--- trunk/096/pkg/commands/include/go-template.inc	2005-09-20 16:29:13 UTC (rev 173)
++++ trunk/096/pkg/commands/include/go-template.inc	2005-09-20 17:27:16 UTC (rev 174)
+@@ -17,6 +17,8 @@
+                 Go_RefreshGump(&quot;LocationIndex&quot;, &quot;base_Distro&quot;);
+         endif
+ 
++        return 0;
++
+ endfunction
+ 
+ function Go_RefreshMyGumps(who)
+@@ -29,6 +31,6 @@
+         elem.EraseProp(&quot;base_Distro&quot;);
+         elem.EraseProp(who.acctname);
+ 
+-        SendSysMessage(who, &quot;Your public and personal gumps have been refreshed.&quot;);
++        return 1;
+ 
+ endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/commands/include/go-text.inc
+===================================================================
+--- trunk/096/pkg/commands/include/go-text.inc	2005-09-20 16:29:13 UTC (rev 173)
++++ trunk/096/pkg/commands/include/go-text.inc	2005-09-20 17:27:16 UTC (rev 174)
+@@ -0,0 +1,141 @@
++function Go_Parse_Text(who, text)
++
++        if( !text )
++                return 0;
++        endif
++
++        var params := SplitWords(text);
++
++        case( lower(params[1]) )
++          &quot;refresh&quot;: return Go_RefreshMyGumps(who);
++          &quot;xyz&quot;:     return Go_GoXYZ(who, params);
++          default:   return Go_FindLocationByText(who, params);
++        endcase
++
++        return 0;
++
++endfunction
++
++function Go_GoXYZ(who, params)
++
++        var num_params := len(params);
++
++        case(num_params)
++          1:
++          2: SendSysMessage(who, &quot;Error. Insufficient data supplied. \&quot;.go xyz x y [z] [string realm name]\&quot;&quot;);
++          3: params[4] := GetMapInfo( CInt(params[1]), CInt(params[2]), who.realm ).z;
++             params[5] := who.realm;
++          4: params[5] := who.realm;
++          default:
++        endcase
++
++        if( Realms().Exists( lower(params[5])) )
++                if( who.realm == lower(params[5]) )
++                        return ( MoveCharacterToLocation( who, CInt(params[2]), CInt(params[3]), CInt(params[4]), MOVECHAR_FORCELOCATION ) );
++                else
++                        return ( MoveObjectToRealm( who, lower(params[5]), CInt(params[2]), CInt(params[3]), CInt(params[4]), MOVECHAR_FORCELOCATION ) );
++                endif
++        else
++                GumpPrompt(who, &quot;Invalid Realm name in xyz!&quot;);
++                return 1;
++        endif
++
++        return 1;
++
++endfunction
++
++function Go_FindLocationByText(who, params)
++
++        case( lower(params[params.size()]) )
++          &quot;private&quot;: Go_ByPrivateLocation(who, params);
++          &quot;public&quot;:  Go_ByPublicLocation(who, params);
++          default:   Go_ByDefaultLocation(who, params);
++        endcase
++
++        return 1;
++
++endfunction
++
++function Go_ByPrivateLocation(who, params)
++
++        if(go_prop.Exists( lower(params[1]) ) )
++                var temp := go_prop[lower(params[1])];
++                SendSysMessage(who, &quot;Going to private location [&quot; + params[1] + &quot;]&quot;);
++                var move;
++                if( who.realm == temp.Realm )
++                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
++                else
++                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
++                endif
++                if ( TypeOf(move) != &quot;Integer&quot; )
++                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
++                        return 0;
++                endif
++        else
++                GumpPrompt(who, &quot;Private Location [&quot; + params[1] + &quot;] does not exist.&quot;);
++                return 0;
++        endif
++
++        return 0;
++
++endfunction
++
++function Go_ByPublicLocation(who, params)
++
++        if(go_prop_base.Exists( lower(params[1]) ) )
++                var temp := go_prop_base[lower(params[1])];
++                SendSysMessage(who, &quot;Going to public location [&quot; + params[1] + &quot;]&quot;);
++                var move;
++                if( who.realm == temp.Realm )
++                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
++                else
++                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
++                endif
++                if ( TypeOf(move) != &quot;Integer&quot; )
++                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
++                        return 0;
++                endif
++        else
++                GumpPrompt(who, &quot;Public Location [&quot; + params[1] + &quot;] does not exist.&quot;);
++                return 0;
++        endif
++
++        return 0;
++
++endfunction
++
++function Go_ByDefaultLocation(who, params)
++
++        if(go_prop.Exists( lower(params[1]) ) )
++                var temp := go_prop[lower(params[1])];
++                SendSysMessage(who, &quot;Going to private location [&quot; + params[1] + &quot;]&quot;);
++                var move;
++                if( who.realm == temp.Realm )
++                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
++                else
++                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
++                endif
++                if ( TypeOf(move) != &quot;Integer&quot; )
++                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
++                        return 0;
++                endif
++        elseif(go_prop_base.Exists( lower(params[1]) ) )
++                var temp := go_prop_base[lower(params[1])];
++                SendSysMessage(who, &quot;Going to public location[&quot; + params[1] + &quot;]&quot;);
++                var move;
++                if( who.realm == temp.Realm )
++                        move := MoveCharacterToLocation(who, CInt(temp.X), CInt(temp.Y), CInt(temp.Z), MOVECHAR_FORCELOCATION);
++                else
++                        move := MoveObjectToRealm( who, temp.Realm, temp.X, temp.Y, temp.Z, MOVECHAR_FORCELOCATION );
++                endif
++                if ( TypeOf(move) != &quot;Integer&quot; )
++                        GumpPrompt(who, &quot;Error moving: X[&quot; + temp.X +&quot;] Y[&quot; + temp.Y + &quot;] Z[&quot; + temp.Z + &quot;]&quot;);
++                        return 0;
++                endif
++        else
++                GumpPrompt(who, &quot;Location [&quot; + params[1] + &quot;] does not exist.&quot;);
++                return 0;
++        endif
++
++
++endfunction
+
+Modified: trunk/096/pkg/commands/seer/go.src
+===================================================================
+--- trunk/096/pkg/commands/seer/go.src	2005-09-20 16:29:13 UTC (rev 173)
++++ trunk/096/pkg/commands/seer/go.src	2005-09-20 17:27:16 UTC (rev 174)
+@@ -1,22 +1,35 @@
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ //
+-//  name:    go.src - Player Textcommand
+-//  version: 2.0a
++//  name:    go.src - Staff Textcommand
++//  version: 2.0b
+ //  author:  MuadDib
+ //
+-//  Purpose: New .go command that saves lists in DataFiles instead of Config Files for easier
+-//           handling. Allows you to add, remove, and edit entries. It also gives you a &quot;base&quot;
+-//           list of locations that everyone can see. As you add locations, they are all &quot;account&quot;
+-//           specific if added while viewing your Private locations. Only the adder will see his
+-//           personal list that has been added to the locations. If you are viewing the &quot;public&quot;
+-//           list when you use Add, it will add it to the Public list instead! You can also add
+-//           locations from the &quot;base&quot; list to the personal list via Copy. Then simply select the
+-//           location from the list given via gump.
++//  Purpose: Lists and Gumps are now cached via DataFiles instead of Config files. Initial use of
++//           the command will import the /config/golocs.cfg file. New features are as follows:
+ //
++//           Buttons:
++//           Goto - Will move you to the selected location.
++//           Send - Will move the object you target to the selected location.
++//           Add Button - Will add the new location to the menu version you are viewing only.
++//           Copy Button - Will copy a location you select from the menu version you are viewing
++//                         to the other menu version.
++//           Edit Button - Allows you to rename a location, change the coords, or delete the
++//                         location totally.
++//           Public/Private Button - This button will switch you the menu version the button states.
++//
++//           Other Abilities:
++//           Text Parsing from the command line. If you pass &quot;xyz&quot; as the location to go to, it will
++//              expect the x and y at least with it. The format is &quot;.go xyz x y [z] [realm]&quot;. Z and
++//              realm are optional.
++//           Location Parsing from the command line. If you pass the location name from the command
++//              line, it will auto move you to that location.
++//           Refresh. If you pass the word &quot;refresh&quot; on the command line, it will refresh all the
++//              gumps for your private gumps, and the main gump.
++//
+ //  To-Do:   Optimize gump functions within includes.
+-//           Add more &quot;text&quot; checks at beginning of the script. Possibly in /include/go_text.inc
+ //
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
++use polsys;
+ use uo;
+ use os;
+ use datafile;
+@@ -29,6 +42,7 @@
+ include &quot;:gumps:include/yesno&quot;;
+ include &quot;:commands:include/go-add&quot;;
+ include &quot;:commands:include/go-edit&quot;;
++include &quot;:commands:include/go-text&quot;;
+ include &quot;:commands:include/go-gumps&quot;;
+ include &quot;:commands:include/go-template&quot;;
+ 
+@@ -45,6 +59,7 @@
+ 
+ CONST BUILD_FROM_OLD      := 0x1;
+ 
++var go_Reserved_Words := array(&quot;refresh&quot;, &quot;xyz&quot;);
+ var go_data_gumps := DFOpenDataFile(&quot;:commands:GoGumps&quot;, DF_CREATE);
+ var go_data_file  := DFOpenDataFile(&quot;:commands:GoFile&quot;, DF_CREATE);
+ var go_elem       := DFFindElement(go_data_file, &quot;GoList&quot;, DF_CREATE);
+@@ -56,22 +71,14 @@
+ var edit_name;
+ var edit_update;
+ var edit_delete;
+-var x_pos;
+-var y_pos;
+-var z_pos;
++var xg_pos;
++var yg_pos;
++var zg_pos;
+ 
+ program textcmd_go( who, text )
+ 
+-        if( lower(text) == &quot;refresh&quot; )
+-          Go_RefreshGump(&quot;LocationIndex&quot;, &quot;base_Distro&quot;);
+-          Go_RefreshGump(&quot;LocationIndex&quot;, who.acctname);
+-          Go_RefreshGump(&quot;CopyIndex&quot;, &quot;base_Distro&quot;);
+-          Go_RefreshGump(&quot;CopyIndex&quot;, who.acctname);
+-          SendSysMessage(who, &quot;Gump Cache emptied for base and personal.&quot;);
+-          return;
+-        endif
++        Go_CheckInit(who);
+ 
+-        Go_CheckInit(who);
+         // See if there is an element in the DataFile that matches their
+         // account name.
+         go_prop := go_elem.GetProp( who.acctname );
+@@ -79,14 +86,17 @@
+         // If there is no Element in the DataFile that matches their account name
+         // let's create it now.
+         if ( !go_prop )
+-                SendSysMessage(who, &quot;Creating personal go list dictionary...&quot;);
+                 var temp := dictionary;
+                 go_elem.SetProp(who.acctname, temp);
+                 go_prop  := go_elem.GetProp(who.acctname);
+         endif
+-        
++
+         go_keys  := go_prop.keys();
+-        
++
++        if( Go_Parse_Text(who, text) )
++                return 0;
++        endif
++
+         var gump_Open := GetObjProperty(who, &quot;#Go_Gump&quot;);
+         case(gump_Open)
+           1: Go_LocationIndex(who);
+
+Deleted: trunk/096/pkg/commands/seer/goxyz.src
+===================================================================
+--- trunk/096/pkg/commands/seer/goxyz.src	2005-09-20 16:29:13 UTC (rev 173)
++++ trunk/096/pkg/commands/seer/goxyz.src	2005-09-20 17:27:16 UTC (rev 174)
+@@ -1,27 +0,0 @@
+-/////////////////////////////////////////////////////////////////////////////
+-//
+-//  &quot;.goxyz x y [z]&quot; - jump to a location, specifying coordinates.
+-//
+-//  If Z is not specified, map data will be read.  Note statics and dynamic
+-//  items won't be taken into account, except insofar as
+-//  MoveCharacterToLocation does automatically.
+-//
+-//  Last Modified: 1999/02/06 Syzygy
+-//
+-/////////////////////////////////////////////////////////////////////////////
+-
+-
+-use uo;
+-
+-program textcmd_goxyz( who, text )
+-	var params := SplitWords( text );
+-    if (len(params) &lt; 3) // didn't pass Z
+-        params[3] := GetMapInfo( CInt(params[1]), CInt(params[2]), who.realm ).z;
+-    endif
+-
+-	var res := MoveCharacterToLocation( who, CInt(params[1]), CInt(params[2]), CInt(params[3]), MOVECHAR_FORCELOCATION );
+-
+-    if (!res)
+-        SendSysMessage( who, &quot;Unable to go there: &quot; + res.errortext );
+-    endif
+-endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000155.html">[Poldistro-svn] r173 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000157.html">[Poldistro-svn] r175 - in trunk/096: config pkg/skills/blacksmithy pkg/skills/carpentry pkg/skills/tailoring scripts/include scripts/util
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#156">[ date ]</a>
+              <a href="thread.html#156">[ thread ]</a>
+              <a href="subject.html#156">[ subject ]</a>
+              <a href="author.html#156">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

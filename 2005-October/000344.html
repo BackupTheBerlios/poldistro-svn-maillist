@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r369 - trunk/096/pkg/items/bountyboard
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r369%20-%20trunk/096/pkg/items/bountyboard&In-Reply-To=%3C200510021328.j92DSLb4004113%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000343.html">
+   <LINK REL="Next"  HREF="000345.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r369 - trunk/096/pkg/items/bountyboard</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r369%20-%20trunk/096/pkg/items/bountyboard&In-Reply-To=%3C200510021328.j92DSLb4004113%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r369 - trunk/096/pkg/items/bountyboard">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct  2 15:28:21 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000343.html">[Poldistro-svn] r368 - trunk/096/pkg/systems/merchantnodes
+</A></li>
+        <LI>Next message: <A HREF="000345.html">[Poldistro-svn] r370 - trunk/096/pkg/systems/boat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#344">[ date ]</a>
+              <a href="thread.html#344">[ thread ]</a>
+              <a href="subject.html#344">[ subject ]</a>
+              <a href="author.html#344">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-02 15:28:21 +0200 (Sun, 02 Oct 2005)
+New Revision: 369
+
+Modified:
+   trunk/096/pkg/items/bountyboard/bounty.src
+   trunk/096/pkg/items/bountyboard/collectBounty.src
+Log:
+
+
+Modified: trunk/096/pkg/items/bountyboard/bounty.src
+===================================================================
+--- trunk/096/pkg/items/bountyboard/bounty.src	2005-10-02 13:21:53 UTC (rev 368)
++++ trunk/096/pkg/items/bountyboard/bounty.src	2005-10-02 13:28:21 UTC (rev 369)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use os;
+ 
+@@ -3,5 +5,4 @@
+ include &quot;include/bounty&quot;;
+ include &quot;:datafile:datafile&quot;;
+-//include &quot;:bank:bank&quot;;
+ include &quot;:containers:storageAreas&quot;;
+ include &quot;:gumps:include/old/old-gumps&quot;;
+@@ -10,16 +11,16 @@
+ 
+ 
+ program Assign_Bounty(parms)
+-	var who := parms[1];
++	var mobile := parms[1];
+ 	var data := parms[2];
+-	var bank := FindBankBox(who);
++	var bank := CP_GetStorageContainerForMobile(mobile, CP_DEFAULT_AREA, 1);
+ 	foreach id in data
+ 		var holder := FindMyGold(bank);
+ 		var mygold := Cint(holder[1]);
+ 		var goldpiles := holder[2];
+ 		if (mygold)
+ 			var mob := SystemFindObjectBySerial(id, SYSFIND_SEARCH_OFFLINE_MOBILES);
+-			var bounty := GetBountyAmount(who, mygold, mob.name);
++			var bounty := GetBountyAmount(mobile, mygold, mob.name);
+ 			if ((bounty) &amp;&amp; (bounty &lt;= mygold))
+ 				AddBounty(mob, bounty);
+ 				foreach thing in goldpiles
+@@ -35,18 +36,18 @@
+ 					endif
+ 				endforeach
+ 			elseif (bounty &gt; mygold)
+-				SendSysMessage(who, &quot;You do not have that much gold.&quot;, 3, 40);
++				SendSysMessage(mobile, &quot;You do not have that much gold.&quot;, 3, 40);
+ 			else
+-				SendSysMessage(who, &quot;You have declined to place a bounty on &quot; + mob.killer.name + &quot;'s head.&quot;);
++				SendSysMessage(mobile, &quot;You have declined to place a bounty on &quot; + mob.killer.name + &quot;'s head.&quot;);
+ 			endif
+ 		else
+-			SendSysMessage(who, &quot;You have no gold in your bank from which to place a bounty.&quot;, 3, 40);
++			SendSysMessage(mobile, &quot;You have no gold in your bank from which to place a bounty.&quot;, 3, 40);
+ 		endif
+ 	endforeach
+ endprogram
+ 
+ 
+-function GetBountyAmount(who, mygold, name)
++function GetBountyAmount(mobile, mygold, name)
+ 	GFInitGump();
+ 	GFPage(0);
+ 	GFResizePic(50,  50, 5120, 500, 200);
+@@ -60,11 +61,11 @@
+ 	var amt := GFTextEntry( 100, 190, 100, 20, 900, &quot;0&quot;);
+ 	GFButtonID(380, 190, 2121, 2120, 0);
+ 	GFButtonID(440, 190, 2130, 2129, 1, 1);
+-	var ret := GFSendGump(who);
++	var ret := GFSendGump(mobile);
+ 	if (ret[0] == 1)
+ 		amt := Cint(SplitWords(ret[amt.keyid])[2]);
+ 	else
+-		SendSysMessage(who, &quot;Cancelled.&quot;, 3, 40);
++		SendSysMessage(mobile, &quot;Cancelled.&quot;, 3, 40);
+ 		amt := 0;
+ 	endif
+ 
+
+Modified: trunk/096/pkg/items/bountyboard/collectBounty.src
+===================================================================
+--- trunk/096/pkg/items/bountyboard/collectBounty.src	2005-10-02 13:21:53 UTC (rev 368)
++++ trunk/096/pkg/items/bountyboard/collectBounty.src	2005-10-02 13:28:21 UTC (rev 369)
+@@ -1,3 +1,5 @@
++// $Id$
++
+ use uo;
+ use os;
+ use datafile;
+@@ -4,19 +6,19 @@
+ 
+ include &quot;:datafile:datafile&quot;;
+ include &quot;include/bounty&quot;;
+-include &quot;:bank:bank&quot;;
++include &quot;:containers:storageAreas&quot;;
+ 
+ program collectBounty(parms)
+   print(&quot;P: &quot; + parms);
+   var me   := parms[1];
+-  var who  := parms[2];
++  var mobile  := parms[2];
+   var item := parms[3];
+   if(!ReserveItem(item))
+     print(&quot;!&quot;);
+     return;
+   endif
+   var serial := GetObjProperty(item, &quot;serial&quot;);
+-  var bounty := FindBounty(who, serial);
++  var bounty := FindBounty(mobile, serial);
+   if(!bounty)
+     PrintTextAbove(me, &quot;I'm sorry, but there doesnt seem to be a bounty on that head.&quot;);
+     DestroyItem(item);
+@@ -25,7 +27,7 @@
+     PrintTextAbove(me, &quot;You have brought in the head of &quot; + bounty[1] + &quot;. That fiend was responsible for &quot; + bounty[3] + &quot; murders.&quot;);
+     PrintTextAbove(me, &quot;Lord British has offered a reward of &quot; + bounty[2] + &quot; gold pieces, which I shall place in your bankbox.&quot;);
+     var gold := Cint(bounty[2]);
+-    var bank := FindBankBox(who);
++    var bank := CP_GetStorageContainerForMobile(mobile, CP_DEFAULT_AREA, 1);
+     while(gold &gt;= 60000)
+       gold := gold - 60000;
+       CreateItemInContainer(bank, 0xeed, 60000);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000343.html">[Poldistro-svn] r368 - trunk/096/pkg/systems/merchantnodes
+</A></li>
+	<LI>Next message: <A HREF="000345.html">[Poldistro-svn] r370 - trunk/096/pkg/systems/boat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#344">[ date ]</a>
+              <a href="thread.html#344">[ thread ]</a>
+              <a href="subject.html#344">[ subject ]</a>
+              <a href="author.html#344">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

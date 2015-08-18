@@ -1,0 +1,669 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r685 - trunk/096/pkg/items/containers
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r685%20-%20trunk/096/pkg/items/containers&In-Reply-To=%3C200510280414.j9S4EEDC026687%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000658.html">
+   <LINK REL="Next"  HREF="000660.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r685 - trunk/096/pkg/items/containers</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r685%20-%20trunk/096/pkg/items/containers&In-Reply-To=%3C200510280414.j9S4EEDC026687%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r685 - trunk/096/pkg/items/containers">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Fri Oct 28 06:14:14 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000658.html">[Poldistro-svn] r684 - in trunk/096: config pkg/commands pkg/commands/config pkg/config pkg/expansions/aos pkg/expansions/aos/skills/chivalry pkg/expansions/aos/skills/focus pkg/expansions/aos/skills/necromancy pkg/expansions/lbr pkg/expansions/uor pkg/items/bountyboard pkg/items/bulletinboard pkg/items/bulletinboard/config pkg/items/commcrystals pkg/items/containers pkg/items/containers/config pkg/items/decorations pkg/items/doors pkg/items/dyes pkg/items/food pkg/items/guildstone pkg/items/interiordecoratortool pkg/items/lighting pkg/items/magic pkg/items/moongates pkg/items/mounts pkg/items/repaircontract pkg/items/runebook pkg/items/sysbook pkg/items/sysbook/config pkg/items/training pkg/items/traps pkg/items/trash pkg/items/treasuremap pkg/items/usestuff pkg/items/walkOn pkg/items/walkOn/config pkg/items/wands pkg/mobiles/animaltrainer pkg/mobiles/barber pkg/mobiles/brainAI pkg/mobiles/brainAI/config pkg/mobiles/death pkg/mobiles/death/config pkg/mobiles/npcutils pkg/mobiles/o! ldAI pkg/mobiles/playervendor pkg/other/gmtools pkg/other/hooks pkg/other/motd pkg/other/motd/config pkg/other/packetHooks/CharProfile pkg/other/packetHooks/CharProfile/config pkg/other/packetHooks/OpenDoor pkg/other/packetHooks/OpenDoor/config pkg/other/packetHooks/RequestAttack pkg/other/packetHooks/RequestAttack/config pkg/other/packetHooks/WarAndPeace pkg/other/packetHooks/WarAndPeace/config pkg/skills/alchemy pkg/skills/anatomy pkg/skills/animallore pkg/skills/animallore/docs pkg/skills/armslore pkg/skills/begging pkg/skills/blacksmithy pkg/skills/bowcraft pkg/skills/camping pkg/skills/carpentry pkg/skills/cartography pkg/skills/cooking pkg/skills/detecthidden pkg/skills/evalint pkg/skills/fishing pkg/skills/forensicevaluation pkg/skills/healing pkg/skills/herding pkg/skills/hiding pkg/skills/inscription pkg/skills/itemid pkg/skills/lockpicking pkg/skills/lumberjacking pkg/skills/magery pkg/skills/meditation pkg/skills/mining pkg/skills/musicianship pkg/skills/poisonin! g pkg/skills/removetrap pkg/skills/spiritspeak pkg/skills/stea! ling pkg
+</A></li>
+        <LI>Next message: <A HREF="000660.html">[Poldistro-svn] r686 - in trunk/096/pkg: items/containers skills/carpentry skills/carpentry/config systems/crafting/config systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#659">[ date ]</a>
+              <a href="thread.html#659">[ thread ]</a>
+              <a href="subject.html#659">[ subject ]</a>
+              <a href="author.html#659">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-28 06:14:04 +0200 (Fri, 28 Oct 2005)
+New Revision: 685
+
+Modified:
+   trunk/096/pkg/items/containers/itemdesc.cfg
+Log:
+
+
+Modified: trunk/096/pkg/items/containers/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/containers/itemdesc.cfg	2005-10-27 18:48:28 UTC (rev 684)
++++ trunk/096/pkg/items/containers/itemdesc.cfg	2005-10-28 04:14:04 UTC (rev 685)
+@@ -20,9 +20,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE80
+@@ -43,9 +43,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0x9AA
+@@ -66,9 +66,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE7D
+@@ -89,9 +89,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ #--=[ Leather ]=-----------------
+@@ -114,9 +114,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE79
+@@ -137,9 +137,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0x9B2
+@@ -160,9 +160,9 @@
+ 	CanDye			1
+ 	Lockable		0
+ 
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE75
+@@ -184,9 +184,9 @@
+ 	CanDye			1
+ 	Lockable		0
+ 
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ #--=[ Chests ]=------------------
+@@ -209,9 +209,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE7C
+@@ -232,9 +232,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE41
+@@ -255,9 +255,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE40
+@@ -278,9 +278,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE43
+@@ -301,9 +301,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE42
+@@ -324,9 +324,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0x9E40
+@@ -347,9 +347,9 @@
+ 	Movable			1
+ 	Weight			5
+ 
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ #--=[ Crates ]=------------------
+@@ -372,9 +372,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE7E
+@@ -395,9 +395,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE3F
+@@ -418,9 +418,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE3E
+@@ -441,9 +441,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE3D
+@@ -464,9 +464,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xE3C
+@@ -487,9 +487,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ #--=[ Baskets ]=-----------------
+@@ -512,9 +512,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0x9B1
+@@ -535,16 +535,16 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ #--=[ Barrels ]=-------------------
+ 
+ Container 0xE77
+ {
+-	Name			container/useBarrel
++	Name			barrel
+ 	Desc			barrel
+ 	Graphic			3707
+ 
+@@ -562,9 +562,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xFAE
+@@ -586,9 +586,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ #--=[ Furniture ]=-----------------
+@@ -611,9 +611,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ Container 0xA34
+ {
+@@ -633,9 +633,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xA30
+@@ -656,9 +656,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ Container 0xA38
+ {
+@@ -678,9 +678,9 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0xA4D
+@@ -701,11 +701,11 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ 
+-	container/useGraphic		2636
++	OpenGraphic		2636
+ 	CloseGraphic		2637
+ }
+ Container 0xA51
+@@ -726,11 +726,11 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ 
+-	container/useGraphic		2640
++	OpenGraphic		2640
+ 	CloseGraphic		2641
+ }
+ 
+@@ -752,13 +752,14 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ 
+-	container/useGraphic		2638
++	OpenGraphic		2638
+ 	CloseGraphic		2639
+ }
++
+ Container 0xA53
+ {
+ 	Name			Armoire4
+@@ -776,15 +777,96 @@
+ 	Movable			1
+ 	Lockable		0
+ 
+-	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	Script			cotainer/use
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ 
+-	container/useGraphic		2642
++	OpenGraphic		2642
+ 	CloseGraphic		2643
+ }
+ 
++Container 0xA3C
++{
++	Name			fancydresser1
++	desc			fancy dresser
++	Gump			0x0048
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	Cprop			furniture	i1
++	RequiresAttention	0
++	MaxItems		75
++	MaxWeight		200
++	Moveable		0
++	Script			cotainer/use
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
++}
++
++Item 0xA3D
++{
++	Name			FancyDresser2
++	Desc			fancy dresser
++	Gump			0x0048
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	Cprop			furniture	i1
++	RequiresAttention	0
++	MaxItems		75
++	MaxWeight		200
++	Moveable		0
++	Script			cotainer/use
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
++}
++
++
++Item 0xA44
++{
++	Name			FancyDresser3
++	Desc			fancy dresser
++	Gump			0x0048
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	Cprop			furniture	i1
++	RequiresAttention	0
++	MaxItems		75
++	MaxWeight		200
++	Moveable		0
++	Script			cotainer/use
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
++}
++
++Item 0xA45
++{
++	Name			FancyDresser4
++	Desc			fancy dresser
++	Gump			0x0048
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	Cprop			furniture	i1
++	RequiresAttention	0
++	MaxItems		75
++	MaxWeight		200
++	Moveable		0
++	Script			cotainer/use
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
++}
++
+ #--=[ Book Shelves ]=--------------
+ 
+ Container 0xA9D
+@@ -805,10 +887,10 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanInsertScript		bookshelf/CanInsert
+-	CanRemoveScript		bookshelf/CanRemove
+-	OnInsertScript		bookshelf/OnInsert
+-	OnRemoveScript		bookshelf/OnRemove
++	CanInsertScript		bookshelf/canInsert
++	CanRemoveScript		bookshelf/canRemove
++	OnInsertScript		bookshelf/onInsert
++	OnRemoveScript		bookshelf/onRemove
+ 
+ 	EmptyGraphic		2717
+ 	FilledGraphic		2712
+@@ -833,10 +915,10 @@
+ 	Lockable		0
+ 
+ 	Script			container/use
+-	CanInsertScript		bookshelf/CanInsert
+-	CanRemoveScript		bookshelf/CanRemove
+-	OnInsertScript		bookshelf/OnInsert
+-	OnRemoveScript		bookshelf/OnRemove
++	CanInsertScript		bookshelf/canInsert
++	CanRemoveScript		bookshelf/canRemove
++	OnInsertScript		bookshelf/onInsert
++	OnRemoveScript		bookshelf/onRemove
+ 
+ 	EmptyGraphic		2718
+ 	FilledGraphic		2713
+@@ -865,9 +947,9 @@
+ 	Movable			0
+ 	Lockable		0
+ 
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ #--=[ System Containers ]=----------
+@@ -889,9 +971,9 @@
+ 	Lockable		1
+ 
+ 	Script			container/use
+-	CanRemoveScript		container/CanRemove
+-	CanInsertScript		container/CanInsert
+-	DestroyScript		container/CanDestroy
++	CanRemoveScript		container/canRemove
++	CanInsertScript		container/canInsert
++	DestroyScript		container/canDestroy
+ }
+ 
+ Container 0x2006
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000658.html">[Poldistro-svn] r684 - in trunk/096: config pkg/commands pkg/commands/config pkg/config pkg/expansions/aos pkg/expansions/aos/skills/chivalry pkg/expansions/aos/skills/focus pkg/expansions/aos/skills/necromancy pkg/expansions/lbr pkg/expansions/uor pkg/items/bountyboard pkg/items/bulletinboard pkg/items/bulletinboard/config pkg/items/commcrystals pkg/items/containers pkg/items/containers/config pkg/items/decorations pkg/items/doors pkg/items/dyes pkg/items/food pkg/items/guildstone pkg/items/interiordecoratortool pkg/items/lighting pkg/items/magic pkg/items/moongates pkg/items/mounts pkg/items/repaircontract pkg/items/runebook pkg/items/sysbook pkg/items/sysbook/config pkg/items/training pkg/items/traps pkg/items/trash pkg/items/treasuremap pkg/items/usestuff pkg/items/walkOn pkg/items/walkOn/config pkg/items/wands pkg/mobiles/animaltrainer pkg/mobiles/barber pkg/mobiles/brainAI pkg/mobiles/brainAI/config pkg/mobiles/death pkg/mobiles/death/config pkg/mobiles/npcutils pkg/mobiles/o! ldAI pkg/mobiles/playervendor pkg/other/gmtools pkg/other/hooks pkg/other/motd pkg/other/motd/config pkg/other/packetHooks/CharProfile pkg/other/packetHooks/CharProfile/config pkg/other/packetHooks/OpenDoor pkg/other/packetHooks/OpenDoor/config pkg/other/packetHooks/RequestAttack pkg/other/packetHooks/RequestAttack/config pkg/other/packetHooks/WarAndPeace pkg/other/packetHooks/WarAndPeace/config pkg/skills/alchemy pkg/skills/anatomy pkg/skills/animallore pkg/skills/animallore/docs pkg/skills/armslore pkg/skills/begging pkg/skills/blacksmithy pkg/skills/bowcraft pkg/skills/camping pkg/skills/carpentry pkg/skills/cartography pkg/skills/cooking pkg/skills/detecthidden pkg/skills/evalint pkg/skills/fishing pkg/skills/forensicevaluation pkg/skills/healing pkg/skills/herding pkg/skills/hiding pkg/skills/inscription pkg/skills/itemid pkg/skills/lockpicking pkg/skills/lumberjacking pkg/skills/magery pkg/skills/meditation pkg/skills/mining pkg/skills/musicianship pkg/skills/poisonin! g pkg/skills/removetrap pkg/skills/spiritspeak pkg/skills/stea! ling pkg
+</A></li>
+	<LI>Next message: <A HREF="000660.html">[Poldistro-svn] r686 - in trunk/096/pkg: items/containers skills/carpentry skills/carpentry/config systems/crafting/config systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#659">[ date ]</a>
+              <a href="thread.html#659">[ thread ]</a>
+              <a href="subject.html#659">[ subject ]</a>
+              <a href="author.html#659">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

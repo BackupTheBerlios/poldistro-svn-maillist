@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r197 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r197%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509202209.j8KM91Sp013255%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000178.html">
+   <LINK REL="Next"  HREF="000180.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r197 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r197%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509202209.j8KM91Sp013255%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r197 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 21 00:09:01 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000178.html">[Poldistro-svn] r196 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000180.html">[Poldistro-svn] r198 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#179">[ date ]</a>
+              <a href="thread.html#179">[ thread ]</a>
+              <a href="subject.html#179">[ subject ]</a>
+              <a href="author.html#179">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-21 00:09:01 +0200 (Wed, 21 Sep 2005)
+New Revision: 197
+
+Modified:
+   trunk/096/pkg/systems/attributes/include/stats.inc
+Log:
+
+
+Modified: trunk/096/pkg/systems/attributes/include/stats.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/stats.inc	2005-09-20 21:14:30 UTC (rev 196)
++++ trunk/096/pkg/systems/attributes/include/stats.inc	2005-09-20 22:09:01 UTC (rev 197)
+@@ -0,0 +1,83 @@
++/*===============================================================
++* Current Version
++* STATS.INC - v1.0
++* Updated 9/20/2005 2:20PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++
++/*
++ * AF_GetRawStat(mobile, stat_name)
++ *
++ * Purpose
++ * Retrieves the value of the stat as it is stored in the core.
++ *
++ * Parameters
++ * mobile:	Mobile reference to retrieve the points from.
++ * stat_name:	Name of the stat to retrieve the points for.
++ *
++ * Return value
++ * Returns an integer.
++ *
++ */
++ function AF_GetRawStat(who, stat_name)
++	return GetAttributeBaseValue(who, stat_name);
++endfunction
++
++/*
++ * AF_GetStat(mobile, stat_name)
++ *
++ * Purpose
++ * Retrieves the base value of the stat plus its mod value.
++ *
++ * Parameters
++ * mobile:	Mobile reference to retrieve the points from.
++ * stat_name:	Name of the stat to retrieve the points for.
++ *
++ * Return value
++ * Returns an integer.
++ *
++ */
++function AF_GetStat(who, stat_name)
++	return (GetTrueStat(who, stat_name)+GetStatMod(who, stat_name));
++endfunction
++
++/*
++ * AF_GetTrueStat(mobile, stat_name)
++ *
++ * Purpose
++ * Retrieves the base value of the stat and turns it into a usable number.
++ *
++ * Parameters
++ * mobile:	Mobile reference to retrieve the points from.
++ * stat_name:	Name of the stat to retrieve the points for.
++ *
++ * Return value
++ * Returns a double.
++ *
++ */
++function AF_GetTrueStat(who, stat_name)
++	return (CDbl(GetAttributeBaseValue(who, stat_name)) / 10.0);
++endfunction
++
++/*
++ * AF_GetStatMod(mobile, stat_name)
++ *
++ * Purpose
++ * Retrieves the base value of the stat mod and turns it into a usable number.
++ *
++ * Parameters
++ * mobile:	Mobile reference to retrieve the points from.
++ * stat_name:	Name of the stat to retrieve the modifier points for.
++ *
++ * Return value
++ * Returns a double.
++ *
++ */
++function AF_GetStatMod(who, stat_name)
++	return (CDbl(GetAttributeTemporaryMod(who, stat_name)) / 10.0);
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000178.html">[Poldistro-svn] r196 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000180.html">[Poldistro-svn] r198 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#179">[ date ]</a>
+              <a href="thread.html#179">[ thread ]</a>
+              <a href="subject.html#179">[ subject ]</a>
+              <a href="author.html#179">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

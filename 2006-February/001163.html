@@ -1,0 +1,588 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1192 - in trunk/096/pkg/items/traps: . OLD
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1192%20-%20in%20trunk/096/pkg/items/traps%3A%20.%20OLD&In-Reply-To=%3C200602111305.k1BD5XBW017786%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001162.html">
+   <LINK REL="Next"  HREF="001164.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1192 - in trunk/096/pkg/items/traps: . OLD</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1192%20-%20in%20trunk/096/pkg/items/traps%3A%20.%20OLD&In-Reply-To=%3C200602111305.k1BD5XBW017786%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1192 - in trunk/096/pkg/items/traps: . OLD">austin at berlios.de
+       </A><BR>
+    <I>Sat Feb 11 14:05:33 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001162.html">[Poldistro-svn] r1191 - trunk/096/pkg/items/doors/OLD
+</A></li>
+        <LI>Next message: <A HREF="001164.html">[Poldistro-svn] r1193 - in trunk/096/pkg/items: keys/key traps traps/floorTraps
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1163">[ date ]</a>
+              <a href="thread.html#1163">[ thread ]</a>
+              <a href="subject.html#1163">[ subject ]</a>
+              <a href="author.html#1163">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-11 14:05:30 +0100 (Sat, 11 Feb 2006)
+New Revision: 1192
+
+Added:
+   trunk/096/pkg/items/traps/OLD/
+   trunk/096/pkg/items/traps/OLD/hiddenTrap.src
+   trunk/096/pkg/items/traps/OLD/itemdesc.cfg
+   trunk/096/pkg/items/traps/OLD/pkg.cfg
+   trunk/096/pkg/items/traps/OLD/poisonTrapTriggered.src
+   trunk/096/pkg/items/traps/OLD/traps.src
+Removed:
+   trunk/096/pkg/items/traps/hiddenTrap.src
+   trunk/096/pkg/items/traps/itemdesc.cfg
+   trunk/096/pkg/items/traps/pkg.cfg
+   trunk/096/pkg/items/traps/poisonTrapTriggered.src
+   trunk/096/pkg/items/traps/traps.src
+Log:
+Next random package to take on :-P
+One trap controller, trap types are sub-scripts. My usual approach to things :-)
+
+Added: trunk/096/pkg/items/traps/OLD/hiddenTrap.src
+===================================================================
+--- trunk/096/pkg/items/traps/OLD/hiddenTrap.src	2006-02-11 12:58:34 UTC (rev 1191)
++++ trunk/096/pkg/items/traps/OLD/hiddenTrap.src	2006-02-11 13:05:30 UTC (rev 1192)
+@@ -0,0 +1,17 @@
++use uo;
++use os;
++use cfgfile;
++use util;
++
++
++program hiddenTrap(mobile, trap)
++	var itemdesc := ReadConfigFile(&quot;itemdesc&quot;);
++	var elem := FindConfigElem(itemdesc, trap.objtype);
++	var effect := GetConfigInt(elem, &quot;Effect&quot;);
++	var dieroll := GetConfigString(elem, &quot;Damage&quot;);
++
++	SendSysMessage(mobile, &quot;You set off a trap!&quot;);
++	PlayStationaryEffect(trap.x, trap.y, trap.z, effect, 0xa, 0xb, 0, mobile.realm);
++	var dam := RandomDiceRoll(dieroll);
++	ApplyRawDamage(mobile, dam);
++endprogram
+
+Added: trunk/096/pkg/items/traps/OLD/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/traps/OLD/itemdesc.cfg	2006-02-11 12:58:34 UTC (rev 1191)
++++ trunk/096/pkg/items/traps/OLD/itemdesc.cfg	2006-02-11 13:05:30 UTC (rev 1192)
+@@ -0,0 +1,109 @@
++Item 0x11a0
++{
++    Name	floorspikes1
++    WalkOnScript      hiddenTrap
++    Effect	0x11A1
++    Damage	3d5
++    movable 0
++}
++
++Item 0x10F5
++{
++    Name	flametrap1
++    WalkOnScript      hiddenTrap
++    Effect	0x10F6
++    Damage	3d5
++}
++
++Item 0x6204
++{
++	Name			firetrap
++	Graphic			0x1b71
++	Movable			0
++}
++
++Item 0x1103
++{
++    Name	sawtrap1
++    WalkOnScript      hiddenTrap
++    Effect	0x1104
++    Damage	3d5
++}
++Item 0x1108
++{
++    Name	wallspikes1
++    WalkOnScript      hiddenTrap
++    Effect	0x1109
++    Damage	3d5
++}
++
++Item 0x1116
++{
++    Name	sawtrap2
++    WalkOnScript      hiddenTrap
++    Effect	0x1117
++    Damage	3d5
++}
++Item 0x111b
++{
++    Name	wallspikes2
++    WalkOnScript      hiddenTrap
++    Effect	0x111c
++    Damage	3d5
++}
++Item 0x112b
++{
++    Name	darttrap1
++    WalkOnScript      hiddenTrap
++    Effect	0x112c
++    Damage	3d5
++}
++Item 0x112f
++{
++    Name	drattrap2
++    WalkOnScript      hiddenTrap
++    Effect	0x1130
++    Damage	3d5
++}
++Item 0x1141
++{
++    Name	axetrap1
++    WalkOnScript      hiddenTrap
++    Effect	0x1140
++    Damage	3d5
++}
++Item 0x114b
++{
++    Name	axetrap2
++    WalkOnScript      hiddenTrap
++    Effect	0x114c
++    Damage	3d5
++}
++Item 0x1193
++{
++    Name	axetrap3
++    WalkOnScript      hiddenTrap
++    Effect	0x1194
++    Damage	3d5
++}
++Item 0x119a
++{
++    Name	floorspikes2
++    WalkOnScript      hiddenTrap
++    Effect	0x119b
++    Damage	3d5
++}
++Item 0x11ac
++{
++    Name	sawtrap3
++    WalkOnScript      hiddenTrap
++    Effect	0x11ad
++    Damage	3d5
++}
++Item 0x11b1
++{
++    Name	sawtrap4
++    WalkOnScript      hiddenTrap
++    Effect	0x11b2
++    Damage	3d5
++}
+
+Added: trunk/096/pkg/items/traps/OLD/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/traps/OLD/pkg.cfg	2006-02-11 12:58:34 UTC (rev 1191)
++++ trunk/096/pkg/items/traps/OLD/pkg.cfg	2006-02-11 13:05:30 UTC (rev 1192)
+@@ -0,0 +1,8 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled		0
++Name		traps
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.0
+
+Added: trunk/096/pkg/items/traps/OLD/poisonTrapTriggered.src
+===================================================================
+--- trunk/096/pkg/items/traps/OLD/poisonTrapTriggered.src	2006-02-11 12:58:34 UTC (rev 1191)
++++ trunk/096/pkg/items/traps/OLD/poisonTrapTriggered.src	2006-02-11 13:05:30 UTC (rev 1192)
+@@ -0,0 +1,27 @@
++use uo;
++
++include &quot;include/OLD/sound&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
++
++
++const FX_POISON_GAS := 0x113a;
++
++
++program poisonTrapTriggered(parms)
++	var who := parms[1];
++	var item := parms[2];
++	var trapstrength := parms[3];
++	var message := parms[4];
++
++	PlaySoundEffect(who, SFX_232);
++	PrintTextAbovePrivate(who, message, who);
++	PlayStationaryEffect(item.x, item.y, item.z, FX_POISON_GAS, 10,10, 0, who.realm);
++	
++	TS_StartTimer(who, &quot;defaultPoison&quot;, 15, trapstrength);
++	
++	item.usescript := &quot;&quot;;
++	EraseObjProperty(item, &quot;trap_type&quot;);
++	EraseObjProperty(item, &quot;trap_strength&quot;);
++
++	return;
++endprogram
+
+Added: trunk/096/pkg/items/traps/OLD/traps.src
+===================================================================
+--- trunk/096/pkg/items/traps/OLD/traps.src	2006-02-11 12:58:34 UTC (rev 1191)
++++ trunk/096/pkg/items/traps/OLD/traps.src	2006-02-11 13:05:30 UTC (rev 1192)
+@@ -0,0 +1,62 @@
++use uo;
++use util;
++use os;
++
++include &quot;include/tileEffects&quot;;
++include &quot;:itemutils:canAccess&quot;;
++include &quot;include/OLD/sound&quot;;
++
++
++program open_trapped_item(who, item)
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	if (!can_access(who, item))
++		return;
++	endif
++	var key_types := array;
++	var stuff := EnumerateItemsInContainer(who.backpack);
++	var thelock := GetObjProperty(item,&quot;lockid&quot;);
++	var has_key := 0;
++
++	// Did someone forget to populate the key_types array?
++
++	foreach item in stuff
++		if (item.objtype in key_types)
++			if (GetObjProperty(item,&quot;lockid&quot;) == thelock)
++				//he has the key
++				has_key := 1;
++				break;
++			endif
++		endif
++	endforeach
++
++	if (!has_key)
++		var traptype := GetObjProperty(item,&quot;trap_type&quot;);
++		var trapstrength := GetObjProperty(item,&quot;trap_strength&quot;);
++
++		case (traptype)
++			&quot;1&quot; :   PlaySoundEffect(who, SFX_225);
++				var dmg := RandomInt(30 * CInt(trapstrength));
++				SendSysMessage(who, &quot;You set off a needle trap!&quot;);
++				ApplyRawDamage(who, dmg);
++				item.usescript := &quot;&quot;;
++				EraseObjProperty( item, &quot;trap_type&quot; );
++				EraseObjProperty( item, &quot;trap_strength&quot; );
++			&quot;2&quot; :   start_script(&quot;:traps:poisonTrapTriggered&quot;, {who, item, &quot;You have been poisoned!&quot;, trapstrength});
++
++			&quot;3&quot; :   PlaySoundEffect(who, SFX_208);
++				SendSysMessage(who, &quot;You set off a trap!&quot;);
++				PlayObjectCenteredEffect(who, FX_EXPLODE_3, 10,10);
++				var dmg := RandomInt(20 * CInt(trapstrength));
++				ApplyRawDamage(who, dmg);
++				item.usescript := &quot;&quot;;
++				EraseObjProperty(item, &quot;trap_type&quot;);
++				EraseObjProperty(item, &quot;trap_strength&quot;);
++			default: SendSysMessage(who, &quot;You narrowly avoid the trap!&quot;);
++		endcase
++	else
++		item.usescript := &quot;&quot;;
++		SendSysMessage(who, &quot;You disarm the trap.&quot;);
++	endif
++
++	return;
++endprogram
+
+Deleted: trunk/096/pkg/items/traps/hiddenTrap.src
+===================================================================
+--- trunk/096/pkg/items/traps/hiddenTrap.src	2006-02-11 12:58:34 UTC (rev 1191)
++++ trunk/096/pkg/items/traps/hiddenTrap.src	2006-02-11 13:05:30 UTC (rev 1192)
+@@ -1,17 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-use util;
+-
+-
+-program hiddenTrap(mobile, trap)
+-	var itemdesc := ReadConfigFile(&quot;itemdesc&quot;);
+-	var elem := FindConfigElem(itemdesc, trap.objtype);
+-	var effect := GetConfigInt(elem, &quot;Effect&quot;);
+-	var dieroll := GetConfigString(elem, &quot;Damage&quot;);
+-
+-	SendSysMessage(mobile, &quot;You set off a trap!&quot;);
+-	PlayStationaryEffect(trap.x, trap.y, trap.z, effect, 0xa, 0xb, 0, mobile.realm);
+-	var dam := RandomDiceRoll(dieroll);
+-	ApplyRawDamage(mobile, dam);
+-endprogram
+
+Deleted: trunk/096/pkg/items/traps/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/traps/itemdesc.cfg	2006-02-11 12:58:34 UTC (rev 1191)
++++ trunk/096/pkg/items/traps/itemdesc.cfg	2006-02-11 13:05:30 UTC (rev 1192)
+@@ -1,109 +0,0 @@
+-Item 0x11a0
+-{
+-    Name	floorspikes1
+-    WalkOnScript      hiddenTrap
+-    Effect	0x11A1
+-    Damage	3d5
+-    movable 0
+-}
+-
+-Item 0x10F5
+-{
+-    Name	flametrap1
+-    WalkOnScript      hiddenTrap
+-    Effect	0x10F6
+-    Damage	3d5
+-}
+-
+-Item 0x6204
+-{
+-	Name			firetrap
+-	Graphic			0x1b71
+-	Movable			0
+-}
+-
+-Item 0x1103
+-{
+-    Name	sawtrap1
+-    WalkOnScript      hiddenTrap
+-    Effect	0x1104
+-    Damage	3d5
+-}
+-Item 0x1108
+-{
+-    Name	wallspikes1
+-    WalkOnScript      hiddenTrap
+-    Effect	0x1109
+-    Damage	3d5
+-}
+-
+-Item 0x1116
+-{
+-    Name	sawtrap2
+-    WalkOnScript      hiddenTrap
+-    Effect	0x1117
+-    Damage	3d5
+-}
+-Item 0x111b
+-{
+-    Name	wallspikes2
+-    WalkOnScript      hiddenTrap
+-    Effect	0x111c
+-    Damage	3d5
+-}
+-Item 0x112b
+-{
+-    Name	darttrap1
+-    WalkOnScript      hiddenTrap
+-    Effect	0x112c
+-    Damage	3d5
+-}
+-Item 0x112f
+-{
+-    Name	drattrap2
+-    WalkOnScript      hiddenTrap
+-    Effect	0x1130
+-    Damage	3d5
+-}
+-Item 0x1141
+-{
+-    Name	axetrap1
+-    WalkOnScript      hiddenTrap
+-    Effect	0x1140
+-    Damage	3d5
+-}
+-Item 0x114b
+-{
+-    Name	axetrap2
+-    WalkOnScript      hiddenTrap
+-    Effect	0x114c
+-    Damage	3d5
+-}
+-Item 0x1193
+-{
+-    Name	axetrap3
+-    WalkOnScript      hiddenTrap
+-    Effect	0x1194
+-    Damage	3d5
+-}
+-Item 0x119a
+-{
+-    Name	floorspikes2
+-    WalkOnScript      hiddenTrap
+-    Effect	0x119b
+-    Damage	3d5
+-}
+-Item 0x11ac
+-{
+-    Name	sawtrap3
+-    WalkOnScript      hiddenTrap
+-    Effect	0x11ad
+-    Damage	3d5
+-}
+-Item 0x11b1
+-{
+-    Name	sawtrap4
+-    WalkOnScript      hiddenTrap
+-    Effect	0x11b2
+-    Damage	3d5
+-}
+
+Deleted: trunk/096/pkg/items/traps/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/traps/pkg.cfg	2006-02-11 12:58:34 UTC (rev 1191)
++++ trunk/096/pkg/items/traps/pkg.cfg	2006-02-11 13:05:30 UTC (rev 1192)
+@@ -1,8 +0,0 @@
+-# $Id$
+-#
+-#
+-Enabled		1
+-Name		traps
+-Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+-Version		1.0
+
+Deleted: trunk/096/pkg/items/traps/poisonTrapTriggered.src
+===================================================================
+--- trunk/096/pkg/items/traps/poisonTrapTriggered.src	2006-02-11 12:58:34 UTC (rev 1191)
++++ trunk/096/pkg/items/traps/poisonTrapTriggered.src	2006-02-11 13:05:30 UTC (rev 1192)
+@@ -1,27 +0,0 @@
+-use uo;
+-
+-include &quot;include/OLD/sound&quot;;
+-include &quot;:timedscripts:timedScripts&quot;;
+-
+-
+-const FX_POISON_GAS := 0x113a;
+-
+-
+-program poisonTrapTriggered(parms)
+-	var who := parms[1];
+-	var item := parms[2];
+-	var trapstrength := parms[3];
+-	var message := parms[4];
+-
+-	PlaySoundEffect(who, SFX_232);
+-	PrintTextAbovePrivate(who, message, who);
+-	PlayStationaryEffect(item.x, item.y, item.z, FX_POISON_GAS, 10,10, 0, who.realm);
+-	
+-	TS_StartTimer(who, &quot;defaultPoison&quot;, 15, trapstrength);
+-	
+-	item.usescript := &quot;&quot;;
+-	EraseObjProperty(item, &quot;trap_type&quot;);
+-	EraseObjProperty(item, &quot;trap_strength&quot;);
+-
+-	return;
+-endprogram
+
+Deleted: trunk/096/pkg/items/traps/traps.src
+===================================================================
+--- trunk/096/pkg/items/traps/traps.src	2006-02-11 12:58:34 UTC (rev 1191)
++++ trunk/096/pkg/items/traps/traps.src	2006-02-11 13:05:30 UTC (rev 1192)
+@@ -1,62 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-
+-include &quot;include/tileEffects&quot;;
+-include &quot;:itemutils:canAccess&quot;;
+-include &quot;include/OLD/sound&quot;;
+-
+-
+-program open_trapped_item(who, item)
+-	EraseObjProperty(who, &quot;IsMeditating&quot;);
+-	if (!can_access(who, item))
+-		return;
+-	endif
+-	var key_types := array;
+-	var stuff := EnumerateItemsInContainer(who.backpack);
+-	var thelock := GetObjProperty(item,&quot;lockid&quot;);
+-	var has_key := 0;
+-
+-	// Did someone forget to populate the key_types array?
+-
+-	foreach item in stuff
+-		if (item.objtype in key_types)
+-			if (GetObjProperty(item,&quot;lockid&quot;) == thelock)
+-				//he has the key
+-				has_key := 1;
+-				break;
+-			endif
+-		endif
+-	endforeach
+-
+-	if (!has_key)
+-		var traptype := GetObjProperty(item,&quot;trap_type&quot;);
+-		var trapstrength := GetObjProperty(item,&quot;trap_strength&quot;);
+-
+-		case (traptype)
+-			&quot;1&quot; :   PlaySoundEffect(who, SFX_225);
+-				var dmg := RandomInt(30 * CInt(trapstrength));
+-				SendSysMessage(who, &quot;You set off a needle trap!&quot;);
+-				ApplyRawDamage(who, dmg);
+-				item.usescript := &quot;&quot;;
+-				EraseObjProperty( item, &quot;trap_type&quot; );
+-				EraseObjProperty( item, &quot;trap_strength&quot; );
+-			&quot;2&quot; :   start_script(&quot;:traps:poisonTrapTriggered&quot;, {who, item, &quot;You have been poisoned!&quot;, trapstrength});
+-
+-			&quot;3&quot; :   PlaySoundEffect(who, SFX_208);
+-				SendSysMessage(who, &quot;You set off a trap!&quot;);
+-				PlayObjectCenteredEffect(who, FX_EXPLODE_3, 10,10);
+-				var dmg := RandomInt(20 * CInt(trapstrength));
+-				ApplyRawDamage(who, dmg);
+-				item.usescript := &quot;&quot;;
+-				EraseObjProperty(item, &quot;trap_type&quot;);
+-				EraseObjProperty(item, &quot;trap_strength&quot;);
+-			default: SendSysMessage(who, &quot;You narrowly avoid the trap!&quot;);
+-		endcase
+-	else
+-		item.usescript := &quot;&quot;;
+-		SendSysMessage(who, &quot;You disarm the trap.&quot;);
+-	endif
+-
+-	return;
+-endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001162.html">[Poldistro-svn] r1191 - trunk/096/pkg/items/doors/OLD
+</A></li>
+	<LI>Next message: <A HREF="001164.html">[Poldistro-svn] r1193 - in trunk/096/pkg/items: keys/key traps traps/floorTraps
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1163">[ date ]</a>
+              <a href="thread.html#1163">[ thread ]</a>
+              <a href="subject.html#1163">[ subject ]</a>
+              <a href="author.html#1163">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

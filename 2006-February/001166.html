@@ -1,0 +1,336 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1195 - in trunk/096/pkg/items/traps: config include trapScripts
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1195%20-%20in%20trunk/096/pkg/items/traps%3A%20config%20include%20trapScripts&In-Reply-To=%3C200602111458.k1BEwJDu001869%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001165.html">
+   <LINK REL="Next"  HREF="001167.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1195 - in trunk/096/pkg/items/traps: config include trapScripts</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1195%20-%20in%20trunk/096/pkg/items/traps%3A%20config%20include%20trapScripts&In-Reply-To=%3C200602111458.k1BEwJDu001869%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1195 - in trunk/096/pkg/items/traps: config include trapScripts">austin at berlios.de
+       </A><BR>
+    <I>Sat Feb 11 15:58:19 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001165.html">[Poldistro-svn] r1194 - in trunk/096/pkg/items/traps: . OLD config floorTraps trapScripts
+</A></li>
+        <LI>Next message: <A HREF="001167.html">[Poldistro-svn] r1196 - trunk/096/pkg/items/doors/door
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1166">[ date ]</a>
+              <a href="thread.html#1166">[ thread ]</a>
+              <a href="subject.html#1166">[ subject ]</a>
+              <a href="author.html#1166">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-11 15:58:18 +0100 (Sat, 11 Feb 2006)
+New Revision: 1195
+
+Added:
+   trunk/096/pkg/items/traps/include/traps.inc
+Modified:
+   trunk/096/pkg/items/traps/config/traps.cfg
+   trunk/096/pkg/items/traps/trapScripts/explosionTrap.src
+   trunk/096/pkg/items/traps/trapScripts/needleTrap.src
+   trunk/096/pkg/items/traps/trapScripts/poisonTrap.src
+Log:
+Added traps.cfg with the old distro traps supported.
+Added traps.inc to support the use of the new traps system.
+Added support for extra parameter to trap scripts (to know what their index is in the trapslist array)
+
+Modified: trunk/096/pkg/items/traps/config/traps.cfg
+===================================================================
+--- trunk/096/pkg/items/traps/config/traps.cfg	2006-02-11 14:27:04 UTC (rev 1194)
++++ trunk/096/pkg/items/traps/config/traps.cfg	2006-02-11 14:58:18 UTC (rev 1195)
+@@ -0,0 +1,41 @@
++/////////////////////////////////////////
++//
++// Traps.cfg
++//
++// This config is for traps that are created with traps.inc
++// Examples: Traps on doors and containers.
++//
++// Trap TrapName
++// {
++//	Name		&lt;trap name&gt; 	// The name of the trap the players see.
++//	Count		&lt;#|dice&gt;	// The default number of times the trap can be set off before being removed.
++//					// Supports a solid number or a dice string.
++//					// -1 = permanent (default)
++//	Script		&lt;script_path&gt;	// The script that is run when the trap is triggered.
++// }
++//
++//////////////////////////////////////////
++
++Trap Needle
++{
++	Name		needle trap	
++	Type		1
++	Count		-1
++	Script		:traps:trapScripts/needleTrap
++}
++
++Trap PoisonGas
++{
++	Name		poison gas trap
++	Type		1
++	Count		-1
++	Script		:traps:trapScripts/poisonTrap
++}
++
++Trap ExplosionTrap
++{
++	Name		explosion trap
++	Type		1
++	Count		-1
++	Script		:traps:trapScripts/explosionTrap
++}
+
+Added: trunk/096/pkg/items/traps/include/traps.inc
+===================================================================
+--- trunk/096/pkg/items/traps/include/traps.inc	2006-02-11 14:27:04 UTC (rev 1194)
++++ trunk/096/pkg/items/traps/include/traps.inc	2006-02-11 14:58:18 UTC (rev 1195)
+@@ -0,0 +1,167 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use cfgfile;
++use util;
++use os;
++
++/*
++ * GetTrapInfo(trap_name)
++ *
++ * Purpose
++ * Retrieves the config elem for a trap from traps.cfg
++ *
++ * Parameters
++ * trap_name:	Config elem name of the trap.
++ *
++ * Return value
++ * Returns a config elem on success.
++ * Returns an error on failure.
++ *
++ */
++function GetTrapInfo(trap_name)
++	var trap_cfg := ReadConfigFile(&quot;:traps:config/traps&quot;);
++	if ( trap_cfg.errortext )
++		var temp := error{&quot;errortxt&quot;:=&quot;GetTrapInfo()::Could not open :traps:config/traps.cfg -&gt;&quot;+trap_cfg.errortext};
++		SysLog(temp.errortext);
++		return temp;
++	endif
++	
++	var trap_elem := trap_cfg[trap_name];
++	if ( trap_elem.errortext )
++		var temp := error{&quot;errortext&quot;:=&quot;GetTrapInfo()::Could not find elem [&quot;+trap_name+&quot;] -&gt; &quot;+trap_elem.errortext};
++		SysLog(temp.errortext);
++		return temp;
++	endif
++	
++	return trap_elem;
++endfunction
++
++/*
++ * AddTrap(object, trap_name, strength, count)
++ *
++ * Purpose
++ * Adds a trap to an object (its use-script must use this include file)
++ *
++ * Parameters
++ * object:	Object to add the trap to.
++ * trap_name:	Name of the trap to add.
++ * strength:	How powerful the trap will be.
++ * count:	How many times the trap can be triggered when the object is used.
++ *		See traps.cfg for more information on 'count'
++ *
++ * Return value
++ * Returns 1 on success.
++ * Returns an error on failure.
++ *
++ */
++function AddTrap(object, trap_name, strength, count:=0)
++	var trap_list := GetObjProperty(object, &quot;TrapList&quot;);
++	
++	if ( Lower(TypeOf(trap_list)) != &quot;array&quot; )
++		trap_list := array{};
++	endif
++	
++	var trap_elem := GetTrapInfo(trap_name);
++	if ( trap_elem.errortext )
++		return trap_elem; // Contains an error
++	endif
++		
++	if ( !count )
++		count := trap_elem.Count;
++		if ( !count )
++			count := -1;
++		elseif ( count[&quot;d&quot;] )
++			count := RandomDiceRoll(trap_elem.count);
++		else
++			count := CInt(trap_elem.Count);
++		endif
++	endif
++	
++	var trap := struct;
++	trap.+Name := trap_name;
++	trap.+Strength := strength;
++	trap.+Count := count;
++	
++	trap_list.Append(trap);
++	
++	SetObjProperty(object, &quot;TrapList&quot;, trap_list);
++	
++	return 1;
++endfunction
++
++/*
++ * RemoveTrap(object, index)
++ *
++ * Purpose
++ * Removes a trap from the object's trap list.
++ *
++ * Parameters
++ * object:	Object to remove the trap from.
++ * index:	Index in the list's array to remove the trap from.
++ *
++ * Return value
++ * Returns 1 on success.
++ * Returns an error on failure.
++ *
++ */
++function RemoveTrap(object, index)
++	var trap_list := GetObjProperty(object, &quot;TrapList&quot;);
++	if ( trap_list == error )
++		return error{&quot;errortext&quot;:=&quot;Object has no traps.&quot;};
++	endif
++	
++	trap_list.Erase(index);
++	
++	if ( trap_list.Size() &gt; 0 )
++		SetObjProperty(object, &quot;TrapList&quot;, trap_list);
++	else
++		EraseObjProperty(object, &quot;TrapList&quot;);
++	endif
++	
++	return 1;
++endfunction
++
++/*
++ * RunTraps(object, mobile)
++ *
++ * Purpose
++ * Runs all traps that are set on the object.
++ *
++ * Parameters
++ * object:	Object to run the traps on.
++ * mobile:	Who triggered the traps.
++ *
++ * Return value
++ * Returns 1 on completion.
++ *
++ */
++function RunTraps(object, mobile)
++	var trap_list := GetObjProperty(object, &quot;TrapList&quot;);
++	if ( trap_list == error )
++		return 1;
++	endif
++	
++	foreach trap_info in ( trap_list )
++		var cfg_info := GetTrapInfo(trap_info.name);
++		
++		var result := start_script(cfg_info.Script, {mobile, object, trap_info, _trap_info_iter});
++		if ( result.errortext )
++			PrintTextAbove(object, result.errortext);
++			continue;
++		endif
++		
++		if ( trap_info.Count &gt; 0 ) // -1 = permanent trap
++			trap_info.Count := trap_info.Count - 1;
++			
++			if ( trap_info.count == 0 )
++				RemoveTrap(object, _trap_info_iter);
++			endif
++		endif
++		sleepms(2);
++	endforeach
++	
++	return 1;
++endfunction
+
+Modified: trunk/096/pkg/items/traps/trapScripts/explosionTrap.src
+===================================================================
+--- trunk/096/pkg/items/traps/trapScripts/explosionTrap.src	2006-02-11 14:27:04 UTC (rev 1194)
++++ trunk/096/pkg/items/traps/trapScripts/explosionTrap.src	2006-02-11 14:58:18 UTC (rev 1195)
+@@ -8,6 +8,7 @@
+ 	var mobile := params[1];
+ 	//var object := params[2];
+ 	//var trap_info := params[3];
++	//var trap_index := params[4];
+ 	params := 0; // Not needed anymore.
+ 	
+ 	SendSysMessage(mobile, &quot;You set off a trap!&quot;);
+
+Modified: trunk/096/pkg/items/traps/trapScripts/needleTrap.src
+===================================================================
+--- trunk/096/pkg/items/traps/trapScripts/needleTrap.src	2006-02-11 14:27:04 UTC (rev 1194)
++++ trunk/096/pkg/items/traps/trapScripts/needleTrap.src	2006-02-11 14:58:18 UTC (rev 1195)
+@@ -8,6 +8,7 @@
+ 	var mobile := params[1];
+ 	//var object := params[2];
+ 	//var trap_info := params[3];
++	//var trap_index := params[4];
+ 	params := 0; // Not needed anymore.
+ 	
+ 	SendSysMessage(mobile, &quot;You set off a needle trap!&quot;);
+
+Modified: trunk/096/pkg/items/traps/trapScripts/poisonTrap.src
+===================================================================
+--- trunk/096/pkg/items/traps/trapScripts/poisonTrap.src	2006-02-11 14:27:04 UTC (rev 1194)
++++ trunk/096/pkg/items/traps/trapScripts/poisonTrap.src	2006-02-11 14:58:18 UTC (rev 1195)
+@@ -9,6 +9,7 @@
+ 	var mobile := params[1];
+ 	var object := params[2];
+ 	var trap_info := params[3];
++	//var trap_index := params[4];
+ 	params := 0; // Not needed anymore.
+ 	
+ 	SendSysMessage(mobile, &quot;You set off a poison gas trap!&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001165.html">[Poldistro-svn] r1194 - in trunk/096/pkg/items/traps: . OLD config floorTraps trapScripts
+</A></li>
+	<LI>Next message: <A HREF="001167.html">[Poldistro-svn] r1196 - trunk/096/pkg/items/doors/door
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1166">[ date ]</a>
+              <a href="thread.html#1166">[ thread ]</a>
+              <a href="subject.html#1166">[ subject ]</a>
+              <a href="author.html#1166">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

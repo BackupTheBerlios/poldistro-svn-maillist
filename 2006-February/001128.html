@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1157 - in trunk/096/pkg/mobiles/brainAI: . bundled/gUnicorn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1157%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20bundled/gUnicorn&In-Reply-To=%3C200602091012.k19ACAjp026364%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001127.html">
+   <LINK REL="Next"  HREF="001129.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1157 - in trunk/096/pkg/mobiles/brainAI: . bundled/gUnicorn</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1157%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20bundled/gUnicorn&In-Reply-To=%3C200602091012.k19ACAjp026364%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1157 - in trunk/096/pkg/mobiles/brainAI: . bundled/gUnicorn">austin at berlios.de
+       </A><BR>
+    <I>Thu Feb  9 11:12:10 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001127.html">[Poldistro-svn] r1156 - trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch
+</A></li>
+        <LI>Next message: <A HREF="001129.html">[Poldistro-svn] r1158 - trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1128">[ date ]</a>
+              <a href="thread.html#1128">[ thread ]</a>
+              <a href="subject.html#1128">[ subject ]</a>
+              <a href="author.html#1128">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-09 11:12:09 +0100 (Thu, 09 Feb 2006)
+New Revision: 1157
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/doubleClick.src
+   trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/lookAround.src
+   trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+The flamboyant unicorn is complete &gt;_&gt;
+
+Modified: trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/doubleClick.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/doubleClick.src	2006-02-09 09:22:02 UTC (rev 1156)
++++ trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/doubleClick.src	2006-02-09 10:12:09 UTC (rev 1157)
+@@ -31,7 +31,8 @@
+ endprogram
+ 
+ function DoubleClickEvent(npc, byref event)
+-	SendEvent(npc, &quot;Virtual&quot;);
++	var new_event := struct{&quot;type&quot;:=&quot;virtual&quot;, &quot;source&quot;:=event.source};
++	SendEvent(npc, new_event);
+ 
+ 	return 1;
+ endfunction
+
+Modified: trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/lookAround.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/lookAround.src	2006-02-09 09:22:02 UTC (rev 1156)
++++ trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/lookAround.src	2006-02-09 10:12:09 UTC (rev 1157)
+@@ -18,6 +18,8 @@
+ 			if ( NPC_LoadWatchList(npc).size() &lt; 1 )
+ 				// No need to look around any longer. We're all alone :(
+ 				return 0;
++			else
++				SendEvent(npc, struct{&quot;type&quot;:=&quot;virtual&quot;});
+ 			endif
+ 			// Keep running while the npc sees something
+ 			// to prevent it from going to sleep.
+@@ -26,6 +28,6 @@
+ 		endif
+ 		
+ 		AI_ClearThoughts(npc, CLR_NERVE);
+-		Sleep(5);
++		sleep(10);
+ 	endwhile
+ endprogram
+
+Modified: trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src	2006-02-09 09:22:02 UTC (rev 1156)
++++ trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src	2006-02-09 10:12:09 UTC (rev 1157)
+@@ -1,5 +1,6 @@
+ use uo;
+ use os;
++use util;
+ 
+ include &quot;:brainAI:npcNerves&quot;;
+ include &quot;:brainAI:npcCommands&quot;;
+@@ -12,27 +13,98 @@
+ 	//var settings	:= params[4];
+ 	//var scripts	:= params[5];
+ 	params := 0; // Not needed anymore.
+-	
++
+ 	while ( npc )
+ 		if ( event )
+-			case ( event.type )
+-				NPCEVENT_DONE:
+-					break;
+-				default:
+-					VirtualEvent(npc, event);
+-					break;
+-			endcase
+-						
+-			event := 0;
++			if ( event.source )
++				SparkleEffect(npc);
++			else
++				SomethingLame(npc);
++			endif
+ 		endif
+ 		
+ 		event := wait_for_event(900000);
+ 	endwhile
+ endprogram
+ 
+-function VirtualEvent(npc, event)
+-	AI_Speak(npc, &quot;So yeah.. I just got this event and I don't know what to do with it... its virtual time, baby.&quot;, SPEAK_TEXTTYPE_YELL, SPEAK_DOEVENT_ENABLE, WAKEUP);
+-	AI_Speak(npc, &quot;The event structure is... &quot;+event, SPEAK_TEXTTYPE_YELL, SPEAK_DOEVENT_ENABLE, WAKEUP);
++function SomethingLame(npc)
++	var effect := RandomInt(5);
++	case ( effect )
++		0: 1: 2:
++			SaySomething(npc);
++			break;
++		3:
++			RainbowStuff(npc);
++			break;
++		default:
++			break;
++	endcase
++
++	return 1;
++endfunction
++
++function RainbowStuff(npc)
++	var orig_color := npc.color;
+ 	
++	AI_Speak(npc, &quot;RED!&quot;);
++	npc.color := 32;
++	sleepms(600);
++
++	AI_Speak(npc, &quot;ORANGE!&quot;);
++	npc.color := 44;
++	sleepms(600);
++
++	AI_Speak(npc, &quot;YELLOW!&quot;);
++	npc.color := 53;
++	sleepms(600);
++
++	AI_Speak(npc, &quot;GREEN!&quot;);
++	npc.color := 462;
++	sleepms(600);
++
++	AI_Speak(npc, &quot;BLUE!&quot;);
++	npc.color := 3;
++	sleepms(600);
++
++	AI_Speak(npc, &quot;INDIGO!&quot;);
++	npc.color := 818;
++	sleepms(600);
++
++	AI_Speak(npc, &quot;VIOLET!&quot;);
++	npc.color := 223;
++	sleepms(700);
++
++	npc.color := orig_color;
++	AI_Speak(npc, &quot;UNICORN POWER!&quot;);
++	SparkleEffect(npc);
+ 	return 1;
++endfunction
++
++function SparkleEffect(npc)
++	PlayObjectCenteredEffect(npc, GFX_BLUE_SPARKLES, 10, 20);
++	sleepms(30);
++	PlayObjectCenteredEffect(npc, GFX_BLUE_SPARKLE_SWIRL, 10, 20);
++	sleepms(30);
++	PlayObjectCenteredEffect(npc, GFX_BLUE_SPARKLE_BORDER, 10, 20);
++	sleepms(30);
++	PlayObjectCenteredEffect(npc, GFX_BLUE_SPARKLE_GROUND, 10, 20);
++
++	return 1;
++endfunction
++
++function SaySomething(npc)
++	var speech_entries := array
++	{
++		&quot;Most of my scripted personality is based off of a guy named Rowan in IRC!&quot;,
++		&quot;Chicks dig my phallical unit!&quot;,
++		&quot;On a scale of 1-10 for my flamboyance, I am Richard Simmons&quot;,
++		&quot;Im so sparkly!&quot;,
++		&quot;Unicorn power!&quot;
++	};
++	
++	var text := speech_entries[RandomInt(speech_entries.Size())+1];
++	
++	AI_Speak(npc, text, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_ENABLE, WAKEUP);
++	
++	return 1;
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-02-09 09:22:02 UTC (rev 1156)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-02-09 10:12:09 UTC (rev 1157)
+@@ -286,14 +286,11 @@
+ 	AttackHitScript	:combat:mainHitScript
+ 
+ 	// Brain AI Settings
+-	AISetting	AreaSize	i5
++	AISetting	AreaSize	i8
+ 	AISetting	CycleWait	i10
+-	AISetting	DblClickRange	i10
++	AISetting	DblClickRange	i4
+ 	AISetting	FleeLevel	i50 // 50%
+-	AISetting	HearGhosts	i1
+-	AISetting	HearSpeech	i1
+ 	AISetting	IdleTicks	i5
+-	AISetting	ListenRange	i10
+ 	AISetting	SleepWait	i1000
+ 
+ 	// Brain AI Nerves
+@@ -303,7 +300,8 @@
+ 	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
+ 	AIScript	LookAround	:brainAI:bundled/gUnicorn/lookAround
+ 	AIScript	Sleep		:brainAI:scripts/sleep/generic
+-	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/targetPlayers
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/targetAny
++	AIScript	Virtual		:brainAI:bundled/gUnicorn/virtual
+ 	
+ 	// Skinning Info
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001127.html">[Poldistro-svn] r1156 - trunk/096/pkg/mobiles/brainAI/scripts/shouldWatch
+</A></li>
+	<LI>Next message: <A HREF="001129.html">[Poldistro-svn] r1158 - trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1128">[ date ]</a>
+              <a href="thread.html#1128">[ thread ]</a>
+              <a href="subject.html#1128">[ subject ]</a>
+              <a href="author.html#1128">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

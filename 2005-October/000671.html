@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r697 - in trunk/096/pkg/mobiles/oldAI: . setup
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r697%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20setup&In-Reply-To=%3C200510291915.j9TJFHGY000033%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000670.html">
+   <LINK REL="Next"  HREF="000672.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r697 - in trunk/096/pkg/mobiles/oldAI: . setup</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r697%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20setup&In-Reply-To=%3C200510291915.j9TJFHGY000033%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r697 - in trunk/096/pkg/mobiles/oldAI: . setup">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sat Oct 29 21:15:17 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000670.html">[Poldistro-svn] r696 - in trunk/096/pkg/mobiles: npcutils oldAI
+</A></li>
+        <LI>Next message: <A HREF="000672.html">[Poldistro-svn] r698 - in trunk/096/pkg/mobiles/oldAI: . combat main
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#671">[ date ]</a>
+              <a href="thread.html#671">[ thread ]</a>
+              <a href="subject.html#671">[ subject ]</a>
+              <a href="author.html#671">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-29 21:15:15 +0200 (Sat, 29 Oct 2005)
+New Revision: 697
+
+Modified:
+   trunk/096/pkg/mobiles/oldAI/barber.src
+   trunk/096/pkg/mobiles/oldAI/battleMage.src
+   trunk/096/pkg/mobiles/oldAI/bladeSpirit.src
+   trunk/096/pkg/mobiles/oldAI/bucsTownHealer.src
+   trunk/096/pkg/mobiles/oldAI/setup/crierSetup.inc
+Log:
+Fixed unused var reports.
+
+Modified: trunk/096/pkg/mobiles/oldAI/barber.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/barber.src	2005-10-29 19:05:18 UTC (rev 696)
++++ trunk/096/pkg/mobiles/oldAI/barber.src	2005-10-29 19:15:15 UTC (rev 697)
+@@ -64,7 +64,7 @@
+ 	while(1)
+ 	ev := os::wait_for_event(120);
+ 	// Used to fix unused var report by ecompile: res;
+-	var res;
++	var res := 0;
+ 	if(ev)
+ 		case(ev.type)
+ 			EVID_NODE:
+
+Modified: trunk/096/pkg/mobiles/oldAI/battleMage.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/battleMage.src	2005-10-29 19:05:18 UTC (rev 696)
++++ trunk/096/pkg/mobiles/oldAI/battleMage.src	2005-10-29 19:15:15 UTC (rev 697)
+@@ -39,12 +39,7 @@
+   SetWarMode(0);
+   set_priority(100);
+   var ev;
+-  var evtext;
+   var next_wander := ReadGameClock() + 10;
+-  var wanders := 9;
+-  var txt;
+-  var ph := SplitWords(me.name);
+-  var myname := lower(ph[1]);
+   while (1)
+     ev := os::wait_for_event(120);
+ 	if (ev)
+@@ -170,10 +165,7 @@
+   me.concealed := 1;
+   sleep(1);
+   DestroyItem(gate);
+-  var oldprio := set_priority(50);
+-  var loops := 0;
+-  var ev;
+-  var waittime := 0;
++  set_priority(50);
+   post_combat();
+   return;
+ endfunction
+
+Modified: trunk/096/pkg/mobiles/oldAI/bladeSpirit.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/bladeSpirit.src	2005-10-29 19:05:18 UTC (rev 696)
++++ trunk/096/pkg/mobiles/oldAI/bladeSpirit.src	2005-10-29 19:15:15 UTC (rev 697)
+@@ -23,7 +23,7 @@
+ var masterserial := GetObjProperty(me, &quot;master&quot;);
+ 
+ program KillPlayers()
+-  var master;
++
+   foreach char in EnumerateOnlineCharacters()
+     if(char.serial == masterserial)
+       master := char;
+@@ -85,7 +85,7 @@
+     opponent := 0;
+ 	return;
+   endif
+-  var oldprio := set_priority(50);
++  set_priority(50);
+   SetOpponent(opponent);
+   prepare_for_fight(opponent);
+   var loops := 0;
+@@ -121,11 +121,13 @@
+ endfunction
+ 
+ function prepare_for_fight(opponent)
++  opponent := opponent;
+   DisableMainEvents();
+   EnableCombatEvents();
+ endfunction
+ 
+ function in_combat_event_loop(opponent, loops)
++  loops := loops;
+   if(Distance(me,opponent) &lt; 2)
+     var dmg := RandomInt(CInt(GetStrength(opponent) / 25));
+     dmg := dmg * 2;
+
+Modified: trunk/096/pkg/mobiles/oldAI/bucsTownHealer.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/bucsTownHealer.src	2005-10-29 19:05:18 UTC (rev 696)
++++ trunk/096/pkg/mobiles/oldAI/bucsTownHealer.src	2005-10-29 19:15:15 UTC (rev 697)
+@@ -66,6 +66,7 @@
+   const loops := 0;
+   while (1)
+     var ev;
++    var res := 0;
+     ev := os::wait_for_event(120);
+     if(ev)
+       case (ev.type)
+@@ -82,7 +83,7 @@
+                                   else
+                                     if(ev.text[&quot;buy&quot;])
+                                       TurnToward(ev.source);
+-                                      var res := SendBuyWindow(ev.source, inv_fs, Self(), inv_pb);
++                                      res := SendBuyWindow(ev.source, inv_fs, Self(), inv_pb);
+                                       foreach thing in ListRootItemsInContainer((ev.source).backpack)
+                                         EraseObjProperty(thing, &quot;ClearRestock&quot;);
+                                       endforeach
+@@ -90,7 +91,7 @@
+                                       if(GetObjProperty(me, &quot;MyGold&quot;) &gt;= 1000)
+                                         TurnToward(ev.source);
+                                         ModifyPCSellList(merchant_type, (ev.source).backpack);
+-                                        var res := SendSellWindow(ev.source, Self(), inv_fs, inv_pb, inv_1c);
++                                        res := SendSellWindow(ev.source, Self(), inv_fs, inv_pb, inv_1c);
+                                         if(res)
+                                           PrintTextAbovePrivate(Self(), &quot;You don't have anything I would be interested in.&quot;, ev.source);
+                                         else
+@@ -146,7 +147,7 @@
+ 
+ function Lookiehere(who)
+   var mobiles := ListMobilesNearLocation(who.x, who.y, who.z, 15, who.realm);
+-  var guard, num, i, hogcall, guardzone, element, range, timer, elem;
++  var num, hogcall, guardzone, element, range, timer, elem;
+   var cfgfile := ReadConfigFile(&quot;::gzone&quot;);
+   var entries := GetConfigStringKeys(cfgfile);
+   foreach listing in entries
+
+Modified: trunk/096/pkg/mobiles/oldAI/setup/crierSetup.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/setup/crierSetup.inc	2005-10-29 19:05:18 UTC (rev 696)
++++ trunk/096/pkg/mobiles/oldAI/setup/crierSetup.inc	2005-10-29 19:15:15 UTC (rev 697)
+@@ -13,6 +13,7 @@
+ start_script(&quot;:npcutils:NPCKeeper&quot;, me);
+ if(!me.backpack)
+   var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75,1, me.realm);
++  newbackpack := newbackpack;
+   var myhome := { };
+   myhome[1] := me.x;
+   myhome[2] := me.y;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000670.html">[Poldistro-svn] r696 - in trunk/096/pkg/mobiles: npcutils oldAI
+</A></li>
+	<LI>Next message: <A HREF="000672.html">[Poldistro-svn] r698 - in trunk/096/pkg/mobiles/oldAI: . combat main
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#671">[ date ]</a>
+              <a href="thread.html#671">[ thread ]</a>
+              <a href="subject.html#671">[ subject ]</a>
+              <a href="author.html#671">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

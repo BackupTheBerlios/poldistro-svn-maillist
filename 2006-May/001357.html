@@ -1,0 +1,344 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1388 - trunk/096/pkg/systems/accounts/hook
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1388%20-%20trunk/096/pkg/systems/accounts/hook&In-Reply-To=%3C200605131003.k4DA3uMY022438%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001356.html">
+   <LINK REL="Next"  HREF="001358.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1388 - trunk/096/pkg/systems/accounts/hook</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1388%20-%20trunk/096/pkg/systems/accounts/hook&In-Reply-To=%3C200605131003.k4DA3uMY022438%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1388 - trunk/096/pkg/systems/accounts/hook">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 12:03:56 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001356.html">[Poldistro-svn] r1387 - in trunk/096/pkg/items/moongates: . moongate
+</A></li>
+        <LI>Next message: <A HREF="001358.html">[Poldistro-svn] r1389 - trunk/096/scripts/console
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1357">[ date ]</a>
+              <a href="thread.html#1357">[ thread ]</a>
+              <a href="subject.html#1357">[ subject ]</a>
+              <a href="author.html#1357">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 12:03:55 +0200 (Sat, 13 May 2006)
+New Revision: 1388
+
+Modified:
+   trunk/096/pkg/systems/accounts/hook/onLogin.src
+Log:
+changed install message
+
+Modified: trunk/096/pkg/systems/accounts/hook/onLogin.src
+===================================================================
+--- trunk/096/pkg/systems/accounts/hook/onLogin.src	2006-05-13 10:00:26 UTC (rev 1387)
++++ trunk/096/pkg/systems/accounts/hook/onLogin.src	2006-05-13 10:03:55 UTC (rev 1388)
+@@ -1,134 +1,134 @@
+-/*
+- *   Author: Unreal (<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">MontuZ at Gmail.com</A>) April 28, 2006.
+- *   Version: 1.0
+- *   Core: 096
+- *   Description: Auto Account Creator. Just like many of you know this is a RunUO/SphereServer
+- *   feature and now a POL feature. What it does exactly is when a person trys to login with
+- *   an unknown(non-existant) account. This script creates the account and logs them in.
+- *   Bugs: There shouldn't be any, but you never really know. So if a bug does come up
+- *   please send me an email or post on the forum where you got this(polserver.com)
+- *
+- */
+-
+-use uo;
+-use os;
+-use polsys;
+-
+-include &quot;:accounts:settings&quot;;
+-include &quot;:accounts:accounts&quot;;
+-
+-const OFFSET_ACCOUNT_NAME	:= 0x01;
+-const OFFSET_ACCOUNT_PASS	:= 0x1F;
+-const INFO_LEN			:= 30;
+-
+-enum THEFT_LEVELS
+-	ACCT_NOT_EXIST		:= 0,
+-	ACCT_LOGIN_OKAY		:= 1,
+-	ACCT_LOGIN_FAIL		:= 2,
+-	ACCT_LOGIN_HACK		:= 3,
+-endenum
+-
+-Program Install()
+-	Print( &quot;INSTALLING: Login packet hook...&quot; );
+-	Return 1;
+-Endprogram
+-
+-exported function LoginHook(who, byref packet)
+-	who := who; // Avoid compiler warnings.
+-
+-	var username := Packet.GetString(OFFSET_ACCOUNT_NAME, INFO_LEN);
+-	var password := Packet.GetString(OFFSET_ACCOUNT_PASS, INFO_LEN);
+-
+-	if ( !username )
+-		SysLog( &quot;Account/GetString Error: &quot; + username.errortext );
+-		return 0;
+-	elseif ( !password )
+-		SysLog( &quot;Password/GetString Error: &quot; + password.errortext );
+-		return 0;
+-	endif
+-
+-	var theft_level := AcctHackChecks(username, password);
+-	case ( theft_level )
+-		ACCT_NOT_EXIST:	 // Account doesn't yet exist.
+-			break; 
+-		ACCT_LOGIN_OKAY: // Account credentials are valid.
+-			return 0;
+-			break;
+-		ACCT_LOGIN_FAIL: // Account credentials are invalid.
+-			return 0; 
+-			break;
+-		ACCT_LOGIN_HACK: // Too many invalid logins. Leave user hanging.
+-			return 1;
+-			break;
+-	endcase
+-	
+-	var settings := ACCT_GetSettingsCfgElem(&quot;Settings&quot;);
+-	if ( !settings.AllowAutoAccounts )
+-		// Automatic account creation is disabled.
+-		return 0;
+-	endif
+-	
+-	var account := CreateNewAccount(username, password, 0, settings.DefaultExpansion);
+-	// In theory this should only return an error saying &quot;Invalid parameter type&quot;.
+-	// Should never return &quot;Account already exists&quot; because we already looked for the
+-	// account and let pol handle it. And when it does return &quot;Invalid parameter type&quot;
+-	// we don't have to worry, pol will do the right job for us and just say that account
+-	// does not exist.
+-	if ( account.errortext )
+-		SysLog(&quot;CreateAccount() Error: &quot; + account.errortext);
+-		return 0;
+-	endif
+-		
+-	SysLog( &quot;AutoAccount Created: &quot; + username );
+-
+-	return 0;
+-
+-endfunction
+-
+-function AcctHackChecks(username, password)
+-	/*
+-	 * This is just a little password protection, so someone doesn't go around
+-	 * trying to steal peoples accounts trying 100's of passwords. It doesn't
+-	 * really stop someone, but it slows them down a lot and may lead them off
+-	 * from trying to steal the account.
+-	 * This is currently UNTESTED, in theory it should work. Any problems, again
+-	 * please send me an email to <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">MontuZ at Gmail.com</A> or post on the polserver.com's
+-	 * forum.
+-	 *
+-	 */
+-
+-	/*  [Password Protection]  */
+-	var account := FindAccount(username);
+-	if ( !account )
+-		// Account doesn't even exist.
+-		return ACCT_NOT_EXIST;
+-	elseif ( !account.CheckPassword(password) )
+-		var failed_login := account.GetProp(&quot;#FailedLogin&quot;);
+-		// First attempt at failing the password check.
+-		if ( !failed_login )
+-			account.SetProp( &quot;#FailedLogin&quot;, {1, polcore().systime});
+-			return ACCT_LOGIN_FAIL; // Let pol tell the user it's an incorrect password.
+-		else
+-			if ( failed_login[1] &gt;= 5 &amp;&amp; ( failed_login[2] &gt;&gt; polcore().systime ) )
+-		  		// Incorrect password for the 5th time.
+-		 		// Leave the user hanging at login for the next 10 minutes.
+-		 		account.SetProp(&quot;#FailedLogin&quot;, {failed_login[1]+1, polcore().systime+600});
+-		  		return ACCT_LOGIN_HACK; // Leave user hanging.
+-		 	
+-		 	elseif ( failed_login[1] &gt;= 5 &amp;&amp; ( failed_login[2] &lt;&lt; polcore().systime ) )
+-		  		// User attempted to login with the wrong password after 10 minutes.
+-		 		// Reset user's wait time.
+-		 		account.EraseProp(&quot;#FailedLogin&quot;);
+-		  		return ACCT_LOGIN_FAIL; // Let pol tell the user it's an incorrect password.
+-		 	
+-		 	elseif ( failed_login[1] &lt;&lt; 5 )
+-		 		// Let pol tell user it's an incorrect password.
+-		  		account.SetProp(&quot;#FailedLogin&quot;, {failed_login[1]+1, polcore().systime+10});
+-		  		return ACCT_LOGIN_FAIL;
+-		 	endif
+-		endif
+-	else
+-		// Passed password check, let user login.
+-		return ACCT_LOGIN_OKAY;
+-	endif
+-endfunction
++/*
++ *   Author: Unreal (<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">MontuZ at Gmail.com</A>) April 28, 2006.
++ *   Version: 1.0
++ *   Core: 096
++ *   Description: Auto Account Creator. Just like many of you know this is a RunUO/SphereServer
++ *   feature and now a POL feature. What it does exactly is when a person trys to login with
++ *   an unknown(non-existant) account. This script creates the account and logs them in.
++ *   Bugs: There shouldn't be any, but you never really know. So if a bug does come up
++ *   please send me an email or post on the forum where you got this(polserver.com)
++ *
++ */
++
++use uo;
++use os;
++use polsys;
++
++include &quot;:accounts:settings&quot;;
++include &quot;:accounts:accounts&quot;;
++
++const OFFSET_ACCOUNT_NAME	:= 0x01;
++const OFFSET_ACCOUNT_PASS	:= 0x1F;
++const INFO_LEN			:= 30;
++
++enum THEFT_LEVELS
++	ACCT_NOT_EXIST		:= 0,
++	ACCT_LOGIN_OKAY		:= 1,
++	ACCT_LOGIN_FAIL		:= 2,
++	ACCT_LOGIN_HACK		:= 3,
++endenum
++
++Program Install()
++	Print( &quot;INSTALLING: Auto Account/Theft Prevention PH...&quot; );
++	Return 1;
++Endprogram
++
++exported function LoginHook(who, byref packet)
++	who := who; // Avoid compiler warnings.
++
++	var username := Packet.GetString(OFFSET_ACCOUNT_NAME, INFO_LEN);
++	var password := Packet.GetString(OFFSET_ACCOUNT_PASS, INFO_LEN);
++
++	if ( !username )
++		SysLog( &quot;Account/GetString Error: &quot; + username.errortext );
++		return 0;
++	elseif ( !password )
++		SysLog( &quot;Password/GetString Error: &quot; + password.errortext );
++		return 0;
++	endif
++
++	var theft_level := AcctHackChecks(username, password);
++	case ( theft_level )
++		ACCT_NOT_EXIST:	 // Account doesn't yet exist.
++			break; 
++		ACCT_LOGIN_OKAY: // Account credentials are valid.
++			return 0;
++			break;
++		ACCT_LOGIN_FAIL: // Account credentials are invalid.
++			return 0; 
++			break;
++		ACCT_LOGIN_HACK: // Too many invalid logins. Leave user hanging.
++			return 1;
++			break;
++	endcase
++	
++	var settings := ACCT_GetSettingsCfgElem(&quot;Settings&quot;);
++	if ( !settings.AllowAutoAccounts )
++		// Automatic account creation is disabled.
++		return 0;
++	endif
++	
++	var account := CreateNewAccount(username, password, 0, settings.DefaultExpansion);
++	// In theory this should only return an error saying &quot;Invalid parameter type&quot;.
++	// Should never return &quot;Account already exists&quot; because we already looked for the
++	// account and let pol handle it. And when it does return &quot;Invalid parameter type&quot;
++	// we don't have to worry, pol will do the right job for us and just say that account
++	// does not exist.
++	if ( account.errortext )
++		SysLog(&quot;CreateAccount() Error: &quot; + account.errortext);
++		return 0;
++	endif
++		
++	SysLog( &quot;AutoAccount Created: &quot; + username );
++
++	return 0;
++
++endfunction
++
++function AcctHackChecks(username, password)
++	/*
++	 * This is just a little password protection, so someone doesn't go around
++	 * trying to steal peoples accounts trying 100's of passwords. It doesn't
++	 * really stop someone, but it slows them down a lot and may lead them off
++	 * from trying to steal the account.
++	 * This is currently UNTESTED, in theory it should work. Any problems, again
++	 * please send me an email to <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">MontuZ at Gmail.com</A> or post on the polserver.com's
++	 * forum.
++	 *
++	 */
++
++	/*  [Password Protection]  */
++	var account := FindAccount(username);
++	if ( !account )
++		// Account doesn't even exist.
++		return ACCT_NOT_EXIST;
++	elseif ( !account.CheckPassword(password) )
++		var failed_login := account.GetProp(&quot;#FailedLogin&quot;);
++		// First attempt at failing the password check.
++		if ( !failed_login )
++			account.SetProp( &quot;#FailedLogin&quot;, {1, polcore().systime});
++			return ACCT_LOGIN_FAIL; // Let pol tell the user it's an incorrect password.
++		else
++			if ( failed_login[1] &gt;= 5 &amp;&amp; ( failed_login[2] &gt;&gt; polcore().systime ) )
++		  		// Incorrect password for the 5th time.
++		 		// Leave the user hanging at login for the next 10 minutes.
++		 		account.SetProp(&quot;#FailedLogin&quot;, {failed_login[1]+1, polcore().systime+600});
++		  		return ACCT_LOGIN_HACK; // Leave user hanging.
++		 	
++		 	elseif ( failed_login[1] &gt;= 5 &amp;&amp; ( failed_login[2] &lt;&lt; polcore().systime ) )
++		  		// User attempted to login with the wrong password after 10 minutes.
++		 		// Reset user's wait time.
++		 		account.EraseProp(&quot;#FailedLogin&quot;);
++		  		return ACCT_LOGIN_FAIL; // Let pol tell the user it's an incorrect password.
++		 	
++		 	elseif ( failed_login[1] &lt;&lt; 5 )
++		 		// Let pol tell user it's an incorrect password.
++		  		account.SetProp(&quot;#FailedLogin&quot;, {failed_login[1]+1, polcore().systime+10});
++		  		return ACCT_LOGIN_FAIL;
++		 	endif
++		endif
++	else
++		// Passed password check, let user login.
++		return ACCT_LOGIN_OKAY;
++	endif
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001356.html">[Poldistro-svn] r1387 - in trunk/096/pkg/items/moongates: . moongate
+</A></li>
+	<LI>Next message: <A HREF="001358.html">[Poldistro-svn] r1389 - trunk/096/scripts/console
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1357">[ date ]</a>
+              <a href="thread.html#1357">[ thread ]</a>
+              <a href="subject.html#1357">[ subject ]</a>
+              <a href="author.html#1357">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

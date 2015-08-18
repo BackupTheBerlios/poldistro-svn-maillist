@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r987 - in trunk/096/pkg: items/keys/key skills/magery skills/magery/recallRune
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r987%20-%20in%20trunk/096/pkg%3A%20items/keys/key%20skills/magery%20skills/magery/recallRune&In-Reply-To=%3C200511140927.jAE9RiNG021892%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000959.html">
+   <LINK REL="Next"  HREF="000961.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r987 - in trunk/096/pkg: items/keys/key skills/magery skills/magery/recallRune</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r987%20-%20in%20trunk/096/pkg%3A%20items/keys/key%20skills/magery%20skills/magery/recallRune&In-Reply-To=%3C200511140927.jAE9RiNG021892%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r987 - in trunk/096/pkg: items/keys/key skills/magery skills/magery/recallRune">austin at berlios.de
+       </A><BR>
+    <I>Mon Nov 14 10:27:44 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000959.html">[Poldistro-svn] r986 - in trunk/096/pkg/skills/magery: . config recallRune
+</A></li>
+        <LI>Next message: <A HREF="000961.html">[Poldistro-svn] r988 - in trunk/096: config pkg/skills/lumberjacking pkg/skills/lumberjacking/config pkg/skills/lumberjacking/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#960">[ date ]</a>
+              <a href="thread.html#960">[ thread ]</a>
+              <a href="subject.html#960">[ subject ]</a>
+              <a href="author.html#960">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-14 10:27:34 +0100 (Mon, 14 Nov 2005)
+New Revision: 987
+
+Modified:
+   trunk/096/pkg/items/keys/key/use.src
+   trunk/096/pkg/skills/magery/pkg.cfg
+   trunk/096/pkg/skills/magery/recallRune/methods.src
+Log:
+Misc. fixes.
+
+Modified: trunk/096/pkg/items/keys/key/use.src
+===================================================================
+--- trunk/096/pkg/items/keys/key/use.src	2005-11-14 09:22:35 UTC (rev 986)
++++ trunk/096/pkg/items/keys/key/use.src	2005-11-14 09:27:34 UTC (rev 987)
+@@ -37,10 +37,13 @@
+ endprogram
+ 
+ function RenameKey(who, key)
+-	var new_name := RequestGump(who, &quot;Enter a name for this key&quot;, &quot;Maximum length is 20 characters.&quot;, key.desc);
++	var new_name := RequestGump(who, &quot;Enter a name for this key&quot;, &quot;Maximum length is 20 characters.&quot;, key.desc, CANCEL_BTN_ON);
+ 	var name_len := Len(new_name);
+ 	
+-	if ( name_len &gt; 20 )
++	if ( !new_name )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	elseif ( name_len &gt; 20 )
+ 		SendSysMessage(who, &quot;Name is too long.&quot;);
+ 		return 0;
+ 	elseif ( name_len &lt; 1 )
+
+Modified: trunk/096/pkg/skills/magery/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/pkg.cfg	2005-11-14 09:22:35 UTC (rev 986)
++++ trunk/096/pkg/skills/magery/pkg.cfg	2005-11-14 09:27:34 UTC (rev 987)
+@@ -1,4 +1,4 @@
+-# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++# $Id$
+ #
+ #
+ Enabled		1
+@@ -13,5 +13,5 @@
+ Maintainer	Distro Team
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+-#Requires none
+-#conflicts	none
++#Requires	NONE
++#conflicts	NONE
+
+Modified: trunk/096/pkg/skills/magery/recallRune/methods.src
+===================================================================
+--- trunk/096/pkg/skills/magery/recallRune/methods.src	2005-11-14 09:22:35 UTC (rev 986)
++++ trunk/096/pkg/skills/magery/recallRune/methods.src	2005-11-14 09:27:34 UTC (rev 987)
+@@ -10,6 +10,11 @@
+ 	return 1;
+ endprogram
+ 
++exported function IsRecallRune(rune)
++	rune := rune;
++	return 1;
++endfunction
++
+ exported function SetDestination(rune, x, y, z, realm)
+ 	var coords := struct;
+ 	struct.+x := CInt(x);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000959.html">[Poldistro-svn] r986 - in trunk/096/pkg/skills/magery: . config recallRune
+</A></li>
+	<LI>Next message: <A HREF="000961.html">[Poldistro-svn] r988 - in trunk/096: config pkg/skills/lumberjacking pkg/skills/lumberjacking/config pkg/skills/lumberjacking/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#960">[ date ]</a>
+              <a href="thread.html#960">[ thread ]</a>
+              <a href="subject.html#960">[ subject ]</a>
+              <a href="author.html#960">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

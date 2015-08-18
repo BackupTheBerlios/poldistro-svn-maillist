@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r42 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r42%20-%20trunk/096/pkg/mobiles/ai_brain/include/braincore&In-Reply-To=%3C200509030604.j836402I015198%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000023.html">
+   <LINK REL="Next"  HREF="000025.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r42 - trunk/096/pkg/mobiles/ai_brain/include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r42%20-%20trunk/096/pkg/mobiles/ai_brain/include/braincore&In-Reply-To=%3C200509030604.j836402I015198%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r42 - trunk/096/pkg/mobiles/ai_brain/include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Sat Sep  3 08:04:01 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000023.html">[Poldistro-svn] r41 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+        <LI>Next message: <A HREF="000025.html">[Poldistro-svn] r43 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#24">[ date ]</a>
+              <a href="thread.html#24">[ thread ]</a>
+              <a href="subject.html#24">[ subject ]</a>
+              <a href="author.html#24">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-03 08:03:59 +0200 (Sat, 03 Sep 2005)
+New Revision: 42
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-03 06:03:19 UTC (rev 41)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-03 06:03:59 UTC (rev 42)
+@@ -44,43 +44,45 @@
+ 	//
+ 	// * Events that use the core 'speech' range.
+ 	//
+-	if ( g_settings.exists(&quot;listen_script&quot;) )
+-		EnableEvents(SYSEVENT_SPEECH, g_settings[&quot;listen_range&quot;]);
++	if ( g_settings.exists(&quot;ListenScript&quot;) )
++		if ( g_settings[&quot;HearSpeech&quot;] )
++			EnableEvents(SYSEVENT_SPEECH, g_settings[&quot;ListenRange&quot;]);
++		endif
++		if ( g_settings[&quot;HearGhosts&quot;] )
++			EnableEvents(SYSEVENT_GHOST_SPEECH, g_settings[&quot;ListenRange&quot;]);
++		endif
+ 	endif
+-	if ( g_settings.exists(&quot;ghost_listen_script&quot;) )
+-		EnableEvents(SYSEVENT_GHOST_SPEECH, g_settings[&quot;listen_range&quot;]);
+-	endif
+-	
++		
+ 	//
+ 	// * Events that use the core 'area size' range.
+ 	//
+-	if ( g_settings.exists(&quot;enter_react_script&quot;) )
+-		EnableEvents(SYSEVENT_ENTEREDAREA, g_settings[&quot;area_size&quot;]);
++	if ( g_settings.exists(&quot;EnterAreaScript&quot;) )
++		EnableEvents(SYSEVENT_ENTEREDAREA, g_settings[&quot;AreaSize&quot;]);
+ 	endif
+-	if ( g_settings.exists(&quot;leave_react_script&quot;) )
+-		EnableEvents(SYSEVENT_LEFTAREA, g_settings[&quot;area_size&quot;]);
++	if ( g_settings.exists(&quot;LeftAreaScript&quot;) )
++		EnableEvents(SYSEVENT_LEFTAREA, g_settings[&quot;AreaSize&quot;]);
+ 	endif
+-	if ( g_settings.exists(&quot;gone_criminal_script&quot;) )
+-		EnableEvents(SYSEVENT_GONE_CRIMINAL, g_settings[&quot;area_size&quot;]);
++	if ( g_settings.exists(&quot;GoneCriminalScript&quot;) )
++		EnableEvents(SYSEVENT_GONE_CRIMINAL, g_settings[&quot;AreaSize&quot;]);
+ 	endif
+ 	
+ 	//
+ 	// * Events that do not have a core range check.
+ 	//
+-	if ( g_settings.exists(&quot;dbl_click_script&quot;) )
+-		EnableEvents(SYSEVENT_DOUBLECLICKED, g_settings[&quot;dbl_click_range&quot;]);
++	if ( g_settings.exists(&quot;DblClickScript&quot;) )
++		EnableEvents(SYSEVENT_DOUBLECLICKED);
+ 	endif
+-	if ( g_settings.exists(&quot;given_item_script&quot;) )
++	if ( g_settings.exists(&quot;GivenItemScript&quot;) )
+ 		EnableEvents(SYSEVENT_ITEM_GIVEN);
+ 	endif
+-	if ( g_settings.exists(&quot;disengage_script&quot;) )
++	if ( g_settings.exists(&quot;DisengagedScript&quot;) )
+ 		EnableEvents(SYSEVENT_DISENGAGED);
+ 	endif
+-	if ( g_settings.exists(&quot;merchant_script&quot;) )
++	if ( g_settings.exists(&quot;MerchantScript&quot;) )
+ 		EnableEvents(SYSEVENT_MERCHANT_BOUGHT);
+ 		EnableEvents(SYSEVENT_MERCHANT_SOLD);
+ 	endif
+-	if ( g_settings.exists(&quot;combat_script&quot;) )
++	if ( g_settings.exists(&quot;CombatScript&quot;) )
+ 		EnableEvents(SYSEVENT_ENGAGED+SYSEVENT_DAMAGED);
+ 	endif
+ 	
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000023.html">[Poldistro-svn] r41 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+	<LI>Next message: <A HREF="000025.html">[Poldistro-svn] r43 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#24">[ date ]</a>
+              <a href="thread.html#24">[ thread ]</a>
+              <a href="subject.html#24">[ subject ]</a>
+              <a href="author.html#24">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

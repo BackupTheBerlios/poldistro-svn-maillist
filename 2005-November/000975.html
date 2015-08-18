@@ -1,0 +1,653 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1002 - in trunk/096: pkg/items/runebook pkg/mobiles/oldAI pkg/skills/fishing pkg/skills/magery/OLD pkg/systems/housing pkg/utils pkg/utils/coords pkg/utils/coords/config pkg/utils/coords/include scripts/include/OLD
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1002%20-%20in%20trunk/096%3A%20pkg/items/runebook%20pkg/mobiles/oldAI%20pkg/skills/fishing%20pkg/skills/magery/OLD%20pkg/systems/housing%20pkg/utils%20pkg/utils/coords%20pkg/utils/coords/config%20pkg/utils/coords/include%20scripts/include/OLD&In-Reply-To=%3C200511150618.jAF6ItQM008708%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000974.html">
+   <LINK REL="Next"  HREF="000976.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1002 - in trunk/096: pkg/items/runebook pkg/mobiles/oldAI pkg/skills/fishing pkg/skills/magery/OLD pkg/systems/housing pkg/utils pkg/utils/coords pkg/utils/coords/config pkg/utils/coords/include scripts/include/OLD</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1002%20-%20in%20trunk/096%3A%20pkg/items/runebook%20pkg/mobiles/oldAI%20pkg/skills/fishing%20pkg/skills/magery/OLD%20pkg/systems/housing%20pkg/utils%20pkg/utils/coords%20pkg/utils/coords/config%20pkg/utils/coords/include%20scripts/include/OLD&In-Reply-To=%3C200511150618.jAF6ItQM008708%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1002 - in trunk/096: pkg/items/runebook pkg/mobiles/oldAI pkg/skills/fishing pkg/skills/magery/OLD pkg/systems/housing pkg/utils pkg/utils/coords pkg/utils/coords/config pkg/utils/coords/include scripts/include/OLD">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Nov 15 07:18:55 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000974.html">[Poldistro-svn] r1001 - trunk/096/pkg/items/acid/include
+</A></li>
+        <LI>Next message: <A HREF="000976.html">[Poldistro-svn] r1003 - trunk/096/pkg/skills/magery
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#975">[ date ]</a>
+              <a href="thread.html#975">[ thread ]</a>
+              <a href="subject.html#975">[ subject ]</a>
+              <a href="author.html#975">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-15 07:18:44 +0100 (Tue, 15 Nov 2005)
+New Revision: 1002
+
+Added:
+   trunk/096/pkg/utils/coords/
+   trunk/096/pkg/utils/coords/config/
+   trunk/096/pkg/utils/coords/config/icp.cfg
+   trunk/096/pkg/utils/coords/include/
+   trunk/096/pkg/utils/coords/include/coords.inc
+   trunk/096/pkg/utils/coords/include/findCity.inc
+   trunk/096/pkg/utils/coords/include/isValidLoc.inc
+   trunk/096/pkg/utils/coords/pkg.cfg
+Removed:
+   trunk/096/scripts/include/OLD/coords.inc
+   trunk/096/scripts/include/OLD/findCity.inc
+   trunk/096/scripts/include/OLD/isValidLoc.inc
+Modified:
+   trunk/096/pkg/items/runebook/runebook.src
+   trunk/096/pkg/mobiles/oldAI/barber.src
+   trunk/096/pkg/mobiles/oldAI/bucsTownHealer.src
+   trunk/096/pkg/mobiles/oldAI/merchant.src
+   trunk/096/pkg/mobiles/oldAI/townHealer.src
+   trunk/096/pkg/skills/fishing/SOSMessage.src
+   trunk/096/pkg/skills/magery/OLD/gate.src.temp
+   trunk/096/pkg/skills/magery/OLD/magicLock.src.temp
+   trunk/096/pkg/skills/magery/OLD/magicTrap.src.temp
+   trunk/096/pkg/skills/magery/OLD/recall.src.temp
+   trunk/096/pkg/skills/magery/OLD/teleport.src.temp
+   trunk/096/pkg/systems/housing/houseDeed.src
+Log:
+Installed a &quot;coords&quot; package in utils area. Moved coords.inc, findCity.inc, and isValidLoc.inc to this package.
+
+Upgraded all files with these includes to the new pkgname:path for them.
+
+Modified: trunk/096/pkg/items/runebook/runebook.src
+===================================================================
+--- trunk/096/pkg/items/runebook/runebook.src	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/items/runebook/runebook.src	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -5,7 +5,7 @@
+ include &quot;customSpells&quot;;
+ include &quot;include/math&quot;;
+ include &quot;include/client&quot;;
+-include &quot;include/OLD/coords&quot;;
++include &quot;:coords:coords&quot;;
+ include &quot;:itemutils:canAccess&quot;;
+ 
+ const OBJTYPE_RUNE := 0x1f14;
+
+Modified: trunk/096/pkg/mobiles/oldAI/barber.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/barber.src	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/mobiles/oldAI/barber.src	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -11,7 +11,7 @@
+ include &quot;:npcutils:NPCBackpacks&quot;;
+ include &quot;include/client&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;include/OLD/findCity&quot;;
++include &quot;:coords:findCity&quot;;
+ include &quot;:begging:begging&quot;;
+ include &quot;:attributes:attributes&quot;;
+ include &quot;:npcutils:trainSkill&quot;;
+
+Modified: trunk/096/pkg/mobiles/oldAI/bucsTownHealer.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/bucsTownHealer.src	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/mobiles/oldAI/bucsTownHealer.src	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -12,7 +12,7 @@
+ include &quot;:npcutils:NPCBackpacks&quot;;
+ include &quot;include/client&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;include/OLD/findCity&quot;;
++include &quot;:coords:findCity&quot;;
+ include &quot;:begging:begging&quot;;
+ include &quot;:npcutils:trainSkill&quot;;
+ 
+
+Modified: trunk/096/pkg/mobiles/oldAI/merchant.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/merchant.src	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/mobiles/oldAI/merchant.src	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -11,7 +11,7 @@
+ include &quot;:npcutils:NPCBackpacks&quot;;
+ include &quot;include/client&quot;;
+ include &quot;:npcutils:anchors&quot;;
+-include &quot;include/OLD/findCity&quot;;
++include &quot;:coords:findCity&quot;;
+ include &quot;:begging:begging&quot;;
+ include &quot;:attributes:attributes&quot;;
+ include &quot;:npcutils:trainSkill&quot;;
+
+Modified: trunk/096/pkg/mobiles/oldAI/townHealer.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/townHealer.src	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/mobiles/oldAI/townHealer.src	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -14,7 +14,7 @@
+ include &quot;include/client&quot;;
+ include &quot;:npcutils:anchors&quot;;
+ include &quot;include/OLD/resurrection&quot;;
+-include &quot;include/OLD/findCity&quot;;
++include &quot;:coords:findCity&quot;;
+ include &quot;:begging:begging&quot;;
+ include &quot;:npcutils:trainSkill&quot;;
+ 
+
+Modified: trunk/096/pkg/skills/fishing/SOSMessage.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/SOSMessage.src	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/skills/fishing/SOSMessage.src	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -5,7 +5,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;include/OLD/coords&quot;;
++include &quot;:coords:coords&quot;;
+ include &quot;:itemutils:canAccess&quot;;
+ include &quot;:gumps:include/gumps&quot;;
+ 
+
+Modified: trunk/096/pkg/skills/magery/OLD/gate.src.temp
+===================================================================
+--- trunk/096/pkg/skills/magery/OLD/gate.src.temp	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/skills/magery/OLD/gate.src.temp	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -1,7 +1,7 @@
+ use os;
+ use uo;
+ 
+-include &quot;include/isValidLoc&quot;;
++include &quot;:coords:isValidLoc&quot;;
+ include &quot;:itemutils:objtype&quot;;
+ include &quot;include/client&quot;;
+ include &quot;include/sound&quot;;
+
+Modified: trunk/096/pkg/skills/magery/OLD/magicLock.src.temp
+===================================================================
+--- trunk/096/pkg/skills/magery/OLD/magicLock.src.temp	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/skills/magery/OLD/magicLock.src.temp	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -5,7 +5,7 @@
+ include &quot;include/client&quot;;
+ include &quot;include/sound&quot;;
+ include &quot;:attributes:attributes&quot;;
+-include &quot;include/findCity&quot;;
++include &quot;:coords:findCity&quot;;
+ include &quot;util/key&quot;;
+ 
+ 
+
+Modified: trunk/096/pkg/skills/magery/OLD/magicTrap.src.temp
+===================================================================
+--- trunk/096/pkg/skills/magery/OLD/magicTrap.src.temp	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/skills/magery/OLD/magicTrap.src.temp	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -5,7 +5,7 @@
+ include &quot;include/client&quot;;
+ include &quot;:attributes:attributes&quot;;
+ include &quot;include/sound&quot;;
+-include &quot;include/findCity&quot;;
++include &quot;:coords:findCity&quot;;
+ 
+ 
+ program spell_magicTrap(parms)
+
+Modified: trunk/096/pkg/skills/magery/OLD/recall.src.temp
+===================================================================
+--- trunk/096/pkg/skills/magery/OLD/recall.src.temp	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/skills/magery/OLD/recall.src.temp	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -4,7 +4,7 @@
+ 
+ include &quot;include/client&quot;;
+ include &quot;:itemutils:objtype&quot;;
+-include &quot;include/isValidLoc&quot;;
++include &quot;:coords:isValidLoc&quot;;
+ 
+ 
+ program spell_recall(parms)
+
+Modified: trunk/096/pkg/skills/magery/OLD/teleport.src.temp
+===================================================================
+--- trunk/096/pkg/skills/magery/OLD/teleport.src.temp	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/skills/magery/OLD/teleport.src.temp	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -4,7 +4,7 @@
+ include &quot;include/client&quot;;
+ include &quot;include/sound&quot;;
+ include &quot;include/tileEffects&quot;;
+-include &quot;include/isValidLoc&quot;;
++include &quot;:coords:isValidLoc&quot;;
+ 
+ 
+ program spell_teleport( parms )
+
+Modified: trunk/096/pkg/systems/housing/houseDeed.src
+===================================================================
+--- trunk/096/pkg/systems/housing/houseDeed.src	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/systems/housing/houseDeed.src	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -5,9 +5,9 @@
+ include &quot;util/key&quot;;
+ include &quot;:containers:storageAreas&quot;;
+ include &quot;:itemutils:objtype&quot;;
+-include &quot;include/OLD/findCity&quot;;
++include &quot;:coords:findCity&quot;;
+ include &quot;:itemutils:canAccess&quot;;
+-include &quot;include/OLD/isValidLoc&quot;;
++include &quot;:coords:isValidLoc&quot;;
+ 
+ const UOBJECT_DOORS_START:=0x675;
+ const UOBJECT_DOORS_END:=0x6f4;
+
+Added: trunk/096/pkg/utils/coords/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/utils/coords/config/icp.cfg	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/utils/coords/config/icp.cfg	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -0,0 +1,19 @@
++# $Id$
++#
++#
++ICP Register
++{
++	Name		Coordinates and Locations
++	Version		1.0
++	Description	Utilities for calculating coordinates and locations
++
++	Creator		MuadDib
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	#Script	cmdlevel path
++
++	#TextCmd	cmdlevel path
++}
+
+
+Property changes on: trunk/096/pkg/utils/coords/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/coords/include/coords.inc
+===================================================================
+--- trunk/096/pkg/utils/coords/include/coords.inc	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/utils/coords/include/coords.inc	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -0,0 +1,28 @@
++/* $Id$
++ *
++ */
++use basic;
++use math;
++
++function ToSextant(x, y)
++	var latitude_direction, longitude_direction;
++	var latitude_degrees, longitude_degrees;
++	var latitude_minutes, longitude_minutes;
++	latitude_degrees := (y-1624)*0.087890625;
++	longitude_degrees := (x-1323)*0.0703125;
++	if(latitude_degrees &lt; 0)
++		latitude_direction := &quot;N&quot;;
++	else
++		latitude_direction := &quot;S&quot;;
++	endif
++	if(longitude_degrees &lt; 0)
++		longitude_direction := &quot;W&quot;;
++	else
++		longitude_direction := &quot;E&quot;;
++	endif
++	latitude_degrees := Abs(latitude_degrees);
++	longitude_degrees := Abs(longitude_degrees);
++	latitude_minutes := CInt((CInt((latitude_degrees-Floor(latitude_degrees))*100)*60)/100);
++	longitude_minutes := CInt((CInt((longitude_degrees-Floor(longitude_degrees))*100)*60)/100);
++	return(Floor(latitude_degrees) + &quot;o &quot; + latitude_minutes + &quot;'&quot; + latitude_direction + &quot;, &quot; + Floor(longitude_degrees) + &quot;o &quot; + longitude_minutes + &quot;'&quot; + longitude_direction);
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/coords/include/coords.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/coords/include/findCity.inc
+===================================================================
+--- trunk/096/pkg/utils/coords/include/findCity.inc	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/utils/coords/include/findCity.inc	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -0,0 +1,54 @@
++/* $Id$
++ *
++ */
++/*
++ * ToDo:	Needs upgraded for realm support.
++ *		Needs upgraded to use config files for city coords.
++ */
++use os;
++use uo;
++
++function FindCity(me)
++	if(me.x&gt;=1244 &amp;&amp; me.y&gt;=1530 &amp;&amp; me.x&lt;=1704 &amp;&amp; me.y&lt;=1758)
++		return &quot;Britain&quot;;
++	elseif(me.x&gt;=4379 &amp;&amp; me.y&gt;=1045 &amp;&amp; me.x&lt;=4487 &amp;&amp; me.y&lt;=1178)
++		return &quot;Moonglow&quot;;
++	elseif(me.x&gt;=5137 &amp;&amp; me.y&gt;=3948 &amp;&amp; me.x&lt;=5196 &amp;&amp; me.y&lt;=4082)
++		return &quot;Delucia&quot;;
++	elseif(me.x&gt;=5196 &amp;&amp; me.y&gt;=3923 &amp;&amp; me.x&lt;=5322 &amp;&amp; me.y&lt;=4085)
++		return &quot;Delucia&quot;;
++	elseif(me.x&gt;=5638 &amp;&amp; me.y&gt;=3083 &amp;&amp; me.x&lt;=5799 &amp;&amp; me.y&lt;=3328)
++		return &quot;Papua&quot;;
++	elseif(me.x&gt;=5799 &amp;&amp; me.y&gt;=3121 &amp;&amp; me.x&lt;=5822 &amp;&amp; me.y&lt;=3327)
++		return &quot;Papua&quot;;
++	elseif(me.x&gt;=1294 &amp;&amp; me.y&gt;=3664 &amp;&amp; me.x&lt;=1506 &amp;&amp; me.y&lt;=3886)
++		return &quot;Jhelom&quot;;
++	elseif(me.x&gt;=494 &amp;&amp; me.y&gt;=926 &amp;&amp; me.x&lt;=600 &amp;&amp; me.y&lt;=1034)
++		return &quot;Yew&quot;;
++	elseif(me.x&gt;=590 &amp;&amp; me.y&gt;=796 &amp;&amp; me.x&lt;=670 &amp;&amp; me.y&lt;=886)
++		return &quot;Empath Abbey&quot;;
++	elseif(me.x&gt;=2394 &amp;&amp; me.y&gt;=370 &amp;&amp; me.x&lt;=2624 &amp;&amp; me.y&lt;=632)
++		return &quot;Minoc&quot;;
++	elseif(me.x&gt;=1794 &amp;&amp; me.y&gt;=2638 &amp;&amp; me.x&lt;=2136 &amp;&amp; me.y&lt;=2902)
++		return &quot;Trinsic&quot;;
++	elseif(me.x&gt;=538 &amp;&amp; me.y&gt;=2106 &amp;&amp; me.x&lt;=686 &amp;&amp; me.y&lt;=2274)
++		return &quot;Skara Brae&quot;;
++	elseif(me.x&gt;=3646 &amp;&amp; me.y&gt;=2040 &amp;&amp; me.x&lt;=3814 &amp;&amp; me.y&lt;=2280)
++		return &quot;Magincia&quot;;
++	elseif(me.x&gt;=3588 &amp;&amp; me.y&gt;=2446 &amp;&amp; me.x&lt;=3762 &amp;&amp; me.y&lt;=2690)
++		return &quot;Occlo&quot;;
++	elseif(me.x&gt;=2612 &amp;&amp; me.y&gt;=2082 &amp;&amp; me.x&lt;=2772 &amp;&amp; me.y&lt;=2256)
++		return &quot;Buccaneers Den&quot;;
++	elseif(me.x&gt;=3496 &amp;&amp; me.y&gt;=1062 &amp;&amp; me.x&lt;=3808 &amp;&amp; me.y&lt;=1400)
++		return &quot;Nujelm&quot;;
++	elseif(me.x&gt;=2794 &amp;&amp; me.y&gt;=634 &amp;&amp; me.x&lt;=3026 &amp;&amp; me.y&lt;=1000)
++		return &quot;Vesper&quot;;
++	elseif(me.x&gt;=2206 &amp;&amp; me.y&gt;=1116 &amp;&amp; me.x&lt;=2290 &amp;&amp; me.y&lt;=1236)
++		return &quot;Cove&quot;;
++	elseif(me.x&gt;=5120 &amp;&amp; me.y&gt;=0 &amp;&amp; me.x&lt;=5374 &amp;&amp; me.y&lt;=254)
++		return &quot;Wind&quot;;
++	elseif(me.x&gt;=1382 &amp;&amp; me.y&gt;=3955 &amp;&amp; me.x&lt;=1528 &amp;&amp; me.y&lt;=4044)
++		return &quot;Jhelom&quot;;
++	endif
++	return &quot;no city&quot;;
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/coords/include/findCity.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/coords/include/isValidLoc.inc
+===================================================================
+--- trunk/096/pkg/utils/coords/include/isValidLoc.inc	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/utils/coords/include/isValidLoc.inc	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -0,0 +1,59 @@
++/* $Id$
++ *
++ */
++use uo;
++use polsys;
++
++function isValidLoc(x, y, realm := &quot;britannia&quot; )
++   if(realm == &quot;britannia&quot; || realm == &quot;britannia_alt&quot;)
++
++	  if((x &gt;= 5112) &amp;&amp; (x &lt;= 5213))
++	    if((y &gt;= 1093) &amp;&amp; (y &lt;= 1213))
++	      return 0;
++	    endif
++	  endif
++
++	  if((x &gt;= 5120) &amp;&amp; (x &lt;= 5374))
++	    if((y &gt;= 265) &amp;&amp; (y &lt;= 512))
++	      return 0;
++	    endif
++	  endif
++
++	  if((x &gt;= 5890) &amp;&amp; (x &lt;= 6142))
++	    if((y &gt;= 514) &amp;&amp; (y &lt;= 1278))
++	      return 0;
++	    endif
++	  endif
++
++	  if((x &gt;= 5376) &amp;&amp; (x &lt;= 5910))
++	    if((y &gt;= 1030) &amp;&amp; (y &lt;= 1276))
++	      return 0;
++	    endif
++	  endif
++
++	  if((x &gt;= 5422) &amp;&amp; (x &lt;= 6142))
++	    if((y &gt;= 1536) &amp;&amp; (y &lt;= 1796))
++	      return 0;
++	    endif
++	  endif
++
++	  if((x &gt;= 5632) &amp;&amp; (x &lt;= 6142))
++	    if((y &gt;= 1784) &amp;&amp; (y &lt;= 2303))
++	      return 0;
++	    endif
++	  endif
++
++	  if((x &gt;= 5120) &amp;&amp; (x &lt;= 5680))
++	    if((y &gt;= 2048) &amp;&amp; (y &lt;= 2303))
++	      return 0;
++	    endif
++	  endif
++
++  else
++  	var realm := Realms()[realm];
++  	if( x &gt;= realm.width || y &gt;= realm.height )
++  		return 0;
++  	endif
++  endif
++  return 1;
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/coords/include/isValidLoc.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/coords/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/coords/pkg.cfg	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/pkg/utils/coords/pkg.cfg	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -0,0 +1,13 @@
++# $Id$
++#
++#
++Enabled		1
++Name		coords
++Version		1.0
++
++Creator		MuadDib
++CEmail		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++CoreRequired	96
+
+
+Property changes on: trunk/096/pkg/utils/coords/pkg.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Deleted: trunk/096/scripts/include/OLD/coords.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/coords.inc	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/scripts/include/OLD/coords.inc	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -1,25 +0,0 @@
+-use basic;
+-use math;
+-
+-function ToSextant(x, y)
+-  var latitude_direction, longitude_direction;
+-  var latitude_degrees, longitude_degrees;
+-  var latitude_minutes, longitude_minutes;
+-  latitude_degrees := (y-1624)*0.087890625;
+-  longitude_degrees := (x-1323)*0.0703125;
+-  if(latitude_degrees &lt; 0)
+-	latitude_direction := &quot;N&quot;;
+-  else
+-	latitude_direction := &quot;S&quot;;
+-  endif
+-  if(longitude_degrees &lt; 0)
+-	longitude_direction := &quot;W&quot;;
+-  else
+-	longitude_direction := &quot;E&quot;;
+-  endif
+-  latitude_degrees := Abs(latitude_degrees);
+-  longitude_degrees := Abs(longitude_degrees);
+-  latitude_minutes := CInt((CInt((latitude_degrees-Floor(latitude_degrees))*100)*60)/100);
+-  longitude_minutes := CInt((CInt((longitude_degrees-Floor(longitude_degrees))*100)*60)/100);
+-  return(Floor(latitude_degrees) + &quot;o &quot; + latitude_minutes + &quot;'&quot; + latitude_direction + &quot;, &quot; + Floor(longitude_degrees) + &quot;o &quot; + longitude_minutes + &quot;'&quot; + longitude_direction);
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/include/OLD/findCity.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/findCity.inc	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/scripts/include/OLD/findCity.inc	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -1,47 +0,0 @@
+-use os;
+-use uo;
+-
+-function FindCity(me)
+-  if(me.x&gt;=1244 &amp;&amp; me.y&gt;=1530 &amp;&amp; me.x&lt;=1704 &amp;&amp; me.y&lt;=1758)
+-    return &quot;Britain&quot;;
+-  elseif(me.x&gt;=4379 &amp;&amp; me.y&gt;=1045 &amp;&amp; me.x&lt;=4487 &amp;&amp; me.y&lt;=1178)
+-    return &quot;Moonglow&quot;;
+-  elseif(me.x&gt;=5137 &amp;&amp; me.y&gt;=3948 &amp;&amp; me.x&lt;=5196 &amp;&amp; me.y&lt;=4082)
+-    return &quot;Delucia&quot;;
+-  elseif(me.x&gt;=5196 &amp;&amp; me.y&gt;=3923 &amp;&amp; me.x&lt;=5322 &amp;&amp; me.y&lt;=4085)
+-    return &quot;Delucia&quot;;
+-  elseif(me.x&gt;=5638 &amp;&amp; me.y&gt;=3083 &amp;&amp; me.x&lt;=5799 &amp;&amp; me.y&lt;=3328)
+-    return &quot;Papua&quot;;
+-  elseif(me.x&gt;=5799 &amp;&amp; me.y&gt;=3121 &amp;&amp; me.x&lt;=5822 &amp;&amp; me.y&lt;=3327)
+-    return &quot;Papua&quot;;
+-  elseif(me.x&gt;=1294 &amp;&amp; me.y&gt;=3664 &amp;&amp; me.x&lt;=1506 &amp;&amp; me.y&lt;=3886)
+-    return &quot;Jhelom&quot;;
+-  elseif(me.x&gt;=494 &amp;&amp; me.y&gt;=926 &amp;&amp; me.x&lt;=600 &amp;&amp; me.y&lt;=1034)
+-    return &quot;Yew&quot;;
+-  elseif(me.x&gt;=590 &amp;&amp; me.y&gt;=796 &amp;&amp; me.x&lt;=670 &amp;&amp; me.y&lt;=886)
+-    return &quot;Empath Abbey&quot;;
+-  elseif(me.x&gt;=2394 &amp;&amp; me.y&gt;=370 &amp;&amp; me.x&lt;=2624 &amp;&amp; me.y&lt;=632)
+-    return &quot;Minoc&quot;;
+-  elseif(me.x&gt;=1794 &amp;&amp; me.y&gt;=2638 &amp;&amp; me.x&lt;=2136 &amp;&amp; me.y&lt;=2902)
+-    return &quot;Trinsic&quot;;
+-  elseif(me.x&gt;=538 &amp;&amp; me.y&gt;=2106 &amp;&amp; me.x&lt;=686 &amp;&amp; me.y&lt;=2274)
+-    return &quot;Skara Brae&quot;;
+-  elseif(me.x&gt;=3646 &amp;&amp; me.y&gt;=2040 &amp;&amp; me.x&lt;=3814 &amp;&amp; me.y&lt;=2280)
+-    return &quot;Magincia&quot;;
+-  elseif(me.x&gt;=3588 &amp;&amp; me.y&gt;=2446 &amp;&amp; me.x&lt;=3762 &amp;&amp; me.y&lt;=2690)
+-    return &quot;Occlo&quot;;
+-  elseif(me.x&gt;=2612 &amp;&amp; me.y&gt;=2082 &amp;&amp; me.x&lt;=2772 &amp;&amp; me.y&lt;=2256)
+-    return &quot;Buccaneers Den&quot;;
+-  elseif(me.x&gt;=3496 &amp;&amp; me.y&gt;=1062 &amp;&amp; me.x&lt;=3808 &amp;&amp; me.y&lt;=1400)
+-    return &quot;Nujelm&quot;;
+-  elseif(me.x&gt;=2794 &amp;&amp; me.y&gt;=634 &amp;&amp; me.x&lt;=3026 &amp;&amp; me.y&lt;=1000)
+-    return &quot;Vesper&quot;;
+-  elseif(me.x&gt;=2206 &amp;&amp; me.y&gt;=1116 &amp;&amp; me.x&lt;=2290 &amp;&amp; me.y&lt;=1236)
+-    return &quot;Cove&quot;;
+-  elseif(me.x&gt;=5120 &amp;&amp; me.y&gt;=0 &amp;&amp; me.x&lt;=5374 &amp;&amp; me.y&lt;=254)
+-    return &quot;Wind&quot;;
+-  elseif(me.x&gt;=1382 &amp;&amp; me.y&gt;=3955 &amp;&amp; me.x&lt;=1528 &amp;&amp; me.y&lt;=4044)
+-    return &quot;Jhelom&quot;;
+-  endif
+-  return &quot;no city&quot;;
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/include/OLD/isValidLoc.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/isValidLoc.inc	2005-11-14 21:06:03 UTC (rev 1001)
++++ trunk/096/scripts/include/OLD/isValidLoc.inc	2005-11-15 06:18:44 UTC (rev 1002)
+@@ -1,57 +0,0 @@
+-use uo;
+-use polsys;
+-
+-function isValidLoc(x, y, realm := &quot;britannia&quot; )
+- 
+-  if(realm == &quot;britannia&quot; || realm == &quot;britannia_alt&quot;)
+-  
+-	  if((x &gt;= 5112) &amp;&amp; (x &lt;= 5213))
+-	    if((y &gt;= 1093) &amp;&amp; (y &lt;= 1213))
+-	      return 0;
+-	    endif
+-	  endif
+-	
+-	  if((x &gt;= 5120) &amp;&amp; (x &lt;= 5374))
+-	    if((y &gt;= 265) &amp;&amp; (y &lt;= 512))
+-	      return 0;
+-	    endif
+-	  endif
+-	
+-	  if((x &gt;= 5890) &amp;&amp; (x &lt;= 6142))
+-	    if((y &gt;= 514) &amp;&amp; (y &lt;= 1278))
+-	      return 0;
+-	    endif
+-	  endif
+-	
+-	  if((x &gt;= 5376) &amp;&amp; (x &lt;= 5910))
+-	    if((y &gt;= 1030) &amp;&amp; (y &lt;= 1276))
+-	      return 0;
+-	    endif
+-	  endif
+-	
+-	  if((x &gt;= 5422) &amp;&amp; (x &lt;= 6142))
+-	    if((y &gt;= 1536) &amp;&amp; (y &lt;= 1796))
+-	      return 0;
+-	    endif
+-	  endif
+-	
+-	  if((x &gt;= 5632) &amp;&amp; (x &lt;= 6142))
+-	    if((y &gt;= 1784) &amp;&amp; (y &lt;= 2303))
+-	      return 0;
+-	    endif
+-	  endif
+-	
+-	  if((x &gt;= 5120) &amp;&amp; (x &lt;= 5680))
+-	    if((y &gt;= 2048) &amp;&amp; (y &lt;= 2303))
+-	      return 0;
+-	    endif
+-	  endif
+-  
+-  else
+-  	var realm := Realms()[realm];
+-  	if( x &gt;= realm.width || y &gt;= realm.height )
+-  		return 0;
+-  	endif
+-  endif
+-  return 1;
+-endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000974.html">[Poldistro-svn] r1001 - trunk/096/pkg/items/acid/include
+</A></li>
+	<LI>Next message: <A HREF="000976.html">[Poldistro-svn] r1003 - trunk/096/pkg/skills/magery
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#975">[ date ]</a>
+              <a href="thread.html#975">[ thread ]</a>
+              <a href="subject.html#975">[ subject ]</a>
+              <a href="author.html#975">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

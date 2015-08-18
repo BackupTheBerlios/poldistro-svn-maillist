@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1065 - trunk/096/pkg/utils/gumps/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1065%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200511271103.jARB3MtY009846%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001037.html">
+   <LINK REL="Next"  HREF="001039.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1065 - trunk/096/pkg/utils/gumps/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1065%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200511271103.jARB3MtY009846%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1065 - trunk/096/pkg/utils/gumps/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 27 12:03:22 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001037.html">[Poldistro-svn] r1064 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="001039.html">[Poldistro-svn] r1066 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1038">[ date ]</a>
+              <a href="thread.html#1038">[ thread ]</a>
+              <a href="subject.html#1038">[ subject ]</a>
+              <a href="author.html#1038">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-27 12:03:18 +0100 (Sun, 27 Nov 2005)
+New Revision: 1065
+
+Modified:
+   trunk/096/pkg/utils/gumps/include/gumps.inc
+Log:
+Added .cur_page to gump objects - to retrieve the page the gump is writing to in the layout.
+
+Modified: trunk/096/pkg/utils/gumps/include/gumps.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/gumps.inc	2005-11-26 23:41:28 UTC (rev 1064)
++++ trunk/096/pkg/utils/gumps/include/gumps.inc	2005-11-27 11:03:18 UTC (rev 1065)
+@@ -79,6 +79,9 @@
+ 	
+ 	// Starting points for data values
+ 	gump.+data_id	:= 1;
++	
++	// Current page the gump is writing to
++	gump.+cur_page := 0;
+ 
+ 	return(gump);
+ endfunction
+@@ -226,12 +229,7 @@
+ function GFPage(byref gump, page_num)
+ 	(gump.layout).append(&quot;Page &quot; + CStr(CInt(page_num)));
+ 	
+-	if ( gump.optimize )
+-		gump.cur_page := page_num;
+-		if ( !gump.pagelocs[page_num] )
+-			gump.pagelocs[page_num] := (gump.layout).size();
+-		endif
+-	endif
++	gump.cur_page := page_num;
+ 	
+ 	return 1;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001037.html">[Poldistro-svn] r1064 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="001039.html">[Poldistro-svn] r1066 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1038">[ date ]</a>
+              <a href="thread.html#1038">[ thread ]</a>
+              <a href="subject.html#1038">[ subject ]</a>
+              <a href="author.html#1038">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

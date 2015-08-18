@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1127 - trunk/096/scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1127%20-%20trunk/096/scripts/misc&In-Reply-To=%3C200601121136.k0CBaN1h013560%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001097.html">
+   <LINK REL="Next"  HREF="001099.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1127 - trunk/096/scripts/misc</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1127%20-%20trunk/096/scripts/misc&In-Reply-To=%3C200601121136.k0CBaN1h013560%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1127 - trunk/096/scripts/misc">austin at berlios.de
+       </A><BR>
+    <I>Thu Jan 12 12:36:23 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001097.html">[Poldistro-svn] r1126 - trunk/096/pkg/multis/boat/plank
+</A></li>
+        <LI>Next message: <A HREF="001099.html">[Poldistro-svn] r1128 - in trunk/096/pkg/multis/boat: commands commands/gm include multi tiller
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1098">[ date ]</a>
+              <a href="thread.html#1098">[ thread ]</a>
+              <a href="subject.html#1098">[ subject ]</a>
+              <a href="author.html#1098">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-12 12:36:21 +0100 (Thu, 12 Jan 2006)
+New Revision: 1127
+
+Modified:
+   trunk/096/scripts/misc/boat.src
+Log:
+Better output incase the controller script doesn't start.
+
+Modified: trunk/096/scripts/misc/boat.src
+===================================================================
+--- trunk/096/scripts/misc/boat.src	2006-01-12 11:32:10 UTC (rev 1126)
++++ trunk/096/scripts/misc/boat.src	2006-01-12 11:36:21 UTC (rev 1127)
+@@ -9,9 +9,16 @@
+  * which can be found in /pkg/systems/boat/
+  *
+  */
++use uo;
+ use os;
+ 
+-
+ Program CoreScript_Boat(multi)
+-	return start_script(&quot;:boat:multi/listener&quot;, multi);
++	var result := start_script(&quot;:boat:multi/listener&quot;, multi);
++	
++	if ( result.errortext )
++		PrintTextAbove(multi, &quot;Error initializing control script&quot;);
++		PrintTextAbove(multi, &quot;&quot;+result.errortext);
++	endif
++	
++	return result;
+ endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001097.html">[Poldistro-svn] r1126 - trunk/096/pkg/multis/boat/plank
+</A></li>
+	<LI>Next message: <A HREF="001099.html">[Poldistro-svn] r1128 - in trunk/096/pkg/multis/boat: commands commands/gm include multi tiller
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1098">[ date ]</a>
+              <a href="thread.html#1098">[ thread ]</a>
+              <a href="subject.html#1098">[ subject ]</a>
+              <a href="author.html#1098">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

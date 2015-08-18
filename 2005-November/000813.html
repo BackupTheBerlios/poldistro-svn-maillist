@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r839 - trunk/096/pkg/utils/gumps/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r839%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200511021820.jA2IKV2K017147%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000812.html">
+   <LINK REL="Next"  HREF="000814.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r839 - trunk/096/pkg/utils/gumps/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r839%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200511021820.jA2IKV2K017147%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r839 - trunk/096/pkg/utils/gumps/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 19:20:31 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000812.html">[Poldistro-svn] r838 - trunk/096/pkg/utils/gumps/include
+</A></li>
+        <LI>Next message: <A HREF="000814.html">[Poldistro-svn] r840 - in trunk/096/pkg/items: treasuremap wands
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#813">[ date ]</a>
+              <a href="thread.html#813">[ thread ]</a>
+              <a href="subject.html#813">[ subject ]</a>
+              <a href="author.html#813">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 19:20:29 +0100 (Wed, 02 Nov 2005)
+New Revision: 839
+
+Modified:
+   trunk/096/pkg/utils/gumps/include/gumps_ex.inc
+Log:
+Better fix for page data loss.
+
+Modified: trunk/096/pkg/utils/gumps/include/gumps_ex.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/gumps_ex.inc	2005-11-02 18:18:54 UTC (rev 838)
++++ trunk/096/pkg/utils/gumps/include/gumps_ex.inc	2005-11-02 18:20:29 UTC (rev 839)
+@@ -110,12 +110,14 @@
+ 	foreach entry in (gump.layout)
+ 		var l_entry := Lower(entry);
+ 		if ( l_entry[1, 5] == &quot;page &quot; )
+-			var page_num := l_entry[6, Len(l_entry)];
++			//  12345   6
++			// &quot;Page &quot; &quot;#&quot;
++			var page_num := CInt(l_entry[6, Len(l_entry)]);
+ 			if ( !gump_pages.Exists(page_num) )
+ 				gump_pages[page_num] := array;
+-				cur_page := CInt(page_num);
++				cur_page := page_num;
+ 			else
+-				cur_page := CInt(page_num);
++				cur_page := page_num;
+ 				continue;
+ 			endif
+ 		endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000812.html">[Poldistro-svn] r838 - trunk/096/pkg/utils/gumps/include
+</A></li>
+	<LI>Next message: <A HREF="000814.html">[Poldistro-svn] r840 - in trunk/096/pkg/items: treasuremap wands
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#813">[ date ]</a>
+              <a href="thread.html#813">[ thread ]</a>
+              <a href="subject.html#813">[ subject ]</a>
+              <a href="author.html#813">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

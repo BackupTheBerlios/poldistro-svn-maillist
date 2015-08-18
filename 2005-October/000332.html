@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r354 - trunk/096/pkg/commands/seer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r354%20-%20trunk/096/pkg/commands/seer&In-Reply-To=%3C200510012152.j91LqhiV031476%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000331.html">
+   <LINK REL="Next"  HREF="000333.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r354 - trunk/096/pkg/commands/seer</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r354%20-%20trunk/096/pkg/commands/seer&In-Reply-To=%3C200510012152.j91LqhiV031476%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r354 - trunk/096/pkg/commands/seer">austin at berlios.de
+       </A><BR>
+    <I>Sat Oct  1 23:52:43 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000331.html">[Poldistro-svn] r353 - trunk/096/pkg/items/containers
+</A></li>
+        <LI>Next message: <A HREF="000333.html">[Poldistro-svn] r355 - trunk/096/pkg/items/containers/commands/admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#332">[ date ]</a>
+              <a href="thread.html#332">[ thread ]</a>
+              <a href="subject.html#332">[ subject ]</a>
+              <a href="author.html#332">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-01 23:52:40 +0200 (Sat, 01 Oct 2005)
+New Revision: 354
+
+Removed:
+   trunk/096/pkg/commands/seer/bank.src
+Log:
+Being replaced by new commands in the container package.
+
+Deleted: trunk/096/pkg/commands/seer/bank.src
+===================================================================
+--- trunk/096/pkg/commands/seer/bank.src	2005-10-01 21:50:15 UTC (rev 353)
++++ trunk/096/pkg/commands/seer/bank.src	2005-10-01 21:52:40 UTC (rev 354)
+@@ -1,26 +0,0 @@
+-use uo;
+-
+-include &quot;include/log&quot;;
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
+-include &quot;:bank:bank&quot;;
+-
+-
+-program command_bank(who)
+-	var mobile;
+-	SendMessage(who, MSG_TARGET_MOB, {}, MSG_COMMAND);
+-
+-	mobile := Target(who, TGTOPT_NOCHECK_LOS);
+-	
+-	if (!mobile.isA(POLCLASS_MOBILE) || mobile.isA(POLCLASS_NPC))
+-		SendMessage(who, MSG_NO_CHAR, {}, MSG_COMMAND);
+-		return;
+-	else
+-		Log(LOG_COMMAND, GetLogInfo(who) + &quot; invoking 'bank' command on &quot; + GetLogInfo(mobile));
+-		var bankbox := FindBankBox(mobile);
+-
+-		SendOpenSpecialContainer(who, bankbox);
+-	endif
+-
+-	return;   
+-endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000331.html">[Poldistro-svn] r353 - trunk/096/pkg/items/containers
+</A></li>
+	<LI>Next message: <A HREF="000333.html">[Poldistro-svn] r355 - trunk/096/pkg/items/containers/commands/admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#332">[ date ]</a>
+              <a href="thread.html#332">[ thread ]</a>
+              <a href="subject.html#332">[ subject ]</a>
+              <a href="author.html#332">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r931 - trunk/096/pkg/mobiles/brainAI/scripts/combat
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r931%20-%20trunk/096/pkg/mobiles/brainAI/scripts/combat&In-Reply-To=%3C200511061814.jA6IETwt020394%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000904.html">
+   <LINK REL="Next"  HREF="000906.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r931 - trunk/096/pkg/mobiles/brainAI/scripts/combat</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r931%20-%20trunk/096/pkg/mobiles/brainAI/scripts/combat&In-Reply-To=%3C200511061814.jA6IETwt020394%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r931 - trunk/096/pkg/mobiles/brainAI/scripts/combat">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov  6 19:14:29 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000904.html">[Poldistro-svn] r930 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+        <LI>Next message: <A HREF="000906.html">[Poldistro-svn] r932 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#905">[ date ]</a>
+              <a href="thread.html#905">[ thread ]</a>
+              <a href="subject.html#905">[ subject ]</a>
+              <a href="author.html#905">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-06 19:14:28 +0100 (Sun, 06 Nov 2005)
+New Revision: 931
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src
+Log:
+Properly runs away and returns now to make a shot.
+
+Modified: trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src	2005-11-06 17:56:50 UTC (rev 930)
++++ trunk/096/pkg/mobiles/brainAI/scripts/combat/fireBeetle.src	2005-11-06 18:14:28 UTC (rev 931)
+@@ -12,6 +12,7 @@
+ include &quot;include/shapes&quot;;
+ include &quot;include/client&quot;;
+ include &quot;include/sounds&quot;;
++include &quot;include/facings&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+@@ -43,10 +44,12 @@
+ 				AI_WarMode(npc, 0);
+ 			endif
+ 			AI_EndNerve(npc, nerve_name);
+-		elseif ( dist &lt;= 5 )
+-			AI_Move(npc, opponent, NEMOVE_AWAY, NEMOVE_RUN, WAKEUP, (6-dist));
+-		elseif( dist &gt; 6 )
+-			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, (dist-5));
++		elseif ( dist &lt;= 6 )
++			AI_Move(npc, opponent, NEMOVE_AWAY, NEMOVE_RUN, WAKEUP, (7-dist));
++		elseif( dist &gt; 10 )
++			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, (dist-10));
++		else
++			npc.facing := GetFacing(npc.x, npc.y, opponent.x, opponent.y);
+ 		endif
+ 
+ 		SpecialAttack(npc, opponent, dist);
+@@ -108,32 +111,35 @@
+ 
+ 	var coord_list := GetCoordsInLine(npc.x, npc.y, opponent.x, opponent.y);
+ 	foreach coord in coord_list
+-		if ( _coord_iter &gt; 1 )
+-			var field := CreateItemAtLocation(coord.x, coord.y, npc.z, &quot;FireField_NS&quot;, 1);
+-			field.SetDuration(3);
+-			sleepms(105);
++		if ( _coord_iter == 1 ) // Dont make one where its standing
++			continue;
+ 		endif
++		
++		var field := CreateItemAtLocation(coord.x, coord.y, npc.z, &quot;FireField_NS&quot;, 1);
++		field.SetDuration(2);
++		sleepms(105);
+ 	endforeach
+ 
+ 	PlaySoundEffect(opponent, 0x208);
+ 	ApplyRawDamage(opponent, RandomDiceRoll(&quot;3d7&quot;));
+ 
+ 	foreach coord in GetCoordsInSquare(opponent.x, opponent.y, 3)
+-		if ( RandomInt(2) == 1 )
+-			case(RandomInt(3))
+-				default:
+-					PlayStationaryEffect(coord.x, coord.y, npc.z, FX_EXPLODE_1, 10, 10, 0);
+-					break;
+-				1:
+-					PlayStationaryEffect(coord.x, coord.y, npc.z, FX_EXPLODE_2, 10, 10, 0);
+-					break;
+-				2:
+-					PlayStationaryEffect(coord.x, coord.y, npc.z, FX_EXPLODE_3, 10, 10, 0);
+-					break;
+-			endcase
+-			var field := CreateItemAtLocation(coord.x, coord.y, opponent.z, &quot;FireFieldNS&quot;, 1);
+-			field.SetDuration(&quot;1d3&quot;);
++		if ( RandomInt(2) != 1 ) // Don't place a fire field
++			continue;
+ 		endif
++		case( RandomInt(3) )
++			default:
++				PlayStationaryEffect(coord.x, coord.y, npc.z, FX_EXPLODE_1, 10, 10, 0);
++				break;
++			1:
++				PlayStationaryEffect(coord.x, coord.y, npc.z, FX_EXPLODE_2, 10, 10, 0);
++				break;
++			2:
++				PlayStationaryEffect(coord.x, coord.y, npc.z, FX_EXPLODE_3, 10, 10, 0);
++				break;
++		endcase
++		var field := CreateItemAtLocation(coord.x, coord.y, opponent.z, &quot;FireFieldNS&quot;, 1);
++		field.SetDuration(5);
+ 		sleepms(5);
+ 	endforeach
+ 	
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000904.html">[Poldistro-svn] r930 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+	<LI>Next message: <A HREF="000906.html">[Poldistro-svn] r932 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#905">[ date ]</a>
+              <a href="thread.html#905">[ thread ]</a>
+              <a href="subject.html#905">[ subject ]</a>
+              <a href="author.html#905">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

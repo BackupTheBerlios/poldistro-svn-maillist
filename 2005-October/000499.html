@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r526 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r526%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200510101555.j9AFtVQ5028895%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000498.html">
+   <LINK REL="Next"  HREF="000500.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r526 - trunk/096/pkg/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r526%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200510101555.j9AFtVQ5028895%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r526 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 17:55:31 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000498.html">[Poldistro-svn] r525 - in trunk/096/pkg/systems/attributes/commands: . seer
+</A></li>
+        <LI>Next message: <A HREF="000500.html">[Poldistro-svn] r527 - trunk/096/pkg/systems/attributes/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#499">[ date ]</a>
+              <a href="thread.html#499">[ thread ]</a>
+              <a href="subject.html#499">[ subject ]</a>
+              <a href="author.html#499">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 17:55:22 +0200 (Mon, 10 Oct 2005)
+New Revision: 526
+
+Removed:
+   trunk/096/pkg/commands/gm/powerdown.src
+   trunk/096/pkg/commands/gm/res.src
+Log:
+
+
+Deleted: trunk/096/pkg/commands/gm/powerdown.src
+===================================================================
+--- trunk/096/pkg/commands/gm/powerdown.src	2005-10-10 15:46:18 UTC (rev 525)
++++ trunk/096/pkg/commands/gm/powerdown.src	2005-10-10 15:55:22 UTC (rev 526)
+@@ -1,19 +0,0 @@
+-use os;
+-use uo;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+-
+-program textcmd_setskill( who )
+-var i;
+-for (i := 0; i &lt;= SKILLID__HIGHEST; i := i + 1)
+-
+-        print( &quot;Setting Skill &quot; + i + &quot; to 0&quot; );
+-        var res := SetBaseSkillBaseValue( who, i, 0 );
+-        if (res == error)
+-            SendSysMessage( who, &quot;Unable to set skill: &quot; + res.errortext );
+-        else
+-            SendSysMessage( who, &quot;New Effective Skill: &quot; + GetEffectiveSkill(who,i) );
+-        endif
+-    endfor
+-endprogram
+
+Deleted: trunk/096/pkg/commands/gm/res.src
+===================================================================
+--- trunk/096/pkg/commands/gm/res.src	2005-10-10 15:46:18 UTC (rev 525)
++++ trunk/096/pkg/commands/gm/res.src	2005-10-10 15:55:22 UTC (rev 526)
+@@ -1,24 +0,0 @@
+-/* $Id$
+- *
+- * TODO
+- * Wait for Austin to implement the corpse method/member.
+- *
+- */
+-use os;
+-use uo;
+-use boat;
+-
+-include &quot;include/messages&quot;;
+-include &quot;include/localization&quot;;
+-
+-program command_res(who, params)
+-	if ( who.dead )
+-		Resurrect(who);
+-	else
+-		var targ := Target(who);
+-		if ( targ.dead )
+-			Resurrect(targ);
+-		endif
+-	endif
+-endprogram
+-	
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000498.html">[Poldistro-svn] r525 - in trunk/096/pkg/systems/attributes/commands: . seer
+</A></li>
+	<LI>Next message: <A HREF="000500.html">[Poldistro-svn] r527 - trunk/096/pkg/systems/attributes/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#499">[ date ]</a>
+              <a href="thread.html#499">[ thread ]</a>
+              <a href="subject.html#499">[ subject ]</a>
+              <a href="author.html#499">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

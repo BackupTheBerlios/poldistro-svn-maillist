@@ -1,0 +1,279 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r908 - in trunk/096/pkg/mobiles/timedScripts: commands/gm config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r908%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20commands/gm%20config&In-Reply-To=%3C200511051221.jA5CLocv018230%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000881.html">
+   <LINK REL="Next"  HREF="000883.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r908 - in trunk/096/pkg/mobiles/timedScripts: commands/gm config</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r908%20-%20in%20trunk/096/pkg/mobiles/timedScripts%3A%20commands/gm%20config&In-Reply-To=%3C200511051221.jA5CLocv018230%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r908 - in trunk/096/pkg/mobiles/timedScripts: commands/gm config">panosl at berlios.de
+       </A><BR>
+    <I>Sat Nov  5 13:21:50 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000881.html">[Poldistro-svn] r907 - in trunk/096: pkg/skills/magery/OLD scripts/include/OLD
+</A></li>
+        <LI>Next message: <A HREF="000883.html">[Poldistro-svn] r909 - in trunk/096/pkg/skills/magery: . include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#882">[ date ]</a>
+              <a href="thread.html#882">[ thread ]</a>
+              <a href="subject.html#882">[ subject ]</a>
+              <a href="author.html#882">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-11-05 13:21:46 +0100 (Sat, 05 Nov 2005)
+New Revision: 908
+
+Modified:
+   trunk/096/pkg/mobiles/timedScripts/commands/gm/addTimer.src
+   trunk/096/pkg/mobiles/timedScripts/commands/gm/curePoisons.src
+   trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimers.src
+   trunk/096/pkg/mobiles/timedScripts/commands/gm/lowerTimer.src
+   trunk/096/pkg/mobiles/timedScripts/config/icp.cfg
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/timedScripts/commands/gm/addTimer.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/commands/gm/addTimer.src	2005-11-05 08:32:43 UTC (rev 907)
++++ trunk/096/pkg/mobiles/timedScripts/commands/gm/addTimer.src	2005-11-05 12:21:46 UTC (rev 908)
+@@ -1,37 +1,41 @@
+-/*
+- * $Id$
++/* $Id$
+  *
+  */
+ use uo;
+ 
+ include &quot;:timedscripts:timedScripts&quot;;
++include &quot;include/messages&quot;;
++include &quot;include/localization&quot;;
+ 
+-program cmd_AddPoison(who, text)
+-	text := SplitWords(text);
++
++program command_AddPoison(who, params)
++	params := SplitWords(params);
+ 	
+-	var timer_name	:= text[1];
+-	var duration	:= CInt(text[2]);
+-	var level	:= CInt(text[3]);
++	var timer_name	:= params[1];
++	var duration	:= CInt(params[2]);
++	var level	:= CInt(params[t3]);
+ 
+-	if ( !level )
++	if (!level)
+ 		level := 1;
+ 	endif
+ 	
+-	if ( !timer_name || !duration )
+-		SendSysMessage(who, &quot;Syntax: .addTimer &lt;timer name&gt; &lt;duration&gt; (level)&quot;);
++	if (!timer_name || !duration)
++		SendMessage(who, MSG_USE_HELP, array{}, MSG_COMMAND);
+ 		return;
+ 	endif
+-	
+-	SendSysMessage(who, &quot;Target mobile to add timer to.&quot;);
++
++	SendMessage(who, MSG_TARGET_MOBILE, array{}, MSG_COMMAND);
++
+ 	var targ := target(who);
+-	
+-	if ( !targ.IsA(POLCLASS_MOBILE) )
+-		SendSysMessage(who, &quot;Cancelled.&quot;);
++	if (!targ.IsA(POLCLASS_MOBILE))
++		SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
+ 		return 0;
+ 	endif
+ 	
+ 	TS_StartTimer(targ, timer_name, duration, level);
+-	SendSysMessage(who, &quot;Done.&quot;);
+ 
++	SendMessage(who, MSG_DONE, array{}, MSG_COMMAND);
++
+ 	return 1;
+ endprogram
++
+
+Modified: trunk/096/pkg/mobiles/timedScripts/commands/gm/curePoisons.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/commands/gm/curePoisons.src	2005-11-05 08:32:43 UTC (rev 907)
++++ trunk/096/pkg/mobiles/timedScripts/commands/gm/curePoisons.src	2005-11-05 12:21:46 UTC (rev 908)
+@@ -1,5 +1,4 @@
+-/*
+- * $Id$
++/* $Id$
+  *
+  */
+ use uo;
+@@ -8,7 +7,7 @@
+ include &quot;:timedscripts:poisonUtil&quot;;
+ 
+ 
+-program textcmd_LowerTimer(who, text)
++program command_LowerTimer(who, text)
+ 	text := SplitWords(text);
+ 	
+ 	var amount	:= CInt(text[1]);
+
+Modified: trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimers.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimers.src	2005-11-05 08:32:43 UTC (rev 907)
++++ trunk/096/pkg/mobiles/timedScripts/commands/gm/listTimers.src	2005-11-05 12:21:46 UTC (rev 908)
+@@ -1,28 +1,30 @@
+-/*
+- * $Id$
++/* $Id$
+  *
+  */
+ use uo;
+ use os;
+ 
+ include &quot;:timedscripts:timedScripts&quot;;
++include &quot;include/messages&quot;;
++include &quot;include/localization&quot;;
+ 
+-program textcmd_ListTimers(who, type)
++
++program command_ListTimers(who, type)
++	var targ;
++	SendMessage(who, MSG_TARGET_MOB, array{}, MSG_COMMAND);
+ 	
+-	SendSysMessage(who, &quot;Select the mobile to list timers on.&quot;);
+-	
+-	var targ := target(who);
+-	
+-	if ( !targ.IsA(POLCLASS_MOBILE) )
+-		SendSysMessage(who, &quot;Cancelled&quot;);
++	targ := target(who, TGTOPT_NOCHECK_LOS);
++	if (!targ.IsA(POLCLASS_MOBILE))
++		SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
+ 		return 0;
+ 	endif
+-	
+-	foreach timer_name in ( TS_GetTimerNames(targ, type) )
++
++	foreach timer_name in (TS_GetTimerNames(targ, type))
+ 		SendSysMessage(who, &quot;-&gt;&quot;+timer_name);
+ 		sleepms(2);
+ 	endforeach
+-	
+-	SendSysMessage(who, &quot;Done.&quot;);
++
++	SendMessage(who, MSG_DONE, array{}, MSG_COMMAND);
++
+ 	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/mobiles/timedScripts/commands/gm/lowerTimer.src
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/commands/gm/lowerTimer.src	2005-11-05 08:32:43 UTC (rev 907)
++++ trunk/096/pkg/mobiles/timedScripts/commands/gm/lowerTimer.src	2005-11-05 12:21:46 UTC (rev 908)
+@@ -1,31 +1,33 @@
+-/*
+- * $Id$
++/* $Id$
+  *
+  */
+ use uo;
+ 
+ include &quot;:timedscripts:timedScripts&quot;;
+ 
+-program textcmd_LowerTimer(who, text)
+-	text := SplitWords(text);
++
++program command_LowerTimer(who, params)
++	params := SplitWords(params);
+ 	
+-	var timer_name	:= text[1];
+-	var amount	:= CInt(text[2]);
++	var timer_name	:= params[1];
++	var amount	:= CInt(params[2]);
+ 	
+-	if ( !timer_name || !amount )
+-		SendSysMessage(who, &quot;Syntax: .lowerTimer &lt;timer name&gt; &lt;amount&gt;&quot;);
++	if (!timer_name || !amount)
++		SendMessage(who, MSG_USE_HELP, array{}, MSG_COMMAND);
+ 		return 0;
+ 	endif
+ 
+-	SendSysMessage(who, &quot;Select a mobile to lower the timer on.&quot;);
++	SendMessage(who, MSG_TARGET_MOB, array{}, MSG_COMMAND);
+ 	var targ := target(who);
+ 	
+ 	if ( !targ.IsA(POLCLASS_MOBILE) )
+-		SendSysMessage(who, &quot;Cancelled.&quot;);
++		SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
+ 		return 0;
+ 	endif
+ 	
+ 	TS_LowerDuration(targ, timer_name, amount);
+-	SendSysMessage(who, &quot;Done.&quot;);
++	SendMessage(who, MSG_DONE, array{}, MSG_COMMAND);
++
+ 	return 1;
+-endprogram
+\ No newline at end of file
++endprogram
++
+
+Modified: trunk/096/pkg/mobiles/timedScripts/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/config/icp.cfg	2005-11-05 08:32:43 UTC (rev 907)
++++ trunk/096/pkg/mobiles/timedScripts/config/icp.cfg	2005-11-05 12:21:46 UTC (rev 908)
+@@ -1,4 +1,4 @@
+-# $Id: icp.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++# $Id$
+ #
+ #
+ ICP Register
+@@ -16,7 +16,7 @@
+ 	Maintainer	Distro Team
+ 	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+-	#Script	cmdlevel path
++	#Script		cmdlevel path
+ 
+ 	#TextCmd	cmdlevel path
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000881.html">[Poldistro-svn] r907 - in trunk/096: pkg/skills/magery/OLD scripts/include/OLD
+</A></li>
+	<LI>Next message: <A HREF="000883.html">[Poldistro-svn] r909 - in trunk/096/pkg/skills/magery: . include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#882">[ date ]</a>
+              <a href="thread.html#882">[ thread ]</a>
+              <a href="subject.html#882">[ subject ]</a>
+              <a href="author.html#882">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

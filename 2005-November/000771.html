@@ -1,0 +1,507 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r797 - in trunk/096/pkg/items: . training training/archeryButte training/config training/include training/pocketDip training/trainingDummy
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r797%20-%20in%20trunk/096/pkg/items%3A%20.%20training%20training/archeryButte%20training/config%20training/include%20training/pocketDip%20training/trainingDummy&In-Reply-To=%3C200511011941.jA1JfbhU031750%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000770.html">
+   <LINK REL="Next"  HREF="000772.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r797 - in trunk/096/pkg/items: . training training/archeryButte training/config training/include training/pocketDip training/trainingDummy</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r797%20-%20in%20trunk/096/pkg/items%3A%20.%20training%20training/archeryButte%20training/config%20training/include%20training/pocketDip%20training/trainingDummy&In-Reply-To=%3C200511011941.jA1JfbhU031750%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r797 - in trunk/096/pkg/items: . training training/archeryButte training/config training/include training/pocketDip training/trainingDummy">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 20:41:37 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000770.html">[Poldistro-svn] r796 - in trunk/096/pkg/systems/combat: . commands include
+</A></li>
+        <LI>Next message: <A HREF="000772.html">[Poldistro-svn] r798 - trunk/096/pkg/items/food
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#771">[ date ]</a>
+              <a href="thread.html#771">[ thread ]</a>
+              <a href="subject.html#771">[ subject ]</a>
+              <a href="author.html#771">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 20:41:37 +0100 (Tue, 01 Nov 2005)
+New Revision: 797
+
+Added:
+   trunk/096/pkg/items/training/
+   trunk/096/pkg/items/training/archeryButte/
+   trunk/096/pkg/items/training/archeryButte/use.src
+   trunk/096/pkg/items/training/config/
+   trunk/096/pkg/items/training/config/icp.cfg
+   trunk/096/pkg/items/training/include/
+   trunk/096/pkg/items/training/include/training.inc
+   trunk/096/pkg/items/training/itemdesc.cfg
+   trunk/096/pkg/items/training/pkg.cfg
+   trunk/096/pkg/items/training/pocketDip/
+   trunk/096/pkg/items/training/pocketDip/use.src
+   trunk/096/pkg/items/training/trainingDummy/
+   trunk/096/pkg/items/training/trainingDummy/control.src
+   trunk/096/pkg/items/training/trainingDummy/use.src
+Log:
+New training package.
+
+Added: trunk/096/pkg/items/training/archeryButte/use.src
+===================================================================
+--- trunk/096/pkg/items/training/archeryButte/use.src	2005-11-01 19:21:13 UTC (rev 796)
++++ trunk/096/pkg/items/training/archeryButte/use.src	2005-11-01 19:41:37 UTC (rev 797)
+@@ -0,0 +1,97 @@
++use uo;
++use os;
++use util;
++use cfgfile;
++
++include &quot;:attributes:attributes&quot;;
++include &quot;:combat:weaponInfo&quot;;
++include &quot;:training:training&quot;;
++
++CONST ANIM_GET_HIT := 0x14;
++
++program ArcheryButte(who, butte)
++	if ( butte.container )
++		return 0;
++	endif
++	
++	var weapon := who.weapon;
++	var weapon_attrib := CS_GetWeaponInfo(weapon, &quot;Attribute&quot;);
++	var weapon_anim := CInt(CS_GetWeaponInfo(weapon, &quot;Anim&quot;));
++	var miss_sound := CInt(CS_GetWeaponInfo(weapon, &quot;MissSound&quot;));
++	var hit_sound := CInt(CS_GetWeaponInfo(weapon, &quot;Hitsound&quot;));
++	var projectile_anim := CInt(CS_GetWeaponInfo(weapon, &quot;ProjectileAnim&quot;));
++	var projectile_type := CInt(CS_GetWeaponInfo(weapon, &quot;ProjectileType&quot;));
++	
++	if ( Distance(who, butte) == 1 )
++		RecoverAmmo(who, butte);
++		return 0;
++	elseif ( !Lower(weapon_attrib)[&quot;archery&quot;] )
++		SendSysMessage(who, &quot;You need to use a missile weapon.&quot;);
++		return 0;
++	elseif ( !TP_CheckRange(who, weapon, butte) )
++		return 0;
++	endif
++		
++	if ( !ConsumeSubstance(who.backpack, projectile_type, 1) )
++		SendSysMessage(who, &quot;You do not have any ammo for this weapon.&quot;);
++		return 0;
++	endif
++	
++	PerformAction(who, weapon_anim);
++	sleep(1);
++	
++	PlayMovingEffect(who, butte, projectile_anim, 10, 0, 0);
++
++	if ( SkillCheck(who, weapon_attrib, -1, 0, TP_CanAdvance(who, weapon_attrib)) &gt; 0 )
++		PlaySoundEffect(who, hit_sound);
++				
++		PrintTextAbove(butte, DetermineHit(who, weapon_attrib));
++			
++		if ( RandomInt(2) )
++			set_critical(1);
++			var ammo := CInt(GetObjProperty(butte, &quot;Ammo-&quot;+projectile_type));
++			ammo := ammo + 1;
++			SetObjProperty(butte, &quot;Ammo-&quot;+projectile_type, ammo);
++			set_critical(0);
++		endif
++	else
++		PlaySoundEffect(who, miss_sound);
++	endif
++	
++	sleep(3);	
++endprogram
++
++function DetermineHit(who, weapon_attrib)
++	if ( SkillCheck(who, weapon_attrib, RandomDiceRoll(&quot;40d3&quot;), 0, ADV_DISABLE) &gt; 0 )
++		return &quot;*Bullseye*&quot;;
++	elseif ( SkillCheck(who, weapon_attrib, RandomDiceRoll(&quot;30d3&quot;), 0, ADV_DISABLE) &gt; 0 )
++		return &quot;*Hit the inner red ring*&quot;;
++	elseif ( SkillCheck(who, weapon_attrib, RandomDiceRoll(&quot;20d3&quot;), 0, ADV_DISABLE) &gt; 0 )
++		return &quot;*Hit the inner white ring*&quot;;
++	elseif ( SkillCheck(who, weapon_attrib, RandomDiceRoll(&quot;10d3&quot;), 0, ADV_DISABLE) &gt; 0 )
++		return &quot;*Hit the outer red ring*&quot;;
++	else
++		return &quot;*It hit the straw*&quot;;
++	endif
++endfunction
++
++function RecoverAmmo(who, butte)
++	var prop_list := GetObjPropertyNames(butte);
++	
++	if ( prop_list.size() &gt; 0 )
++		foreach c_prop in prop_list
++			if ( c_prop[&quot;Ammo-&quot;] )
++				var ammo := c_prop;
++				ammo[&quot;Ammo-&quot;] := &quot;&quot;;
++				
++				CreateItemInBackPack(who, CInt(ammo), CInt(GetObjProperty(butte, c_prop)));
++				SendSysMessage(who, &quot;You recover some ammo.&quot;);
++				
++				EraseObjProperty(butte, c_prop);
++			endif
++			sleepms(2);
++		endforeach
++	else
++		SendSysMessage(who, &quot;There is no ammunition to recover from this butte.&quot;);
++	endif
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/training/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/training/config/icp.cfg	2005-11-01 19:21:13 UTC (rev 796)
++++ trunk/096/pkg/items/training/config/icp.cfg	2005-11-01 19:41:37 UTC (rev 797)
+@@ -0,0 +1,17 @@
++ICP Register
++{
++	Name		Training
++	Version		1.0
++	
++	Description	Items for training various skills.
++		
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++	
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>	
++	
++	//Script	cmdlevel path
++	
++	//TextCmd	cmdlevel path	
++}
+
+Added: trunk/096/pkg/items/training/include/training.inc
+===================================================================
+--- trunk/096/pkg/items/training/include/training.inc	2005-11-01 19:21:13 UTC (rev 796)
++++ trunk/096/pkg/items/training/include/training.inc	2005-11-01 19:41:37 UTC (rev 797)
+@@ -0,0 +1,63 @@
++/*
++ * $Id$
++ *
++ */
++use uo;
++use cfgfile;
++
++include &quot;:attributes:attributes&quot;;
++include &quot;:combat:weaponInfo&quot;;
++
++/*
++ * TP_CheckWeaponRange(mobile, weapon, targ)
++ *
++ * Purpose
++ * Checks if the weapon the mobile is using can reach the target.
++ *
++ * Parameters
++ * mobile:	Mobile using the weapon on the target.
++ * weapon:	Weapon that is being used.
++ * targ:	Object that is begin targetted.
++ *
++ * Return value
++ * Returns 1 if the weapon can reach.
++ * Returns 0 if the weapon can't reach.
++ *
++ */
++function TP_CheckRange(mobile, weapon, targ)
++	var wpn_range := CInt(CS_GetWeaponInfo(weapon, &quot;MaxRange&quot;));
++	if ( !wpn_range )
++		wpn_range := 1;
++	endif
++		
++	if ( Distance(mobile, targ) &gt; wpn_range )
++		SendSysMessage(mobile, &quot;You are too far away.&quot;);
++		return 0;
++	endif
++	
++	return wpn_range;
++endfunction
++
++/*
++ * TP_CanAdvance(mobile, attrib_name)
++ *
++ * Purpose
++ * Checks if a mobile's skill is low enough to gain from the training tool.
++ *
++ * Parameters
++ * mobile:	Mobile doing the training.
++ * attrib_name:	Attribute to advance.
++ *
++ * Return value
++ * Returns ADV_SKILL if the skill can advance.
++ * Returns ADV_DISABLE if the skill is too high.
++ *
++ */
++function TP_CanAdvance(mobile, attrib_name)
++	if ( CDbl(AP_GetTrueSkill(mobile, attrib_name)) &gt; Cdbl(30) )
++		// Skill is higher than 30%
++		return ADV_DISABLE;
++	else
++		return ADV_SKILL;
++	endif
++endfunction
+
+Added: trunk/096/pkg/items/training/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/training/itemdesc.cfg	2005-11-01 19:21:13 UTC (rev 796)
++++ trunk/096/pkg/items/training/itemdesc.cfg	2005-11-01 19:41:37 UTC (rev 797)
+@@ -0,0 +1,52 @@
++Item 0x100A
++{
++	Name			ArcheryButte
++	
++	DoubleClickRange	10
++	
++	Script			archeryButte/use
++}
++Item 0x100B
++{
++	Name			ArcheryButte2
++	
++	DoubleClickRange	10
++	
++	Script			archeryButte/use
++}
++
++Item 0x1070
++{
++	Name			TrainingDummy
++	
++	DoubleClickRange	5
++	
++	ControlScript		trainingDummy/control
++	Script			trainingDummy/use
++}
++Item 0x1074
++{
++	Name			TrainingDummy2
++	
++	DoubleClickRange	5
++	
++	ControlScript		trainingDummy/control
++	Script			trainingDummy/use
++}
++
++Item 0x1EC0
++{
++	Name			PocketDip
++	
++	DoubleClickRange	1
++	
++	Script			pocketDip/use
++}
++Item 0x1EC3
++{
++	Name			PocketDip2
++	
++	DoubleClickRange	1	
++	
++	Script			pocketDip/use
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/training/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/training/pkg.cfg	2005-11-01 19:21:13 UTC (rev 796)
++++ trunk/096/pkg/items/training/pkg.cfg	2005-11-01 19:41:37 UTC (rev 797)
+@@ -0,0 +1,17 @@
++#
++# $Id$
++#
++Enabled		1
++Name		training
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires none
++#conflicts	none
+
+Added: trunk/096/pkg/items/training/pocketDip/use.src
+===================================================================
+--- trunk/096/pkg/items/training/pocketDip/use.src	2005-11-01 19:21:13 UTC (rev 796)
++++ trunk/096/pkg/items/training/pocketDip/use.src	2005-11-01 19:41:37 UTC (rev 797)
+@@ -0,0 +1,52 @@
++use uo;
++use os;
++
++include &quot;:attributes:attributes&quot;;
++include &quot;:combat:weaponInfo&quot;;
++include &quot;:training:training&quot;;
++
++CONST SUCCESS_SOUND := 0x58;
++CONST FAIL_SOUND := 0x41;
++
++program PocketDip(who, dummy)
++	if ( dummy.container )
++		return 0;
++	elseif ( Distance(who, dummy) &gt; 2 )
++		SendSysMessage(who, &quot;You are too far away.&quot;);
++		return 0;
++	elseif ( !ReserveItem(dummy) )
++		SendSysMessage(who, &quot;Someone else is already using that.&quot;);
++		return 0;
++	elseif ( SkillCheck(who, &quot;Stealing&quot;, -1, TP_CanAdvance(who, &quot;Stealing&quot;) ) &gt; 0)
++		PlaySoundEffect(who, SUCCESS_SOUND);
++		SendSysMessage(who, &quot;You successfully slip your hand into the bag.&quot;);
++		ReleaseItem(dummy);
++		sleepms(3600);
++		return 1;
++	else
++		SendSysMessage(who, &quot;You foolishly grip the bag.&quot;);
++		PlaySoundEffect(who, FAIL_SOUND);
++		
++		DummyRock(dummy);
++		
++		return 1;
++	endif
++endprogram
++
++function DummyRock(dummy)
++	case ( dummy.graphic )
++		7872:
++			dummy.graphic := 7873;
++			sleepms(3600);
++			dummy.graphic := 7872;
++			break;
++			
++		7875:
++			dummy.graphic := 7876;
++			sleepms(3600);
++			dummy.graphic := 7875;
++			break;
++	endcase
++
++	return 1;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/training/trainingDummy/control.src
+===================================================================
+--- trunk/096/pkg/items/training/trainingDummy/control.src	2005-11-01 19:21:13 UTC (rev 796)
++++ trunk/096/pkg/items/training/trainingDummy/control.src	2005-11-01 19:41:37 UTC (rev 797)
+@@ -0,0 +1,14 @@
++use uo;
++
++program DummyControl(dummy)
++	//De-animates dummies on start-up.
++	
++	if ( dummy.graphic == 4209 ) // Animated
++		dummy.graphic := 4208; // None animated
++		
++	elseif ( dummy.graphic == 4213 ) // Animated
++		dummy.graphic := 4212; // Non animated
++	endif
++	
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/items/training/trainingDummy/use.src
+===================================================================
+--- trunk/096/pkg/items/training/trainingDummy/use.src	2005-11-01 19:21:13 UTC (rev 796)
++++ trunk/096/pkg/items/training/trainingDummy/use.src	2005-11-01 19:41:37 UTC (rev 797)
+@@ -0,0 +1,61 @@
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:attributes:attributes&quot;;
++include &quot;:combat:weaponInfo&quot;;
++include &quot;:training:training&quot;;
++
++CONST DUMMY_HIT_SOUND := 0x13C;
++
++program PracticeDummy(who, dummy)
++	if ( dummy.container )
++		return 0;
++	elseif ( !ReserveItem(dummy) )
++		SendSysMessage(who, &quot;Someone else is already using that.&quot;);
++		return 0;
++	endif
++	
++	var weapon := who.weapon;
++	
++	if ( !TP_CheckRange(who, weapon, dummy) )
++		return 0;
++	endif
++	
++	var weapon_anim := CInt(CS_GetWeaponInfo(weapon, &quot;Anim&quot;));
++	var miss_sound := CInt(CS_GetWeaponInfo(weapon, &quot;MissSound&quot;));
++	var weapon_attribute := CS_GetWeaponInfo(weapon, &quot;Attribute&quot;);
++	if ( weapon_attribute[&quot;Archery&quot;] )
++		SendSysMessage(who, &quot;You should use an archery butte.&quot;);
++		return 0;
++	endif
++	
++	PerformAction(who, weapon_anim);
++		
++	if ( SkillCheck(who, weapon_attribute, -1, 0, TP_CanAdvance(who, weapon_attribute)) &gt; 0 )
++		PlaySoundEffect(who, DUMMY_HIT_SOUND);
++		DummyRock(dummy);
++	else
++		PlaySoundEffect(who, miss_sound);
++		ReleaseItem(dummy);
++		sleepms(3600);
++	endif	
++endprogram
++
++function DummyRock(dummy)
++	case ( dummy.graphic )
++		4208:
++			dummy.graphic := 4209;
++			sleepms(3600);
++			dummy.graphic := 4208;
++			break;
++			
++		4212:
++			dummy.graphic := 4213;
++			sleepms(3600);
++			dummy.graphic := 4212;
++			break;
++	endcase
++	
++	return 1;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000770.html">[Poldistro-svn] r796 - in trunk/096/pkg/systems/combat: . commands include
+</A></li>
+	<LI>Next message: <A HREF="000772.html">[Poldistro-svn] r798 - trunk/096/pkg/items/food
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#771">[ date ]</a>
+              <a href="thread.html#771">[ thread ]</a>
+              <a href="subject.html#771">[ subject ]</a>
+              <a href="author.html#771">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

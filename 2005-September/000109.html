@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r127 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r127%20-%20trunk/096/pkg/mobiles/ai_brain/complete/testnpc&In-Reply-To=%3C200509141257.j8ECvNsV028462%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000108.html">
+   <LINK REL="Next"  HREF="000110.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r127 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r127%20-%20trunk/096/pkg/mobiles/ai_brain/complete/testnpc&In-Reply-To=%3C200509141257.j8ECvNsV028462%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r127 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 14 14:57:23 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000108.html">[Poldistro-svn] r126 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000110.html">[Poldistro-svn] r128 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#109">[ date ]</a>
+              <a href="thread.html#109">[ thread ]</a>
+              <a href="subject.html#109">[ subject ]</a>
+              <a href="author.html#109">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-14 14:57:23 +0200 (Wed, 14 Sep 2005)
+New Revision: 127
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src
+Log:
+The ShouldWatch() check in this script may be a little too heavy... but im tired!
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src	2005-09-14 12:31:31 UTC (rev 126)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src	2005-09-14 12:57:23 UTC (rev 127)
+@@ -11,22 +11,27 @@
+ 	//var nerve_name	:= params[2];
+ 	//var event	:= params[3];
+ 	var settings	:= params[4];
+-	//var scripts	:= params[5];
++	var scripts	:= params[5];
+ 	params := 0; // Not needed anymore.
+ 	
+ 	while ( npc )
+ 		if ( !npc.opponent )
+-			FindOpponent(npc, settings);
++			if ( NPC_LoadWatchList(npc).size() &lt; 1 )
++				AI_Sleep(npc);
++			else
++				AI_WakeUp(npc);
++				FindOpponent(npc, settings, scripts);
++			endif
+ 		endif
+-				
+-		Sleep(3);
++		
++		Sleep(1);
+ 	endwhile
+ endprogram
+ 
+-function FindOpponent(npc, byref settings)
++function FindOpponent(npc, byref settings, byref scripts)
+ 	var attack_list := array;
+ 	foreach mobile in ListMobilesInLineOfSight(npc, CInt(settings[&quot;AreaSize&quot;]))
+-		if ( (mobile.ip) &amp;&amp; (!mobile.cmdlevel) )
++		if ( NPC_ShouldWatch(npc, mobile, settings, scripts) )
+ 			attack_list.Append(mobile);
+ 		endif
+ 		sleepms(2);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000108.html">[Poldistro-svn] r126 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000110.html">[Poldistro-svn] r128 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#109">[ date ]</a>
+              <a href="thread.html#109">[ thread ]</a>
+              <a href="subject.html#109">[ subject ]</a>
+              <a href="author.html#109">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

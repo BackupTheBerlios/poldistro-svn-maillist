@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1266 - trunk/096/pkg/systems/spawnSystem/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1266%20-%20trunk/096/pkg/systems/spawnSystem/include&In-Reply-To=%3C200605032150.k43LoKoa006696%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001237.html">
+   <LINK REL="Next"  HREF="001239.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1266 - trunk/096/pkg/systems/spawnSystem/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1266%20-%20trunk/096/pkg/systems/spawnSystem/include&In-Reply-To=%3C200605032150.k43LoKoa006696%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1266 - trunk/096/pkg/systems/spawnSystem/include">austin at berlios.de
+       </A><BR>
+    <I>Wed May  3 23:50:20 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001237.html">[Poldistro-svn] r1265 - trunk/096/pkg/other/motd/commands/player
+</A></li>
+        <LI>Next message: <A HREF="001239.html">[Poldistro-svn] r1267 - in trunk/096/pkg/packetHooks: BFCommand StatHook Target
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1238">[ date ]</a>
+              <a href="thread.html#1238">[ thread ]</a>
+              <a href="subject.html#1238">[ subject ]</a>
+              <a href="author.html#1238">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-03 23:50:19 +0200 (Wed, 03 May 2006)
+New Revision: 1266
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/include/regions.inc
+Log:
+Made the spawn wait set for an entire region and not each group in it (to make coding so much easier)
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/regions.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/regions.inc	2006-05-03 20:30:02 UTC (rev 1265)
++++ trunk/096/pkg/systems/spawnSystem/include/regions.inc	2006-05-03 21:50:19 UTC (rev 1266)
+@@ -249,7 +249,6 @@
+  * region_name:	Name of the region to add the group to.
+  * group_name:	Name of the group to add to the region.
+  * max_amt:	Max amount of objects (mobiles/items) the group should make.
+- * spawn_wait:	Amount of time between each spawn cycle for this group.
+  * enabled:	0 | 1
+  * 
+  * Return Value
+@@ -259,10 +258,9 @@
+  * 	This function can also be used to update a spawn group's settings in a region.
+  *
+  */
+-function SS_AddGroupToRegion(region_name, group_name, max_amt, spawn_wait, enabled)
++function SS_AddGroupToRegion(region_name, group_name, max_amt, enabled)
+ 	var settings := struct;
+ 	settings.+max_amt := max_amt;
+-	settings.+spawn_wait := spawn_wait;
+ 	settings.+enabled := enabled;
+ 	
+ 	var group_list := SS_GetGroupsInRegion(region_name);
+@@ -346,3 +344,52 @@
+ 	
+ 	return spawns;
+ endfunction
++
++/* 
++ * SS_GetRegionSpawnWait(region_name)
++ *
++ * Purpose
++ * Retrieves the number of seconds a region waits between spawn runs.
++ *
++ * Parameters
++ * region_name:	Name of the region to get the spawn wait for.
++ *
++ * Return Value
++ * Integer (seconds)
++ *
++ */
++function SS_GetRegionSpawnWait(region_name)
++	var region_elem := SS_GetRegionDataElem(region_name);
++	var wait := CInt(region_elem.GetProp(&quot;SpawnWait&quot;));
++	if ( wait &lt; 1 )
++		wait := 1;
++	endif
++	return wait;
++endfunction
++
++/* 
++ * SS_SetRegionSpawnWait(region_name, seconds)
++ *
++ * Purpose
++ * Sets the number of seconds a region waits between spawn runs.
++ *
++ * Parameters
++ * region_name:	Name of the region to get the spawn wait for.
++ * seconds:	Number of seconds between spawns cycles.
++ *
++ * Return Value
++ * 1
++ *
++ */
++function SS_SetRegionSpawnWait(region_name, seconds)
++	var region_elem := SS_GetRegionDataElem(region_name);
++	
++	seconds := CInt(seconds);
++	if ( seconds &lt; 1 )
++		seconds := 1;
++	endif
++	
++	region_elem.SetProp(&quot;SpawnWait&quot;, seconds);
++	return 1;
++endfunction
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001237.html">[Poldistro-svn] r1265 - trunk/096/pkg/other/motd/commands/player
+</A></li>
+	<LI>Next message: <A HREF="001239.html">[Poldistro-svn] r1267 - in trunk/096/pkg/packetHooks: BFCommand StatHook Target
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1238">[ date ]</a>
+              <a href="thread.html#1238">[ thread ]</a>
+              <a href="subject.html#1238">[ subject ]</a>
+              <a href="author.html#1238">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

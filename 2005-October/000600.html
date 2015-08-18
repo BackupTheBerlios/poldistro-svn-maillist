@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r627 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r627%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200510190102.j9J12PTM028786%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000599.html">
+   <LINK REL="Next"  HREF="000601.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r627 - trunk/096/pkg/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r627%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200510190102.j9J12PTM028786%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r627 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct 19 03:02:25 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000599.html">[Poldistro-svn] r626 - trunk/096/pkg/mobiles/brainAI/include
+</A></li>
+        <LI>Next message: <A HREF="000601.html">[Poldistro-svn] r628 - trunk/096/pkg/utils/gumps/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#600">[ date ]</a>
+              <a href="thread.html#600">[ thread ]</a>
+              <a href="subject.html#600">[ subject ]</a>
+              <a href="author.html#600">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-19 03:02:09 +0200 (Wed, 19 Oct 2005)
+New Revision: 627
+
+Added:
+   trunk/096/pkg/commands/gm/info.src
+Log:
+Start of the new .info command.
+
+Added: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-10-19 00:57:55 UTC (rev 626)
++++ trunk/096/pkg/commands/gm/info.src	2005-10-19 01:02:09 UTC (rev 627)
+@@ -0,0 +1,161 @@
++/*
++ * $Id$
++ *
++ * Purpose
++ *
++ * Presents information about a mobile.
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:attributes:attributes&quot;;
++include &quot;:gumps:gumps&quot;;
++include &quot;:gumps:gumpprompt&quot;;
++include &quot;:gumps:requestgump&quot;;
++include &quot;:gumps:yesno&quot;;
++include &quot;:containers:storageAreas&quot;;
++
++unload_scripts(&quot;&quot;);
++
++var priv_names := array
++{
++	&quot;ignoredoors&quot;, &quot;seeinvisitems&quot;, &quot;seehidden&quot;, &quot;seeghosts&quot;,
++	&quot;renameany&quot;, &quot;moveany&quot;, &quot;losany&quot;, &quot;invul&quot;, &quot;hearghosts&quot;,
++	&quot;dblclickany&quot;, &quot;clotheany&quot;, &quot;freemove&quot;
++};
++
++
++program textcmd_Info(who, serial)
++	var targ := who;;
++	/*if ( serial )
++		targ := SystemFindObjectBySerial(CInt(serial));
++	else
++		targ := Target(who);
++	endif
++	if ( !targ.IsA(POLCLASS_MOBILE) )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	*/
++	
++	ClientGump(who, targ);
++endprogram
++
++function GumpTemplate(targ)
++	var gump := GFCreateGump();
++	
++	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 500, 480);
++	
++	GFResizePic(gump, 15, 15, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 470, 35);
++	GFTextLine(gump, 25, 22, 2100, &quot;Info on &quot;+targ.name);
++	
++	if ( targ.npctemplate )
++		GFTextRight(gump, 475, 22, 2100, &quot;[NPC]&quot;);
++	elseif ( targ.connected )
++		GFTextRight(gump, 475, 22, 2100, &quot;[Player]&quot;);
++	else
++		GFTextRight(gump, 475, 22, 2100, &quot;[Offline Player]&quot;);
++	endif
++	
++	GFResizePic(gump, 15, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 140, 410);
++	GFAddButton(gump, 20, 63, 2117, 2118, GF_CLOSE_BTN, 1);
++	GFTextLine(gump, 40, 60, 2100, &quot;General&quot;);
++	
++	GFAddButton(gump, 20, 83, 2117, 2118, GF_CLOSE_BTN, 1);
++	GFTextLine(gump, 40, 80, 2100, &quot;Client&quot;);
++	
++	GFAddButton(gump, 20, 103, 2117, 2118, GF_CLOSE_BTN, 1);
++	GFTextLine(gump, 40, 100, 2100, &quot;Combat&quot;);
++	
++	GFAddButton(gump, 20, 123, 2117, 2118, GF_CLOSE_BTN, 1);
++	GFTextLine(gump, 40, 120, 2100, &quot;Script&quot;);
++	
++	GFAddButton(gump, 20, 143, 2117, 2118, GF_CLOSE_BTN, 1);
++	GFTextLine(gump, 40, 140, 2100, &quot;Reputation&quot;);
++	
++	GFAddButton(gump, 20, 163, 2117, 2118, GF_CLOSE_BTN, 1);
++	GFTextLine(gump, 40, 160, 2100, &quot;Properties&quot;);
++	
++	GFAddButton(gump, 20, 183, 2117, 2118, GF_CLOSE_BTN, 1);
++	GFTextLine(gump, 40, 180, 2100, &quot;Privileges&quot;);
++	
++	GFAddButton(gump, 20, 203, 2117, 2118, GF_CLOSE_BTN, 1);
++	GFTextLine(gump, 40, 200, 2100, &quot;Storage&quot;);	
++
++	GFAddButton(gump, 20, 223, 2117, 2118, GF_CLOSE_BTN, 1);
++	GFTextLine(gump, 40, 220, 2100, &quot;Miscellaneous&quot;);
++
++	return gump;
++endfunction
++
++function GeneralGump(who, targ)
++	var gump := GumpTemplate(targ);
++	
++	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 95);
++	
++	GFAddButton(gump, 165, 66, 2117, 2118, GF_DUMMY_BTN);
++	GFTextLine(gump, 185, 63, 2100, &quot;Title Prefix&quot;);
++	GFTextRight(gump, 475, 63, 2100, targ.title_prefix);
++	
++	GFAddButton(gump, 165, 86, 2117, 2118, GF_DUMMY_BTN);
++	GFTextLine(gump, 185, 83, 2100, &quot;Name&quot;);
++	GFTextRight(gump, 475, 83, 2100, targ.name);
++	
++	GFAddButton(gump, 165, 106, 2117, 2118, GF_DUMMY_BTN);
++	GFTextLine(gump, 185, 103, 2100, &quot;Title Suffix&quot;);
++	GFTextRight(gump, 475, 103, 2100, targ.title_suffix);
++	
++	GFAddButton(gump, 165, 126, 2117, 2118, GF_DUMMY_BTN);
++	GFTextLine(gump, 185, 123, 2100, &quot;Tile Race&quot;);
++	GFTextRight(gump, 475, 123, 2100, targ.title_race);
++	
++	return gump;
++endfunction
++
++function ClientGump(who, targ)
++	var gump := GumpTemplate(targ);
++	
++	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 75);
++	GFTextLine(gump, 185, 63, 2100, &quot;Connected&quot;);
++	GFTextRight(gump, 475, 63, 2100, CStr(targ.connected));
++	GFTextLine(gump, 185, 83, 2100, &quot;IP Address&quot;);
++	GFTextRight(gump, 475, 83, 2100, CStr(targ.ip));
++	GFTextLine(gump, 185, 103, 2100, &quot;Client Version&quot;);
++	GFTextRight(gump, 475, 103, 2100, targ.clientversion);
++	
++	GFResizePic(gump, 160, 135, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 75);
++	GFTextLine(gump, 185, 143, 2100, &quot;Account Name&quot;);
++	GFTextRight(gump, 475, 143, 2100, CStr(targ.acctname));
++	GFTextLine(gump, 185, 163, 2100, &quot;Account Enabled&quot;);
++	GFTextRight(gump, 475, 163, 2100, CStr((targ.acct).enabled));
++	GFTextLine(gump, 185, 183, 2100, &quot;Account Banned&quot;);
++	GFTextRight(gump, 475, 183, 2100, CStr((targ.acct).banned));
++	
++	GFResizePic(gump, 163, 215, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 315, 245);
++	var client_info := targ.clientinfo;
++	var info_string := &quot;&lt;U&gt;Client Info&lt;/U&gt;&lt;BR&gt;&quot;;
++	foreach key in ( (client_info).keys() )
++		info_string := info_string + key +&quot; &lt;B&gt;:&lt;/B&gt; &quot;+client_info[key]+&quot;&lt;BR&gt;&quot;;
++		sleepms(2);
++	endforeach
++	
++	GFHTMLArea(gump, 170, 222, 323, 230, info_string, 0, 1);
++	GFSendGump(who, gump);
++endfunction
++
++function PropertyGump(who, targ)
++	var gump := GumpTemplate(targ);
++	
++	GFResizePic(gump, 160, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 325, 95);
++	GFTextLine(gump, 185, 63, 2100, &quot;X&quot;); 
++	GFTextRight(gump, 475, 63, 2100, CStr(targ.x));
++	GFTextLine(gump, 185, 83, 2100, &quot;Y&quot;); 
++	GFTextRight(gump, 475, 83, 2100, CStr(targ.y));
++	GFTextLine(gump, 185, 103, 2100, &quot;Z&quot;); 
++	GFTextRight(gump, 475, 103, 2100, CStr(targ.z));
++	GFTextLine(gump, 185, 123, 2100, &quot;Realm&quot;); 
++	GFTextRight(gump, 475, 123, 2100, targ.realm);
++	return gump;
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000599.html">[Poldistro-svn] r626 - trunk/096/pkg/mobiles/brainAI/include
+</A></li>
+	<LI>Next message: <A HREF="000601.html">[Poldistro-svn] r628 - trunk/096/pkg/utils/gumps/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#600">[ date ]</a>
+              <a href="thread.html#600">[ thread ]</a>
+              <a href="subject.html#600">[ subject ]</a>
+              <a href="author.html#600">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

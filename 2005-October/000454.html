@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r481 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r481%20-%20trunk/096/scripts/include&In-Reply-To=%3C200510091203.j99C3bd4012827%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000453.html">
+   <LINK REL="Next"  HREF="000455.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r481 - trunk/096/scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r481%20-%20trunk/096/scripts/include&In-Reply-To=%3C200510091203.j99C3bd4012827%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r481 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct  9 14:03:37 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000453.html">[Poldistro-svn] r480 - trunk/096/scripts
+</A></li>
+        <LI>Next message: <A HREF="000455.html">[Poldistro-svn] r482 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#454">[ date ]</a>
+              <a href="thread.html#454">[ thread ]</a>
+              <a href="subject.html#454">[ subject ]</a>
+              <a href="author.html#454">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-09 14:03:35 +0200 (Sun, 09 Oct 2005)
+New Revision: 481
+
+Modified:
+   trunk/096/scripts/include/res.inc
+Log:
+
+
+Modified: trunk/096/scripts/include/res.inc
+===================================================================
+--- trunk/096/scripts/include/res.inc	2005-10-09 11:57:05 UTC (rev 480)
++++ trunk/096/scripts/include/res.inc	2005-10-09 12:03:35 UTC (rev 481)
+@@ -1,30 +1,22 @@
+ use uo;
+ 
+-var layout := {
+-&quot;page 0&quot;,
+-&quot;nodispose&quot;,
+-&quot;noclose&quot;,
+-&quot;gumppic 300 230 2070&quot;,
+-&quot;button 330 305 2073 2072 1 0 0&quot;,
+-&quot;button 400 305 2076 2075 1 0 1&quot;,
+-&quot;text 332 264 40 0&quot;
+-};
++include &quot;:gumps:gumps&quot;;
+ 
+-var data := {
+-&quot;Resurrect Now?&quot;
+-};
+-
+-function ResNow(who)
+-  var x := who.x;
+-  var y := who.y;
+-  var z := who.z;
+-  var ret := SendDialogGump(who,layout,data);
+-  if(!ret)
+-	return 0;
+-  endif
+-  if(MoveCharacterToLocation(who, x, y, z, MOVECHAR_FORCELOCATION))
+-    return ret[0];
+-  else
+-    return 0;
+-  endif
+-endfunction
+\ No newline at end of file
++function ResNow(mobile)
++	var gump := GFCreateGump();
++	GFClosable(gump, 0);
++	GFGumpPic(gump, 300, 230, 2070);
++	GFAddButton(gump, 330, 305, 2073, 2072, GF_CLOSE_BTN, 10);
++	GFAddButton(gump, 400, 305, 2076, 2075, GF_CLOSE_BTN, 11);
++	GFTextLine(gump, 332, 264, 40, &quot;Resurrect Now?&quot;);
++	
++	var input := GFSendGump(mobile, gump);
++	input := input[0];
++	input := input-10;
++	
++	if ( !input )
++		return 0;
++	else
++		return 1;
++	endif
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000453.html">[Poldistro-svn] r480 - trunk/096/scripts
+</A></li>
+	<LI>Next message: <A HREF="000455.html">[Poldistro-svn] r482 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#454">[ date ]</a>
+              <a href="thread.html#454">[ thread ]</a>
+              <a href="subject.html#454">[ subject ]</a>
+              <a href="author.html#454">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

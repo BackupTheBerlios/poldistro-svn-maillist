@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r591 - trunk/096/pkg/utils/datafile/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r591%20-%20trunk/096/pkg/utils/datafile/include&In-Reply-To=%3C200510130101.j9D11mGP007102%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000560.html">
+   <LINK REL="Next"  HREF="000562.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r591 - trunk/096/pkg/utils/datafile/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r591%20-%20trunk/096/pkg/utils/datafile/include&In-Reply-To=%3C200510130101.j9D11mGP007102%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r591 - trunk/096/pkg/utils/datafile/include">austin at berlios.de
+       </A><BR>
+    <I>Thu Oct 13 03:01:48 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000560.html">[Poldistro-svn] r590 - in trunk/096/pkg/systems/spawnSystem: . include initializer
+</A></li>
+        <LI>Next message: <A HREF="000562.html">[Poldistro-svn] r592 - in trunk/096/pkg/systems/crafting: . commands commands/test
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#561">[ date ]</a>
+              <a href="thread.html#561">[ thread ]</a>
+              <a href="subject.html#561">[ subject ]</a>
+              <a href="author.html#561">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-13 03:01:43 +0200 (Thu, 13 Oct 2005)
+New Revision: 591
+
+Modified:
+   trunk/096/pkg/utils/datafile/include/datafile.inc
+Log:
+Datafile.inc no longer reports to SysLog() but instead will just write to /log/dataFile.log
+
+Modified: trunk/096/pkg/utils/datafile/include/datafile.inc
+===================================================================
+--- trunk/096/pkg/utils/datafile/include/datafile.inc	2005-10-12 08:11:10 UTC (rev 590)
++++ trunk/096/pkg/utils/datafile/include/datafile.inc	2005-10-13 01:01:43 UTC (rev 591)
+@@ -23,6 +23,7 @@
+  */
+ use uo;
+ use os;
++use file;
+ use basic;
+ use cfgfile;
+ use datafile;
+@@ -325,7 +326,9 @@
+  */
+ function DF_OutPut(text)
+ 	if ( DF_DEBUG_MODE )
+-		SysLog(text);
++		//SysLog(text);
++		var script_name := GetProcess(GetPid()).name;
++		LogToFile(&quot;::log/dataFile.log&quot;, &quot;[&quot;+script_name+&quot;]: &quot;+text, LOG_DATETIME);
+ 	endif
+ 	
+ 	return 1;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000560.html">[Poldistro-svn] r590 - in trunk/096/pkg/systems/spawnSystem: . include initializer
+</A></li>
+	<LI>Next message: <A HREF="000562.html">[Poldistro-svn] r592 - in trunk/096/pkg/systems/crafting: . commands commands/test
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#561">[ date ]</a>
+              <a href="thread.html#561">[ thread ]</a>
+              <a href="subject.html#561">[ subject ]</a>
+              <a href="author.html#561">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

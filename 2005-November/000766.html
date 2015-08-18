@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r792 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r792%20-%20trunk/096/scripts/include&In-Reply-To=%3C200511011823.jA1INofP028151%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000765.html">
+   <LINK REL="Next"  HREF="000767.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r792 - trunk/096/scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r792%20-%20trunk/096/scripts/include&In-Reply-To=%3C200511011823.jA1INofP028151%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r792 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 19:23:50 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000765.html">[Poldistro-svn] r791 - trunk/096/pkg/items/repaircontract
+</A></li>
+        <LI>Next message: <A HREF="000767.html">[Poldistro-svn] r793 - trunk/096/pkg/items/runebook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#766">[ date ]</a>
+              <a href="thread.html#766">[ thread ]</a>
+              <a href="subject.html#766">[ subject ]</a>
+              <a href="author.html#766">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 19:23:46 +0100 (Tue, 01 Nov 2005)
+New Revision: 792
+
+Modified:
+   trunk/096/scripts/include/statMod.inc
+Log:
+Updated for new attributes system.
+
+Modified: trunk/096/scripts/include/statMod.inc
+===================================================================
+--- trunk/096/scripts/include/statMod.inc	2005-11-01 18:17:50 UTC (rev 791)
++++ trunk/096/scripts/include/statMod.inc	2005-11-01 18:23:46 UTC (rev 792)
+@@ -1,7 +1,8 @@
+ use uo;
+ use util;
+-include &quot;include/attributes&quot;;
+ 
++include &quot;:attributes:attributes&quot;;
++
+ function GetModAmount(magery)
+   var mod_amount := CInt(RandomInt(3) +(magery/10));
+   if(mod_amount &gt; 10)
+@@ -34,9 +35,9 @@
+ function DoTempMod(who, stat, amt, duration)
+   var mod;
+   case(stat)
+-    &quot;str&quot;:  mod := &quot;#ss&quot;;  SetStrengthMod(who, GetStrengthMod(who) + amt);
+-    &quot;dex&quot;:  mod := &quot;#dd&quot;;  SetDexterityMod(who, GetDexterityMod(who) + amt);
+-    &quot;int&quot;:  mod := &quot;#ii&quot;;  SetIntelligenceMod(who, GetIntelligenceMod(who) + amt);
++    &quot;str&quot;:  mod := &quot;#ss&quot;;  AP_SetStatMod(who, &quot;Strength&quot;, AP_GetStatMod(who, &quot;Strength&quot;) + amt);
++    &quot;dex&quot;:  mod := &quot;#dd&quot;;  AP_SetStatMod(who, &quot;Dexterity&quot;, AP_GetStatMod(who, &quot;Dexterity&quot;) + amt);
++    &quot;int&quot;:  mod := &quot;#ii&quot;;  AP_SetStatMod(who, &quot;Intelligence&quot;, AP_GetStatMod(who, &quot;Intelligence&quot;) + amt);
+     &quot;ar&quot; :  mod := &quot;#ar&quot;;  who.ar_mod           := who.ar_mod + amt;
+ 	&quot;p&quot;  :  mod := &quot;#pp&quot;;  who.setParalyzed(1);
+   endcase
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000765.html">[Poldistro-svn] r791 - trunk/096/pkg/items/repaircontract
+</A></li>
+	<LI>Next message: <A HREF="000767.html">[Poldistro-svn] r793 - trunk/096/pkg/items/runebook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#766">[ date ]</a>
+              <a href="thread.html#766">[ thread ]</a>
+              <a href="subject.html#766">[ subject ]</a>
+              <a href="author.html#766">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

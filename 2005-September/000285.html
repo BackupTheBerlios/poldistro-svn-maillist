@@ -1,0 +1,843 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r307 - in trunk/096/pkg/skills: anatomy detecthidden evalint hiding spiritspeak stealth
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r307%20-%20in%20trunk/096/pkg/skills%3A%20anatomy%20detecthidden%20evalint%20hiding%20spiritspeak%20stealth&In-Reply-To=%3C200509290507.j8T57igQ019640%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000284.html">
+   <LINK REL="Next"  HREF="000286.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r307 - in trunk/096/pkg/skills: anatomy detecthidden evalint hiding spiritspeak stealth</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r307%20-%20in%20trunk/096/pkg/skills%3A%20anatomy%20detecthidden%20evalint%20hiding%20spiritspeak%20stealth&In-Reply-To=%3C200509290507.j8T57igQ019640%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r307 - in trunk/096/pkg/skills: anatomy detecthidden evalint hiding spiritspeak stealth">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Thu Sep 29 07:07:44 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000284.html">[Poldistro-svn] r306 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000286.html">[Poldistro-svn] r308 - in trunk/096/pkg/skills: alchemy alchemy/config anatomy/config animallore animallore/config armslore armslore/config begging begging/config blacksmithy blacksmithy/config bowcraft bowcraft/config camping camping/config carpentry carpentry/config cartography cartography/config cooking cooking/config detecthidden/config evalint/config fishing fishing/config forensicevaluation forensicevaluation/config healing healing/config herding herding/config hiding hiding/config inscription inscription/config itemid itemid/config lockpicking lockpicking/config lumberjacking lumberjacking/config magery magery/config meditation meditation/config mining mining/config musicianship musicianship/config poisoning poisoning/config removetrap removetrap/config spiritspeak spiritspeak/config stealing stealing/config stealth stealth/config tailoring tailoring/config taming taming/config tasteid tasteid/config tinkering tinkering/config tracking tracking/config veterinary veterinary/c! onfig
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#285">[ date ]</a>
+              <a href="thread.html#285">[ thread ]</a>
+              <a href="subject.html#285">[ subject ]</a>
+              <a href="author.html#285">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-29 07:07:29 +0200 (Thu, 29 Sep 2005)
+New Revision: 307
+
+Modified:
+   trunk/096/pkg/skills/anatomy/anatomy.src
+   trunk/096/pkg/skills/anatomy/pkg.cfg
+   trunk/096/pkg/skills/detecthidden/detectHidden.src
+   trunk/096/pkg/skills/detecthidden/pkg.cfg
+   trunk/096/pkg/skills/evalint/evalInt.src
+   trunk/096/pkg/skills/evalint/pkg.cfg
+   trunk/096/pkg/skills/hiding/hiding.src
+   trunk/096/pkg/skills/spiritspeak/spiritSpeak.src
+   trunk/096/pkg/skills/stealth/stealth.src
+Log:
+Few skills updated for the new attribute system.
+
+Modified: trunk/096/pkg/skills/anatomy/anatomy.src
+===================================================================
+--- trunk/096/pkg/skills/anatomy/anatomy.src	2005-09-29 04:29:49 UTC (rev 306)
++++ trunk/096/pkg/skills/anatomy/anatomy.src	2005-09-29 05:07:29 UTC (rev 307)
+@@ -1,170 +1,178 @@
+-//
+-// Last updated: 26-11-03
+-// Revised by Infusion (<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">dcrofts at fastmail.com.au</A>)
++// //$Id$
+ 
+ use uo;
+-use unicode;
+ 
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ 
+-program Anatomy(who)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  SendSysMessageUC(who, CAscZ(&quot;Whom shall I examine?&quot;), &quot;ENG&quot;);
+-  var subject := Target(who);
+-  // target checks begin here
+-  if(!subject)
+-    return;
+-  elseif(subject.serial == who.serial)
+-    PrintTextAbovePrivateUC(who, CAscZ(&quot;You know yourself quite well enough already.&quot;), &quot;ENG&quot;, who);
+-    return;
+-  elseif(subject.graphic == 0x2006)
+-    SendSysMessageUC(who, CAscZ(&quot;Looks pretty dead to you.&quot;), &quot;ENG&quot;);
+-    return;
+-  elseif(!subject.isA(POLCLASS_MOBILE))
+-    SendSysMessageUC(who, CAscZ(&quot;That cannot be inspected.&quot;), &quot;ENG&quot;);
+-    return;
+-  endif
+-  // variables for sys messages
+-  var streng := getStreng(GetStrength(subject), subject.graphic, subject.gender);
+-  var dext := getDext(GetDexterity(subject), subject.graphic, subject.gender);
+-  var endur := getEnd(CInt(CInt(GetStamina(subject))/CDbl(GetMaxStamina(subject))*100));
+-  var skill := GetEffectiveSkill(who, SKILLID_ANATOMY);
+-  // adjust succeed and fail msgs here
+-  var strMsg, strFail;
+-  if(subject.graphic != 0x190 &amp;&amp; subject.graphic != 0x191)
+-    strMsg := &quot;That creature&quot;;
+-    strFail := &quot;that creature's physical characteristics.&quot;;
+-  else
+-    strMsg := subject.name;
+-    if(upper(subject.name[len(subject.name)]) != &quot;S&quot; || lower(subject.name[len(subject.name)]) != &quot;s&quot; ) 
+-      strFail := subject.name + &quot;'s physical characteristics.&quot;;  
+-    else 
+-      strFail := subject.name + &quot;' physical characteristics.&quot;; 
+-    endif
+-  endif
+-  var pts := CInt(GetEffectiveSkill(who, SKILLID_ANATOMY) + 1) *3;
+-  if (pts &lt; 30) 
+-    pts := 30;
+-  endif
+-  if(CheckSkill(who, SKILLID_ANATOMY, -1, pts))
+-    PrintTextAbovePrivateUC(subject, CAscZ(strMsg + &quot; looks &quot; + streng + &quot; and &quot; + dext + &quot;.&quot;), &quot;ENG&quot;, who);
+-    // player's anatomy skill equal/greater than 65 can get endurance info
+-    if(skill &gt;= 65)
+-      PrintTextAbovePrivateUC(subject, CAscZ(strMsg + &quot; is at &quot; + endur + &quot; endurance.&quot;), &quot;ENG&quot;, who);
+-    endif
+-  else
+-    PrintTextAbovePrivateUC(subject, CAscZ(&quot;You can not quite get a sense of &quot; + strFail), &quot;ENG&quot;, who);
+-  endif
++program skill_Anatomy(who)
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	SendSysMessage(who, &quot;Whom shall I examine?&quot;);
++	var subject := Target(who);
++	// target checks begin here
++	if(!subject)
++		return 0;
++	elseif(subject.serial == who.serial)
++		PrintTextAbovePrivate(who, &quot;You know yourself quite well enough already.&quot;, who);
++		return 0;
++	elseif(subject.graphic == 0x2006)
++		SendSysMessage(who, &quot;Looks pretty dead to you.&quot;);
++		return 0;
++	elseif(!subject.isA(POLCLASS_MOBILE))
++		SendSysMessage(who, &quot;That cannot be inspected.&quot;);
++		return 0;
++	endif
++
++	// variables for sys messages
++  	var streng := getStreng(AP_GetStat(subject, &quot;Strength&quot;), subject.graphic, subject.gender);
++	var dext := getDext(AP_GetStat(subject, &quot;Dexterity&quot;), subject.graphic, subject.gender);
++	var endur_percentage := CInt(CInt(AP_GetVital(subject, &quot;Stamina&quot;))/CDbl(AP_GetVitalMaximumValue(subject, &quot;Stamina&quot;))*100);
++	var endur := getEnd(endur_percentage);
++
++	// adjust succeed and fail msgs here
++	var strMsg, strFail;
++	if(subject.graphic != 0x190 &amp;&amp; subject.graphic != 0x191)
++		strMsg := &quot;That creature&quot;;
++		strFail := &quot;that creature's physical characteristics.&quot;;
++	else
++		strMsg := subject.name;
++		if(upper(subject.name[len(subject.name)]) != &quot;S&quot; || lower(subject.name[len(subject.name)]) != &quot;s&quot; )
++			strFail := subject.name + &quot;'s physical characteristics.&quot;;
++		else
++			strFail := subject.name + &quot;' physical characteristics.&quot;;
++		endif
++	endif
++
++	if( SkillCheck(who, ATTRIBUTE_ANATOMY, -1) &gt; 0 )
++		PrintTextAbovePrivate(subject, strMsg + &quot; looks &quot; + streng + &quot; and &quot; + dext + &quot;.&quot;, who);
++		// player's anatomy skill equal/greater than 65 can get endurance info
++		var skill := AP_GetSkill(who, ATTRIBUTE_ANATOMY);
++		if(skill &gt;= 65)
++			PrintTextAbovePrivate(subject, strMsg + &quot; is at &quot; + endur + &quot; endurance.&quot;, who);
++		endif
++		return 1;
++	else
++		PrintTextAbovePrivate(subject, &quot;You can not quite get a sense of &quot; + strFail, who);
++		return 0;
++	endif
++
+ endprogram
+ 
+-// strength
++
+ function getStreng(subject, graphic, gender)
+-  // fix sys msgs
+-  var strSuper, strType, strGender;
+-  if(graphic != 0x190 &amp;&amp; graphic != 0x191)
+-    strSuper := &quot;supernaturally&quot;;
+-    strType := &quot;creatures&quot;;
+-    strGender := &quot;it&quot;;
+-  else
+-    strSuper := &quot;superhumanly&quot;;
+-    strType := &quot;people&quot;;
+-    if(gender == 0)
+-      strGender := &quot;he&quot;;
+-    elseif(gender == 1)
+-      strGender := &quot;she&quot;;
+-    endif
+-  endif
+-  if(subject &gt;= 100)
+-    return strSuper + &quot; strong&quot;;
+-  elseif(subject &gt;= 99)
+-    return &quot;like one of the strongest &quot; + strType + &quot; you have ever seen&quot;;
+-  elseif(subject &gt;= 89)
+-    return &quot;strong as an ox&quot;;
+-  elseif(subject &gt;= 79)
+-    return &quot;extraordinarily strong&quot;;
+-  elseif(subject &gt;= 69)
+-    return &quot;extremely strong&quot;;
+-  elseif(subject &gt;= 59)
+-    return &quot;very strong&quot;;
+-  elseif(subject &gt;= 49)
+-    return &quot;somewhat strong&quot;;
+-  elseif(subject &gt;= 39)
+-    return &quot;to be of normal strength&quot;;
+-  elseif(subject &gt;= 29)
+-    return &quot;somewhat weak&quot;;
+-  elseif(subject &gt;= 19)
+-    return &quot;rather feeble&quot;;
+-  else
+-    return &quot;like &quot; + strGender + &quot; would have trouble lifting small objects&quot;;
+-  endif
++
++	var strSuper, strType, strGender;
++	if(graphic != 0x190 &amp;&amp; graphic != 0x191)
++		strSuper := &quot;supernaturally&quot;;
++		strType := &quot;creatures&quot;;
++		strGender := &quot;it&quot;;
++	else
++		strSuper := &quot;superhumanly&quot;;
++		strType := &quot;people&quot;;
++		if(gender == 0)
++			strGender := &quot;he&quot;;
++		elseif(gender == 1)
++			strGender := &quot;she&quot;;
++		endif
++	endif
++	if(subject &gt;= 100)
++		return strSuper + &quot; strong&quot;;
++	elseif(subject &gt;= 99)
++		return &quot;like one of the strongest &quot; + strType + &quot; you have ever seen&quot;;
++	elseif(subject &gt;= 89)
++		return &quot;strong as an ox&quot;;
++	elseif(subject &gt;= 79)
++		return &quot;extraordinarily strong&quot;;
++	elseif(subject &gt;= 69)
++		return &quot;extremely strong&quot;;
++	elseif(subject &gt;= 59)
++		return &quot;very strong&quot;;
++	elseif(subject &gt;= 49)
++		return &quot;somewhat strong&quot;;
++	elseif(subject &gt;= 39)
++		return &quot;to be of normal strength&quot;;
++	elseif(subject &gt;= 29)
++		return &quot;somewhat weak&quot;;
++	elseif(subject &gt;= 19)
++		return &quot;rather feeble&quot;;
++	else
++		return &quot;like &quot; + strGender + &quot; would have trouble lifting small objects&quot;;
++	endif
++
+ endfunction
+ 
+-// dexterity
++
+ function getDext(subject, graphic, gender)
+-  // fix sys msgs
+-  var strSuper, strType, strGender;
+-  if(graphic != 0x190 &amp;&amp; graphic != 0x191)
+-    strSuper := &quot;supernaturally&quot;;
+-    strType := &quot;creatures&quot;;
+-    strGender := &quot;it&quot;;
+-  else
+-    strSuper := &quot;superhumanly&quot;;
+-    strType := &quot;people&quot;;
+-    if(gender == 0)
+-      strGender := &quot;he&quot;;
+-    elseif(gender == 1)
+-      strGender := &quot;she&quot;;
+-    endif
+-  endif
+-  if(subject &gt;= 100)
+-    return &quot;also looks &quot; + strSuper + &quot; agile&quot;;
+-  elseif(subject &gt;= 99)
+-    return &quot;like one of the fastest &quot; + strType + &quot; you have ever seen&quot;;
+-  elseif(subject &gt;= 89)
+-    return &quot;moves like quicksilver&quot;;
+-  elseif(subject &gt;= 79)
+-    return &quot;extraordinarily agile&quot;;
+-  elseif(subject &gt;= 69)
+-    return &quot;extremely agile&quot;;
+-  elseif(subject &gt;= 59)
+-    return &quot;very agile&quot;;
+-  elseif(subject &gt;= 49)
+-    return &quot;somewhat agile&quot;;
+-  elseif(subject &gt;= 39)
+-    return &quot;moderately dextrous&quot;;
+-  elseif(subject &gt;= 29)
+-    return &quot;somewhat uncoordinated&quot;;
+-  elseif(subject &gt;= 19)
+-    return &quot;very clumsy&quot;;
+-  else
+-    return &quot;like &quot; + strGender + &quot; can barely manage to stay standing&quot;;
+-  endif
++
++	var strSuper, strType, strGender;
++	if(graphic != 0x190 &amp;&amp; graphic != 0x191)
++		strSuper := &quot;supernaturally&quot;;
++		strType := &quot;creatures&quot;;
++		strGender := &quot;it&quot;;
++	else
++		strSuper := &quot;superhumanly&quot;;
++		strType := &quot;people&quot;;
++		if(gender == 0)
++			strGender := &quot;he&quot;;
++		elseif(gender == 1)
++			strGender := &quot;she&quot;;
++		endif
++	endif
++	if(subject &gt;= 100)
++		return &quot;also looks &quot; + strSuper + &quot; agile&quot;;
++	elseif(subject &gt;= 99)
++		return &quot;like one of the fastest &quot; + strType + &quot; you have ever seen&quot;;
++	elseif(subject &gt;= 89)
++		return &quot;moves like quicksilver&quot;;
++	elseif(subject &gt;= 79)
++		return &quot;extraordinarily agile&quot;;
++	elseif(subject &gt;= 69)
++		return &quot;extremely agile&quot;;
++	elseif(subject &gt;= 59)
++		return &quot;very agile&quot;;
++	elseif(subject &gt;= 49)
++		return &quot;somewhat agile&quot;;
++	elseif(subject &gt;= 39)
++		return &quot;moderately dextrous&quot;;
++	elseif(subject &gt;= 29)
++		return &quot;somewhat uncoordinated&quot;;
++	elseif(subject &gt;= 19)
++		return &quot;very clumsy&quot;;
++	else
++		return &quot;like &quot; + strGender + &quot; can barely manage to stay standing&quot;;
++	endif
++
+ endfunction
+ 
+-// endurance
++
+ function getEnd(subject)
+-  if(subject &gt;= 100)
+-    return &quot;one-hundred percent&quot;;
+-  elseif(subject &gt;= 90)
+-    return &quot;ninety percent&quot;;
+-  elseif(subject &gt;= 80)
+-    return &quot;eighty percent&quot;;
+-  elseif(subject &gt;= 70)
+-    return &quot;seventy percent&quot;;
+-  elseif(subject &gt;= 60)
+-    return &quot;sixty percent&quot;;
+-  elseif(subject &gt;= 50)
+-    return &quot;fifty percent&quot;;
+-  elseif(subject &gt;= 40)
+-    return &quot;forty percent&quot;;
+-  elseif(subject &gt;= 30)
+-    return &quot;thirty percent&quot;;
+-  elseif(subject &gt;= 20)
+-    return &quot;twenty percent&quot;;
+-  elseif(subject &gt;= 10)
+-    return &quot;low&quot;;
+-  else
+-    return &quot;very low&quot;;
+-  endif
++
++	if(subject &gt;= 100)
++		return &quot;one-hundred percent&quot;;
++	elseif(subject &gt;= 90)
++		return &quot;ninety percent&quot;;
++	elseif(subject &gt;= 80)
++		return &quot;eighty percent&quot;;
++	elseif(subject &gt;= 70)
++		return &quot;seventy percent&quot;;
++	elseif(subject &gt;= 60)
++		return &quot;sixty percent&quot;;
++	elseif(subject &gt;= 50)
++		return &quot;fifty percent&quot;;
++	elseif(subject &gt;= 40)
++		return &quot;forty percent&quot;;
++	elseif(subject &gt;= 30)
++		return &quot;thirty percent&quot;;
++	elseif(subject &gt;= 20)
++		return &quot;twenty percent&quot;;
++	elseif(subject &gt;= 10)
++		return &quot;low&quot;;
++	else
++		return &quot;very low&quot;;
++	endif
++
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/anatomy/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/anatomy/pkg.cfg	2005-09-29 04:29:49 UTC (rev 306)
++++ trunk/096/pkg/skills/anatomy/pkg.cfg	2005-09-29 05:07:29 UTC (rev 307)
+@@ -1,6 +1,6 @@
+ Enabled         1
+ Name            anatomy
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.1
+ CoreRequired    95
+
+Modified: trunk/096/pkg/skills/detecthidden/detectHidden.src
+===================================================================
+--- trunk/096/pkg/skills/detecthidden/detectHidden.src	2005-09-29 04:29:49 UTC (rev 306)
++++ trunk/096/pkg/skills/detecthidden/detectHidden.src	2005-09-29 05:07:29 UTC (rev 307)
+@@ -26,14 +26,12 @@
+ CONST TRAP := &quot;hiddentrap&quot;;
+ CONST CRITICAL_FAILURE := 1;
+ 
+-var thepoints;
+ var item_cfg := ReadConfigFile( &quot;:*:itemdesc&quot; );
+ 
+ program skill_DetectHidden(who)
+ 
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 	EraseObjProperty(who, &quot;HealTimer&quot;);
+-	thepoints := AP_GetSkill(who, ATTRIBUTE_DETECTING_HIDDEN) + 10;
+ 
+ 	SendSysMessage(who,&quot;Target the location to search.&quot;);
+ 	var targ := TargetCoordinates( who );
+@@ -62,9 +60,8 @@
+      prop := GetObjProperty(item,&quot;trap_type&quot;);
+ 	 dtct := GetObjProperty(item, &quot;trapped&quot;);
+      var trapstrength := GetObjProperty(item,&quot;trap_strength&quot;);
+-     thepoints := trapstrength *2;
+ 	 if( dtct )
+-        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1, thepoints ))
++        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1) &gt; 0)
+ 	      PrintTextAbovePrivate( item, &quot;Trapped&quot;, who);
+         else
+           var results := RandomInt(9) + 1;
+@@ -94,7 +91,7 @@
+           endif
+         endif
+       elseif( data == TRAP)
+-        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1, thepoints ))
++        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1) &gt; 0)
+ 	      PrintTextAbovePrivate( item, &quot;Trap&quot;, who );
+           SetObjProperty( item, &quot;trapped&quot;, 1 );
+         else
+@@ -129,7 +126,7 @@
+           endif
+         endif
+      elseif( prop )
+-        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1, thepoints ))
++        if(SkillCheck( who, ATTRIBUTE_DETECTING_HIDDEN, -1) &gt; 0 )
+ 	      PrintTextAbovePrivate( item, &quot;Trapped&quot;, who);
+ 	      SetObjProperty( item, &quot;trapped&quot;, 1 );
+         else
+@@ -182,7 +179,7 @@
+ 
+ function Found( finder, hider ) //FIXME: should not be 100% certain to find a hider if your skill is greater
+   var hide_skill := AP_GetSkill( hider, ATTRIBUTE_HIDING );
+-  if (SkillCheck( finder, ATTRIBUTE_DETECTING_HIDDEN, hide_skill, thepoints ) )
++  if (SkillCheck( finder, ATTRIBUTE_DETECTING_HIDDEN, hide_skill) &gt; 0)
+     return 1;
+   else
+     return 0;
+
+Modified: trunk/096/pkg/skills/detecthidden/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/detecthidden/pkg.cfg	2005-09-29 04:29:49 UTC (rev 306)
++++ trunk/096/pkg/skills/detecthidden/pkg.cfg	2005-09-29 05:07:29 UTC (rev 307)
+@@ -1,6 +1,6 @@
+ Enabled         1
+ Name            detecthidden
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.0
+ 
+
+Modified: trunk/096/pkg/skills/evalint/evalInt.src
+===================================================================
+--- trunk/096/pkg/skills/evalint/evalInt.src	2005-09-29 04:29:49 UTC (rev 306)
++++ trunk/096/pkg/skills/evalint/evalInt.src	2005-09-29 05:07:29 UTC (rev 307)
+@@ -1,127 +1,133 @@
+-//
+-// Last updated: 26-11-03
+-//
++// //$Id$
+ 
+ use uo;
+-use unicode;
+ 
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ 
+-program EvaluatingIntelligence(who)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  SendSysMessageUC(who, CAscZ(&quot;What do you wish to evaluate?&quot;), &quot;ENG&quot;);
+-  var subject := Target(who);
+-  // target checks begin here
+-  if(!subject)
+-    return;
+-  elseif(subject.serial == who.serial)
+-    PrintTextAbovePrivateUC(who, CAscZ(&quot;You know your mental capabilities quite well enough already.&quot;), &quot;ENG&quot;, who);
+-    return;
+-  elseif(subject.graphic == 0x2006)
+-    SendSysMessageUC(who, CAscZ(&quot;Looks pretty dead to you.&quot;), &quot;ENG&quot;);
+-    return;
+-  elseif(!subject.isA(POLCLASS_MOBILE))
+-    SendSysMessageUC(who, CAscZ(&quot;That cannot be evaluated.&quot;), &quot;ENG&quot;);
+-    return;
+-  endif
+-  // variables for sys messages
+-  var intell := getIntell(GetIntelligence(subject), subject.graphic, subject.gender);
+-  var mentalStreng := getMentalStreng(CInt(CInt(GetMana(subject))/CDbl(GetMaxMana(subject))*100));
+-  var skill := GetEffectiveSkill(who, SKILLID_EVALINT);
+-  // adjust succeed and fail msgs here
+-  var strMsg, strFail;
+-  if(subject.graphic != 0x190 &amp;&amp; subject.graphic != 0x191)
+-    strMsg := &quot;That creature&quot;;
+-    strFail := &quot;that creature's mental abilities.&quot;;
+-  else
+-    strMsg := subject.name;
+-    if(upper(subject.name[len(subject.name)]) != &quot;S&quot; || lower(subject.name[len(subject.name)]) != &quot;s&quot; ) 
+-      strFail := subject.name + &quot;'s mental abilities.&quot;;  
+-    else 
+-      strFail := subject.name + &quot;' mental abilities.&quot;; 
+-    endif
+-  endif
+-  var pts := CInt(GetEffectiveSkill(who, SKILLID_EVALINT) + 1) *3;
+-  if (pts &lt; 30) 
+-    pts := 30;
+-  endif
+-  if(CheckSkill(who, SKILLID_EVALINT, -1, pts))
+-    PrintTextAbovePrivateUC(subject, CAscZ(strMsg + &quot; looks &quot; + intell + &quot;.&quot; ), &quot;ENG&quot;, who);	
+-    // player's evalint skill equal/greater than 76 can get mental strength info
+-    if(skill &gt;= 76)
+-      PrintTextAbovePrivateUC(subject, CAscZ(strMsg + &quot; is at &quot; + mentalStreng + &quot; mental strength.&quot;), &quot;ENG&quot;, who);
+-    endif
+-  else
+-      PrintTextAbovePrivateUC(subject, CAscZ(&quot;You cannot judge &quot; + strFail), &quot;ENG&quot;, who);
+-    endif
++program skill_EvaluatingIntelligence(who)
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	SendSysMessage(who, &quot;What do you wish to evaluate?&quot;);
++	var subject := Target(who);
++	// target checks begin here
++	if(!subject)
++		return 0;
++	elseif(subject.serial == who.serial)
++		PrintTextAbovePrivate(who, &quot;You know your mental capabilities quite well enough already.&quot;, who);
++		return 0;
++	elseif(subject.graphic == 0x2006)
++		SendSysMessage(who, &quot;Looks pretty dead to you.&quot;);
++		return 0;
++	elseif(!subject.isA(POLCLASS_MOBILE))
++		SendSysMessage(who, &quot;That cannot be evaluated.&quot;);
++		return 0;
++	endif
++
++	// variables for sys messages
++	var intell := getIntell(AP_GetStat(subject, &quot;Intelligence&quot;), subject.graphic, subject.gender);
++	var mental_percentage := CInt(CInt(AP_GetVital(subject, &quot;Mana&quot;))/CDbl(AP_GetVitalMaximumValue(subject, &quot;Mana&quot;))*100);
++	var mentalStrength := getMentalStrength(mental_percentage);
++
++	// adjust succeed and fail msgs here
++	var strMsg, strFail;
++	if(subject.graphic != 0x190 &amp;&amp; subject.graphic != 0x191)
++		strMsg := &quot;That creature&quot;;
++		strFail := &quot;that creature's mental abilities.&quot;;
++	else
++		strMsg := subject.name;
++		if(upper(subject.name[len(subject.name)]) != &quot;S&quot; || lower(subject.name[len(subject.name)]) != &quot;s&quot; )
++			strFail := subject.name + &quot;'s mental abilities.&quot;;
++		else
++			strFail := subject.name + &quot;' mental abilities.&quot;;
++		endif
++	endif
++	if(SkillCheck(who, ATTRIBUTE_EVALUATING_INTELLIGENCE, -1) &gt; 0)
++		PrintTextAbovePrivate(subject, strMsg + &quot; looks &quot; + intell + &quot;.&quot;, who);
++		// player's evalint skill equal/greater than 76 can get mental strength info
++		var skill := AP_GetSkill(who, ATTRIBUTE_EVALUATING_INTELLIGENCE);
++		if(skill &gt;= 76)
++			PrintTextAbovePrivate(subject, strMsg + &quot; is at &quot; + mentalStrength + &quot; mental strength.&quot;, who);
++		endif
++		return 1;
++	else
++		PrintTextAbovePrivate(subject, &quot;You cannot judge &quot; + strFail, who);
++		return 0;
++	endif
++
+ endprogram
+ 
+-// intelligence
++
+ function getIntell(subject, graphic, gender)
+-  // fix sys msgs
+-  var strSuper, strGender;
+-  if(graphic != 0x190 &amp;&amp; graphic != 0x191)
+-    strSuper := &quot;supernaturally&quot;;
+-    strGender := &quot;it&quot;;
+-  else
+-    strSuper := &quot;superhumanly&quot;;
+-    if(gender == 0)
+-      strGender := &quot;he&quot;;
+-    elseif(gender == 1)
+-      strGender := &quot;she&quot;;
+-    endif
+-  endif
+-  if(subject &gt;= 100)
+-    return strSuper + &quot; intelligent in a manner you cannot comprehend&quot;;
+-  elseif(subject &gt;= 99)
+-    return &quot;like a definite genius&quot;;
+-  elseif(subject &gt;= 89)
+-    return &quot;like a formidable intellect, well beyond even the extraordinary&quot;;
+-  elseif(subject &gt;= 79)
+-    return &quot;extraordinarily intelligent&quot;;
+-  elseif(subject &gt;= 69)
+-    return &quot;extremely intelligent&quot;;
+-  elseif(subject &gt;= 59)
+-    return &quot;very intelligent&quot;;
+-  elseif(subject &gt;= 49)
+-    return &quot;moderately intelligent&quot;;
+-  elseif(subject &gt;= 39)
+-    return &quot;about average&quot;;
+-  elseif(subject &gt;= 29)
+-    return &quot;not the brightest&quot;;
+-  elseif(subject &gt;= 19)
+-    return &quot;fairly stupid&quot;;
+-  elseif(subject &gt;= 9)
+-    return &quot;slightly less intelligent than a rock&quot;;
+-  else
+-    return &quot;smarter than a rock, but dumber than a piece of wood&quot;;
+-  endif
++
++	var strSuper, strGender;
++	if(graphic != 0x190 &amp;&amp; graphic != 0x191)
++		strSuper := &quot;supernaturally&quot;;
++		strGender := &quot;it&quot;;
++	else
++		strSuper := &quot;superhumanly&quot;;
++		if(gender == 0)
++			strGender := &quot;he&quot;;
++		elseif(gender == 1)
++			strGender := &quot;she&quot;;
++		endif
++	endif
++	if(subject &gt;= 100)
++		return strSuper + &quot; intelligent in a manner you cannot comprehend&quot;;
++	elseif(subject &gt;= 99)
++		return &quot;like a definite genius&quot;;
++	elseif(subject &gt;= 89)
++		return &quot;like a formidable intellect, well beyond even the extraordinary&quot;;
++	elseif(subject &gt;= 79)
++		return &quot;extraordinarily intelligent&quot;;
++	elseif(subject &gt;= 69)
++		return &quot;extremely intelligent&quot;;
++	elseif(subject &gt;= 59)
++		return &quot;very intelligent&quot;;
++	elseif(subject &gt;= 49)
++		return &quot;moderately intelligent&quot;;
++	elseif(subject &gt;= 39)
++		return &quot;about average&quot;;
++	elseif(subject &gt;= 29)
++		return &quot;not the brightest&quot;;
++	elseif(subject &gt;= 19)
++		return &quot;fairly stupid&quot;;
++	elseif(subject &gt;= 9)
++		return &quot;slightly less intelligent than a rock&quot;;
++	else
++		return &quot;smarter than a rock, but dumber than a piece of wood&quot;;
++	endif
++
+ endfunction
+ 
+-// mental strength
+-function getMentalStreng(subject)
+-  if(subject &gt;= 100)
+-    return &quot;one-hundred percent&quot;;
+-  elseif(subject &gt;= 90)
+-    return &quot;ninety percent&quot;;
+-  elseif(subject &gt;= 80)
+-    return &quot;eighty percent&quot;;
+-  elseif(subject &gt;= 70)
+-    return &quot;seventy percent&quot;;
+-  elseif(subject &gt;= 60)
+-    return &quot;sixty percent&quot;;
+-  elseif(subject &gt;= 50)
+-    return &quot;fifty percent&quot;;
+-  elseif(subject &gt;= 40)
+-    return &quot;forty percent&quot;;
+-  elseif(subject &gt;= 30)
+-    return &quot;thirty percent&quot;;
+-  elseif(subject &gt;= 20)
+-    return &quot;twenty percent&quot;;
+-  elseif(subject &gt;= 10)
+-    return &quot;low&quot;;
+-  else
+-    return &quot;very low&quot;;
+-  endif
++
++function getMentalStrength(subject)
++
++	if(subject &gt;= 100)
++		return &quot;one-hundred percent&quot;;
++	elseif(subject &gt;= 90)
++		return &quot;ninety percent&quot;;
++	elseif(subject &gt;= 80)
++		return &quot;eighty percent&quot;;
++	elseif(subject &gt;= 70)
++		return &quot;seventy percent&quot;;
++	elseif(subject &gt;= 60)
++		return &quot;sixty percent&quot;;
++	elseif(subject &gt;= 50)
++		return &quot;fifty percent&quot;;
++	elseif(subject &gt;= 40)
++		return &quot;forty percent&quot;;
++	elseif(subject &gt;= 30)
++		return &quot;thirty percent&quot;;
++	elseif(subject &gt;= 20)
++		return &quot;twenty percent&quot;;
++	elseif(subject &gt;= 10)
++		return &quot;low&quot;;
++	else
++		return &quot;very low&quot;;
++	endif
++
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/evalint/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/evalint/pkg.cfg	2005-09-29 04:29:49 UTC (rev 306)
++++ trunk/096/pkg/skills/evalint/pkg.cfg	2005-09-29 05:07:29 UTC (rev 307)
+@@ -1,5 +1,5 @@
+ Enabled         1
+ Name            evalint
+ Maintainer      Distro Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ Version         1.1
+
+Modified: trunk/096/pkg/skills/hiding/hiding.src
+===================================================================
+--- trunk/096/pkg/skills/hiding/hiding.src	2005-09-29 04:29:49 UTC (rev 306)
++++ trunk/096/pkg/skills/hiding/hiding.src	2005-09-29 05:07:29 UTC (rev 307)
+@@ -21,10 +21,7 @@
+ 
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 	EraseObjProperty(who, &quot;HealTimer&quot;);
+-	var thepoints := CInt(AP_GetSkill(who, ATTRIBUTE_HIDING) + 10);
+-	if( thepoints &lt; 20 )
+-		thepoints := 20;
+-	endif
++
+ 	if( who.warmode )
+ 		who.SetWarMode(0);
+ 	endif
+@@ -34,11 +31,15 @@
+ 		PrintTextAbovePrivate(who, &quot;You cannot hide as there are hostiles in view!&quot;, who);
+ 		return 0;
+ 	endif
+-	if( SkillCheck(who, ATTRIBUTE_HIDING, -1, thepoints) &gt; 0 )
++	if( SkillCheck(who, ATTRIBUTE_HIDING, -1) &gt; 0 )
+ 		who.hidden := 1;
+-		PrintTextAbovePrivate(who, &quot;You have hidden yourself well.&quot;, who);
++		if( GetObjProperty(who, &quot;#Stealth&quot;) != 1)
++			PrintTextAbovePrivate(who, &quot;You have hidden yourself well.&quot;, who);
++		endif
+ 	else
+-		PrintTextAbovePrivate(who, &quot;You can't seem to hide here.&quot;, who);
++		if( GetObjProperty(who, &quot;#Stealth&quot;) != 1)
++			PrintTextAbovePrivate(who, &quot;You can't seem to hide here.&quot;, who);
++		endif
+ 		who.hidden := 0;
+ 	endif
+ 
+
+Modified: trunk/096/pkg/skills/spiritspeak/spiritSpeak.src
+===================================================================
+--- trunk/096/pkg/skills/spiritspeak/spiritSpeak.src	2005-09-29 04:29:49 UTC (rev 306)
++++ trunk/096/pkg/skills/spiritspeak/spiritSpeak.src	2005-09-29 05:07:29 UTC (rev 307)
+@@ -42,7 +42,7 @@
+ 	PlaySoundEffect(who, SFX_SKILL_SPIRITSPEAK);
+ 
+ 
+-  	if(SkillCheck(who, ATTRIBUTE_SPIRIT_SPEAK, -1,  my_skill) &gt; 0)
++  	if(SkillCheck(who, ATTRIBUTE_SPIRIT_SPEAK, -1) &gt; 0)
+ 		foreach corpse in ListItemsNearLocationOfType( who.x, who.y, who.z, SS_RANGE, 0x2006 )
+ 			channelFromCorpse(who, corpse, my_skill);
+ 		endforeach
+
+Modified: trunk/096/pkg/skills/stealth/stealth.src
+===================================================================
+--- trunk/096/pkg/skills/stealth/stealth.src	2005-09-29 04:29:49 UTC (rev 306)
++++ trunk/096/pkg/skills/stealth/stealth.src	2005-09-29 05:07:29 UTC (rev 307)
+@@ -39,12 +39,14 @@
+ 	endif
+ 
+ 	var my_Skill := AP_GetSkill(who, ATTRIBUTE_STEALTH) / 10;
+-	if(SkillCheck(who, ATTRIBUTE_STEALTH, -1, (my_Skill*10)) &gt; 0)
++	if(SkillCheck(who, ATTRIBUTE_STEALTH, -1) &gt; 0)
+ 		if( !who.hidden )
+ 			// Used RSTC because it runs the script in critical mode, thus
+ 			// ensuring the hiding attempt completes before the stealth
+ 			// script continues.
++			SetObjProperty(who, &quot;#Stealth&quot;, 1);
+ 			Run_Script_To_Completion(&quot;:hiding:hiding&quot;, who);
++			EraseObjProperty(who, &quot;#Stealth&quot;);
+ 			if ( !who.hidden )
+ 				SendSysMessage(who, &quot;You must be hidden to stealth.&quot;);
+ 				return 0;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000284.html">[Poldistro-svn] r306 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000286.html">[Poldistro-svn] r308 - in trunk/096/pkg/skills: alchemy alchemy/config anatomy/config animallore animallore/config armslore armslore/config begging begging/config blacksmithy blacksmithy/config bowcraft bowcraft/config camping camping/config carpentry carpentry/config cartography cartography/config cooking cooking/config detecthidden/config evalint/config fishing fishing/config forensicevaluation forensicevaluation/config healing healing/config herding herding/config hiding hiding/config inscription inscription/config itemid itemid/config lockpicking lockpicking/config lumberjacking lumberjacking/config magery magery/config meditation meditation/config mining mining/config musicianship musicianship/config poisoning poisoning/config removetrap removetrap/config spiritspeak spiritspeak/config stealing stealing/config stealth stealth/config tailoring tailoring/config taming taming/config tasteid tasteid/config tinkering tinkering/config tracking tracking/config veterinary veterinary/c! onfig
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#285">[ date ]</a>
+              <a href="thread.html#285">[ thread ]</a>
+              <a href="subject.html#285">[ subject ]</a>
+              <a href="author.html#285">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

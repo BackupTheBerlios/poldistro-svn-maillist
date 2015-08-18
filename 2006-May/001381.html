@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1412 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1412%20-%20trunk/096/scripts/include&In-Reply-To=%3C200605140616.k4E6GFuf028818%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001380.html">
+   <LINK REL="Next"  HREF="001382.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1412 - trunk/096/scripts/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1412%20-%20trunk/096/scripts/include&In-Reply-To=%3C200605140616.k4E6GFuf028818%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1412 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Sun May 14 08:16:15 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001380.html">[Poldistro-svn] r1411 - trunk/096/pkg/skills/evalint
+</A></li>
+        <LI>Next message: <A HREF="001382.html">[Poldistro-svn] r1413 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1381">[ date ]</a>
+              <a href="thread.html#1381">[ thread ]</a>
+              <a href="subject.html#1381">[ subject ]</a>
+              <a href="author.html#1381">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-14 08:16:14 +0200 (Sun, 14 May 2006)
+New Revision: 1412
+
+Added:
+   trunk/096/scripts/include/occupied.inc
+Log:
+
+
+Added: trunk/096/scripts/include/occupied.inc
+===================================================================
+--- trunk/096/scripts/include/occupied.inc	2006-05-14 05:43:28 UTC (rev 1411)
++++ trunk/096/scripts/include/occupied.inc	2006-05-14 06:16:14 UTC (rev 1412)
+@@ -0,0 +1,43 @@
++/* $Id$
++ *
++ * Purpose:
++ * Used to determine is a player is 'busy'
++ * E.G. - Meditating, casting a spell or something.
++ *
++ */
++
++use uo;
++
++/* 
++ * IsOccupied(mobile, doing:=0)
++ *
++ * Purpose 
++ * Determines if a mobile is already doing something.
++ *
++ * Parameters
++ * mobile:	Mobile to check on
++ * doing:	Activity to check on.
++ *		If nothing is passed, uses mobile.attached
++ *
++ */
++function IsOccupied(mobile, doing:=0)
++	if ( !doing )
++		return mobile.attached;
++	endif
++	
++	var activity_list := GetObjProperty(mobile, &quot;#Occupied&quot;);
++	var timer := activity_list[doing];
++	
++	if ( timer == -1 ) // Timer doesn't expire.
++		return 1;
++	elseif ( timer &lt; polcore().systime )
++		return 1;
++	endif
++	
++	return 0;
++endfunction
++
++/*
++ * SomeFunctionToAddADoingTimer()
++ *
++ */
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001380.html">[Poldistro-svn] r1411 - trunk/096/pkg/skills/evalint
+</A></li>
+	<LI>Next message: <A HREF="001382.html">[Poldistro-svn] r1413 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1381">[ date ]</a>
+              <a href="thread.html#1381">[ thread ]</a>
+              <a href="subject.html#1381">[ subject ]</a>
+              <a href="author.html#1381">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

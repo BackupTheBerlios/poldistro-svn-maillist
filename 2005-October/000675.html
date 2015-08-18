@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r701 - in trunk/096/pkg/mobiles/oldAI: . main
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r701%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20main&In-Reply-To=%3C200510292022.j9TKMpk4008192%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000674.html">
+   <LINK REL="Next"  HREF="000676.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r701 - in trunk/096/pkg/mobiles/oldAI: . main</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r701%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20main&In-Reply-To=%3C200510292022.j9TKMpk4008192%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r701 - in trunk/096/pkg/mobiles/oldAI: . main">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sat Oct 29 22:22:51 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000674.html">[Poldistro-svn] r700 - in trunk/096/pkg/mobiles/oldAI: . main
+</A></li>
+        <LI>Next message: <A HREF="000676.html">[Poldistro-svn] r702 - in trunk/096/pkg/skills: mining musicianship
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#675">[ date ]</a>
+              <a href="thread.html#675">[ thread ]</a>
+              <a href="subject.html#675">[ subject ]</a>
+              <a href="author.html#675">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-29 22:22:50 +0200 (Sat, 29 Oct 2005)
+New Revision: 701
+
+Modified:
+   trunk/096/pkg/mobiles/oldAI/chicken.src
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopChicken.inc
+Log:
+Fixed unused var reports.
+
+Modified: trunk/096/pkg/mobiles/oldAI/chicken.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/chicken.src	2005-10-29 20:17:13 UTC (rev 700)
++++ trunk/096/pkg/mobiles/oldAI/chicken.src	2005-10-29 20:22:50 UTC (rev 701)
+@@ -21,6 +21,8 @@
+ var npccfgfile := ReadConfigFile( &quot;::npcdesc&quot; );
+ var idlesnd1 := CInt(npccfgfile[me.npctemplate].idlesound1);
+ var idlesnd2 := CInt(npccfgfile[me.npctemplate].idlesound2);
++var waittime := 0;
++var ev := 0;
+ 
+ program KillPlayers()
+   SetWarMode( 0 );
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopChicken.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopChicken.inc	2005-10-29 20:17:13 UTC (rev 700)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopChicken.inc	2005-10-29 20:22:50 UTC (rev 701)
+@@ -2,7 +2,6 @@
+ const GFX_SHORN_SHEEP := 0xdf;
+ 
+ function main_AI_loop()
+-  var ev;
+   var wanders := 60;
+   var nextlay := CInt(ReadGameClock()+ 3600);
+   var nextbark := ReadGameClock()+ 30;
+@@ -41,7 +40,6 @@
+ endfunction
+ 
+ function RunLikeHell(opponent)
+-  var ev;
+   while((opponent)&amp;&amp; not (opponent.dead || opponent.hidden || opponent.concealed)&amp;&amp; (dist(me,opponent)&lt; 25))
+     RunAwayFrom(opponent);
+     repeat
+@@ -69,7 +67,7 @@
+   var ly := holder[2];
+   var loops := 0;
+   var opponent;
+-  var waittime := 0;
++  waittime := 0;
+   while(1)
+ 	if(!CloseIn(me, lx, ly))
+ 	  loops := loops + 1;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000674.html">[Poldistro-svn] r700 - in trunk/096/pkg/mobiles/oldAI: . main
+</A></li>
+	<LI>Next message: <A HREF="000676.html">[Poldistro-svn] r702 - in trunk/096/pkg/skills: mining musicianship
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#675">[ date ]</a>
+              <a href="thread.html#675">[ thread ]</a>
+              <a href="subject.html#675">[ subject ]</a>
+              <a href="author.html#675">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r595 - in trunk/096/pkg/systems/spawnSystem: . initializer www
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r595%20-%20in%20trunk/096/pkg/systems/spawnSystem%3A%20.%20initializer%20www&In-Reply-To=%3C200510130425.j9D4P2Q6026471%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000564.html">
+   <LINK REL="Next"  HREF="000566.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r595 - in trunk/096/pkg/systems/spawnSystem: . initializer www</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r595%20-%20in%20trunk/096/pkg/systems/spawnSystem%3A%20.%20initializer%20www&In-Reply-To=%3C200510130425.j9D4P2Q6026471%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r595 - in trunk/096/pkg/systems/spawnSystem: . initializer www">austin at berlios.de
+       </A><BR>
+    <I>Thu Oct 13 06:25:02 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000564.html">[Poldistro-svn] r594 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+        <LI>Next message: <A HREF="000566.html">[Poldistro-svn] r596 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#565">[ date ]</a>
+              <a href="thread.html#565">[ thread ]</a>
+              <a href="subject.html#565">[ subject ]</a>
+              <a href="author.html#565">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-13 06:25:01 +0200 (Thu, 13 Oct 2005)
+New Revision: 595
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src
+   trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+   trunk/096/pkg/systems/spawnSystem/www/spawnControl.src
+Log:
+Udpated include paths.
+Starting work on the web control interface.
+I think itll be easier to do first than the gump setup.
+
+Modified: trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src	2005-10-13 04:23:58 UTC (rev 594)
++++ trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src	2005-10-13 04:25:01 UTC (rev 595)
+@@ -1,13 +1,13 @@
+ use uo;
+ use os;
+ 
+-include &quot;:spawnsystem:include/groups&quot;;
+-include &quot;:spawnsystem:include/realms&quot;;
+-include &quot;:spawnsystem:include/regions&quot;;
+-include &quot;:spawnsystem:include/report&quot;;
++include &quot;:spawnsystem:groups&quot;;
++include &quot;:spawnsystem:realms&quot;;
++include &quot;:spawnsystem:regions&quot;;
++include &quot;:spawnsystem:report&quot;;
+ 
+ program FirstRun()
+-	SS_ReportText(&quot;Setting up spawner for first time use...&quot;);
++	SS_ReportText(&quot;Setting up spawner for first time use...&quot;, SPAWN_REPORT_CONSOLE+SPAWN_REPORT_SYSLOG);
+ 	
+ 	var start_cfg := ReadConfigFile(&quot;:spawnsystem:config/firstrun&quot;);
+ 	if ( start_cfg.errortext )
+
+Modified: trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/spawnSystem.src	2005-10-13 04:23:58 UTC (rev 594)
++++ trunk/096/pkg/systems/spawnSystem/spawnSystem.src	2005-10-13 04:25:01 UTC (rev 595)
+@@ -1,19 +1,23 @@
+ use uo;
+ use os;
+ 
+-include &quot;:spawnsystem:include/groups&quot;;
+-include &quot;:spawnsystem:include/realms&quot;;
+-include &quot;:spawnsystem:include/regions&quot;;
+-include &quot;:spawnsystem:include/report&quot;;
++include &quot;:spawnsystem:groups&quot;;
++include &quot;:spawnsystem:realms&quot;;
++include &quot;:spawnsystem:regions&quot;;
++include &quot;:spawnsystem:report&quot;;
+ 
+ program SpawnSystem()
+ 	SS_ReportText(&quot;---=[ SPAWNER HAS STARTED UP ]=---&quot;);
+ 	
+ 	if ( !GetGlobalProperty(&quot;SpawnSystem&quot;) )
+-		var script := Start_Script(&quot;:spawnSystem:initializer/firstRun&quot;);
++		var script := Start_Script(&quot;:spawnsystem:initializer/firstRun&quot;);
+ 		if ( script.errortext )
+ 			SS_ReportText(script.errortext);
+ 			return 0;
++		else
++			while ( script.pid )
++				sleep(1);
++			endwhile
+ 		endif
+ 	endif
+ 	
+
+Modified: trunk/096/pkg/systems/spawnSystem/www/spawnControl.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/www/spawnControl.src	2005-10-13 04:23:58 UTC (rev 594)
++++ trunk/096/pkg/systems/spawnSystem/www/spawnControl.src	2005-10-13 04:25:01 UTC (rev 595)
+@@ -0,0 +1,55 @@
++use uo;
++use os;
++use http;
++
++include &quot;:spawnsystem:groups&quot;;
++include &quot;:spawnsystem:realms&quot;;
++include &quot;:spawnsystem:regions&quot;;
++include &quot;:spawnsystem:report&quot;;
++
++CONST WWW_LVL_SSREALMS := 0x0;
++CONST WWW_LVL_SSREGION := 0x1;
++CONST WWW_LVL_SSGROUPS := 0x2;
++
++unload_scripts(&quot;&quot;);
++
++program www_SpawnControl()
++	WriteHTML(&quot;&lt;HTML&gt;&quot;);
++	WriteHTML(&quot;&lt;BODY&gt;&quot;);
++	WriteHTML(&quot;&lt;TITLE&gt;Spawn System Management&lt;/TITLE&gt;&quot;);
++	
++	case ( CInt(QueryParam(&quot;Level&quot;)) )
++		WWW_LVL_SSREALMS: ListRealms(); break;
++		//WWW_LVL_SSREGION: ListGroups(); break;
++		//WWW_LVL_SSGROUPS: ListGroups(); break;
++	endcase
++	
++	WriteHTML(&quot;&lt;/HTML&gt;&quot;);
++	WriteHTML(&quot;&lt;/BODY&gt;&quot;);
++	return 1;
++endprogram
++
++function ListRealms()
++	WriteHTML(&quot;&lt;TABLE BORDER='1' CELLPADDING='1' CELLSPACING='0' WIDTH='50%'&gt;&quot;);
++	WriteHTML(&quot;&lt;TR&gt;&quot;);
++	WriteHTML(&quot;&lt;TD&gt;Realm Name&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;/TR&gt;&quot;);
++	foreach realm_name in SS_GetRealmNames()
++		WriteHTML(&quot;&lt;TR&gt;&quot;);
++		WriteHTML(&quot;&lt;TD&gt;&quot;+realm_name+&quot;&lt;/TD&gt;&quot;);
++		WriteHTML(&quot;&lt;/TR&gt;&quot;);
++		sleepms(2);
++	endforeach
++	
++	WriteHTML(&quot;&lt;TR&gt;&quot;);
++	WriteHTML(&quot;&lt;TD&gt;&quot;);
++	WriteHTML(&quot;&lt;FORM METHOD='GET' NAME='FORM'&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='Name'&gt;&quot;);
++	WriteHTML(&quot;
++	WriteHTML(&quot;&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;/TR&gt;&quot;);
++	
++	WriteHTML(&quot;&lt;/TABLE&gt;&quot;);
++	
++	return 1;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000564.html">[Poldistro-svn] r594 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+	<LI>Next message: <A HREF="000566.html">[Poldistro-svn] r596 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#565">[ date ]</a>
+              <a href="thread.html#565">[ thread ]</a>
+              <a href="subject.html#565">[ subject ]</a>
+              <a href="author.html#565">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

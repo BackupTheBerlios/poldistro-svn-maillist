@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r97 - in trunk/096/pkg/mobiles/ai_brain: . include include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r97%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20include%20include/braincore&In-Reply-To=%3C200509081357.j88DveUv023032%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000078.html">
+   <LINK REL="Next"  HREF="000080.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r97 - in trunk/096/pkg/mobiles/ai_brain: . include include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r97%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20include%20include/braincore&In-Reply-To=%3C200509081357.j88DveUv023032%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r97 - in trunk/096/pkg/mobiles/ai_brain: . include include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep  8 15:57:40 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000078.html">[Poldistro-svn] r96 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc
+</A></li>
+        <LI>Next message: <A HREF="000080.html">[Poldistro-svn] r98 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#79">[ date ]</a>
+              <a href="thread.html#79">[ thread ]</a>
+              <a href="subject.html#79">[ subject ]</a>
+              <a href="author.html#79">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-08 15:57:40 +0200 (Thu, 08 Sep 2005)
+New Revision: 97
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/brain.src
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc
+   trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/brain.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/brain.src	2005-09-08 13:05:52 UTC (rev 96)
++++ trunk/096/pkg/mobiles/ai_brain/brain.src	2005-09-08 13:57:40 UTC (rev 97)
+@@ -51,13 +51,15 @@
+ 	set_critical(1);
+ 	StartupScripts();
+ 	
++	sleep(1);
++	
+ 	while ( npc )
+ 		var ev;
+ 		if ( !sleep_mode )
+ 			RunCycleScript();			
+-			ev := Wait_For_Event(g_settings[&quot;cycle_wait&quot;]);
++			ev := Wait_For_Event(g_settings[&quot;CycleWait&quot;]);
+ 		else
+-			ev := Wait_For_Event(g_settings[&quot;sleep_wait&quot;]);
++			ev := Wait_For_Event(g_settings[&quot;SleepWait&quot;]);
+ 		endif
+ 		
+ 		if ( !ev )
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-08 13:05:52 UTC (rev 96)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-08 13:57:40 UTC (rev 97)
+@@ -139,7 +139,7 @@
+ 		// .source	: What sent the double click
+ 		SYSEVENT_DOUBLECLICKED:
+ 			if ( g_scripts.Exists(&quot;DblClick&quot;) )
+-				if ( Distance(event.source, npc) &lt;= g_settings[&quot;dbl_click_range&quot;] )
++				if ( Distance(event.source, npc) &lt;= g_settings[&quot;DblClickRange&quot;] )
+ 					var process := GetNerveProcess(npc, &quot;DblClick&quot;, g_nerves);
+ 					if ( !process )
+ 						StartNerve(npc, &quot;DblClick&quot;, g_scripts[&quot;DblClick&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;DblClick&quot;].flags, g_nerves);
+@@ -292,7 +292,7 @@
+ 	   // and telling it what event it sent that has finished
+ 	   // being processed.
+ 	   if ( event.process )
+-		(event.process).SendEvent(struct{&quot;type&quot;:=NPCEVENT_DONE, &quot;source&quot;:=event.type});
++		(event.process).SendEvent(struct{&quot;type&quot;:=NPCEVENT_DONE, &quot;evsource&quot;:=event.type});
+ 	   endif
+ 
+ 	   set_priority(old_priority);
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-08 13:05:52 UTC (rev 96)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-08 13:57:40 UTC (rev 97)
+@@ -71,7 +71,7 @@
+ 	// * Events that do not have a core range check.
+ 	//
+ 	if ( g_scripts.Exists(&quot;DblClick&quot;) )
+-		EnableEvents(SYSEVENT_DOUBLECLICKED);
++		EnableEvents(SYSEVENT_DOUBLECLICKED, 20);
+ 	endif
+ 	if ( g_scripts.Exists(&quot;ItemGiven&quot;) )
+ 		EnableEvents(SYSEVENT_ITEM_GIVEN);
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc	2005-09-08 13:05:52 UTC (rev 96)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc	2005-09-08 13:57:40 UTC (rev 97)
+@@ -74,6 +74,7 @@
+ 	var settings := dictionary;
+ 	foreach setting_name in (setting_list.keys())
+ 		settings[setting_name] := UnPack(setting_list[setting_name]);
++		
+ 		sleepms(2);
+ 	endforeach
+ 
+@@ -115,7 +116,7 @@
+ 	// * Load config defaults first
+ 	//
+ 	var npc_elem := NPC_GetNPCConfig(source);
+-
++	
+ 	var script_list := GetConfigStringDictionary(npc_elem, &quot;AIScript&quot;);
+ 	var flag_list := GetConfigStringDictionary(npc_elem, &quot;AIScriptFlag&quot;);
+ 
+@@ -123,6 +124,7 @@
+ 	foreach script_type in (script_list.keys())
+ 		var temp := struct;
+ 		temp.+script := script_list[script_type];
++		
+ 		temp.+flags := 0x0;
+ 		if ( flag_list[script_type] )
+ 			temp.flags := UnPack(flag_list[script_type]);
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc	2005-09-08 13:05:52 UTC (rev 96)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc	2005-09-08 13:57:40 UTC (rev 97)
+@@ -44,7 +44,7 @@
+ 		parsed.package := &quot;&quot;;
+ 		parsed.template := template_name;
+ 	else
+-		parsed.package := template_name[colon_a+1, colon_b-1];
++		parsed.package := template_name[colon_a+1, colon_b-2];
+ 		parsed.template := template_name[colon_b+1, Len(template_name)];
+ 	endif
+ 
+@@ -70,7 +70,14 @@
+ 	endif
+ 	
+ 	var npc_cfg := ReadConfigFile(&quot;:&quot;+template.package+&quot;:npcdesc&quot;);
++	if ( npc_cfg.errortext )
++		return error{&quot;errortext&quot;:=&quot;Error - NPC_GetNPCConfig():: Could not open :&quot;+template.package+&quot;:npcdesc -&gt;&quot;+npc_cfg.errortext};
++	endif
++	
+ 	var cfg_elem := npc_cfg[template.template];
++	if ( cfg_elem.errortext )
++		return error{&quot;errortext&quot;:=&quot;Error - NPC_GetNPCConfig():: Could not find elem [&quot;+template.template+&quot;] -&gt;&quot;+cfg_elem.errortext};
++	endif
+ 	
+ 	return cfg_elem;
+ endfunction
+
+Modified: trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-08 13:05:52 UTC (rev 96)
++++ trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-08 13:57:40 UTC (rev 97)
+@@ -1,6 +1,6 @@
+ NPCTemplate TestNPC
+ {
+-	Name		&lt;random&gt;
++	Name		Test Bitch NPC
+ 	Script		:ai_brain:brain
+ 	ObjType		0x190
+ 	Color		0
+@@ -21,6 +21,7 @@
+ 	AISetting	SleepWait	i1000
+ 	AISetting	ListenRange	i10
+ 	AISetting	AreaSize	i5
++	AISetting	DblClickRange	i10
+ 	AISetting	HearSpeech	i1
+ 	AISetting	HearGhosts	i1
+ 	
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000078.html">[Poldistro-svn] r96 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc
+</A></li>
+	<LI>Next message: <A HREF="000080.html">[Poldistro-svn] r98 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#79">[ date ]</a>
+              <a href="thread.html#79">[ thread ]</a>
+              <a href="subject.html#79">[ subject ]</a>
+              <a href="author.html#79">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

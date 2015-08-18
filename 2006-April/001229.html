@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1257 - trunk/096/pkg/systems/spawnSystem
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1257%20-%20trunk/096/pkg/systems/spawnSystem&In-Reply-To=%3C200604300317.k3U3H519000434%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001228.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1257 - trunk/096/pkg/systems/spawnSystem</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1257%20-%20trunk/096/pkg/systems/spawnSystem&In-Reply-To=%3C200604300317.k3U3H519000434%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1257 - trunk/096/pkg/systems/spawnSystem">austin at berlios.de
+       </A><BR>
+    <I>Sun Apr 30 05:17:05 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001228.html">[Poldistro-svn] r1256 - trunk/uomul
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1229">[ date ]</a>
+              <a href="thread.html#1229">[ thread ]</a>
+              <a href="subject.html#1229">[ subject ]</a>
+              <a href="author.html#1229">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-04-30 05:17:00 +0200 (Sun, 30 Apr 2006)
+New Revision: 1257
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+Log:
+Comments for whats left to do.
+
+Modified: trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/spawnSystem.src	2006-04-28 15:25:27 UTC (rev 1256)
++++ trunk/096/pkg/systems/spawnSystem/spawnSystem.src	2006-04-30 03:17:00 UTC (rev 1257)
+@@ -8,7 +8,21 @@
+ 
+ program SpawnSystem()
+ 	SS_ReportText(&quot;---=[ SPAWNER HAS STARTED UP ]=---&quot;);
++	Initialize();
+ 	
++	while ( 1 )
++		// Go through all realms -&gt; regions -&gt; groups.
++		// Determine if it is time to spawn the group. If so, start its engine.
++		// Save when it needs to run again (polcore().systime)
++		
++		// Determine when this needs to run again (1 second for now cause im lazy)
++		sleep(1);
++	endwhile
++	
++	return 1;
++endprogram
++
++function Initialize()
+ 	if ( !GetGlobalProperty(&quot;SpawnSystem&quot;) )
+ 		var script := Start_Script(&quot;:spawnsystem:initializer/firstRun&quot;);
+ 		if ( script.errortext )
+@@ -22,4 +36,4 @@
+ 	endif
+ 	
+ 	return 1;
+-endprogram
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001228.html">[Poldistro-svn] r1256 - trunk/uomul
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1229">[ date ]</a>
+              <a href="thread.html#1229">[ thread ]</a>
+              <a href="subject.html#1229">[ subject ]</a>
+              <a href="author.html#1229">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

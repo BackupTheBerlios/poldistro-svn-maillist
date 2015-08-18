@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1072 - in trunk/096/pkg/commands: config gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1072%20-%20in%20trunk/096/pkg/commands%3A%20config%20gm&In-Reply-To=%3C200511271302.jARD2BJs020996%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001042.html">
+   <LINK REL="Next"  HREF="001044.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1072 - in trunk/096/pkg/commands: config gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1072%20-%20in%20trunk/096/pkg/commands%3A%20config%20gm&In-Reply-To=%3C200511271302.jARD2BJs020996%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1072 - in trunk/096/pkg/commands: config gm">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 27 14:02:11 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001042.html">[Poldistro-svn] r1071 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001044.html">[Poldistro-svn] r1073 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1043">[ date ]</a>
+              <a href="thread.html#1043">[ thread ]</a>
+              <a href="subject.html#1043">[ subject ]</a>
+              <a href="author.html#1043">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-27 14:01:54 +0100 (Sun, 27 Nov 2005)
+New Revision: 1072
+
+Modified:
+   trunk/096/pkg/commands/config/info.cfg
+   trunk/096/pkg/commands/gm/info.src
+Log:
+Support for storage areas and privileges.
+
+Modified: trunk/096/pkg/commands/config/info.cfg
+===================================================================
+--- trunk/096/pkg/commands/config/info.cfg	2005-11-27 12:29:33 UTC (rev 1071)
++++ trunk/096/pkg/commands/config/info.cfg	2005-11-27 13:01:54 UTC (rev 1072)
+@@ -50,6 +50,21 @@
+ 	Index	Storage
+ 	Index	Miscellaneous
+ }
++Elem	PrivList
++{
++	Priv	ignoredoors
++	Priv	seeinvisitems
++	Priv	seehidden
++	Priv	seeghosts
++	Priv	renameany
++	Priv	moveany
++	Priv	losany
++	Priv	invul
++	Priv	hearghosts
++	Priv	dblclickany
++	Priv	clotheany
++	Priv	freemove
++}
+ 
+ Elem	Index-General
+ {
+@@ -100,6 +115,21 @@
+ 	Group	Skills
+ }
+ 
++Elem	Index-Privileges
++{
++	Group	Privileges
++}
++
++Elem	Index-Storage
++{
++	AutoBox	1
++	Entry	member	Back_Pack	backpack	0	0
++	Group	Storage
++}
++
++
++
++
+ Group	NameAndTitles
+ {
+ 	AutoBox	1
+@@ -201,3 +231,13 @@
+ {
+ 	Entry	Attributes	Skill
+ }
++
++Group	Privileges
++{
++	Entry	Privileges
++}
++
++Group	Storage
++{
++	Entry	StorageAreas
++}
+\ No newline at end of file
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-11-27 12:29:33 UTC (rev 1071)
++++ trunk/096/pkg/commands/gm/info.src	2005-11-27 13:01:54 UTC (rev 1072)
+@@ -25,16 +25,9 @@
+ 
+ unload_scripts(&quot;&quot;);
+ 
+-var priv_names := array
+-{
+-	&quot;ignoredoors&quot;, &quot;seeinvisitems&quot;, &quot;seehidden&quot;, &quot;seeghosts&quot;,
+-	&quot;renameany&quot;, &quot;moveany&quot;, &quot;losany&quot;, &quot;invul&quot;, &quot;hearghosts&quot;,
+-	&quot;dblclickany&quot;, &quot;clotheany&quot;, &quot;freemove&quot;
+-};
+-
+ // Storing these globally just makes the script easier to use...
+ var info_cfg;			// info.cfg
+-var index_list; 		// info.cfg &quot;Index&quot; lines from Index elem
++var index_list; 		// info.cfg &quot;Index&quot; lines from Settings elem
+ var template;			// Template gump (so it doesn't need to be rebuilt)
+ 
+ program textcmd_Info(who, serial)
+@@ -78,19 +71,23 @@
+ 	var cfg_elem := info_cfg[&quot;Index-&quot;+index];
+ 	var groups := GetConfigStringArray(cfg_elem, &quot;Group&quot;);
+ 	var y_pos := START_Y;
++	BuildEntries(targ, gump, cfg_elem, y_pos);
+ 	foreach group in ( groups )
+ 		var group_elem := info_cfg[group];
+ 		BuildEntries(targ, gump, group_elem, y_pos);
+-		y_pos := y_pos+5;
+ 		sleepms(2);
+ 	endforeach
+ 
+ 	return gump;
+ endfunction
+ 
+-function BuildEntries(targ, byref gump, byref group_elem, byref y_pos)
+-	var entries := GetConfigStringArray(group_elem, &quot;Entry&quot;);
+-	if ( group_elem.AutoBox )
++function BuildEntries(targ, byref gump, byref cfg_elem, byref y_pos)
++	var entries := GetConfigStringArray(cfg_elem, &quot;Entry&quot;);
++	if ( entries.Size() &lt; 1 )
++		return 0;
++	endif
++	
++	if ( cfg_elem.AutoBox )
+ 		var num_entries := entries.Size();
+ 		GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, (num_entries*20));
+ 	endif
+@@ -107,6 +104,16 @@
+ 			&quot;attributes&quot;:
+ 				DisplayAttributes(targ, gump, entry, y_pos);
+ 				break;
++			&quot;privileges&quot;:
++				DisplayPrivileges(targ, gump, y_pos);
++				break;	
++			&quot;text&quot;:
++				GFTextLine(gump, 175, y_pos, 2100, entry);
++				y_pos := y_pos+20;
++				break;
++			&quot;storageareas&quot;:
++				DisplayStorageAreas(targ, gump, y_pos);
++				break;
+ 			&quot;blank&quot;:
+ 				y_pos := y_pos+20;
+ 				break;
+@@ -120,7 +127,8 @@
+ 		endcase
+ 		sleepms(2);
+ 	endforeach
+-
++	y_pos := y_pos+5;
++		
+ 	return 1;
+ endfunction
+ 
+@@ -163,7 +171,7 @@
+ 
+ function DisplayVitals(targ, byref gump, byref y_pos)
+ 	var vitals := AP_GetVitalNames();
+-	var num_vitals := vitals.size();
++	var num_vitals := vitals.Size();
+ 	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, (num_vitals*20));
+ 	foreach vital_name in ( vitals )
+ 		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+@@ -204,7 +212,7 @@
+ 		
+ 	foreach group in ( attributes )
+ 		num_attribs := group.Size();
+-		GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, num_attribs * 20);
++		GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, num_attribs*20);
+ 		if ( _group_iter &gt; 1 )
+ 			GFAddButton(gump, 460, START_Y+5, 2650, 2651, GF_PAGE_BTN, gump.cur_page-1);
+ 		endif
+@@ -231,6 +239,42 @@
+ 	return 1;
+ endfunction
+ 
++function DisplayPrivileges(targ, byref gump, byref y_pos)
++	var privs := info_cfg[&quot;PrivList&quot;];
++	privs := GetConfigStringArray(privs, &quot;Priv&quot;);
++	
++	var num_privs := privs.Size();
++	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, (num_privs*20));
++	foreach priv_name in ( privs )
++		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
++		GFTextLine(gump, 175, y_pos, 2100, priv_name);
++		GFTextRight(gump, 480, y_pos, 2100, targ.Enabled(priv_name));
++		y_pos := y_pos+20;
++		sleepms(2);
++	endforeach
++
++	return 1;
++endfunction
++
++function DisplayStorageAreas(targ, byref gump, byref y_pos)
++	
++	var storage_areas := CP_GetStorageAreaNames();
++	
++	var num_areas := storage_areas.Size();
++	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, (num_areas*20));
++	foreach area_name in ( storage_areas )
++		var container := CP_GetStorageContainerForMobile(targ, area_name, CP_NOCREATE);
++		if ( container )
++			GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
++		endif
++		GFTextLine(gump, 175, y_pos, 2100, area_name);
++		y_pos := y_pos+20;
++		sleepms(2);
++	endforeach
++
++	return 1;
++endfunction
++
+ function ParseEntryName(entry_name)
+ 	while ( entry_name[&quot;_&quot;] )
+ 		entry_name[&quot;_&quot;] := &quot; &quot;;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001042.html">[Poldistro-svn] r1071 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001044.html">[Poldistro-svn] r1073 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1043">[ date ]</a>
+              <a href="thread.html#1043">[ thread ]</a>
+              <a href="subject.html#1043">[ subject ]</a>
+              <a href="author.html#1043">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

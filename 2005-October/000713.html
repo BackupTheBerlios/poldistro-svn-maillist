@@ -1,0 +1,1497 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r739 - in trunk/096/pkg: commands/coun items/containers/corpse items/doors/config items/food/config skills/blacksmithy skills/bowcraft skills/carpentry skills/cartography skills/cartography/config skills/fishing systems/crafting/config systems/crafting/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r739%20-%20in%20trunk/096/pkg%3A%20commands/coun%20items/containers/corpse%20items/doors/config%20items/food/config%20skills/blacksmithy%20skills/bowcraft%20skills/carpentry%20skills/cartography%20skills/cartography/config%20skills/fishing%20systems/crafting/config%20systems/crafting/include&In-Reply-To=%3C200510310445.j9V4jL7g015138%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000712.html">
+   <LINK REL="Next"  HREF="000714.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r739 - in trunk/096/pkg: commands/coun items/containers/corpse items/doors/config items/food/config skills/blacksmithy skills/bowcraft skills/carpentry skills/cartography skills/cartography/config skills/fishing systems/crafting/config systems/crafting/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r739%20-%20in%20trunk/096/pkg%3A%20commands/coun%20items/containers/corpse%20items/doors/config%20items/food/config%20skills/blacksmithy%20skills/bowcraft%20skills/carpentry%20skills/cartography%20skills/cartography/config%20skills/fishing%20systems/crafting/config%20systems/crafting/include&In-Reply-To=%3C200510310445.j9V4jL7g015138%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r739 - in trunk/096/pkg: commands/coun items/containers/corpse items/doors/config items/food/config skills/blacksmithy skills/bowcraft skills/carpentry skills/cartography skills/cartography/config skills/fishing systems/crafting/config systems/crafting/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon Oct 31 05:45:21 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000712.html">[Poldistro-svn] r738 - in trunk/096/pkg/mobiles/timedScripts: . config include
+</A></li>
+        <LI>Next message: <A HREF="000714.html">[Poldistro-svn] r740 - in trunk/096/pkg: skills/cartography systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#713">[ date ]</a>
+              <a href="thread.html#713">[ thread ]</a>
+              <a href="subject.html#713">[ subject ]</a>
+              <a href="author.html#713">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-31 05:45:12 +0100 (Mon, 31 Oct 2005)
+New Revision: 739
+
+Added:
+   trunk/096/pkg/skills/cartography/CartMenu.cfg
+   trunk/096/pkg/skills/cartography/cartography.cfg
+   trunk/096/pkg/skills/cartography/encodeMap.src
+   trunk/096/pkg/skills/cartography/mapmakersPen.src
+Removed:
+   trunk/096/pkg/skills/cartography/makeMap.src
+Modified:
+   trunk/096/pkg/commands/coun/conceal.txt
+   trunk/096/pkg/commands/coun/moveto.txt
+   trunk/096/pkg/items/containers/corpse/corpseFunctions.inc
+   trunk/096/pkg/items/doors/config/icp.cfg
+   trunk/096/pkg/items/food/config/icp.cfg
+   trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src
+   trunk/096/pkg/skills/bowcraft/bowcraft.src
+   trunk/096/pkg/skills/carpentry/CarpMenu.cfg
+   trunk/096/pkg/skills/cartography/cartography.src
+   trunk/096/pkg/skills/cartography/config/icp.cfg
+   trunk/096/pkg/skills/cartography/itemdesc.cfg
+   trunk/096/pkg/skills/cartography/pkg.cfg
+   trunk/096/pkg/skills/fishing/fishnets.src
+   trunk/096/pkg/systems/crafting/config/craftConfig.cfg
+   trunk/096/pkg/systems/crafting/include/crafting.inc
+Log:
+
+
+
+Property changes on: trunk/096/pkg/commands/coun/conceal.txt
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/commands/coun/moveto.txt
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/items/containers/corpse/corpseFunctions.inc
+===================================================================
+--- trunk/096/pkg/items/containers/corpse/corpseFunctions.inc	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/items/containers/corpse/corpseFunctions.inc	2005-10-31 04:45:12 UTC (rev 739)
+@@ -101,6 +101,14 @@
+ 				i := i + 1;
+ 			endforeach
+ 			SendSysMessage(who, &quot;You place the items on the corpse.&quot;);
++			// The do/dowhile loop used here, is done to ensure that the loop
++			// runs at least once. do/dowhile runs as a Post-Condition loop,
++			// checking AFTER the loop. A while/endwhile loop is known as a
++			// Pre-Condition loop, checking before it runs the loop.
++			var orig_facing := cadaver.facing;
++			do
++				cadaver.facing := RandomInt(7) + 1;
++			dowhile( orig_facing == cadaver.facing );
+ 			var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, cadaver.realm);
+ 			sleep(30);
+ 			DestroyItem(cadaver);
+
+
+Property changes on: trunk/096/pkg/items/doors/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+
+Property changes on: trunk/096/pkg/items/food/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src	2005-10-31 04:45:12 UTC (rev 739)
+@@ -24,7 +24,7 @@
+ 		return 0;
+ 	endif
+ 	if(!tool in ListEquippedItems(who))
+-		if(tool.container.serial != who.backpack.serial)
++		if( !(tool in EnumerateItemsInContainer(who.backpack)) )
+ 			SendSysMessage(who, &quot;That item is not in your backpack nor equipped.&quot;);
+ 			return 0;
+ 		endif
+
+Modified: trunk/096/pkg/skills/bowcraft/bowcraft.src
+===================================================================
+--- trunk/096/pkg/skills/bowcraft/bowcraft.src	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/bowcraft/bowcraft.src	2005-10-31 04:45:12 UTC (rev 739)
+@@ -23,7 +23,7 @@
+ 		SendSysMessage(who, &quot;You cannot use that&quot;);
+ 		return 0;
+ 	endif
+-	if(tool.container.serial != who.backpack.serial)
++	if( !(tool in EnumerateItemsInContainer(who.backpack)) )
+ 		SendSysMessage(who, &quot;That item is not in your backpack.&quot;);
+ 		return 0;
+ 	endif
+
+
+Property changes on: trunk/096/pkg/skills/carpentry/CarpMenu.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/skills/cartography/CartMenu.cfg
+===================================================================
+--- trunk/096/pkg/skills/cartography/CartMenu.cfg	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/cartography/CartMenu.cfg	2005-10-31 04:45:12 UTC (rev 739)
+@@ -0,0 +1,40 @@
++# $Id$
++#
++#
++##########################################################################
++# Format for Crafting Menus Config Files:
++#
++#  Index Entry for Config:
++#
++#     Craftitem Index      &lt;- This is the Index. Contains the Sub Menu Names
++#     {
++#      Title	   Example      &lt;- HTML Name of the Menu
++#      Skill       cartography  &lt;- Skill the menu is for. Same as the ID's in pol
++#      SkillID     Cartography  &lt;- SkillID of the skill listed in Skill. Needs removed
++#      Group       Maps         &lt;- Used for each Sub Menu Name
++#     }
++#
++#  Sub Menu Entry for Config:
++#
++#     Craftitem RingMail   &lt;- Should match the Sub-Menu Group name in Index
++#     {
++#     	Item	RingmailGloves   &lt;- For each item in the sub-menu. You use the
++#                                   objtype name here, not the objtype.
++#     }
++#
++##########################################################################
++
++Craftitem Index
++{
++        Title   &lt;center&gt;Cartography Selection Menu&lt;/center&gt;
++        Skill   Cartography
++        SkillID Cartography
++	Group	Maps
++}
++
++Craftitem Maps
++{
++	Item	localmap
++	Item	regionalmap
++	Item	worldmap
++}
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/skills/cartography/CartMenu.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/skills/cartography/cartography.cfg
+===================================================================
+--- trunk/096/pkg/skills/cartography/cartography.cfg	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/cartography/cartography.cfg	2005-10-31 04:45:12 UTC (rev 739)
+@@ -0,0 +1,51 @@
++# $Id$
++#
++#
++##########################################################################
++# Format for cartography.cfg:
++#
++#     Element    0xf3f      &lt;- Objtype of the item
++#     {
++#      Name             local map   &lt;- Name of the item
++#      material         1           &lt;- Material Amount Required
++#      skill            1.0         &lt;- Skill Required of Carpentry to make xx.x formated
++#      difficulty       1.0         &lt;- Difficulty of creating this item xx.x formated
++#      points           1.0         &lt;- Points given for crafting this item, xx.x formated
++#      exceptional 1                &lt;- 0/1 Flag. 1 = Can be exceptional
++#      mark        1                &lt;- 0/1 Flag. 1 = Can retain maker's mark
++#     }
++#
++# Notes: 1.) Objtype in entry header must NOT use 0x0aaa format, but 0xaaa
++##########################################################################
++Element 0x6500
++{
++	name		local map
++	material	1
++	skill		10.0
++	difficulty	20.0
++	points		30.0
++	exceptional	0
++	mark		0
++}
++
++Element 0x6501
++{
++	name		regional map
++	material	1
++	skill		35.0
++	difficulty	50.0
++	points		70.0
++	exceptional	0
++	mark		0
++}
++
++Element 0x6502
++{
++	name		world map
++	material	1
++	skill		50.0
++	difficulty	80.0
++	points		100.0
++	exceptional	0
++	mark		0
++}
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/skills/cartography/cartography.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/skills/cartography/cartography.src
+===================================================================
+--- trunk/096/pkg/skills/cartography/cartography.src	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/cartography/cartography.src	2005-10-31 04:45:12 UTC (rev 739)
+@@ -1,78 +1,11 @@
++/* $Id$
++ *
++ */
+ use uo;
+-use os;
+ 
+-include &quot;include/objtype&quot;;
+-include &quot;include/client&quot;;
+-include &quot;include/canAccess&quot;;
++program skill_Cartography(who)
+ 
+-program go_go_gadget_map(who)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  var blank := Target(who);
+-  if(!blank)
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  endif
+-  if(blank.objtype != UOBJ_MAP1 || GetObjProperty(blank, &quot;decoder&quot;))
+-    SendSysMessage(who, &quot;You can only inscribe blank maps.&quot;);
+-    return;
+-  endif
+-  if(!can_access(who, blank))
+-    return;
+-  endif
+-  if((who.x &gt; 5120) &amp;&amp; (who.y &lt; 2304))
+-    SendSysMessage(who, &quot;You cannot chart dungeons.&quot;);
+-    return;
+-  endif
+-  var choice := SelectMenuItem2(who, &quot;Cartography&quot;);
+-  if(!choice)
+-	SendSysMessage(who, &quot;Cancelled&quot;);
+-    return;
+-  endif
+-  var props;
+-  case(choice.index)
+-	1: if(CheckSkill(who, SKILLID_CARTOGRAPHY, 20, 70))
+-	     props := array(&quot;local&quot;, who.x - 265, who.y - 260, who.x + 265, who.y + 260, 200, 200);
+-		 makemap(who, props, blank);
+-	   else
+-         SendSysMessage(who, &quot;You are not familiar enough with the area to draw the map.&quot;);
+-	     DestroyItem(blank);
+-	   endif
+-	2: if(CheckSkill(who, SKILLID_CARTOGRAPHY, 50, 100))
+-		 props := array(&quot;regional&quot;, who.x - 850, who.y - 800, who.x + 850, who.y + 800, 400, 400);
+-	     makemap(who, props, blank);
+-	   else
+-		 SendSysMessage(who, &quot;You are not familiar enough with the area to draw the map.&quot;);
+-	   	 DestroyItem(blank);
+-	   endif
+-	3: if(CheckSkill(who, SKILLID_CARTOGRAPHY, 80, 150))
+-	   	 props := array(&quot;world&quot;, 0, 0, 5119, 4095, 500, 400);
+-		 makemap(who, props, blank);
+-	   else
+-		 SendSysMessage(who, &quot;You are not familiar enough with the area to draw the map.&quot;);
+-	     DestroyItem(blank);
+-		 endif
+-  endcase
+-endprogram
++	SendSysMessage(who, &quot;You must use a mapmaker's pen to make maps.&quot;);
++	return 1;
+ 
+-function makemap(who, mapdef, mapitem)
+-  set_critical(1);
+-   releaseitem(mapitem);
+-   DestroyItem (mapitem);
+-   var map := CreateItemInBackpack( who, UOBJ_MAP2 );   
+-  set_critical(0);   
+-  SetName( map , (&quot;a completed &quot; + mapdef[1] + &quot; map&quot;) );
+-  if(mapdef[2] &lt; 0)
+-    mapdef[2] := 0;
+-  endif
+-  if(mapdef[3] &lt; 0)
+-    mapdef[3] := 0;
+-  endif
+-  map.xwest := mapdef[2];
+-  map.ynorth := mapdef[3];
+-  map.xeast := mapdef[4];
+-  map.ysouth := mapdef[5];
+-  map.gumpwidth := mapdef[6];
+-  map.gumpheight := mapdef[7];
+-  SendSysMessage(who, &quot;You successfully inscribe the map.&quot;);
+-endfunction
++endprogram
+
+Modified: trunk/096/pkg/skills/cartography/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/skills/cartography/config/icp.cfg	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/cartography/config/icp.cfg	2005-10-31 04:45:12 UTC (rev 739)
+@@ -1,7 +1,10 @@
++# $Id$
++#
++#
+ ICP Register
+ {
+         Name            Cartography
+-        Version         1.0
++        Version         1.1
+         Description     Cartography Skill
+ 
+         Creator         Distro Team
+
+Added: trunk/096/pkg/skills/cartography/encodeMap.src
+===================================================================
+--- trunk/096/pkg/skills/cartography/encodeMap.src	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/cartography/encodeMap.src	2005-10-31 04:45:12 UTC (rev 739)
+@@ -0,0 +1,62 @@
++/* $Id$
++ *
++ */
++use uo;
++use os;
++
++var mapdefs := array(   array( 0, &quot;Vesper&quot;, 0x0a4c, 0x0250, 0x0bf8, 0x03f4, 0xc8, 0xc8 ),
++			array( 1, &quot;Yew&quot;, 0x00ec, 0x02e5, 0x02fe, 0x04f5, 0xc8, 0xc8 ),
++			array( 2, &quot;Skara Brae&quot;, 0x020c, 0x0810, 0x03c0, 0x0994, 0xc8, 0xc8 ),
++			array( 3, &quot;Jhelom&quot;, 0x0440, 0x0df4, 0x05f8, 0x0fd8, 0xc8, 0xc8 ),
++			array( 4, &quot;Trinsic&quot;, 0x0700, 0x0a46, 0x0846, 0x0b88, 0xc8, 0xc8 ),
++			array( 5, &quot;Minoc&quot;, 0x0938, 0x0164, 0x0a92, 0x02be, 0xc8, 0xc8 ),
++			array( 6, &quot;Bucaneer's Den&quot;, 0x0a38, 0x0818, 0x0acf, 0x08d7, 0xc8, 0xc8 ),
++			array( 7, &quot;Serpent's Hold&quot;, 0x0a9a, 0x0d01, 0x0c1c, 0x0e37, 0xc8, 0xc8 ),
++			array( 8, &quot;Nujelm&quot;, 0x0d76, 0x0406, 0x0ef8, 0x0590, 0xc8, 0xc8 ),
++			array( 9, &quot;Magincia&quot;, 0x0dca, 0x07e6, 0x0eea, 0x08fa, 0xc8, 0xc8 ),
++			array( 10, &quot;Ocllo&quot;, 0x0dfe, 0x0998, 0x0eba, 0x0ab6, 0xc8, 0xc8 ),
++			array( 11, &quot;Moonglow&quot;, 0x103c, 0x0328, 0x127c, 0x05f8, 0xc8, 0xc8 ),
++			array( 12, &quot;Britain&quot;, 0x0444, 0x0574, 0x06c8, 0x0784, 0xc8, 0xc8 ),
++			array( 13, &quot;Minoc to Yew&quot;, 0x0000, 0x0100, 0x0900, 0x0c00, 0xc8, 0xc8 ),
++			array( 14, &quot;Minoc to Vesper&quot;, 0x09a3, 0x023c, 0x0b3e, 0x02ea, 0xc8, 0xc8 ),
++			array( 15, &quot;Britain to Trinsic&quot;, 0x0400, 0x0500, 0x0900, 0x0c00, 0xc8, 0xc8 ),
++			array( 16, &quot;Trinsic to Bucaneer's Den&quot;, 0x0700, 0x0700, 0x0c00, 0x0c00, 0xc8, 0xc8 ),
++			array( 17, &quot;Bucaneer's Den to Ocllo&quot;, 0x0a00, 0x0700, 0x0f00, 0x0c00, 0xc8, 0xc8 ),
++			array( 18, &quot;Trinsic to Jhelom&quot;, 0x0100, 0x0700, 0x0900, 0x0fff, 0xc8, 0xc8 ),
++			array( 19, &quot;Vesper to Nujelm&quot;, 0x0a4c, 0x0250, 0x0f00, 0x0600, 0xc8, 0xc8 ),
++			array( 20, &quot;Nujelm to Magincia&quot;, 0x0d00, 0x0400, 0x0f00, 0x0900, 0xc8, 0xc8 ),
++			array( 21, &quot;Bucaneer's Den to Magincia&quot;, 0x0a00, 0x0700, 0x0f00, 0x0a00, 0xc8, 0xc8 ),
++			array( 22, &quot;Magincia to Ocllo&quot;, 0x0d00, 0x0700, 0x0f00, 0x0900, 0xc8, 0xc8 ),
++			array( 23, &quot;Serpent's Hold to Ocllo&quot;, 0x0a00, 0x0a00, 0x0f00, 0x0f00, 0xc8, 0xc8 ),
++			array( 24, &quot;Moonglow to Nujelm&quot;, 0x0d00, 0x0300, 0x1300, 0x0600, 0xc8, 0xc8 ),
++			array( 25, &quot;Yew to Britain&quot;, 0x0000, 0x0200, 0x0700, 0x0800, 0xc8, 0xc8 ),
++			array( 26, &quot;Britain to Skara Brae&quot;, 0x0100, 0x0700, 0x06c8, 0x0a00, 0xc8, 0xc8 ),
++			array( 27, &quot;the World&quot;, 0x0, 0x0, 0x144f, 0x0fff, 0xc8, 0xc8 )
++		);
++
++program create_encodeMap( mapitem )
++
++	var mapname := CInt(GetObjProperty( mapitem, &quot;maptype&quot;));
++	foreach mapdef in mapdefs
++		if (mapdef[1] == mapname)
++			makethemap( mapitem, mapdef );
++			return 1;
++		endif
++	endforeach
++
++endprogram
++
++
++function makethemap( map, mapdef )
++
++	map.name := &quot;map of &quot; + mapdef[2];
++	map.xwest := hex(mapdef[3]);
++	map.ynorth := hex(mapdef[4]);
++	map.xeast := hex(mapdef[5]);
++	map.ysouth := hex(mapdef[6]);
++	map.gumpwidth := hex(mapdef[7]);
++	map.gumpheight := hex(mapdef[8]);
++
++	return 1;
++
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/skills/cartography/encodeMap.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/skills/cartography/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/cartography/itemdesc.cfg	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/cartography/itemdesc.cfg	2005-10-31 04:45:12 UTC (rev 739)
+@@ -1,353 +1,438 @@
++# $Id$
++#
++#
++Item 0x4FBF
++{
++	Name		mapmakerspen1
++	Graphic		0xFBF
++	Desc		mapmaker's pen
++	Script		:cartography:mapmakersPen
++	VendorSellsFor	8
++	VendorBuysFor	4
++}
++
++Item 0x4FC0
++{
++	Name		mapmakerspen2
++	Graphic		0xFBF
++	Desc		mapmaker's pen
++	Script		:cartography:mapmakersPen
++	VendorSellsFor	8
++	VendorBuysFor	4
++}
++
+ Map 0x14ed
+ {
+-    Name rolledmap
+-    VendorSellsFor  10
+-    VendorBuysFor   5
++	Name		rolledmap
++	VendorSellsFor	10
++	VendorBuysFor	5
+ }
++
+ Map 0x14ee
+ {
+-    Name rolledmap2
+-    VendorSellsFor  10
+-    VendorBuysFor   5
++	Name		rolledmap2
++	VendorSellsFor	10
++	VendorBuysFor	5
+ }
++
+ Map 0x14eb
+ {
+-    Name blankmap
+-    VendorSellsFor  10
+-    VendorBuysFor   5
++	Name		blankmap
++	VendorSellsFor	10
++	VendorBuysFor	5
+ }
+ 
+ Map 0x14ec
+ {
+-    Name blankmap_2
+-    VendorSellsFor  10
+-    VendorBuysFor   5
++	Name		blankmap_2
++	VendorSellsFor	10
++	VendorBuysFor	5
+ }
+ 
+-Map 0x641E 
++Map 0x641E
+ {
+-    Name map_nonedit
+-    Desc Blank Map
+-    Graphic 0x14EB
+-    VendorSellsFor  10
+-    VendorBuysFor   5
+-    Editable	0
++	Name		map_nonedit
++	Desc		Blank Map
++	Graphic		0x14EB
++	VendorSellsFor	10
++	VendorBuysFor	5
++	Editable	0
+ }
+ 
+ Map 0x6001
+ {
+-    Name blankmap2
+-    Desc Blank Map
+-    Graphic 0x14EB
+-    VendorSellsFor  10
+-    VendorBuysFor   5
++	Name		blankmap2
++	Desc		Blank Map
++	Graphic		0x14EB
++	VendorSellsFor	10
++	VendorBuysFor	5
+ }
+ 
+ Map 0x6402
+ {
+-    Desc Map of Vesper
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i0
+-    Editable 	1
++	Desc		Map of Vesper
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i0
++	Editable	1
+ }
++
+ Map 0x6403
+ {
+-    Desc Map of Yew
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i1
+-    Editable 	1
++	Desc		Map of Yew
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i1
++	Editable	1
+ }
++
+ Map 0x6404
+ {
+-    Desc Map of Skara Brae
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i2
+-    Editable 	1
++	Desc		Map of Skara Brae
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i2
++	Editable	1
+ }
++
+ Map 0x6405
+ {
+-    Desc Map of Jhelom
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i3
+-    Editable 	1
++	Desc		Map of Jhelom
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i3
++	Editable	1
+ }
++
+ Map 0x6406
+ {
+-    Desc Map of Trinsic
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i4
+-    Editable 	1
++	Desc		Map of Trinsic
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i4
++	Editable	1
+ }
++
+ Map 0x6407
+ {
+-    Desc Map of Minoc
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i5
+-    Editable 	1
++	Desc		Map of Minoc
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i5
++	Editable	1
+ }
++
+ Map 0x6408
+ {
+-    Desc Map of Bucaneer's Den
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i6
+-    Editable 	1
++	Desc		Map of Bucaneer's Den
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i6
++	Editable	1
+ }
++
+ Map 0x6409
+ {
+-    Desc Map of Serpent's Hold
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i7
+-    Editable 	1
++	Desc		Map of Serpent's Hold
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i7
++	Editable	1
+ }
++
+ Map 0x640A
+ {
+-    Desc Map of Nujelm
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i8
+-    Editable 	1
++	Desc		Map of Nujelm
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i8
++	Editable	1
+ }
++
+ Map 0x640B
+ {
+-    Desc Map of Magincia
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i9
+-    Editable 	1
++	Desc		Map of Magincia
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i9
++	Editable	1
+ }
++
+ Map 0x640C
+ {
+-    Desc Map of Ocllo
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i10
+-    Editable 	1
++	Desc		Map of Ocllo
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i10
++	Editable	1
+ }
++
+ Map 0x640D
+ {
+-    Desc Map of Moonglow
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i11
+-    Editable 	1
++	Desc		Map of Moonglow
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i11
++	Editable	1
+ }
++
+ Map 0x640E
+ {
+-    Desc Map of Britain
+-    Graphic 0x14ed
+-    VendorSellsFor  9
+-    VendorBuysFor   4
+-    Weight   1
+-    script makeMap
+-    cprop maptype i12
+-    Editable 	1
++	Desc		Map of Britain
++	Graphic		0x14ed
++	VendorSellsFor	9
++	VendorBuysFor	4
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i12
++	Editable	1
+ }
++
+ Map 0x640F
+ {
+-    Desc Map of Minoc to Yew
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i13
+-    Editable 	1
++	Desc		Map of Minoc to Yew
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i13
++	Editable	1
+ }
++
+ Map 0x6410
+ {
+-    Desc Map of Minoc to Vesper
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i14
+-    Editable 	1
++	Desc		Map of Minoc to Vesper
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i14
++	Editable	1
+ }
++
+ Map 0x6411
+ {
+-    Desc Map of Britain to Trinsic
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i15
+-    Editable 	1
++	Desc		Map of Britain to Trinsic
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i15
++	Editable	1
+ }
++
+ Map 0x6412
+ {
+-    Desc Map of Trinsic to Bucaneer's Den
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i16
+-    Editable 	1
++	Desc		Map of Trinsic to Bucaneer's Den
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i16
++	Editable	1
+ }
++
+ Map 0x6413
+ {
+-    Desc Map of Bucaneer's Den to Ocllo
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i17
+-    Editable 	1
++	Desc		Map of Bucaneer's Den to Ocllo
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i17
++	Editable	1
+ }
++
+ Map 0x6414
+ {
+-    Desc Map of Trinsic to Jhelom
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i18
+-    Editable 	1
++	Desc		Map of Trinsic to Jhelom
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i18
++	Editable	1
+ }
++
+ Map 0x6415
+ {
+-    Desc Map of Vesper to Nujelm
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i19
+-    Editable 	1
++	Desc		Map of Vesper to Nujelm
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i19
++	Editable	1
+ }
++
+ Map 0x6416
+ {
+-    Desc Map of Nujelm to Magincia
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i20
+-    Editable 	1
++	Desc		Map of Nujelm to Magincia
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i20
++	Editable	1
+ }
++
+ Map 0x6417
+ {
+-    Desc Map of Bucaneer's Den to Magincia
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i21
+-    Editable 	1
++	Desc		Map of Bucaneer's Den to Magincia
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i21
++	Editable	1
+ }
++
+ Map 0x6418
+ {
+-    Desc Map of Magincia to Ocllo
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i22
+-    Editable 	1
++	Desc		Map of Magincia to Ocllo
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i22
++	Editable	1
+ }
++
+ Map 0x6419
+ {
+-    Desc Map of Serpent's Hold to Ocllo
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i23
+-    Editable 	1
++	Desc		Map of Serpent's Hold to Ocllo
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i23
++	Editable	1
+ }
++
+ Map 0x641A
+ {
+-    Desc Map of Moonglow to Nujelm
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i24
+-    Editable 	1
++	Desc		Map of Moonglow to Nujelm
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i24
++	Editable	1
+ }
++
+ Map 0x641B
+ {
+-    Desc Map of Yew to Britain
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i25
+-    Editable 	1
++	Desc		Map of Yew to Britain
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i25
++	Editable	1
+ }
++
+ Map 0x641C
+ {
+-    Desc Map of Britain to Skara Brae
+-    Graphic 0x14ed
+-    VendorSellsFor  15
+-    VendorBuysFor   7
+-    Weight   1
+-    script makeMap
+-    cprop maptype i26
+-    Editable 	1
++	Desc		Map of Britain to Skara Brae
++	Graphic		0x14ed
++	VendorSellsFor	15
++	VendorBuysFor	7
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i26
++	Editable	1
+ }
++
+ Map 0x641D
+ {
+-    Desc Map of the World
+-    Graphic 0x14ed
+-    VendorSellsFor  75
+-    VendorBuysFor   37
+-    Weight   1
+-    script makeMap
+-    cprop maptype i27
+-    Editable 	1
++	Desc		Map of the World
++	Graphic		0x14ed
++	VendorSellsFor	75
++	VendorBuysFor	37
++	Weight		1
++	CreateScript	:cartography:encodeMap
++	cprop		maptype	i27
++	Editable	1
+ }
++
++Map 0x6500
++{
++	Name		localmap
++	Desc		a local map
++	Graphic		0x14EC
++	VendorSellsFor	25
++	VendorBuysFor	12
++	Weight		1
++	Editable	1
++}
++
++Map 0x6501
++{
++	Name		regionalmap
++	Desc		a regional map
++	Graphic		0x14EC
++	VendorSellsFor	30
++	VendorBuysFor	15
++	Weight		1
++	Editable	1
++}
++
++Map 0x6502
++{
++	Name		worldmap
++	Desc		a world map
++	Graphic		0x14ED
++	VendorSellsFor	75
++	VendorBuysFor	37
++	Weight		1
++	Editable	1
++}
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/skills/cartography/makeMap.src
+===================================================================
+--- trunk/096/pkg/skills/cartography/makeMap.src	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/cartography/makeMap.src	2005-10-31 04:45:12 UTC (rev 739)
+@@ -1,68 +0,0 @@
+-// created by zulu <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">zuluhotel at hotmail.com</A>
+-// march 3, 2000
+-// this is based on test code makemap.ecl
+-use uo;
+-use os;
+-
+-include &quot;include/objtype&quot;;
+-
+-var mapdefs := array(
+-array( 0, &quot;Vesper&quot;, 0x0a4c, 0x0250, 0x0bf8, 0x03f4, 0xc8, 0xc8 ),
+-array( 1, &quot;Yew&quot;, 0x00ec, 0x02e5, 0x02fe, 0x04f5, 0xc8, 0xc8 ),
+-array( 2, &quot;Skara Brae&quot;, 0x020c, 0x0810, 0x03c0, 0x0994, 0xc8, 0xc8 ),
+-array( 3, &quot;Jhelom&quot;, 0x0440, 0x0df4, 0x05f8, 0x0fd8, 0xc8, 0xc8 ),
+-array( 4, &quot;Trinsic&quot;, 0x0700, 0x0a46, 0x0846, 0x0b88, 0xc8, 0xc8 ),
+-array( 5, &quot;Minoc&quot;, 0x0938, 0x0164, 0x0a92, 0x02be, 0xc8, 0xc8 ),
+-array( 6, &quot;Bucaneer's Den&quot;, 0x0a38, 0x0818, 0x0acf, 0x08d7, 0xc8, 0xc8 ),
+-array( 7, &quot;Serpent's Hold&quot;, 0x0a9a, 0x0d01, 0x0c1c, 0x0e37, 0xc8, 0xc8 ),
+-array( 8, &quot;Nujelm&quot;, 0x0d76, 0x0406, 0x0ef8, 0x0590, 0xc8, 0xc8 ),
+-array( 9, &quot;Magincia&quot;, 0x0dca, 0x07e6, 0x0eea, 0x08fa, 0xc8, 0xc8 ),
+-array( 10, &quot;Ocllo&quot;, 0x0dfe, 0x0998, 0x0eba, 0x0ab6, 0xc8, 0xc8 ),
+-array( 11, &quot;Moonglow&quot;, 0x103c, 0x0328, 0x127c, 0x05f8, 0xc8, 0xc8 ),
+-array( 12, &quot;Britain&quot;, 0x0444, 0x0574, 0x06c8, 0x0784, 0xc8, 0xc8 ),
+-array( 13, &quot;Minoc to Yew&quot;, 0x0000, 0x0100, 0x0900, 0x0c00, 0xc8, 0xc8 ),
+-array( 14, &quot;Minoc to Vesper&quot;, 0x09a3, 0x023c, 0x0b3e, 0x02ea, 0xc8, 0xc8 ),
+-array( 15, &quot;Britain to Trinsic&quot;, 0x0400, 0x0500, 0x0900, 0x0c00, 0xc8, 0xc8 ),
+-array( 16, &quot;Trinsic to Bucaneer's Den&quot;, 0x0700, 0x0700, 0x0c00, 0x0c00, 0xc8, 0xc8 ),
+-array( 17, &quot;Bucaneer's Den to Ocllo&quot;, 0x0a00, 0x0700, 0x0f00, 0x0c00, 0xc8, 0xc8 ),
+-array( 18, &quot;Trinsic to Jhelom&quot;, 0x0100, 0x0700, 0x0900, 0x0fff, 0xc8, 0xc8 ),
+-array( 19, &quot;Vesper to Nujelm&quot;, 0x0a4c, 0x0250, 0x0f00, 0x0600, 0xc8, 0xc8 ),
+-array( 20, &quot;Nujelm to Magincia&quot;, 0x0d00, 0x0400, 0x0f00, 0x0900, 0xc8, 0xc8 ),
+-array( 21, &quot;Bucaneer's Den to Magincia&quot;, 0x0a00, 0x0700, 0x0f00, 0x0a00, 0xc8, 0xc8 ),
+-array( 22, &quot;Magincia to Ocllo&quot;, 0x0d00, 0x0700, 0x0f00, 0x0900, 0xc8, 0xc8 ),
+-array( 23, &quot;Serpent's Hold to Ocllo&quot;, 0x0a00, 0x0a00, 0x0f00, 0x0f00, 0xc8, 0xc8 ),
+-array( 24, &quot;Moonglow to Nujelm&quot;, 0x0d00, 0x0300, 0x1300, 0x0600, 0xc8, 0xc8 ),
+-array( 25, &quot;Yew to Britain&quot;, 0x0000, 0x0200, 0x0700, 0x0800, 0xc8, 0xc8 ),
+-array( 26, &quot;Britain to Skara Brae&quot;, 0x0100, 0x0700, 0x06c8, 0x0a00, 0xc8, 0xc8 ),
+-array( 27, &quot;the World&quot;, 0x0, 0x0, 0x144f, 0x0fff, 0xc8, 0xc8 )
+-);
+-
+-program makemap( who, mapitem )
+-  if(!ReserveItem(mapitem))
+-    return;
+-  endif
+-  if(GetObjProperty(mapitem, &quot;maplevel&quot;))
+-    SendSysMessage(who, &quot;You cannot inscribe a trasure map.&quot;);
+-    return;
+-  endif
+-  var mapname := cint(GetObjProperty( mapitem, &quot;maptype&quot;));
+-  foreach mapdef in mapdefs
+-    if (mapdef[1] == mapname)
+-      makethemap( who, mapdef );
+-      releaseitem(mapitem);
+-      DestroyItem (mapitem);
+-      return;
+-    endif
+-  endforeach
+-endprogram
+-
+-function makethemap( who, mapdef )
+-    var map := CreateItemInBackpack( who, UOBJ_MAP1 );
+-    map.name := &quot;map of &quot; + mapdef[2];
+-    map.xwest := hex(mapdef[3]);
+-    map.ynorth := hex(mapdef[4]);
+-    map.xeast := hex(mapdef[5]);
+-    map.ysouth := hex(mapdef[6]);
+-    map.gumpwidth := hex(mapdef[7]);
+-    map.gumpheight := hex(mapdef[8]);
+-endfunction
+
+Added: trunk/096/pkg/skills/cartography/mapmakersPen.src
+===================================================================
+--- trunk/096/pkg/skills/cartography/mapmakersPen.src	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/cartography/mapmakersPen.src	2005-10-31 04:45:12 UTC (rev 739)
+@@ -0,0 +1,155 @@
++/* $Id$
++ *
++ */
++use uo;
++use os;
++
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
++include &quot;:crafting:crafting&quot;;
++include &quot;:crafting:toolWear&quot;;
++include &quot;include/canAccess&quot;;
++
++var item_config     := ReadConfigFile(&quot;:cartography:itemdesc&quot;);
++var craft_config    := ReadConfigFile(&quot;:cartography:cartography&quot;);
++
++program use_MapmakersPen(who, tool)
++
++	if(!can_access(who, tool))
++		return 0;
++	endif
++	if((!tool.movable) or !ReserveItem(tool))
++		SendSysMessage(who, &quot;You cannot use that&quot;);
++		return 0;
++	endif
++	if( !(tool in EnumerateItemsInContainer(who.backpack)) )
++		SendSysMessage(who, &quot;That item is not in your backpack.&quot;);
++		return 0;
++	endif
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	var rinfo := sendCraftGump(who, ATTRIBUTE_CARTOGRAPHY);
++
++	// OK was pressed, close it on out
++	if(rinfo == 0)
++		return 0;
++	endif
++
++	var the_objtype := rinfo[1];
++	var amt         := rinfo[2];
++
++	makeCartographyMap(who, the_objtype, amt, tool);
++
++	return 1;
++
++endprogram
++
++
++function makeCartographyMap(who, map_objtype, amount, tool)
++
++
++	var blank_array := { 0xE34, 0xEF3, 0x14EB, 0x14EC };
++	var blank := Target(who);
++	if( !blank )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	if( !(blank.objtype in blank_array)  || GetObjProperty(blank, &quot;decoder&quot;) )
++		SendSysMessage(who, &quot;You can only inscribe blank maps or scrolls.&quot;);
++		return 0;
++	endif
++	if( !can_access(who, blank) )
++		return 0;
++	endif
++	if( !(blank in EnumerateItemsInContainer(who.backpack)) )
++		SendSysMessage(who, &quot;That item is not in your backpack.&quot;);
++		return 0;
++	endif
++	if( who.realm != &quot;britannia&quot; )
++		SendSysMessage(who, &quot;Sorry, only britannia is chartable.&quot;);
++		return 0;
++	endif
++	if( (who.x &gt; 5120) &amp;&amp; (who.y &lt; 2304) )
++		SendSysMessage(who, &quot;You cannot chart dungeons.&quot;);
++		return 0;
++	endif
++
++	var itemname := craft_config[map_objtype].name;
++	var material := Cint(craft_config[map_objtype].material);
++	var reqd := Cint(craft_config[map_objtype].skill);
++	var diff := Cint(craft_config[map_objtype].difficulty);
++	var pts  := Cint(craft_config[map_objtype].points);
++
++	var counter := 0, x := who.x, y := who.y;
++
++	while(counter &lt; amount)
++		if((who.x != x) || (who.y != y))
++			SendSysMessage(who, &quot;You stop inscribing.&quot;);
++			break;
++		endif
++		if(!tool)
++			break;
++		endif
++
++		sleep(2);
++
++		if(GetAmount(blank) &gt;= material)
++			if( CraftCheckSkill(who, craft_skill, diff, pts) )
++				var theitem := CreateCraftedMap(who, craft_skill, blank, map_objtype, material, itemname, reqd);
++				if( TypeOf(theitem) != &quot;ItemRef&quot; )
++					SubtractAmount(blank, material);
++					SendSysMessage(who, &quot;You failed to create the item, and some of your materials are lost.&quot;);
++					counter := counter + 1;
++					continue;
++				else
++					CheckToolWear (who, tool, craft_skill);
++					var props;
++					case(theitem.objtype)
++						0x6500:	props := array(&quot;local&quot;, who.x - 265, who.y - 260, who.x + 265, who.y + 260, 200, 200);
++							encodeMap(props, theitem);
++						0x6501:	props := array(&quot;regional&quot;, who.x - 850, who.y - 800, who.x + 850, who.y + 800, 400, 400);
++							encodeMap(props, theitem);
++						0x6502: props := array(&quot;world&quot;, 0, 0, 5119, 4095, 500, 400);
++							encodeMap(props, theitem);
++					endcase
++				endif
++			else
++				if( SubtractAmount(blank, material) )
++					SendSysMessage(who, &quot;You lost some material&quot;);
++				endif
++			endif
++		else
++			SendSysMessage(who, &quot;You don't have the resources required to make that item.&quot;);
++			counter := 100;
++			break;
++		endif
++		counter := counter + 1;
++	endwhile
++
++	return 0;
++
++endfunction
++
++
++function encodeMap(map_definitions, map)
++
++	if( map_definitions[2] &lt; 0 )
++		map_definitions[2] := 0;
++	endif
++	if( map_definitions[3] &lt; 0 )
++		map_definitions[3] := 0;
++	endif
++	map.xwest      := map_definitions[2];
++	map.ynorth     := map_definitions[3];
++	map.xeast      := map_definitions[4];
++	map.ysouth     := map_definitions[5];
++	map.gumpwidth  := map_definitions[6];
++	map.gumpheight := map_definitions[7];
++
++	return 1;
++
++endfunction
++
+
+
+Property changes on: trunk/096/pkg/skills/cartography/mapmakersPen.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/skills/cartography/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/cartography/pkg.cfg	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/skills/cartography/pkg.cfg	2005-10-31 04:45:12 UTC (rev 739)
+@@ -5,5 +5,5 @@
+ Name		cartography
+ Maintainer      Distro Team
+ Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+-Version         1.0
++Version         1.1
+ 
+
+
+Property changes on: trunk/096/pkg/skills/fishing/fishnets.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/pkg/systems/crafting/config/craftConfig.cfg
+===================================================================
+--- trunk/096/pkg/systems/crafting/config/craftConfig.cfg	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/systems/crafting/config/craftConfig.cfg	2005-10-31 04:45:12 UTC (rev 739)
+@@ -133,10 +133,11 @@
+ Crafting cartography
+ {
+ 	Name		cartography
+-	Attribute	cartography
++	Attribute	Cartography
+ 	CraftDelay	2
+ 	CraftLoops	0
+ 	CraftAnim	0
++	CraftSound	0
+ 	Repair		0
+ 	Smelt		0
+ 	MakersMark	0
+
+Modified: trunk/096/pkg/systems/crafting/include/crafting.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/crafting.inc	2005-10-31 03:24:45 UTC (rev 738)
++++ trunk/096/pkg/systems/crafting/include/crafting.inc	2005-10-31 04:45:12 UTC (rev 739)
+@@ -360,6 +360,52 @@
+ 
+ endfunction
+ 
++
++function CreateCraftedMap(who, craft_skill, use_on, objtype, amount, itemname, reqd)
++
++	var craft_sound  := menu_config[craft_skill].CraftSound;
++	var craft_loops  := menu_config[craft_skill].CraftLoops;
++	var craft_delay  := menu_config[craft_skill].CraftDelay;
++	var craft_action := menu_config[craft_skill].CraftAnim;
++	playCraftWork(who, craft_sound, craft_loops, craft_delay, craft_action);
++
++	var theitem := CreateItemInBackpack(who, objtype, 1);
++	if(theitem)
++		if( !SubtractAmount(use_on, amount) )
++			SendSysMessage(who, &quot;You don't have enough materials in your backpack!&quot;);
++			DestroyItem(theitem);
++			return -1;
++		endif
++		var rint := randomint(AP_GetSkill(who, craft_skill));
++		if(reqd &gt;= 23)
++			reqd := reqd - 20;
++		else
++			reqd := 3;
++		endif
++		if(rint &lt; reqd)
++			SendSysMessage(who, &quot;You were barely able to make this item.  Its quality is below average.&quot;);
++		else
++			SendSysMessage(who, &quot;You create the item and put it in your backpack.&quot;);
++		endif
++		var word := &quot;&quot;;
++		if((itemname[1] == &quot;a&quot;) || (itemname[1] == &quot;e&quot;) || (itemname[1] == &quot;i&quot;) || (itemname[1] == &quot;o&quot;) || (itemname[1] == &quot;u&quot;))
++			word := &quot;an &quot;;
++		else
++			word := &quot;a &quot;;
++		endif
++		itemname := &quot;&quot; + word + itemname;
++		itemname := itemname - &quot;plain &quot;;
++		SetName(theitem, itemname);
++	else
++		SendSysMessage(who, &quot;You don't have enough room in your backpack!&quot;);
++		return 0;
++	endif
++
++	return theitem;
++
++endfunction
++
++
+ //
+ //  TruncatePlural()
+ //
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000712.html">[Poldistro-svn] r738 - in trunk/096/pkg/mobiles/timedScripts: . config include
+</A></li>
+	<LI>Next message: <A HREF="000714.html">[Poldistro-svn] r740 - in trunk/096/pkg: skills/cartography systems/crafting/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#713">[ date ]</a>
+              <a href="thread.html#713">[ thread ]</a>
+              <a href="subject.html#713">[ subject ]</a>
+              <a href="author.html#713">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

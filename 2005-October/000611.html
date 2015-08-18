@@ -1,0 +1,671 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r637 - in trunk/096/pkg: commands/seer skills/begging skills/begging/config skills/begging/include skills/camping
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r637%20-%20in%20trunk/096/pkg%3A%20commands/seer%20skills/begging%20skills/begging/config%20skills/begging/include%20skills/camping&In-Reply-To=%3C200510221327.j9MDRwhb010459%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000610.html">
+   <LINK REL="Next"  HREF="000616.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r637 - in trunk/096/pkg: commands/seer skills/begging skills/begging/config skills/begging/include skills/camping</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r637%20-%20in%20trunk/096/pkg%3A%20commands/seer%20skills/begging%20skills/begging/config%20skills/begging/include%20skills/camping&In-Reply-To=%3C200510221327.j9MDRwhb010459%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r637 - in trunk/096/pkg: commands/seer skills/begging skills/begging/config skills/begging/include skills/camping">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sat Oct 22 15:27:58 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000610.html">[Poldistro-svn] r636 - trunk/096/pkg/commands/coun
+</A></li>
+        <LI>Next message: <A HREF="000616.html">[Poldistro-svn] r638 - in trunk: . tools tools/PGumpTool tools/PGumpTool/PGumpTool tools/PGumpTool/PGumpTool/bin tools/PGumpTool/PGumpTool/bin/Debug tools/PGumpTool/PGumpTool/bin/Release tools/PGumpTool/PGumpTool/obj tools/PGumpTool/PGumpTool/obj/Debug tools/PGumpTool/PGumpTool/obj/Release
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#611">[ date ]</a>
+              <a href="thread.html#611">[ thread ]</a>
+              <a href="subject.html#611">[ subject ]</a>
+              <a href="author.html#611">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-22 15:27:55 +0200 (Sat, 22 Oct 2005)
+New Revision: 637
+
+Added:
+   trunk/096/pkg/skills/begging/include/
+   trunk/096/pkg/skills/begging/include/begging.inc
+Removed:
+   trunk/096/pkg/skills/begging/begging.inc
+Modified:
+   trunk/096/pkg/commands/seer/go.src
+   trunk/096/pkg/skills/begging/begging.src
+   trunk/096/pkg/skills/begging/config/icp.cfg
+   trunk/096/pkg/skills/begging/pkg.cfg
+   trunk/096/pkg/skills/camping/bedroll.src
+   trunk/096/pkg/skills/camping/camping.src
+Log:
+
+
+Modified: trunk/096/pkg/commands/seer/go.src
+===================================================================
+--- trunk/096/pkg/commands/seer/go.src	2005-10-20 18:55:01 UTC (rev 636)
++++ trunk/096/pkg/commands/seer/go.src	2005-10-22 13:27:55 UTC (rev 637)
+@@ -36,8 +36,8 @@
+ 
+ include &quot;:datafile:datafile&quot;;
+ include &quot;include/math&quot;;
++include &quot;:gumps:include/gumps&quot;;
+ include &quot;:gumps:include/gumpprompt&quot;;
+-include &quot;:gumps:include/gumps&quot;;
+ include &quot;:gumps:include/gumps_ex&quot;;
+ include &quot;:gumps:include/yesno&quot;;
+ include &quot;:commands:include/goAdd&quot;;
+
+Deleted: trunk/096/pkg/skills/begging/begging.inc
+===================================================================
+--- trunk/096/pkg/skills/begging/begging.inc	2005-10-20 18:55:01 UTC (rev 636)
++++ trunk/096/pkg/skills/begging/begging.inc	2005-10-22 13:27:55 UTC (rev 637)
+@@ -1,19 +0,0 @@
+-function begpurse(me)
+-  var amt := Cint(GetObjProperty(me, &quot;begpurse&quot;));
+-  if(!amt)
+-    amt := 50;
+-  endif
+-  var cnfg := ReadConfigFile(&quot;::npcdesc&quot;);
+-  var wealth := cnfg[me.npctemplate].wealth;
+-  var cap := 50;
+-  case(wealth)
+-    &quot;upper&quot;:  cap := 150;
+-    &quot;middle&quot;: cap := 100;
+-    &quot;poor&quot;:   cap := 50;
+-    &quot;broke&quot;:  cap := 0;
+-  endcase
+-  if(amt &lt; cap)
+-    amt := amt + 1;
+-    SetObjProperty(me, &quot;begpurse&quot;, amt);
+-  endif
+-endfunction
+
+Modified: trunk/096/pkg/skills/begging/begging.src
+===================================================================
+--- trunk/096/pkg/skills/begging/begging.src	2005-10-20 18:55:01 UTC (rev 636)
++++ trunk/096/pkg/skills/begging/begging.src	2005-10-22 13:27:55 UTC (rev 637)
+@@ -1,3 +1,7 @@
++/* $Id$
++ *
++ */
++
+ use uo;
+ use util;
+ use cfgfile;
+@@ -2,175 +6,108 @@
+ 
+-include &quot;include/attributes&quot;;
++include &quot;:begging:begging&quot;;
++include &quot;:brainAI:npcUtil&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ include &quot;include/mobileID&quot;;
+ include &quot;include/client&quot;;
+ include &quot;include/objtype&quot;;
+ 
+-const MINKARMA := 4000;
+-const MINFAME := 4000;
++CONST MINKARMA := 4000;
++CONST MINFAME := 4000;
++CONST UOBJ_GOLDCOIN :=0x0eed;
+ 
+-var zPleas := {
+-  &quot;Spare some change?&quot;,
+-  &quot;Alms for the poor?&quot;,
+-  &quot;Donate to my charity?&quot;,
+-  &quot;Wanna buy a rock?&quot;,
+-  &quot;C'mon...   please?&quot;,
+-  &quot;Spare a few gold?&quot;
+-};
++program skill_Begging( who )
+ 
+-var zFails := {
+-  &quot;I think not&quot;,
+-  &quot;Go away!&quot;,
+-  &quot;Off with thee, peasant!&quot;,
+-  &quot;Thou dost not look trustworthy... No gold for thee today!&quot;,
+-  &quot;I feel sorry for thee... Thou dost not look trustworthy... No gold for thee today!&quot;,
+-  &quot;Ye wont be getting any gold from me today.&quot;
+-};
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
+ 
+-var zBroke := {
+-  &quot;Ain't got nothin' t' give ya!&quot;,
+-  &quot;No' got nothin'. Sorry.&quot;,
+-  &quot;Not much better off meself'.&quot;,
+-  &quot;Maybe ye can spare a coin for me?&quot;
+-};
++	SendSysMessage( who, &quot;Select the person you wish to beg to.&quot; );
++	var beggee := Target( who );
++	if ( !beggee )
++		SendSysMessage( who, &quot;Changed your mind?&quot; );
++		return 0;
++  	endif
++  	if( beggee == who )
++  		SendSysMessage(who, &quot;You might want to consider therapy.&quot;);
++  		return 0;
++	endif
++	if( (!beggee.isa(POLCLASS_NPC)) )
++		SendSysMessage(who, &quot;You might look a little silly doing that.&quot;);
++		return 0;
++	endif
++	if( (beggee.graphic != MOB_HUMAN_MALE) &amp;&amp; (beggee.graphic != MOB_HUMAN_FEMALE) )
++		SendSysMessage(who, &quot;You might look a little silly doing that.&quot;);
++		return 0;
++	endif
++	if( TypeOf(beggee.acctname) == &quot;String&quot; )
++		SendSysMessage(who, &quot;Perhaps talking to them would be a better idea.&quot;);
++		return 0;
++	endif
+ 
+-var zEmpty := {
+-  &quot;Sorry, gave it all away already.&quot;,
+-  &quot;Ain't got nothin' t' give ya!&quot;,
+-  &quot;Nope. Gots nothing. Sorry.&quot;,
+-  &quot;Thy cohorts cleaned me out already!&quot;
+-};
++	PrintTextAbove(who, &quot;*looks at &quot; + beggee.name + &quot;*&quot; );
+ 
+-var zNone := {
+-  &quot;I'm sorry, I can give thee nothing.&quot;,
+-  &quot;Does it look like I have pockets in this armor?&quot;,
+-  &quot;Not while I'm on duty.&quot;
+-};
++	PrintBeggingMessage( who, Pleade );
++	sleep(1);
+ 
+-var zLowKarma := {
+-  &quot;I will not give money to such as thee!&quot;,
+-  &quot;Take off, eh?&quot;,
+-  &quot;I do not give money to naughty evildoers!&quot;,
+-  &quot;Thou dost not look trustworthy... no gold for thee today!&quot;
+-};
++	var karma := GetObjProperty(who, &quot;Karma&quot;);
++	if( !karma )
++		karma := 0;
++		SetObjProperty(who, &quot;Karma&quot;, karma);
++	endif
++	if( karma &lt; 0 )
++		PrintBeggingMessage( beggee, NegKarma );
++		return 0;
++	endif
+ 
+-const UOBJ_GOLDCOIN :=0x0eed;
++	var bTemplate := NPC_GetNPCConfig(beggee.npctemplate);
++	var wealth := bTemplate.wealth;
++	if( !wealth )
++		PrintBeggingMessage(beggee, Broke );
++		return 0;
++	endif
++	var lb := Cint(GetObjProperty(beggee, &quot;begpurse&quot;));
++	if( lb &lt; 10 )
++		PrintBeggingMessage(beggee, Broke );
++		return 0;
++	endif
+ 
++	if( SkillCheck(who, ATTRIBUTE_BEGGING, -1) &gt; 0 )
++		var gold;
++		case (wealth)
++			&quot;upper&quot;:	gold := RandomDiceRoll(&quot;4d5&quot;);
++			&quot;middle&quot;:	gold := RandomDiceRoll(&quot;3d4&quot;);
++			&quot;poor&quot;:		gold := RandomDiceRoll(&quot;2d3&quot;);
++			&quot;broke&quot;:
++			default:	PrintBeggingMessage( beggee, Broke );
++					return 0;
++			&quot;none&quot;:		PrintBeggingMessage( beggee , None );
++					return 0;
++		endcase
++		if( (GetObjProperty(who, &quot;Karma&quot;) &gt; MINKARMA) and (GetObjProperty(who, &quot;Fame&quot;) &gt; MINFAME) )
++			gold := CInt(gold*1.3);
++		endif
++		lb := Cint(lb - gold);
++		SetObjProperty(beggee, &quot;begpurse&quot;, lb);
++		PrintTextAbove( beggee, &quot;*throws a few coins to &quot; + who.name + &quot;*&quot; );
++		if( !CreateItemInBackpack(who, UOBJ_GOLDCOIN, gold) )
++			SendSysMessage( who, &quot;You miss and the coins bounce into cracks in the ground!&quot; );
++		else
++			var coin := &quot;coins&quot;;
++			if (gold == 1)
++				coin := &quot;coin&quot;;
++			endif
++			SendSysMessage( who, &quot;You quickly stuff &quot; + gold + &quot; &quot; + coin + &quot; in your pack!&quot; );
++		endif
++		if (GetObjProperty(who, &quot;Karma&quot;) &gt; 10)
++			SendSysMessage(who, &quot;You lose a little karma.&quot;);
++			SetObjProperty(who, &quot;Karma&quot;, GetObjProperty(who, &quot;Karma&quot;)-10);
++		endif
++		return 1;
++	else
++		PrintBeggingMessage( beggee, Failed );
++		return 0;
++	endif
+ 
+-program skill_begging( who )
+-  SendSysMessage( who, &quot;Select the victim.&quot; );
+-  var tgt := Target( who );
+-  if ( !tgt )
+-    SendSysMessage( who, &quot;Cancelled&quot; );
+-    return;
+-  endif
+-  if(tgt.serial == who.serial)
+-    SendSysMessage(who, &quot;You might want to consider therapy.&quot;);
+-    return;
+-  endif
+-  if((tgt.graphic != MOB_HUMAN_MALE) &amp;&amp; (tgt.graphic != MOB_HUMAN_FEMALE))
+-    SendSysMessage(who, &quot;You look a little silly doing that.&quot;);
+-    return;
+-  endif
+-  if(GetObjProperty(tgt, &quot;LoggedIn&quot;))
+-    SendSysMessage(who, &quot;Perhaps talking to them would be a better idea.&quot;);
+-    return;
+-  endif
+-  
+-  var cfgtemplate := ReadConfigFile(&quot;::npcdesc&quot;);
+-  var ismob := tgt.isa(POLCLASS_MOBILE);
+-  if (ismob)
+-    PrintTextAbove(who, &quot;*looks at &quot; + tgt.name + &quot;*&quot; );
+-  else
+-    PrintTextAbove( who, &quot;*looks at &quot; + tgt.desc + &quot;*&quot; );
+-  endif
+-  if ((!ismob) || (!tgt.isa(POLCLASS_NPC)))
+-    return;
+-  endif
+-  PrintRandomMessage( who, zPleas );
+-  sleep(1);
+-  var karma := GetObjProperty(who, &quot;Karma&quot;);
+-  if (!karma)
+-    karma := 0;
+-    SetObjProperty(who, &quot;Karma&quot;, karma);
+-  endif
+-  if (karma &lt; 0)
+-    PrintRandomMessage( tgt, zLowKarma );
+-    return;
+-  endif
+-  var wealth := cfgtemplate[tgt.npctemplate].wealth;
+-  if (!wealth)
+-    PrintTextAbovePrivate(who, &quot;This creature will not give thee money!&quot;, who);
+-    return;
+-  endif
+-  var lb := Cint(GetObjProperty(tgt, &quot;begpurse&quot;));
+-  if(!lb)
+-    lb := 50;
+-    SetObjProperty(tgt, &quot;begpurse&quot;, lb);
+-  endif
+-  if(lb &lt; 25)
+-    PrintRandomMessage( tgt, zEmpty );
+-    return;
+-  endif
+ 
+-  var pts := GetEffectiveSkill(who, SKILLID_BEGGING) + 10;
+-  if(pts &lt; 10)
+-    pts := 10;
+-  endif
+-  if ( !CheckSkill( who, SKILLID_BEGGING, -1, pts ) )
+-    PrintRandomMessage( tgt, zFails );
+-    return;
+-  endif
+-  var gold;
+-  case (wealth)
+-    &quot;upper&quot;:
+-      gold := RandomDiceRoll(&quot;4d5&quot;);
+-    &quot;middle&quot;:
+-      gold := RandomDiceRoll(&quot;3d4&quot;);
+-    &quot;poor&quot;:
+-      gold := RandomDiceRoll(&quot;2d3&quot;);
+-    &quot;broke&quot;:
+-    default:
+-      PrintRandomMessage( tgt, zBroke );
+-      return;
+-    &quot;none&quot;:
+-      PrintRandomMessage( tgt , zNone );
+-      return;
+-  endcase
+-  if ((GetObjProperty(who, &quot;Karma&quot;) &gt; MINKARMA) and (GetObjProperty(who, &quot;Fame&quot;) &gt; MINFAME))
+-    gold := CInt(gold*1.3);
+-  endif
+-  lb := Cint(lb - gold);
+-  SetObjProperty(tgt, &quot;begpurse&quot;, lb);
+-  PrintTextAbove( tgt, &quot;*throws a few coins to &quot; + who.name + &quot;*&quot; );
+-  if ( !CreateItemInBackpack( who, UOBJ_GOLDCOIN, gold ) )
+-    SendSysMessage( who, &quot;You miss and the coins bounce into cracks in the ground!&quot; );
+-  else
+-    var coin := &quot;coins&quot;;
+-    if (gold == 1)
+-      coin := &quot;coin&quot;;
+-    endif
+-    SendSysMessage( who, &quot;You quickly stuff &quot; + gold + &quot; &quot; + coin + &quot; in your pack!&quot; );
+-  endif
+-  if (GetObjProperty(who, &quot;Karma&quot;) &gt; 10)
+-    SendSysMessage(who, &quot;You lose a little karma.&quot;);
+-    SetObjProperty(who, &quot;Karma&quot;, GetObjProperty(who, &quot;Karma&quot;)-10);
+-  endif
+-
+-  var fame := GetObjProperty(who, &quot;Fame&quot;);
+-  if (!fame)
+-    fame := 0;
+-    SetObjProperty(who, &quot;Fame&quot;, fame);
+-  endif
+-  if (fame &gt; 5)
+-    SendSysMessage(who, &quot;You lose a little fame.&quot;);
+-    SetObjProperty(who, &quot;Fame&quot;, CInt(fame*0.98));
+-  endif
+-  return;
+-endprogram
+-
+-function PrintRandomMessage( speaker, byref zSpeech )
+-  if(zSpeech.size())
+-    PrintTextAbove(speaker, zSpeech[RandomInt(zSpeech.size())+1]);
+-  endif
+-  return;
+-endfunction
++endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/begging/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/skills/begging/config/icp.cfg	2005-10-20 18:55:01 UTC (rev 636)
++++ trunk/096/pkg/skills/begging/config/icp.cfg	2005-10-22 13:27:55 UTC (rev 637)
+@@ -1,7 +1,7 @@
+ ICP Register
+ {
+         Name            Begging
+-        Version         0.5
++        Version         1.0
+         Description     Begging Skill
+ 
+         Creator         Distro Team
+
+Added: trunk/096/pkg/skills/begging/include/begging.inc
+===================================================================
+--- trunk/096/pkg/skills/begging/include/begging.inc	2005-10-20 18:55:01 UTC (rev 636)
++++ trunk/096/pkg/skills/begging/include/begging.inc	2005-10-22 13:27:55 UTC (rev 637)
+@@ -0,0 +1,73 @@
++/* $Id$
++ *
++ */
++
++var Pleade := { &quot;Spare some change?&quot;,
++		&quot;Alms for the poor?&quot;,
++		&quot;Donate to my charity?&quot;,
++		&quot;Wanna buy a rock?&quot;,
++		&quot;C'mon...   please?&quot;,
++		&quot;Spare a few gold?&quot;
++	      };
++
++var Failed := { &quot;I think not&quot;,
++		&quot;Go away!&quot;,
++		&quot;Off with thee, peasant!&quot;,
++		&quot;Thou dost not look trustworthy... No gold for thee today!&quot;,
++		&quot;I feel sorry for thee... Thou dost not look trustworthy... No gold for thee today!&quot;,
++		&quot;Ye wont be getting any gold from me today.&quot;
++	      };
++
++var Broke := {	&quot;Ain't got nothin' t' give ya!&quot;,
++		&quot;No' got nothin'. Sorry.&quot;,
++		&quot;Not much better off meself'.&quot;,
++		&quot;Maybe ye can spare a coin for me?&quot;
++	     };
++
++var Empty := {  &quot;Sorry, gave it all away already.&quot;,
++		&quot;Ain't got nothin' t' give ya!&quot;,
++		&quot;Nope. Gots nothing. Sorry.&quot;,
++		&quot;Thy cohorts cleaned me out already!&quot;
++	     };
++
++var None := {	&quot;I'm sorry, I can give thee nothing.&quot;,
++		&quot;Does it look like I have pockets in this armor?&quot;,
++		&quot;Not while I'm on duty.&quot;
++	    };
++
++var NegKarma := { &quot;I will not give money to such as thee!&quot;,
++		  &quot;Take off, eh?&quot;,
++		  &quot;I do not give money to naughty evildoers!&quot;,
++		  &quot;Thou dost not look trustworthy... no gold for thee today!&quot;
++		};
++
++
++function begpurse(me)
++  var amt := Cint(GetObjProperty(me, &quot;begpurse&quot;));
++  if(!amt)
++    amt := 50;
++  endif
++  var cnfg := ReadConfigFile(&quot;::npcdesc&quot;);
++  var wealth := cnfg[me.npctemplate].wealth;
++  var cap := 50;
++  case(wealth)
++    &quot;upper&quot;:  cap := 150;
++    &quot;middle&quot;: cap := 100;
++    &quot;poor&quot;:   cap := 50;
++    &quot;broke&quot;:  cap := 0;
++  endcase
++  if(amt &lt; cap)
++    amt := amt + 1;
++    SetObjProperty(me, &quot;begpurse&quot;, amt);
++  endif
++endfunction
++
++
++function PrintBeggingMessage( speaker, begMessage )
++
++	if(begMessage.size())
++		PrintTextAbove(speaker, begMessage[RandomInt(begMessage.size())+1]);
++	endif
++	return 1;
++
++endfunction
+
+Modified: trunk/096/pkg/skills/begging/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/begging/pkg.cfg	2005-10-20 18:55:01 UTC (rev 636)
++++ trunk/096/pkg/skills/begging/pkg.cfg	2005-10-22 13:27:55 UTC (rev 637)
+@@ -1,5 +1,5 @@
+ Name            begging
+-Version         0.5
++Version         1.0
+ CoreRequired    94
+ Enabled         1
+ Maintainer      Distro Team
+
+Modified: trunk/096/pkg/skills/camping/bedroll.src
+===================================================================
+--- trunk/096/pkg/skills/camping/bedroll.src	2005-10-20 18:55:01 UTC (rev 636)
++++ trunk/096/pkg/skills/camping/bedroll.src	2005-10-22 13:27:55 UTC (rev 637)
+@@ -1,3 +1,7 @@
++/* $Id$
++ *
++ */
++
+ use uo;
+ use os;
+ 
+@@ -3,43 +7,44 @@
+ include &quot;include/canAccess&quot;;
+ 
+-const LOGOUT_WAIT := 30;
+-const UOBJECT_CAMPFIRE := 0xde3;
++CONST LOGOUT_WAIT 	:= 30;
++CONST UOBJECT_CAMPFIRE  := 0xde3;
+ 
+-program use_bedroll( who, bedroll )
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  if(!can_access(who, bedroll))
+-    return;
+-  endif
+-  if(bedroll.movable == 0)
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-   var items := ListItemsNearLocationOfType( who.x,who.y,who.z, 2, UOBJECT_CAMPFIRE, who.realm );
+-   if( len(items) == 0 )
+-      SendSysMessage( who, &quot;You must have a campfire nearby to use this.&quot; );
+-      return;
+-   else
+-      SendSysMessage( who, &quot;You must stand still to prepare your camp.&quot; );
+-   endif
++program use_Bedroll( who, bedroll )
+ 
+-   var x := who.x;
+-   var y := who.y;
+-   var z := who.z;
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++	if(!can_access(who, bedroll))
++		return 0;
++	endif
++	if(bedroll.movable == 0)
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++	var items := ListItemsNearLocationOfType( who.x,who.y,who.z, 2, UOBJECT_CAMPFIRE, who.realm );
++	if( len(items) == 0 )
++		SendSysMessage( who, &quot;You must have a campfire nearby to use this.&quot; );
++		return 0;
++	else
++		SendSysMessage( who, &quot;You must stand still to prepare your camp.&quot; );
++	endif
+ 
+-   var ttl := LOGOUT_WAIT;
++	var x := who.x;
++	var y := who.y;
++	var z := who.z;
+ 
+-   while( ttl &gt; 0 )
+-      if( (who.x != x) || (who.y != y) || (who.z != z) )
+-         SendSysMessage( who, &quot;You abandon your preparations to camp.&quot;);
+-         return;
+-      endif
+-      SendSysMessage( who, &quot;You must wait &quot; + ttl + &quot; more seconds to log out.&quot; );
+-      ttl := ttl - 5;
+-      sleep(5);
+-   endwhile
++	var ttl := LOGOUT_WAIT;
+ 
+-   SetObjProperty(who,&quot;#camped&quot;,1);
+-   DisconnectClient( who );
++	while( ttl &gt; 0 )
++		if( (who.x != x) || (who.y != y) || (who.z != z) )
++			SendSysMessage( who, &quot;You abandon your preparations to camp.&quot;);
++			return 0;
++		endif
++		SendSysMessage( who, &quot;You must wait &quot; + ttl + &quot; more seconds to log out.&quot; );
++		ttl := ttl - 5;
++		sleep(5);
++	endwhile
+ 
++	SetObjProperty(who,&quot;#camped&quot;,1);
++	DisconnectClient( who );
++
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/camping/camping.src
+===================================================================
+--- trunk/096/pkg/skills/camping/camping.src	2005-10-20 18:55:01 UTC (rev 636)
++++ trunk/096/pkg/skills/camping/camping.src	2005-10-22 13:27:55 UTC (rev 637)
+@@ -1,42 +1,40 @@
+ // $Id$
+ 
+-use uo;
+-use util;
+-use os;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ include &quot;include/objtype&quot;;
+ include &quot;include/canAccess&quot;;
+ 
+ program UseWood( who, wood )
++
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 	EraseObjProperty(who, &quot;HealTimer&quot;);
+-	if(!can_access(who, wood))
+-		return;
++	if( !can_access(who, wood) )
++		return 0;
+ 	endif
+-	if(wood.movable == 0)
++	if( wood.movable == 0 )
+ 		SendSysMessage(who, &quot;You cannot light that.&quot;);
+-		return;
++		return 0;
+ 	endif
+ 	var camptimer := GetObjProperty(who, &quot;CampTimer&quot;);
+-	if(camptimer)
+-		if(camptimer &gt; ReadGameClock())
++	if( camptimer )
++		if( camptimer &gt; ReadGameClock() )
+ 			SendSysMessage(who, &quot;You must wait a few moments to camp again.&quot;);
+-			return;
++			return 0;
+ 		endif
+ 	endif
+ 	SetObjProperty(who, &quot;CampTimer&quot;, ReadGameClock() + 5);
+-	if(not Accessible(who, wood))
++	if( !Accessible(who, wood) )
+ 		PrintTextAbovePrivate( wood, &quot;You can't reach that!&quot;, who );
+-		return;
++		return 0;
+ 	endif
+-	if(wood.container)
++	if( wood.container )
+ 		PrintTextAbovePrivate( wood, &quot;Put that on the ground first!&quot;, who );
+-		return;
++		return 0;
+ 	endif
+ 
+-	if(CheckSkill(who, SKILLID_CAMPING, -1, 50))
++	if( SkillCheck(who, ATTRIBUTE_CAMPING, -1) &gt; 0 )
+ 		var x := wood.x;
+ 		var y := wood.y;
+ 		var z := wood.z;
+@@ -53,4 +51,5 @@
+ 	else
+ 		PrintTextAbovePrivate( wood, &quot;You couldn't manage to start the fire.&quot;, who );
+ 	endif
++
+ endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000610.html">[Poldistro-svn] r636 - trunk/096/pkg/commands/coun
+</A></li>
+	<LI>Next message: <A HREF="000616.html">[Poldistro-svn] r638 - in trunk: . tools tools/PGumpTool tools/PGumpTool/PGumpTool tools/PGumpTool/PGumpTool/bin tools/PGumpTool/PGumpTool/bin/Debug tools/PGumpTool/PGumpTool/bin/Release tools/PGumpTool/PGumpTool/obj tools/PGumpTool/PGumpTool/obj/Debug tools/PGumpTool/PGumpTool/obj/Release
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#611">[ date ]</a>
+              <a href="thread.html#611">[ thread ]</a>
+              <a href="subject.html#611">[ subject ]</a>
+              <a href="author.html#611">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r128 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r128%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20complete/testnpc%20include%20include/braincore&In-Reply-To=%3C200509141316.j8EDGDFj029875%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000109.html">
+   <LINK REL="Next"  HREF="000111.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r128 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r128%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20complete/testnpc%20include%20include/braincore&In-Reply-To=%3C200509141316.j8EDGDFj029875%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r128 - in trunk/096/pkg/mobiles/ai_brain: complete/testnpc include include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 14 15:16:13 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000109.html">[Poldistro-svn] r127 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc
+</A></li>
+        <LI>Next message: <A HREF="000111.html">[Poldistro-svn] r129 - in trunk/096/pkg/utils: . servperf servperf/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#110">[ date ]</a>
+              <a href="thread.html#110">[ thread ]</a>
+              <a href="subject.html#110">[ subject ]</a>
+              <a href="author.html#110">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-14 15:16:11 +0200 (Wed, 14 Sep 2005)
+New Revision: 128
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/leftArea.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/shouldWatch.src
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc
+Log:
+Okay this is getting close to finished, people. :-)
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/leftArea.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/leftArea.src	2005-09-14 12:57:23 UTC (rev 127)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/leftArea.src	2005-09-14 13:16:11 UTC (rev 128)
+@@ -15,10 +15,9 @@
+ 	
+ 	while ( npc )
+ 		if ( event )
+-			var source := event.source;
+ 			case ( event.type )
+ 				SYSEVENT_LEFTAREA:
+-					LeftArea(npc, source);
++					LeftArea(npc, event);
+ 					break;
+ 				default:
+ 					break;
+@@ -32,13 +31,13 @@
+ 	endwhile
+ endprogram
+ 
+-function LeftArea(npc, source)
++function LeftArea(npc, byref event)
++	var source := event.source;
++
+ 	if ( source.npctemplate )
+ 		return 0;
+-	else
+-		NPC_RemoveFromWatchList(npc, source);
++	elseif ( NPC_RemoveFromWatchList(npc, source) )
+ 		AI_Speak(npc, &quot;I am no longer watching &quot;+source.name);
+-		
+ 		return 1;
+ 	endif
+ 	
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src	2005-09-14 12:57:23 UTC (rev 127)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src	2005-09-14 13:16:11 UTC (rev 128)
+@@ -24,6 +24,7 @@
+ 			endif
+ 		endif
+ 		
++		AI_ClearThoughts(npc, CLR_NERVE);
+ 		Sleep(1);
+ 	endwhile
+ endprogram
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/shouldWatch.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/shouldWatch.src	2005-09-14 12:57:23 UTC (rev 127)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/shouldWatch.src	2005-09-14 13:16:11 UTC (rev 128)
+@@ -7,9 +7,9 @@
+ include &quot;:ai_brain:include/npcWatchList&quot;;
+ 
+ program BrainCriticalScript(params)
+-	var npc := params[1];
+-	var mobile := params[2];
+-	var settings := params[3];
++	//var npc := params[1];
++	//var mobile := params[2];
++	//var settings := params[3];
+ 	params := 0; // Not needed anymore
+ 	
+ 	return 1;
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc	2005-09-14 12:57:23 UTC (rev 127)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc	2005-09-14 13:16:11 UTC (rev 128)
+@@ -22,7 +22,7 @@
+  */
+ function RunCycleScript()
+ 	if ( g_scripts[&quot;Cycle&quot;] )
+-		var script := Run_Script_To_Completion(g_scripts[&quot;Cycle&quot;], array{npc, g_settings, g_scripts});
++		var script := Run_Script_To_Completion(g_scripts[&quot;Cycle&quot;].script, array{npc, g_settings, g_scripts});
+ 		
+ 		if ( script.errortext )
+ 			NPC_ErrorSysLog(npc, &quot;Error::RunCycleScript() - &quot;+script.errortext);
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-14 12:57:23 UTC (rev 127)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-14 13:16:11 UTC (rev 128)
+@@ -255,13 +255,13 @@
+ 		// If the next event in the queue tells it to wake up,
+ 		// this command will be useless.
+ 		NPCEVENT_SLEEP:
+-			//idle_ticks := g_settings[&quot;idle_ticks&quot;]+1;
++			idle_ticks := g_settings[&quot;IdleTicks&quot;]+1;
++			EnterSleepMode();
+ 			break;
+ 
+ 		// Force the npc out of sleep mode.
+ 		NPCEVENT_WAKEUP:
+-			//sleep_mode := 0;
+-			//idle_ticks := 0;
++			LeaveSleepMode();
+ 			break;
+ 
+ 		// Forward an event from one nerve to another.
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc	2005-09-14 12:57:23 UTC (rev 127)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcWatchList.inc	2005-09-14 13:16:11 UTC (rev 128)
+@@ -11,6 +11,8 @@
+ use uo;
+ use os;
+ 
++include &quot;:ai_brain:include/npcError&quot;;
++
+ /////////////////////////////////////////////////////////////////
+ // * Function List *
+ //
+@@ -115,6 +117,8 @@
+ 	if ( watch_dict.Exists(mobile) )
+ 		watch_dict.Erase(mobile);
+ 		NPC_SaveWatchList(npc, watch_dict);
++		
++		return 1;
+ 	else
+ 		return 0;
+ 	endif
+@@ -165,7 +169,10 @@
+ 		return 1;
+ 	endif
+ 	
+-	var result := Run_Script_To_Completion(scripts[&quot;ShouldWatch&quot;], {npc, mobile, settings});
++	var result := Run_Script_To_Completion(scripts[&quot;ShouldWatch&quot;].script, {npc, mobile, settings});
++	if ( result.errortext )
++		NPC_ErrorSysLog(npc, &quot;Error::NPC_ShouldWatch() - &quot;+result.errortext);
++	endif
+ 	
+ 	return result;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000109.html">[Poldistro-svn] r127 - trunk/096/pkg/mobiles/ai_brain/complete/testnpc
+</A></li>
+	<LI>Next message: <A HREF="000111.html">[Poldistro-svn] r129 - in trunk/096/pkg/utils: . servperf servperf/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#110">[ date ]</a>
+              <a href="thread.html#110">[ thread ]</a>
+              <a href="subject.html#110">[ subject ]</a>
+              <a href="author.html#110">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r181 - in trunk/096/pkg/systems/attributes: . hooks include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r181%20-%20in%20trunk/096/pkg/systems/attributes%3A%20.%20hooks%20include&In-Reply-To=%3C200509201941.j8KJfsMw024726%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000162.html">
+   <LINK REL="Next"  HREF="000164.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r181 - in trunk/096/pkg/systems/attributes: . hooks include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r181%20-%20in%20trunk/096/pkg/systems/attributes%3A%20.%20hooks%20include&In-Reply-To=%3C200509201941.j8KJfsMw024726%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r181 - in trunk/096/pkg/systems/attributes: . hooks include">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep 20 21:41:54 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000162.html">[Poldistro-svn] r180 - in trunk/096/pkg/systems/attributes: . hooks
+</A></li>
+        <LI>Next message: <A HREF="000164.html">[Poldistro-svn] r182 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#163">[ date ]</a>
+              <a href="thread.html#163">[ thread ]</a>
+              <a href="subject.html#163">[ subject ]</a>
+              <a href="author.html#163">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-20 21:41:53 +0200 (Tue, 20 Sep 2005)
+New Revision: 181
+
+Modified:
+   trunk/096/pkg/systems/attributes/attributes.cfg
+   trunk/096/pkg/systems/attributes/hooks/regenRate.src
+   trunk/096/pkg/systems/attributes/include/attributes.inc
+   trunk/096/pkg/systems/attributes/include/attributes_ex.inc
+   trunk/096/pkg/systems/attributes/pkg.cfg
+   trunk/096/pkg/systems/attributes/vitals.cfg
+Log:
+Got it to where the package 'works' :-P
+
+Modified: trunk/096/pkg/systems/attributes/attributes.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/attributes.cfg	2005-09-20 19:17:19 UTC (rev 180)
++++ trunk/096/pkg/systems/attributes/attributes.cfg	2005-09-20 19:41:53 UTC (rev 181)
+@@ -121,6 +121,7 @@
+ Attribute Parrying
+ {
+ 	Alias		Parry
++	
+ 	AttributeType	Skill
+ 	SkillId		5
+ 	
+@@ -422,6 +423,8 @@
+ 
+ Attribute Swordsmanship
+ {
++	Alias		Swords
++	
+ 	AttributeType	Skill
+ 	SkillId		40
+ 	
+@@ -431,6 +434,8 @@
+ 
+ Attribute MaceFighting
+ {
++	Alias		Mace
++	
+ 	AttributeType	Skill
+ 	DisplayName	Mace Fighting
+ 	SkillId		41
+
+Modified: trunk/096/pkg/systems/attributes/hooks/regenRate.src
+===================================================================
+--- trunk/096/pkg/systems/attributes/hooks/regenRate.src	2005-09-20 19:17:19 UTC (rev 180)
++++ trunk/096/pkg/systems/attributes/hooks/regenRate.src	2005-09-20 19:41:53 UTC (rev 181)
+@@ -0,0 +1,61 @@
++/*===============================================================
++* Current Version
++* regenRates.src
++* Updated 9/20/2005 12:20PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created file
++===============================================================*/
++use uo;
++
++include &quot;:attributes:include/attributes&quot;;
++include &quot;:ai_brain:include/npcUtil&quot;;
++
++program Install()
++	print(&quot;INSTALLED: Exported Vital - RegenRate and MaxValue functions... ok.&quot;);
++	return 1;
++endprogram
++
++
++
++// *****
++// Hit Point Functions
++// *****
++exported function GetHitsRegenRate(mobile)
++	return 1200;
++endfunction
++
++exported function GetHitsMaximumValue(mobile)
++	var max_hits := GetAttribute(mobile, &quot;Strength&quot;) * 100;
++	if ( mobile.npctemplate )
++		var npc_cfg := NPC_GetNPCConfig(mobile.npctemplate);
++		if ( npc_cfg.HITS )
++			max_hits := npc_cfg.HITS * 100;
++		endif
++	endif
++		
++	return max_hits;
++endfunction
++
++// *****
++// Mana Functions
++// *****
++exported function GetManaRegenRate(mobile)
++	return 1200;
++endfunction
++
++exported function GetManaMaximumValue(mobile)
++    return GetAttribute(mobile, &quot;Mana&quot;) * 100;
++endfunction
++
++// *****
++// Stamina Functions
++// *****
++exported function GetStaminaRegenRate(mobile)
++	return 1200;
++endfunction
++
++exported function GetStaminaMaximumValue(mobile)
++	return GetAttribute(mobile, &quot;Stamina&quot;) * 100;
++endfunction
+
+Modified: trunk/096/pkg/systems/attributes/include/attributes.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-20 19:17:19 UTC (rev 180)
++++ trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-20 19:41:53 UTC (rev 181)
+@@ -10,6 +10,7 @@
+ 
+ use uo;
+ use os;
++use cfgfile;
+ 
+ include &quot;:attributes:include/regen&quot;;
+ include &quot;:attributes:include/skills&quot;;
+@@ -32,12 +33,12 @@
+ function AF_GetAttributeCfgElem(attribute)
+ 	var cfg := ReadConfigFile(&quot;:attributes:attributes&quot;);
+ 	if ( cfg.errortext )
+-		SysLog(&quot;Error::GetAttributeCfgElem() - Unable to open attributes.cfg -&gt;&quot;+cfg.errortext);
++		SysLog(&quot;Error::AF_GetAttributeCfgElem() - Unable to open attributes.cfg -&gt;&quot;+cfg.errortext);
+ 	endif
+ 	
+ 	var cfg_elem := cfg[attribute];
+ 	if ( cfg_elem.errortext )
+-		SysLog(&quot;Error::GetAttributeCfgElem() - in attributes.cfg -&gt;&quot;+cfg_elem.errortext);
++		SysLog(&quot;Error::AF_GetAttributeCfgElem() - unable to find cfg elem [&quot;+attribute+&quot;] -&gt;&quot;+cfg_elem.errortext);
+ 	endif
+ 	
+ 	return cfg_elem;
+
+Modified: trunk/096/pkg/systems/attributes/include/attributes_ex.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributes_ex.inc	2005-09-20 19:17:19 UTC (rev 180)
++++ trunk/096/pkg/systems/attributes/include/attributes_ex.inc	2005-09-20 19:41:53 UTC (rev 181)
+@@ -26,9 +26,16 @@
+  */
+ function AF_IDToAttributeName(skill_number)
+ 	var skills_cfg := ReadConfigFile(&quot;:*:skills&quot;);
++	if ( skills_cfg.errortext )
++		SysLog(&quot;Error::AF_IDToAttributeName() - Unable to open :*:skills.cfg -&gt;&quot;+skills_cfg.errortext);
++	endif
++	
+ 	var cfg_elem := skills_cfg[skill_number];
++	if ( cfg_elem.errortext )
++		SysLog(&quot;Error::AF_IDToAttributeName() - unable to find cfg elem [&quot;+skill_number+&quot;] -&gt;&quot;+cfg_elem.errortext);
++	endif
+ 	
+-	return elem.Name;
++	return cfg_elem.Name;
+ endfunction
+ 
+ /*
+@@ -46,7 +53,7 @@
+  *
+  */
+ function AF_AttributeNameToSkillID(attribute_name)
+-	var cfg_elem := AF_GetAttributeElem(attribute_name);
++	var cfg_elem := AF_GetAttributeCfgElem(attribute_name);
+ 	
+ 	return cfg_elem.SkillId;
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/attributes/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/pkg.cfg	2005-09-20 19:17:19 UTC (rev 180)
++++ trunk/096/pkg/systems/attributes/pkg.cfg	2005-09-20 19:41:53 UTC (rev 181)
+@@ -1,4 +1,4 @@
+-Enabled		0
++Enabled		1
+ Name		attributes
+ 
+ Creator		Hesinde-Team
+
+Modified: trunk/096/pkg/systems/attributes/vitals.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/vitals.cfg	2005-09-20 19:17:19 UTC (rev 180)
++++ trunk/096/pkg/systems/attributes/vitals.cfg	2005-09-20 19:41:53 UTC (rev 181)
+@@ -28,18 +28,18 @@
+ Vital Hits
+ {
+     Alias               Life
+-    RegenRateFunction   regenRate:GetHitsRegenRate
+-    MaximumFunction     regenRate:GetHitsMaximumValue
++    RegenRateFunction	:attributes:hooks/regenRate:GetHitsRegenRate
++    MaximumFunction	:attributes:hooks/regenRate:GetHitsMaximumValue
+ }
+ 
+ Vital Mana
+ {
+-    RegenRateFunction   regenRate:GetManaRegenRate
+-    MaximumFunction     regenRate:GetManaMaximumValue
++    RegenRateFunction	:attributes:hooks/regenRate:GetManaRegenRate
++    MaximumFunction	:attributes:hooks/regenRate:GetManaMaximumValue
+ }
+ 
+ Vital Stamina
+ {
+-    RegenRateFunction   regenRate:GetStaminaRegenRate
+-    MaximumFunction     regenRate:GetStaminaMaximumValue
++    RegenRateFunction	:attributes:hooks/regenRate:GetStaminaRegenRate
++    MaximumFunction	:attributes:hooks/regenRate:GetStaminaMaximumValue
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000162.html">[Poldistro-svn] r180 - in trunk/096/pkg/systems/attributes: . hooks
+</A></li>
+	<LI>Next message: <A HREF="000164.html">[Poldistro-svn] r182 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#163">[ date ]</a>
+              <a href="thread.html#163">[ thread ]</a>
+              <a href="subject.html#163">[ subject ]</a>
+              <a href="author.html#163">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

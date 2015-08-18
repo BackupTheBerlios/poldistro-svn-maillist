@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r324 - in trunk/096/pkg/items/sysbook: book commands/gm include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r324%20-%20in%20trunk/096/pkg/items/sysbook%3A%20book%20commands/gm%20include&In-Reply-To=%3C200509300308.j8U38F4q014723%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000301.html">
+   <LINK REL="Next"  HREF="000303.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r324 - in trunk/096/pkg/items/sysbook: book commands/gm include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r324%20-%20in%20trunk/096/pkg/items/sysbook%3A%20book%20commands/gm%20include&In-Reply-To=%3C200509300308.j8U38F4q014723%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r324 - in trunk/096/pkg/items/sysbook: book commands/gm include">austin at berlios.de
+       </A><BR>
+    <I>Fri Sep 30 05:08:15 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000301.html">[Poldistro-svn] r323 - in trunk/096/pkg/items/sysbook: book commands/gm include
+</A></li>
+        <LI>Next message: <A HREF="000303.html">[Poldistro-svn] r325 - in trunk/096/pkg/items/sysbook: book commands/gm include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#302">[ date ]</a>
+              <a href="thread.html#302">[ thread ]</a>
+              <a href="subject.html#302">[ subject ]</a>
+              <a href="author.html#302">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-30 05:08:14 +0200 (Fri, 30 Sep 2005)
+New Revision: 324
+
+Modified:
+   trunk/096/pkg/items/sysbook/book/use.src
+   trunk/096/pkg/items/sysbook/commands/gm/zulubooks.src
+   trunk/096/pkg/items/sysbook/include/zuluBooks.inc
+Log:
+
+
+Modified: trunk/096/pkg/items/sysbook/book/use.src
+===================================================================
+--- trunk/096/pkg/items/sysbook/book/use.src	2005-09-30 02:57:57 UTC (rev 323)
++++ trunk/096/pkg/items/sysbook/book/use.src	2005-09-30 03:08:14 UTC (rev 324)
+@@ -1 +1,12 @@
+ // $Id$
++
++use uo;
++
++program useBook(who,book)
++	if ( !ReserveItem(book) )
++		SendSysMessage(who, &quot;Someone else is already reading this book.&quot;);
++		return;
++	endif
++
++	SendOpenBook(who, book);
++endprogram
+
+Modified: trunk/096/pkg/items/sysbook/commands/gm/zulubooks.src
+===================================================================
+--- trunk/096/pkg/items/sysbook/commands/gm/zulubooks.src	2005-09-30 02:57:57 UTC (rev 323)
++++ trunk/096/pkg/items/sysbook/commands/gm/zulubooks.src	2005-09-30 03:08:14 UTC (rev 324)
+@@ -5,8 +5,6 @@
+ include &quot;:sysbook:zuluBooks&quot;;
+ include &quot;:gumps:gumps_ex&quot;;
+ 
+-unload_scripts(&quot;&quot;);
+-
+ program MakeZuluBook(mobile)
+ 	GumpList(mobile);
+ endprogram
+@@ -23,6 +21,8 @@
+ 	var counter := 1;
+ 	var page_num := 1;
+ 	GFTextMid(gump, 10, 15, 560, 2100, &quot;Books from zuluBooks.cfg&quot;);
++	
++	GFPage(gump, 1);
+ 	foreach elem_name in (elem_names)
+ 		var elem_info := SysBook_GetZuluCfgElem(elem_name);
+ 		
+@@ -32,7 +32,16 @@
+ 		GFTextLine(gump, 380, y_pos, 2100, &quot;Author: &quot;+elem_info.Author);
+ 				
+ 		y_pos := y_pos+20;
++		counter := counter+1;
+ 		
++		if ( counter &gt; 20 )
++			counter := 1;
++			y_pos := 40;
++			GFAddButton(gump, 545, 445, 2648, 2649, GF_PAGE_BTN, page_num+1);
++			page_num := page_num+1;
++			GFPage(gump, page_num);
++			GFAddButton(gump, 545, 15, 2650, 2651, GF_PAGE_BTN, page_num-1);
++		endif
+ 		sleepms(2);
+ 	endforeach
+ 	
+@@ -58,6 +67,8 @@
+ 		sleepms(2);
+ 	endforeach
+ 	
++	book.ReadOnly(1);
++	
+ 	SendSysMessage(mobile, &quot;Done!&quot;);
+ 	
+ 	return 1;
+
+Modified: trunk/096/pkg/items/sysbook/include/zuluBooks.inc
+===================================================================
+--- trunk/096/pkg/items/sysbook/include/zuluBooks.inc	2005-09-30 02:57:57 UTC (rev 323)
++++ trunk/096/pkg/items/sysbook/include/zuluBooks.inc	2005-09-30 03:08:14 UTC (rev 324)
+@@ -97,12 +97,13 @@
+ 		for ( line_num; line_num &lt;= 8; line_num := line_num+1 ) // 8 lines per page
+ 			var prop_string := &quot;p&quot;+page_num+&quot;l&quot;+line_num; //p#l#
+ 			var line_text := GetConfigString(cfg_elem, prop_string);
++						
+ 			if ( !line_text )
+ 				line_text := &quot;&quot;;
+ 			endif
++					
++			(book_info.contents).Append(line_text);
+ 		
+-			book_info.Append(line_text);
+-		
+ 			sleepms(2);
+ 		endfor
+ 		sleepms(2);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000301.html">[Poldistro-svn] r323 - in trunk/096/pkg/items/sysbook: book commands/gm include
+</A></li>
+	<LI>Next message: <A HREF="000303.html">[Poldistro-svn] r325 - in trunk/096/pkg/items/sysbook: book commands/gm include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#302">[ date ]</a>
+              <a href="thread.html#302">[ thread ]</a>
+              <a href="subject.html#302">[ subject ]</a>
+              <a href="author.html#302">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

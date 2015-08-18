@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1103 - in trunk/096/pkg/skills/magery: config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1103%20-%20in%20trunk/096/pkg/skills/magery%3A%20config%20include&In-Reply-To=%3C200601071527.k07FRF3D027774%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001073.html">
+   <LINK REL="Next"  HREF="001075.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1103 - in trunk/096/pkg/skills/magery: config include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1103%20-%20in%20trunk/096/pkg/skills/magery%3A%20config%20include&In-Reply-To=%3C200601071527.k07FRF3D027774%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1103 - in trunk/096/pkg/skills/magery: config include">austin at berlios.de
+       </A><BR>
+    <I>Sat Jan  7 16:27:15 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001073.html">[Poldistro-svn] r1102 - in trunk/096: config pkg/skills/cartography pkg/skills/cartography/sextant
+</A></li>
+        <LI>Next message: <A HREF="001075.html">[Poldistro-svn] r1104 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1074">[ date ]</a>
+              <a href="thread.html#1074">[ thread ]</a>
+              <a href="subject.html#1074">[ subject ]</a>
+              <a href="author.html#1074">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-07 16:27:15 +0100 (Sat, 07 Jan 2006)
+New Revision: 1103
+
+Added:
+   trunk/096/pkg/skills/magery/config/spells_ex.cfg
+   trunk/096/pkg/skills/magery/include/spells_ex.inc
+Log:
+Support for converting spell names to their ID #.
+
+Added: trunk/096/pkg/skills/magery/config/spells_ex.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/config/spells_ex.cfg	2006-01-07 06:37:57 UTC (rev 1102)
++++ trunk/096/pkg/skills/magery/config/spells_ex.cfg	2006-01-07 15:27:15 UTC (rev 1103)
+@@ -0,0 +1,6 @@
++Elem	NameToId
++{
++	// Name		ID #
++	Clumsy		1
++	CreateFood	2
++}
+
+Added: trunk/096/pkg/skills/magery/include/spells_ex.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/include/spells_ex.inc	2006-01-07 06:37:57 UTC (rev 1102)
++++ trunk/096/pkg/skills/magery/include/spells_ex.inc	2006-01-07 15:27:15 UTC (rev 1103)
+@@ -0,0 +1,31 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:magery:spells&quot;;
++
++/*
++ * MS_SpellNameToId(spell_name)
++ *
++ * Purpose
++ * Converts the name of a spell to its ID number.
++ *
++ * Parameters
++ * spell_name:	Name of the spell to convert
++ *
++ * Return value
++ * Returns an integer if a spell Id was found.
++ * Returns 0 if the spell name is invalid.
++ *
++ */
++  
++function MS_SpellNameToId(spell_name)
++	var spellex_cfg := ReadConfigFile(&quot;:magery:config/spells_ex&quot;);
++	var cfg_elem := spellex_cfg[&quot;NameToId&quot;];
++	
++	return GetConfigInt(cfg_elem, spell_name);
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001073.html">[Poldistro-svn] r1102 - in trunk/096: config pkg/skills/cartography pkg/skills/cartography/sextant
+</A></li>
+	<LI>Next message: <A HREF="001075.html">[Poldistro-svn] r1104 - in trunk/096/pkg/mobiles/brainAI: . scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1074">[ date ]</a>
+              <a href="thread.html#1074">[ thread ]</a>
+              <a href="subject.html#1074">[ subject ]</a>
+              <a href="author.html#1074">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

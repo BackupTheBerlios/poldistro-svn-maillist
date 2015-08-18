@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r244 - in trunk/096/pkg/mobiles/brainAI: complete/testnpc include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r244%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20complete/testnpc%20include&In-Reply-To=%3C200509251450.j8PEoNea019503%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000224.html">
+   <LINK REL="Next"  HREF="000226.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r244 - in trunk/096/pkg/mobiles/brainAI: complete/testnpc include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r244%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20complete/testnpc%20include&In-Reply-To=%3C200509251450.j8PEoNea019503%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r244 - in trunk/096/pkg/mobiles/brainAI: complete/testnpc include">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep 25 16:50:23 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000224.html">[Poldistro-svn] r243 - trunk/096/pkg/systems/attributes/hooks
+</A></li>
+        <LI>Next message: <A HREF="000226.html">[Poldistro-svn] r245 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#225">[ date ]</a>
+              <a href="thread.html#225">[ thread ]</a>
+              <a href="subject.html#225">[ subject ]</a>
+              <a href="author.html#225">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-25 16:50:23 +0200 (Sun, 25 Sep 2005)
+New Revision: 244
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/complete/testnpc/enteredArea.src
+   trunk/096/pkg/mobiles/brainAI/complete/testnpc/lookAround.src
+   trunk/096/pkg/mobiles/brainAI/include/eventid.inc
+Log:
+Better handling of LookAround scripts.
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/testnpc/enteredArea.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/enteredArea.src	2005-09-25 14:42:28 UTC (rev 243)
++++ trunk/096/pkg/mobiles/brainAI/complete/testnpc/enteredArea.src	2005-09-25 14:50:23 UTC (rev 244)
+@@ -39,6 +39,12 @@
+ 			AI_WakeUp(npc);
+ 			AI_Speak(npc, &quot;Ive added you to my watch list &quot;+source.name);
+ 			
++			if ( scripts[&quot;LookAround&quot;] )
++				if ( !GetNerveProcess(npc, &quot;LookAround&quot;) )
++					AI_WakeUp(npc);
++				endif
++			endif
++			
+ 			return 1;
+ 		endif
+ 	endif
+
+Modified: trunk/096/pkg/mobiles/brainAI/complete/testnpc/lookAround.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/complete/testnpc/lookAround.src	2005-09-25 14:42:28 UTC (rev 243)
++++ trunk/096/pkg/mobiles/brainAI/complete/testnpc/lookAround.src	2005-09-25 14:50:23 UTC (rev 244)
+@@ -16,9 +16,9 @@
+ 	while ( npc )
+ 		if ( !npc.opponent )
+ 			if ( NPC_LoadWatchList(npc).size() &lt; 1 )
+-				AI_Sleep(npc);
++				// No need to look around any longer. We're all alone :(
++				return;
+ 			else
+-				AI_WakeUp(npc);
+ 				FindOpponent(npc, settings, scripts);
+ 			endif
+ 		endif
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/eventid.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/eventid.inc	2005-09-25 14:42:28 UTC (rev 243)
++++ trunk/096/pkg/mobiles/brainAI/include/eventid.inc	2005-09-25 14:50:23 UTC (rev 244)
+@@ -11,60 +11,60 @@
+ //
+ // * Custom brain AI event IDs
+ //
+-const NPCEVENT_MOVE				:= 0xA00003;	// Has NEMOVE_* helper constants
+-const NPCEVENT_OPPONENT				:= 0xA00004;	// Set New Opponent (.source)
+-const NPCEVENT_SPEAK				:= 0xA00005;	// Speak (.text)
+-const NPCEVENT_TURN				:= 0xA00006;	// Turn towards or away from an object
+-const NPCEVENT_WARMODE				:= 0xA00007;	// Set WarMode state (.value=0|1)
+-const NPCEVENT_ATTACK				:= 0xA0000A;	// Tell the npc to attack something
+-const NPCEVENT_MOVE_XY				:= 0xA0000B;	// Tell the NPC to move to coordinates
+-const NPCEVENT_TURN_XY				:= 0xA0000C;	// Tell the NPC to turn towards coordinates
+-const NPCEVENT_WANDER				:= 0xA0000D;	// Tell the npc to wander
++CONST NPCEVENT_MOVE				:= 0xA00003;	// Has NEMOVE_* helper CONSTants
++CONST NPCEVENT_OPPONENT				:= 0xA00004;	// Set New Opponent (.source)
++CONST NPCEVENT_SPEAK				:= 0xA00005;	// Speak (.text)
++CONST NPCEVENT_TURN				:= 0xA00006;	// Turn towards or away from an object
++CONST NPCEVENT_WARMODE				:= 0xA00007;	// Set WarMode state (.value=0|1)
++CONST NPCEVENT_ATTACK				:= 0xA0000A;	// Tell the npc to attack something
++CONST NPCEVENT_MOVE_XY				:= 0xA0000B;	// Tell the NPC to move to coordinates
++CONST NPCEVENT_TURN_XY				:= 0xA0000C;	// Tell the NPC to turn towards coordinates
++CONST NPCEVENT_WANDER				:= 0xA0000D;	// Tell the npc to wander
+ 
+-const NPCEVENT_ENDNERVE				:= 0xA0000F;	// Tell the brain to stop a nerve.
+-const NPCEVENT_STARTNERVE			:= 0xA00010;	// Tell the brain to start a nerve.
+-const NPCEVENT_DONE				:= 0xA00011;	// Brain tells a nerve that its instruction is done.
++CONST NPCEVENT_ENDNERVE				:= 0xA0000F;	// Tell the brain to stop a nerve.
++CONST NPCEVENT_STARTNERVE			:= 0xA00010;	// Tell the brain to start a nerve.
++CONST NPCEVENT_DONE				:= 0xA00011;	// Brain tells a nerve that its instruction is done.
+ 
+-const NPCEVENT_SLEEP				:= 0xA00012;	// Tell the brain to go to sleep.
+-const NPCEVENT_WAKEUP				:= 0xA00013;	// Tell the brain to wake up.
++CONST NPCEVENT_SLEEP				:= 0xA00012;	// Tell the brain to go to sleep.
++CONST NPCEVENT_WAKEUP				:= 0xA00013;	// Tell the brain to wake up.
+ 
+-const NPCEVENT_FWDNERVE				:= 0xA00014;	// Tell the brain to forward an event to a nerve.
++CONST NPCEVENT_FWDNERVE				:= 0xA00014;	// Tell the brain to forward an event to a nerve.
+ 
+ //
+-// * NPCEVENT_MOVE helper constants (.source = object)
++// * NPCEVENT_MOVE helper CONSTants (.source = object)
+ //
+-const NEMOVE_WALK				:= 1;	// .speed (default)
+-const NEMOVE_RUN				:= 2;	// .speed
+-const NEMOVE_TOWARD 				:= 1;	// .direction (default)
+-const NEMOVE_AWAY				:= 2;	// .direction
++CONST NEMOVE_WALK				:= 1;	// .speed (default)
++CONST NEMOVE_RUN				:= 2;	// .speed
++CONST NEMOVE_TOWARD 				:= 1;	// .direction (default)
++CONST NEMOVE_AWAY				:= 2;	// .direction
+ 
+ //
+-// * NE_TURN helper constants
++// * NE_TURN helper CONSTants
+ //
+-const NETURN_TOWARD				:= 1;
+-const NETURN_AWAY				:= 2;
++CONST NETURN_TOWARD				:= 1;
++CONST NETURN_AWAY				:= 2;
+ 
+ //
+ // * AWAKEN CONSTANTS
+ // 
+-const WAKEUP					:= 0;
+-const NOWAKE					:= 1;
++CONST WAKEUP					:= 0;
++CONST NOWAKE					:= 1;
+ 
+ //
+ // * CLEAR THOUGHT CONSTANTS
+ //
+-const CLR_BRAIN					:= 1;
+-const CLR_NERVE					:= 2;
+-const CLR_BOTH					:= 3;
++CONST CLR_BRAIN					:= 1;
++CONST CLR_NERVE					:= 2;
++CONST CLR_BOTH					:= 3;
+ 
+ //
+-//* NPC.EM constants (only brain can access npc.em)
++//* NPC.EM CONSTants (only brain can access npc.em)
+ //
+-// Constants for texttype flags in the AI_Speak() function
+-const SPEAK_TEXTTYPE_DEFAULT			:= &quot;default&quot;;
+-const SPEAK_TEXTTYPE_WHISPER			:= &quot;whisper&quot;;
+-const SPEAK_TEXTTYPE_YELL			:= &quot;yell&quot;;
++// CONSTants for texttype flags in the AI_Speak() function
++CONST SPEAK_TEXTTYPE_DEFAULT			:= &quot;default&quot;;
++CONST SPEAK_TEXTTYPE_WHISPER			:= &quot;whisper&quot;;
++CONST SPEAK_TEXTTYPE_YELL			:= &quot;yell&quot;;
+ 
+-// Constants for doevent flag in AI_Speak() function
+-const SPEAK_DOEVENT_DISABLE			:= 0x0;
+-const SPEAK_DOEVENT_ENABLE			:= 0x1;
++// CONSTants for doevent flag in AI_Speak() function
++CONST SPEAK_DOEVENT_DISABLE			:= 0x0;
++CONST SPEAK_DOEVENT_ENABLE			:= 0x1;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000224.html">[Poldistro-svn] r243 - trunk/096/pkg/systems/attributes/hooks
+</A></li>
+	<LI>Next message: <A HREF="000226.html">[Poldistro-svn] r245 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#225">[ date ]</a>
+              <a href="thread.html#225">[ thread ]</a>
+              <a href="subject.html#225">[ subject ]</a>
+              <a href="author.html#225">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

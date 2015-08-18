@@ -1,0 +1,254 @@
+From austin at berlios.de  Fri Mar  3 21:04:34 2006
+From: austin at berlios.de (austin at BerliOS)
+Date: Fri, 3 Mar 2006 21:04:34 +0100
+Subject: [Poldistro-svn] r1232 - in trunk/096: pkg/utils/coords pkg/utils/coords/regionScripts pkg/utils/coords/regionScripts/enter pkg/utils/coords/regionScripts/leave regions
+Message-ID: <200603032004.k23K4YAe000859@sheep.berlios.de>
+
+Author: austin
+Date: 2006-03-03 21:04:13 +0100 (Fri, 03 Mar 2006)
+New Revision: 1232
+
+Added:
+   trunk/096/pkg/utils/coords/regionScripts/
+   trunk/096/pkg/utils/coords/regionScripts/enter/
+   trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src
+   trunk/096/pkg/utils/coords/regionScripts/leave/
+   trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src
+Modified:
+   trunk/096/regions/regions.cfg
+Log:
+
+
+Added: trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src
+===================================================================
+--- trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src	2006-02-18 01:59:23 UTC (rev 1231)
++++ trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src	2006-03-03 20:04:13 UTC (rev 1232)
+@@ -0,0 +1,21 @@
++/* $Id$
++ *
++ */
++
++use uo;
++
++program EnterRegionZone(mobile, region_name)
++	
++	mobile.GrantPrivilege("Invul");
++	mobile.Enable("Invul");
++	
++	if ( mobile.cmdlevel )
++		SendSysMessage(mobile, "Ahh another hard day of work in the office. (Entering "+region_name+")");
++		return 1;
++	else 
++		SendSysMessage(mobile, "You are in the GM jail. Please wait for someone to assist you.");
++		return 1;
++	endif
++	
++        return 1;
++endprogram
+
+Added: trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src
+===================================================================
+--- trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src	2006-02-18 01:59:23 UTC (rev 1231)
++++ trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src	2006-03-03 20:04:13 UTC (rev 1232)
+@@ -0,0 +1,19 @@
++/* $Id$
++ *
++ */
++
++use uo;
++
++program EnterRegionZone(mobile, region_name)
++	
++	if ( mobile.cmdlevel )
++		SendSysMessage(mobile, "Off to go check on the players. (Leaving "+region_name+")");
++		return 1;
++	else 
++		SendSysMessage(mobile, "Go on, get out of here and behave for once.");
++		mobile.Disable("Invul");
++		return 1;
++	endif
++	
++        return 1;
++endprogram
+
+Modified: trunk/096/regions/regions.cfg
+===================================================================
+--- trunk/096/regions/regions.cfg	2006-02-18 01:59:23 UTC (rev 1231)
++++ trunk/096/regions/regions.cfg	2006-03-03 20:04:13 UTC (rev 1232)
+@@ -296,3 +296,17 @@
+ #       LightLevel      15
+ #}
+ 
++Region GM Jail
++{
++	Range		5268 1156 5311 1191
++	Guarded		1
++	LightLevel	0
++	LightOverride	1
++	NoCast		1
++	
++	//EnterText	You have entered GM Jail.
++	//LeaveText	You have left GM Jail.
++	
++	EnterScript	:coords:regionScripts/enter/GMJail
++	LeaveScript	:coords:regionScripts/leave/GMJail
++}
+
+
+
+From austin at berlios.de  Fri Mar  3 21:13:01 2006
+From: austin at berlios.de (austin at BerliOS)
+Date: Fri, 3 Mar 2006 21:13:01 +0100
+Subject: [Poldistro-svn] r1233 - in trunk/096/pkg/utils/coords/regionScripts: enter leave
+Message-ID: <200603032013.k23KD15s004975@sheep.berlios.de>
+
+Author: austin
+Date: 2006-03-03 21:13:00 +0100 (Fri, 03 Mar 2006)
+New Revision: 1233
+
+Modified:
+   trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src
+   trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src
+Log:
+
+
+Modified: trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src
+===================================================================
+--- trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src	2006-03-03 20:04:13 UTC (rev 1232)
++++ trunk/096/pkg/utils/coords/regionScripts/enter/gmJail.src	2006-03-03 20:13:00 UTC (rev 1233)
+@@ -6,8 +6,8 @@
+ 
+ program EnterRegionZone(mobile, region_name)
+ 	
+-	mobile.GrantPrivilege("Invul");
+-	mobile.Enable("Invul");
++	mobile.GrantPrivilege("invul");
++	mobile.Enable("invul");
+ 	
+ 	if ( mobile.cmdlevel )
+ 		SendSysMessage(mobile, "Ahh another hard day of work in the office. (Entering "+region_name+")");
+
+Modified: trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src
+===================================================================
+--- trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src	2006-03-03 20:04:13 UTC (rev 1232)
++++ trunk/096/pkg/utils/coords/regionScripts/leave/gmJail.src	2006-03-03 20:13:00 UTC (rev 1233)
+@@ -11,7 +11,7 @@
+ 		return 1;
+ 	else 
+ 		SendSysMessage(mobile, "Go on, get out of here and behave for once.");
+-		mobile.Disable("Invul");
++		mobile.Disable("invul");
+ 		return 1;
+ 	endif
+ 	
+
+
+
+From muaddiblsd at berlios.de  Sun Mar 12 13:48:32 2006
+From: muaddiblsd at berlios.de (muaddiblsd at BerliOS)
+Date: Sun, 12 Mar 2006 13:48:32 +0100
+Subject: [Poldistro-svn] r1234 - trunk/096
+Message-ID: <200603121248.k2CCmWdm016376@sheep.berlios.de>
+
+Author: muaddiblsd
+Date: 2006-03-12 13:48:28 +0100 (Sun, 12 Mar 2006)
+New Revision: 1234
+
+Modified:
+   trunk/096/CoreChanges-096.txt
+Log:
+
+
+Modified: trunk/096/CoreChanges-096.txt
+===================================================================
+--- trunk/096/CoreChanges-096.txt	2006-03-03 20:13:00 UTC (rev 1233)
++++ trunk/096/CoreChanges-096.txt	2006-03-12 12:48:28 UTC (rev 1234)
+@@ -1,4 +1,41 @@
+ -- POL096 --
++03-07 MuadDib
++        Added: New Justice/Region config entry for Regions. NoCombat is a 0/1 Flag to set
++               a region to be a No Combat region. No Combat regions will not allow the 
++               Clicking of a mobile to select as a new opponent if they are in this region.
++               It will also reset opponent data for mob if one enters this region. This is
++               a PvP specific addon. It does NOT check for npcs, this will have to be done
++               via packethooks.
++               
++               When Entering a NoCombat region, while already in combat, if YOU are the
++               attacker, it will reset your fight. If you are the one being attacked, it
++               will reset the fight with the first "opponent" you have listed.
++
++03-06 MuadDib
++        Changed: Regen after being damaged delay was changed from 10 seconds to 2 seconds.
++        Changed: Regen delay after changing warmode was changed from 5 seconds to 2 seconds.
++        Changed: SE Expansion set to send UOGold (Final UOSE) packet of 0xB9807B.
++                 Expansion changes should not affect versioning due to the updated releases
++                 simply added a feature they kept hidden, or simply was a more patched up version
++                 on the CD.
++
++03-03 MuadDib
++        Changed: Optimized handling of mobile.connected in core.
++        
++03-02 MuadDib
++        Fixed: Handling of 0x22 Move Resync with "Player Noto" handling to send
++                 correct information.
++                 
++03-01 MuadDib
++        Changed: Handling of item's decayat property when moved.
++        Fixed: Stack checking for decayat handling when moving items.
++        Fixed: Newly created characters will now have the connected member set
++               correctly.
++        
++01-18 Shinigami
++        Changed : Prop script_process.attached_to will return NPC if it's his AI-Script.
++                  (script_process comes from NPC.process or uo::GetProcess(pid))
++
+ 01-09 MuadDib
+         Changed: Added check for No Decay timer on items when resetting decay time.
+         Fixed: AOS Tooltips will now correctly show the Reputation of mobiles. In order
+
+
+
+From muaddiblsd at berlios.de  Thu Mar 16 06:45:39 2006
+From: muaddiblsd at berlios.de (muaddiblsd at BerliOS)
+Date: Thu, 16 Mar 2006 06:45:39 +0100
+Subject: [Poldistro-svn] r1235 - trunk/096
+Message-ID: <200603160545.k2G5jddE008634@sheep.berlios.de>
+
+Author: muaddiblsd
+Date: 2006-03-16 06:45:33 +0100 (Thu, 16 Mar 2006)
+New Revision: 1235
+
+Modified:
+   trunk/096/CoreChanges-096.txt
+Log:
+
+
+Modified: trunk/096/CoreChanges-096.txt
+===================================================================
+--- trunk/096/CoreChanges-096.txt	2006-03-12 12:48:28 UTC (rev 1234)
++++ trunk/096/CoreChanges-096.txt	2006-03-16 05:45:33 UTC (rev 1235)
+@@ -1,4 +1,10 @@
+ -- POL096 --
++03-15 MuadDib
++        Fixed: Attack Request will be automatically denied if Defender.serial == Attacker.serial.
++        Changed: Packet Logs (using .startlog and .stoplog) format has changed. It has been updated
++                 for easier reading and to match Packet Loggers format more (Such as UOLog and
++                 Spy UO).
++                 
+ 03-07 MuadDib
+         Added: New Justice/Region config entry for Regions. NoCombat is a 0/1 Flag to set
+                a region to be a No Combat region. No Combat regions will not allow the 
+@@ -14,10 +20,6 @@
+ 03-06 MuadDib
+         Changed: Regen after being damaged delay was changed from 10 seconds to 2 seconds.
+         Changed: Regen delay after changing warmode was changed from 5 seconds to 2 seconds.
+-        Changed: SE Expansion set to send UOGold (Final UOSE) packet of 0xB9807B.
+-                 Expansion changes should not affect versioning due to the updated releases
+-                 simply added a feature they kept hidden, or simply was a more patched up version
+-                 on the CD.
+ 
+ 03-03 MuadDib
+         Changed: Optimized handling of mobile.connected in core.
+
+
+

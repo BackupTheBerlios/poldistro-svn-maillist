@@ -1,0 +1,937 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r211 - in trunk/096/pkg: items/commcrystals items/commcrystals/config items/corpses items/corpses/config items/decorations items/decorations/config utils/servperf utils/servperf/config utils/servperf/www
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r211%20-%20in%20trunk/096/pkg%3A%20items/commcrystals%20items/commcrystals/config%20items/corpses%20items/corpses/config%20items/decorations%20items/decorations/config%20utils/servperf%20utils/servperf/config%20utils/servperf/www&In-Reply-To=%3C200509211308.j8LD8LtZ002087%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000192.html">
+   <LINK REL="Next"  HREF="000194.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r211 - in trunk/096/pkg: items/commcrystals items/commcrystals/config items/corpses items/corpses/config items/decorations items/decorations/config utils/servperf utils/servperf/config utils/servperf/www</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r211%20-%20in%20trunk/096/pkg%3A%20items/commcrystals%20items/commcrystals/config%20items/corpses%20items/corpses/config%20items/decorations%20items/decorations/config%20utils/servperf%20utils/servperf/config%20utils/servperf/www&In-Reply-To=%3C200509211308.j8LD8LtZ002087%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r211 - in trunk/096/pkg: items/commcrystals items/commcrystals/config items/corpses items/corpses/config items/decorations items/decorations/config utils/servperf utils/servperf/config utils/servperf/www">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Wed Sep 21 15:08:21 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000192.html">[Poldistro-svn] r210 - in trunk/096/pkg: config/config expansions/aos expansions/aos/config expansions/aos/skills/chivalry expansions/aos/skills/chivalry/config expansions/aos/skills/focus expansions/aos/skills/focus/config expansions/aos/skills/necromancy expansions/aos/skills/necromancy/config expansions/lbr expansions/lbr/config expansions/uor expansions/uor/config
+</A></li>
+        <LI>Next message: <A HREF="000194.html">[Poldistro-svn] r212 - in trunk/096/pkg/systems/attributes: . hooks include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#193">[ date ]</a>
+              <a href="thread.html#193">[ thread ]</a>
+              <a href="subject.html#193">[ subject ]</a>
+              <a href="author.html#193">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-21 15:08:14 +0200 (Wed, 21 Sep 2005)
+New Revision: 211
+
+Added:
+   trunk/096/pkg/items/commcrystals/config/
+   trunk/096/pkg/items/commcrystals/config/icp.cfg
+   trunk/096/pkg/items/corpses/config/
+   trunk/096/pkg/items/corpses/config/icp.cfg
+   trunk/096/pkg/items/decorations/config/
+   trunk/096/pkg/items/decorations/config/icp.cfg
+   trunk/096/pkg/utils/servperf/config/
+   trunk/096/pkg/utils/servperf/config/icp.cfg
+Modified:
+   trunk/096/pkg/items/commcrystals/commCrystal.src
+   trunk/096/pkg/items/commcrystals/crystalControl.src
+   trunk/096/pkg/items/commcrystals/itemdesc.cfg
+   trunk/096/pkg/items/commcrystals/pkg.cfg
+   trunk/096/pkg/items/corpses/boneControl.src
+   trunk/096/pkg/items/corpses/corpseControl.src
+   trunk/096/pkg/items/corpses/corpseFunctions.inc
+   trunk/096/pkg/items/corpses/pkg.cfg
+   trunk/096/pkg/items/decorations/itemdesc.cfg
+   trunk/096/pkg/utils/servperf/pkg.cfg
+   trunk/096/pkg/utils/servperf/recbandwidth.src
+   trunk/096/pkg/utils/servperf/start.src
+   trunk/096/pkg/utils/servperf/www/header.inc
+Log:
+Added /config/icp.cfg for ICP Compliance.
+Restructured pkg.cfg for correct spacing in file.
+Reindented files for correct tab spacing.
+
+Modified: trunk/096/pkg/items/commcrystals/commCrystal.src
+===================================================================
+--- trunk/096/pkg/items/commcrystals/commCrystal.src	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/commcrystals/commCrystal.src	2005-09-21 13:08:14 UTC (rev 211)
+@@ -1,79 +1,82 @@
+-
+ use uo;
+ use basic;
+ 
+-const CRYSTALOBJ := 0xC001;
+-const RECEIVEROBJ := 0xC002;
++CONST CRYSTALOBJ  := 0xC001;
++CONST RECEIVEROBJ := 0xC002;
+ 
+-program use_commcrystal(who, crystal)
+-  var CrystalStatus := GetObjProperty(crystal, &quot;Status&quot;);
+-  var Charges := GetObjProperty(crystal, &quot;Charges&quot;);
+-  Charges := Cint(Charges);
+-  if ( Charges &lt;= 0 )
+-    SendSysMessage(who, &quot;All charges have been used.&quot;);
+-    return;
+-  endif
+-  
+-  var LinkString := GetObjProperty(crystal, &quot;Links&quot;);
+-  var Links := Splitwords(LinkString);
+-  var LinkCount := Len(Links);
+-  var CrystalId := crystal.serial;
+-  var i, blank, placeholder, receiver;
+-  SendSysMessage(who, &quot;Select object.&quot;);
+-  var TargetItem := target(who);
+-  if ( (TargetItem.objtype != CRYSTALOBJ) and (TargetItem.objtype != RECEIVEROBJ) )
+-    SendSysMessage(who, &quot;That is not a communication crystal.&quot;);
+-    return;
+-  endif
+-  if (TargetItem.serial == crystal.serial)
+-    if (CrystalStatus == &quot;OFF&quot;)
+-      SendSysMessage(who, &quot;Crystal activated.  You are linked to &quot; + (LinkCount-1) + &quot; receivers.&quot;);
+-      SetObjProperty(crystal, &quot;Status&quot;, &quot;ON&quot;);
+-      Charges := Charges -1;
+-      SetObjProperty( crystal, &quot;Charges&quot;, Charges );
+-      return;
+-    else
+-      SendSysMessage(who, &quot;Crystal deactivated.&quot;);
+-      SetObjProperty(crystal, &quot;Status&quot;, &quot;OFF&quot;);
+-      return;
+-    endif
+-  endif
+-  if (TargetItem.objtype == RECEIVEROBJ)
+-    var Master := GetObjProperty(TargetItem, &quot;Master&quot;);
+-    Master := Cint(Master);
+-    if (Master == 0)
+-      If (LinkCount &gt; 10)
+-        SendSysMessage(who, &quot;Too many receivers.   Aborted.&quot;);
+-        return;
+-      endif
+-      SendSysMessage(who, &quot;Linked.&quot;);
+-      SetObjProperty(TargetItem, &quot;Master&quot;, CrystalId);
+-      LinkString := Cstr(LinkString) + &quot; &quot; + Cstr(TargetItem.serial);
+-      SetObjProperty(crystal, &quot;Links&quot;, LinkString);
+-      return;
+-    endif
+-    if (Master == CrystalId)
+-      receiver := CStr(TargetItem.serial);
+-      placeholder := &quot;&quot;;
+-      i := 1;
+-      LinkCount := LinkCount + 1;
+-      SetObjProperty(TargetItem, &quot;Master&quot;, 0);
+-      while (i &lt; LinkCount)
+-        blank := CStr(Links[i]);
+-        if (blank == receiver)
+-          blank := &quot;nothing&quot;;
+-          //we ignore this one
+-        else
+-          placeholder := placeholder + &quot; &quot; + blank;
+-        endif
+-        i := i + 1;
+-      endwhile
+-      SetObjProperty(crystal, &quot;Links&quot;, placeholder);
+-      SendSysMessage(who, &quot;Unlinked.&quot;);
+-      return;
+-    else
+-      SendSysMessage(who, &quot;That receiver is in use.&quot;);
+-      return;
+-    endif
+-  endif
++program use_commCrystal(who, crystal)
++
++	var CrystalStatus := GetObjProperty(crystal, &quot;Status&quot;);
++	var Charges := GetObjProperty(crystal, &quot;Charges&quot;);
++	Charges := Cint(Charges);
++	if ( Charges &lt;= 0 )
++		SendSysMessage(who, &quot;All charges have been used.&quot;);
++		return 0;
++	endif
++
++	var LinkString := GetObjProperty(crystal, &quot;Links&quot;);
++	var Links := Splitwords(LinkString);
++	var LinkCount := Len(Links);
++	var CrystalId := crystal.serial;
++	var i, blank, placeholder, receiver;
++	SendSysMessage(who, &quot;Select object.&quot;);
++	var TargetItem := target(who);
++	if ( (TargetItem.objtype != CRYSTALOBJ) and (TargetItem.objtype != RECEIVEROBJ) )
++		SendSysMessage(who, &quot;That is not a communication crystal.&quot;);
++		return 0;
++	endif
++	if (TargetItem.serial == crystal.serial)
++		if (CrystalStatus == &quot;OFF&quot;)
++			SendSysMessage(who, &quot;Crystal activated.  You are linked to &quot; + (LinkCount-1) + &quot; receivers.&quot;);
++			SetObjProperty(crystal, &quot;Status&quot;, &quot;ON&quot;);
++			Charges := Charges -1;
++			SetObjProperty( crystal, &quot;Charges&quot;, Charges );
++			return 0;
++		else
++			SendSysMessage(who, &quot;Crystal deactivated.&quot;);
++			SetObjProperty(crystal, &quot;Status&quot;, &quot;OFF&quot;);
++			return 0;
++		endif
++	endif
++	if (TargetItem.objtype == RECEIVEROBJ)
++		var Master := GetObjProperty(TargetItem, &quot;Master&quot;);
++		Master := Cint(Master);
++		if (Master == 0)
++			If (LinkCount &gt; 10)
++				SendSysMessage(who, &quot;Too many receivers.   Aborted.&quot;);
++				return 0;
++			endif
++			SendSysMessage(who, &quot;Linked.&quot;);
++			SetObjProperty(TargetItem, &quot;Master&quot;, CrystalId);
++			LinkString := Cstr(LinkString) + &quot; &quot; + Cstr(TargetItem.serial);
++			SetObjProperty(crystal, &quot;Links&quot;, LinkString);
++			return 0;
++		endif
++		if (Master == CrystalId)
++			receiver := CStr(TargetItem.serial);
++			placeholder := &quot;&quot;;
++			i := 1;
++			LinkCount := LinkCount + 1;
++			SetObjProperty(TargetItem, &quot;Master&quot;, 0);
++			while (i &lt; LinkCount)
++				blank := CStr(Links[i]);
++				if (blank == receiver)
++					blank := &quot;nothing&quot;;
++					//we ignore this one
++				else
++					placeholder := placeholder + &quot; &quot; + blank;
++				endif
++				i := i + 1;
++			endwhile
++			SetObjProperty(crystal, &quot;Links&quot;, placeholder);
++			SendSysMessage(who, &quot;Unlinked.&quot;);
++			return 0;
++		else
++			SendSysMessage(who, &quot;That receiver is in use.&quot;);
++			return 0;
++		endif
++	endif
++
++	return 0;
++
+ endprogram
+
+Added: trunk/096/pkg/items/commcrystals/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/commcrystals/config/icp.cfg	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/commcrystals/config/icp.cfg	2005-09-21 13:08:14 UTC (rev 211)
+@@ -0,0 +1,12 @@
++ICP Register
++{
++        Name            Communication Crystals
++        Version         1.0
++        Description     CommCrystal Control Package
++
++        Creator         Distro Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++}
+
+Modified: trunk/096/pkg/items/commcrystals/crystalControl.src
+===================================================================
+--- trunk/096/pkg/items/commcrystals/crystalControl.src	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/commcrystals/crystalControl.src	2005-09-21 13:08:14 UTC (rev 211)
+@@ -4,32 +4,36 @@
+ 
+ include &quot;include/sysEvent&quot;;
+ 
+-program receivercontrol(crystal);
+-  var i, placeholder, receiver, Links, LinkList, LinkCount;
+-  RegisterForSpeechEvents(crystal, 1);
+-  EnableEvents(SYSEVENT_SPEECH,1);
+-  var ev;
++program receiverControl(crystal);
+ 
+-  while(1)
+-    ev := os::wait_for_event( 3 );
+-    if(ev)
+-      var IsOn := GetObjProperty(crystal, &quot;Status&quot;);
+-      IsOn := CStr(IsOn);
+-      if (IsOn == &quot;ON&quot;)
+-        if (ev.type==SYSEVENT_SPEECH)
+-          LinkList := GetObjProperty(crystal, &quot;Links&quot;);
+-          Links := Splitwords(LinkList);
+-          LinkCount := Len(Links);
+-          LinkCount := LinkCount + 1;
+-          i := 1;
+-          while (i &lt; LinkCount)
+-            placeholder := Cint(Links[i]);
+-            receiver := SystemFindObjectBySerial(placeholder);
+-            PrintTextAbove(receiver, &quot;Message from &quot;+ev.source.name+&quot;: &quot; + ev.text);
+-            i := i + 1;
+-          endwhile
+-        endif
+-      endif
+-    endif
+-  endwhile
++	var i, placeholder, receiver, Links, LinkList, LinkCount;
++	RegisterForSpeechEvents(crystal, 1);
++	EnableEvents(SYSEVENT_SPEECH,1);
++	var ev;
++
++	while(1)
++		ev := os::wait_for_event( 3 );
++		if(ev)
++			var IsOn := GetObjProperty(crystal, &quot;Status&quot;);
++			IsOn := CStr(IsOn);
++			if (IsOn == &quot;ON&quot;)
++				if (ev.type==SYSEVENT_SPEECH)
++					LinkList := GetObjProperty(crystal, &quot;Links&quot;);
++					Links := Splitwords(LinkList);
++					LinkCount := Len(Links);
++					LinkCount := LinkCount + 1;
++					i := 1;
++					while (i &lt; LinkCount)
++						placeholder := Cint(Links[i]);
++						receiver := SystemFindObjectBySerial(placeholder);
++						PrintTextAbove(receiver, &quot;Message from &quot;+ev.source.name+&quot;: &quot; + ev.text);
++						i := i + 1;
++					endwhile
++				endif
++			endif
++		endif
++	endwhile
++
++	return 0;
++
+ endprogram
+
+Modified: trunk/096/pkg/items/commcrystals/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/commcrystals/itemdesc.cfg	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/commcrystals/itemdesc.cfg	2005-09-21 13:08:14 UTC (rev 211)
+@@ -6,7 +6,7 @@
+ 	ControlScript	crystalControl
+ 	Script		commCrystal
+ 	graphic		0x1ED0
+-    CProp       Status      sOFF
++	CProp		Status      sOFF
+ 	CProp		Links		sBLANK
+ 	CProp		Charges		i2000
+ }
+
+Modified: trunk/096/pkg/items/commcrystals/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/commcrystals/pkg.cfg	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/commcrystals/pkg.cfg	2005-09-21 13:08:14 UTC (rev 211)
+@@ -1,6 +1,6 @@
+-Enabled 1
+-Name commcrystals
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
++Enabled	 	1
++Name 		commcrystals
++Maintainer 	Distro Team
++Email 		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Version 	1.0
+ 
+
+Modified: trunk/096/pkg/items/corpses/boneControl.src
+===================================================================
+--- trunk/096/pkg/items/corpses/boneControl.src	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/corpses/boneControl.src	2005-09-21 13:08:14 UTC (rev 211)
+@@ -1,8 +1,9 @@
+ use uo;
+ use os;
+-use util;
+ 
+-program bonecontrol(corpse)
+-  sleep(300);
+-  DestroyItem(corpse);
+-endprogram
+\ No newline at end of file
++program boneControl(corpse)
++
++        sleep(300);
++        DestroyItem(corpse);
++
++endprogram
+
+Added: trunk/096/pkg/items/corpses/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/corpses/config/icp.cfg	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/corpses/config/icp.cfg	2005-09-21 13:08:14 UTC (rev 211)
+@@ -0,0 +1,12 @@
++ICP Register
++{
++        Name            Corpses
++        Version         1.0
++        Description     Corpse Control package. Handles corpse carving, corpse decay, and bone decay (from corpse).
++
++        Creator         Distro Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++}
+
+Modified: trunk/096/pkg/items/corpses/corpseControl.src
+===================================================================
+--- trunk/096/pkg/items/corpses/corpseControl.src	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/corpses/corpseControl.src	2005-09-21 13:08:14 UTC (rev 211)
+@@ -2,32 +2,36 @@
+ use os;
+ use util;
+ 
+-program corpsecontrol(corpse)
+-  sleep(300);
+-  if(!corpse)
+-    return;
+-  endif
+-  if(GetObjProperty(corpse, &quot;npctemplate&quot;))
+-    DestroyItem(corpse);
+-    return;
+-  else
+-    var beardlist := {0x203e, 0x203f, 0x2040, 0x2041, 0x204b, 0x204c, 0x204d };
+-    var hairlist  := {0x2044, 0x2045, 0x2046, 0x2047, 0x2048, 0x2049, 0x204a, 0x203b, 0x203c, 0x203d };
+-    var bonearray := array(0xed2, 0xed1, 0xed0, 0xecf, 0xece, 0xecd, 0xecc, 0xecb, 0xeca);
+-    var bones := CreateItemAtLocation(corpse.x, corpse.y, corpse.z, bonearray[RandomInt(9)+1], 1, corpse.realm);
+-    var newname := corpse.name[&quot;A corpse of &quot;] := &quot;&quot;;
+-    bones.name := &quot;remains of &quot; + newname;
+-    foreach thing in EnumerateItemsInContainer(corpse)
+-      if((thing.objtype in beardlist) || (thing.objtype in hairlist))
+-        DestroyItem(thing);
+-        elseif(thing.movable == 0)
+-        DestroyItem(thing);
+-      else
+-        MoveItemToContainer(thing, bones);
+-        thing.decayAt := ReadGameClock() + 600;
+-      endif
+-    endforeach
+-    DestroyItem(corpse);
+-    start_script(&quot;boneControl&quot;, bones);
+-  endif
++program corpseControl(corpse)
++
++	sleep(300);
++	if(!corpse)
++		return 0;
++	endif
++	if(GetObjProperty(corpse, &quot;npctemplate&quot;))
++		DestroyItem(corpse);
++		return 0;
++	else
++		var beardlist := {0x203e, 0x203f, 0x2040, 0x2041, 0x204b, 0x204c, 0x204d };
++		var hairlist  := {0x2044, 0x2045, 0x2046, 0x2047, 0x2048, 0x2049, 0x204a, 0x203b, 0x203c, 0x203d };
++		var bonearray := array(0xed2, 0xed1, 0xed0, 0xecf, 0xece, 0xecd, 0xecc, 0xecb, 0xeca);
++		var bones := CreateItemAtLocation(corpse.x, corpse.y, corpse.z, bonearray[RandomInt(9)+1], 1, corpse.realm);
++		var newname := corpse.name[&quot;A corpse of &quot;] := &quot;&quot;;
++		bones.name := &quot;remains of &quot; + newname;
++		foreach thing in EnumerateItemsInContainer(corpse)
++			if((thing.objtype in beardlist) || (thing.objtype in hairlist))
++				DestroyItem(thing);
++			elseif(thing.movable == 0)
++				DestroyItem(thing);
++			else
++				MoveItemToContainer(thing, bones);
++				thing.decayAt := ReadGameClock() + 600;
++			endif
++		endforeach
++		DestroyItem(corpse);
++		start_script(&quot;boneControl&quot;, bones);
++	endif
++
++	return 0;
++
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/corpses/corpseFunctions.inc
+===================================================================
+--- trunk/096/pkg/items/corpses/corpseFunctions.inc	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/corpses/corpseFunctions.inc	2005-09-21 13:08:14 UTC (rev 211)
+@@ -1,109 +1,114 @@
+ 
+ function Carve_Corpse(who, cadaver)
+-  Detach();
+-  if((!Accessible(who, cadaver)) or (!CheckLineOfSight(who, cadaver)))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  if(Distance(who, cadaver) &gt; 2)
+-    SendSysMessage(who, &quot;You are not close enough.&quot;);
+-    return;
+-  endif
+-  var c_type := cadaver.corpsetype;
+-  if(GetObjProperty(cadaver, &quot;cut&quot;) == &quot;1&quot;)
+-    SendSysMessage( who, &quot;You cannot get any more from this corpse.&quot; );
+-    foreach thing in EnumerateItemsInContainer(cadaver)
+-      MoveItemToLocation(thing, cadaver.x, cadaver.y, cadaver.z, MOVEITEM_FORCELOCATION);
+-    endforeach
+-    DestroyItem(cadaver);
+-  elseif((c_type == 400) || (c_type == 401))
+-    var beardlist := {0x203e, 0x203f, 0x2040, 0x2041, 0x204b, 0x204c, 0x204d };
+-    var hairlist  := {0x2044, 0x2045, 0x2046, 0x2047, 0x2048, 0x2049, 0x204a, 0x203b, 0x203c, 0x203d };
+-    foreach thing in EnumerateItemsInContainer(cadaver)
+-      if((thing.objtype in hairlist) or (thing.objtype in beardlist))
+-        DestroyItem(thing);
+-      else
+-        MoveItemToLocation(thing, cadaver.x, cadaver.y, cadaver.z, MOVEITEM_FORCELOCATION);
+-      endif
+-    endforeach
+-    var partsarray := {};
+-    var part;
+-    part := CreateItemAtLocation(cadaver.x-1, cadaver.y, cadaver.z, 0x1da0, 1, cadaver.realm);
+-    partsarray.append(part);
+-    SetObjProperty(part, &quot;serial&quot;, GetObjProperty(cadaver, &quot;serial&quot;));
+-    var aname := cadaver.name;
+-    aname[&quot;A corpse of&quot;] := &quot;&quot;;
+-    part.name := &quot;The head of &quot; + aname;
+-    part := CreateItemAtLocation(cadaver.x-1, cadaver.y, cadaver.z, 0x1da1, 1, cadaver.realm);
+-    partsarray.append(part);
+-    part := CreateItemAtLocation(cadaver.x-1, cadaver.y+1, cadaver.z, 0x1da2, 1, cadaver.realm);
+-    partsarray.append(part);
+-    part := CreateItemAtLocation(cadaver.x+1, cadaver.y, cadaver.z, 0x1da3, 1, cadaver.realm);
+-    partsarray.append(part);
+-    part := CreateItemAtLocation(cadaver.x+1, cadaver.y+1, cadaver.z, 0x1da4, 1, cadaver.realm);
+-    partsarray.append(part);
+-    part := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, 0x1d9f, 1, cadaver.realm);
+-    partsarray.append(part);
+-    var blood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, 0x122a, 1, cadaver.realm);
+-    blood.movable := 0;
+-    DestroyItem(cadaver);
+-    sleep(40);
+-    foreach thing in partsarray
+-      if(!thing.container)
+-        DestroyItem(thing);
+-      endif
+-    endforeach
+-    sleep(20);
+-    DestroyItem(blood);
+-  else
+-    if(c_type == 223)
+-      CreateItemInContainer(cadaver, 0x9f1, 2);
+-      SendSysMessage(who, &quot;You place the items on the corpse.&quot;);
+-      var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, cadaver.realm);
+-      sleep(30);
+-      DestroyItem(cadaver);
+-      sleep(30);
+-      DestroyItem(theblood);
+-      return;
+-    endif
+-    var conf := ReadConfigFile(&quot;:*:npcdesc&quot;);
+-    var tmplate := GetObjProperty(cadaver, &quot;npctemplate&quot;);
+-    if(!tmplate)
+-      SendSysMessage(who, &quot;You cut the corpse, but fail to find anything useful.&quot;, 3, 40);
+-      var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, cadaver.realm);
+-      sleep(30);
+-      DestroyItem(cadaver);
+-      sleep(30);
+-      DestroyItem(theblood);
+-      return;
+-    else
+-      SetObjProperty(cadaver, &quot;cut&quot;,&quot;1&quot;);
+-      var corpseitm := conf[tmplate].&quot;corpseitm&quot;;
+-      var corpseamt := conf[tmplate].&quot;corpseamt&quot;;
+-      print(&quot;I: &quot; + corpseitm);
+-      print(&quot;A: &quot; + corpseamt);
+-      if(!corpseitm)
+-        print(&quot;error&quot;);
+-        var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, cadaver.realm);
+-        sleep(30);
+-        DestroyItem(cadaver);
+-        sleep(30);
+-        DestroyItem(theblood);
+-        return;
+-      endif
+-      var i := 1;
+-      corpseitm := SplitWords(corpseitm);
+-      corpseamt := SplitWords(corpseamt);
+-      foreach thing in corpseitm
+-        CreateItemInContainer(cadaver, thing, Cint(corpseamt[i]));
+-        i := i + 1;
+-      endforeach
+-      SendSysMessage(who, &quot;You place the items on the corpse.&quot;);
+-      var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, cadaver.realm);
+-      sleep(30);
+-      DestroyItem(cadaver);
+-      sleep(30);
+-      DestroyItem(theblood);
+-    endif
+-  endif
+-endfunction
++
++         Detach();
++	if((!Accessible(who, cadaver)) or (!CheckLineOfSight(who, cadaver)))
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++	if(Distance(who, cadaver) &gt; 2)
++		SendSysMessage(who, &quot;You are not close enough.&quot;);
++		return 0;
++	endif
++
++	var c_type := cadaver.corpsetype;
++	if(GetObjProperty(cadaver, &quot;cut&quot;) == &quot;1&quot;)
++		SendSysMessage( who, &quot;You cannot get any more from this corpse.&quot; );
++		foreach thing in EnumerateItemsInContainer(cadaver)
++			MoveItemToLocation(thing, cadaver.x, cadaver.y, cadaver.z, MOVEITEM_FORCELOCATION);
++		endforeach
++		DestroyItem(cadaver);
++	elseif((c_type == 400) || (c_type == 401))
++		var beardlist := {0x203e, 0x203f, 0x2040, 0x2041, 0x204b, 0x204c, 0x204d };
++		var hairlist  := {0x2044, 0x2045, 0x2046, 0x2047, 0x2048, 0x2049, 0x204a, 0x203b, 0x203c, 0x203d };
++		foreach thing in EnumerateItemsInContainer(cadaver)
++			if((thing.objtype in hairlist) or (thing.objtype in beardlist))
++				DestroyItem(thing);
++			else
++				MoveItemToLocation(thing, cadaver.x, cadaver.y, cadaver.z, MOVEITEM_FORCELOCATION);
++			endif
++		endforeach
++		var partsarray := {};
++		var part;
++		part := CreateItemAtLocation(cadaver.x-1, cadaver.y, cadaver.z, 0x1da0, 1, cadaver.realm);
++		partsarray.append(part);
++		SetObjProperty(part, &quot;serial&quot;, GetObjProperty(cadaver, &quot;serial&quot;));
++		var aname := cadaver.name;
++		aname[&quot;A corpse of&quot;] := &quot;&quot;;
++		part.name := &quot;The head of &quot; + aname;
++		part := CreateItemAtLocation(cadaver.x-1, cadaver.y, cadaver.z, 0x1da1, 1, cadaver.realm);
++		partsarray.append(part);
++		part := CreateItemAtLocation(cadaver.x-1, cadaver.y+1, cadaver.z, 0x1da2, 1, cadaver.realm);
++		partsarray.append(part);
++		part := CreateItemAtLocation(cadaver.x+1, cadaver.y, cadaver.z, 0x1da3, 1, cadaver.realm);
++		partsarray.append(part);
++		part := CreateItemAtLocation(cadaver.x+1, cadaver.y+1, cadaver.z, 0x1da4, 1, cadaver.realm);
++		partsarray.append(part);
++		part := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, 0x1d9f, 1, cadaver.realm);
++		partsarray.append(part);
++		var blood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, 0x122a, 1, cadaver.realm);
++		blood.movable := 0;
++		DestroyItem(cadaver);
++		sleep(40);
++		foreach thing in partsarray
++			if(!thing.container)
++				DestroyItem(thing);
++			endif
++		endforeach
++		sleep(20);
++		DestroyItem(blood);
++	else
++		if(c_type == 223)
++			CreateItemInContainer(cadaver, 0x9f1, 2);
++			SendSysMessage(who, &quot;You place the items on the corpse.&quot;);
++			var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, cadaver.realm);
++			sleep(30);
++			DestroyItem(cadaver);
++			sleep(30);
++			DestroyItem(theblood);
++			return 0;
++		endif
++		var conf := ReadConfigFile(&quot;:*:npcdesc&quot;);
++		var tmplate := GetObjProperty(cadaver, &quot;npctemplate&quot;);
++		if(!tmplate)
++			SendSysMessage(who, &quot;You cut the corpse, but fail to find anything useful.&quot;, 3, 40);
++			var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, cadaver.realm);
++			sleep(30);
++			DestroyItem(cadaver);
++			sleep(30);
++			DestroyItem(theblood);
++			return 0;
++		else
++			SetObjProperty(cadaver, &quot;cut&quot;,&quot;1&quot;);
++			var corpseitm := conf[tmplate].&quot;corpseitm&quot;;
++			var corpseamt := conf[tmplate].&quot;corpseamt&quot;;
++			print(&quot;I: &quot; + corpseitm);
++			print(&quot;A: &quot; + corpseamt);
++			if(!corpseitm)
++				print(&quot;error&quot;);
++				var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, cadaver.realm);
++				sleep(30);
++				DestroyItem(cadaver);
++				sleep(30);
++				DestroyItem(theblood);
++				return 0;
++			endif
++			var i := 1;
++			corpseitm := SplitWords(corpseitm);
++			corpseamt := SplitWords(corpseamt);
++			foreach thing in corpseitm
++				CreateItemInContainer(cadaver, thing, Cint(corpseamt[i]));
++				i := i + 1;
++			endforeach
++			SendSysMessage(who, &quot;You place the items on the corpse.&quot;);
++			var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, cadaver.realm);
++			sleep(30);
++			DestroyItem(cadaver);
++			sleep(30);
++			DestroyItem(theblood);
++		endif
++	endif
++
++	return 0;
++
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/corpses/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/corpses/pkg.cfg	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/corpses/pkg.cfg	2005-09-21 13:08:14 UTC (rev 211)
+@@ -1,5 +1,5 @@
+-Enabled 1
+-Name corpses
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+\ No newline at end of file
++Enabled 	1
++Name 		corpses
++Maintainer 	Distro Team
++Email 		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Version 	1.0
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/decorations/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/decorations/config/icp.cfg	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/decorations/config/icp.cfg	2005-09-21 13:08:14 UTC (rev 211)
+@@ -0,0 +1,12 @@
++ICP Register
++{
++        Name            Decorations
++        Version         1.0a
++        Description     Decorations package. Contains items solely for decoration and their scripts if any required.
++
++        Creator         Distro Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++}
+
+Modified: trunk/096/pkg/items/decorations/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/decorations/itemdesc.cfg	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/items/decorations/itemdesc.cfg	2005-09-21 13:08:14 UTC (rev 211)
+@@ -1,34 +1,34 @@
+ Item 0x0E46 // empty jars
+ {
+-   Name emptyjars1
+-   VendorSellsFor  200
+-   VendorBuysFor   75
++	Name		emptyjars1
++	VendorSellsFor  200
++	VendorBuysFor   75
+ }
+ 
+ Item 0x0EE4 // W spiderweb
+ {
+-   Name spiderweb1
+-   VendorSellsFor  200
+-   VendorBuysFor   75
++	Name 		spiderweb1
++	VendorSellsFor  200
++	VendorBuysFor   75
+ }
+ 
+ Item 0x0EE3 // N spiderweb
+ {
+-   Name spiderweb2
+-   VendorSellsFor  200
+-   VendorBuysFor   75
++	Name 		spiderweb2
++	VendorSellsFor  200
++	VendorBuysFor   75
+ }
+ 
+ Item 0x154D // water barrel
+ {
+-   Name waterbarrel
+-   VendorSellsFor  280
+-   VendorBuysFor   130
++	Name 		waterbarrel
++	VendorSellsFor  280
++	VendorBuysFor   130
+ }
+ 
+ Item 0x1852 // scales2
+ {
+-   Name scales2
+-   VendorSellsFor  200
+-   VendorBuysFor   75
++	Name 		scales2
++	VendorSellsFor  200
++	VendorBuysFor   75
+ }
+
+Added: trunk/096/pkg/utils/servperf/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/utils/servperf/config/icp.cfg	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/utils/servperf/config/icp.cfg	2005-09-21 13:08:14 UTC (rev 211)
+@@ -0,0 +1,16 @@
++ICP Register
++{
++	Name		Server Performance WebPkg
++	Version		1.1
++	Description	Server Performance recording package for internal Webserver.
++
++	Creator		Syzygy
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">syzygy at pobox.com</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++	//Script	cmdlevel path
++
++	//TextCmd	cmdlevel path
++}
+
+Modified: trunk/096/pkg/utils/servperf/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/servperf/pkg.cfg	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/utils/servperf/pkg.cfg	2005-09-21 13:08:14 UTC (rev 211)
+@@ -1,6 +1,6 @@
+-Enabled 1
+-CoreRequired 84
+-Name servperf
+-Maintainer Syzygy
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">syzygy at pobox.com</A>
+-Version 1.1
+\ No newline at end of file
++Enabled 	1
++CoreRequired 	84
++Name 		servperf
++Maintainer 	Syzygy
++Email 		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">syzygy at pobox.com</A>
++Version 	1.1
+\ No newline at end of file
+
+Modified: trunk/096/pkg/utils/servperf/recbandwidth.src
+===================================================================
+--- trunk/096/pkg/utils/servperf/recbandwidth.src	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/utils/servperf/recbandwidth.src	2005-09-21 13:08:14 UTC (rev 211)
+@@ -2,28 +2,30 @@
+ use uo;
+ 
+ // This program records the bandwidth used per minute
+-// Samples are stored for the last HISTORY_MINUTES minutes 
++// Samples are stored for the last HISTORY_MINUTES minutes
+ // each element contains { bytes_received, bytes_sent } for that minute
+ 
+-const HISTORY_MINUTES := 10;
++CONST HISTORY_MINUTES := 10;
+ 
+-program record_bandwidth_used()
+-    var results := { {0,0} };
+-    var system := polcore();
+-    var last_received := system.bytes_received;
+-    var last_sent := system.bytes_sent;
+-    var this_received, this_sent;
++program record_Bandwidth_used()
+ 
+-    set_critical(1);
+-    while (1)
+-        sleep( 60 );
+-        this_received := system.bytes_received;
+-        this_sent := system.bytes_sent;    
+-        results.insert( 1, { this_received-last_received,this_sent-last_sent } );
+-        // print( &quot;results: &quot; + results );
+-        results.erase( HISTORY_MINUTES+1 );
+-        last_received := this_received;
+-        last_sent := this_sent;
+-        SetGlobalProperty( &quot;#:servperf:bandwidth&quot;, results );
+-    endwhile     
++	var results := { {0,0} };
++	var system := polcore();
++	var last_received := system.bytes_received;
++	var last_sent := system.bytes_sent;
++	var this_received, this_sent;
++
++	set_critical(1);
++	while (1)
++		sleep( 60 );
++		this_received := system.bytes_received;
++		this_sent := system.bytes_sent;
++		results.insert( 1, { this_received-last_received,this_sent-last_sent } );
++		// print( &quot;results: &quot; + results );
++		results.erase( HISTORY_MINUTES+1 );
++		last_received := this_received;
++		last_sent := this_sent;
++		SetGlobalProperty( &quot;#:servperf:bandwidth&quot;, results );
++	endwhile
++
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/utils/servperf/start.src
+===================================================================
+--- trunk/096/pkg/utils/servperf/start.src	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/utils/servperf/start.src	2005-09-21 13:08:14 UTC (rev 211)
+@@ -1,3 +1,3 @@
+ use os;
+ 
+-start_script( &quot;recbandwidth&quot; );
++start_script( &quot;recBandwidth&quot; );
+
+Modified: trunk/096/pkg/utils/servperf/www/header.inc
+===================================================================
+--- trunk/096/pkg/utils/servperf/www/header.inc	2005-09-21 06:36:17 UTC (rev 210)
++++ trunk/096/pkg/utils/servperf/www/header.inc	2005-09-21 13:08:14 UTC (rev 211)
+@@ -1,9 +1,13 @@
+ function PrintHeader( name )
+-  WriteHtmlRaw( &quot;&lt;table border=0 width=\&quot;100%\&quot;&quot; 
+-      +&quot;&lt;tr&gt;&quot;
+-      +&quot;&lt;td valign=\&quot;top\&quot; width=\&quot;100%\&quot;&gt;&lt;strong&gt;&lt;big&gt;&quot; + name + &quot;&lt;/big&gt;&lt;/strong&gt;&lt;/td&gt;&quot;
+-      +&quot;&lt;td width=\&quot;50%\&quot; valign=\&quot;top\&quot; align=\&quot;right\&quot; nowrap&gt;&lt;a href=\&quot;index.ecl\&quot;&gt;&lt;small&gt;Performance&lt;br&gt;&quot;
+-      +&quot;Home&lt;/small&gt;&lt;/a&gt;&lt;/td&gt;&quot;
+-      +&quot;&lt;/tr&gt;&quot;
+-      +&quot;&lt;/table&gt;&quot; );
++
++	WriteHtmlRaw( &quot;&lt;table border=0 width=\&quot;100%\&quot;&quot;
++			+&quot;&lt;tr&gt;&quot;
++			+&quot;&lt;td valign=\&quot;top\&quot; width=\&quot;100%\&quot;&gt;&lt;strong&gt;&lt;big&gt;&quot; + name + &quot;&lt;/big&gt;&lt;/strong&gt;&lt;/td&gt;&quot;
++			+&quot;&lt;td width=\&quot;50%\&quot; valign=\&quot;top\&quot; align=\&quot;right\&quot; nowrap&gt;&lt;a href=\&quot;index.ecl\&quot;&gt;&lt;small&gt;Performance&lt;br&gt;&quot;
++			+&quot;Home&lt;/small&gt;&lt;/a&gt;&lt;/td&gt;&quot;
++			+&quot;&lt;/tr&gt;&quot;
++			+&quot;&lt;/table&gt;&quot; );
++
++	return 0;
++
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000192.html">[Poldistro-svn] r210 - in trunk/096/pkg: config/config expansions/aos expansions/aos/config expansions/aos/skills/chivalry expansions/aos/skills/chivalry/config expansions/aos/skills/focus expansions/aos/skills/focus/config expansions/aos/skills/necromancy expansions/aos/skills/necromancy/config expansions/lbr expansions/lbr/config expansions/uor expansions/uor/config
+</A></li>
+	<LI>Next message: <A HREF="000194.html">[Poldistro-svn] r212 - in trunk/096/pkg/systems/attributes: . hooks include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#193">[ date ]</a>
+              <a href="thread.html#193">[ thread ]</a>
+              <a href="subject.html#193">[ subject ]</a>
+              <a href="author.html#193">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

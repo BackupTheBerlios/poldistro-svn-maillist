@@ -1,0 +1,713 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r808 - in trunk/096/pkg/mobiles/oldAI: . combat main
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r808%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20combat%20main&In-Reply-To=%3C200511012207.jA1M7up8021884%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000781.html">
+   <LINK REL="Next"  HREF="000783.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r808 - in trunk/096/pkg/mobiles/oldAI: . combat main</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r808%20-%20in%20trunk/096/pkg/mobiles/oldAI%3A%20.%20combat%20main&In-Reply-To=%3C200511012207.jA1M7up8021884%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r808 - in trunk/096/pkg/mobiles/oldAI: . combat main">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 23:07:56 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000781.html">[Poldistro-svn] r807 - in trunk/096/scripts: include items misc util
+</A></li>
+        <LI>Next message: <A HREF="000783.html">[Poldistro-svn] r809 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#782">[ date ]</a>
+              <a href="thread.html#782">[ thread ]</a>
+              <a href="subject.html#782">[ subject ]</a>
+              <a href="author.html#782">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 23:07:54 +0100 (Tue, 01 Nov 2005)
+New Revision: 808
+
+Modified:
+   trunk/096/pkg/mobiles/oldAI/battleMage.src
+   trunk/096/pkg/mobiles/oldAI/combat/animalCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/defaultCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/fireCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/healerCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/packFight.inc
+   trunk/096/pkg/mobiles/oldAI/combat/packFireCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/poisonCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/slimeCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/spellCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/spellFireEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/spiderCombatEvent.inc
+   trunk/096/pkg/mobiles/oldAI/combat/warriorcombatevent.inc
+   trunk/096/pkg/mobiles/oldAI/davesHealer.src
+   trunk/096/pkg/mobiles/oldAI/employed.src
+   trunk/096/pkg/mobiles/oldAI/entranced.src
+   trunk/096/pkg/mobiles/oldAI/escortee.src
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopQuestie.inc
+   trunk/096/pkg/mobiles/oldAI/main/mainLoopSheep.inc
+   trunk/096/pkg/mobiles/oldAI/main/sleepMode.inc
+   trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc
+   trunk/096/pkg/mobiles/oldAI/main/sleepModeSheep.inc
+   trunk/096/pkg/mobiles/oldAI/poisonElemental.src
+   trunk/096/pkg/mobiles/oldAI/tamed.src
+   trunk/096/pkg/mobiles/oldAI/townGuard.src
+Log:
+Updated attributes stuff.
+
+Modified: trunk/096/pkg/mobiles/oldAI/battleMage.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/battleMage.src	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/battleMage.src	2005-11-01 22:07:54 UTC (rev 808)
+@@ -186,7 +186,7 @@
+     PlaySoundEffect(me, 0x31);
+     sleep(1);
+   endif
+-  if(GetHp(me) &lt; GetStrength(me))
++  if(AP_GetVital(me, &quot;Hits&quot;) &lt; GetStrength(me))
+     sleep(1);
+     PerformAction(me, 0x22);
+     SetHp(me, me.strength);
+@@ -257,7 +257,7 @@
+     PlaySoundEffect(me, 0x31);
+     sleep(1);
+   endif
+-  if(GetHp(me) &lt; (GetStrength(me) / 2))
++  if(AP_GetVital(me, &quot;Hits&quot;) &lt; (GetStrength(me) / 2))
+     sleep(1);
+     PerformAction(me, 0x22);
+     SetHp(me, me.strength);
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/animalCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/animalCombatEvent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/animalCombatEvent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -1,6 +1,6 @@
+ include &quot;:attributes:attributes&quot;;
+ function process_combat_event(opponent)
+-  if ((GetHp(me) * 100/GetMaxHp(me)) &lt; flee_point)
++  if ((AP_GetVital(me, &quot;Hits&quot;) * 100/AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+     EraseObjProperty(me,&quot;#flees&quot;);
+     flee(opponent);
+   endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/defaultCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/defaultCombatEvent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/defaultCombatEvent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -1,6 +1,6 @@
+ include &quot;:attributes:attributes&quot;;
+ function process_combat_event(opponent)
+-  if((GetHp(me) * 100/GetMaxHp(me)) &lt; flee_point)
++  if((AP_GetVital(me, &quot;Hits&quot;) * 100/AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+ 	EraseObjProperty(me,&quot;#flees&quot;);
+     flee(opponent);
+   endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/fireCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/fireCombatEvent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/fireCombatEvent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -1,6 +1,6 @@
+ include &quot;:attributes:attributes&quot;;
+ function process_combat_event(opponent)
+-  if((GetHp(me) * 100/GetMaxHp(me)) &lt; flee_point)
++  if((AP_GetVital(me, &quot;Hits&quot;) * 100/AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+     EraseObjProperty(me,&quot;#flees&quot;);
+     flee(opponent);
+   endif
+@@ -20,7 +20,7 @@
+     sleep(1);
+     PlaySoundEffect(me, 0x16b);
+     sleep(1);
+-    var base := Cint(((FLAME_STRENGTH * GetHp(me)) / GetMaxHp(me)) / 2);
++    var base := Cint(((FLAME_STRENGTH * AP_GetVital(me, &quot;Hits&quot;)) / AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) / 2);
+     var dmg :=  RandomInt(base) + base;
+     PlayMovingEffect(me, opponent, 0x36d4, 10, 1, 1);
+     ApplyRawDamage(opponent, dmg);
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/healerCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/healerCombatEvent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/healerCombatEvent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -3,13 +3,13 @@
+ 
+ function process_combat_event(opponent)
+   spellattack(opponent);
+-  if ( GetHp(me) &lt; (GetStrength(me)/2))
++  if ( AP_GetVital(me, &quot;Hits&quot;) &lt; (GetStrength(me)/2))
+     CastSpell(me,me,&quot;gheal&quot;);
+     if (ListPoisonsByType(me, &quot;defaultPoison&quot;).size() &gt; 0)
+       CastSpell(me,me,&quot;cure&quot;);
+     endif
+   endif
+-  if ((GetHp(me) * 100/GetMaxHp(me)) &lt; flee_point)
++  if ((AP_GetVital(me, &quot;Hits&quot;) * 100/AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+     EraseObjProperty(me,&quot;#flees&quot;);
+     flee(opponent);
+   endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/packFight.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/packFight.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/packFight.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -93,7 +93,7 @@
+     if ( numflees &gt; 10 )
+       MoveCharacterToLocation(me,1,1,0,MOVECHAR_FORCELOCATION);
+       SetObjProperty(me,&quot;guardkill&quot;,1);
+-      ApplyRawDamage( me, GetMaxHp(me) + 3 );
++      ApplyRawDamage( me, AP_GetVitalMaximumValue(me, &quot;Hits&quot;) + 3 );
+     else
+       numflees := numflees + 1;
+     endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/packFireCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/packFireCombatEvent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/packFireCombatEvent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -1,7 +1,7 @@
+ include &quot;:attributes:attributes&quot;;
+ function process_combat_event(opponent)
+   spellattack(opponent);
+-  if((GetHp(me) * 100/GetMaxHp(me)) &lt; flee_point)
++  if((AP_GetVital(me, &quot;Hits&quot;) * 100/AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+ 	EraseObjProperty(me,&quot;#flees&quot;);
+ 	flee(opponent);
+   endif
+@@ -13,7 +13,7 @@
+   endif
+   if(CheckLineOfSight(me, opponent))
+     PerformAction(me,0x0c);
+-    var dmg := ((RandomInt(9) + 1) + (GetHp(me) / 10));
++    var dmg := ((RandomInt(9) + 1) + (AP_GetVital(me, &quot;Hits&quot;) / 10));
+     PlaySoundEffect(me, 0x16b);
+     sleep(2);
+     PlayMovingEffect(me, opponent, 0x36d4, 10, 1, 1);
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/poisonCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/poisonCombatEvent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/poisonCombatEvent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -1,7 +1,7 @@
+ include &quot;:attributes:attributes&quot;;
+ function process_combat_event(opponent)
+   DoPoison(opponent);
+-  if((GetHp(me) * 100/GetMaxHp(me)) &lt; flee_point)
++  if((AP_GetVital(me, &quot;Hits&quot;) * 100/AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+ 	EraseObjProperty(me,&quot;#flees&quot;);
+ 	flee(opponent);
+   endif
+@@ -38,7 +38,7 @@
+ function DoPoison(you)
+   SetObjProperty(me, &quot;#lastbreath&quot;, ReadGameClock() + 10);
+   if((Distance(me,you) &lt; 2) &amp;&amp; (RandomInt(4)==1))
+-	var p_level := CInt(GetMaxHp(me)/20);
++	var p_level := CInt(AP_GetVitalMaximumValue(me, &quot;Hits&quot;)/20);
+ 	var poison_level := CInt(GetObjProperty(you, &quot;poison_level&quot;));
+     if(p_level &lt; 1)
+       p_level := 1;
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/slimeCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/slimeCombatEvent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/slimeCombatEvent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -10,7 +10,7 @@
+       endif
+     endif
+   endif
+-  if ((GetHp(me) * 100/GetMaxHp(me)) &lt; flee_point)
++  if ((AP_GetVital(me, &quot;Hits&quot;) * 100/AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+     EraseObjProperty(me,&quot;#flees&quot;);
+     flee(opponent);
+   endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/spellCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/spellCombatEvent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/spellCombatEvent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -2,21 +2,21 @@
+ include &quot;:timedscripts:timedScripts&quot;;
+ 
+ function process_combat_event(opponent)
+-  if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(8) &gt;= 5))
++  if((AP_GetVital(me, &quot;Hits&quot;) &lt; (AP_GetVitalMaximumValue(me, &quot;Hits&quot;) / 2)) &amp;&amp; (RandomInt(8) &gt;= 5))
+     CastSpell(me, me, &quot;gheal&quot;);
+   elseif((TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 5))
+     CastSpell(me, me, &quot;cure&quot;);
+   else
+     spellattack(opponent);
+   endif
+-  if(((GetHp(me) * 100) / GetMaxHp(me)) &lt; flee_point)
++  if(((AP_GetVital(me, &quot;Hits&quot;) * 100) / AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+     EraseObjProperty(me,&quot;#flees&quot;);
+     flee(opponent);
+   endif
+ endfunction
+ 
+ function process_flee_event(opponent)
+-  if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(8) &gt;= 3))
++  if((AP_GetVital(me, &quot;Hits&quot;) &lt; (AP_GetVitalMaximumValue(me, &quot;Hits&quot;) / 2)) &amp;&amp; (RandomInt(8) &gt;= 3))
+     CastSpell(me, me, &quot;gheal&quot;);
+     return 0;
+   elseif((TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 3))
+@@ -25,7 +25,7 @@
+   else
+     spellattack(opponent);
+   endif
+-  if(((GetHp(me) * 100) / GetMaxHp(me)) &gt;= flee_point)
++  if(((AP_GetVital(me, &quot;Hits&quot;) * 100) / AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &gt;= flee_point)
+     return 1;
+   endif
+ endfunction
+@@ -49,7 +49,7 @@
+ endfunction
+ 
+ function post_combat()
+-  if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(4) &gt;= 2))
++  if((AP_GetVital(me, &quot;Hits&quot;) &lt; (AP_GetVitalMaximumValue(me, &quot;Hits&quot;) / 2)) &amp;&amp; (RandomInt(4) &gt;= 2))
+     CastSpell(me, me, &quot;gheal&quot;);
+   endif
+   if(TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0)
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/spellFireEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/spellFireEvent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/spellFireEvent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -2,21 +2,21 @@
+ include &quot;:timedscripts:timedScripts&quot;;
+ 
+ function process_combat_event(opponent)
+-  if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(8) &gt;= 5))
++  if((AP_GetVital(me, &quot;Hits&quot;) &lt; (AP_GetVitalMaximumValue(me, &quot;Hits&quot;) / 2)) &amp;&amp; (RandomInt(8) &gt;= 5))
+     CastSpell(me, me, &quot;gheal&quot;);
+   elseif((TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 5))
+     CastSpell(me, me, &quot;cure&quot;);
+   else
+     spellattack(opponent);
+   endif
+-  if(((GetHp(me) * 100) / GetMaxHp(me)) &lt; flee_point)
++  if(((AP_GetVital(me, &quot;Hits&quot;) * 100) / AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+     EraseObjProperty(me,&quot;#flees&quot;);
+     flee(opponent);
+   endif
+ endfunction
+ 
+ function process_flee_event(opponent)
+-  if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(8) &gt;= 3))
++  if((AP_GetVital(me, &quot;Hits&quot;) &lt; (AP_GetVitalMaximumValue(me, &quot;Hits&quot;) / 2)) &amp;&amp; (RandomInt(8) &gt;= 3))
+     CastSpell(me, me, &quot;gheal&quot;);
+     return 0;
+   elseif((TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0) &amp;&amp; (RandomInt(8) &gt;= 3))
+@@ -26,7 +26,7 @@
+     spellattack(opponent);
+     return 0;
+   endif
+-  if(((GetHp(me) * 100) / GetMaxHp(me)) &gt;= flee_point)
++  if(((AP_GetVital(me, &quot;Hits&quot;) * 100) / AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &gt;= flee_point)
+     return 1;
+   endif
+ endfunction
+@@ -40,7 +40,7 @@
+       PerformAction(me,0x0c);
+       PlaySoundEffect(me, 0x16b);
+       sleep(2);
+-      var base := Cint(((FLAME_STRENGTH * GetHp(me)) / GetMaxHp(me)) / 2);
++      var base := Cint(((FLAME_STRENGTH * AP_GetVital(me, &quot;Hits&quot;)) / AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) / 2);
+       var dmg :=  RandomInt(base) + base;
+       PlayMovingEffect(me, opponent, 0x36d4, 10, 1, 1);
+       ApplyRawDamage(opponent, dmg);
+@@ -69,7 +69,7 @@
+ endfunction
+ 
+ function post_combat()
+-  if ( GetHp(me) &lt; (GetStrength(me)-10))
++  if ( AP_GetVital(me, &quot;Hits&quot;) &lt; (GetStrength(me)-10))
+ 	CastSpell(me,me,&quot;gheal&quot;);
+   endif
+   if (TS_GetTimerNames(me, &quot;P&quot;).size() &gt; 0)
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/spiderCombatEvent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/spiderCombatEvent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/spiderCombatEvent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -2,7 +2,7 @@
+ 
+ function process_combat_event(opponent)
+   send_web(opponent);
+-  if ((GetHp(me) * 100/GetMaxHp(me)) &lt; flee_point)
++  if ((AP_GetVital(me, &quot;Hits&quot;) * 100/AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+ 	EraseObjProperty(me,&quot;#flees&quot;);
+ 	flee(opponent);
+   endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/combat/warriorcombatevent.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/combat/warriorcombatevent.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/combat/warriorcombatevent.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -1,9 +1,9 @@
+ include &quot;:attributes:attributes&quot;;
+ function process_combat_event(opponent)
+-    if ((GetHp(me) * 100/GetMaxHp(me)) &lt; flee_point)
++    if ((AP_GetVital(me, &quot;Hits&quot;) * 100/AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+       EraseObjProperty(me,&quot;#flees&quot;);
+       flee(opponent);
+-    elseif (GetHp(me) &lt; GetMaxHp(me)/2)
++    elseif (AP_GetVital(me, &quot;Hits&quot;) &lt; AP_GetVitalMaximumValue(me, &quot;Hits&quot;)/2)
+       ApplyHealing();
+     endif
+ endfunction
+@@ -51,7 +51,7 @@
+   if((GetObjProperty(me,&quot;#nextheal&quot;) &lt; ReadGameClock()) || !GetObjProperty(me,&quot;#nextheal&quot;))
+     bandages := Cint(GetObjProperty(me, &quot;bandages&quot;));
+     if(bandages)
+-      SetHp(me, GetHp(me) + (RandomInt(GetMaxHp(me) - GetHp(me))+1));
++      SetHp(me, AP_GetVital(me, &quot;Hits&quot;) + (RandomInt(AP_GetVitalMaximumValue(me, &quot;Hits&quot;) - AP_GetVital(me, &quot;Hits&quot;))+1));
+       SetObjProperty(me,&quot;#nextheal&quot;, ReadGameClock()+20);
+       bandages := bandages - 1;
+       if(bandages &lt;= 0)
+
+Modified: trunk/096/pkg/mobiles/oldAI/davesHealer.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/davesHealer.src	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/davesHealer.src	2005-11-01 22:07:54 UTC (rev 808)
+@@ -84,7 +84,7 @@
+        SYSEVENT_DISENGAGED:
+        SYSEVENT_ENGAGED:
+        SYSEVENT_DAMAGED:        PlaySoundEffect(me,dmgsound);
+-                                if(GetHp(me) &lt; (GetMaxHp(me)/2))
++                                if(AP_GetVital(me, &quot;Hits&quot;) &lt; (AP_GetVitalMaximumValue(me, &quot;Hits&quot;)/2))
+                                   CastSpell(me, me, &quot;gheal&quot;);
+                                 endif
+        SYSEVENT_OPPONENT_MOVED: break;
+
+Modified: trunk/096/pkg/mobiles/oldAI/employed.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/employed.src	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/employed.src	2005-11-01 22:07:54 UTC (rev 808)
+@@ -147,14 +147,14 @@
+     if(ReadGameClock() &gt; CInt(GetObjProperty(me, &quot;Timer&quot;)))
+ 	  Release();
+     endif
+-    mhp := GetHp(me);
++    mhp := AP_GetVital(me, &quot;Hits&quot;);
+     ev := os::wait_for_event(waittime);
+     case (ev.type)
+ 	  SYSEVENT_SPEECH:     ProcessSpeech(ev);
+ 	  SYSEVENT_ENGAGED:    if(ev.source)
+ 	  	                     Fight(ev.source);
+ 	  	                   endif
+-	  SYSEVENT_DAMAGED:        if(GetHp(me) &lt; mhp)
++	  SYSEVENT_DAMAGED:        if(AP_GetVital(me, &quot;Hits&quot;) &lt; mhp)
+                              PlaySoundEffect(me,dmgsound);
+                            endif
+                            if(ev.source)
+
+Modified: trunk/096/pkg/mobiles/oldAI/entranced.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/entranced.src	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/entranced.src	2005-11-01 22:07:54 UTC (rev 808)
+@@ -31,7 +31,7 @@
+ 
+ 	EraseObjProperty(me, &quot;bardmaster&quot;);
+ 
+-	while (GetHp(me))
++	while (AP_GetVital(me, &quot;Hits&quot;))
+ 
+ 	WalkToward(follower);
+ 
+
+Modified: trunk/096/pkg/mobiles/oldAI/escortee.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/escortee.src	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/escortee.src	2005-11-01 22:07:54 UTC (rev 808)
+@@ -105,7 +105,7 @@
+     elseif((ReadGameClock() &gt; killtime) &amp;&amp; (killtime != 0))
+       MoveCharacterToLocation(me, 1, 1, 0, MOVECHAR_FORCELOCATION);
+       SetObjProperty(me, &quot;guardkill&quot;, 1);
+-      ApplyRawDamage(me, GetHp(me) + 100);
++      ApplyRawDamage(me, AP_GetVital(me, &quot;Hits&quot;) + 100);
+       break;
+     endif
+     if(escortee)
+@@ -168,7 +168,7 @@
+       next_wander := ReadGameClock() + 10;
+     elseif((ReadGameClock() &gt; killtime) &amp;&amp; (killtime != 0))
+       MoveCharacterToLocation(me, 1, 1, 0, MOVECHAR_FORCELOCATION);
+-      ApplyRawDamage(me, GetHp(me) + 100);
++      ApplyRawDamage(me, AP_GetVital(me, &quot;Hits&quot;) + 100);
+       break;
+     endif
+   endwhile
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopQuestie.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopQuestie.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopQuestie.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -24,19 +24,19 @@
+ 					if (!slave)
+ 						MoveCharacterToLocation(me,1,1,0,MOVECHAR_FORCELOCATION);
+ 						SetObjProperty(me,&quot;guardkill&quot;,1);
+-						ApplyRawDamage( me, GetMaxHp(me) + 3 );
++						ApplyRawDamage( me, AP_GetVitalMaximumValue(me, &quot;Hits&quot;) + 3 );
+ 					endif
+ 				else
+ 					if (!master)
+ 						MoveCharacterToLocation(me,1, 1, 0,MOVECHAR_FORCELOCATION);
+ 						SetObjProperty(me,&quot;guardkill&quot;,1);
+-						ApplyRawDamage( me, GetMaxHp(me) + 3 );
++						ApplyRawDamage( me, AP_GetVitalMaximumValue(me, &quot;Hits&quot;) + 3 );
+ 					endif
+ 				endif
+ 			else
+ 				MoveCharacterToLocation(me,1, 1, 0,MOVECHAR_FORCELOCATION);
+ 				SetObjProperty(me,&quot;guardkill&quot;,1);
+-				ApplyRawDamage( me, GetMaxHp(me) + 3 );
++				ApplyRawDamage( me, AP_GetVitalMaximumValue(me, &quot;Hits&quot;) + 3 );
+ 			endif
+ 			endif
+ 			ev := sleepmode();
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/mainLoopSheep.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/mainLoopSheep.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/main/mainLoopSheep.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -30,7 +30,7 @@
+                                   PlayStationaryEffect(me.x, me.y, me.z, FX_EXPLODE_3, 7, 0x10,0,me.realm);
+                                   sleepms(5);
+                                   MoveCharacterToLocation(me,0,0,0,MOVECHAR_FORCELOCATION);
+-                                  ApplyRawDamage(me, GetHp(me) + 3);
++                                  ApplyRawDamage(me, AP_GetVital(me, &quot;Hits&quot;) + 3);
+                                 endif
+         SYSEVENT_ENGAGED:       RunLikeHell(ev.source);
+         EVID_HERDING:           Herding(ev);
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/sleepMode.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/sleepMode.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/main/sleepMode.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -9,11 +9,11 @@
+   if(GetObjProperty(me,&quot;killme&quot;))
+     SetObjProperty(me, &quot;guardkill&quot;, 1);
+     MoveCharacterToLocation(me, 1, 1, 0, MOVECHAR_FORCELOCATION);
+-    ApplyRawDamage(me, GetHp(me)+1);
++    ApplyRawDamage(me, AP_GetVital(me, &quot;Hits&quot;)+1);
+   endif
+   EraseObjProperty(me,&quot;#flees&quot;);
+   DisableMainEvents();
+-  if(GetEffectiveSkill(me, 21) &gt; 0 )
++  if( AP_GetSkill(me, &quot;Hiding&quot;) &gt; 0 )
+     me.hidden := 1;
+   endif
+   EnableEvents(SYSEVENT_ENTEREDAREA,18);
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/main/sleepModeCow.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -9,7 +9,7 @@
+   if(GetObjProperty(me,&quot;killme&quot;))
+     SetObjProperty(me, &quot;guardkill&quot;, 1);
+     MoveCharacterToLocation(me, 1, 1, 0, MOVECHAR_FORCELOCATION);
+-    ApplyRawDamage(me, GetHp(me)+1);
++    ApplyRawDamage(me, AP_GetVital(me, &quot;Hits&quot;)+1);
+   endif
+   EraseObjProperty(me,&quot;#flees&quot;);
+   DisableMainEvents();
+
+Modified: trunk/096/pkg/mobiles/oldAI/main/sleepModeSheep.inc
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/main/sleepModeSheep.inc	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/main/sleepModeSheep.inc	2005-11-01 22:07:54 UTC (rev 808)
+@@ -9,7 +9,7 @@
+   if(GetObjProperty(me,&quot;killme&quot;))
+     SetObjProperty(me, &quot;guardkill&quot;, 1);
+     MoveCharacterToLocation(me, 1, 1, 0, MOVECHAR_FORCELOCATION);
+-    ApplyRawDamage(me, GetHp(me)+1);
++    ApplyRawDamage(me, AP_GetVital(me, &quot;Hits&quot;)+1);
+   endif
+   EraseObjProperty(me,&quot;#flees&quot;);
+   DisableMainEvents();
+@@ -34,7 +34,7 @@
+                                 PlayStationaryEffect(me.x, me.y, me.z, FX_EXPLODE_3, 7, 0x10,0, me.realm);
+                                 sleepms(5);
+                                 MoveCharacterToLocation(me,0,0,0,MOVECHAR_FORCELOCATION);
+-                                ApplyRawDamage(me, GetHp(me) + 3);
++                                ApplyRawDamage(me, AP_GetVital(me, &quot;Hits&quot;) + 3);
+                               endif
+       SYSEVENT_ENGAGED:    if((!(ev.source).npctemplate) || (((ev.source).script == &quot;employed&quot;) || ((ev.source).script == &quot;tamed&quot;)))
+                              if (me.hidden)
+
+Modified: trunk/096/pkg/mobiles/oldAI/poisonElemental.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/poisonElemental.src	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/poisonElemental.src	2005-11-01 22:07:54 UTC (rev 808)
+@@ -53,13 +53,13 @@
+   spellattack(opponent);
+   var plevel := Cint(GetObjProperty(me, &quot;poison_level&quot;));
+   var rint := RandomInt(8);
+-  if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (rint &gt;= 5))
++  if((AP_GetVital(me, &quot;Hits&quot;) &lt; (AP_GetVitalMaximumValue(me, &quot;Hits&quot;) / 2)) &amp;&amp; (rint &gt;= 5))
+     CastSpell(me, me, &quot;gheal&quot;);
+   endif
+   if((plevel &gt;= 1) &amp;&amp; (rint &gt;= 5))
+     CastSpell(me, me, &quot;poison&quot;);
+   endif
+-  if(((GetHp(me) * 100) / GetMaxHp(me)) &lt; flee_point)
++  if(((AP_GetVital(me, &quot;Hits&quot;) * 100) / AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &lt; flee_point)
+     EraseObjProperty(me,&quot;#flees&quot;);
+     flee(opponent);
+   endif
+@@ -67,7 +67,7 @@
+ 
+ function process_flee_event(opponent)
+   spellattack(opponent);
+-  if((GetHp(me) &lt; (GetMaxHP(me) / 2)) &amp;&amp; (RandomInt(8) &gt;= 3))
++  if((AP_GetVital(me, &quot;Hits&quot;) &lt; (AP_GetVitalMaximumValue(me, &quot;Hits&quot;) / 2)) &amp;&amp; (RandomInt(8) &gt;= 3))
+     CastSpell(me, me, &quot;gheal&quot;);
+     return 0;
+   endif
+@@ -75,7 +75,7 @@
+     CastSpell(me, me, &quot;poison&quot;);
+     return 0;
+   endif
+-  if(((GetHp(me) * 100) / GetMaxHp(me)) &gt;= flee_point)
++  if(((AP_GetVital(me, &quot;Hits&quot;) * 100) / AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) &gt;= flee_point)
+     return 1;
+   endif
+ endfunction
+@@ -100,7 +100,7 @@
+ endfunction
+ 
+ function post_combat()
+-  if(GetHp(me) &lt; (GetStrength(me)-10))
++  if(AP_GetVital(me, &quot;Hits&quot;) &lt; (GetStrength(me)-10))
+ 	CastSpell(me,me,&quot;gheal&quot;);
+   endif
+   DisableCombatEvents();
+
+Modified: trunk/096/pkg/mobiles/oldAI/tamed.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/tamed.src	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/tamed.src	2005-11-01 22:07:54 UTC (rev 808)
+@@ -55,7 +55,7 @@
+   start_script(&quot;:taming:happyCounter&quot;, parms);
+   master := SystemFindObjectBySerial(masterserial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+   if(!master)
+-    ApplyRawDamage(me, GetHP(me)+ 1);
++    ApplyRawDamage(me, AP_GetVital(me, &quot;Hits&quot;)+ 1);
+     return;
+   endif
+   me.setmaster(master);
+@@ -112,9 +112,9 @@
+   nextwatch := ReadGameClock();
+   var mhp;
+   EnableMainEvents();
+-  while(GetHp(me)&gt; 0)
++  while(AP_GetVital(me, &quot;Hits&quot;)&gt; 0)
+     happiness := GetObjProperty(me,&quot;happiness&quot;);
+-    mhp := GetHp(me);
++    mhp := AP_GetVital(me, &quot;Hits&quot;);
+     if(GetObjProperty(me, &quot;onhold&quot;))
+       HoldLoop(&quot;onhold&quot;);
+     elseif(GetObjProperty(me, &quot;stabled&quot;))
+@@ -129,7 +129,7 @@
+       case(ev.type)
+         SYSEVENT_SPEECH:        ProcessSpeech(ev);
+         SYSEVENT_ENGAGED:       Fight(ev.source);
+-        SYSEVENT_DAMAGED:       if(GetHp(me)&lt; mhp)
++        SYSEVENT_DAMAGED:       if(AP_GetVital(me, &quot;Hits&quot;)&lt; mhp)
+                                   if(ev.source)
+                                     Fight(ev.source);
+                                   endif
+@@ -402,7 +402,7 @@
+     endif
+     PlayStationaryEffect(me.x, me.y, me.z, FX_SMOKE, 0xa, 0xa, 0, me.realm);
+     MoveCharacterToLocation(me,1, 1, 0,MOVECHAR_FORCELOCATION);
+-    ApplyRawDamage(me, GetHp(me)+ 3);
++    ApplyRawDamage(me, AP_GetVital(me, &quot;Hits&quot;)+ 3);
+   else
+     if(GetObjProperty(me,&quot;mounted&quot;))
+       char := GetObjProperty(me,&quot;mounted_on&quot;);
+@@ -779,7 +779,7 @@
+ endfunction
+ 
+ function cast_meteor(opponent)
+-  var base := Cint(((FLAME_STRENGTH * GetHp(me)) / GetMaxHp(me)) / 2);
++  var base := Cint(((FLAME_STRENGTH * AP_GetVital(me, &quot;Hits&quot;)) / AP_GetVitalMaximumValue(me, &quot;Hits&quot;)) / 2);
+   var dmg :=  RandomInt(base) + base;
+   PerformAction(me,0x0c);
+   PlaysoundEffect(me, 0x16b);
+@@ -794,7 +794,7 @@
+     if(numflees &gt; 5)
+       MoveCharacterToLocation(me,1,1,0,MOVECHAR_FORCELOCATION);
+       SetObjProperty(me,&quot;guardkill&quot;,1);
+-      ApplyRawDamage(me, GetMaxHp(me)+ 3);
++      ApplyRawDamage(me, AP_GetVitalMaximumValue(me, &quot;Hits&quot;)+ 3);
+     else
+       numflees := numflees + 1;
+     endif
+
+Modified: trunk/096/pkg/mobiles/oldAI/townGuard.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/townGuard.src	2005-11-01 21:57:39 UTC (rev 807)
++++ trunk/096/pkg/mobiles/oldAI/townGuard.src	2005-11-01 22:07:54 UTC (rev 808)
+@@ -192,10 +192,10 @@
+     PlaySoundEffect(me, 0x31);
+     sleep(1);
+   endif
+-  if(GetHp(me) &lt; GetMaxHP(me))
++  if(AP_GetVital(me, &quot;Hits&quot;) &lt; AP_GetVitalMaximumValue(me, &quot;Hits&quot;))
+     sleep(1);
+     PerformAction(me, 0x22);
+-    SetHp(me, GetMaxHP(me));
++    SetHp(me, AP_GetVitalMaximumValue(me, &quot;Hits&quot;));
+     PlaySoundEffect(me, 0x32);
+     sleep(1);
+   endif
+@@ -268,7 +268,7 @@
+     PlaySoundEffect(me, 0x31);
+     sleep(1);
+   endif
+-  if(GetHp(me) &lt; (GetStrength(me) / 2))
++  if(AP_GetVital(me, &quot;Hits&quot;) &lt; (GetStrength(me) / 2))
+     sleep(1);
+     PerformAction(me, 0x22);
+     SetHp(me, me.strength);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000781.html">[Poldistro-svn] r807 - in trunk/096/scripts: include items misc util
+</A></li>
+	<LI>Next message: <A HREF="000783.html">[Poldistro-svn] r809 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#782">[ date ]</a>
+              <a href="thread.html#782">[ thread ]</a>
+              <a href="subject.html#782">[ subject ]</a>
+              <a href="author.html#782">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r140 - trunk/096/pkg/mobiles/ai_brain/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r140%20-%20trunk/096/pkg/mobiles/ai_brain/commands/gm&In-Reply-To=%3C200509160310.j8G3AOvP013519%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000121.html">
+   <LINK REL="Next"  HREF="000145.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r140 - trunk/096/pkg/mobiles/ai_brain/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r140%20-%20trunk/096/pkg/mobiles/ai_brain/commands/gm&In-Reply-To=%3C200509160310.j8G3AOvP013519%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r140 - trunk/096/pkg/mobiles/ai_brain/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Fri Sep 16 05:10:24 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000121.html">[Poldistro-svn] r139 - trunk/096/pkg/utils/gumps/include
+</A></li>
+        <LI>Next message: <A HREF="000145.html">[Poldistro-svn] r141 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#122">[ date ]</a>
+              <a href="thread.html#122">[ thread ]</a>
+              <a href="subject.html#122">[ subject ]</a>
+              <a href="author.html#122">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-16 05:10:22 +0200 (Fri, 16 Sep 2005)
+New Revision: 140
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/makeswarm.src
+Log:
+Fixed a small bug with making npcs.
+
+Modified: trunk/096/pkg/mobiles/ai_brain/commands/gm/makeswarm.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/makeswarm.src	2005-09-16 03:02:14 UTC (rev 139)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/makeswarm.src	2005-09-16 03:10:22 UTC (rev 140)
+@@ -1,7 +1,6 @@
+ //Example: .makeswarm [templateate] [radius] - Makes npcs on every tile in the radius around you.
+ 
+ use uo;
+-use util;
+ use os;
+ use util;
+ 
+@@ -42,19 +41,21 @@
+ 	var end_x := who.x + CInt(radius);
+ 	var end_y := who.y + CInt(radius);
+ 
+-	var x, y;
++	var x := start_x, y := start_y;
+ 	var created := 0;
+ 	
+ 	for ( x:=start_x; x&lt;=end_x; x:=x+1 )
+ 		for ( y:=start_y; y&lt;=end_y; y:=y+1 )
+-			var npc := CreateNPCFromTemplate(template, x, y, who.z, who.realm);
++			var npc := CreateNPCFromTemplate(template, x, y, who.z, 0, who.realm);
+ 			if ( npc )
+ 				created := created+1;
++			elseif ( npc.errortext )
++				Print(npc.errortext);
+ 			endif
+ 			
+ 			sleepms(3);
+ 		endfor
+ 	endfor
+ 	
+-	SendSysMessage(who, &quot;Done making npc swarm. Created [&quot;+created+&quot;] npcs.&quot;);
++	SendSysMessage(who, &quot;Done making npc swarm. Created [&quot;+created+&quot;] [&quot;+template+&quot;] npcs.&quot;);
+ endprogram        
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000121.html">[Poldistro-svn] r139 - trunk/096/pkg/utils/gumps/include
+</A></li>
+	<LI>Next message: <A HREF="000145.html">[Poldistro-svn] r141 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#122">[ date ]</a>
+              <a href="thread.html#122">[ thread ]</a>
+              <a href="subject.html#122">[ subject ]</a>
+              <a href="author.html#122">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

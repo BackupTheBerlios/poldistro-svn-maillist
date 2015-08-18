@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r624 - trunk/096/pkg/systems/attributes/hooks
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r624%20-%20trunk/096/pkg/systems/attributes/hooks&In-Reply-To=%3C200510180500.j9I50d66025600%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000596.html">
+   <LINK REL="Next"  HREF="000598.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r624 - trunk/096/pkg/systems/attributes/hooks</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r624%20-%20trunk/096/pkg/systems/attributes/hooks&In-Reply-To=%3C200510180500.j9I50d66025600%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r624 - trunk/096/pkg/systems/attributes/hooks">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Oct 18 07:00:39 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000596.html">[Poldistro-svn] r623 - trunk/096/pkg/commands/building
+</A></li>
+        <LI>Next message: <A HREF="000598.html">[Poldistro-svn] r625 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#597">[ date ]</a>
+              <a href="thread.html#597">[ thread ]</a>
+              <a href="subject.html#597">[ subject ]</a>
+              <a href="author.html#597">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-18 07:00:23 +0200 (Tue, 18 Oct 2005)
+New Revision: 624
+
+Modified:
+   trunk/096/pkg/systems/attributes/hooks/vitalInit.src
+Log:
+Updated for an issue involving random vitals from npcdesc.cfg.
+
+Modified: trunk/096/pkg/systems/attributes/hooks/vitalInit.src
+===================================================================
+--- trunk/096/pkg/systems/attributes/hooks/vitalInit.src	2005-10-17 23:01:01 UTC (rev 623)
++++ trunk/096/pkg/systems/attributes/hooks/vitalInit.src	2005-10-18 05:00:23 UTC (rev 624)
+@@ -1,3 +1,7 @@
++/* $Id$
++*
++*/
++
+ /*===============================================================
+ * Current Version
+ * regenRates.src
+@@ -41,7 +45,7 @@
+ // *****
+ exported function GetManaRegenRate(mobile)
+ 	var base_regen := CInt(AP_GetSettingsCfgElem(&quot;Regen&quot;).Mana) * 100;
+-	
++
+ 	return base_regen + AP_GetVitalRegenRateMod(mobile, &quot;mana&quot;);
+ endfunction
+ 
+@@ -59,7 +63,7 @@
+ // *****
+ exported function GetStaminaRegenRate(mobile)
+ 	var base_regen := CInt(AP_GetSettingsCfgElem(&quot;Regen&quot;).Stamina) * 100;
+-	
++
+ 	return base_regen + AP_GetVitalRegenRateMod(mobile, &quot;stamina&quot;);
+ endfunction
+ 
+@@ -84,8 +88,9 @@
+ 
+ 	// CProp used if NPC had dice settings - so they dont change over and over.
+ 	var vital_settings := GetObjProperty(mobile, &quot;%NPC_Vitals%&quot;);
++
+ 	if ( vital_settings.Exists(vital) )
+-		value := vital_settings[vital];
++		value := CInt(vital_settings[vital]);
+ 	else
+ 		// No prior setup took place - get information from the npcdesc.cfg
+ 		var npc_cfg := NPC_GetNPCConfig(mobile.npctemplate);
+@@ -100,7 +105,7 @@
+ 			if ( Lower(TypeOf(vital_settings)) != &quot;dictionary&quot; )
+ 				vital_settings := dictionary;
+ 			endif
+-			vital_settings[vital] := value;
++			vital_settings[vital] := CInt(value);
+ 			SetObjProperty(mobile, &quot;%NPC_Vitals%&quot;, vital_settings);
+ 		else
+ 			value := CInt(value);
+@@ -108,4 +113,4 @@
+ 	endif
+ 
+ 	return (value * 100);
+-endfunction
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000596.html">[Poldistro-svn] r623 - trunk/096/pkg/commands/building
+</A></li>
+	<LI>Next message: <A HREF="000598.html">[Poldistro-svn] r625 - trunk/096
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#597">[ date ]</a>
+              <a href="thread.html#597">[ thread ]</a>
+              <a href="subject.html#597">[ subject ]</a>
+              <a href="author.html#597">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

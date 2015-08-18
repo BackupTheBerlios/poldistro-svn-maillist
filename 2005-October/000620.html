@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r646 - trunk/096/pkg/commands/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r646%20-%20trunk/096/pkg/commands/include&In-Reply-To=%3C200510241624.j9OGOSXi012700%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000619.html">
+   <LINK REL="Next"  HREF="000621.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r646 - trunk/096/pkg/commands/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r646%20-%20trunk/096/pkg/commands/include&In-Reply-To=%3C200510241624.j9OGOSXi012700%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r646 - trunk/096/pkg/commands/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon Oct 24 18:24:28 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000619.html">[Poldistro-svn] r645 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="000621.html">[Poldistro-svn] r647 - trunk/096/pkg/commands/coun
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#620">[ date ]</a>
+              <a href="thread.html#620">[ thread ]</a>
+              <a href="subject.html#620">[ subject ]</a>
+              <a href="author.html#620">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-24 18:24:26 +0200 (Mon, 24 Oct 2005)
+New Revision: 646
+
+Modified:
+   trunk/096/pkg/commands/include/goAdd.inc
+   trunk/096/pkg/commands/include/goEdit.inc
+   trunk/096/pkg/commands/include/goGumps.inc
+Log:
+Resized gump for smaller resolution.
+Made Go_GumpHeader() function, since all gumps have the same header characteristics.
+
+Modified: trunk/096/pkg/commands/include/goAdd.inc
+===================================================================
+--- trunk/096/pkg/commands/include/goAdd.inc	2005-10-24 16:10:44 UTC (rev 645)
++++ trunk/096/pkg/commands/include/goAdd.inc	2005-10-24 16:24:26 UTC (rev 646)
+@@ -135,19 +135,10 @@
+ 
+ function Go_LocationCopyGump(public:=1)
+ 
+-	var gump := GFCreateGump();
+-	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
+-	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
+-	if( public )
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
+-	else
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
+-	endif
+-	GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
++	var gump := Go_GumpHeader(public);
+ 	GFHTMLArea(gump,  25, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Name&quot;);
+ 	GFHTMLArea(gump, 175, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Realm&quot;);
+ 	GFHTMLArea(gump, 295, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
+-	GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
+ 
+ 	GFPage(gump, 1);
+ 
+@@ -166,8 +157,8 @@
+ 			counter := counter + 1;
+ 			line_num := line_num+1;
+ 			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++			if ( line_num &gt;= 17 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 405, 2706, 2707, GF_PAGE_BTN, page_num+1);
+ 				page_num := page_num + 1;
+ 				GFPage(gump, page_num);
+ 				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+@@ -186,8 +177,8 @@
+ 			counter := counter + 1;
+ 			line_num := line_num+1;
+ 			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++			if ( line_num &gt;= 17 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 405, 2706, 2707, GF_PAGE_BTN, page_num+1);
+ 				page_num := page_num + 1;
+ 				GFPage(gump, page_num);
+ 				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+
+Modified: trunk/096/pkg/commands/include/goEdit.inc
+===================================================================
+--- trunk/096/pkg/commands/include/goEdit.inc	2005-10-24 16:10:44 UTC (rev 645)
++++ trunk/096/pkg/commands/include/goEdit.inc	2005-10-24 16:24:26 UTC (rev 646)
+@@ -96,21 +96,11 @@
+ 
+ function Go_SelectEditGump(public)
+ 
+-	var gump := GFCreateGump();
+-	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
+-	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
+-	if( public )
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
+-	else
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
+-	endif
+-        GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
++	var gump := Go_GumpHeader(public);
+         GFHTMLArea(gump,  25, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Name&quot;);
+         GFHTMLArea(gump, 175, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Realm&quot;);
+         GFHTMLArea(gump, 295, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
+-        GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
+ 
+-
+         GFPage(gump, 1);
+ 
+         var y_loc := 85;
+@@ -128,8 +118,8 @@
+ 			counter := counter + 1;
+ 			line_num := line_num+1;
+ 			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++			if ( line_num &gt;= 17 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 405, 2706, 2707, GF_PAGE_BTN, page_num+1);
+ 				page_num := page_num + 1;
+ 				GFPage(gump, page_num);
+ 				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+@@ -148,8 +138,8 @@
+ 			counter := counter + 1;
+ 			line_num := line_num+1;
+ 			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++			if ( line_num &gt;= 17 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 405, 2706, 2707, GF_PAGE_BTN, page_num+1);
+ 				page_num := page_num + 1;
+ 				GFPage(gump, page_num);
+ 				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+@@ -166,21 +156,14 @@
+ 
+ 
+ function Go_EditLocationGump(send_Location, public:=1)
+-	var gump := GFCreateGump();
+-	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
+-	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
+-	if (public)
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
+-	else
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
+-	endif
+-	GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
+-	GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
+-	edit_update := GFAddButton(gump, 25, 477, 4008, 4010, GF_CLOSE_BTN, UPDATE_BUTTON);
+-	GFHTMLArea(gump,  57, 480, 40, 20, &quot;&lt;basefont color=#7FFFD4&gt;Update&quot;);
+-	edit_delete := GFAddButton(gump, 100, 477, 4005, 4007, GF_CLOSE_BTN, DELETE_BUTTON);
+-	GFHTMLArea(gump,  132, 480, 40, 20, &quot;&lt;basefont color=#7FFFD4&gt;Delete&quot;);
+ 
++	var gump := Go_GumpHeader(public);
++
++	edit_update := GFAddButton(gump, 25, 447, 4008, 4010, GF_CLOSE_BTN, UPDATE_BUTTON);
++	GFHTMLArea(gump,  57, 450, 40, 20, &quot;&lt;basefont color=#7FFFD4&gt;Update&quot;);
++	edit_delete := GFAddButton(gump, 100, 447, 4005, 4007, GF_CLOSE_BTN, DELETE_BUTTON);
++	GFHTMLArea(gump,  132, 450, 40, 20, &quot;&lt;basefont color=#7FFFD4&gt;Delete&quot;);
++
+ 	GFTextLine(gump, 20, 120, 2100, &quot;Name&quot;);
+ 	GFResizePic(gump, 120, 117, 2620, 180, 30);
+ 	edit_name := GFTextEntry(gump, 130, 122, 160, 25, 2100, send_Location.Name);
+@@ -198,4 +181,5 @@
+ 	zg_pos := GFTextEntry(gump, 130, 191, 80, 25, 2100, send_Location.Z);
+ 
+ 	return gump;
++
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/commands/include/goGumps.inc
+===================================================================
+--- trunk/096/pkg/commands/include/goGumps.inc	2005-10-24 16:10:44 UTC (rev 645)
++++ trunk/096/pkg/commands/include/goGumps.inc	2005-10-24 16:24:26 UTC (rev 646)
+@@ -6,6 +6,24 @@
+ var BKGND_DARK_STONE := GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;);
+ 
+ 
++function Go_GumpHeader(public:=1)
++
++	var headerGump := GFCreateGump();
++	GFResizePic(headerGump, 0, 0, BKGND_SILVERTRIM, 400, 490);
++	GFResizePic(headerGump, 15, 15, BKGND_DARK_STONE, 370, 35);
++	if( public )
++		GFHTMLArea(headerGump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
++	else
++		GFHTMLArea(headerGump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
++	endif
++        GFResizePic(headerGump, 15, 55, BKGND_DARK_STONE, 370, 380);
++        GFResizePic(headerGump, 15, 440, BKGND_DARK_STONE, 370, 35);
++
++	return headerGump;
++
++endfunction
++
++
+ function Go_LocationIndex(who, gump_Type:=&quot;base_Distro&quot;)
+ 
+         var gump := Go_RetrieveGump(&quot;LocationIndex&quot;, gump_Type);
+@@ -98,38 +116,29 @@
+ 
+ function Go_LocationIndexGump(public:=1)
+ 
+-	var gump := GFCreateGump();
+-	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 400, 520);
+-	GFResizePic(gump, 15, 15, BKGND_DARK_STONE, 370, 35);
+-	if( public )
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Public)&lt;/center&gt;&quot;);
+-	else
+-		GFHTMLArea(gump,  15, 20, 370, 20, &quot;&lt;basefont color=#7FFFD4&gt;&lt;center&gt;Go To Locations (Private)&lt;/center&gt;&quot;);
+-	endif
+-	GFResizePic(gump, 15, 55, BKGND_DARK_STONE, 370, 410);
++	var gump := Go_GumpHeader(public);
+ 	GFHTMLArea(gump,  25, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Name&quot;);
+ 	GFHTMLArea(gump, 175, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Realm&quot;);
+ 	GFHTMLArea(gump, 295, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Send&quot;);
+ 	GFHTMLArea(gump, 345, 60, 150, 20, &quot;&lt;basefont color=#7FFFD4&gt;Goto&quot;);
+-	GFResizePic(gump, 15, 470, BKGND_DARK_STONE, 370, 35);
+ 	if( public )
+-		GFAddButton(gump, 25, 477, 4008, 4010, GF_CLOSE_BTN, ADD_NEW_PUBLIC);
+-		GFHTMLArea(gump,  57, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Add&quot;);
+-		GFAddButton(gump, 100, 477, 4005, 4007, GF_CLOSE_BTN, COPY_PUBLIC_ITEM);
+-		GFHTMLArea(gump,  132, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
+-		GFAddButton(gump, 175, 477, 4008, 4010, GF_CLOSE_BTN, EDIT_PUBLIC_ITEM);
+-		GFHTMLArea(gump,  207, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
+-		GFAddButton(gump, 250, 477, 4008, 4010, GF_CLOSE_BTN, SHOW_PRIVATE_INDEX);
+-		GFHTMLArea(gump,  282, 480, 100, 20, &quot;&lt;basefont color=#7FFFD4&gt;Public Menu&quot;);
++		GFAddButton(gump, 25, 447, 4008, 4010, GF_CLOSE_BTN, ADD_NEW_PUBLIC);
++		GFHTMLArea(gump,  57, 450, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Add&quot;);
++		GFAddButton(gump, 100, 447, 4005, 4007, GF_CLOSE_BTN, COPY_PUBLIC_ITEM);
++		GFHTMLArea(gump,  132, 450, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
++		GFAddButton(gump, 175, 447, 4008, 4010, GF_CLOSE_BTN, EDIT_PUBLIC_ITEM);
++		GFHTMLArea(gump,  207, 450, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
++		GFAddButton(gump, 250, 447, 4008, 4010, GF_CLOSE_BTN, SHOW_PRIVATE_INDEX);
++		GFHTMLArea(gump,  282, 450, 100, 20, &quot;&lt;basefont color=#7FFFD4&gt;Private Menu&quot;);
+ 	else
+-		GFAddButton(gump, 25, 477, 4008, 4010, GF_CLOSE_BTN, ADD_NEW_PRIVATE);
+-		GFHTMLArea(gump,  57, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Add&quot;);
+-		GFAddButton(gump, 100, 477, 4005, 4007, GF_CLOSE_BTN, COPY_PRIVATE_ITEM);
+-		GFHTMLArea(gump,  132, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
+-		GFAddButton(gump, 175, 477, 4008, 4010, GF_CLOSE_BTN, EDIT_PRIVATE_ITEM);
+-		GFHTMLArea(gump,  207, 480, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
+-		GFAddButton(gump, 250, 477, 4008, 4010, GF_CLOSE_BTN, SHOW_PUBLIC_INDEX);
+-		GFHTMLArea(gump,  282, 480, 100, 20, &quot;&lt;basefont color=#7FFFD4&gt;Public Menu&quot;);
++		GFAddButton(gump, 25, 447, 4008, 4010, GF_CLOSE_BTN, ADD_NEW_PRIVATE);
++		GFHTMLArea(gump,  57, 450, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Add&quot;);
++		GFAddButton(gump, 100, 447, 4005, 4007, GF_CLOSE_BTN, COPY_PRIVATE_ITEM);
++		GFHTMLArea(gump,  132, 450, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Copy&quot;);
++		GFAddButton(gump, 175, 447, 4008, 4010, GF_CLOSE_BTN, EDIT_PRIVATE_ITEM);
++		GFHTMLArea(gump,  207, 450, 30, 20, &quot;&lt;basefont color=#7FFFD4&gt;Edit&quot;);
++		GFAddButton(gump, 250, 447, 4008, 4010, GF_CLOSE_BTN, SHOW_PUBLIC_INDEX);
++		GFHTMLArea(gump,  282, 450, 100, 20, &quot;&lt;basefont color=#7FFFD4&gt;Public Menu&quot;);
+ 	endif
+ 
+ 	GFPage(gump, 1);
+@@ -150,8 +159,8 @@
+ 			counter := counter + 1;
+ 			line_num := line_num+1;
+ 			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++			if ( line_num &gt;= 17 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 405, 2706, 2707, GF_PAGE_BTN, page_num+1);
+ 				page_num := page_num + 1;
+ 				GFPage(gump, page_num);
+ 				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+@@ -171,8 +180,8 @@
+ 			counter := counter + 1;
+ 			line_num := line_num+1;
+ 			y_loc := y_loc + 20;
+-			if ( line_num &gt;= 18 &amp;&amp; line_num &lt; num_keys )
+-				GFAddButton(gump, 370, 435, 2706, 2707, GF_PAGE_BTN, page_num+1);
++			if ( line_num &gt;= 17 &amp;&amp; line_num &lt; num_keys )
++				GFAddButton(gump, 370, 405, 2706, 2707, GF_PAGE_BTN, page_num+1);
+ 				page_num := page_num + 1;
+ 				GFPage(gump, page_num);
+ 				GFAddButton(gump, 370,  85, 2704, 2705, GF_PAGE_BTN, page_num-1);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000619.html">[Poldistro-svn] r645 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="000621.html">[Poldistro-svn] r647 - trunk/096/pkg/commands/coun
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#620">[ date ]</a>
+              <a href="thread.html#620">[ thread ]</a>
+              <a href="subject.html#620">[ subject ]</a>
+              <a href="author.html#620">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

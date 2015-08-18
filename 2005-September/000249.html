@@ -1,0 +1,1130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r271 - in trunk/096/pkg/items/containers: . include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r271%20-%20in%20trunk/096/pkg/items/containers%3A%20.%20include&In-Reply-To=%3C200509281844.j8SIiMJx025809%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000248.html">
+   <LINK REL="Next"  HREF="000250.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r271 - in trunk/096/pkg/items/containers: . include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r271%20-%20in%20trunk/096/pkg/items/containers%3A%20.%20include&In-Reply-To=%3C200509281844.j8SIiMJx025809%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r271 - in trunk/096/pkg/items/containers: . include">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 28 20:44:22 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000248.html">[Poldistro-svn] r270 - trunk/096/pkg/systems
+</A></li>
+        <LI>Next message: <A HREF="000250.html">[Poldistro-svn] r272 - in trunk/096: config pkg/items/decorations pkg/items/doors pkg/items/dyes pkg/items/lighting pkg/items/sysbook pkg/mobiles/barber pkg/skills/alchemy pkg/skills/blacksmithy pkg/skills/bowcraft pkg/skills/camping pkg/skills/carpentry pkg/skills/cooking pkg/skills/fishing pkg/skills/healing pkg/skills/hiding pkg/skills/mining pkg/skills/musicianship pkg/skills/spiritspeak pkg/skills/stealth pkg/skills/tailoring pkg/systems/crafting/config pkg/systems/housing
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#249">[ date ]</a>
+              <a href="thread.html#249">[ thread ]</a>
+              <a href="subject.html#249">[ subject ]</a>
+              <a href="author.html#249">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-28 20:44:22 +0200 (Wed, 28 Sep 2005)
+New Revision: 271
+
+Added:
+   trunk/096/pkg/items/containers/include/storage.inc
+Modified:
+   trunk/096/pkg/items/containers/itemdesc.cfg
+Log:
+
+
+Added: trunk/096/pkg/items/containers/include/storage.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/storage.inc	2005-09-28 18:43:37 UTC (rev 270)
++++ trunk/096/pkg/items/containers/include/storage.inc	2005-09-28 18:44:22 UTC (rev 271)
+@@ -0,0 +1,187 @@
++// Bank.inc
++// By Austin Heilman
++//
++// Created 10/22/2001 11:31PM
++// Updated 10/24/2003 5:13PM
++//
++// Somewhere, define a container for banks with the item name
++// &quot;BankBox&quot; so you dont need to deal with object type numbers here
++// plus making a custom container makes it easy to change the bank box
++// graphic, container gump and item limits.
++//
++
++use uo;
++use os;
++use polsys;
++
++//Set the 'box_type' variable to the object name of the container type
++//you want to be used for bank boxes. Example 'pouch' 'metalchest' etc.
++//This is only used when a new bank box is created. It can be changed on
++//the fly inside of a script for when you want to use specific container
++//types for special storage areas. Ideally, you should make a object type
++//with the name 'BankBox' to better control the number of items that can
++//be put in the storage container.
++var box_type		:= &quot;BankBox&quot;;
++
++//Toggles the bank related debug messages on and off.
++var storage_debug_mode	:= 1;
++
++
++
++/*
++ * GetBox(who, string)
++ *
++ * Purpose
++ *
++ * Parameters
++ * who: reference to the mobile whos container we want to view
++ * bank_name: the container that belongs to the mobile referenced.
++ *
++ * Return Value
++ * The bank box of who, for the bank_name passed.
++ */
++function GetBox(who, bank_name)
++
++	if ((!bank_name) || (bank_name == error))
++		bank_name := &quot;Global&quot;;
++	endif
++
++	RegisterBank(bank_name);
++
++	var bank := FindStorageArea(bank_name);
++	if ( !bank )
++		CreateStorageArea(bank_name);
++		bank := FindStorageArea(bank_name);
++	endif
++
++	//Find a box by serial because a mobile's name can change
++	//but a serial never does :)
++	var box_name := &quot;Bankbox for &quot; + hex(who.serial);
++
++	var bank_box := FindRootItemInStorageArea(bank, box_name);
++	if ( !bank_box )
++		set_critical(1);
++		var new_box := CreateRootItemInStorageArea(bank, box_name, box_type);
++		if ( new_box.errortext )
++			return new_box;
++		endif
++		
++		bank_box := FindRootItemInStorageArea(bank, box_name);
++
++		if ( who.acctname )
++			//Makes the storage file a little easier to read by storing
++			//a person's account name and character name on the box.
++			var temp := dictionary;
++			temp[&quot;Name&quot;] := who.name;
++			temp[&quot;Account&quot;] := who.acctname;
++			SetObjProperty(bank_box, &quot;Info&quot;, temp);
++		endif
++		set_critical(0);
++	endif
++
++	return bank_box;
++endfunction
++
++
++function HasBankBox(who, bank_name)
++	if ( (!bank_name) || (bank_name == error) )
++		bank_name := &quot;Global&quot;;
++	endif
++	
++	var bank := FindStorageArea(bank_name);
++	var box_name := &quot;Bankbox for &quot; + hex(who.serial);
++	var bank_box := FindRootItemInStorageArea(bank, box_name);
++	
++	if ( bank_box )
++		return 1;
++	else
++		return 0;
++	endif
++endfunction
++
++
++// *DestroyBox(mobile, string)
++//
++// Used to remove a mobile's bank box and everything inside of it.
++// When someone deletes a character, pol does not do this automatically
++// so you may want to use this function with GetBankNames() to clear them.
++//
++function DestroyBox(who, bank_name)
++	if ( (!bank_name) || (bank_name == error) )
++		bank_name := &quot;Global&quot;;
++	endif
++
++	var bank := FindStorageArea(bank_name);
++	var box_name := &quot;Bankbox for &quot; + hex(who.serial);
++
++	BankDbgMsg(&quot;Removed bank box [&quot; + bank_name + &quot;] for [&quot; + who.name + &quot;]&quot;);
++
++	return DestroyRootItemInStorageArea(bank, box_name);
++endfunction
++
++
++// * RegisterBank(string)
++//
++// Registers the bank name in a global property called &quot;banks&quot;.
++// Used to keep track of what banks exist in the world.
++//
++// This is only run the first time a storage area is used.
++//
++function RegisterBank(bank_name)
++	return;
++	
++	if ( (!bank_name) || (bank_name == error) )
++		return 0;
++	endif
++
++	set_critical(1);
++	var all_banks := GetBankNames();
++	if ( !(bank_name in all_banks) )
++		BankDbgMsg(&quot;Registering bank &quot; + bank_name);
++		all_banks.append(bank_name);
++		SetGlobalProperty(&quot;banks&quot;, all_banks);
++	endif
++	set_critical(0);
++endfunction
++
++
++// * GetBankNames()
++//
++// Returns an array of all storage area names.
++//
++function GetBankNames()
++	/*
++	var all_banks := GetGlobalProperty(&quot;banks&quot;);
++	if (!all_banks)
++		all_banks := array;
++		SetGlobalProperty(&quot;banks&quot;, all_banks);
++	endif
++	return all_banks;
++	*/
++	// Note... for now I am having it use the StorageAreas()
++	// function in polsys.em. It works kind of funny though.
++	// It returns an array of the region names, but if you do
++	// TypeOf() on the region name, you get &lt;RegionName&gt; like,
++	// &lt;Global&gt; &lt;Britain&gt; &lt;Minoc&gt; etc. back. For now I convert them
++	// to a string which works. I am not really sure what Syzygy has
++	// planned for this function, but if its changed to work as I have
++	// a feeling it was intended to work, this foreach will still work.
++	// You can uncomment the global property usage above, and comment
++	// the loop below though if any problems arise. Until I am certain
++	// as to how Syzygy wants to make this function work, I am leaving
++	// the global property tracking of bank region names in.
++	var temp := array;
++	foreach key in StorageAreas()
++		temp.append(Cstr(key));
++		sleepms(2);
++	endforeach
++	
++	return temp;
++endfunction
++
++
++function BankDbgMsg(text)
++	if ( storage_debug_mode )
++		SysLog(text);
++	endif
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/containers/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/containers/itemdesc.cfg	2005-09-28 18:43:37 UTC (rev 270)
++++ trunk/096/pkg/items/containers/itemdesc.cfg	2005-09-28 18:44:22 UTC (rev 271)
+@@ -1,3 +1,849 @@
++//--=[ Small Boxes]=--------------
++
++Container 0x9A8
++{
++	Name			StrongBox
++	Desc			strong box%es%
++
++	Gump			0x4B
++	MinX			40
++	MaxX			60
++	MinY			20
++	MaxY			80
++	MaxItems		20
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE80
++{
++	Name			StrongBox2
++	Desc			strong box%es%
++
++	Gump			0x4B
++	MinX			40
++	MaxX			60
++	MinY			20
++	MaxY			80
++	MaxItems		20
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0x9AA
++{
++	Name			WoodenBox
++	Desc			wooden box%es%
++
++	Gump			0x43
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		15
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE7D
++{
++	Name			WoodenBox2
++	Desc			wooden box%es%
++
++	Gump			0x43
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		15
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++//--=[ Leather ]=-----------------
++
++Container 0x9B0
++{
++	Name			Pouch
++	Desc			pouch%es%
++
++	Gump			0x40
++	MinX			20
++	MaxX			60
++	MinY			20
++	MaxY			60
++	MaxItems		5
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE79
++{
++	Name			Pouch2
++	Desc			pouch%es%
++
++	Gump			0x40
++	MinX			20
++	MaxX			60
++	MinY			20
++	MaxY			60
++	MaxItems		5
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0x9B2
++{
++	Name			Backpack
++	Desc			back pack
++
++	Gump			0x3C
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		5000
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	CanDye			1
++	Lockable		0
++
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE75
++{
++	//Note: This is the backpack the core equips by default.
++	Name			Backpack2
++	Desc			back pack
++
++	Gump			0x3C
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		5000
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	CanDye			1
++	Lockable		0
++
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE76
++{
++	Name			Bag
++	Desc			bag
++
++	Gump			0x3D
++	MinX			40
++	MaxX			60
++	MinY			20
++	MaxY			80
++	MaxItems		50
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++//--=[ Chests ]=------------------
++
++Container 0x9AB
++{
++	Name			SilverChest1
++	Desc			silver chest
++
++	Gump			0x4A
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		100
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE7C
++{
++	Name			SilverChest2
++	Desc			silver chest
++
++	Gump			0x4A
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		100
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE41
++{
++	Name			MetalChest
++	Desc			metal chest
++
++	Gump			0x42
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		100
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE40
++{
++	Name			MetalChest2
++	Desc			metal chest
++
++	Gump			0x42
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		100
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE43
++{
++	Name			WoodenChest
++	Desc			wooden chest
++
++	Gump			0x49
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		100
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE42
++{
++	Name			WoodenChest2
++	Desc			wooden chest
++
++	Gump			0x49
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		100
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++//--=[ Crates ]=------------------
++
++Container 0x9A9
++{
++	Name			SmallCrate
++	Desc			small crate
++
++	Gump			0x44
++	MinX			40
++	MaxX			60
++	MinY			0
++	MaxY			60
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE7E
++{
++	Name			SmallCrate2
++	Desc			small crate
++
++	Gump			0x44
++	MinX			40
++	MaxX			60
++	MinY			0
++	MaxY			60
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE3F
++{
++	Name			MediumCrate
++	Desc			medium crate
++
++	Gump			0x44
++	MinX			40
++	MaxX			60
++	MinY			0
++	MaxY			60
++	MaxItems		50
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE3E
++{
++	Name			MediumCrate2
++	Desc			medium crate
++
++	Gump			0x44
++	MinX			40
++	MaxX			60
++	MinY			0
++	MaxY			60
++	MaxItems		50
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE3D
++{
++	Name			LargeCrate
++	Desc			large crate
++
++	Gump			0x44
++	MinX			40
++	MaxX			60
++	MinY			0
++	MaxY			60
++	MaxItems		75
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xE3C
++{
++	Name			LargeCrate2
++	Desc			large crate
++
++	Gump			0x44
++	MinX			40
++	MaxX			60
++	MinY			0
++	MaxY			60
++	MaxItems		75
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		1
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++//--=[ Baskets ]=-----------------
++
++Container 0xE7A
++{
++	Name			picnicbasket
++	Desc			picnic basket
++
++	Gump			0x3F
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		10
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0x9B1
++{
++	Name			basket
++	Desc			basket
++
++	Gump			0x41
++	MinX			40
++	MaxX			60
++	MinY			20
++	MaxY			80
++	MaxItems		10
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++//--=[ Barrels ]=-------------------
++
++Container 0xE77
++{
++	Name			OpenBarrel
++	Desc			barrel
++	Graphic			3707
++
++	Gump			0x3E
++
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		100
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xFAE
++{
++	Name			Barrel
++	Desc			barrel
++	Graphic			4014
++
++	Gump			0x3E
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		100
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++//--=[ Furniture ]=-----------------
++
++Container 0xA2C
++{
++	Name			ChestOfDrawers
++	Desc			chest of drawers%%
++
++	Gump			0x51
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++Container 0xA34
++{
++	Name			ChestOfDrawers2
++	Desc			chest of drawers%%
++
++	Gump			0x51
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xA30
++{
++	Name			ChestOfDrawers3
++	Desc			chest of drawers%%
++
++	Gump			0x48
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++Container 0xA38
++{
++	Name			ChestOfDrawers4
++	Desc			chest of drawers%%
++
++	Gump			0x48
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++}
++
++Container 0xA4D
++{
++	Name			Armoire
++	Desc			armoire
++
++	Gump			0x4E
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++
++	OpenGraphic		2636
++	CloseGraphic		2637
++}
++Container 0xA51
++{
++	Name			Armoire2
++	Desc			armoire
++
++	Gump			0x4E
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++
++	OpenGraphic		2640
++	CloseGraphic		2641
++}
++
++Container 0xA4F
++{
++	Name			Armoire3
++	Desc			armoire
++
++	Gump			0x4F
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++
++	OpenGraphic		2638
++	CloseGraphic		2639
++}
++Container 0xA53
++{
++	Name			Armoire4
++	Desc			armoire
++
++	Gump			0x4F
++	MinX			44
++	MaxX			143
++	MinY			65
++	MaxY			140
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanRemoveScript		CanRemove
++	CanInsertScript		CanInsert
++	DestroyScript		CanDestroy
++
++	OpenGraphic		2642
++	CloseGraphic		2643
++}
++
++//--=[ Book Shelves ]=--------------
++
++Container 0xA9D
++{
++	Name			BookShelf
++	Desc			book shelf
++
++	Gump			0x4D
++	MinX			40
++	MaxX			125
++	MinY			10
++	MaxY			65
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanInsertScript		bookshelf/CanInsert
++	CanRemoveScript		bookshelf/CanRemove
++	OnInsertScript		bookshelf/OnInsert
++	OnRemoveScript		bookshelf/OnRemove
++
++	EmptyGraphic		2717
++	FilledGraphic		2712
++	FilledGraphic		2711
++	FilledGraphic		2715
++}
++Container 0xA9E
++{
++	Name			BookShelf2
++	Desc			book shelf
++
++	Gump			0x4D
++	MinX			40
++	MaxX			125
++	MinY			10
++	MaxY			65
++	MaxItems		25
++	MaxWeight		0
++
++	RequiresAttention	0
++	Movable			1
++	Lockable		0
++
++	Script			open
++	CanInsertScript		bookshelf/CanInsert
++	CanRemoveScript		bookshelf/CanRemove
++	OnInsertScript		bookshelf/OnInsert
++	OnRemoveScript		bookshelf/OnRemove
++
++	EmptyGraphic		2718
++	FilledGraphic		2713
++	FilledGraphic		2714
++	FilledGraphic		2716
++}
++
++#--=[ System Containers ]=----------
++
+ Container 0xF013
+ {
+ 	//Ship Hold
+@@ -21,8 +867,6 @@
+ 	DestroyScript		CanDestroy
+ }
+ 
+-#--=[ System Containers ]=----------
+-
+ Container 0x2006
+ {
+ 	Name			Corpse
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000248.html">[Poldistro-svn] r270 - trunk/096/pkg/systems
+</A></li>
+	<LI>Next message: <A HREF="000250.html">[Poldistro-svn] r272 - in trunk/096: config pkg/items/decorations pkg/items/doors pkg/items/dyes pkg/items/lighting pkg/items/sysbook pkg/mobiles/barber pkg/skills/alchemy pkg/skills/blacksmithy pkg/skills/bowcraft pkg/skills/camping pkg/skills/carpentry pkg/skills/cooking pkg/skills/fishing pkg/skills/healing pkg/skills/hiding pkg/skills/mining pkg/skills/musicianship pkg/skills/spiritspeak pkg/skills/stealth pkg/skills/tailoring pkg/systems/crafting/config pkg/systems/housing
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#249">[ date ]</a>
+              <a href="thread.html#249">[ thread ]</a>
+              <a href="subject.html#249">[ subject ]</a>
+              <a href="author.html#249">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

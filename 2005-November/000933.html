@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r959 - in trunk/096/pkg/mobiles/brainAI: . include include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r959%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20include%20include/braincore&In-Reply-To=%3C200511131242.jADCgZ2O006887%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000932.html">
+   <LINK REL="Next"  HREF="000934.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r959 - in trunk/096/pkg/mobiles/brainAI: . include include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r959%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20include%20include/braincore&In-Reply-To=%3C200511131242.jADCgZ2O006887%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r959 - in trunk/096/pkg/mobiles/brainAI: . include include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 13 13:42:35 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000932.html">[Poldistro-svn] r958 - trunk/096/pkg/items/keys/key
+</A></li>
+        <LI>Next message: <A HREF="000934.html">[Poldistro-svn] r960 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/banker docs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#933">[ date ]</a>
+              <a href="thread.html#933">[ thread ]</a>
+              <a href="subject.html#933">[ subject ]</a>
+              <a href="author.html#933">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-13 13:42:27 +0100 (Sun, 13 Nov 2005)
+New Revision: 959
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/include/braincore/sleep.inc
+   trunk/096/pkg/mobiles/brainAI/include/npcSettings.inc
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+Added support for AISetting NoSleep i1
+If the line is in an npc template it will not be allowed to enter sleep mode.
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/braincore/sleep.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/braincore/sleep.inc	2005-11-13 12:35:12 UTC (rev 958)
++++ trunk/096/pkg/mobiles/brainAI/include/braincore/sleep.inc	2005-11-13 12:42:27 UTC (rev 959)
+@@ -93,6 +93,9 @@
+ 	elseif ( GetNerveProcess(npc, &quot;LookAround&quot;) )
+ 		// Look around script is currently running.
+ 		return 0;
++	elseif ( g_settings[&quot;NoSleep&quot;] )
++		// NPC is not allowed to enter sleep mode.
++		return 0;
+ 	elseif ( idle_ticks &lt; g_settings[&quot;IdleTicks&quot;] )
+ 		// Not enough idle ticks have gone by yet.
+ 		return 0;
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcSettings.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcSettings.inc	2005-11-13 12:35:12 UTC (rev 958)
++++ trunk/096/pkg/mobiles/brainAI/include/npcSettings.inc	2005-11-13 12:42:27 UTC (rev 959)
+@@ -38,12 +38,15 @@
+ 	if ( CInt(settings.exists(&quot;CycleWait&quot;)) &lt;= 0 )
+ 		settings[&quot;CycleWait&quot;] := 10;
+ 	endif
+-	if ( CInt(settings.exists(&quot;SleepWait&quot;)) &lt;= 0 )
+-		settings[&quot;SleepWait&quot;] := 1024;
++	
++	if ( !settings.Exists(&quot;NoSleep&quot;) )
++		if ( CInt(settings.exists(&quot;SleepWait&quot;)) &lt;= 0 )
++			settings[&quot;SleepWait&quot;] := 1024;
++		endif
++		if ( CInt(settings.exists(&quot;IdleTicks&quot;)) &lt;= 0 )
++			settings[&quot;IdleTicks&quot;] := 5;
++		endif
+ 	endif
+-	if ( CInt(settings.exists(&quot;IdleTicks&quot;)) &lt;= 0 )
+-		settings[&quot;IdleTicks&quot;] := 5;
+-	endif
+ 
+ 	return settings;
+ endfunction
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-13 12:35:12 UTC (rev 958)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-13 12:42:27 UTC (rev 959)
+@@ -283,6 +283,7 @@
+ 	Strength		200
+ 	Intelligence		200
+ 	Dexterity		200
++	Wrestling		500
+ 	
+ 	// Vitals
+ 	HITS			200
+@@ -297,10 +298,9 @@
+ 
+ 	// Brain AI Settings
+ 	AISetting	CycleWait	i100
+-	AISetting	SleepWait	i100
+-	AISetting	IdleTicks	i100
+ 	AISetting	ListenRange	i5
+ 	AISetting	HearSpeech	i1
++	AISetting	NoSleep		i1
+ 	
+ 	// Brain AI Nerves
+ 	AIScript	Combat		:brainAI:bundled/banker/combat
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000932.html">[Poldistro-svn] r958 - trunk/096/pkg/items/keys/key
+</A></li>
+	<LI>Next message: <A HREF="000934.html">[Poldistro-svn] r960 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/banker docs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#933">[ date ]</a>
+              <a href="thread.html#933">[ thread ]</a>
+              <a href="subject.html#933">[ subject ]</a>
+              <a href="author.html#933">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

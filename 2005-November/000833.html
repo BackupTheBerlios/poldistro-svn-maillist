@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r859 - in trunk/096/pkg/systems/combat: . hooks useScripts
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r859%20-%20in%20trunk/096/pkg/systems/combat%3A%20.%20hooks%20useScripts&In-Reply-To=%3C200511030330.jA33Ut27023924%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000832.html">
+   <LINK REL="Next"  HREF="000834.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r859 - in trunk/096/pkg/systems/combat: . hooks useScripts</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r859%20-%20in%20trunk/096/pkg/systems/combat%3A%20.%20hooks%20useScripts&In-Reply-To=%3C200511030330.jA33Ut27023924%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r859 - in trunk/096/pkg/systems/combat: . hooks useScripts">austin at berlios.de
+       </A><BR>
+    <I>Thu Nov  3 04:30:55 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000832.html">[Poldistro-svn] r858 - in trunk/096/pkg: skills/tinkering systems/combat
+</A></li>
+        <LI>Next message: <A HREF="000834.html">[Poldistro-svn] r860 - trunk/096/data
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#833">[ date ]</a>
+              <a href="thread.html#833">[ thread ]</a>
+              <a href="subject.html#833">[ subject ]</a>
+              <a href="author.html#833">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-03 04:30:45 +0100 (Thu, 03 Nov 2005)
+New Revision: 859
+
+Added:
+   trunk/096/pkg/systems/combat/useScripts/
+   trunk/096/pkg/systems/combat/useScripts/bladed.src
+Modified:
+   trunk/096/pkg/systems/combat/hooks/combatAdv.src
+   trunk/096/pkg/systems/combat/itemdesc.cfg
+Log:
+Updated itemdesc.cfg entries to point to the new location for bladed.src.
+
+Fixed console warning for CombatAdvancementHook.
+
+Modified: trunk/096/pkg/systems/combat/hooks/combatAdv.src
+===================================================================
+--- trunk/096/pkg/systems/combat/hooks/combatAdv.src	2005-11-03 03:25:43 UTC (rev 858)
++++ trunk/096/pkg/systems/combat/hooks/combatAdv.src	2005-11-03 03:30:45 UTC (rev 859)
+@@ -12,9 +12,10 @@
+ //
+ // NOTE: This function is called EVEN IF THE ATTACK DIDN'T SUCCEED!
+ //
+-exported function CombatAdvancement(attacker,defender)
++exported function CombatAdvancement(attacker, weapon, defender)
+ 	// Eliminates compiler warnings
+ 	attacker := attacker;
++	weapon := weapon;
+ 	defender := defender;
+ 	
+ 	// Advancement currently handled in mainHitScript
+
+Modified: trunk/096/pkg/systems/combat/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/systems/combat/itemdesc.cfg	2005-11-03 03:25:43 UTC (rev 858)
++++ trunk/096/pkg/systems/combat/itemdesc.cfg	2005-11-03 03:30:45 UTC (rev 859)
+@@ -1190,7 +1190,7 @@
+ 	Attribute	Swordsmanship
+ 	Anim		0x0009
+ 	MaxHP		60
+-	Script		bladed
++	Script		useScripts/bladed
+ 	HitSound	0x23C
+ 	MissSound	0x23A
+ 	VendorSellsFor	60
+@@ -1703,7 +1703,7 @@
+ 	Attribute	Swordsmanship
+ 	Anim		0x0009
+ 	MaxHP		65
+-	Script		bladed
++	Script		useScripts/bladed
+ 	HitSound	0x23C
+ 	MissSound	0x23A
+ 	VendorSellsFor	44
+@@ -1726,7 +1726,7 @@
+ 	Attribute	Swordsmanship
+ 	Anim		0x0009
+ 	MaxHP		55
+-	Script		bladed
++	Script		useScripts/bladed
+ 	HitSound	0x23C
+ 	MissSound	0x23A
+ 	VendorSellsFor	32
+@@ -1758,7 +1758,7 @@
+ 	MinDam		3
+ 	MaxDam		15
+ 	
+-	Script		bladed
++	Script		useScripts/bladed
+ 	DestroyScript	onDestroy
+ 	HitScript	mainHitScript
+ }
+@@ -1781,7 +1781,7 @@
+ 	MinDam		5
+ 	MaxDam		26
+ 	
+-	Script		bladed
++	Script		useScripts/bladed
+ 	DestroyScript	onDestroy
+ 	HitScript	mainHitScript
+ }
+@@ -1804,7 +1804,7 @@
+ 	MinDam		3
+ 	MaxDam		28
+ 	
+-	Script		bladed
++	Script		useScripts/bladed
+ 	HitScript	mainHitScript
+ 	DestroyScript	onDestroy
+ }
+@@ -1827,7 +1827,7 @@
+ 	MinDam		4
+ 	MaxDam		30
+ 	
+-	Script		bladed
++	Script		useScripts/bladed
+ 	DestroyScript	onDestroy
+ 	HitScript	mainHitScript
+ }
+@@ -1851,7 +1851,7 @@
+ 	MinDam		8
+ 	MaxDam		36
+ 	
+-	Script		bladed
++	Script		useScripts/bladed
+ 	HitScript	mainHitScript
+ 	DestroyScript	onDestroy
+ }
+@@ -1921,7 +1921,7 @@
+ 	MinDam		2
+ 	MaxDam		14
+ 	
+-	Script		bladed
++	Script		useScripts/bladed
+ 	HitScript	mainHitScript
+ 	DestroyScript	onDestroy
+ }
+@@ -1944,7 +1944,7 @@
+ 	MinDam		2
+ 	MaxDam		13
+ 	
+-	Script		bladed
++	Script		useScripts/bladed
+ 	HitScript	mainHitScript
+ 	DestroyScript	onDestroy
+ }
+@@ -1967,7 +1967,7 @@
+ 	MinDam		1
+ 	MaxDam		4
+ 	
+-	Script		bladed
++	Script		useScripts/bladed
+ 	HitScript	mainHitScript
+ 	DestroyScript	onDestroy
+ }
+@@ -2139,7 +2139,7 @@
+ 	Attribute	Swordsmanship
+ 	Anim		0x0009
+ 	MaxHP		60
+-	Script		bladed
++	Script		useScripts/bladed
+ 	HitSound	0x23C
+ 	MissSound	0x23A
+ 	newbie		1
+@@ -2182,7 +2182,7 @@
+ 	Attribute	Fencing
+ 	Anim		0x000a
+ 	MaxHP		60
+-	Script		bladed
++	Script		useScripts/bladed
+ 	HitSound	0x23C
+ 	MissSound	0x23A
+ 	newbie		1
+
+Added: trunk/096/pkg/systems/combat/useScripts/bladed.src
+===================================================================
+--- trunk/096/pkg/systems/combat/useScripts/bladed.src	2005-11-03 03:25:43 UTC (rev 858)
++++ trunk/096/pkg/systems/combat/useScripts/bladed.src	2005-11-03 03:30:45 UTC (rev 859)
+@@ -0,0 +1,93 @@
++// //$Id: bladed.src 806 2005-11-01 21:56:02Z austin $
++
++
++use cfgfile;
++use uo;
++use os;
++use util;
++
++include &quot;include/client&quot;;
++include &quot;include/sound&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;include/string&quot;;
++include &quot;include/objtype&quot;;
++include &quot;include/canAccess&quot;;
++include &quot;include/dist&quot;;
++include &quot;include/toolWear&quot;;
++include &quot;include/noto&quot;;
++include &quot;:tailoring:tailoringFunctions&quot;;
++include &quot;:fishing:fishingFunctions&quot;;
++include &quot;:containers:corpse/corpseFunctions&quot;;
++
++var bowcraftconfigfile := ReadConfigFile(&quot;:bowcraft:bowcraft&quot;);
++
++
++program use_blade(who, blade )
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	if ( !can_access(who, blade) )
++		return 0;
++	endif
++	if ( !ReserveItem(blade) )
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;What would you like to use that on?&quot;);
++	var use_on := TargetCoordinates(who);
++	if ( !use_on )
++		return 0;
++	endif
++	if ( use_on.item )
++		if ( !can_access(who, use_on.item, &quot;unmovable&quot;) )
++			return 0;
++		endif
++	endif
++	var checkme := use_on.item.objtype;
++	if ( use_on.mobile.npctemplate == &quot;sheep&quot; )
++		process_wool(who, blade, use_on.mobile);
++	elseif ( use_on.item.objtype == UOBJ_CORPSE )
++		ReleaseItem(blade);
++		Carve_Corpse(who, use_on.item);
++	elseif ( is_fish(checkme) )
++		CarveFish(who, blade, use_on.item);
++	elseif ( is_tree(use_on.objtype ) )
++		CarveTree(who, blade, use_on.item);
++	else
++		SendSysMessage(who, &quot;I don't know how to use those items together.&quot;);
++	endif
++
++endprogram
++
++
++function is_tree(theobj )
++
++	if ( (theobj == 0x0c9e) || (theobj == 0x0ca8) || (theobj == 0x0caa) )
++		return 1;
++	elseif (theobj == 0x0cab )
++		return 1;
++	elseif ((theobj &gt;= 0x0c99) &amp;&amp; (theobj &lt;= 0x0cea) )
++		return 1;
++	elseif ((theobj &gt;= 0x0cf3) &amp;&amp; (theobj &lt;= 0x0d03) )
++		return 1;
++	elseif ((theobj &gt;= 0x0d41) &amp;&amp; (theobj &lt;= 0x0dab) )
++		return 1;
++	else
++		return 0;
++	endif
++
++endfunction
++
++
++function CarveTree(who, blade, use_on )
++
++	if ( dist(who, use_on) &gt; 2 )
++		SendSysMessage(who, &quot;You cannot use that&quot;);
++		return 0;
++	endif
++	CreateItemInBackpack(who, UOBJ_KINDLING, 1);
++	DestroyItem(use_on);
++	SendSysMessage(who, &quot;You chip off some kindling and put it in your backpack.&quot;);
++
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000832.html">[Poldistro-svn] r858 - in trunk/096/pkg: skills/tinkering systems/combat
+</A></li>
+	<LI>Next message: <A HREF="000834.html">[Poldistro-svn] r860 - trunk/096/data
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#833">[ date ]</a>
+              <a href="thread.html#833">[ thread ]</a>
+              <a href="subject.html#833">[ subject ]</a>
+              <a href="author.html#833">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

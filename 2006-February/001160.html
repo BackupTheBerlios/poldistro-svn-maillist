@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1189 - trunk/096/pkg/items/doors/door
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1189%20-%20trunk/096/pkg/items/doors/door&In-Reply-To=%3C200602102214.k1AMEmX8014337%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001159.html">
+   <LINK REL="Next"  HREF="001161.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1189 - trunk/096/pkg/items/doors/door</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1189%20-%20trunk/096/pkg/items/doors/door&In-Reply-To=%3C200602102214.k1AMEmX8014337%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1189 - trunk/096/pkg/items/doors/door">austin at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 23:14:48 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001159.html">[Poldistro-svn] r1188 - trunk/096/pkg/items/doors/door
+</A></li>
+        <LI>Next message: <A HREF="001161.html">[Poldistro-svn] r1190 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1160">[ date ]</a>
+              <a href="thread.html#1160">[ thread ]</a>
+              <a href="subject.html#1160">[ subject ]</a>
+              <a href="author.html#1160">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-10 23:14:48 +0100 (Fri, 10 Feb 2006)
+New Revision: 1189
+
+Modified:
+   trunk/096/pkg/items/doors/door/method.src
+   trunk/096/pkg/items/doors/door/use.src
+Log:
+Added automatic door close support.
+
+Modified: trunk/096/pkg/items/doors/door/method.src
+===================================================================
+--- trunk/096/pkg/items/doors/door/method.src	2006-02-10 20:51:35 UTC (rev 1188)
++++ trunk/096/pkg/items/doors/door/method.src	2006-02-10 22:14:48 UTC (rev 1189)
+@@ -63,7 +63,11 @@
+ endfunction
+ 
+ exported function IsOpen(door)
+-	return CInt(GetObjProperty(door, &quot;Open&quot;));
++	if ( door.isopen )
++		return 1;
++	else
++		return CInt(GetObjProperty(door, &quot;Open&quot;));
++	endif
+ endfunction
+ 
+ exported function IsInside(door, object)
+
+Modified: trunk/096/pkg/items/doors/door/use.src
+===================================================================
+--- trunk/096/pkg/items/doors/door/use.src	2006-02-10 20:51:35 UTC (rev 1188)
++++ trunk/096/pkg/items/doors/door/use.src	2006-02-10 22:14:48 UTC (rev 1189)
+@@ -6,15 +6,25 @@
+  */
+ 
+ use uo;
++use os;
+ 
+ include &quot;:keys:key&quot;;
+ 
+ program useScript(mobile, door)
+ 	if ( DoorIsLocked(mobile, door) )
+ 		return 0;
++	elseif ( door.IsOpen() )
++		var pid := CInt(GetObjProperty(door, &quot;#ClosePid&quot;));
++		GetProcess(pid).SendEvent(&quot;stop&quot;);
+ 	endif
+ 
+ 	door.Toggle();
++	
++	Detach();
++	
++	AutoClose(door);
++	
++	return 1;
+ endprogram
+ 
+ function DoorIsLocked(mobile, door)
+@@ -35,3 +45,19 @@
+ 		return 1;
+ 	endif
+ endfunction
++
++function AutoClose(door)
++	// Wait 10 seconds, and auto-close the door.
++	// If someone manually closes the door this instance of the use script
++	// will get an event from the new one and stop waiting to close it.
++	if ( door.IsOpen() )
++		SetObjProperty(door, &quot;#ClosePid&quot;, GetPid());
++		var event := Wait_For_event(10);
++		if ( !event )
++			door.Close();
++		endif
++		EraseObjProperty(door, &quot;#ClosePid&quot;);		
++	endif
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001159.html">[Poldistro-svn] r1188 - trunk/096/pkg/items/doors/door
+</A></li>
+	<LI>Next message: <A HREF="001161.html">[Poldistro-svn] r1190 - trunk/096/scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1160">[ date ]</a>
+              <a href="thread.html#1160">[ thread ]</a>
+              <a href="subject.html#1160">[ subject ]</a>
+              <a href="author.html#1160">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

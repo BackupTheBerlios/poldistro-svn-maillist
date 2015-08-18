@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1199 - in trunk/096: config pkg/items/containers pkg/mobiles/playervendor pkg/skills/magery pkg/skills/magery/spellBook
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1199%20-%20in%20trunk/096%3A%20config%20pkg/items/containers%20pkg/mobiles/playervendor%20pkg/skills/magery%20pkg/skills/magery/spellBook&In-Reply-To=%3C200602111833.k1BIXBs5020897%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001169.html">
+   <LINK REL="Next"  HREF="001171.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1199 - in trunk/096: config pkg/items/containers pkg/mobiles/playervendor pkg/skills/magery pkg/skills/magery/spellBook</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1199%20-%20in%20trunk/096%3A%20config%20pkg/items/containers%20pkg/mobiles/playervendor%20pkg/skills/magery%20pkg/skills/magery/spellBook&In-Reply-To=%3C200602111833.k1BIXBs5020897%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1199 - in trunk/096: config pkg/items/containers pkg/mobiles/playervendor pkg/skills/magery pkg/skills/magery/spellBook">austin at berlios.de
+       </A><BR>
+    <I>Sat Feb 11 19:33:11 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001169.html">[Poldistro-svn] r1198 - trunk/096/pkg/items/containers/container
+</A></li>
+        <LI>Next message: <A HREF="001171.html">[Poldistro-svn] r1200 - in trunk/096/pkg/items/containers: . container
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1170">[ date ]</a>
+              <a href="thread.html#1170">[ thread ]</a>
+              <a href="subject.html#1170">[ subject ]</a>
+              <a href="author.html#1170">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-11 19:33:08 +0100 (Sat, 11 Feb 2006)
+New Revision: 1199
+
+Added:
+   trunk/096/pkg/skills/magery/spellBook/canRemove.src
+Modified:
+   trunk/096/config/itemdesc.cfg
+   trunk/096/pkg/items/containers/itemdesc.cfg
+   trunk/096/pkg/mobiles/playervendor/itemdesc.cfg
+   trunk/096/pkg/skills/magery/itemdesc.cfg
+Log:
+Container updates to remove startup warnings.
+
+Modified: trunk/096/config/itemdesc.cfg
+===================================================================
+--- trunk/096/config/itemdesc.cfg	2006-02-11 18:24:45 UTC (rev 1198)
++++ trunk/096/config/itemdesc.cfg	2006-02-11 18:33:08 UTC (rev 1199)
+@@ -124,7 +124,7 @@
+ 	VendorSellsFor		22
+ 	VendorBuysFor		11
+ 	Weight			1
+-	CanRemoveScript		:containers:container/noRemove
++	//CanRemoveScript		:containers:container/noRemove
+ }
+ 
+ Spellbook 0x2253
+@@ -142,7 +142,7 @@
+ 	VendorSellsFor		22
+ 	VendorBuysFor		11
+ 	Weight			1
+-	CanRemoveScript		:containers:container/noRemove
++	//CanRemoveScript		:containers:container/noRemove
+ }
+ 
+ Item 0x1BD7
+@@ -595,7 +595,7 @@
+ 	Name			playervendordeed
+ 	Desc			player vendor deed
+ 	Graphic			0x14EF
+-	Script			VendorDeed
++	//Script			VendorDeed
+ 	VendorSellsFor		1500
+ }
+ 
+
+Modified: trunk/096/pkg/items/containers/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/containers/itemdesc.cfg	2006-02-11 18:24:45 UTC (rev 1198)
++++ trunk/096/pkg/items/containers/itemdesc.cfg	2006-02-11 18:33:08 UTC (rev 1199)
+@@ -848,10 +848,10 @@
+ 	MaxItems		125
+ 	MaxWeight		400
+ 	Weight			5
+-	CanInsertScript		::canInsert
+-	OnInsertScript		::onInsert
+-	CanRemoveScript		::canRemove
+-	OnRemoveScript		::onRemove
++	CanInsertScript		container/canInsert
++	OnInsertScript		container/onInsert
++	CanRemoveScript		container/canRemove
++	OnRemoveScript		container/onRemove
+ }
+ Container 0xA4F
+ {
+
+Modified: trunk/096/pkg/mobiles/playervendor/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/playervendor/itemdesc.cfg	2006-02-11 18:24:45 UTC (rev 1198)
++++ trunk/096/pkg/mobiles/playervendor/itemdesc.cfg	2006-02-11 18:33:08 UTC (rev 1199)
+@@ -13,8 +13,8 @@
+     dyeable             1
+     MaxItems            125
+     MaxWeight           400
+-    CanInsertScript     ::canInsert
+-    OnInsertScript      ::onInsert
+-    CanRemoveScript     ::canRemove
+-    OnRemoveScript      ::onRemove
++    //CanInsertScript     ::canInsert
++   //OnInsertScript      ::onInsert
++    //CanRemoveScript     ::canRemove
++   // OnRemoveScript      ::onRemove
+ }
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/magery/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/itemdesc.cfg	2006-02-11 18:24:45 UTC (rev 1198)
++++ trunk/096/pkg/skills/magery/itemdesc.cfg	2006-02-11 18:33:08 UTC (rev 1199)
+@@ -26,7 +26,7 @@
+ 
+ 	Weight			1
+ 
+-	CanRemoveScript		:containers:container/noRemove
++	CanRemoveScript		spellBook/canRemove
+ }
+ 
+ //--=[ MAGERY SCROLLS ]=-------------------------
+
+Added: trunk/096/pkg/skills/magery/spellBook/canRemove.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellBook/canRemove.src	2006-02-11 18:24:45 UTC (rev 1198)
++++ trunk/096/pkg/skills/magery/spellBook/canRemove.src	2006-02-11 18:33:08 UTC (rev 1199)
+@@ -0,0 +1,17 @@
++/* $Id: noRemove.src 1198 2006-02-11 18:24:45Z austin $
++ *
++ */
++
++use uo;
++use os;
++
++program canRemove(mobile, container, item, move_type)
++	if ( mobile.cmdlevel )
++		return 1;
++	elseif ( move_type == MOVETYPE_COREMOVE )
++		return 1;
++	else
++		PrintTextAbovePrivate(container, &quot;That cannot be removed.&quot;, mobile);
++		return 0;
++	endif
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001169.html">[Poldistro-svn] r1198 - trunk/096/pkg/items/containers/container
+</A></li>
+	<LI>Next message: <A HREF="001171.html">[Poldistro-svn] r1200 - in trunk/096/pkg/items/containers: . container
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1170">[ date ]</a>
+              <a href="thread.html#1170">[ thread ]</a>
+              <a href="subject.html#1170">[ subject ]</a>
+              <a href="author.html#1170">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

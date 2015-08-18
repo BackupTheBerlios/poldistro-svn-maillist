@@ -1,0 +1,974 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r505 - trunk/096/pkg/skills/tailoring
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r505%20-%20trunk/096/pkg/skills/tailoring&In-Reply-To=%3C200510092232.j99MWaDT025915%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000478.html">
+   <LINK REL="Next"  HREF="000481.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r505 - trunk/096/pkg/skills/tailoring</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r505%20-%20trunk/096/pkg/skills/tailoring&In-Reply-To=%3C200510092232.j99MWaDT025915%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r505 - trunk/096/pkg/skills/tailoring">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 00:32:36 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000478.html">[Poldistro-svn] r504 - trunk/096/pkg/skills/magery
+</A></li>
+        <LI>Next message: <A HREF="000481.html">[Poldistro-svn] r506 - trunk/096/pkg/systems/boat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#477">[ date ]</a>
+              <a href="thread.html#477">[ thread ]</a>
+              <a href="subject.html#477">[ subject ]</a>
+              <a href="author.html#477">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 00:32:34 +0200 (Mon, 10 Oct 2005)
+New Revision: 505
+
+Modified:
+   trunk/096/pkg/skills/tailoring/makeClothItems.src
+Log:
+
+
+Modified: trunk/096/pkg/skills/tailoring/makeClothItems.src
+===================================================================
+--- trunk/096/pkg/skills/tailoring/makeClothItems.src	2005-10-09 22:30:30 UTC (rev 504)
++++ trunk/096/pkg/skills/tailoring/makeClothItems.src	2005-10-09 22:32:34 UTC (rev 505)
+@@ -5,7 +5,6 @@
+ 
+ include &quot;:gumps:include/old/old-gumps&quot;;
+ include &quot;include/attributes&quot;;
+-include &quot;include/gumpUtil&quot;;
+ include &quot;include/dist&quot;;
+ include &quot;include/client&quot;;
+ include &quot;include/objtype&quot;;
+@@ -19,8 +18,8 @@
+ var tailor_cfg       := ReadConfigFile( &quot;tailoring&quot; );
+ var leather_cfg      := ReadConfigFile( &quot;leather&quot; );
+ 
+-gfref.x := 50;
+-gfref.y := 50;
++GFref.x := 50;
++GFref.y := 50;
+ 
+ program use_sewing_kit(who, sewing_kit)
+   EraseObjProperty(who, &quot;IsMeditating&quot;);
+@@ -68,84 +67,84 @@
+ endprogram
+ 
+ function MakeClothItems(who, cloth, kit)
+-  GFInitGump(0, 0);
+-  GFNoDispose();
+-  GFNoClose();
+-  GFPage(0);
+-  GFResizePic(0, 60, 2600, 500, 400);
+-  GFGumpPic( 20, 120, 5100);
+-  GFGumpPic( 28, 120, 5101);
+-  GFGumpPic(118, 120, 5101);
+-  GFGumpPic(208, 120, 5101);
+-  GFGumpPic(298, 120, 5101);
+-  GFGumpPic(370, 120, 5101);
+-  GFGumpPic(460, 120, 5102);
+-  GFGumpPic( 20, 128, 5103);
+-  GFGumpPic( 28, 128, 5104);
+-  GFGumpPic(118, 128, 5104);
+-  GFGumpPic(208, 128, 5104);
+-  GFGumpPic(298, 128, 5104);
+-  GFGumpPic(370, 128, 5104);
+-  GFGumpPic(460, 128, 5105);
+-  GFGumpPic( 20, 136, 5058);
+-  GFGumpPic(118, 136, 5058);
+-  GFGumpPic(232, 136, 5058);
+-  GFGumpPic(350, 136, 5058);
+-  GFGumpPic( 20, 136, 5106);
+-  GFGumpPic( 28, 136, 5107);
+-  GFGumpPic(118, 136, 5107);
+-  GFGumpPic(208, 136, 5107);
+-  GFGumpPic(298, 136, 5107);
+-  GFGumpPic(370, 136, 5107);
+-  GFGumpPic(460, 136, 5108);
+-  GFGumpPic( 28, 278, 5104);
+-  GFGumpPic(118, 278, 5104);
+-  GFGumpPic(208, 278, 5104);
+-  GFGumpPic(298, 278, 5104);
+-  GFGumpPic(368, 278, 5104);
+-  GFGumpPic( 20, 278, 5103);
+-  GFGumpPic(460, 278, 5105);
+-  GFGumpPic( 20, 226, 5058);
+-  GFGumpPic(118, 226, 5058);
+-  GFGumpPic(232, 226, 5058);
+-  GFGumpPic(350, 226, 5058);
+-  GFGumpPic( 20, 366, 5106);
+-  GFGumpPic( 28, 366, 5107);
+-  GFGumpPic(118, 366, 5107);
+-  GFGumpPic(208, 366, 5107);
+-  GFGumpPic(298, 366, 5107);
+-  GFGumpPic(370, 366, 5107);
+-  GFGumpPic(460, 366, 5108);
+-  GFGumpPic( 20, 350, 5100);
+-  GFGumpPic( 28, 350, 5101);
+-  GFGumpPic(118, 350, 5101);
+-  GFGumpPic(208, 350, 5101);
+-  GFGumpPic(298, 350, 5101);
+-  GFGumpPic(370, 350, 5101);
+-  GFGumpPic(460, 350, 5102);
+-  GFTextLine(110,  80, 900, &quot;TAILORING SELECTION MENU&quot;);
+-  GFTextLine( 50, 121,   0, &quot;Shirts&quot;);
+-  GFTextLine(200, 121,   0, &quot;Pants&quot;);
+-  GFTextLine(310, 121,   0, &quot;Robes/Dresses&quot;);
+-  GFTextLine(320, 351,   0, &quot;hats&quot;);
+-  GFTextLine( 80, 351,   0, &quot;Miscellaneous&quot;);
+-  GFTextLine( 90, 380, 900, &quot;Make Last&quot;);
+-  var lastitm := GFButtonID( 70, 384,   3, 4, 99);
+-  var close   := GFButtonID(410, 380, 242, 241, 1);
+-  GFButtonPage(110, 123, 5209, 5209, 2);
+-  GFButtonPage(260, 123, 5209, 5209, 3);
+-  GFButtonPage(425, 123, 5209, 5209, 4);
+-  GFButtonPage(190, 353, 5209, 5209, 5);
+-  GFButtonPage(370, 353, 5209, 5209, 6);
+-  GFTextLine(  300, 420, 900, &quot;How Many?&quot;);
+-  GFGumpPic(390, 417, 2443);
++  OldGFInitGump(0, 0);
++  OldGFNoDispose();
++  OldGFNoClose();
++  OldGFPage(0);
++  OldGFResizePic(0, 60, 2600, 500, 400);
++  OldGFGumpPic( 20, 120, 5100);
++  OldGFGumpPic( 28, 120, 5101);
++  OldGFGumpPic(118, 120, 5101);
++  OldGFGumpPic(208, 120, 5101);
++  OldGFGumpPic(298, 120, 5101);
++  OldGFGumpPic(370, 120, 5101);
++  OldGFGumpPic(460, 120, 5102);
++  OldGFGumpPic( 20, 128, 5103);
++  OldGFGumpPic( 28, 128, 5104);
++  OldGFGumpPic(118, 128, 5104);
++  OldGFGumpPic(208, 128, 5104);
++  OldGFGumpPic(298, 128, 5104);
++  OldGFGumpPic(370, 128, 5104);
++  OldGFGumpPic(460, 128, 5105);
++  OldGFGumpPic( 20, 136, 5058);
++  OldGFGumpPic(118, 136, 5058);
++  OldGFGumpPic(232, 136, 5058);
++  OldGFGumpPic(350, 136, 5058);
++  OldGFGumpPic( 20, 136, 5106);
++  OldGFGumpPic( 28, 136, 5107);
++  OldGFGumpPic(118, 136, 5107);
++  OldGFGumpPic(208, 136, 5107);
++  OldGFGumpPic(298, 136, 5107);
++  OldGFGumpPic(370, 136, 5107);
++  OldGFGumpPic(460, 136, 5108);
++  OldGFGumpPic( 28, 278, 5104);
++  OldGFGumpPic(118, 278, 5104);
++  OldGFGumpPic(208, 278, 5104);
++  OldGFGumpPic(298, 278, 5104);
++  OldGFGumpPic(368, 278, 5104);
++  OldGFGumpPic( 20, 278, 5103);
++  OldGFGumpPic(460, 278, 5105);
++  OldGFGumpPic( 20, 226, 5058);
++  OldGFGumpPic(118, 226, 5058);
++  OldGFGumpPic(232, 226, 5058);
++  OldGFGumpPic(350, 226, 5058);
++  OldGFGumpPic( 20, 366, 5106);
++  OldGFGumpPic( 28, 366, 5107);
++  OldGFGumpPic(118, 366, 5107);
++  OldGFGumpPic(208, 366, 5107);
++  OldGFGumpPic(298, 366, 5107);
++  OldGFGumpPic(370, 366, 5107);
++  OldGFGumpPic(460, 366, 5108);
++  OldGFGumpPic( 20, 350, 5100);
++  OldGFGumpPic( 28, 350, 5101);
++  OldGFGumpPic(118, 350, 5101);
++  OldGFGumpPic(208, 350, 5101);
++  OldGFGumpPic(298, 350, 5101);
++  OldGFGumpPic(370, 350, 5101);
++  OldGFGumpPic(460, 350, 5102);
++  OldGFTextLine(110,  80, 900, &quot;TAILORING SELECTION MENU&quot;);
++  OldGFTextLine( 50, 121,   0, &quot;Shirts&quot;);
++  OldGFTextLine(200, 121,   0, &quot;Pants&quot;);
++  OldGFTextLine(310, 121,   0, &quot;Robes/Dresses&quot;);
++  OldGFTextLine(320, 351,   0, &quot;hats&quot;);
++  OldGFTextLine( 80, 351,   0, &quot;Miscellaneous&quot;);
++  OldGFTextLine( 90, 380, 900, &quot;Make Last&quot;);
++  var lastitm := OldGFButtonID( 70, 384,   3, 4, 99);
++  var close   := OldGFButtonID(410, 380, 242, 241, 1);
++  OldGFButtonPage(110, 123, 5209, 5209, 2);
++  OldGFButtonPage(260, 123, 5209, 5209, 3);
++  OldGFButtonPage(425, 123, 5209, 5209, 4);
++  OldGFButtonPage(190, 353, 5209, 5209, 5);
++  OldGFButtonPage(370, 353, 5209, 5209, 6);
++  OldGFTextLine(  300, 420, 900, &quot;How Many?&quot;);
++  OldGFGumpPic(390, 417, 2443);
+   var sa := GetObjProperty(who, &quot;#TailorAmt&quot;);
+   if(!sa)
+     sa := 1;
+   endif
+-  var ct := GFTextEntry(400, 420, 100, 30, 0, sa);
++  var ct := OldGFTextEntry(400, 420, 100, 30, 0, sa);
+   ComposeClothSubMenu(who);
+-  var res := GFSendGump(who);
++  var res := OldGFSendGump(who);
+   if((res[0] == 999) || (res[close.keyid]))
+     SendSysMessage(who, &quot;Cancelled&quot;);
+     return;
+@@ -313,92 +312,92 @@
+ endfunction
+ 
+ function MakeLeatherItems(who, cloth, kit)
+-  GFInitGump(0, 0);
+-  GFNoDispose();
+-  GFNoClose();
+-  GFPage(0);
+-  GFGumpPic(  0,  50,  206);
+-  GFGumpPic( 40,  50,  201);
+-  GFGumpPic(460,  50,  207);
+-  GFGumpPic(  0,  94,  202);
+-  GFGumpPic( 40,  94, 2604);
+-  GFGumpPic(460,  94, 2605);
+-  GFGumpPic(  0, 410, 2606);
+-  GFGumpPic( 40, 410, 2607);
+-  GFGumpPic(460, 410, 2608);
+-  GFGumpPic( 20, 120, 5100);
+-  GFGumpPic( 28, 120, 5101);
+-  GFGumpPic(118, 120, 5101);
+-  GFGumpPic(208, 120, 5101);
+-  GFGumpPic(298, 120, 5101);
+-  GFGumpPic(370, 120, 5101);
+-  GFGumpPic(460, 120, 5102);
+-  GFGumpPic( 20, 128, 5103);
+-  GFGumpPic( 28, 128, 5104);
+-  GFGumpPic(118, 128, 5104);
+-  GFGumpPic(208, 128, 5104);
+-  GFGumpPic(298, 128, 5104);
+-  GFGumpPic(370, 128, 5104);
+-  GFGumpPic(460, 128, 5105);
+-  GFGumpPic( 20, 136, 5058);
+-  GFGumpPic(118, 136, 5058);
+-  GFGumpPic(232, 136, 5058);
+-  GFGumpPic(350, 136, 5058);
+-  GFGumpPic( 20, 136, 5106);
+-  GFGumpPic( 28, 136, 5107);
+-  GFGumpPic(118, 136, 5107);
+-  GFGumpPic(208, 136, 5107);
+-  GFGumpPic(298, 136, 5107);
+-  GFGumpPic(370, 136, 5107);
+-  GFGumpPic(460, 136, 5108);
+-  GFGumpPic( 28, 278, 5104);
+-  GFGumpPic(118, 278, 5104);
+-  GFGumpPic(208, 278, 5104);
+-  GFGumpPic(298, 278, 5104);
+-  GFGumpPic(368, 278, 5104);
+-  GFGumpPic( 20, 278, 5103);
+-  GFGumpPic(460, 278, 5105);
+-  GFGumpPic( 20, 226, 5058);
+-  GFGumpPic(118, 226, 5058);
+-  GFGumpPic(232, 226, 5058);
+-  GFGumpPic(350, 226, 5058);
+-  GFGumpPic( 20, 366, 5106);
+-  GFGumpPic( 28, 366, 5107);
+-  GFGumpPic(118, 366, 5107);
+-  GFGumpPic(208, 366, 5107);
+-  GFGumpPic(298, 366, 5107);
+-  GFGumpPic(370, 366, 5107);
+-  GFGumpPic(460, 366, 5108);
+-  GFGumpPic( 20, 350, 5100);
+-  GFGumpPic( 28, 350, 5101);
+-  GFGumpPic(118, 350, 5101);
+-  GFGumpPic(208, 350, 5101);
+-  GFGumpPic(298, 350, 5101);
+-  GFGumpPic(370, 350, 5101);
+-  GFGumpPic(460, 350, 5102);
+-  GFTextLine(110,  80, 900, &quot;LEATHER SELECTION MENU&quot;);
+-  GFTextLine( 50, 121,   0, &quot;Leather&quot;);
+-  GFTextLine(200, 121,   0, &quot;Studded&quot;);
+-  GFTextLine(360, 121,   0, &quot;Female&quot;);
+-  GFTextLine(320, 351,   0, &quot;Shoes&quot;);
+-  GFTextLine(110, 351,   0, &quot;Containers&quot;);
+-  GFTextLine( 90, 380, 900, &quot;Make Last&quot;);
+-  var lastitm := GFButtonID( 70, 384,   3, 4, 99);
+-  var close   := GFButtonID(410, 380, 242, 241, 1);
+-  GFButtonPage(110, 123, 5209, 5209, 2);
+-  GFButtonPage(260, 123, 5209, 5209, 3);
+-  GFButtonPage(425, 123, 5209, 5209, 4);
+-  GFButtonPage(190, 353, 5209, 5209, 5);
+-  GFButtonPage(370, 353, 5209, 5209, 6);
+-  GFTextLine(  300, 420, 900, &quot;How Many?&quot;);
+-  GFGumpPic(390, 417, 2443);
++  OldGFInitGump(0, 0);
++  OldGFNoDispose();
++  OldGFNoClose();
++  OldGFPage(0);
++  OldGFGumpPic(  0,  50,  206);
++  OldGFGumpPic( 40,  50,  201);
++  OldGFGumpPic(460,  50,  207);
++  OldGFGumpPic(  0,  94,  202);
++  OldGFGumpPic( 40,  94, 2604);
++  OldGFGumpPic(460,  94, 2605);
++  OldGFGumpPic(  0, 410, 2606);
++  OldGFGumpPic( 40, 410, 2607);
++  OldGFGumpPic(460, 410, 2608);
++  OldGFGumpPic( 20, 120, 5100);
++  OldGFGumpPic( 28, 120, 5101);
++  OldGFGumpPic(118, 120, 5101);
++  OldGFGumpPic(208, 120, 5101);
++  OldGFGumpPic(298, 120, 5101);
++  OldGFGumpPic(370, 120, 5101);
++  OldGFGumpPic(460, 120, 5102);
++  OldGFGumpPic( 20, 128, 5103);
++  OldGFGumpPic( 28, 128, 5104);
++  OldGFGumpPic(118, 128, 5104);
++  OldGFGumpPic(208, 128, 5104);
++  OldGFGumpPic(298, 128, 5104);
++  OldGFGumpPic(370, 128, 5104);
++  OldGFGumpPic(460, 128, 5105);
++  OldGFGumpPic( 20, 136, 5058);
++  OldGFGumpPic(118, 136, 5058);
++  OldGFGumpPic(232, 136, 5058);
++  OldGFGumpPic(350, 136, 5058);
++  OldGFGumpPic( 20, 136, 5106);
++  OldGFGumpPic( 28, 136, 5107);
++  OldGFGumpPic(118, 136, 5107);
++  OldGFGumpPic(208, 136, 5107);
++  OldGFGumpPic(298, 136, 5107);
++  OldGFGumpPic(370, 136, 5107);
++  OldGFGumpPic(460, 136, 5108);
++  OldGFGumpPic( 28, 278, 5104);
++  OldGFGumpPic(118, 278, 5104);
++  OldGFGumpPic(208, 278, 5104);
++  OldGFGumpPic(298, 278, 5104);
++  OldGFGumpPic(368, 278, 5104);
++  OldGFGumpPic( 20, 278, 5103);
++  OldGFGumpPic(460, 278, 5105);
++  OldGFGumpPic( 20, 226, 5058);
++  OldGFGumpPic(118, 226, 5058);
++  OldGFGumpPic(232, 226, 5058);
++  OldGFGumpPic(350, 226, 5058);
++  OldGFGumpPic( 20, 366, 5106);
++  OldGFGumpPic( 28, 366, 5107);
++  OldGFGumpPic(118, 366, 5107);
++  OldGFGumpPic(208, 366, 5107);
++  OldGFGumpPic(298, 366, 5107);
++  OldGFGumpPic(370, 366, 5107);
++  OldGFGumpPic(460, 366, 5108);
++  OldGFGumpPic( 20, 350, 5100);
++  OldGFGumpPic( 28, 350, 5101);
++  OldGFGumpPic(118, 350, 5101);
++  OldGFGumpPic(208, 350, 5101);
++  OldGFGumpPic(298, 350, 5101);
++  OldGFGumpPic(370, 350, 5101);
++  OldGFGumpPic(460, 350, 5102);
++  OldGFTextLine(110,  80, 900, &quot;LEATHER SELECTION MENU&quot;);
++  OldGFTextLine( 50, 121,   0, &quot;Leather&quot;);
++  OldGFTextLine(200, 121,   0, &quot;Studded&quot;);
++  OldGFTextLine(360, 121,   0, &quot;Female&quot;);
++  OldGFTextLine(320, 351,   0, &quot;Shoes&quot;);
++  OldGFTextLine(110, 351,   0, &quot;Containers&quot;);
++  OldGFTextLine( 90, 380, 900, &quot;Make Last&quot;);
++  var lastitm := OldGFButtonID( 70, 384,   3, 4, 99);
++  var close   := OldGFButtonID(410, 380, 242, 241, 1);
++  OldGFButtonPage(110, 123, 5209, 5209, 2);
++  OldGFButtonPage(260, 123, 5209, 5209, 3);
++  OldGFButtonPage(425, 123, 5209, 5209, 4);
++  OldGFButtonPage(190, 353, 5209, 5209, 5);
++  OldGFButtonPage(370, 353, 5209, 5209, 6);
++  OldGFTextLine(  300, 420, 900, &quot;How Many?&quot;);
++  OldGFGumpPic(390, 417, 2443);
+   var sa := GetObjProperty(who, &quot;#TailorAmt&quot;);
+   if(!sa)
+     sa := 1;
+   endif
+-  var ct := GFTextEntry(400, 420, 100, 30, 0, sa);
++  var ct := OldGFTextEntry(400, 420, 100, 30, 0, sa);
+   ComposeLeatherSubMenu(who);
+-  var res := GFSendGump(who);
++  var res := OldGFSendGump(who);
+   if((res[0] == 999) || (res[close.keyid]))
+     SendSysMessage(who, &quot;Cancelled&quot;);
+     return;
+@@ -528,192 +527,192 @@
+   var cfg := ReadConfigFile(&quot;:tailoring:tailoring&quot;);
+   while(num &lt; 11)
+     case(num)
+-       2: GFPage(2);        // Page 2 (shirts)
++       2: OldGFPage(2);        // Page 2 (shirts)
+           if(skill &gt;= CInt(cfg[0x1517].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 5399);
++            OldGFButtonIDC(110, 200, 210, 211, 1, 5399);
+           endif
+-          GFTextLine( 80, 175, color, &quot;shirt&quot;);
+-          GFTilePic(  60, 200, 5399);
++          OldGFTextLine( 80, 175, color, &quot;shirt&quot;);
++          OldGFTilePic(  60, 200, 5399);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1efd].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 7933);
++            OldGFButtonIDC(210, 200, 210, 211, 1, 7933);
+           endif
+-          GFTextLine(160, 175, color, &quot;fancy shirt&quot;);
+-          GFTilePic( 160, 200, 7933);
++          OldGFTextLine(160, 175, color, &quot;fancy shirt&quot;);
++          OldGFTilePic( 160, 200, 7933);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1ffd].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 8189);
++            OldGFButtonIDC(310, 200, 210, 211, 1, 8189);
+           endif
+-          GFTextLine(270, 175, color, &quot;surcoat&quot;);
+-          GFTilePic( 250, 200, 8189);
++          OldGFTextLine(270, 175, color, &quot;surcoat&quot;);
++          OldGFTilePic( 250, 200, 8189);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1fa1].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 8097);
++            OldGFButtonIDC(410, 200, 210, 211, 1, 8097);
+           endif
+-          GFTextLine(375, 175, color, &quot;tunic&quot;);
+-          GFTilePic( 350, 200, 8097);
++          OldGFTextLine(375, 175, color, &quot;tunic&quot;);
++          OldGFTilePic( 350, 200, 8097);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1515].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 5397);
++            OldGFButtonIDC(110, 295, 210, 211, 1, 5397);
+           endif
+-          GFTextLine( 75, 270, color, &quot;cloak&quot;);
+-          GFTilePic(  50, 295, 5397);
++          OldGFTextLine( 75, 270, color, &quot;cloak&quot;);
++          OldGFTilePic(  50, 295, 5397);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1f9f].&quot;skill&quot;))
+             color := 900;
+-           GFButtonIDC(210, 295, 210, 211, 1, 8095);
++           OldGFButtonIDC(210, 295, 210, 211, 1, 8095);
+           endif
+-          GFTextLine(160, 270, color, &quot;jester's suit&quot;);
+-          GFTilePic( 150, 295, 8095);
++          OldGFTextLine(160, 270, color, &quot;jester's suit&quot;);
++          OldGFTilePic( 150, 295, 8095);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1f7b].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 295, 210, 211, 1, 8059);
++            OldGFButtonIDC(310, 295, 210, 211, 1, 8059);
+           endif
+-          GFTextLine(275, 270, color, &quot;doublet&quot;);
+-          GFTilePic( 245, 295, 8059);
++          OldGFTextLine(275, 270, color, &quot;doublet&quot;);
++          OldGFTilePic( 245, 295, 8059);
+           color := 0;
+-       3: GFPage(3);        // Page 4 (pants)
++       3: OldGFPage(3);        // Page 4 (pants)
+           if(skill &gt;= CInt(cfg[0x152e].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 200, 210, 211, 1, 5422);
++            OldGFButtonIDC(150, 200, 210, 211, 1, 5422);
+           endif
+-          GFTextLine( 90, 175, color, &quot;short pants&quot;);
+-          GFTilePic( 100, 200, 5422);
++          OldGFTextLine( 90, 175, color, &quot;short pants&quot;);
++          OldGFTilePic( 100, 200, 5422);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1539].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 200, 210, 211, 1, 5433);
++            OldGFButtonIDC(300, 200, 210, 211, 1, 5433);
+           endif
+-          GFTextLine(240, 175, color, &quot;long pants&quot;);
+-          GFTilePic( 250, 200, 5433);
++          OldGFTextLine(240, 175, color, &quot;long pants&quot;);
++          OldGFTilePic( 250, 200, 5433);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1537].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 295, 210, 211, 1, 5431);
++            OldGFButtonIDC(150, 295, 210, 211, 1, 5431);
+           endif
+-          GFTextLine(120, 270, color, &quot;kilt&quot;);
+-          GFTilePic( 100, 295, 5431);
++          OldGFTextLine(120, 270, color, &quot;kilt&quot;);
++          OldGFTilePic( 100, 295, 5431);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1516].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 295, 210, 211, 1, 5398);
++            OldGFButtonIDC(300, 295, 210, 211, 1, 5398);
+           endif
+-          GFTextLine(260, 270, color, &quot;skirt&quot;);
+-          GFTilePic( 250, 295, 5398);
++          OldGFTextLine(260, 270, color, &quot;skirt&quot;);
++          OldGFTilePic( 250, 295, 5398);
+           color := 0;
+-       4: GFPage(4);        // Page 4 (robes/dresses)
++       4: OldGFPage(4);        // Page 4 (robes/dresses)
+           if(skill &gt;= CInt(cfg[0x1f01].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 200, 210, 211, 1, 7937);
++            OldGFButtonIDC(150, 200, 210, 211, 1, 7937);
+           endif
+-          GFTextLine( 90, 175, color, &quot;plain dress&quot;);
+-          GFTilePic(  90, 200, 7937);
++          OldGFTextLine( 90, 175, color, &quot;plain dress&quot;);
++          OldGFTilePic(  90, 200, 7937);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1eff].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 200, 210, 211, 1, 7935);
++            OldGFButtonIDC(300, 200, 210, 211, 1, 7935);
+           endif
+-          GFTextLine(240, 175, color, &quot;fancy dress&quot;);
+-          GFTilePic( 235, 200, 7935);
++          OldGFTextLine(240, 175, color, &quot;fancy dress&quot;);
++          OldGFTilePic( 235, 200, 7935);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x9945].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 295, 210, 211, 1, 39237);
++            OldGFButtonIDC(150, 295, 210, 211, 1, 39237);
+           endif
+-          GFTextLine(120, 270, color, &quot;robe&quot;);
+-          GFTilePic(  90, 295, 7939);
++          OldGFTextLine(120, 270, color, &quot;robe&quot;);
++          OldGFTilePic(  90, 295, 7939);
+           color := 0;
+-       5: GFPage(5);        //Page 5 (miscellaneous)
++       5: OldGFPage(5);        //Page 5 (miscellaneous)
+           if(skill &gt;= CInt(cfg[0x1541].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 200, 210, 211, 1, 5441);
++            OldGFButtonIDC(150, 200, 210, 211, 1, 5441);
+           endif
+-          GFTextLine(100, 175, color, &quot;body sash&quot;);
+-          GFTilePic( 100, 200, 5441);
++          OldGFTextLine(100, 175, color, &quot;body sash&quot;);
++          OldGFTilePic( 100, 200, 5441);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x153b].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 295, 210, 211, 1, 5435);
++            OldGFButtonIDC(150, 295, 210, 211, 1, 5435);
+           endif
+-          GFTextLine(105, 270, color, &quot;half apron&quot;);
+-          GFTilePic( 100, 295, 5435);
++          OldGFTextLine(105, 270, color, &quot;half apron&quot;);
++          OldGFTilePic( 100, 295, 5435);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x153d].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 295, 210, 211, 1, 5437);
++            OldGFButtonIDC(300, 295, 210, 211, 1, 5437);
+           endif
+-          GFTextLine(255, 270, color, &quot;full apron&quot;);
+-          GFTilePic( 250, 295, 5437);
++          OldGFTextLine(255, 270, color, &quot;full apron&quot;);
++          OldGFTilePic( 250, 295, 5437);
+           color := 0;
+-       6: GFPage(6);        //Page 6 (hats)
++       6: OldGFPage(6);        //Page 6 (hats)
+           if(skill &gt;= CInt(cfg[0x153f].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 170, 210, 211, 1, 5439);
++            OldGFButtonIDC(110, 170, 210, 211, 1, 5439);
+           endif
+-          GFTextLine( 70, 145, color, &quot;bandana&quot;);
+-          GFTilePic(  60, 170, 5439);
++          OldGFTextLine( 70, 145, color, &quot;bandana&quot;);
++          OldGFTilePic(  60, 170, 5439);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1543].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(260, 170, 210, 211, 1, 5443);
++            OldGFButtonIDC(260, 170, 210, 211, 1, 5443);
+           endif
+-          GFTextLine(210, 145, color, &quot;skullcap&quot;);
+-          GFTilePic( 210, 170, 5443);
++          OldGFTextLine(210, 145, color, &quot;skullcap&quot;);
++          OldGFTilePic( 210, 170, 5443);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1715].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 170, 210, 211, 1, 5909);
++            OldGFButtonIDC(410, 170, 210, 211, 1, 5909);
+           endif
+-          GFTextLine(380, 145, color, &quot;cap&quot;);
+-          GFTilePic( 360, 170, 5909);
++          OldGFTextLine(380, 145, color, &quot;cap&quot;);
++          OldGFTilePic( 360, 170, 5909);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1719].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 240, 210, 211, 1, 5913);
++            OldGFButtonIDC(110, 240, 210, 211, 1, 5913);
+           endif
+-          GFTextLine( 75, 215, color, &quot;bonnet&quot;);
+-          GFTilePic(  60, 240, 5913);
++          OldGFTextLine( 75, 215, color, &quot;bonnet&quot;);
++          OldGFTilePic(  60, 240, 5913);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x171a].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(260, 240, 210, 211, 1, 5914);
++            OldGFButtonIDC(260, 240, 210, 211, 1, 5914);
+           endif
+-          GFTextLine(210, 215, color, &quot;feathered hat&quot;);
+-          GFTilePic( 210, 240, 5914);
++          OldGFTextLine(210, 215, color, &quot;feathered hat&quot;);
++          OldGFTilePic( 210, 240, 5914);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1713].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 240, 210, 211, 1, 5907);
++            OldGFButtonIDC(410, 240, 210, 211, 1, 5907);
+           endif
+-          GFTextLine(360, 215, color, &quot;floppy hat&quot;);
+-          GFTilePic( 360, 240, 5907);
++          OldGFTextLine(360, 215, color, &quot;floppy hat&quot;);
++          OldGFTilePic( 360, 240, 5907);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1714].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 310, 210, 211, 1, 5908);
++            OldGFButtonIDC(110, 310, 210, 211, 1, 5908);
+           endif
+-          GFTextLine( 65, 285, color, &quot;wide brim hat&quot;);
+-          GFTilePic(  60, 310, 5908);
++          OldGFTextLine( 65, 285, color, &quot;wide brim hat&quot;);
++          OldGFTilePic(  60, 310, 5908);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x171b].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(260, 310, 210, 211, 1, 5915);
++            OldGFButtonIDC(260, 310, 210, 211, 1, 5915);
+           endif
+-          GFTextLine(210, 285, color, &quot;tricorne hat&quot;);
+-          GFTilePic( 210, 310, 5915);
++          OldGFTextLine(210, 285, color, &quot;tricorne hat&quot;);
++          OldGFTilePic( 210, 310, 5915);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x171c].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 310, 210, 211, 1, 5916);
++            OldGFButtonIDC(410, 310, 210, 211, 1, 5916);
+           endif
+-          GFTextLine(360, 285, color, &quot;jester hat&quot;);
+-          GFTilePic( 360, 310, 5916);
++          OldGFTextLine(360, 285, color, &quot;jester hat&quot;);
++          OldGFTilePic( 360, 310, 5916);
+           color := 0;
+     endcase
+     num := num + 1;
+@@ -728,178 +727,178 @@
+   var cfg := ReadConfigFile(&quot;:tailoring:leather&quot;);
+   while(num &lt; 11)
+     case(num)
+-       2: GFPage(2);        // Page 2 (leather)
++       2: OldGFPage(2);        // Page 2 (leather)
+           if(skill &gt;= CInt(cfg[0x1db9].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 7609);
++            OldGFButtonIDC(110, 200, 210, 211, 1, 7609);
+           endif
+-          GFTextLine( 80, 175, color, &quot;cap&quot;);
+-          GFTilePic(  60, 200, 7609);
++          OldGFTextLine( 80, 175, color, &quot;cap&quot;);
++          OldGFTilePic(  60, 200, 7609);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13c7].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 5063);
++            OldGFButtonIDC(210, 200, 210, 211, 1, 5063);
+           endif
+-          GFTextLine(160, 175, color, &quot;gorget&quot;);
+-          GFTilePic( 160, 200, 5063);
++          OldGFTextLine(160, 175, color, &quot;gorget&quot;);
++          OldGFTilePic( 160, 200, 5063);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13c6].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 5062);
++            OldGFButtonIDC(310, 200, 210, 211, 1, 5062);
+           endif
+-          GFTextLine(270, 175, color, &quot;gloves&quot;);
+-          GFTilePic( 250, 200, 5062);
++          OldGFTextLine(270, 175, color, &quot;gloves&quot;);
++          OldGFTilePic( 250, 200, 5062);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13cd].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 5069);
++            OldGFButtonIDC(410, 200, 210, 211, 1, 5069);
+           endif
+-          GFTextLine(375, 175, color, &quot;sleeves&quot;);
+-          GFTilePic( 350, 200, 5069);
++          OldGFTextLine(375, 175, color, &quot;sleeves&quot;);
++          OldGFTilePic( 350, 200, 5069);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13cb].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 5067);
++            OldGFButtonIDC(110, 295, 210, 211, 1, 5067);
+           endif
+-          GFTextLine( 75, 270, color, &quot;leggings&quot;);
+-          GFTilePic(  50, 295, 5067);
++          OldGFTextLine( 75, 270, color, &quot;leggings&quot;);
++          OldGFTilePic(  50, 295, 5067);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13cc].&quot;skill&quot;))
+             color := 900;
+-           GFButtonIDC(210, 295, 210, 211, 1, 5068);
++           OldGFButtonIDC(210, 295, 210, 211, 1, 5068);
+           endif
+-          GFTextLine(175, 270, color, &quot;tunic&quot;);
+-          GFTilePic( 150, 295, 5068);
++          OldGFTextLine(175, 270, color, &quot;tunic&quot;);
++          OldGFTilePic( 150, 295, 5068);
+           color := 0;
+-       3: GFPage(3);        // Page 4 (studded leather)
++       3: OldGFPage(3);        // Page 4 (studded leather)
+           if(skill &gt;= CInt(cfg[0x13d6].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 5078);
++            OldGFButtonIDC(110, 200, 210, 211, 1, 5078);
+           endif
+-          GFTextLine( 80, 175, color, &quot;gorget&quot;);
+-          GFTilePic(  60, 200, 5078);
++          OldGFTextLine( 80, 175, color, &quot;gorget&quot;);
++          OldGFTilePic(  60, 200, 5078);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13d5].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 5077);
++            OldGFButtonIDC(210, 200, 210, 211, 1, 5077);
+           endif
+-          GFTextLine(160, 175, color, &quot;gloves&quot;);
+-          GFTilePic( 160, 200, 5077);
++          OldGFTextLine(160, 175, color, &quot;gloves&quot;);
++          OldGFTilePic( 160, 200, 5077);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13d4].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 5076);
++            OldGFButtonIDC(310, 200, 210, 211, 1, 5076);
+           endif
+-          GFTextLine(270, 175, color, &quot;sleeves&quot;);
+-          GFTilePic( 250, 200, 5076);
++          OldGFTextLine(270, 175, color, &quot;sleeves&quot;);
++          OldGFTilePic( 250, 200, 5076);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13da].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 5082);
++            OldGFButtonIDC(410, 200, 210, 211, 1, 5082);
+           endif
+-          GFTextLine(375, 175, color, &quot;leggings&quot;);
+-          GFTilePic( 350, 200, 5082);
++          OldGFTextLine(375, 175, color, &quot;leggings&quot;);
++          OldGFTilePic( 350, 200, 5082);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x13db].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 5083);
++            OldGFButtonIDC(110, 295, 210, 211, 1, 5083);
+           endif
+-          GFTextLine( 75, 270, color, &quot;tunic&quot;);
+-          GFTilePic(  50, 295, 5083);
++          OldGFTextLine( 75, 270, color, &quot;tunic&quot;);
++          OldGFTilePic(  50, 295, 5083);
+           color := 0;
+-       4: GFPage(4);        // Page 4 (female)
++       4: OldGFPage(4);        // Page 4 (female)
+           if(skill &gt;= CInt(cfg[0x1c0a].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 7178);
++            OldGFButtonIDC(110, 200, 210, 211, 1, 7178);
+           endif
+-          GFTextLine( 55, 175, color, &quot;leather bustier&quot;);
+-          GFTilePic(  60, 200, 7178);
++          OldGFTextLine( 55, 175, color, &quot;leather bustier&quot;);
++          OldGFTilePic(  60, 200, 7178);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1c0c].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 7180);
++            OldGFButtonIDC(210, 200, 210, 211, 1, 7180);
+           endif
+-          GFTextLine(160, 175, color, &quot;studded bustier&quot;);
+-          GFTilePic( 160, 200, 7180);
++          OldGFTextLine(160, 175, color, &quot;studded bustier&quot;);
++          OldGFTilePic( 160, 200, 7180);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1c00].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 7168);
++            OldGFButtonIDC(310, 200, 210, 211, 1, 7168);
+           endif
+-          GFTextLine(270, 175, color, &quot;leather shorts&quot;);
+-          GFTilePic( 265, 200, 7168);
++          OldGFTextLine(270, 175, color, &quot;leather shorts&quot;);
++          OldGFTilePic( 265, 200, 7168);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1c08].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 7176);
++            OldGFButtonIDC(410, 200, 210, 211, 1, 7176);
+           endif
+-          GFTextLine(375, 175, color, &quot;leather skirt&quot;);
+-          GFTilePic( 360, 200, 7176);
++          OldGFTextLine(375, 175, color, &quot;leather skirt&quot;);
++          OldGFTilePic( 360, 200, 7176);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1c06].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 7174);
++            OldGFButtonIDC(110, 295, 210, 211, 1, 7174);
+           endif
+-          GFTextLine( 50, 270, color, &quot;female leather&quot;);
+-          GFTilePic(  50, 295, 7174);
++          OldGFTextLine( 50, 270, color, &quot;female leather&quot;);
++          OldGFTilePic(  50, 295, 7174);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1c02].&quot;skill&quot;))
+             color := 900;
+-           GFButtonIDC(210, 295, 210, 211, 1, 7170);
++           OldGFButtonIDC(210, 295, 210, 211, 1, 7170);
+           endif
+-          GFTextLine(160, 270, color, &quot;female studded&quot;);
+-          GFTilePic( 150, 295, 7170);
++          OldGFTextLine(160, 270, color, &quot;female studded&quot;);
++          OldGFTilePic( 150, 295, 7170);
+           color := 0;
+-       5: GFPage(5);        //Page 5 (containers)
++       5: OldGFPage(5);        //Page 5 (containers)
+           if(skill &gt;= CInt(cfg[0x0e76].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 200, 210, 211, 1, 3702);
++            OldGFButtonIDC(150, 200, 210, 211, 1, 3702);
+           endif
+-          GFTextLine(125, 175, color, &quot;bag&quot;);
+-          GFTilePic(  90, 200, 3702);
++          OldGFTextLine(125, 175, color, &quot;bag&quot;);
++          OldGFTilePic(  90, 200, 3702);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e79].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 200, 210, 211, 1, 3705);
++            OldGFButtonIDC(300, 200, 210, 211, 1, 3705);
+           endif
+-          GFTextLine(270, 175, color, &quot;pouch&quot;);
+-          GFTilePic( 235, 200, 3705);
++          OldGFTextLine(270, 175, color, &quot;pouch&quot;);
++          OldGFTilePic( 235, 200, 3705);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x0e75].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 295, 210, 211, 1, 3701);
++            OldGFButtonIDC(150, 295, 210, 211, 1, 3701);
+           endif
+-          GFTextLine(115, 270, color, &quot;backpack&quot;);
+-          GFTilePic(  90, 295, 3701);
++          OldGFTextLine(115, 270, color, &quot;backpack&quot;);
++          OldGFTilePic(  90, 295, 3701);
+           color := 0;
+-       6: GFPage(6);        //Page 6 (shoes)
++       6: OldGFPage(6);        //Page 6 (shoes)
+           if(skill &gt;= CInt(cfg[0x170d].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 200, 210, 211, 1, 5901);
++            OldGFButtonIDC(150, 200, 210, 211, 1, 5901);
+           endif
+-          GFTextLine(115, 175, color, &quot;sandals&quot;);
+-          GFTilePic( 100, 200, 5901);
++          OldGFTextLine(115, 175, color, &quot;sandals&quot;);
++          OldGFTilePic( 100, 200, 5901);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x170f].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 200, 210, 211, 1, 5903);
++            OldGFButtonIDC(300, 200, 210, 211, 1, 5903);
+           endif
+-          GFTextLine(270, 175, color, &quot;shoes&quot;);
+-          GFTilePic( 250, 200, 5903);
++          OldGFTextLine(270, 175, color, &quot;shoes&quot;);
++          OldGFTilePic( 250, 200, 5903);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x170b].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(150, 295, 210, 211, 1, 5899);
++            OldGFButtonIDC(150, 295, 210, 211, 1, 5899);
+           endif
+-          GFTextLine(120, 270, color, &quot;leather boots&quot;);
+-          GFTilePic( 100, 295, 5899);
++          OldGFTextLine(120, 270, color, &quot;leather boots&quot;);
++          OldGFTilePic( 100, 295, 5899);
+           color := 0;
+           if(skill &gt;= CInt(cfg[0x1711].&quot;skill&quot;))
+             color := 900;
+-            GFButtonIDC(300, 295, 210, 211, 1, 5905);
++            OldGFButtonIDC(300, 295, 210, 211, 1, 5905);
+           endif
+-          GFTextLine(260, 270, color, &quot;thigh boots&quot;);
+-          GFTilePic( 250, 295, 5905);
++          OldGFTextLine(260, 270, color, &quot;thigh boots&quot;);
++          OldGFTilePic( 250, 295, 5905);
+           color := 0;
+     endcase
+     num := num + 1;
+@@ -907,11 +906,11 @@
+   return;
+ endfunction
+ 
+-function GFButtonIDC(x, y, release, press, close, retval)
+-        var line := &quot;button &quot; + CStr(gfref.x + CInt(x)) + &quot; &quot; + CStr(gfref.y + CInt(y));
++function OldGFButtonIDC(x, y, release, press, close, retval)
++        var line := &quot;button &quot; + CStr(GFref.x + CInt(x)) + &quot; &quot; + CStr(GFref.y + CInt(y));
+         line := line + &quot; &quot; + CStr(CInt(release)) + &quot; &quot; + CStr(CInt(press)) + &quot; &quot;;
+         line := line + &quot;1 0 &quot;;
+         line := line + CStr(retval);
+-        gflayout.append( line );
+-        return XGFRetVal( gflayout.size(), -1, gfbutid - 1 );
++        GFlayout.append( line );
++        return XGFRetVal( GFlayout.size(), -1, GFbutid - 1 );
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000478.html">[Poldistro-svn] r504 - trunk/096/pkg/skills/magery
+</A></li>
+	<LI>Next message: <A HREF="000481.html">[Poldistro-svn] r506 - trunk/096/pkg/systems/boat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#477">[ date ]</a>
+              <a href="thread.html#477">[ thread ]</a>
+              <a href="subject.html#477">[ subject ]</a>
+              <a href="author.html#477">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

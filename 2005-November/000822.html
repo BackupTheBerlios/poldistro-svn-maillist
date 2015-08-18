@@ -1,0 +1,442 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r848 - in trunk/096/pkg/systems: attributes/include combat/old
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r848%20-%20in%20trunk/096/pkg/systems%3A%20attributes/include%20combat/old&In-Reply-To=%3C200511022054.jA2KsdeO028456%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000821.html">
+   <LINK REL="Next"  HREF="000823.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r848 - in trunk/096/pkg/systems: attributes/include combat/old</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r848%20-%20in%20trunk/096/pkg/systems%3A%20attributes/include%20combat/old&In-Reply-To=%3C200511022054.jA2KsdeO028456%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r848 - in trunk/096/pkg/systems: attributes/include combat/old">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 21:54:39 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000821.html">[Poldistro-svn] r847 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000823.html">[Poldistro-svn] r849 - in trunk/096: pkg/systems/combat/old pkg/systems/housing pkg/systems/spellcasting scripts/items scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#822">[ date ]</a>
+              <a href="thread.html#822">[ thread ]</a>
+              <a href="subject.html#822">[ subject ]</a>
+              <a href="author.html#822">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 21:54:39 +0100 (Wed, 02 Nov 2005)
+New Revision: 848
+
+Modified:
+   trunk/096/pkg/systems/attributes/include/skills.inc
+   trunk/096/pkg/systems/attributes/include/stats.inc
+   trunk/096/pkg/systems/combat/old/chargeUpkeep.src
+   trunk/096/pkg/systems/combat/old/destroy.src
+   trunk/096/pkg/systems/combat/old/earthElemental.src
+   trunk/096/pkg/systems/combat/old/equip.inc
+   trunk/096/pkg/systems/combat/old/hitScriptInc.inc
+   trunk/096/pkg/systems/combat/old/unequip.src
+   trunk/096/pkg/systems/combat/old/vortexHit.src
+   trunk/096/pkg/systems/combat/old/wrestlingHitScript.src
+Log:
+Attribute updates.
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-11-02 20:39:33 UTC (rev 847)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-11-02 20:54:39 UTC (rev 848)
+@@ -124,9 +124,10 @@
+  */
+ function AP_ModifySkillMod(mobile, stat_name, points)
+ 	var orig_mod := AP_GetStatMod(mobile, stat_name);
+-	var new_mod := CDbl(points)+orig_mod;
+-	SetAttributeTemporaryMod(mobile, stat_name, CInt(CDbl(new_mod) * 10.0));
++	var new_mod := CDbl(points)+CDbl(orig_mod);
+ 	
++	AP_SetSkillMod(mobile, stat_name, new_mod);
++	
+ 	return orig_mod;
+ endfunction
+ 
+
+Modified: trunk/096/pkg/systems/attributes/include/stats.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/stats.inc	2005-11-02 20:39:33 UTC (rev 847)
++++ trunk/096/pkg/systems/attributes/include/stats.inc	2005-11-02 20:54:39 UTC (rev 848)
+@@ -124,9 +124,10 @@
+  */
+ function AP_ModifyStatMod(mobile, stat_name, points)
+ 	var orig_mod := AP_GetStatMod(mobile, stat_name);
+-	var new_mod := CDbl(points)+orig_mod;
+-	SetAttributeTemporaryMod(mobile, stat_name, CInt(CDbl(new_mod) * 10.0));
++	var new_mod := CDbl(points)+Cdbl(orig_mod);
+ 	
++	AP_SetStatMod(mobile, stat_name, new_mod);
++	
+ 	return orig_mod;
+ endfunction
+ 
+
+Modified: trunk/096/pkg/systems/combat/old/chargeUpkeep.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/chargeUpkeep.src	2005-11-02 20:39:33 UTC (rev 847)
++++ trunk/096/pkg/systems/combat/old/chargeUpkeep.src	2005-11-02 20:54:39 UTC (rev 848)
+@@ -41,15 +41,15 @@
+     return;
+   endif
+   case(type)
+-    &quot;strength&quot;:     ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH, gain);
++    &quot;strength&quot;:     AP_ModifyStatMod(who, STRENGTH, gain);
+     &quot;invisibility&quot;: who.hidden := 1;
+     &quot;sight&quot;:        who.setlightlevel(0, 70);
+-    &quot;protection&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY, gain);
++    &quot;protection&quot;:   AP_ModifySkillMod(who, PARRY, gain);
+     &quot;reflect&quot;:      SetObjProperty(who, &quot;mr&quot;, 2);
+-    &quot;bless&quot;:        ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH,     gain);
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_INTELLIGENCE, gain);
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_DEXTERITY,    gain);
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY,        (gain *3 ));
++    &quot;bless&quot;:        AP_ModifySkillMod(who, STRENGTH,     gain);
++                    AP_ModifySkillMod(who, INTELLIGENCE, gain);
++                    AP_ModifySkillMod(who, DEXTERITY,    gain);
++                    AP_ModifySkillMod(who, PARRY,        (gain *3 ));
+   endcase
+   RecalcVitals(who);
+   EraseObjProperty(item, &quot;HoldMods&quot;);
+@@ -117,15 +117,15 @@
+     who := SystemFindObjectBySerial(who.serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+   endif
+   case(type)
+-    &quot;strength&quot;:     ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH, (0 - gain));
++    &quot;strength&quot;:     AP_ModifyStatMod(who, STRENGTH, (0 - gain));
+     &quot;invisibility&quot;: who.hidden := 0;
+     &quot;sight&quot;:        who.setlightlevel(0, 1);
+-    &quot;protection&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY, (0 - gain));
++    &quot;protection&quot;:   AP_ModifySkillMod(who, PARRY, (0 - gain));
+     &quot;reflect&quot;:      EraseObjProperty(who, &quot;mr&quot;);
+-    &quot;bless&quot;:        ModifyAttributeTemporaryMod(who, ATTRIBUTEID_STRENGTH,     (0 - gain));
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_INTELLIGENCE, (0 - gain));
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_DEXTERITY,    (0 - gain));
+-                    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_PARRY,        (0 - (gain *3)));
++    &quot;bless&quot;:        AP_ModifySkillMod(who, STRENGTH,     (0 - gain));
++                    AP_ModifySkillMod(who, INTELLIGENCE, (0 - gain));
++                    AP_ModifySkillMod(who, DEXTERITY,    (0 - gain));
++                    AP_ModifySkillMod(who, PARRY,        (0 - (gain *3)));
+   endcase
+   RecalcVitals(who);
+   EraseObjProperty(item, &quot;HoldMods&quot;);
+
+Modified: trunk/096/pkg/systems/combat/old/destroy.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/destroy.src	2005-11-02 20:39:33 UTC (rev 847)
++++ trunk/096/pkg/systems/combat/old/destroy.src	2005-11-02 20:54:39 UTC (rev 848)
+@@ -16,7 +16,7 @@
+   var penalty := CInt(itemdesc[item.objtype].DexPenalty);
+   if(penalty)
+     EraseObjProperty(item, &quot;#equipped&quot;);
+-    SetDexterityMod(who, GetDexterityMod(who) + penalty);
++    AP_SetStatMod(who, DEXTERITY, AP_GetStatMod(who, DEXTERITY) + penalty);
+   endif
+   var type := GetObjProperty(item,&quot;type&quot;);
+   var val := 0;
+@@ -27,7 +27,7 @@
+     &quot;reflect&quot;:      val := reflect(who,item);
+     &quot;protection&quot;:   val := protection(who,item);
+     &quot;wizzohat&quot;:     val := wizzohat(who,item);
+-    &quot;strength&quot;:     val := strength(who,item);
++    &quot;strength&quot;:     val := ModifyStrength(who,item);
+     &quot;invisibility&quot;: val := invisibility(who, item);
+     default:        val := 1;
+   endcase
+@@ -35,16 +35,16 @@
+   set_critical(0);
+ endprogram
+ 
+-function strength(who,item)
++function ModifyStrength(who,item)
+   who := who;
+   item := item;
+   return 1;
+ endfunction
+ 
+ function wizzohat(who,item)
+-  SetIntelligenceMod(who, GetIntelligenceMod(who) - 10);
+-  SetStrengthMod(who, GetStrengthMod(who) + 5);
+-  SetDexterityMod(who, GetDexterityMod(who) + 5);
++  AP_SetStatMod(who, INTELLIGENCE, AP_GetStatMod(who, INTELLIGENCE) - 10);
++  AP_SetStatMod(who, STRENGTH, AP_GetStatMod(who, STRENGTH) + 5);
++  AP_SetStatMod(who, DEXTERITY, AP_GetStatMod(who, DEXTERITY) + 5);
+   EraseObjProperty(item, &quot;#equipped&quot;);
+   return 1;
+ endfunction
+@@ -79,11 +79,11 @@
+   var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+   var attrib := cfg[item.objtype].Attribute;
+   case(attrib)
+-    &quot;Wrestling&quot;: ModifyAttributeTemporaryMod(who, ATTRIBUTEID_WRESTLING,     amt);
+-    &quot;Fencing&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_FENCING,       amt);
+-    &quot;Archery&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_ARCHERY,       amt);
+-    &quot;Swords&quot;:    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_SWORDSMANSHIP, amt);
+-    &quot;Mace&quot;:      ModifyAttributeTemporaryMod(who, ATTRIBUTEID_MACEFIGHTING,  amt);
++    &quot;Wrestling&quot;: AP_ModifySkillMod(who, WRESTLING,     amt);
++    &quot;Fencing&quot;:   AP_ModifySkillMod(who, FENCING,       amt);
++    &quot;Archery&quot;:   AP_ModifySkillMod(who, ARCHERY,       amt);
++    &quot;Swords&quot;:    AP_ModifySkillMod(who, SWORDSMANSHIP, amt);
++    &quot;Mace&quot;:      AP_ModifySkillMod(who, MACE_FIGHTING,  amt);
+   endcase
+   EraseObjProperty(item, &quot;#equipped&quot;);
+   return 1;
+
+Modified: trunk/096/pkg/systems/combat/old/earthElemental.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/earthElemental.src	2005-11-02 20:39:33 UTC (rev 847)
++++ trunk/096/pkg/systems/combat/old/earthElemental.src	2005-11-02 20:54:39 UTC (rev 848)
+@@ -23,10 +23,10 @@
+     endif
+   endif
+   var sdr := RandomInt(3) + 3;
+-  if(GetStamina(defender) &gt;= sdr)
+-    SetStamina(defender, GetStamina(defender) - sdr);
++  if(AP_GetVital(defender, STAMINA) &gt;= sdr)
++    AP_SetVital(defender, STAMINA, AP_GetVital(defender, STAMINA) - sdr);
+   else
+-    SetStamina(defender, 0);
++    AP_SetVital(defender, STAMINA, 0);
+   endif
+ endprogram
+ 
+
+Modified: trunk/096/pkg/systems/combat/old/equip.inc
+===================================================================
+--- trunk/096/pkg/systems/combat/old/equip.inc	2005-11-02 20:39:33 UTC (rev 847)
++++ trunk/096/pkg/systems/combat/old/equip.inc	2005-11-02 20:54:39 UTC (rev 848)
+@@ -1,4 +1,6 @@
++use uo;
+ 
++include &quot;:attributes:attributes&quot;;
+ 
+ 
+ function HandleMods(who, item)
+@@ -12,7 +14,7 @@
+   endif
+   if(penalty)
+     SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+-    SetDexterityMod(who, GetDexterityMod(who) - penalty);
++    AP_SetStatMod(who, DEXTERITY, AP_GetStatMod(who, DEXTERITY) - penalty);
+   endif
+   var type := GetObjProperty(item, &quot;type&quot;);
+   if(!type)
+@@ -29,7 +31,7 @@
+     &quot;reflect&quot;:      val := reflect(who,item);
+     &quot;protection&quot;:   val := protection(who,item);
+     &quot;wizzohat&quot;:     val := wizzohat(who,item);
+-    &quot;strength&quot;:     val := strength(who,item);
++    &quot;strength&quot;:     val := ModifyStrength(who,item);
+     &quot;invisibility&quot;: val := invisibility(who,item);
+     default:        val := 1;
+   endcase
+@@ -37,7 +39,7 @@
+   set_critical(0);
+ endfunction
+ 
+-function strength(who,item)
++function ModifyStrength(who,item)
+   var gain := GetObjProperty(item, &quot;gain&quot;);
+   if(!gain)
+     gain := 5;
+@@ -49,9 +51,9 @@
+ endfunction
+ 
+ function wizzohat(who,item)
+-  SetIntelligenceMod(who, GetIntelligenceMod(who) + 10);
+-  SetStrengthMod(who, GetStrengthMod(who) - 5);
+-  SetDexterityMod(who, GetDexterityMod(who) - 5);
++  AP_SetStatMod(who, INTELLIGENCE,  AP_GetStatMod(who, INTELLIGENCE) + 10);
++  AP_SetStatMod(who, STRENGTH, AP_GetStatMod(who, STRENGTH) - 5);
++  AP_SetStatMod(who, DEXTERITY, AP_GetStatMod(who, DEXTERITY) - 5);
+   SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+   return 1;
+ endfunction
+@@ -64,11 +66,11 @@
+   var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+   var attrib := cfg[item.objtype].Attribute;
+   case(attrib)
+-    &quot;Wrestling&quot;: ModifyAttributeTemporaryMod(who, ATTRIBUTEID_WRESTLING,     amt);
+-    &quot;Fencing&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_FENCING,       amt);
+-    &quot;Archery&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_ARCHERY,       amt);
+-    &quot;Swords&quot;:    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_SWORDSMANSHIP, amt);
+-    &quot;Mace&quot;:      ModifyAttributeTemporaryMod(who, ATTRIBUTEID_MACEFIGHTING,  amt);
++    &quot;Wrestling&quot;: AP_ModifySkillMod(who, WRESTLING,    amt);
++    &quot;Fencing&quot;:  AP_ModifySkillMod(who, FENCING,      amt);
++    &quot;Archery&quot;:   AP_ModifySkillMod(who, ARCHERY,      amt);
++    &quot;Swords&quot;:   AP_ModifySkillMod(who, SWORDSMANSHIP, amt);
++    &quot;Mace&quot;:      AP_ModifySkillMod(who, MACE_FIGHTING, amt);
+   endcase
+   SetObjProperty(item, &quot;#equipped&quot;, who.serial);
+   return 1;
+
+Modified: trunk/096/pkg/systems/combat/old/hitScriptInc.inc
+===================================================================
+--- trunk/096/pkg/systems/combat/old/hitScriptInc.inc	2005-11-02 20:39:33 UTC (rev 847)
++++ trunk/096/pkg/systems/combat/old/hitScriptInc.inc	2005-11-02 20:54:39 UTC (rev 848)
+@@ -4,6 +4,6 @@
+ include &quot;:attributes:attributes&quot;;
+ 
+ function DealDamage(defender, attacker, rawdamage)
+-  rawdamage := rawdamage + RandomInt( (GetEffectiveSkill(attacker, 1) ) / 20);
++  rawdamage := rawdamage + RandomInt( (AP_GetSkill(attacker, ANATOMY) ) / 20);
+   ApplyRawDamage(defender, rawdamage);
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/combat/old/unequip.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/unequip.src	2005-11-02 20:39:33 UTC (rev 847)
++++ trunk/096/pkg/systems/combat/old/unequip.src	2005-11-02 20:54:39 UTC (rev 848)
+@@ -14,7 +14,7 @@
+   var penalty := CInt(itemdesc[item.objtype].DexPenalty);
+   if(penalty)
+     EraseObjProperty(item, &quot;#equipped&quot;);
+-    SetDexterityMod(who, GetDexterityMod(who) + penalty);
++    AP_SetStatMod(who, DEXTERITY,  AP_GetStatMod(who, DEXTERITY) + penalty);
+   endif
+   var type := GetObjProperty(item,&quot;type&quot;);
+   var val := 0;
+@@ -25,7 +25,7 @@
+     &quot;reflect&quot;:      val := reflect(who,item);
+     &quot;protection&quot;:   val := protection(who,item);
+     &quot;wizzohat&quot;:     val := wizzohat(who,item);
+-    &quot;strength&quot;:     val := strength(who,item);
++    &quot;strength&quot;:     val := ModifyStrength(who,item);
+     &quot;invisibility&quot;: val := invisibility(who, item);
+     default:        val := 1;
+   endcase
+@@ -33,15 +33,15 @@
+   set_critical(0);
+ endprogram
+ 
+-function strength(who,item)
++function ModifyStrength(who,item)
+   RemoveMods(who, item);
+   return 1;
+ endfunction
+ 
+ function wizzohat(who,item)
+-  SetIntelligenceMod(who, GetIntelligenceMod(who) - 10);
+-  SetStrengthMod(who, GetStrengthMod(who) + 5);
+-  SetDexterityMod(who, GetDexterityMod(who) + 5);
++  AP_SetStatMod(who, INTELLIGENCE, AP_GetStatMod(who, INTELLIGENCE) - 10);
++  AP_SetStatMod(who, STRENGTH, AP_GetStatMod(who, STRENGTH) + 5);
++  AP_SetStatMod(who, DEXTERITY,  AP_GetStatMod(who, DEXTERITY) + 5);
+   EraseObjProperty(item, &quot;#equipped&quot;);
+   return 1;
+ endfunction
+@@ -77,11 +77,11 @@
+     var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+     var attrib := cfg[item.objtype].Attribute;
+     case(attrib)
+-      &quot;Wrestling&quot;: ModifyAttributeTemporaryMod(who, ATTRIBUTEID_WRESTLING,     amt);
+-      &quot;Fencing&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_FENCING,       amt);
+-      &quot;Archery&quot;:   ModifyAttributeTemporaryMod(who, ATTRIBUTEID_ARCHERY,       amt);
+-      &quot;Swords&quot;:    ModifyAttributeTemporaryMod(who, ATTRIBUTEID_SWORDSMANSHIP, amt);
+-      &quot;Mace&quot;:      ModifyAttributeTemporaryMod(who, ATTRIBUTEID_MACEFIGHTING,  amt);
++      &quot;Wrestling&quot;: AP_ModifySkillMod(who, WRESTLING,     amt);
++      &quot;Fencing&quot;:   AP_ModifySkillMod(who, FENCING,       amt);
++      &quot;Archery&quot;:   AP_ModifySkillMod(who, ARCHERY,       amt);
++      &quot;Swords&quot;:    AP_ModifySkillMod(who, SWORDSMANSHIP, amt);
++      &quot;Mace&quot;:      AP_ModifySkillMod(who, MACE_FIGHTING,  amt);
+     endcase
+     EraseObjProperty(item, &quot;#equipped&quot;);
+     return 1;
+
+Modified: trunk/096/pkg/systems/combat/old/vortexHit.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/vortexHit.src	2005-11-02 20:39:33 UTC (rev 847)
++++ trunk/096/pkg/systems/combat/old/vortexHit.src	2005-11-02 20:54:39 UTC (rev 848)
+@@ -15,7 +15,7 @@
+ 		return;
+ 	endif
+ 
+-	var dmg := RandomInt(CInt(GetIntelligence(defender) / 10));
++	var dmg := RandomInt(CInt(AP_GetStat(defender, INTELLIGENCE) / 10));
+ 	
+ 	if(dmg &gt; 40)
+ 		dmg := 12;
+
+Modified: trunk/096/pkg/systems/combat/old/wrestlingHitScript.src
+===================================================================
+--- trunk/096/pkg/systems/combat/old/wrestlingHitScript.src	2005-11-02 20:39:33 UTC (rev 847)
++++ trunk/096/pkg/systems/combat/old/wrestlingHitScript.src	2005-11-02 20:54:39 UTC (rev 848)
+@@ -39,7 +39,7 @@
+     else
+       bd := basedamage;
+     endif
+-    if(RandomInt(Cint(GetEffectiveSkill(defender, SKILLID_PARRY) / 2)) &gt;= bd)
++    if(RandomInt(Cint(AP_GetSkill(defender, PARRY) / 2)) &gt;= bd)
+       armor := shield;
+     endif
+   endif
+@@ -58,7 +58,7 @@
+       if(rawdamage &lt; 1)
+         rawdamage := 1;
+       endif
+-      anat := Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20);
++      anat := Cint(AP_GetSkill(attacker, ANATOMY) / 20);
+       rawdamage := Cint(rawdamage + anat);
+       DealDamage(defender, attacker, rawdamage);
+       SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon });
+@@ -77,7 +77,7 @@
+       if(rawdamage &lt; 1)
+         rawdamage := 1;
+       endif
+-      anat := Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20);
++      anat := Cint(AP_GetSkill(attacker, ANATOMY) / 20);
+       rawdamage := Cint(rawdamage + anat);
+       DealDamage(defender, attacker, rawdamage);
+       SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon });
+@@ -100,7 +100,7 @@
+     if(rawdamage &lt; 1)
+       rawdamage := 1;
+     endif
+-    anat := Cint(GetEffectiveSkill(attacker, SKILLID_ANATOMY) / 20);
++    anat := Cint(AP_GetSkill(attacker, ANATOMY) / 20);
+     rawdamage := Cint(rawdamage + anat);
+     DealDamage(defender, attacker, rawdamage);
+     SetObjProperty(defender, &quot;LastHit&quot;, {attacker.name, attacker.serial, weapon});
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000821.html">[Poldistro-svn] r847 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000823.html">[Poldistro-svn] r849 - in trunk/096: pkg/systems/combat/old pkg/systems/housing pkg/systems/spellcasting scripts/items scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#822">[ date ]</a>
+              <a href="thread.html#822">[ thread ]</a>
+              <a href="subject.html#822">[ subject ]</a>
+              <a href="author.html#822">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

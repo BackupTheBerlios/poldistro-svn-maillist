@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r696 - in trunk/096/pkg/mobiles: npcutils oldAI
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r696%20-%20in%20trunk/096/pkg/mobiles%3A%20npcutils%20oldAI&In-Reply-To=%3C200510291905.j9TJ5JmS031695%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000669.html">
+   <LINK REL="Next"  HREF="000671.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r696 - in trunk/096/pkg/mobiles: npcutils oldAI</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r696%20-%20in%20trunk/096/pkg/mobiles%3A%20npcutils%20oldAI&In-Reply-To=%3C200510291905.j9TJ5JmS031695%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r696 - in trunk/096/pkg/mobiles: npcutils oldAI">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sat Oct 29 21:05:19 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000669.html">[Poldistro-svn] r695 - in trunk/096/pkg: commands/gm items/containers/include items/mounts/mount items/repaircontract items/repaircontract/config items/walkOn/resurrect mobiles/brainAI/complete/exampleNPC utils/control/include
+</A></li>
+        <LI>Next message: <A HREF="000671.html">[Poldistro-svn] r697 - in trunk/096/pkg/mobiles/oldAI: . setup
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#670">[ date ]</a>
+              <a href="thread.html#670">[ thread ]</a>
+              <a href="subject.html#670">[ subject ]</a>
+              <a href="author.html#670">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-29 21:05:18 +0200 (Sat, 29 Oct 2005)
+New Revision: 696
+
+Modified:
+   trunk/096/pkg/mobiles/npcutils/trainSkill.inc
+   trunk/096/pkg/mobiles/oldAI/barber.src
+Log:
+Fixed unused var reports.
+
+Modified: trunk/096/pkg/mobiles/npcutils/trainSkill.inc
+===================================================================
+--- trunk/096/pkg/mobiles/npcutils/trainSkill.inc	2005-10-29 18:59:30 UTC (rev 695)
++++ trunk/096/pkg/mobiles/npcutils/trainSkill.inc	2005-10-29 19:05:18 UTC (rev 696)
+@@ -49,7 +49,7 @@
+         if(npclevel == 0)
+           npclevel := RandomInt(12) + 22;
+           SetBaseSkill(me, holder, npclevel);
+-          var npclevel := GetEffectiveSkill(me, holder);
++          npclevel := GetEffectiveSkill(me, holder);
+         endif
+         if(npclevel &gt; maxskilltotrain)
+           npclevel := maxskilltotrain;
+
+Modified: trunk/096/pkg/mobiles/oldAI/barber.src
+===================================================================
+--- trunk/096/pkg/mobiles/oldAI/barber.src	2005-10-29 18:59:30 UTC (rev 695)
++++ trunk/096/pkg/mobiles/oldAI/barber.src	2005-10-29 19:05:18 UTC (rev 696)
+@@ -63,6 +63,8 @@
+ 	var ev;
+ 	while(1)
+ 	ev := os::wait_for_event(120);
++	// Used to fix unused var report by ecompile: res;
++	var res;
+ 	if(ev)
+ 		case(ev.type)
+ 			EVID_NODE:
+@@ -72,13 +74,13 @@
+ 				else
+ 					if (txt[&quot;buy&quot;])
+ 						TurnToward(ev.source);
+-						var res := SendBuyWindow(ev.source, inv_fs, Self(), inv_pb);
++						res := SendBuyWindow(ev.source, inv_fs, Self(), inv_pb);
+ 					elseif (txt[&quot;sell&quot;])
+ 						if (GetObjProperty(inv_rs, &quot;MyGold&quot;) &gt;= 1000)
+ 							TurnToward(ev.source);
+ 							var count := ModifyPCSellList(merchant_type, (ev.source).backpack);
+ 							if (count &gt;= 1)
+-								var res := SendSellWindow(ev.source, Self(), inv_fs, inv_pb, inv_1c);
++								res := SendSellWindow(ev.source, Self(), inv_fs, inv_pb, inv_1c);
+ 							else
+ 								PrintTextAbovePrivate(Self(), &quot;You don't have anything I would be interested in.&quot;, ev.source);
+ 							endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000669.html">[Poldistro-svn] r695 - in trunk/096/pkg: commands/gm items/containers/include items/mounts/mount items/repaircontract items/repaircontract/config items/walkOn/resurrect mobiles/brainAI/complete/exampleNPC utils/control/include
+</A></li>
+	<LI>Next message: <A HREF="000671.html">[Poldistro-svn] r697 - in trunk/096/pkg/mobiles/oldAI: . setup
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#670">[ date ]</a>
+              <a href="thread.html#670">[ thread ]</a>
+              <a href="subject.html#670">[ subject ]</a>
+              <a href="author.html#670">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

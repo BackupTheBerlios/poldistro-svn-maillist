@@ -1,0 +1,3660 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1179 - in trunk/096/pkg/items/doors: . OLD OLD/config config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1179%20-%20in%20trunk/096/pkg/items/doors%3A%20.%20OLD%20OLD/config%20config&In-Reply-To=%3C200602101301.k1AD1r04031688%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001149.html">
+   <LINK REL="Next"  HREF="001151.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1179 - in trunk/096/pkg/items/doors: . OLD OLD/config config</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1179%20-%20in%20trunk/096/pkg/items/doors%3A%20.%20OLD%20OLD/config%20config&In-Reply-To=%3C200602101301.k1AD1r04031688%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1179 - in trunk/096/pkg/items/doors: . OLD OLD/config config">austin at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 14:01:53 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001149.html">[Poldistro-svn] r1178 - trunk/096/pkg/items/sysbook/book
+</A></li>
+        <LI>Next message: <A HREF="001151.html">[Poldistro-svn] r1180 - in trunk/096/pkg/items/doors: . OLD door
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1150">[ date ]</a>
+              <a href="thread.html#1150">[ thread ]</a>
+              <a href="subject.html#1150">[ subject ]</a>
+              <a href="author.html#1150">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-10 14:01:38 +0100 (Fri, 10 Feb 2006)
+New Revision: 1179
+
+Added:
+   trunk/096/pkg/items/doors/OLD/
+   trunk/096/pkg/items/doors/OLD/closeDoor.dep
+   trunk/096/pkg/items/doors/OLD/closeDoor.ecl
+   trunk/096/pkg/items/doors/OLD/closeDoor.src
+   trunk/096/pkg/items/doors/OLD/config/
+   trunk/096/pkg/items/doors/OLD/config/icp.cfg
+   trunk/096/pkg/items/doors/OLD/door.cfg
+   trunk/096/pkg/items/doors/OLD/door.dep
+   trunk/096/pkg/items/doors/OLD/door.ecl
+   trunk/096/pkg/items/doors/OLD/door.src
+   trunk/096/pkg/items/doors/OLD/doors.inc
+   trunk/096/pkg/items/doors/OLD/itemdesc.cfg
+   trunk/096/pkg/items/doors/OLD/openDoor.dep
+   trunk/096/pkg/items/doors/OLD/openDoor.ecl
+   trunk/096/pkg/items/doors/OLD/openDoor.src
+   trunk/096/pkg/items/doors/OLD/pkg.cfg
+   trunk/096/pkg/items/doors/OLD/setFlow.dep
+   trunk/096/pkg/items/doors/OLD/setFlow.ecl
+   trunk/096/pkg/items/doors/OLD/setFlow.src
+Removed:
+   trunk/096/pkg/items/doors/closeDoor.src
+   trunk/096/pkg/items/doors/door.cfg
+   trunk/096/pkg/items/doors/door.src
+   trunk/096/pkg/items/doors/doors.inc
+   trunk/096/pkg/items/doors/itemdesc.cfg
+   trunk/096/pkg/items/doors/openDoor.src
+   trunk/096/pkg/items/doors/pkg.cfg
+   trunk/096/pkg/items/doors/setFlow.src
+Modified:
+   trunk/096/pkg/items/doors/config/icp.cfg
+Log:
+Reworking package to use a method script.
+
+Added: trunk/096/pkg/items/doors/OLD/closeDoor.dep
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/closeDoor.dep	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/closeDoor.dep	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,2 @@
++E:\UOL\Distro\096\pkg\items\doors\closeDoor.src
++scripts/include/OLD/sound.inc
+
+Added: trunk/096/pkg/items/doors/OLD/closeDoor.ecl
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/096/pkg/items/doors/OLD/closeDoor.ecl
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/096/pkg/items/doors/OLD/closeDoor.src
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/closeDoor.src	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/closeDoor.src	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,49 @@
++use cfgfile;
++use uo;
++use os;
++
++include &quot;include/OLD/sound&quot;;
++
++
++program close_door(door)
++	var doordesc := ReadConfigFile(&quot;itemdesc&quot;);
++	var xmod := CInt(doordesc[door.objtype].xmod);
++	var ymod := CInt(doordesc[door.objtype].ymod);
++	var newx := (door.x - xmod);
++	var newy := (door.y - ymod);
++	var newz := (door.z);
++	var closesound;
++	var opensound;
++	case(doordesc[door.objtype].doortype)
++		&quot;stone&quot;:
++			opensound := SFX_OPEN_METAL_DOOR;
++			closesound := SFX_CLOSE_METAL_DOOR;
++		&quot;wood&quot;:
++			opensound := SFX_OPEN_WOODEN_DOOR;
++			closesound := SFX_CLOSE_WOODEN_DOOR;
++		&quot;metal&quot;:
++			opensound := SFX_OPEN_METAL_DOOR;
++			closesound := SFX_CLOSE_METAL_DOOR;
++	endcase
++	while (1);
++	if (!GetObjProperty( door, &quot;WhenOpened&quot;))
++		return;
++	endif
++	var people := len(ListMobilesNearLocation( newx, newy, newz, 0, door.realm));
++	var hidden := len(ListMobilesNearLocationEx(newx, newy, newz, 0, LISTEX_FLAG_HIDDEN, door.realm));
++	if ((people == 0) &amp;&amp; (hidden == 0));
++		set_critical(1);
++		PlaySoundEffect( door, closesound );
++		door.graphic := door.objtype;
++		door.movable := 1;
++		MoveItemToLocation(door, newx, newy, newz, MOVEITEM_FORCELOCATION);
++		door.movable := 0;
++		EraseObjProperty(door, &quot;WhenOpened&quot;);
++		set_critical(0);
++		break;
++	endif
++	sleep(1);
++	endwhile
++
++	return;
++endprogram
+
+Added: trunk/096/pkg/items/doors/OLD/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/config/icp.cfg	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/config/icp.cfg	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,12 @@
++ICP Register
++{
++        Name            Doors Control
++        Version         1.5
++        Description     Control package for Doors.
++
++        Creator         Distro Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+
+Added: trunk/096/pkg/items/doors/OLD/door.cfg
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/door.cfg	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/door.cfg	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,32 @@
++# $Id: door.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++
++Configuration doors
++{
++# Doors usable from the inside of a multi [no|yes|house|front]
++# If &quot;house&quot; is selected, it will vary from house to house and
++#   a script called &quot;innerlock&quot; needs to be placed in the housing
++#   package, and must return true if the door can be opened and
++#   false if it cannot.
++# Defaults to front.
++  OpenFromInside	front
++
++# Doors refresh houses [no|yes]
++# If &quot;yes&quot; is selected, opening any door in a multi will
++#   trigger the script &quot;refesh&quot; which must be in the housing
++#   package.
++# Defaults to no.
++
++    DoorsRefresh	yes
++
++# Allowed to close opened locked doors [no|yes]
++# If &quot;yes&quot;, using a door that is opened and locked will close it
++#   whether or not you have the key. If &quot;no&quot;, it will act like OSI
++#   and tell you the door is locked if you try to close it from outside
++#   without the key.
++# Defaults to yes.
++
++    CloseLocked        no
++
++}
+
+Added: trunk/096/pkg/items/doors/OLD/door.dep
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/door.dep	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/door.dep	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,4 @@
++E:\UOL\Distro\096\pkg\items\doors\door.src
++E:\UOL\Distro\096\pkg\items\doors\doors.inc
++scripts/include/client.inc
++pkg/utils/itemUtils/include/objtype.inc
+
+Added: trunk/096/pkg/items/doors/OLD/door.ecl
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/096/pkg/items/doors/OLD/door.ecl
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/096/pkg/items/doors/OLD/door.src
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/door.src	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/door.src	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,89 @@
++use uo;
++use os;
++use cfgfile;
++
++include &quot;doors&quot;;
++
++
++program use_door(chr, door)
++  if(GetObjProperty(door, &quot;#inuse&quot;))
++    return;
++  endif
++  SetObjProperty(door, &quot;#inuse&quot;, 1);
++  var doordesc := ReadConfigFile(&quot;itemdesc&quot;);
++  var dooroptions := ReadConfigFile(&quot;door&quot;);
++  var configuration := FindConfigElem(dooroptions, &quot;doors&quot;);
++  var refresh := GetConfigString(configuration, &quot;DoorsRefresh&quot;);
++  var flowoption := lower(GetConfigString(configuration, &quot;OpenFromInside&quot;));
++  var closelocked := lower(GetConfigString(configuration, &quot;CloseLocked&quot;));
++  if((chr.multi) &amp;&amp; (!GetObjProperty(door, &quot;Flow&quot;)) &amp;&amp; (flowoption != &quot;no&quot;))
++    run_script_to_completion(&quot;:doors:setFlow&quot;, chr.multi);
++  endif
++  var hs := GetObjProperty(door, &quot;houseserial&quot;);
++  if(!hs)
++    hs := GetObjProperty(door, &quot;house_serial&quot;);
++  endif
++  if(hs)
++    var house := SystemFindObjectBySerial(hs);
++    var ss := GetObjProperty(house, &quot;signserial&quot;);
++    var sign := SystemFindObjectBySerial(ss);
++    if(!sign)
++      var item := house.components;
++      var signarray := array(0xbd2, 0xbd0, 0xbd1);
++      foreach itemt in item
++        if(itemt.objtype in signarray)
++          SetObjProperty(house, &quot;signserial&quot;, itemt.serial);
++          sign := itemt;
++          break;
++        endif
++      endforeach
++    endif
++    var friend := isfriend(chr, house);
++    if(friend == 1)
++      SendSysMessage(chr, &quot;Your house and its contents have been refreshed.&quot;);
++      SetObjProperty(sign,&quot;decay&quot;, (ReadGameClock()+ 864000));
++    endif
++  endif
++  if(IsLocked(chr, door, flowoption, closelocked))
++    PrintTextAbovePrivate(door, &quot;That is locked.&quot;, chr);
++  else
++    if(GetObjProperty( door, &quot;WhenOpened&quot; ))
++      start_script(&quot;:doors:closeDoor&quot;, door);
++    else
++      detach();
++      start_script(&quot;:doors:openDoor&quot;, door);
++      if (refresh[&quot;yes&quot;])
++        var param := array;
++        param[0] := chr;
++        param[1] := door;
++        start_script(&quot;:housing:refresh&quot;,param);
++      endif
++      foreach potentialdoor in ListObjectsInBox((door.x-1),(door.y-1),(door.z),(door.x+1),(door.y+1),(door.z),door.realm)
++        if(!potentialdoor.hp)
++          var doortype := doordesc[potentialdoor.objtype].doortype;
++          if((doortype) &amp;&amp; (door != potentialdoor))
++            if((!potentialdoor.locked) &amp;&amp; (!GetObjProperty(potentialdoor, &quot;WhenOpened&quot;)))
++              start_script(&quot;:doors:openDoor&quot;, potentialdoor);
++            endif
++           endif
++        endif
++      endforeach
++    endif
++  endif
++  EraseObjProperty(door, &quot;#inuse&quot;);
++endprogram
++
++function isfriend(who, house)
++  var friend := 0;
++  if (GetObjProperty(house, &quot;owneracct&quot;) == who.acctname)
++    friend := 1;
++  endif
++  var friendinfo := GetObjProperty(house, &quot;friendlist&quot;);
++  var coownerinfo := GetObjProperty(house,&quot;coownlist&quot;);
++  if(who.serial in friendinfo)
++    friend := 1;
++  elseif(who.serial in coownerinfo)
++    friend := 1;
++  endif
++  return friend;
++endfunction
+
+Added: trunk/096/pkg/items/doors/OLD/doors.inc
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/doors.inc	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/doors.inc	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,90 @@
++include &quot;include/client&quot;;
++include &quot;:itemutils:objtype&quot;;
++
++
++function IsLocked(me, door, options := &quot;no&quot;, closed := &quot;no&quot;)
++  const KEYSTART := 0x100e;
++  const KEYEND := 0x1013;
++  const KEYRING := 0x1011;
++    var doorlockid;
++    var keylockid;
++    var insidering;
++    if((!door.locked) || ((GetObjProperty(door,&quot;WhenOpened&quot;)) &amp;&amp; (closed == &quot;yes&quot;)))
++      return 0;
++    else
++      if(((me.multi) &amp;&amp; (options != &quot;no&quot;)) || (GetObjProperty(door, &quot;UseFlow&quot;)))
++        if(options == &quot;house&quot;)
++          var params := array;
++          params[0] := me;
++          params[1] := door;
++          var innerlock := run_script_to_completion(&quot;:housing:innerLock&quot;, params);
++          if(innerlock)
++            return 0;
++          endif
++          return 1;
++        endif
++        if(((options == &quot;yes&quot;) || ((options == &quot;front&quot;) &amp;&amp; (GetObjProperty(door, &quot;Front&quot;)))) || (GetObjProperty(door, &quot;UseFlow&quot;)))
++          case (GetObjProperty(door, &quot;Flow&quot;))
++            &quot;S&quot;: if(door.y &lt; me.y)
++                   PrintTextAbovePrivate(door, &quot;The door is locked, but you open it from the inside.&quot;, me);
++                   return 0;
++                 endif
++            &quot;E&quot;: if(door.x &lt; me.x)
++                   PrintTextAbovePrivate(door, &quot;The door is locked, but you open it from the inside.&quot;, me);
++                   return 0;
++                 endif
++            &quot;W&quot;: if(door.x &gt; me.x)
++                   PrintTextAbovePrivate(door, &quot;The door is locked, but you open it from the inside.&quot;, me);
++                   return 0;
++                 endif
++            &quot;N&quot;: if(door.y &gt; me.y)
++                   PrintTextAbovePrivate(door, &quot;The door is locked, but you open it from the inside.&quot;, me);
++                   return 0;
++                 endif
++          endcase
++        endif
++      endif
++      doorlockid := GetObjProperty(door, &quot;lockid&quot;);
++      if(!doorlockid)
++         return 1;
++      endif
++      var mykeys := EnumerateItemsInContainer(me.backpack);
++      foreach key in mykeys
++        if((key.objtype &gt;= KEYSTART) &amp;&amp; (key.objtype &lt;= KEYEND) &amp;&amp;  (key.objtype != KEYRING))
++          keylockid := GetObjProperty(key, &quot;lockid&quot;);
++          if((keylockid) &amp;&amp; (keylockid == doorlockid))
++            PrintTextAbovePrivate(door, &quot;You quickly unlock, use and re-lock the door&quot;, me);
++            return 0;
++          endif
++        elseif(key.objtype == KEYRING)
++          insidering := FindMyPack(key.serial);
++          foreach otherkey in EnumerateItemsInContainer(insidering)
++          keylockid := GetObjProperty( otherkey, &quot;lockid&quot; );
++          if(keylockid == doorlockid)
++            PrintTextAbovePrivate( door, &quot;You quickly unlock, use and re-lock the door&quot;, me);
++            return 0;
++          endif
++        endforeach
++      endif
++    endforeach
++  endif
++  return 1;
++endfunction
++
++function OpenTamedStorageAreas()
++  var bank := FindStorageArea(&quot;Tamed Storage&quot;);
++  if(!bank)
++    bank := CreateStorageArea(&quot;Tamed Storage&quot;);
++  endif
++  return bank;
++endfunction
++
++function FindMyPack(myserial)
++  var mybank := OpenTamedStorageAreas();
++  var bank_obj_name := &quot;Bankbox  &quot; + Hex(myserial);
++  var bankbox := FindRootItemInStorageArea(mybank, bank_obj_name);
++  if(!bankbox)
++     bankbox := CreateRootItemInStorageArea(mybank, bank_obj_name, UOBJ_BANKBOX);
++  endif
++  return bankbox;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/doors/OLD/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/itemdesc.cfg	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/itemdesc.cfg	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,1034 @@
++# $Id: itemdesc.cfg 371 2005-10-02 13:51:29Z panosl $
++
++Door 0x675
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x677
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x67d
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x67f
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x6c5
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x6c7
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x6cd
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x6cf
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x685
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x687
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x68d
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x68f
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x6a5
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6a7
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6ad
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6af
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x6b5
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6b7
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6bd
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6bf
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x6d5
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6d7
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6dd
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6df
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x6e5
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6e7
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6ed
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x6ef
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x695
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x697
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x69d
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x69f
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x67B
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x6ab
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x825
++{
++    xmod 0
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x827
++{
++    xmod 0
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x82d
++{
++    xmod -1
++    ymod 0
++    script door
++    doortype metal
++}
++
++Door 0x82f
++{
++    xmod -1
++    ymod 0
++    script door
++    doortype metal
++}
++
++Door 0x829
++{
++    xmod 0
++    ymod 0
++    script door
++    doortype metal
++}
++
++Door 0x82c
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x826
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x82a
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x84d
++{
++    xmod 0
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x84f
++{
++    xmod 0
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x851
++{
++    xmod 0
++    ymod 0
++    script door
++    doortype metal
++}
++
++Door 0x854
++{
++    xmod 0
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x859
++{
++    xmod 0
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x852
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x84c
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x857
++{
++    xmod -1
++    ymod 0
++    script door
++    doortype metal
++}
++
++Door 0x839
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x83d
++{
++    xmod -1
++    ymod 0
++    script door
++    doortype wood
++}
++
++Door 0x83b
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x83f
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x843
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x847
++{
++    xmod 0
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x841
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x845
++{
++    xmod 0
++    ymod 0
++    script door
++    doortype wood
++}
++
++
++Door 0x866
++{
++    xmod -1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x86a
++{
++    xmod -1
++    ymod 0
++    script door
++    doortype wood
++}
++
++Door 0x868
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x86c
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x870
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x874
++{
++    xmod 0
++    ymod -1
++    script door
++    doortype wood
++}
++
++Door 0x86e
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype wood
++}
++
++Door 0x872
++{
++    xmod 0
++    ymod 0
++    script door
++    doortype wood
++}
++
++Door 0x6a9
++{
++    xmod -1
++    ymod 0
++    script door
++    doortype wood
++}
++
++Door 0x0F1
++{
++    Name    BlueThickStoneSecretSSW
++    xmod    -1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x0EA
++{
++    Name    BlueThickStoneSecretSSE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x0EC
++{
++    Name    BlueThickStoneSecretSNW
++    xmod    -1
++    ymod    0
++    script  door
++    doortype stone
++}
++
++Door 0x0EE
++{
++    Name    BlueThickStoneSecretSNE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x0F0
++{
++    Name    BlueThickStoneSecretESE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x0F2
++{
++    Name    BlueThickStoneSecretENE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x0F4
++{
++    Name    BlueThickStoneSecretESW
++    xmod    0
++    ymod    0
++    script  door
++    doortype stone
++}
++
++Door 0x0F6
++{
++    Name    BlueThickStoneSecretENW
++    xmod    0
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x31D
++{
++    Name    DarkThinStoneSecretSSW
++    xmod    -1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x316
++{
++    Name    DarkThinStoneSecretSSE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x318
++{
++    Name    DarkThinStoneSecretSNW
++    xmod    -1
++    ymod    0
++    script  door
++    doortype stone
++}
++
++Door 0x31A
++{
++    Name    DarkThinStoneSecretSNE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x31C
++{
++    Name    DarkThinStoneSecretESE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x31E
++{
++    Name    DarkThinStoneSecretENE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x320
++{
++    Name    DarkThinStoneSecretESW
++    xmod    0
++    ymod    0
++    script  door
++    doortype stone
++}
++
++Door 0x322
++{
++    Name    DarkThinStoneSecretENW
++    xmod    0
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x324
++{
++    Name    DarkThickStoneSecretSSW
++    xmod    -1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x326
++{
++    Name    DarkThickStoneSecretSSE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x328
++{
++    Name    DarkThickStoneSecretSNW
++    xmod    -1
++    ymod    0
++    script  door
++    doortype stone
++}
++
++Door 0x32A
++{
++    Name    DarkThickStoneSecretSNE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x32C
++{
++    Name    DarkThickStoneSecretESE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x32E
++{
++    Name    DarkThickStoneSecretENE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x330
++{
++    Name    DarkThickStoneSecretESW
++    xmod    0
++    ymod    0
++    script  door
++    doortype stone
++}
++
++Door 0x332
++{
++    Name    DarkThickStoneSecretENW
++    xmod    0
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x334
++{
++    Name    DarkWoodSecretSSW
++    xmod    -1
++    ymod    +1
++    script  door
++    doortype Wood
++}
++
++Door 0x336
++{
++    Name    DarkWoodSecretSSE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype Wood
++}
++
++Door 0x338
++{
++    Name    DarkWoodSecretSNW
++    xmod    -1
++    ymod    0
++    script  door
++    doortype Wood
++}
++
++Door 0x33A
++{
++    Name    DarkWoodSecretSNE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype Wood
++}
++
++Door 0x33C
++{
++    Name    DarkWoodSecretESE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype Wood
++}
++
++Door 0x33E
++{
++    Name    DarkWoodSecretENE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype Wood
++}
++
++Door 0x340
++{
++    Name    DarkWoodSecretESW
++    xmod    0
++    ymod    0
++    script  door
++    doortype Wood
++}
++
++Door 0x342
++{
++    Name    DarkWoodSecretENW
++    xmod    0
++    ymod    -1
++    script  door
++    doortype Wood
++}
++
++Door 0x344
++{
++    Name    LightWoodSecretSSW
++    xmod    -1
++    ymod    +1
++    script  door
++    doortype Wood
++}
++
++Door 0x346
++{
++    Name    LightWoodSecretSSE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype Wood
++}
++
++Door 0x348
++{
++    Name    LightWoodSecretSNW
++    xmod    -1
++    ymod    0
++    script  door
++    doortype Wood
++}
++
++Door 0x34A
++{
++    Name    LightWoodSecretSNE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype Wood
++}
++
++Door 0x34C
++{
++    Name    LightWoodSecretESE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype Wood
++}
++
++Door 0x34E
++{
++    Name    LightWoodSecretENE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype Wood
++}
++
++Door 0x350
++{
++    Name    LightWoodSecretESW
++    xmod    0
++    ymod    0
++    script  door
++    doortype Wood
++}
++
++Door 0x352
++{
++    Name    LightWoodSecretENW
++    xmod    0
++    ymod    -1
++    script  door
++    doortype Wood
++}
++
++Door 0x354
++{
++    Name    LightThickStoneSecretSSW
++    xmod    -1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x356
++{
++    Name    LightThickStoneSecretSSE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x358
++{
++    Name    LightThickStoneSecretSNW
++    xmod    -1
++    ymod    0
++    script  door
++    doortype stone
++}
++
++Door 0x35A
++{
++    Name    LightThickStoneSecretSNE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x35C
++{
++    Name    LightThickStoneSecretESE
++    xmod    +1
++    ymod    +1
++    script  door
++    doortype stone
++}
++
++Door 0x35E
++{
++    Name    LightThickStoneSecretENE
++    xmod    +1
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x360
++{
++    Name    LightThickStoneSecretESW
++    xmod    0
++    ymod    0
++    script  door
++    doortype stone
++}
++
++Door 0x362
++{
++    Name    LightThickStoneSecretENW
++    xmod    0
++    ymod    -1
++    script  door
++    doortype stone
++}
++
++Door 0x1FED
++{
++    xmod -1
++    ymod +1
++    script  door
++    doortype metal
++}
++
++Door 0x1FEF
++{
++    xmod +1
++    ymod +1
++    script door
++    doortype metal
++}
++
++Door 0x1FF1
++{
++    xmod -1
++    ymod 0
++    script door
++    doortype metal
++}
++
++Door 0x1FF3
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x1FF5
++{
++    xmod +1
++    ymod +1
++    script  door
++    doortype metal
++}
++
++Door 0x1FF7
++{
++    xmod +1
++    ymod -1
++    script door
++    doortype metal
++}
++
++Door 0x1FF9
++{
++    xmod 0
++    ymod 0
++    script door
++    doortype metal
++}
++
++Door 0x1FFB
++{
++    xmod 0
++    ymod -1
++    script door
++    doortype metal
++}
+
+Added: trunk/096/pkg/items/doors/OLD/openDoor.dep
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/openDoor.dep	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/openDoor.dep	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,2 @@
++E:\UOL\Distro\096\pkg\items\doors\openDoor.src
++scripts/include/OLD/sound.inc
+
+Added: trunk/096/pkg/items/doors/OLD/openDoor.ecl
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/096/pkg/items/doors/OLD/openDoor.ecl
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/096/pkg/items/doors/OLD/openDoor.src
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/openDoor.src	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/openDoor.src	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,46 @@
++use cfgfile;
++use uo;
++use os;
++
++include &quot;include/OLD/sound&quot;;
++
++
++program openDoor(door)
++	var doordesc := ReadConfigFile(&quot;itemdesc&quot;);
++	var xmod := CInt(doordesc[door.objtype].xmod);
++	var ymod := CInt(doordesc[door.objtype].ymod);
++	var newx := (door.x + xmod);
++	var newy := (door.y + ymod);
++	var newz := door.z;
++	var closesound, opensound;
++	case (doordesc[door.objtype].doortype)
++		&quot;stone&quot;: opensound := SFX_OPEN_METAL_DOOR;
++			closesound := SFX_CLOSE_METAL_DOOR;
++		&quot;wood&quot;:  opensound := SFX_OPEN_WOODEN_DOOR;
++			closesound := SFX_CLOSE_WOODEN_DOOR;
++		&quot;metal&quot;: opensound := SFX_OPEN_METAL_DOOR;
++			closesound := SFX_CLOSE_METAL_DOOR;
++	endcase
++	var opengraphic := GetObjProperty(door, &quot;opengraphic&quot;);
++	if ((!opengraphic) || (opengraphic == &quot;&quot;))
++		opengraphic := door.graphic + 1;
++	endif
++	var whenopened := ReadGameClock();
++	if (GetObjProperty( door, &quot;WhenOpened&quot;))
++		return;
++	endif
++	set_critical(1);
++	PlaySoundEffect( door, opensound );
++	door.graphic := opengraphic;
++	door.movable := 1;
++	MoveItemToLocation(door, newx, newy, newz, MOVEITEM_FORCELOCATION);
++	door.movable := 0;
++	SetObjProperty( door, &quot;WhenOpened&quot;, whenopened );
++	set_critical(0);
++	sleep( 10 );
++	if (GetObjProperty( door, &quot;WhenOpened&quot; ))
++		start_script(&quot;:doors:closeDoor&quot;, door);
++	endif
++
++	return;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/doors/OLD/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/pkg.cfg	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/pkg.cfg	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,8 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled		1
++Name		doors
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version		1.5
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/doors/OLD/setFlow.dep
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/setFlow.dep	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/setFlow.dep	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1 @@
++E:\UOL\Distro\096\pkg\items\doors\setFlow.src
+
+Added: trunk/096/pkg/items/doors/OLD/setFlow.ecl
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/096/pkg/items/doors/OLD/setFlow.ecl
+___________________________________________________________________
+Name: svn:mime-type
+   + application/octet-stream
+
+Added: trunk/096/pkg/items/doors/OLD/setFlow.src
+===================================================================
+--- trunk/096/pkg/items/doors/OLD/setFlow.src	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/OLD/setFlow.src	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -0,0 +1,319 @@
++use uo;
++use os;
++use cfgfile;
++
++
++program setFlow(house)
++  var doordesc := ReadConfigFile(&quot;itemdesc&quot;);
++  var housetype := house.objtype;
++  case(housetype)
++    0x6060: foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
++              if(doordesc[doors.objtype].doortype)
++                if (!GetObjProperty(doors, &quot;Flow&quot;))
++                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                endif
++                SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++              endif
++            endforeach
++    0x6061:  foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
++              if(doordesc[doors.objtype].doortype)
++                if (!GetObjProperty(doors, &quot;Flow&quot;))
++                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                endif
++                SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++              endif
++            endforeach
++    0x6062: foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
++              if(doordesc[doors.objtype].doortype)
++                if (!GetObjProperty(doors, &quot;Flow&quot;))
++                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                endif
++                SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++              endif
++            endforeach
++    0x6063: foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
++              if(doordesc[doors.objtype].doortype)
++                if (!GetObjProperty(doors, &quot;Flow&quot;))
++                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                endif
++                SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++              endif
++            endforeach
++    0x6064: foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
++              if(doordesc[doors.objtype].doortype)
++                if (!GetObjProperty(doors, &quot;Flow&quot;))
++                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                endif
++                SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++              endif
++            endforeach
++    0x6073: foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
++              if(doordesc[doors.objtype].doortype)
++                if (!GetObjProperty(doors, &quot;Flow&quot;))
++                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                endif
++                SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++              endif
++            endforeach
++    0x6065: foreach doors in ListItemsAtLocation((house.x-3),(house.y-1),(house.z+7), house.realm)
++             if(doordesc[doors.objtype].doortype)
++               if(!GetObjProperty(doors, &quot;Flow&quot;))
++                 SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++             endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x+3),(house.y-1),(house.z+7), house.realm)
++             if (doordesc[doors.objtype].doortype)
++               if (!GetObjProperty(doors, &quot;Flow&quot;))
++                    SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++             endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x-1),(house.y+6),(house.z+7), house.realm)
++             if(doordesc[doors.objtype].doortype)
++               if(!GetObjProperty(doors, &quot;Flow&quot;))
++                 SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++               endif
++               SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++             endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x),(house.y+6),(house.z+7), house.realm)
++             if(doordesc[doors.objtype].doortype)
++               if(!GetObjProperty(doors, &quot;Flow&quot;))
++                 SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++               endif
++               SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++             endif
++           endforeach
++    0x6068: foreach doors in ListItemsAtLocation((house.x-3),house.y,house.z+7, house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x-3),(house.y+6),(house.z+7), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                    SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x-2),(house.y+6),(house.z+7), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                    SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x-3),(house.y),(house.z+27), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++    0x6066: foreach doors in ListItemsAtLocation((house.x-3),house.y,house.z+7, house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x-3),(house.y+6),(house.z+7), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                    SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x-2),(house.y+6),(house.z+7), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                    SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x-3),(house.y),(house.z+27), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++    0x6069: foreach doors in ListItemsAtLocation((house.x+3),(house.y-2),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x),(house.y+6),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                    SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x+1),(house.y+6),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                    SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+26), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;E&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+46), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;E&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++    0x6070: foreach doors in ListItemsAtLocation((house.x),(house.y+10),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                    SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x+1),(house.y+10),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                    SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++    0x6071: foreach doors in ListItemsAtLocation((house.x),(house.y+15),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                    SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x+1),(house.y+15),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                    SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x),(house.y+11),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x+1),(house.y+11),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x),(house.y+5),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x+1),(house.y+5),(house.z+6), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++    0x6072: foreach doors in ListItemsAtLocation((house.x+1),(house.y-4),(house.z+7), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;W&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x+4),(house.y-1),(house.z+7), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+7), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                    if (!GetObjProperty(doors, &quot;Flow&quot;))
++                         SetObjProperty(doors, &quot;Flow&quot;, &quot;E&quot;);
++                    endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x-4),(house.y+6),(house.z+7), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                   if (!GetObjProperty(doors, &quot;Flow&quot;))
++                        SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                   endif
++                   SetObjProperty(doors, &quot;Front&quot;, 1);
++               endif
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++           endforeach
++           foreach doors in ListItemsAtLocation((house.x-3),(house.y+6),(house.z+7), house.realm)
++               if (doordesc[doors.objtype].doortype)
++                   if (!GetObjProperty(doors, &quot;Flow&quot;))
++                        SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
++                   endif
++                   SetObjProperty(doors, &quot;Front&quot;, 1);
++                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
++               endif
++           endforeach
++  endcase
++endprogram
+
+Deleted: trunk/096/pkg/items/doors/closeDoor.src
+===================================================================
+--- trunk/096/pkg/items/doors/closeDoor.src	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/closeDoor.src	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -1,49 +0,0 @@
+-use cfgfile;
+-use uo;
+-use os;
+-
+-include &quot;include/OLD/sound&quot;;
+-
+-
+-program close_door(door)
+-	var doordesc := ReadConfigFile(&quot;itemdesc&quot;);
+-	var xmod := CInt(doordesc[door.objtype].xmod);
+-	var ymod := CInt(doordesc[door.objtype].ymod);
+-	var newx := (door.x - xmod);
+-	var newy := (door.y - ymod);
+-	var newz := (door.z);
+-	var closesound;
+-	var opensound;
+-	case(doordesc[door.objtype].doortype)
+-		&quot;stone&quot;:
+-			opensound := SFX_OPEN_METAL_DOOR;
+-			closesound := SFX_CLOSE_METAL_DOOR;
+-		&quot;wood&quot;:
+-			opensound := SFX_OPEN_WOODEN_DOOR;
+-			closesound := SFX_CLOSE_WOODEN_DOOR;
+-		&quot;metal&quot;:
+-			opensound := SFX_OPEN_METAL_DOOR;
+-			closesound := SFX_CLOSE_METAL_DOOR;
+-	endcase
+-	while (1);
+-	if (!GetObjProperty( door, &quot;WhenOpened&quot;))
+-		return;
+-	endif
+-	var people := len(ListMobilesNearLocation( newx, newy, newz, 0, door.realm));
+-	var hidden := len(ListMobilesNearLocationEx(newx, newy, newz, 0, LISTEX_FLAG_HIDDEN, door.realm));
+-	if ((people == 0) &amp;&amp; (hidden == 0));
+-		set_critical(1);
+-		PlaySoundEffect( door, closesound );
+-		door.graphic := door.objtype;
+-		door.movable := 1;
+-		MoveItemToLocation(door, newx, newy, newz, MOVEITEM_FORCELOCATION);
+-		door.movable := 0;
+-		EraseObjProperty(door, &quot;WhenOpened&quot;);
+-		set_critical(0);
+-		break;
+-	endif
+-	sleep(1);
+-	endwhile
+-
+-	return;
+-endprogram
+
+Modified: trunk/096/pkg/items/doors/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/doors/config/icp.cfg	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/config/icp.cfg	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -1,12 +1,21 @@
++# $Id$
++#
++#
++
+ ICP Register
+ {
+-        Name            Doors Control
+-        Version         1.5
+-        Description     Control package for Doors.
++	Name		Doors Control
++	Version         2.0
++	
++	Description     Control package for doors.
+ 
+-        Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++	Creator		Austin Heilman
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+ 
+-        Maintainer      Distro Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++	
++	// Script	cmdlevel	path
++	
++	// TextCmd	cmdlevel	path
+ }
+
+Deleted: trunk/096/pkg/items/doors/door.cfg
+===================================================================
+--- trunk/096/pkg/items/doors/door.cfg	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/door.cfg	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -1,32 +0,0 @@
+-# $Id$
+-#
+-#
+-
+-Configuration doors
+-{
+-# Doors usable from the inside of a multi [no|yes|house|front]
+-# If &quot;house&quot; is selected, it will vary from house to house and
+-#   a script called &quot;innerlock&quot; needs to be placed in the housing
+-#   package, and must return true if the door can be opened and
+-#   false if it cannot.
+-# Defaults to front.
+-  OpenFromInside	front
+-
+-# Doors refresh houses [no|yes]
+-# If &quot;yes&quot; is selected, opening any door in a multi will
+-#   trigger the script &quot;refesh&quot; which must be in the housing
+-#   package.
+-# Defaults to no.
+-
+-    DoorsRefresh	yes
+-
+-# Allowed to close opened locked doors [no|yes]
+-# If &quot;yes&quot;, using a door that is opened and locked will close it
+-#   whether or not you have the key. If &quot;no&quot;, it will act like OSI
+-#   and tell you the door is locked if you try to close it from outside
+-#   without the key.
+-# Defaults to yes.
+-
+-    CloseLocked        no
+-
+-}
+
+Deleted: trunk/096/pkg/items/doors/door.src
+===================================================================
+--- trunk/096/pkg/items/doors/door.src	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/door.src	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -1,89 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-
+-include &quot;doors&quot;;
+-
+-
+-program use_door(chr, door)
+-  if(GetObjProperty(door, &quot;#inuse&quot;))
+-    return;
+-  endif
+-  SetObjProperty(door, &quot;#inuse&quot;, 1);
+-  var doordesc := ReadConfigFile(&quot;itemdesc&quot;);
+-  var dooroptions := ReadConfigFile(&quot;door&quot;);
+-  var configuration := FindConfigElem(dooroptions, &quot;doors&quot;);
+-  var refresh := GetConfigString(configuration, &quot;DoorsRefresh&quot;);
+-  var flowoption := lower(GetConfigString(configuration, &quot;OpenFromInside&quot;));
+-  var closelocked := lower(GetConfigString(configuration, &quot;CloseLocked&quot;));
+-  if((chr.multi) &amp;&amp; (!GetObjProperty(door, &quot;Flow&quot;)) &amp;&amp; (flowoption != &quot;no&quot;))
+-    run_script_to_completion(&quot;:doors:setFlow&quot;, chr.multi);
+-  endif
+-  var hs := GetObjProperty(door, &quot;houseserial&quot;);
+-  if(!hs)
+-    hs := GetObjProperty(door, &quot;house_serial&quot;);
+-  endif
+-  if(hs)
+-    var house := SystemFindObjectBySerial(hs);
+-    var ss := GetObjProperty(house, &quot;signserial&quot;);
+-    var sign := SystemFindObjectBySerial(ss);
+-    if(!sign)
+-      var item := house.components;
+-      var signarray := array(0xbd2, 0xbd0, 0xbd1);
+-      foreach itemt in item
+-        if(itemt.objtype in signarray)
+-          SetObjProperty(house, &quot;signserial&quot;, itemt.serial);
+-          sign := itemt;
+-          break;
+-        endif
+-      endforeach
+-    endif
+-    var friend := isfriend(chr, house);
+-    if(friend == 1)
+-      SendSysMessage(chr, &quot;Your house and its contents have been refreshed.&quot;);
+-      SetObjProperty(sign,&quot;decay&quot;, (ReadGameClock()+ 864000));
+-    endif
+-  endif
+-  if(IsLocked(chr, door, flowoption, closelocked))
+-    PrintTextAbovePrivate(door, &quot;That is locked.&quot;, chr);
+-  else
+-    if(GetObjProperty( door, &quot;WhenOpened&quot; ))
+-      start_script(&quot;:doors:closeDoor&quot;, door);
+-    else
+-      detach();
+-      start_script(&quot;:doors:openDoor&quot;, door);
+-      if (refresh[&quot;yes&quot;])
+-        var param := array;
+-        param[0] := chr;
+-        param[1] := door;
+-        start_script(&quot;:housing:refresh&quot;,param);
+-      endif
+-      foreach potentialdoor in ListObjectsInBox((door.x-1),(door.y-1),(door.z),(door.x+1),(door.y+1),(door.z),door.realm)
+-        if(!potentialdoor.hp)
+-          var doortype := doordesc[potentialdoor.objtype].doortype;
+-          if((doortype) &amp;&amp; (door != potentialdoor))
+-            if((!potentialdoor.locked) &amp;&amp; (!GetObjProperty(potentialdoor, &quot;WhenOpened&quot;)))
+-              start_script(&quot;:doors:openDoor&quot;, potentialdoor);
+-            endif
+-           endif
+-        endif
+-      endforeach
+-    endif
+-  endif
+-  EraseObjProperty(door, &quot;#inuse&quot;);
+-endprogram
+-
+-function isfriend(who, house)
+-  var friend := 0;
+-  if (GetObjProperty(house, &quot;owneracct&quot;) == who.acctname)
+-    friend := 1;
+-  endif
+-  var friendinfo := GetObjProperty(house, &quot;friendlist&quot;);
+-  var coownerinfo := GetObjProperty(house,&quot;coownlist&quot;);
+-  if(who.serial in friendinfo)
+-    friend := 1;
+-  elseif(who.serial in coownerinfo)
+-    friend := 1;
+-  endif
+-  return friend;
+-endfunction
+
+Deleted: trunk/096/pkg/items/doors/doors.inc
+===================================================================
+--- trunk/096/pkg/items/doors/doors.inc	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/doors.inc	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -1,90 +0,0 @@
+-include &quot;include/client&quot;;
+-include &quot;:itemutils:objtype&quot;;
+-
+-
+-function IsLocked(me, door, options := &quot;no&quot;, closed := &quot;no&quot;)
+-  const KEYSTART := 0x100e;
+-  const KEYEND := 0x1013;
+-  const KEYRING := 0x1011;
+-    var doorlockid;
+-    var keylockid;
+-    var insidering;
+-    if((!door.locked) || ((GetObjProperty(door,&quot;WhenOpened&quot;)) &amp;&amp; (closed == &quot;yes&quot;)))
+-      return 0;
+-    else
+-      if(((me.multi) &amp;&amp; (options != &quot;no&quot;)) || (GetObjProperty(door, &quot;UseFlow&quot;)))
+-        if(options == &quot;house&quot;)
+-          var params := array;
+-          params[0] := me;
+-          params[1] := door;
+-          var innerlock := run_script_to_completion(&quot;:housing:innerLock&quot;, params);
+-          if(innerlock)
+-            return 0;
+-          endif
+-          return 1;
+-        endif
+-        if(((options == &quot;yes&quot;) || ((options == &quot;front&quot;) &amp;&amp; (GetObjProperty(door, &quot;Front&quot;)))) || (GetObjProperty(door, &quot;UseFlow&quot;)))
+-          case (GetObjProperty(door, &quot;Flow&quot;))
+-            &quot;S&quot;: if(door.y &lt; me.y)
+-                   PrintTextAbovePrivate(door, &quot;The door is locked, but you open it from the inside.&quot;, me);
+-                   return 0;
+-                 endif
+-            &quot;E&quot;: if(door.x &lt; me.x)
+-                   PrintTextAbovePrivate(door, &quot;The door is locked, but you open it from the inside.&quot;, me);
+-                   return 0;
+-                 endif
+-            &quot;W&quot;: if(door.x &gt; me.x)
+-                   PrintTextAbovePrivate(door, &quot;The door is locked, but you open it from the inside.&quot;, me);
+-                   return 0;
+-                 endif
+-            &quot;N&quot;: if(door.y &gt; me.y)
+-                   PrintTextAbovePrivate(door, &quot;The door is locked, but you open it from the inside.&quot;, me);
+-                   return 0;
+-                 endif
+-          endcase
+-        endif
+-      endif
+-      doorlockid := GetObjProperty(door, &quot;lockid&quot;);
+-      if(!doorlockid)
+-         return 1;
+-      endif
+-      var mykeys := EnumerateItemsInContainer(me.backpack);
+-      foreach key in mykeys
+-        if((key.objtype &gt;= KEYSTART) &amp;&amp; (key.objtype &lt;= KEYEND) &amp;&amp;  (key.objtype != KEYRING))
+-          keylockid := GetObjProperty(key, &quot;lockid&quot;);
+-          if((keylockid) &amp;&amp; (keylockid == doorlockid))
+-            PrintTextAbovePrivate(door, &quot;You quickly unlock, use and re-lock the door&quot;, me);
+-            return 0;
+-          endif
+-        elseif(key.objtype == KEYRING)
+-          insidering := FindMyPack(key.serial);
+-          foreach otherkey in EnumerateItemsInContainer(insidering)
+-          keylockid := GetObjProperty( otherkey, &quot;lockid&quot; );
+-          if(keylockid == doorlockid)
+-            PrintTextAbovePrivate( door, &quot;You quickly unlock, use and re-lock the door&quot;, me);
+-            return 0;
+-          endif
+-        endforeach
+-      endif
+-    endforeach
+-  endif
+-  return 1;
+-endfunction
+-
+-function OpenTamedStorageAreas()
+-  var bank := FindStorageArea(&quot;Tamed Storage&quot;);
+-  if(!bank)
+-    bank := CreateStorageArea(&quot;Tamed Storage&quot;);
+-  endif
+-  return bank;
+-endfunction
+-
+-function FindMyPack(myserial)
+-  var mybank := OpenTamedStorageAreas();
+-  var bank_obj_name := &quot;Bankbox  &quot; + Hex(myserial);
+-  var bankbox := FindRootItemInStorageArea(mybank, bank_obj_name);
+-  if(!bankbox)
+-     bankbox := CreateRootItemInStorageArea(mybank, bank_obj_name, UOBJ_BANKBOX);
+-  endif
+-  return bankbox;
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/items/doors/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/doors/itemdesc.cfg	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/itemdesc.cfg	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -1,1034 +0,0 @@
+-# $Id$
+-
+-Door 0x675
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x677
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x67d
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x67f
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x6c5
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x6c7
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x6cd
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x6cf
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x685
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x687
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x68d
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x68f
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x6a5
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6a7
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6ad
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6af
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6b5
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6b7
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6bd
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6bf
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6d5
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6d7
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6dd
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6df
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6e5
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6e7
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6ed
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6ef
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x695
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x697
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x69d
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x69f
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x67B
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x6ab
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x825
+-{
+-    xmod 0
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x827
+-{
+-    xmod 0
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x82d
+-{
+-    xmod -1
+-    ymod 0
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x82f
+-{
+-    xmod -1
+-    ymod 0
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x829
+-{
+-    xmod 0
+-    ymod 0
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x82c
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x826
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x82a
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x84d
+-{
+-    xmod 0
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x84f
+-{
+-    xmod 0
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x851
+-{
+-    xmod 0
+-    ymod 0
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x854
+-{
+-    xmod 0
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x859
+-{
+-    xmod 0
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x852
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x84c
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x857
+-{
+-    xmod -1
+-    ymod 0
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x839
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x83d
+-{
+-    xmod -1
+-    ymod 0
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x83b
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x83f
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x843
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x847
+-{
+-    xmod 0
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x841
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x845
+-{
+-    xmod 0
+-    ymod 0
+-    script door
+-    doortype wood
+-}
+-
+-
+-Door 0x866
+-{
+-    xmod -1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x86a
+-{
+-    xmod -1
+-    ymod 0
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x868
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x86c
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x870
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x874
+-{
+-    xmod 0
+-    ymod -1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x86e
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x872
+-{
+-    xmod 0
+-    ymod 0
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x6a9
+-{
+-    xmod -1
+-    ymod 0
+-    script door
+-    doortype wood
+-}
+-
+-Door 0x0F1
+-{
+-    Name    BlueThickStoneSecretSSW
+-    xmod    -1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x0EA
+-{
+-    Name    BlueThickStoneSecretSSE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x0EC
+-{
+-    Name    BlueThickStoneSecretSNW
+-    xmod    -1
+-    ymod    0
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x0EE
+-{
+-    Name    BlueThickStoneSecretSNE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x0F0
+-{
+-    Name    BlueThickStoneSecretESE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x0F2
+-{
+-    Name    BlueThickStoneSecretENE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x0F4
+-{
+-    Name    BlueThickStoneSecretESW
+-    xmod    0
+-    ymod    0
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x0F6
+-{
+-    Name    BlueThickStoneSecretENW
+-    xmod    0
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x31D
+-{
+-    Name    DarkThinStoneSecretSSW
+-    xmod    -1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x316
+-{
+-    Name    DarkThinStoneSecretSSE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x318
+-{
+-    Name    DarkThinStoneSecretSNW
+-    xmod    -1
+-    ymod    0
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x31A
+-{
+-    Name    DarkThinStoneSecretSNE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x31C
+-{
+-    Name    DarkThinStoneSecretESE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x31E
+-{
+-    Name    DarkThinStoneSecretENE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x320
+-{
+-    Name    DarkThinStoneSecretESW
+-    xmod    0
+-    ymod    0
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x322
+-{
+-    Name    DarkThinStoneSecretENW
+-    xmod    0
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x324
+-{
+-    Name    DarkThickStoneSecretSSW
+-    xmod    -1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x326
+-{
+-    Name    DarkThickStoneSecretSSE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x328
+-{
+-    Name    DarkThickStoneSecretSNW
+-    xmod    -1
+-    ymod    0
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x32A
+-{
+-    Name    DarkThickStoneSecretSNE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x32C
+-{
+-    Name    DarkThickStoneSecretESE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x32E
+-{
+-    Name    DarkThickStoneSecretENE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x330
+-{
+-    Name    DarkThickStoneSecretESW
+-    xmod    0
+-    ymod    0
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x332
+-{
+-    Name    DarkThickStoneSecretENW
+-    xmod    0
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x334
+-{
+-    Name    DarkWoodSecretSSW
+-    xmod    -1
+-    ymod    +1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x336
+-{
+-    Name    DarkWoodSecretSSE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x338
+-{
+-    Name    DarkWoodSecretSNW
+-    xmod    -1
+-    ymod    0
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x33A
+-{
+-    Name    DarkWoodSecretSNE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x33C
+-{
+-    Name    DarkWoodSecretESE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x33E
+-{
+-    Name    DarkWoodSecretENE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x340
+-{
+-    Name    DarkWoodSecretESW
+-    xmod    0
+-    ymod    0
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x342
+-{
+-    Name    DarkWoodSecretENW
+-    xmod    0
+-    ymod    -1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x344
+-{
+-    Name    LightWoodSecretSSW
+-    xmod    -1
+-    ymod    +1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x346
+-{
+-    Name    LightWoodSecretSSE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x348
+-{
+-    Name    LightWoodSecretSNW
+-    xmod    -1
+-    ymod    0
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x34A
+-{
+-    Name    LightWoodSecretSNE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x34C
+-{
+-    Name    LightWoodSecretESE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x34E
+-{
+-    Name    LightWoodSecretENE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x350
+-{
+-    Name    LightWoodSecretESW
+-    xmod    0
+-    ymod    0
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x352
+-{
+-    Name    LightWoodSecretENW
+-    xmod    0
+-    ymod    -1
+-    script  door
+-    doortype Wood
+-}
+-
+-Door 0x354
+-{
+-    Name    LightThickStoneSecretSSW
+-    xmod    -1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x356
+-{
+-    Name    LightThickStoneSecretSSE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x358
+-{
+-    Name    LightThickStoneSecretSNW
+-    xmod    -1
+-    ymod    0
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x35A
+-{
+-    Name    LightThickStoneSecretSNE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x35C
+-{
+-    Name    LightThickStoneSecretESE
+-    xmod    +1
+-    ymod    +1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x35E
+-{
+-    Name    LightThickStoneSecretENE
+-    xmod    +1
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x360
+-{
+-    Name    LightThickStoneSecretESW
+-    xmod    0
+-    ymod    0
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x362
+-{
+-    Name    LightThickStoneSecretENW
+-    xmod    0
+-    ymod    -1
+-    script  door
+-    doortype stone
+-}
+-
+-Door 0x1FED
+-{
+-    xmod -1
+-    ymod +1
+-    script  door
+-    doortype metal
+-}
+-
+-Door 0x1FEF
+-{
+-    xmod +1
+-    ymod +1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x1FF1
+-{
+-    xmod -1
+-    ymod 0
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x1FF3
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x1FF5
+-{
+-    xmod +1
+-    ymod +1
+-    script  door
+-    doortype metal
+-}
+-
+-Door 0x1FF7
+-{
+-    xmod +1
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x1FF9
+-{
+-    xmod 0
+-    ymod 0
+-    script door
+-    doortype metal
+-}
+-
+-Door 0x1FFB
+-{
+-    xmod 0
+-    ymod -1
+-    script door
+-    doortype metal
+-}
+
+Deleted: trunk/096/pkg/items/doors/openDoor.src
+===================================================================
+--- trunk/096/pkg/items/doors/openDoor.src	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/openDoor.src	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -1,46 +0,0 @@
+-use cfgfile;
+-use uo;
+-use os;
+-
+-include &quot;include/OLD/sound&quot;;
+-
+-
+-program openDoor(door)
+-	var doordesc := ReadConfigFile(&quot;itemdesc&quot;);
+-	var xmod := CInt(doordesc[door.objtype].xmod);
+-	var ymod := CInt(doordesc[door.objtype].ymod);
+-	var newx := (door.x + xmod);
+-	var newy := (door.y + ymod);
+-	var newz := door.z;
+-	var closesound, opensound;
+-	case (doordesc[door.objtype].doortype)
+-		&quot;stone&quot;: opensound := SFX_OPEN_METAL_DOOR;
+-			closesound := SFX_CLOSE_METAL_DOOR;
+-		&quot;wood&quot;:  opensound := SFX_OPEN_WOODEN_DOOR;
+-			closesound := SFX_CLOSE_WOODEN_DOOR;
+-		&quot;metal&quot;: opensound := SFX_OPEN_METAL_DOOR;
+-			closesound := SFX_CLOSE_METAL_DOOR;
+-	endcase
+-	var opengraphic := GetObjProperty(door, &quot;opengraphic&quot;);
+-	if ((!opengraphic) || (opengraphic == &quot;&quot;))
+-		opengraphic := door.graphic + 1;
+-	endif
+-	var whenopened := ReadGameClock();
+-	if (GetObjProperty( door, &quot;WhenOpened&quot;))
+-		return;
+-	endif
+-	set_critical(1);
+-	PlaySoundEffect( door, opensound );
+-	door.graphic := opengraphic;
+-	door.movable := 1;
+-	MoveItemToLocation(door, newx, newy, newz, MOVEITEM_FORCELOCATION);
+-	door.movable := 0;
+-	SetObjProperty( door, &quot;WhenOpened&quot;, whenopened );
+-	set_critical(0);
+-	sleep( 10 );
+-	if (GetObjProperty( door, &quot;WhenOpened&quot; ))
+-		start_script(&quot;:doors:closeDoor&quot;, door);
+-	endif
+-
+-	return;
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/items/doors/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/doors/pkg.cfg	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/pkg.cfg	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -1,8 +0,0 @@
+-# $Id$
+-#
+-#
+-Enabled		1
+-Name		doors
+-Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+-Version		1.5
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/items/doors/setFlow.src
+===================================================================
+--- trunk/096/pkg/items/doors/setFlow.src	2006-02-10 12:32:59 UTC (rev 1178)
++++ trunk/096/pkg/items/doors/setFlow.src	2006-02-10 13:01:38 UTC (rev 1179)
+@@ -1,319 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-
+-
+-program setFlow(house)
+-  var doordesc := ReadConfigFile(&quot;itemdesc&quot;);
+-  var housetype := house.objtype;
+-  case(housetype)
+-    0x6060: foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
+-              if(doordesc[doors.objtype].doortype)
+-                if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                endif
+-                SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-              endif
+-            endforeach
+-    0x6061:  foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
+-              if(doordesc[doors.objtype].doortype)
+-                if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                endif
+-                SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-              endif
+-            endforeach
+-    0x6062: foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
+-              if(doordesc[doors.objtype].doortype)
+-                if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                endif
+-                SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-              endif
+-            endforeach
+-    0x6063: foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
+-              if(doordesc[doors.objtype].doortype)
+-                if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                endif
+-                SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-              endif
+-            endforeach
+-    0x6064: foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
+-              if(doordesc[doors.objtype].doortype)
+-                if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                endif
+-                SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-              endif
+-            endforeach
+-    0x6073: foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7), house.realm)
+-              if(doordesc[doors.objtype].doortype)
+-                if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                  SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                endif
+-                SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-              endif
+-            endforeach
+-    0x6065: foreach doors in ListItemsAtLocation((house.x-3),(house.y-1),(house.z+7), house.realm)
+-             if(doordesc[doors.objtype].doortype)
+-               if(!GetObjProperty(doors, &quot;Flow&quot;))
+-                 SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-             endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x+3),(house.y-1),(house.z+7), house.realm)
+-             if (doordesc[doors.objtype].doortype)
+-               if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                    SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-             endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x-1),(house.y+6),(house.z+7), house.realm)
+-             if(doordesc[doors.objtype].doortype)
+-               if(!GetObjProperty(doors, &quot;Flow&quot;))
+-                 SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-               endif
+-               SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-             endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x),(house.y+6),(house.z+7), house.realm)
+-             if(doordesc[doors.objtype].doortype)
+-               if(!GetObjProperty(doors, &quot;Flow&quot;))
+-                 SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-               endif
+-               SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-             endif
+-           endforeach
+-    0x6068: foreach doors in ListItemsAtLocation((house.x-3),house.y,house.z+7, house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x-3),(house.y+6),(house.z+7), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                    SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x-2),(house.y+6),(house.z+7), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                    SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x-3),(house.y),(house.z+27), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-    0x6066: foreach doors in ListItemsAtLocation((house.x-3),house.y,house.z+7, house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x-3),(house.y+6),(house.z+7), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                    SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x-2),(house.y+6),(house.z+7), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                    SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x-3),(house.y),(house.z+27), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-    0x6069: foreach doors in ListItemsAtLocation((house.x+3),(house.y-2),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x),(house.y+6),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                    SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x+1),(house.y+6),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                    SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+26), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;E&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+46), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;E&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-    0x6070: foreach doors in ListItemsAtLocation((house.x),(house.y+10),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                    SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x+1),(house.y+10),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                    SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-    0x6071: foreach doors in ListItemsAtLocation((house.x),(house.y+15),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                    SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x+1),(house.y+15),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                    SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x),(house.y+11),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x+1),(house.y+11),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x),(house.y+5),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x+1),(house.y+5),(house.z+6), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-    0x6072: foreach doors in ListItemsAtLocation((house.x+1),(house.y-4),(house.z+7), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;W&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x+4),(house.y-1),(house.z+7), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+7), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                    if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                         SetObjProperty(doors, &quot;Flow&quot;, &quot;E&quot;);
+-                    endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x-4),(house.y+6),(house.z+7), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                   if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                        SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                   endif
+-                   SetObjProperty(doors, &quot;Front&quot;, 1);
+-               endif
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-           endforeach
+-           foreach doors in ListItemsAtLocation((house.x-3),(house.y+6),(house.z+7), house.realm)
+-               if (doordesc[doors.objtype].doortype)
+-                   if (!GetObjProperty(doors, &quot;Flow&quot;))
+-                        SetObjProperty(doors, &quot;Flow&quot;, &quot;N&quot;);
+-                   endif
+-                   SetObjProperty(doors, &quot;Front&quot;, 1);
+-                SetObjProperty(doors, &quot;UseFlow&quot;, 1);
+-               endif
+-           endforeach
+-  endcase
+-endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001149.html">[Poldistro-svn] r1178 - trunk/096/pkg/items/sysbook/book
+</A></li>
+	<LI>Next message: <A HREF="001151.html">[Poldistro-svn] r1180 - in trunk/096/pkg/items/doors: . OLD door
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1150">[ date ]</a>
+              <a href="thread.html#1150">[ thread ]</a>
+              <a href="subject.html#1150">[ subject ]</a>
+              <a href="author.html#1150">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

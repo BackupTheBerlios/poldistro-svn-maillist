@@ -1,0 +1,349 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r584 - in trunk/096/pkg/systems/poisonwatcher: . config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r584%20-%20in%20trunk/096/pkg/systems/poisonwatcher%3A%20.%20config%20include&In-Reply-To=%3C200510120646.j9C6k41m002730%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000553.html">
+   <LINK REL="Next"  HREF="000555.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r584 - in trunk/096/pkg/systems/poisonwatcher: . config include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r584%20-%20in%20trunk/096/pkg/systems/poisonwatcher%3A%20.%20config%20include&In-Reply-To=%3C200510120646.j9C6k41m002730%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r584 - in trunk/096/pkg/systems/poisonwatcher: . config include">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct 12 08:46:04 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000553.html">[Poldistro-svn] r583 - in trunk/096/pkg/systems/poisonwatcher: . poisonscripts/paralysis
+</A></li>
+        <LI>Next message: <A HREF="000555.html">[Poldistro-svn] r585 - in trunk/096/pkg/systems/poisonwatcher: . include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#554">[ date ]</a>
+              <a href="thread.html#554">[ thread ]</a>
+              <a href="subject.html#554">[ subject ]</a>
+              <a href="author.html#554">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-12 08:46:00 +0200 (Wed, 12 Oct 2005)
+New Revision: 584
+
+Added:
+   trunk/096/pkg/systems/poisonwatcher/config/
+   trunk/096/pkg/systems/poisonwatcher/config/icp.cfg
+   trunk/096/pkg/systems/poisonwatcher/config/poisons.cfg
+   trunk/096/pkg/systems/poisonwatcher/include/
+   trunk/096/pkg/systems/poisonwatcher/include/poisons.inc
+Log:
+Moving poisons.inc to include/
+Moving poisons.cfg to config/
+Added icp.cfg
+
+
+Added: trunk/096/pkg/systems/poisonwatcher/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/systems/poisonwatcher/config/icp.cfg	2005-10-12 06:41:50 UTC (rev 583)
++++ trunk/096/pkg/systems/poisonwatcher/config/icp.cfg	2005-10-12 06:46:00 UTC (rev 584)
+@@ -0,0 +1,16 @@
++ICP Register
++{
++	Name		Poison Watcher
++	Version		1.0
++	Description	Controls poisons, curses, and other timer based effects for mobiles.
++
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++	//Script	cmdlevel path
++
++	//TextCmd	cmdlevel path
++}
+
+Added: trunk/096/pkg/systems/poisonwatcher/config/poisons.cfg
+===================================================================
+--- trunk/096/pkg/systems/poisonwatcher/config/poisons.cfg	2005-10-12 06:41:50 UTC (rev 583)
++++ trunk/096/pkg/systems/poisonwatcher/config/poisons.cfg	2005-10-12 06:46:00 UTC (rev 584)
+@@ -0,0 +1,77 @@
++###########################################
++#poisons.cfg
++#Config file to determine poison characteristics
++#
++#Entries:
++#	Name: The Name of the poisons that characters see.
++#	Script: the Script to run when someone is poisoned.
++#	CureScript: a Script to call when a poison is cured.
++#	LogOutScript: a Script to call when a player logs out.
++#
++#	Virulence: How much curing is nullified by the poison. cint(curing/virulence)
++#		A virulence of 4 means that 3 points of cure are lost and 1 point cures.
++#		-Default is 1
++#
++#	ResistSkill: Skill number (or attribute Name when .94 is released) to check.
++#		     The virulence is lowered 1 each successful check when the person cures.
++#		     Leave out of the poison setting, if you do not want it resisted.
++#
++#	NoCure: 1 if the poison can't be cured by normal means.
++#		-Default is 0
++#	NoEnd: 1 if the poison won't time out normally.
++#		-Default is 0
++#	CureOnEnd: 1 if the poison cures when the Script is finished.	
++#		-Default is 0
++#	IndicatePoison: 1 if this causes the person's health bar to be green.
++#		-Default is 0
++#	ContinueOnDeath: keep the Script running after death and resurrection
++#		-Default is 0
++#	CureMessage: An optional string the player sees when the poison ends. 
++#                    Removes the need for a cure Script thats just a sysmessage.
++#	Cumulative: 1 if getting poisoned will add to an existing poison's duration.
++#                   If the poison has levels, lower level poisons will add a fraction
++#                   of their duration to the higher level poison.
++#	AllorNothingCure: 1 means a cure either works or it doesn't; 0 means a cure
++#                   reduces the poison's duration at least a little regardless.
++#	MaxDuration: The maximum duration that a poison can reach. Required setting.
++#
++#	Type &quot;P&quot; for poison, &quot;C&quot; for curse &quot;B&quot; for blessing &quot;V&quot; for virus.
++#	-There is no default. Type is used for getting an array of specific poison types.
++#
++#Notes:
++#	NoCure + NoEnd = Never ending until curespecific is used
++#	Setting IndicatePoison	to 0 NoCure to 1 and NoEnd to 1 and you have a curse.
++#	Set the Type to C to make it findable when you use ListPoisons(mobile, &quot;C&quot;)
++#	
++###########################################
++
++//--=[ Std. Poison ]=------------------------------
++	
++PoisonType defaultPoison
++{
++	Name			DefaultPoison
++	Script			PoisonScripts/defaultPoison
++	IndicatePoison		1
++	CureMessage		You have been cured of poison.
++	Type			defaultPoison
++	Cumulative		0
++	AllorNothingCure	1
++	MaxDuration		120	// 2 minutes
++}
++
++//--=[ Paralysis Poisons ]=------------------------
++
++PoisonType paralysis
++{
++	Name			Paralysis
++	Script			poisonscripts/paralysis/paralysis
++	CureScript		poisonscripts/paralysis/endParalysis
++	IndicatePoison		0
++	CureMessage		You are able to move again.
++	Type			C
++	NoCure			1
++	Cumulative		1
++	MaxDuration		600	// 10 minutes
++}
++
++	
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/poisonwatcher/include/poisons.inc
+===================================================================
+--- trunk/096/pkg/systems/poisonwatcher/include/poisons.inc	2005-10-12 06:41:50 UTC (rev 583)
++++ trunk/096/pkg/systems/poisonwatcher/include/poisons.inc	2005-10-12 06:46:00 UTC (rev 584)
+@@ -0,0 +1,160 @@
++use os;
++use cfgfile;
++use uo;
++
++const EVENT_ADD_POISON				:= 0x1;
++const EVENT_CURE_POISON				:= 0x2;
++const EVENT_CURE_SPECIFIC_POISON	:= 0x3;
++const EVENT_DEAD					:= 0x4;
++
++
++//
++// ListPoisonsByType(mobile, type)
++// Returns an array of strings listing poisons names
++// running on the targetted mobile that are of the type 
++// passed.
++//
++function ListPoisonsByType(mobile, the_type)
++	var p_list := array;
++	var temp_list := GetObjProperty(mobile, &quot;Poisons&quot;);
++	foreach poison_name in (temp_list.keys())
++		if (lower(CfgInfo(poison_name).Type) == lower(the_type))
++			p_list.append(poison_name);
++		endif
++		sleepms(2);
++	endforeach
++	
++	return p_list;
++endfunction
++
++
++//
++// GetAllPoisons(mobile)
++// Returns an array of strings listing the poison names
++// running on the mobile passed.
++//
++function GetAllPoisons(mobile)
++	var p_list := array;
++	var temp_list := GetObjProperty(mobile, &quot;Poisons&quot;);
++	var temp := temp_list.keys();
++	foreach poison_name in (temp_list.keys())
++		p_list.append(poison_name);
++		sleepms(2);
++	endforeach
++	
++	return p_list;
++endfunction
++
++
++//
++// AddPoison(mobile, poison_name, amount, attacker, level)
++// Adds a poison to the mobile for 'amount' seconds.
++// Attacker is usually set to be the drinker or eater if the poison is
++// from food or a potion.
++// Level applies if the poison comes in levels, as the default poison does.
++//
++function AddPoison(mobile, poison_name, amount, attacker, level := 1)
++	var event := struct;
++	event.+ type;
++	event.+ name;
++	event.+ amount;
++	event.+ level;
++	event.+ attacker;
++	
++	event.type := EVENT_ADD_POISON;
++	event.name := poison_name;
++	event.amount := amount;
++	event.attacker := attacker;
++	event.level := level;
++	
++	GetScript(mobile).SendEvent(event);
++
++	return;
++endfunction
++
++
++//
++// CurePoison(mobile, amount)
++// Cures 'amount' of seconds of poison from
++// the mobile. This will only cure poisons that
++// are NOT set to 'NoCure 1'.
++// Poisontype is for if we group poisons into families that have seperate
++// scripts and as such CureSpecific is not appropriate. 
++// Level is for the level of the cure. A level 2 cure will be twice 
++// as effective against a level 1 poison and half as effective against 
++// a level 4 poison.
++//
++function CurePoison(mobile, amount, poisontype := &quot;&quot;, level := 1)
++	var event := struct;
++	event.+ type;
++	event.+ name;
++	event.+ amount;
++	event.+ poisontype;
++	event.+ level;
++	
++	event.type := EVENT_CURE_POISON;
++	event.amount := amount;
++	event.poisontype := poisontype;
++	event.level := level;
++	
++	GetScript(mobile).SendEvent(event);
++
++	return;
++endfunction
++
++
++// 
++// CureSpecific(mobile, poison_name, amount)
++// Cures 'amount' seconds of a specific poison.
++// Ignores the 'NoCure' setting. 
++//
++function CureSpecific(mobile, poison_name, amount, level := 1)
++	var event := struct;
++	event.+ type;
++	event.+ name;
++	event.+ amount;
++	event.+ level;
++	
++	event.type := EVENT_CURE_SPECIFIC_POISON;
++	event.name := poison_name;
++	event.amount := amount;
++	event.level := level;
++	
++	GetScript(mobile).SendEvent(event);
++
++	return;
++endfunction
++
++
++//
++// GetScript(mobile)
++// Returns the process of the poison watcher.
++// If the poison watcher is not running, it will 
++// start it up on the mobile unless no_start is set to
++// a non-zero value.
++//
++function GetScript(mobile, no_start := 0)
++	var poison_pid := CInt(GetObjProperty(mobile, &quot;#PoisonPID&quot;));
++	var poison_watcher := GetProcess(poison_pid);
++
++	if (!poison_watcher &amp;&amp; !no_start) 
++		//How to start it on an npc!
++		poison_watcher := start_script(&quot;:poisonwatcher:poisonwatcher&quot;, {mobile});
++		
++		if ( poison_watcher.errortext )
++			PrintTextAbove(mobile, &quot;Poison Watcher GetScript() &quot; + poison_watcher.errortext);
++		endif
++	endif
++	
++	return poison_watcher;
++endfunction
++
++
++//
++// CfgInfo(poison_name)
++// Returns config information about the poison name passed.
++//
++function CfgInfo(poison_name)
++	return ReadConfigFile(&quot;:poisonwatcher:poisons&quot;)[poison_name];	
++endfunction
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000553.html">[Poldistro-svn] r583 - in trunk/096/pkg/systems/poisonwatcher: . poisonscripts/paralysis
+</A></li>
+	<LI>Next message: <A HREF="000555.html">[Poldistro-svn] r585 - in trunk/096/pkg/systems/poisonwatcher: . include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#554">[ date ]</a>
+              <a href="thread.html#554">[ thread ]</a>
+              <a href="subject.html#554">[ subject ]</a>
+              <a href="author.html#554">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

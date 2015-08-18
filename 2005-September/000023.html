@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r41 - trunk/096/pkg/mobiles/ai_brain/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r41%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509030603.j8363K1C014794%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000022.html">
+   <LINK REL="Next"  HREF="000024.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r41 - trunk/096/pkg/mobiles/ai_brain/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r41%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509030603.j8363K1C014794%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r41 - trunk/096/pkg/mobiles/ai_brain/include">austin at berlios.de
+       </A><BR>
+    <I>Sat Sep  3 08:03:20 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000022.html">[Poldistro-svn] r40 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000024.html">[Poldistro-svn] r42 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#23">[ date ]</a>
+              <a href="thread.html#23">[ thread ]</a>
+              <a href="subject.html#23">[ subject ]</a>
+              <a href="author.html#23">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-03 08:03:19 +0200 (Sat, 03 Sep 2005)
+New Revision: 41
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc	2005-09-03 06:02:21 UTC (rev 40)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_nerves.inc	2005-09-03 06:03:19 UTC (rev 41)
+@@ -68,7 +68,7 @@
+  * Returns 1 on success
+  *
+  */
+-function SaveNerves(mobile, nerve_dict)
++function SaveNerves(mobile, byref nerve_dict)
+ 	return SetObjProperty(mobile, &quot;#NerveInfo&quot;, nerve_dict);
+ endfunction
+ 
+@@ -134,7 +134,7 @@
+  *
+  * Parameters
+  * mobile:	NPC the nerve will be running for.
+- * nerve_name:	The name the nerve script will be run under. (Example: &quot;combat_script&quot;)
++ * nerve_name:	The name the nerve script will be run under. (Example: &quot;CombatScript&quot; or &quot;EnterReact&quot;)
+  * data:	Array of data to send to the nerve script when it starts.
+  * flags:	Can contain anything - but should use NF_* flags for bitwise checks.
+  * nerve_dict:	Optional parameter. Use if the settings were already loaded for faster access.
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc	2005-09-03 06:02:21 UTC (rev 40)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_settings.inc	2005-09-03 06:03:19 UTC (rev 41)
+@@ -54,6 +54,33 @@
+ 	return settings;
+ endfunction
+ 
++function NPC_LoadScriptSettings(source)
++	var template:=source;
++	if ( source.IsA(POLCLASS_NPC) )
++		template := NPC_ParseTemplateName(source.npctemplate);
++	elseif ( !template.package )
++		template := NPC_ParseTemplateName(template);
++	endif
++	
++	var npc_cfg := ReadConfigFile(template.package+&quot;npcdesc&quot;);
++	var npc_elem := npc_cfg[template];
++	
++	var script_list := GetConfigStringArray(npc_elem, &quot;AIScript&quot;);
++	var flag_list := GetConfigStringArray(npc_elem, &quot;AIScriptFlag&quot;);
++	
++	var script_settings := dictionary;
++	foreach script_line in (script_list)
++		script_line := SplitWords(script_line);
++		var key := script_line[1];
++		var value := script_line[2];
++		var flags := 		
++		
++		var temp := struct;
++		
++		script_settings[key] := struct{&quot;
++		
++endfunction
++
+ /*
+  * NPC_LoadCustomSettings(npc_ref, settings:=0)
+  * 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000022.html">[Poldistro-svn] r40 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000024.html">[Poldistro-svn] r42 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#23">[ date ]</a>
+              <a href="thread.html#23">[ thread ]</a>
+              <a href="subject.html#23">[ subject ]</a>
+              <a href="author.html#23">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

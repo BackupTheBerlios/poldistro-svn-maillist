@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r712 - in trunk/096/pkg/systems/poisonwatcher: config poisonscripts poisonscripts/odors
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r712%20-%20in%20trunk/096/pkg/systems/poisonwatcher%3A%20config%20poisonscripts%20poisonscripts/odors&In-Reply-To=%3C200510300926.j9U9Q56x015627%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000685.html">
+   <LINK REL="Next"  HREF="000687.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r712 - in trunk/096/pkg/systems/poisonwatcher: config poisonscripts poisonscripts/odors</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r712%20-%20in%20trunk/096/pkg/systems/poisonwatcher%3A%20config%20poisonscripts%20poisonscripts/odors&In-Reply-To=%3C200510300926.j9U9Q56x015627%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r712 - in trunk/096/pkg/systems/poisonwatcher: config poisonscripts poisonscripts/odors">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct 30 10:26:05 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000685.html">[Poldistro-svn] r711 - trunk/096/pkg/commands/player
+</A></li>
+        <LI>Next message: <A HREF="000687.html">[Poldistro-svn] r713 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#686">[ date ]</a>
+              <a href="thread.html#686">[ thread ]</a>
+              <a href="subject.html#686">[ subject ]</a>
+              <a href="author.html#686">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-30 10:26:03 +0100 (Sun, 30 Oct 2005)
+New Revision: 712
+
+Added:
+   trunk/096/pkg/systems/poisonwatcher/poisonscripts/odors/
+   trunk/096/pkg/systems/poisonwatcher/poisonscripts/odors/poostink.src
+Modified:
+   trunk/096/pkg/systems/poisonwatcher/config/poisons.cfg
+Log:
+Added poison watcher script that forces a mobile to emote *smells like poo!*
+
+Modified: trunk/096/pkg/systems/poisonwatcher/config/poisons.cfg
+===================================================================
+--- trunk/096/pkg/systems/poisonwatcher/config/poisons.cfg	2005-10-30 09:14:47 UTC (rev 711)
++++ trunk/096/pkg/systems/poisonwatcher/config/poisons.cfg	2005-10-30 09:26:03 UTC (rev 712)
+@@ -59,7 +59,7 @@
+ 	Type			defaultPoison
+ 	Cumulative		0
+ 	AllorNothingCure	1
+-	MaxDuration		120	# 2 minutes
++	MaxDuration		120	// 2 minutes
+ }
+ 
+ #--=[ Paralysis Poisons ]=------------------------
+@@ -74,6 +74,17 @@
+ 	Type			C
+ 	NoCure			1
+ 	Cumulative		1
+-	MaxDuration		600	# 10 minutes
++	MaxDuration		600	// 10 minutes
+ }
+ 
++#--=[ Odors ]=------------------------------------
++
++PoisonType poostink
++{
++	Name			Poo Stink
++	Script			poisonscripts/odors/poostink
++	NoCure			1
++	CureOnDeath		0
++	CureMessage		The horrid stench of poo fades away.
++	MaxDuration		300	// 5 minutes
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/poisonwatcher/poisonscripts/odors/poostink.src
+===================================================================
+--- trunk/096/pkg/systems/poisonwatcher/poisonscripts/odors/poostink.src	2005-10-30 09:14:47 UTC (rev 711)
++++ trunk/096/pkg/systems/poisonwatcher/poisonscripts/odors/poostink.src	2005-10-30 09:26:03 UTC (rev 712)
+@@ -0,0 +1,11 @@
++use uo;
++use os;
++
++program PooStink(params)
++	var who := params[1];
++	
++	while(1)
++		PrintTextAbove(who, &quot;*&quot; + who.name + &quot; smells like poo!*&quot;);
++		sleep(6);
++	endwhile
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000685.html">[Poldistro-svn] r711 - trunk/096/pkg/commands/player
+</A></li>
+	<LI>Next message: <A HREF="000687.html">[Poldistro-svn] r713 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#686">[ date ]</a>
+              <a href="thread.html#686">[ thread ]</a>
+              <a href="subject.html#686">[ subject ]</a>
+              <a href="author.html#686">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

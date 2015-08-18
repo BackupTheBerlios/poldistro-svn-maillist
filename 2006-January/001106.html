@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1135 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1135%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200601150128.k0F1SQHT014239%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001105.html">
+   <LINK REL="Next"  HREF="001107.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1135 - trunk/096/pkg/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1135%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200601150128.k0F1SQHT014239%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1135 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sun Jan 15 02:28:26 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001105.html">[Poldistro-svn] r1134 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001107.html">[Poldistro-svn] r1136 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1106">[ date ]</a>
+              <a href="thread.html#1106">[ thread ]</a>
+              <a href="subject.html#1106">[ subject ]</a>
+              <a href="author.html#1106">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-15 02:28:21 +0100 (Sun, 15 Jan 2006)
+New Revision: 1135
+
+Modified:
+   trunk/096/pkg/commands/gm/info.src
+Log:
+Added support for changing coordinates.
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2006-01-15 01:17:22 UTC (rev 1134)
++++ trunk/096/pkg/commands/gm/info.src	2006-01-15 01:28:21 UTC (rev 1135)
+@@ -449,11 +449,16 @@
+ 
+ 	SendSysMessage(who, &quot;+&gt;&quot;+input_info);
+ 
+-	case ( CStr(input_info.editFunc) )
+-		&quot;PropEdit&quot;:
++	case ( Lower(CStr(input_info.editFunc)) )
++		&quot;propedit&quot;:
+ 			PropEdit(who, targ, input_info);
++			break;
++		&quot;coordedit&quot;:
++			CoordEdit(who, targ, input_info);
++			break;
+ 		default:
+ 			GumpPrompt(who, &quot;Dont know what to do with edit function type '&quot;+input_info.editFunc+&quot;'&quot;);
++			break;
+ 	endcase
+ 	return 0;
+ endfunction
+@@ -461,8 +466,46 @@
+ function PropEdit(who, targ, input_info)
+ 	var value := ParseMembers(targ, input_info.name);
+ 	
+-	var change := CStr(RequestGump(who, &quot;New value to assign &quot;+input_info.name+&quot; to.&quot;, &quot;'NULL' to set as non-value.&quot;, CStr(value)));
+-	SendSysMessage(who, &quot;*&gt;&quot;+ParseMembers(targ, input_info.name, change));
++	var change := CStr(RequestGump(who, &quot;New value to assign &quot;+input_info.name+&quot; to.&quot;, &quot;'NULL' to set as non-value.&quot;, CStr(value), CANCEL_BTN_ON));
++	if ( change != error )
++		ParseMembers(targ, input_info.name, change);
++	endif
+ 
+ 	return 1;
++endfunction
++
++function CoordEdit(who, targ, input_info)
++	var value := ParseMembers(targ, input_info.name);
++	
++	var change := CStr(RequestGump(who, &quot;New value to assign &quot;+input_info.name+&quot; to.&quot;, &quot;&quot;, CStr(value), CANCEL_BTN_ON));
++	if ( change == error )
++		return 0;
++	endif
++	
++	var x := targ.x;
++	var y := targ.y;
++	var z := targ.z;
++	var realm := targ.realm;
++	
++	case ( Lower(input_info.name) )
++		&quot;x&quot;: 
++			x := CInt(change);
++			break;
++		&quot;y&quot;: 
++			y := CInt(change); 
++			break;
++		&quot;z&quot;: z := 
++			z := CInt(change);
++			break;
++		&quot;realm&quot; : 
++			realm := CStr(change);
++			break;
++	endcase
++		
++	var result := MoveObjectToLocation(targ, x, y, z, realm, MOVEOBJECT_FORCELOCATION);
++	if ( result.errortext )
++		GumpPrompt(who, &quot;Movement Error [P] &quot;+result);
++	endif
++
++	return 1;
+ endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001105.html">[Poldistro-svn] r1134 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001107.html">[Poldistro-svn] r1136 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1106">[ date ]</a>
+              <a href="thread.html#1106">[ thread ]</a>
+              <a href="subject.html#1106">[ subject ]</a>
+              <a href="author.html#1106">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

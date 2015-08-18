@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r786 - in trunk/096/pkg/commands: gm seer test
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r786%20-%20in%20trunk/096/pkg/commands%3A%20gm%20seer%20test&In-Reply-To=%3C200511011749.jA1HnboP009191%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000759.html">
+   <LINK REL="Next"  HREF="000761.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r786 - in trunk/096/pkg/commands: gm seer test</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r786%20-%20in%20trunk/096/pkg/commands%3A%20gm%20seer%20test&In-Reply-To=%3C200511011749.jA1HnboP009191%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r786 - in trunk/096/pkg/commands: gm seer test">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 18:49:37 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000759.html">[Poldistro-svn] r785 - trunk/096/config
+</A></li>
+        <LI>Next message: <A HREF="000761.html">[Poldistro-svn] r787 - trunk/096/pkg/items/doors
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#760">[ date ]</a>
+              <a href="thread.html#760">[ thread ]</a>
+              <a href="subject.html#760">[ subject ]</a>
+              <a href="author.html#760">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 18:49:36 +0100 (Tue, 01 Nov 2005)
+New Revision: 786
+
+Removed:
+   trunk/096/pkg/commands/gm/showstats.src
+   trunk/096/pkg/commands/seer/createlightsource.src
+   trunk/096/pkg/commands/test/firestorm.src
+   trunk/096/pkg/commands/test/killmods.src
+Log:
+Unnecessary commands.
+Plus they want to use the new attributes system.
+If they dont exist I dont have to fix them :p
+
+Deleted: trunk/096/pkg/commands/gm/showstats.src
+===================================================================
+--- trunk/096/pkg/commands/gm/showstats.src	2005-11-01 17:46:36 UTC (rev 785)
++++ trunk/096/pkg/commands/gm/showstats.src	2005-11-01 17:49:36 UTC (rev 786)
+@@ -1,14 +0,0 @@
+-
+-use uo;
+-include &quot;include/attributes&quot;;
+-
+-program textcmd_showstats( who )
+-    SendSysMessage( who, &quot;Select a mobile.&quot; );
+-
+-    var mobile := Target( who );
+-    if (mobile)
+-        PrintTextAbovePrivate( mobile, &quot;Str: &quot; + GetStrength(mobile), who );
+-        PrintTextAbovePrivate( mobile, &quot;Dex: &quot; + GetDexterity(mobile), who );
+-        PrintTextAbovePrivate( mobile, &quot;Int: &quot; + GetIntelligence(mobile), who );
+-    endif
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/seer/createlightsource.src
+===================================================================
+--- trunk/096/pkg/commands/seer/createlightsource.src	2005-11-01 17:46:36 UTC (rev 785)
++++ trunk/096/pkg/commands/seer/createlightsource.src	2005-11-01 17:49:36 UTC (rev 786)
+@@ -1,43 +0,0 @@
+-/* $Id$
+- *
+- */
+-use uo;
+-use os;
+-
+-include &quot;include/sound&quot;;
+-include &quot;include/attributes&quot;;
+-
+-program command_CreateLightsource(caster)
+-
+-	var cast_loc := TargetCoordinates( caster );
+-	if (!cast_loc.x)
+-		return 0;
+-	endif
+-
+-	if( !CheckLosAt( caster, cast_loc.x, cast_loc.y, cast_loc.z ) )
+-		SendSysMessage( caster, &quot;You don't have line of sight to that.&quot; );
+-		return 0;
+-	endif
+-
+-	var thecritter;
+-	var parms := {};
+-
+-	parms .+ script := &quot;tamed&quot;;
+-	parms .+ name := &quot;a magical lightsource&quot;;
+-
+-	thecritter := CreateNpcFromTemplate(&quot;wisp&quot;, cast_loc.x, cast_loc.y,cast_loc.z, parms, caster.realm);
+-	SetObjProperty(thecritter,&quot;master&quot;, caster.serial);
+-	SetObjProperty(thecritter, &quot;summoned&quot;,1);
+-	var thelight := CreateItemAtLocation(1, 1, 1, 0xa22, 1, thecritter.realm);
+-	thelight.newbie := 1;
+-	EquipItem(thecritter, thelight);
+-	SetHp(thecritter, 1);
+-	SetBaseStrength(thecritter,1);
+-	SetMana(thecritter, 1);
+-	SetBaseIntelligence(thecritter,1);
+-	PlaySoundEffect(caster, SFX_SPELL_SUMMON_ELEMENTAL);
+-	Detach();
+-	sleep(120);
+-	ApplyRawDamage(thecritter, GetHp(thecritter) + 3); //should kill it off
+-
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/test/firestorm.src
+===================================================================
+--- trunk/096/pkg/commands/test/firestorm.src	2005-11-01 17:46:36 UTC (rev 785)
++++ trunk/096/pkg/commands/test/firestorm.src	2005-11-01 17:49:36 UTC (rev 786)
+@@ -1,37 +0,0 @@
+-use uo;
+-use os;
+-use util;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+-
+-program flamewind(who)
+-  var newtarg;
+-  var x, y;
+-  var i := 20;
+-  Detach();
+-  PlaySoundEffect(who, 0x231);
+-  while(i &gt; 0)
+-    x := who.x + RandomInt(15) - 7;
+-    y := who.y + RandomInt(15) - 7;
+-    newtarg := CreateItemAtLocation(x, y, who.z, 0xeed, 1, who.realm);
+-    newtarg.graphic := 1;
+-    PlayMovingEffectXYZ( newtarg.x, newtarg.y,(newtarg.z + 80), newtarg.x, newtarg.y, newtarg.z, 0x36d4, 0x18, 0x10, 0, who.realm);
+-    RainDamage(newtarg);
+-    i := i - 1;
+-    DestroyItem(newtarg);
+-    sleepms(200);
+-  endwhile
+-endprogram
+-
+-function RainDamage(targ)
+-  var victims := ListMobilesNearLocationEx(targ.x, targ.y, targ.z, 3, 0x3, targ.realm);
+-  foreach targ in victims
+-    if((GetHp(targ)) &amp;&amp; (!targ.cmdlevel))
+-      PlayObjectCenteredEffect(targ, 0x36cb, 7, 0x10);
+-      PlaySoundEffect(targ, 0x228);
+-      SetObjProperty(targ, &quot;guardkill&quot;, 1);
+-      ApplyRawDamage(targ, 1000);
+-    endif
+-  endforeach
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/test/killmods.src
+===================================================================
+--- trunk/096/pkg/commands/test/killmods.src	2005-11-01 17:46:36 UTC (rev 785)
++++ trunk/096/pkg/commands/test/killmods.src	2005-11-01 17:49:36 UTC (rev 786)
+@@ -1,13 +0,0 @@
+-use uo;
+-include &quot;include/attributes&quot;;
+-
+-program textcmd_setint(chr)
+-    var who := Target(chr);
+-    SetDexterityMod(who, 0);
+-    SetIntelligenceMod(who, 0);
+-    SetStrengthMod(who, 0);
+-    who.ar_mod := 0;
+-    foreach thing in GetAttributeIds()
+-      SetAttributeTemporaryMod(chr, thing, 0);
+-    endforeach
+-endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000759.html">[Poldistro-svn] r785 - trunk/096/config
+</A></li>
+	<LI>Next message: <A HREF="000761.html">[Poldistro-svn] r787 - trunk/096/pkg/items/doors
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#760">[ date ]</a>
+              <a href="thread.html#760">[ thread ]</a>
+              <a href="subject.html#760">[ subject ]</a>
+              <a href="author.html#760">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

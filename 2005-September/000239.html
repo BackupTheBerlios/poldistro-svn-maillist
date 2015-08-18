@@ -1,0 +1,644 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r261 - in trunk/096/pkg/systems: . crafting crafting/config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r261%20-%20in%20trunk/096/pkg/systems%3A%20.%20crafting%20crafting/config&In-Reply-To=%3C200509271411.j8REBEME017413%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000237.html">
+   <LINK REL="Next"  HREF="000240.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r261 - in trunk/096/pkg/systems: . crafting crafting/config</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r261%20-%20in%20trunk/096/pkg/systems%3A%20.%20crafting%20crafting/config&In-Reply-To=%3C200509271411.j8REBEME017413%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r261 - in trunk/096/pkg/systems: . crafting crafting/config">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Sep 27 16:11:14 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000237.html">[Poldistro-svn] r260 - trunk/096/pkg/systems/attributes
+</A></li>
+        <LI>Next message: <A HREF="000240.html">[Poldistro-svn] r262 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#239">[ date ]</a>
+              <a href="thread.html#239">[ thread ]</a>
+              <a href="subject.html#239">[ subject ]</a>
+              <a href="author.html#239">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-27 16:11:12 +0200 (Tue, 27 Sep 2005)
+New Revision: 261
+
+Added:
+   trunk/096/pkg/systems/crafting/
+   trunk/096/pkg/systems/crafting/config/
+   trunk/096/pkg/systems/crafting/config/craftConfig.cfg
+   trunk/096/pkg/systems/crafting/config/icp.cfg
+   trunk/096/pkg/systems/crafting/config/resourceList.cfg
+   trunk/096/pkg/systems/crafting/pkg.cfg
+Log:
+introduction of crafting package. Base cfgs and pkg directory.
+
+Added: trunk/096/pkg/systems/crafting/config/craftConfig.cfg
+===================================================================
+--- trunk/096/pkg/systems/crafting/config/craftConfig.cfg	2005-09-26 14:02:50 UTC (rev 260)
++++ trunk/096/pkg/systems/crafting/config/craftConfig.cfg	2005-09-27 14:11:12 UTC (rev 261)
+@@ -0,0 +1,201 @@
++######################################################################################
++#
++# Crafting Setup	Global Settings for crafting
++# {
++#	MaxAmount	Max Amount allowed to be crafted in a row from gump's amount entry
++#	DefaultAmount	Default amount in the text box when first using a skill
++#	RetainColor	0/1 for Off/On if skills allow retaining color of material
++#	Info		0/1 for Off/On if skills give the Info button for items
++#	MakeLast	0/1 for Off/On if skills give the Make Last button
++#	Resmelt		0/1 for Off/On if skills allow resmelting from crafting gump
++# }
++#
++######################################################################################
++#
++# Crafting Skills	List of all the names in the crafting system.
++# {
++#	Skill	alchemy
++#       Skill   blacksmithy
++#       Skill   carpentry
++#       Skill   cartography
++#	Skill	cooking
++#	Skill	fletching
++#	Skill	inscription
++#	Skill	tailoring
++#	Skill	tinkering
++# }
++#
++######################################################################################
++#
++# Crafting alchemy	Exists for EACH skill in skill list above. Settings per skill
++# {
++#	Name		Name you want. Must match what is sent by skill to gump command.
++#	Attribute	The Attribute it uses from Attributes.cfg
++#	CraftDelay	The delay between each loop while crafting items
++#	CraftAnim	The animation (0 if none) to play during each loop
++#	Repair		0/1 Off/On for giving the Repair button in gump
++#	Smelt		0/1 Off/On for giving the Resmelt button in gump
++#	MakersMark	0/1 Off/On for giving the Add Makers Mark button
++#	RetainColor	0/1 Off/On for giving Retain Color button
++#	MenuFile	String path of the location of the menu file
++#	ExceptionalName	The string to use when exceptional items are crafted. Example below.
++# }
++#
++# Exceptional Name Example: &quot;an agapite helmet [exceptionalname crafter's name]&quot;
++#			    &quot;an agapite helmet [crafted by crafter's name]&quot;
++#			    &quot;an agapite helmet [crafted by Joe]&quot;
++#
++# The exceptional name string, is prepended before the crafter's name in the brackets &quot;[]&quot;.
++#
++######################################################################################
++
++Crafting Setup
++{
++	MaxAmount	10
++	DefaultAmount	1
++	RetainColor	1
++	Info		1
++	MakeLast	1
++	Resmelt		1
++}
++
++Crafting Skills
++{
++	Skill	alchemy
++        Skill   blacksmithy
++        Skill   carpentry
++        Skill   cartography
++	Skill	cooking
++	Skill	fletching
++	Skill	inscription
++	Skill	tailoring
++	Skill	tinkering
++}
++
++Crafting alchemy
++{
++	Name		alchemy
++	Attribute	alchemy
++	CraftDelay	2
++	CraftLoops	0
++	CraftAnim	0
++	Repair		0
++	Smelt		0
++	MakersMark	0
++	RetainColor	0
++	ExceptionalName	brewed by
++}
++
++Crafting blacksmithy
++{
++	Name		blacksmithy
++	Attribute	blacksmithy
++	CraftDelay	2
++	CraftLoops	0
++	CraftAnim	0
++	Repair		1
++	Smelt		1
++	MakersMark	1
++	RetainColor	1
++	MenuFile	:blacksmithy:SmithMenu
++	ExceptionalName	crafted by
++}
++
++Crafting carpentry
++{
++	Name		carpentry
++	Attribute	carpentry
++	CraftDelay	2
++	CraftLoops	0
++	CraftAnim	0
++	Repair		1
++	Smelt		0
++	MakersMark	1
++	RetainColor	1
++	ExceptionalName	crafted by
++}
++
++Crafting cartography
++{
++	Name		cartography
++	Attribute	cartography
++	CraftDelay	2
++	CraftLoops	0
++	CraftAnim	0
++	Repair		0
++	Smelt		0
++	MakersMark	0
++	RetainColor	0
++	ExceptionalName	drawn by
++}
++
++Crafting cooking
++{
++	Name		cooking
++	Attribute	cooking
++	CraftDelay	2
++	CraftLoops	0
++	CraftAnim	0
++	Repair		0
++	Smelt		0
++	MakersMark	1
++	RetainColor	0
++	ExceptionalName	cooked by
++}
++
++Crafting fletching
++{
++	Name		fletching
++	Attribute	fletching
++	CraftDelay	2
++	CraftLoops	0
++	CraftAnim	0
++	Repair		1
++	Smelt		0
++	MakersMark	1
++	RetainColor	1
++	ExceptionalName	fletched by
++}
++
++Crafting inscription
++{
++	Name		inscription
++	Attribute	inscription
++	CraftDelay	2
++	CraftLoops	0
++	CraftAnim	0
++	Repair		0
++	Smelt		0
++	MakersMark	0
++	RetainColor	0
++	ExceptionalName	scribed by
++}
++
++Crafting tailoring
++{
++	Name		tailoring
++	Attribute	tailoring
++	CraftDelay	2
++	CraftLoops	0
++	CraftAnim	0
++	Repair		1
++	Smelt		0
++	MakersMark	1
++	RetainColor	1
++	ExceptionalName	tailored by
++}
++
++Crafting tinkering
++{
++	Name		tinkering
++	Attribute	tinkering
++	CraftDelay	2
++	CraftLoops	0
++	CraftAnim	0
++	Repair		1
++	Smelt		0
++	MakersMark	1
++	RetainColor	1
++	ExceptionalName	tinkered by
++}
++
+
+Added: trunk/096/pkg/systems/crafting/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/systems/crafting/config/icp.cfg	2005-09-26 14:02:50 UTC (rev 260)
++++ trunk/096/pkg/systems/crafting/config/icp.cfg	2005-09-27 14:11:12 UTC (rev 261)
+@@ -0,0 +1,14 @@
++ICP Register
++{
++        Name            Crafting Base
++        Version         1.0
++        Description     Main packaged include files for the Crafting Backbone.
++
++        Creator         MuadDib
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++        //TextCmd       cmdlevel path
++}
+
+Added: trunk/096/pkg/systems/crafting/config/resourceList.cfg
+===================================================================
+--- trunk/096/pkg/systems/crafting/config/resourceList.cfg	2005-09-26 14:02:50 UTC (rev 260)
++++ trunk/096/pkg/systems/crafting/config/resourceList.cfg	2005-09-27 14:11:12 UTC (rev 261)
+@@ -0,0 +1,316 @@
++// Metals/Ingots
++
++Resource 0x6309
++{
++    Name        iron
++    Color       0
++    Power       0
++    WPower      0
++    Skill       0
++    Type        Metal
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x630a
++{
++    Name        dull copper
++    Color       0x8415
++    Power       0
++    WPower      0
++    Skill       65
++    Type        Metal
++    Quality     0 6 10
++    Ptmod       5
++}
++
++Resource 0x630b
++{
++    Name        shadow
++    Color       0x8455
++    Power       0
++    WPower      0
++    Skill       70
++    Type        Metal
++    Quality     1 2 10
++    Ptmod       5
++}
++
++Resource 0x630c
++{
++    Name        copper
++    Color       0x845e
++    Power       COPPER
++    WPower      0
++    Skill       75
++    Type        Metal
++    Quality     1 1 40
++    Ptmod       10
++}
++
++Resource 0x630d
++{
++    Name        bronze
++    Color       0x86b2
++    Power       0
++    WPower      0
++    Skill       80
++    Type        Metal
++    Quality     3 3 40
++    Ptmod       10
++}
++
++Resource 0x630e
++{
++    Name        golden
++    Color       0x88a6
++    Power       0
++    WPower      0
++    Skill       85
++    Type        Metal
++    Quality     5 1 50
++    Ptmod       15
++}
++
++Resource 0x630f
++{
++    Name        agapite
++    Color       0x83ea
++    Power       0
++    WPower      0
++    Skill       90
++    Type        Metal
++    Quality     7 2 50
++    Ptmod       15
++}
++
++Resource 0x6310
++{
++    Name        verite
++    Color       0x889f
++    Power       0
++    WPower      0
++    Skill       97
++    Type        Metal
++    Quality     7 3 50
++    Ptmod       20
++}
++
++Resource 0x6311
++{
++    Name        valorite
++    Color       0x8539
++    Power       0
++    WPower      0
++    Skill       100
++    Type        Metal
++    Quality     9 4 50
++    Ptmod       25
++}
++
++// Wood/Logs/Boards
++
++Resource 0x1bdd
++{
++    Name        plain
++    Color       0
++    Power       0
++    WPower      0
++    Skill       0
++    Type        Wood
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x1bd7
++{
++    Name        plain
++    Color       0
++    Power       0
++    WPower      0
++    Skill       0
++    Type        Wood
++    Quality     0 0 0
++    Ptmod       0
++}
++
++// Cloth
++
++Resource 0x1766
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x1767
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x1768
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf95
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf96
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf97
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf98
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf99
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf9a
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf9b
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf9c
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++
++// Leather
++
++Resource 0x1078
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Leather
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x1079
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Leather
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x702e
++{
++    Name	spined
++    Color	1337
++    Skill       65
++    Power       0
++    Type        Leather
++    Quality     0 5 0
++    Ptmod       17
++}
++
++Resource 0x7030
++{
++    Name	horned
++    Color       1653
++    Power       0
++    Skill       90
++    Type        Leather
++    Quality     0 2 0
++    Ptmod       25
++}
++
++Resource 0x702f
++{
++    Name	barbed
++    Color       1425
++    Power       0
++    Skill       70
++    Type        Leather
++    Quality     0 2 0
++    Ptmod       20
++}
+
+Added: trunk/096/pkg/systems/crafting/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/crafting/pkg.cfg	2005-09-26 14:02:50 UTC (rev 260)
++++ trunk/096/pkg/systems/crafting/pkg.cfg	2005-09-27 14:11:12 UTC (rev 261)
+@@ -0,0 +1,13 @@
++Enabled		1
++Name		crafting
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		MuadDib
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++
++#Conflicts none
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000237.html">[Poldistro-svn] r260 - trunk/096/pkg/systems/attributes
+</A></li>
+	<LI>Next message: <A HREF="000240.html">[Poldistro-svn] r262 - trunk/096/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#239">[ date ]</a>
+              <a href="thread.html#239">[ thread ]</a>
+              <a href="subject.html#239">[ subject ]</a>
+              <a href="author.html#239">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

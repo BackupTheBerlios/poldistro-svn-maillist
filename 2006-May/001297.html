@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1344 - trunk/096/pkg/systems/combat/useScripts
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1344%20-%20trunk/096/pkg/systems/combat/useScripts&In-Reply-To=%3C200605120812.k4C8CcA6022446%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001298.html">
+   <LINK REL="Next"  HREF="001316.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1344 - trunk/096/pkg/systems/combat/useScripts</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1344%20-%20trunk/096/pkg/systems/combat/useScripts&In-Reply-To=%3C200605120812.k4C8CcA6022446%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1344 - trunk/096/pkg/systems/combat/useScripts">austin at berlios.de
+       </A><BR>
+    <I>Fri May 12 10:12:38 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001298.html">[Poldistro-svn] r1343 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="001316.html">[Poldistro-svn] r1345 - in trunk/096: config scripts/console scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1297">[ date ]</a>
+              <a href="thread.html#1297">[ thread ]</a>
+              <a href="subject.html#1297">[ subject ]</a>
+              <a href="author.html#1297">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-12 10:12:38 +0200 (Fri, 12 May 2006)
+New Revision: 1344
+
+Modified:
+   trunk/096/pkg/systems/combat/useScripts/bladed.src
+Log:
+
+
+Modified: trunk/096/pkg/systems/combat/useScripts/bladed.src
+===================================================================
+--- trunk/096/pkg/systems/combat/useScripts/bladed.src	2006-05-12 07:56:34 UTC (rev 1343)
++++ trunk/096/pkg/systems/combat/useScripts/bladed.src	2006-05-12 08:12:38 UTC (rev 1344)
+@@ -1,92 +1,60 @@
+-// //$Id$
+-
+-
+-use cfgfile;
++/* $Id$
++ *
++ *
++ */
++ 
+ use uo;
+ use os;
+ use util;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/OLD/sound&quot;;
+-include &quot;:attributes:attributes&quot;;
+-include &quot;include/string&quot;;
+-include &quot;:itemutils:objtype&quot;;
+-include &quot;:itemutils:canAccess&quot;;
+-include &quot;:itemutils:toolWear&quot;;
+-include &quot;include/OLD/noto&quot;;
+-include &quot;:tailoring:tailoringFunctions&quot;;
+-include &quot;:fishing:fishingFunctions&quot;;
+-include &quot;:containers:corpse/corpseFunctions&quot;;
++include &quot;:lumberjacking:lumberJack&quot;;
+ 
+-var bowcraftconfigfile := ReadConfigFile(&quot;:bowcraft:bowcraft&quot;);
+-
+-
+-program use_blade(who, blade )
+-
+-	EraseObjProperty(who, &quot;IsMeditating&quot;);
+-	EraseObjProperty(who, &quot;HealTimer&quot;);
+-
+-	if ( !can_access(who, blade) )
+-		return 0;
+-	endif
+-	if ( !ReserveItem(blade) )
+-		return 0;
+-	endif
+-
++program use_Bladed(who, tool)
+ 	SendSysMessage(who, &quot;What would you like to use that on?&quot;);
+-	var use_on := TargetCoordinates(who);
+-	if ( !use_on )
++	var targ := TargetCoordinates(who);
++	
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
+ 		return 0;
+ 	endif
+-	if ( use_on.item )
+-		if ( !can_access(who, use_on.item, &quot;unmovable&quot;) )
+-			return 0;
+-		endif
+-	endif
+-	var checkme := use_on.item.objtype;
+-	if ( use_on.mobile.npctemplate == &quot;sheep&quot; )
+-		process_wool(who, blade, use_on.mobile);
+-	elseif ( use_on.item.objtype == UOBJ_CORPSE )
+-		ReleaseItem(blade);
+-		Carve_Corpse(who, use_on.item);
+-	elseif ( is_fish(checkme) )
+-		CarveFish(who, blade, use_on.item);
+-	elseif ( is_tree(use_on.objtype ) )
+-		CarveTree(who, blade, use_on.item);
++	
++	if ( targ.item )
++		CarveItems(who, tool, targ.item);
++	elseif ( targ.mobile )
++		CarveMobiles(who, tool, targ.mobile);
+ 	else
+-		SendSysMessage(who, &quot;I don't know how to use those items together.&quot;);
++		CarveObject(who, tool, targ.objtype);
+ 	endif
+-
+ endprogram
+ 
+-
+-function is_tree(theobj )
+-
+-	if ( (theobj == 0x0c9e) || (theobj == 0x0ca8) || (theobj == 0x0caa) )
++function CarveItems(who, tool, item)
++	if ( item.IsA(POLCLASS_CORPSE) )
++		// Carve corpse;
+ 		return 1;
+-	elseif (theobj == 0x0cab )
+-		return 1;
+-	elseif ((theobj &gt;= 0x0c99) &amp;&amp; (theobj &lt;= 0x0cea) )
+-		return 1;
+-	elseif ((theobj &gt;= 0x0cf3) &amp;&amp; (theobj &lt;= 0x0d03) )
+-		return 1;
+-	elseif ((theobj &gt;= 0x0d41) &amp;&amp; (theobj &lt;= 0x0dab) )
+-		return 1;
+-	else
+-		return 0;
+ 	endif
+-
++	//elseif ( fish )
++	// 	Fish?
++	//	return 1;
++	//endif
++	
++	return 1;
+ endfunction
+ 
+-
+-function CarveTree(who, blade, use_on )
+-
+-	if ( Distance(who, use_on) &gt; 2 )
+-		SendSysMessage(who, &quot;You cannot use that&quot;);
+-		return 0;
++function CarveMobiles(who, tool, mobile)
++	if ( mobile.npctemplate[&quot;sheep&quot;] )
++		// Wool stuff;
++		return 1;
+ 	endif
+-	CreateItemInBackpack(who, UOBJ_KINDLING, 1);
+-	DestroyItem(use_on);
+-	SendSysMessage(who, &quot;You chip off some kindling and put it in your backpack.&quot;);
++	
++	return 1;
++endfunction
+ 
+-endfunction
+\ No newline at end of file
++function CarveObject(who, tool, objtype)
++	if ( LJ_IsTree(objtype) )
++		// Give kindling;
++		return 1;
++	endif
++	
++	return 1;
++endfunction
++		
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001298.html">[Poldistro-svn] r1343 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="001316.html">[Poldistro-svn] r1345 - in trunk/096: config scripts/console scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1297">[ date ]</a>
+              <a href="thread.html#1297">[ thread ]</a>
+              <a href="subject.html#1297">[ subject ]</a>
+              <a href="author.html#1297">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

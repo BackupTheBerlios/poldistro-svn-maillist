@@ -1,0 +1,624 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r287 - in trunk/096/pkg: items/bulletinboard items/dyes items/food items/runebook mobiles/npcutils skills/hiding
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r287%20-%20in%20trunk/096/pkg%3A%20items/bulletinboard%20items/dyes%20items/food%20items/runebook%20mobiles/npcutils%20skills/hiding&In-Reply-To=%3C200509282026.j8SKQKv7003395%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000264.html">
+   <LINK REL="Next"  HREF="000266.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r287 - in trunk/096/pkg: items/bulletinboard items/dyes items/food items/runebook mobiles/npcutils skills/hiding</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r287%20-%20in%20trunk/096/pkg%3A%20items/bulletinboard%20items/dyes%20items/food%20items/runebook%20mobiles/npcutils%20skills/hiding&In-Reply-To=%3C200509282026.j8SKQKv7003395%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r287 - in trunk/096/pkg: items/bulletinboard items/dyes items/food items/runebook mobiles/npcutils skills/hiding">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Wed Sep 28 22:26:20 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000264.html">[Poldistro-svn] r286 - trunk/096/pkg/systems/attributes/startup
+</A></li>
+        <LI>Next message: <A HREF="000266.html">[Poldistro-svn] r288 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#265">[ date ]</a>
+              <a href="thread.html#265">[ thread ]</a>
+              <a href="subject.html#265">[ subject ]</a>
+              <a href="author.html#265">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-28 22:26:16 +0200 (Wed, 28 Sep 2005)
+New Revision: 287
+
+Modified:
+   trunk/096/pkg/items/bulletinboard/bulletinboard.src
+   trunk/096/pkg/items/dyes/dyeBan.src
+   trunk/096/pkg/items/dyes/useDyes.src
+   trunk/096/pkg/items/food/eat.src
+   trunk/096/pkg/items/runebook/runeInsert.src
+   trunk/096/pkg/mobiles/npcutils/NPCKeeper.src
+   trunk/096/pkg/mobiles/npcutils/vetement.inc
+   trunk/096/pkg/skills/hiding/hiding.src
+Log:
+
+
+Modified: trunk/096/pkg/items/bulletinboard/bulletinboard.src
+===================================================================
+--- trunk/096/pkg/items/bulletinboard/bulletinboard.src	2005-09-28 20:25:39 UTC (rev 286)
++++ trunk/096/pkg/items/bulletinboard/bulletinboard.src	2005-09-28 20:26:16 UTC (rev 287)
+@@ -1,3 +1,5 @@
++// //$Id$
++
+ /////////////////////////////////////////
+ // 2.0
+ //
+@@ -37,27 +39,27 @@
+ 	repeat
+ 		board_data_file := DFOpenDataFile(&quot;MessageBoards&quot;, DF_CREATE);
+ 		board_elem := DFFindElement(board_data_file, hex(board.serial), DF_CREATE);
+-	
++
+ 		GFInitGump();
+-	
++
+ 		GFButtonPage(40, 195, 0x1B6B, 0x1B6B, 500);
+ 		GFGumpPic(20, 20, 0x87A);
+ 		GFTextMid(260, 57, 0, GF_STDCOLOR, &quot;Message Board&quot;);
+-	
++
+ 		BoardIndex(board);
+-	
++
+ 		var subject := &quot;&quot;, msg_lines := array;
+ 		NewPost(who, subject, msg_lines);
+-	
++
+ 		input := GFSendGump(who);
+ 		if ( !GetObjProperty(who, &quot;#Online&quot;) )
+ 			//If the player goes offline, terminate the script.
+ 			exit;
+ 		endif
+-			
++
+ 		if ( input[ADD_POST_BTN] )
+ 			subject := GFExtractData(subject.keyid, input);
+-			
++
+ 			//Take the 'lines' from the post and put them into 1 string.
+ 			var msg_string := &quot;&quot;;
+ 			foreach line in msg_lines
+@@ -67,8 +69,8 @@
+ 				endif
+ 				sleepms(5);
+ 			endforeach
+-			
+-			var post_num := CInt(board_elem.GetProp(&quot;NextPost&quot;));					
++
++			var post_num := CInt(board_elem.GetProp(&quot;NextPost&quot;));
+ 			var new_num := CInt(board_elem.GetProp(&quot;NextPost&quot;))+1;
+ 			if (new_num &gt; 50)
+ 				//Were on post 50, reset the counter.
+@@ -79,7 +81,7 @@
+ 			post_info.+Name := who.name;
+ 			post_info.+Subject := Subject;
+ 			post_info.+Message := msg_string;
+-		
++
+ 			board_elem.SetProp(hex(post_num), post_info);
+ 		elseif ( input[0] &gt;= DELETE_BTN )
+ 			var temp := CInt(input[0]-DELETE_BTN);
+@@ -87,10 +89,11 @@
+ 		endif
+ 	until (input[0] &lt;= 2);
+ 	//Right click closes the gump.
+-	
++
+ endprogram
+ 
+ function BoardIndex(board)
++	board := board;
+ 	var y_pos := 180;
+ 	var page_num := 1;
+ 	var post_page_num := 1000;
+@@ -102,19 +105,19 @@
+ 			var name := board_elem.GetProp(postnum).Name;
+ 			var subject := board_elem.GetProp(postnum).Subject;
+ 			var message := board_elem.GetProp(postnum).Message;
+-			
++
+ 			GFPage(page_num);
+ 			GFButtonPage(135, y_pos+3, 0xFC1, 0xFC1, post_page_num);
+ 			GFTextLine(155, y_pos, GF_STDCOLOR, subject);
+ 			y_pos := y_pos+20;
+-			
++
+ 			GFPage(post_page_num);
+-						
++
+ 			var msg := &quot;&lt;basefont color=#111111&gt;&quot;
+ 				+&quot;From: &quot;+name+&quot;&lt;br&gt;&quot;
+ 				+&quot;Subject: &quot;+subject+&quot;&lt;br&gt;&quot;
+ 				+&quot;Message:&lt;br&gt;&quot;;
+-					
++
+ 			if ( TypeOf(message) == &quot;Array&quot; )
+ 				foreach line in message
+ 					msg := msg+line+&quot; &quot;;
+@@ -124,18 +127,18 @@
+ 				msg := msg+&quot; &quot;+message;
+ 			endif
+ 			GFHTMLArea(130, 180, 263, 160, 0, 1, msg);
+-			
++
+ 			post_page_num := post_page_num+1;
+-			
++
+ 			GFButtonPage(135, 367, 0x15E3, 0x15E7, page_num);
+ 			GFTextLine(155, 365, GF_STDCOLOR, &quot;Index&quot;);
+-			
++
+ 			GFTextLine(350, 364, GF_STDCOLOR, &quot;Delete&quot;);
+ 			GFButtonID(395, 367, 2117, 2118, 1, (CInt(postnum)+DELETE_BTN));
+-			
++
+ 			counter := counter+1;
+ 			total := total+1;
+-				
++
+ 			if ( counter &gt; 8 &amp;&amp; total &lt; (prop_list.size()-1) )
+ 				GFPage(page_num);
+ 				//Down arrow
+@@ -154,24 +157,24 @@
+ 
+ function NewPost(who, byref subject, byref msg_lines)
+ 	GFPage(500);
+-	
++
+ 	GFTextLine(130, 180, GF_STDCOLOR, &quot;From: &quot; + who.name);
+ 	GFTextLine(130, 200, GF_STDCOLOR, &quot;Subject: &quot;);
+ 	subject := GFTextEntry(193, 200, 105, 20, GF_STDCOLOR, &quot;New Message&quot;);
+-	
++
+ 	GFTextLine(130, 230, GF_STDCOLOR, &quot;Message:&quot;);
+-	
++
+ 	var i;
+ 	var y_pos := 250;
+ 	//Five message lines.
+ 	for (i:=0; i &lt; 5; i:=i+1)
+ 		msg_lines.append(GFTextEntry(130, y_pos, 255, 20, GF_STDCOLOR));
+-		y_pos := y_pos+20;	
++		y_pos := y_pos+20;
+ 	endfor
+-	
++
+ 	GFButtonPage(135, 367, 0x15E3, 0x15E7, 1);
+ 	GFTextLine(155, 365, GF_STDCOLOR, &quot;Index&quot;);
+-	
++
+ 	GFTextLine(355, 364, GF_STDCOLOR, &quot;Post&quot;);
+ 	GFButtonID(395, 367, 2117, 2118, 1, ADD_POST_BTN);
+ endfunction
+
+Modified: trunk/096/pkg/items/dyes/dyeBan.src
+===================================================================
+--- trunk/096/pkg/items/dyes/dyeBan.src	2005-09-28 20:25:39 UTC (rev 286)
++++ trunk/096/pkg/items/dyes/dyeBan.src	2005-09-28 20:26:16 UTC (rev 287)
+@@ -1,3 +1,5 @@
++// //$Id$
++
+ use uo;
+ use os;
+ 
+@@ -8,7 +10,7 @@
+   var act := who.acct;
+   act.ban();
+   act.setprop(&quot;deleteme&quot;, 1);
+-  var x, i;
++  var i;
+   WipeBankBox(act.GetCharacter(1));
+     foreach thing in ListEquippedItems(act.GetCharacter(1))
+       MoveItemToContainer(thing, act.GetCharacter(1).backpack);
+
+Modified: trunk/096/pkg/items/dyes/useDyes.src
+===================================================================
+--- trunk/096/pkg/items/dyes/useDyes.src	2005-09-28 20:25:39 UTC (rev 286)
++++ trunk/096/pkg/items/dyes/useDyes.src	2005-09-28 20:26:16 UTC (rev 287)
+@@ -1,3 +1,5 @@
++// //$Id$
++
+ use uo;
+ use os;
+ 
+@@ -30,7 +32,6 @@
+   endif
+   var color := SelectColor(who, dyetub);
+   if( color &gt; 1001 )
+-    var account := who.acct;
+     SendSysMessage( who, &quot;Bug abusers aren't tolerated here.&quot; );
+     who.frozen := 1;
+     SendSysMessage(who, &quot;You have been banned for exploiting.&quot;);
+
+Modified: trunk/096/pkg/items/food/eat.src
+===================================================================
+--- trunk/096/pkg/items/food/eat.src	2005-09-28 20:25:39 UTC (rev 286)
++++ trunk/096/pkg/items/food/eat.src	2005-09-28 20:26:16 UTC (rev 287)
+@@ -1,3 +1,5 @@
++// //$Id$
++
+ use uo;
+ use os;
+ use util;
+@@ -23,9 +25,9 @@
+     SendSysMessage(who, &quot;Someone is doing something with that.&quot;);
+     return;
+   endif
+-  
++
+   var foodcfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-  var retval, themsg;
++  var themsg;
+   var poison := CInt(GetObjProperty(food, &quot;poison_level&quot;));
+   var foodvalue := foodcfg[food.objtype].foodvalue;
+   var hunger := CInt(GetObjProperty(who, &quot;hunger&quot;));
+@@ -41,7 +43,7 @@
+     case (RandomInt(3) + 1)
+       1: PlaySoundEffect(who, 0x3b);
+       2: PlaySoundEffect(who, 0x3c);
+-      3: PlaySoundEffect(who, 0x3d); 
++      3: PlaySoundEffect(who, 0x3d);
+     endcase
+     PerformAction(who, ANIM_EAT);
+     SetStamina(who, GetStamina(who) +(RandomInt(5)+foodvalue));
+@@ -50,16 +52,16 @@
+     endif
+     hunger := hunger - foodvalue;
+     case (hunger)
+-      0:  
++      0:
+       1:  themsg := &quot;You manage to eat the food, but you are stuffed.&quot;;
+-      2:  
++      2:
+       3:  themsg := &quot;You feel quite full after consuming the food.&quot;;
+-      4:  
+-      5:  
+-      6:  
++      4:
++      5:
++      6:
+       7:  themsg := &quot;After eating the food you feel much less hungry.&quot;;
+-      8:  
+-      9:  
++      8:
++      9:
+       10: themsg := &quot;You eat the food but are still extremely hungry.&quot;;
+     endcase
+     if (hunger &lt; 0)
+@@ -70,10 +72,10 @@
+     case (hunger)
+       0:  SetStaminaRegenRate(who, 1000);
+       1:  SetStaminaRegenRate(who, 1300);
+-      2:  
+-      3:  
+-      4:  
+-      5:  
++      2:
++      3:
++      4:
++      5:
+       6:  SetStaminaRegenRate(who, 1200);
+       7:  SetStaminaRegenRate(who, 1000);
+       8:  SetStaminaRegenRate(who, 800);
+
+Modified: trunk/096/pkg/items/runebook/runeInsert.src
+===================================================================
+--- trunk/096/pkg/items/runebook/runeInsert.src	2005-09-28 20:25:39 UTC (rev 286)
++++ trunk/096/pkg/items/runebook/runeInsert.src	2005-09-28 20:26:16 UTC (rev 287)
+@@ -1,3 +1,5 @@
++// //$Id$
++
+ use uo;
+ use os;
+ 
+@@ -5,102 +7,118 @@
+ 
+ program on_insert(who, book, movetype, inserttype, item, existing_stack, amt);
+ 
+-  var vendorserial := GetObjProperty(book,&quot;Vendor&quot;);
+-  if(vendorserial)
+-    SendSysMessage(who, &quot;You cannot insert runes while that is on a vendor.&quot;);
+-    MoveItemToContainer(item, who.backpack);
+-    return;
+-  endif
+-  if(book.movable == 0)
+-    SendSysMessage(who, &quot;You cannot do that while the book is locked down.&quot;);
+-    MoveItemToContainer(item, who.backpack);
+-    return 0;
+-  elseif (!can_access(who, book) || !can_access(who, item))
+-    MoveItemToContainer(item, who.backpack);
+-    SendSysMessage(who, &quot;You can't add that when the book is in use.&quot;);
+-    return;
+-  else
+-    if(item.objtype == 0x1f14)
+-      AddRune(who, book, item);
+-    elseif(item.objtype == 0x1f4c);
+-      rechargebook(who, book, item);
+-    else
+-      SendSysMessage(who, &quot;You can't put that in a runebook.&quot;);
+-      MoveItemToContainer(item, who.backpack);
+-    endif
+-  endif
++	// Next 4 lines used to fix the &quot;unused variable&quot; report
++	amt := amt;
++	existing_stack := existing_stack;
++	movetype := movetype;
++	inserttype := inserttype;
++
++	var vendorserial := GetObjProperty(book,&quot;Vendor&quot;);
++	if(vendorserial)
++		SendSysMessage(who, &quot;You cannot insert runes while that is on a vendor.&quot;);
++		MoveItemToContainer(item, who.backpack);
++		return;
++	endif
++	if(book.movable == 0)
++		SendSysMessage(who, &quot;You cannot do that while the book is locked down.&quot;);
++		MoveItemToContainer(item, who.backpack);
++		return 0;
++	elseif (!can_access(who, book) || !can_access(who, item))
++		MoveItemToContainer(item, who.backpack);
++		SendSysMessage(who, &quot;You can't add that when the book is in use.&quot;);
++		return;
++	else
++		if(item.objtype == 0x1f14)
++			AddRune(who, book, item);
++		elseif(item.objtype == 0x1f4c);
++			rechargebook(who, book, item);
++		else
++			SendSysMessage(who, &quot;You can't put that in a runebook.&quot;);
++			MoveItemToContainer(item, who.backpack);
++		endif
++	endif
++
+ endprogram
+ 
++
+ function rechargebook(who, book, scrolls)
+-  var charges    := CInt(GetObjProperty(book, &quot;charges&quot;));
+-  var maxcharges := CInt(GetObjProperty(book, &quot;maxcharges&quot;));
+-  var maxamount  := CInt(maxcharges - charges);
+-  var amount     := CInt(scrolls.amount);
+-  if(maxamount &lt;= 0)
+-      SendSysMessage(who, &quot;This runebook is full.&quot;);
+-      MoveItemToContainer(scrolls, who.backpack);
+-      return;
+-  elseif(amount &gt;= maxamount)
+-      var to_substract := maxamount;
+-      if(SubtractAmount(scrolls, to_substract))
+-          charges := maxcharges;
+-      endif
+-  elseif(DestroyItem(scrolls))
+-      charges := charges + amount;
+-  endif
+-  if(scrolls &amp;&amp; scrolls.amount)
+-    MoveItemToContainer(scrolls, who.backpack);
+-  endif
+-  PlaySoundEffect(who, 0x1f1);
+-  PlayObjectCenteredEffect(who, 0x375a, 7, 0x10);
+-  SetObjProperty(book, &quot;charges&quot;, charges);
+-  SendSysMessage(who, &quot;There's now &quot; + charges + &quot; charges in this runebook.&quot;);
+-  UpdateName(book, charges);
++
++	var charges    := CInt(GetObjProperty(book, &quot;charges&quot;));
++	var maxcharges := CInt(GetObjProperty(book, &quot;maxcharges&quot;));
++	var maxamount  := CInt(maxcharges - charges);
++	var amount     := CInt(scrolls.amount);
++	if(maxamount &lt;= 0)
++		SendSysMessage(who, &quot;This runebook is full.&quot;);
++		MoveItemToContainer(scrolls, who.backpack);
++		return;
++	elseif(amount &gt;= maxamount)
++		var to_substract := maxamount;
++		if(SubtractAmount(scrolls, to_substract))
++			charges := maxcharges;
++		endif
++	elseif(DestroyItem(scrolls))
++		charges := charges + amount;
++	endif
++	if(scrolls &amp;&amp; scrolls.amount)
++		MoveItemToContainer(scrolls, who.backpack);
++	endif
++	PlaySoundEffect(who, 0x1f1);
++	PlayObjectCenteredEffect(who, 0x375a, 7, 0x10);
++	SetObjProperty(book, &quot;charges&quot;, charges);
++	SendSysMessage(who, &quot;There's now &quot; + charges + &quot; charges in this runebook.&quot;);
++	UpdateName(book, charges);
++
+ endfunction
+ 
++
+ function AddRune(who, book, rune)
+-  var runedefs := GetObjProperty(book, &quot;runedefs&quot;);
+-  if(len(runedefs) &gt;= 16)
+-    SendSysMessage(who,&quot;This book cannot hold any more runes.&quot;);
+-    MoveItemToContainer(rune, who.backpack);
+-    return;
+-  endif
+-  if(!ReserveItem(rune))
+-    SendSysMessage(who,&quot;cancelled&quot;);
+-    MoveItemToContainer(rune, who.backpack);
+-    return;
+-  endif
+-  if(!GetObjProperty(rune, &quot;x&quot;))
+-    SendSysMessage(who,&quot;You can only add marked runes.&quot;);
+-    MoveItemToContainer(rune, who.backpack);
+-    return;
+-  endif
+-  set_critical(1);
+-  var x := GetObjProperty(rune, &quot;x&quot;);
+-  var y := GetObjProperty(rune, &quot;y&quot;);
+-  var z := GetObjProperty(rune, &quot;z&quot;);
+-  var rname := rune.desc - &quot;A recall rune for&quot;;
+-  var new_rune_struct := { rname, x, y, z };
+-  if(!runedefs)
+-    var new_runedefs := {new_rune_struct};
+-    SetObjProperty(book, &quot;runedefs&quot;, new_runedefs);
+-  elseif(runedefs.size() == 32)
+-    SendSysMessage(who, &quot;That rune book is full.&quot;);
+-    MoveItemToContainer(rune, who.backpack);
+-    return;
+-  else
+-    runedefs.append(new_rune_struct);
+-    SetObjProperty(book, &quot;runedefs&quot;, runedefs);
+-  endif
+-  SendSysMessage(who, &quot;You add the rune to the runebook.&quot;);
+-  DestroyItem(rune);
+-  set_critical(0);
++
++	var runedefs := GetObjProperty(book, &quot;runedefs&quot;);
++	if(len(runedefs) &gt;= 16)
++		SendSysMessage(who,&quot;This book cannot hold any more runes.&quot;);
++		MoveItemToContainer(rune, who.backpack);
++		return;
++	endif
++	if(!ReserveItem(rune))
++		SendSysMessage(who,&quot;cancelled&quot;);
++		MoveItemToContainer(rune, who.backpack);
++		return;
++	endif
++	if(!GetObjProperty(rune, &quot;x&quot;))
++		SendSysMessage(who,&quot;You can only add marked runes.&quot;);
++		MoveItemToContainer(rune, who.backpack);
++		return;
++	endif
++	set_critical(1);
++	var x := GetObjProperty(rune, &quot;x&quot;);
++	var y := GetObjProperty(rune, &quot;y&quot;);
++	var z := GetObjProperty(rune, &quot;z&quot;);
++	var rname := rune.desc - &quot;A recall rune for&quot;;
++	var new_rune_struct := { rname, x, y, z };
++	if(!runedefs)
++		var new_runedefs := {new_rune_struct};
++		SetObjProperty(book, &quot;runedefs&quot;, new_runedefs);
++	elseif(runedefs.size() == 32)
++		SendSysMessage(who, &quot;That rune book is full.&quot;);
++		MoveItemToContainer(rune, who.backpack);
++		return;
++	else
++		runedefs.append(new_rune_struct);
++		SetObjProperty(book, &quot;runedefs&quot;, runedefs);
++	endif
++	SendSysMessage(who, &quot;You add the rune to the runebook.&quot;);
++	DestroyItem(rune);
++	set_critical(0);
++
+ endfunction
+ 
++
+ function UpdateName(runebook, charges)
+-  var name := GetObjProperty(runebook, &quot;name&quot;);
+-  if(!name)
+-    name := &quot;Runebook&quot;;
+-  endif
+-  runebook.name := name + &quot; [charges: &quot; + charges + &quot;]&quot;;
+-endfunction 
+\ No newline at end of file
++
++	var name := GetObjProperty(runebook, &quot;name&quot;);
++	if(!name)
++		name := &quot;Runebook&quot;;
++	endif
++	runebook.name := name + &quot; [charges: &quot; + charges + &quot;]&quot;;
++
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/npcutils/NPCKeeper.src
+===================================================================
+--- trunk/096/pkg/mobiles/npcutils/NPCKeeper.src	2005-09-28 20:25:39 UTC (rev 286)
++++ trunk/096/pkg/mobiles/npcutils/NPCKeeper.src	2005-09-28 20:26:16 UTC (rev 287)
+@@ -1,3 +1,5 @@
++// //$Id$
++
+ use uo;
+ use os;
+ 
+@@ -191,7 +193,7 @@
+   if(colornum == 0)
+     colornum := 1;
+   endif
+-  who.speech_color := CInt(colorarray[colornum]); 
++  who.speech_color := CInt(colorarray[colornum]);
+ endprogram
+ 
+ function Adjustment(who, type)
+
+Modified: trunk/096/pkg/mobiles/npcutils/vetement.inc
+===================================================================
+--- trunk/096/pkg/mobiles/npcutils/vetement.inc	2005-09-28 20:25:39 UTC (rev 286)
++++ trunk/096/pkg/mobiles/npcutils/vetement.inc	2005-09-28 20:26:16 UTC (rev 287)
+@@ -1,3 +1,5 @@
++// //$Id$
++
+ use cfgfile;
+ use os;
+ use util;
+@@ -85,7 +87,6 @@
+       var itemg := FindConfigElem(vetements, objname);
+       if(itemg)
+         var str := GetConfigStringArray(itemg, &quot;Item&quot;);
+-        var str3;
+         var newarray := {};
+         var i := 1;
+         var sex := &quot;&quot;;
+
+Modified: trunk/096/pkg/skills/hiding/hiding.src
+===================================================================
+--- trunk/096/pkg/skills/hiding/hiding.src	2005-09-28 20:25:39 UTC (rev 286)
++++ trunk/096/pkg/skills/hiding/hiding.src	2005-09-28 20:26:16 UTC (rev 287)
+@@ -13,9 +13,9 @@
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ use uo;
+ 
+-include &quot;:attributes:include/attributeConstants&quot;;
+-include &quot;:attributes:include/attributes&quot;;
+-include &quot;:attributes:include/skillCheck&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
+ 
+ program skill_Hide(who)
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000264.html">[Poldistro-svn] r286 - trunk/096/pkg/systems/attributes/startup
+</A></li>
+	<LI>Next message: <A HREF="000266.html">[Poldistro-svn] r288 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#265">[ date ]</a>
+              <a href="thread.html#265">[ thread ]</a>
+              <a href="subject.html#265">[ subject ]</a>
+              <a href="author.html#265">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

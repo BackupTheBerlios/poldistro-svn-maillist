@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1370 - in trunk/096/pkg/OLD/utils: . logger logger/config logger/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1370%20-%20in%20trunk/096/pkg/OLD/utils%3A%20.%20logger%20logger/config%20logger/include&In-Reply-To=%3C200605122257.k4CMvsTF014498%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001337.html">
+   <LINK REL="Next"  HREF="001339.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1370 - in trunk/096/pkg/OLD/utils: . logger logger/config logger/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1370%20-%20in%20trunk/096/pkg/OLD/utils%3A%20.%20logger%20logger/config%20logger/include&In-Reply-To=%3C200605122257.k4CMvsTF014498%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1370 - in trunk/096/pkg/OLD/utils: . logger logger/config logger/include">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 00:57:54 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001337.html">[Poldistro-svn] r1369 - trunk/096/pkg/utils
+</A></li>
+        <LI>Next message: <A HREF="001339.html">[Poldistro-svn] r1371 - in trunk/096: config pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/include pkg/packetHooks/StatHook pkg/systems/accounts pkg/utils/gumps/include scripts/include scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1338">[ date ]</a>
+              <a href="thread.html#1338">[ thread ]</a>
+              <a href="subject.html#1338">[ subject ]</a>
+              <a href="author.html#1338">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 00:57:52 +0200 (Sat, 13 May 2006)
+New Revision: 1370
+
+Added:
+   trunk/096/pkg/OLD/utils/logger/
+   trunk/096/pkg/OLD/utils/logger/config/
+   trunk/096/pkg/OLD/utils/logger/config/icp.cfg
+   trunk/096/pkg/OLD/utils/logger/include/
+   trunk/096/pkg/OLD/utils/logger/include/exception.inc
+   trunk/096/pkg/OLD/utils/logger/include/log.inc
+   trunk/096/pkg/OLD/utils/logger/pkg.cfg
+Log:
+
+
+Added: trunk/096/pkg/OLD/utils/logger/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/OLD/utils/logger/config/icp.cfg	2006-05-12 22:56:17 UTC (rev 1369)
++++ trunk/096/pkg/OLD/utils/logger/config/icp.cfg	2006-05-12 22:57:52 UTC (rev 1370)
+@@ -0,0 +1,16 @@
++# $Id: icp.cfg 891 2005-11-04 06:29:43Z muaddiblsd $
++#
++#
++ICP Register
++{
++	Name		Script Logger
++	Version		1.0
++	Description	Includes for handling Logging from scripts.
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	#Script	cmdlevel path
++
++	#TextCmd	cmdlevel path
++}
+
+Added: trunk/096/pkg/OLD/utils/logger/include/exception.inc
+===================================================================
+--- trunk/096/pkg/OLD/utils/logger/include/exception.inc	2006-05-12 22:56:17 UTC (rev 1369)
++++ trunk/096/pkg/OLD/utils/logger/include/exception.inc	2006-05-12 22:57:52 UTC (rev 1370)
+@@ -0,0 +1,35 @@
++/* $Id: exception.inc 891 2005-11-04 06:29:43Z muaddiblsd $
++ *
++ * Purpose
++ * Provides various functions and constants for exceptions.
++ *
++ */
++use uo;
++
++include &quot;:logger:log&quot;;
++
++
++/*
++ * Exception(what)
++ *
++ * Author: Folko
++ *
++ * Purpose
++ * Raises and exception and logs it to the error log.
++ *
++ * Parameters
++ * what:        A string describing the error
++ *
++ * Return value
++ * Always returns an error-object
++ *
++ * Notes
++ * Only use this for script errors etc., we don't want spam in the error log.
++ *
++ */
++function Exception(what)
++	print(&quot;******Exception: &quot; + what + &quot;******&quot;);
++	Log(LOG_ERROR, &quot;Exception: &quot; + what);
++
++	return(error);
++endfunction
+
+Added: trunk/096/pkg/OLD/utils/logger/include/log.inc
+===================================================================
+--- trunk/096/pkg/OLD/utils/logger/include/log.inc	2006-05-12 22:56:17 UTC (rev 1369)
++++ trunk/096/pkg/OLD/utils/logger/include/log.inc	2006-05-12 22:57:52 UTC (rev 1370)
+@@ -0,0 +1,70 @@
++/* $Id: log.inc 891 2005-11-04 06:29:43Z muaddiblsd $
++ *
++ * Purpose
++ * Provide various functions and constants to log stuff
++ *
++ * TODO:
++ * Implement log roll over.
++ *
++ */
++use basic;
++use file;
++
++include &quot;include/time&quot;;
++
++enum LOG_FILES
++	LOG_MAIN        := &quot;::log/mainlog.log&quot;,
++	LOG_ERROR       := &quot;::log/errorlog.log&quot;,
++	LOG_WARNING     := &quot;::log/warning.log&quot;,
++	LOG_ACCESS      := &quot;::log/access.log&quot;,
++	LOG_COMMAND     := &quot;::log/commands.log&quot;
++endenum
++
++
++/*
++ * Log(file, line)
++ *
++ * Author: Folko
++ *
++ * Purpose
++ * Adds a timestamp to a string and logs it to a file.
++ *
++ * Parameters
++ * file:    The logfile where the string will be logged to
++ * line:    The string to log
++ *
++ * Return value
++ * No return value.
++ * 
++ */
++function Log(file, line)
++	LogToFile(file, AddTimeStamp(line));
++
++	return;
++endfunction
++
++
++/*
++ * GetLogInfo(what)
++ *
++ * Author: Folko
++ *
++ * Purpose
++ * Returns name and serial for logging purposes.
++ *
++ * Parameters
++ * what:    The thing of which to return name and serial
++ *
++ * Return value
++ * String describing the thing for logging
++ * 
++ */
++function GetLogInfo(what)
++	if(what.isA(POLCLASS_MOBILE))
++		return(what.name + &quot;(&quot; + Hex(what.serial) + &quot;)&quot;);
++	else
++		return(what.desc + &quot;(&quot; + Hex(what.serial) + &quot;)&quot;);
++	endif
++
++	return;
++endfunction
+
+Added: trunk/096/pkg/OLD/utils/logger/pkg.cfg
+===================================================================
+--- trunk/096/pkg/OLD/utils/logger/pkg.cfg	2006-05-12 22:56:17 UTC (rev 1369)
++++ trunk/096/pkg/OLD/utils/logger/pkg.cfg	2006-05-12 22:57:52 UTC (rev 1370)
+@@ -0,0 +1,13 @@
++# $Id: pkg.cfg 891 2005-11-04 06:29:43Z muaddiblsd $
++#
++#
++Enabled		0
++Name		logger
++Version		1.0
++
++CoreRequired	94
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#conflicts	none
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001337.html">[Poldistro-svn] r1369 - trunk/096/pkg/utils
+</A></li>
+	<LI>Next message: <A HREF="001339.html">[Poldistro-svn] r1371 - in trunk/096: config pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/include pkg/packetHooks/StatHook pkg/systems/accounts pkg/utils/gumps/include scripts/include scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1338">[ date ]</a>
+              <a href="thread.html#1338">[ thread ]</a>
+              <a href="subject.html#1338">[ subject ]</a>
+              <a href="author.html#1338">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

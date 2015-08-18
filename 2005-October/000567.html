@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r597 - trunk/096/pkg/systems/spawnSystem/www
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r597%20-%20trunk/096/pkg/systems/spawnSystem/www&In-Reply-To=%3C200510130536.j9D5aHfr004819%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000566.html">
+   <LINK REL="Next"  HREF="000568.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r597 - trunk/096/pkg/systems/spawnSystem/www</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r597%20-%20trunk/096/pkg/systems/spawnSystem/www&In-Reply-To=%3C200510130536.j9D5aHfr004819%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r597 - trunk/096/pkg/systems/spawnSystem/www">austin at berlios.de
+       </A><BR>
+    <I>Thu Oct 13 07:36:17 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000566.html">[Poldistro-svn] r596 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+        <LI>Next message: <A HREF="000568.html">[Poldistro-svn] r598 - trunk/096/pkg/systems/spawnSystem/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#567">[ date ]</a>
+              <a href="thread.html#567">[ thread ]</a>
+              <a href="subject.html#567">[ subject ]</a>
+              <a href="author.html#567">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-13 07:36:13 +0200 (Thu, 13 Oct 2005)
+New Revision: 597
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/www/spawnControl.src
+Log:
+Added function to list spawn realms, and regions in a realm.
+
+Modified: trunk/096/pkg/systems/spawnSystem/www/spawnControl.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/www/spawnControl.src	2005-10-13 05:11:22 UTC (rev 596)
++++ trunk/096/pkg/systems/spawnSystem/www/spawnControl.src	2005-10-13 05:36:13 UTC (rev 597)
+@@ -7,36 +7,74 @@
+ include &quot;:spawnsystem:regions&quot;;
+ include &quot;:spawnsystem:report&quot;;
+ 
+-CONST WWW_LVL_SSREALMS := 0x0;
+-CONST WWW_LVL_SSREGION := 0x1;
+-CONST WWW_LVL_SSGROUPS := 0x2;
+-
+ unload_scripts(&quot;&quot;);
+ 
+ program www_SpawnControl()
+ 	WriteHTML(&quot;&lt;HTML&gt;&quot;);
+ 	WriteHTML(&quot;&lt;BODY&gt;&quot;);
++	WriteHTML(&quot;&lt;STYLE&gt;&quot;);
++	WriteHTML(&quot;body,td,th {&quot;);
++	WriteHTML(&quot;font-family: Tahoma, Verdana, Trebuchet MS, Arial, MS Sans Serif, sans-serif;&quot;);
++	WriteHTML(&quot;font-size: 13px; color: #000000;&quot;);
++	WriteHTML(&quot;}&quot;);
++	WriteHTML(&quot;&lt;/STYLE&gt;&quot;);
++
+ 	WriteHTML(&quot;&lt;TITLE&gt;Spawn System Management&lt;/TITLE&gt;&quot;);
++	if ( QueryParam(&quot;Realm&quot;) )
++		ShowRegionsInRealm(QueryParam(&quot;Realm&quot;));
++	else
++		ListRealms();
++	endif
+ 	
+-	case ( CInt(QueryParam(&quot;Level&quot;)) )
+-		WWW_LVL_SSREALMS: ListRealms(); break;
+-		//WWW_LVL_SSREGION: ListGroups(); break;
+-		//WWW_LVL_SSGROUPS: ListGroups(); break;
+-	endcase
+-	
+ 	WriteHTML(&quot;&lt;/HTML&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/BODY&gt;&quot;);
+ 	return 1;
+ endprogram
+ 
++function ShowRegionsInRealm(realm_name)
++	WriteHTML(&quot;&lt;TABLE BORDER='1' CELLPADDING='3' CELLSPACING='0'&gt;&quot;);
++	WriteHTML(&quot;&lt;TR&gt;&quot;);
++	WriteHTML(&quot;&lt;TD BGCOLOR='808080'&gt;&lt;B&gt;Spawn Regions in Realm '&quot;+realm_name+&quot;'&lt;/B&gt;&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;/TR&gt;&quot;);
++	
++	var spawn_regions := SS_GetRegionsInRealm(realm_name);
++	foreach region_name in (spawn_regions.Keys())
++		WriteHTML(&quot;&lt;TR&gt;&quot;);
++		WriteHTMLRaw(&quot;&lt;TD BGCOLOR='C0C0C0'&gt;&quot;);
++		WriteHTML(region_name+&quot;&lt;/TD&gt;&quot;);
++		WriteHTML(&quot;&lt;/TR&gt;&quot;);
++		sleepms(2);
++	endforeach
++	
++	WriteHTML(&quot;&lt;TR&gt;&quot;);
++	WriteHTML(&quot;&lt;TD&gt;&quot;);
++	WriteHTML(&quot;&lt;FORM METHOD='GET' NAME='FORM'&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='Name' VALUE=''&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='HIDDEN' NAME='Realm' Value='&quot;+realm_name+&quot;'&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='SUBMIT' Name='AddRegion' VALUE='Add Region'&gt;&quot;);
++	WriteHTML(&quot;&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;/TR&gt;&quot;);
++	
++	WriteHTML(&quot;&lt;/TABLE&gt;&quot;);
++	
++	return 1;
++endfunction
++
+ function ListRealms()
+-	WriteHTML(&quot;&lt;TABLE BORDER='1' CELLPADDING='1' CELLSPACING='0' WIDTH='50%'&gt;&quot;);
++	WriteHTML(&quot;&lt;TABLE BORDER='1' CELLPADDING='3' CELLSPACING='0'&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TR&gt;&quot;);
+-	WriteHTML(&quot;&lt;TD&gt;Realm Name&lt;/TD&gt;&quot;);
++	WriteHTML(&quot;&lt;TD BGCOLOR='808080'&gt;&lt;B&gt;Realms List&lt;/B&gt;&lt;/TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TR&gt;&quot;);
++	
++	var core_realms := Realms();
+ 	foreach realm_name in SS_GetRealmNames()
+ 		WriteHTML(&quot;&lt;TR&gt;&quot;);
+-		WriteHTML(&quot;&lt;TD&gt;&quot;+realm_name+&quot;&lt;/TD&gt;&quot;);
++		WriteHTMLRaw(&quot;&lt;TD BGCOLOR='C0C0C0'&gt;&quot;);
++		if ( !core_realms.Exists(Lower(realm_name)) )
++			WriteHTMLRaw(&quot;&lt;FONT COLOR='DARKRED'&gt;&lt;B&gt;&quot;);
++		endif
++		var realm_link := MakeAHref(realm_name);
++		WriteHTML(realm_link+realm_name+&quot;&lt;/A&gt;&lt;/TD&gt;&quot;);
+ 		WriteHTML(&quot;&lt;/TR&gt;&quot;);
+ 		sleepms(2);
+ 	endforeach
+@@ -44,8 +82,8 @@
+ 	WriteHTML(&quot;&lt;TR&gt;&quot;);
+ 	WriteHTML(&quot;&lt;TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;FORM METHOD='GET' NAME='FORM'&gt;&quot;);
+-	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='Name'&gt;&quot;);
+-	WriteHTML(&quot;
++	WriteHTML(&quot;&lt;INPUT TYPE='TEXT' NAME='Name' VALUE=''&gt;&quot;);
++	WriteHTML(&quot;&lt;INPUT TYPE='SUBMIT' Name='AddRealm' VALUE='Add Realm'&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TD&gt;&quot;);
+ 	WriteHTML(&quot;&lt;/TR&gt;&quot;);
+ 	
+@@ -53,3 +91,21 @@
+ 	
+ 	return 1;
+ endfunction
++
++function MakeAHref(realm_name, region_name:=&quot;&quot;, group_name:=&quot;&quot;)
++	var link_text := &quot;&lt;A HREF=?Realm=&quot;+realm_name;
++	if ( region_name )
++		link_text := link_text+&quot;&amp;Region=&quot;+region_name;
++	endif
++	if ( group_name )
++		link_text := link_text+&quot;&amp;Group=&quot;+region_name;
++	endif
++	link_text := link_text+&quot;&gt;&quot;;
++
++	return link_text;
++endfunction
++
++function ShowError(text)
++	WriteHTMLRaw(&quot;&lt;FONT COLOR='DARKRED'&gt;&lt;B&gt;&quot;+text+&quot;&lt;/B&gt;&lt;/FONT&gt;&quot;);
++	return 1;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000566.html">[Poldistro-svn] r596 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+	<LI>Next message: <A HREF="000568.html">[Poldistro-svn] r598 - trunk/096/pkg/systems/spawnSystem/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#567">[ date ]</a>
+              <a href="thread.html#567">[ thread ]</a>
+              <a href="subject.html#567">[ subject ]</a>
+              <a href="author.html#567">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

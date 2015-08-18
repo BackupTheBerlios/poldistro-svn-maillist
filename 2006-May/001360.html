@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1391 - in trunk/096/pkg/utils/control: . commands/coun config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1391%20-%20in%20trunk/096/pkg/utils/control%3A%20.%20commands/coun%20config%20include&In-Reply-To=%3C200605131025.k4DAPZOQ024350%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001359.html">
+   <LINK REL="Next"  HREF="001361.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1391 - in trunk/096/pkg/utils/control: . commands/coun config include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1391%20-%20in%20trunk/096/pkg/utils/control%3A%20.%20commands/coun%20config%20include&In-Reply-To=%3C200605131025.k4DAPZOQ024350%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1391 - in trunk/096/pkg/utils/control: . commands/coun config include">austin at berlios.de
+       </A><BR>
+    <I>Sat May 13 12:25:35 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001359.html">[Poldistro-svn] r1390 - trunk/096/scripts/console
+</A></li>
+        <LI>Next message: <A HREF="001361.html">[Poldistro-svn] r1392 - in trunk/096/pkg/skills/lumberjacking: . include treeRegen
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1360">[ date ]</a>
+              <a href="thread.html#1360">[ thread ]</a>
+              <a href="subject.html#1360">[ subject ]</a>
+              <a href="author.html#1360">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-13 12:25:34 +0200 (Sat, 13 May 2006)
+New Revision: 1391
+
+Added:
+   trunk/096/pkg/utils/control/include/report.inc
+Modified:
+   trunk/096/pkg/utils/control/checkpackages.src
+   trunk/096/pkg/utils/control/commands/coun/control.src
+   trunk/096/pkg/utils/control/config/icp.cfg
+   trunk/096/pkg/utils/control/pkg.cfg
+Log:
+Little updates. Made it no longer report its status to the console but instead to ICP.log.
+
+
+Modified: trunk/096/pkg/utils/control/checkpackages.src
+===================================================================
+--- trunk/096/pkg/utils/control/checkpackages.src	2006-05-13 10:16:45 UTC (rev 1390)
++++ trunk/096/pkg/utils/control/checkpackages.src	2006-05-13 10:25:34 UTC (rev 1391)
+@@ -7,22 +7,22 @@
+ 
+ include &quot;include/string&quot;;
+ include &quot;:datafile:include/datafile&quot;;
++include &quot;:control:report&quot;;
+ 
+ // Run 255 lines before going to the next script.
+ // Its as close as it gets to critical without the console whining about it.
+ set_priority(255);
+ set_script_option(SCRIPTOPT_NO_RUNAWAY, 1);
+ 
+-
+ program CheckPackages()
++	ICP_ReportText(&quot;---=[ ICP SETUP HAS STARTED UP ]=---&quot;, ICP_REPORT_SYSLOG);
++	
+ 	var pkg_info := DFOpenDataFile(&quot;:control:packages&quot;, DF_CREATE);
+ 	var pkg_gumps := DFOpenDataFile(&quot;:control:gumps&quot;, DF_CREATE);
+ 
+ 	// This foreach loop is here until DeleteDataFile() in datafile.em works.
+ 	// Its purpose is to wipe the datafile so its updated for the new package settings.
+-	foreach elem_name in (pkg_info.keys())
+-		pkg_info.DeleteElement(elem_name);
+-	endforeach
++	DFPurgeFile(pkg_info);
+ 	pkg_gumps.DeleteElement(&quot;index&quot;);
+ 	
+ 	DF_DEBUG_MODE := 0;
+@@ -61,6 +61,7 @@
+ 			data_elem.SetProp(&quot;Scripts&quot;, script_list);
+ 			data_elem.SetProp(&quot;TextCommands&quot;, cmd_list);
+ 		else
++			ICP_ReportText(&quot;Warning: Package [&quot;+package+&quot;] has no ICP support!&quot;, ICP_REPORT_SYSLOG);
+ 			temp_info.+Name := package;
+ 			temp_info.+NoSupport := 1;
+ 			data_elem.SetProp(&quot;Main&quot;, temp_info);
+@@ -69,7 +70,9 @@
+ 		UnloadConfigFile(&quot;:&quot;+package+&quot;:config/icp&quot;);
+ 	endforeach
+ 
+-	Print(&quot;[CONTROL] Finished setting up packages.&quot;);
++	ICP_ReportText(&quot;ICP setup has completed.&quot;, ICP_REPORT_SYSLOG);
++	
++	return 1;
+ endprogram
+ 
+ 
+
+Modified: trunk/096/pkg/utils/control/commands/coun/control.src
+===================================================================
+--- trunk/096/pkg/utils/control/commands/coun/control.src	2006-05-13 10:16:45 UTC (rev 1390)
++++ trunk/096/pkg/utils/control/commands/coun/control.src	2006-05-13 10:25:34 UTC (rev 1391)
+@@ -18,7 +18,6 @@
+ include &quot;:control:include/icp-scripts&quot;;
+ include &quot;:control:include/icp-util&quot;;
+ 
+-
+ // Arbitrary button return (id) values.
+ const START_ID		:= 0xA00000; // Anything above this value is a button.
+ const BACK_BTN		:= 0xA00002;
+@@ -32,10 +31,8 @@
+ var pkg_info := DFOpenDataFile(&quot;:control:packages&quot;, DF_CREATE);
+ var pkg_gumps := DFOpenDataFile(&quot;:control:gumps&quot;, DF_CREATE);
+ 
+-unload_scripts(&quot;&quot;);
+-
+-program ICPSystem(who, pkg_name)
+-	while ( 1 )
++program textcmd_ICPSystem(who, pkg_name)
++	while ( who.connected )
+ 		if ( pkg_name )
+ 			var input := ICP_PackagePanels(who, pkg_name);
+ 			if ( !input )
+@@ -50,4 +47,6 @@
+ 		endif
+ 	endwhile
+ 	SendSysMessage(who, &quot;Done&quot;);
++	
++	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/utils/control/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/utils/control/config/icp.cfg	2006-05-13 10:16:45 UTC (rev 1390)
++++ trunk/096/pkg/utils/control/config/icp.cfg	2006-05-13 10:25:34 UTC (rev 1391)
+@@ -13,9 +13,9 @@
+ 	Maintainer	Austin
+ 	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+ 
+-	#Script	cmdlevel path
+-	Script		4 :control:checkpackages
++	#Script		cmdlevel	 path
++	Script		4	 :control:checkpackages
+ 
+-	#TextCmd	cmdlevel path
+-	TextCmd		1 :control:textcmd/counselor/control
++	#TextCmd	cmdlevel 	path
++	TextCmd		1 	:control:textcmd/counselor/control
+ }
+
+Added: trunk/096/pkg/utils/control/include/report.inc
+===================================================================
+--- trunk/096/pkg/utils/control/include/report.inc	2006-05-13 10:16:45 UTC (rev 1390)
++++ trunk/096/pkg/utils/control/include/report.inc	2006-05-13 10:25:34 UTC (rev 1391)
+@@ -0,0 +1,30 @@
++use uo;
++use os;
++use file;
++
++CONST ICP_REPORT_DISABLE	:= 0x0;
++CONST ICP_REPORT_CONSOLE	:= 0x1;
++CONST ICP_REPORT_SYSLOG		:= 0x2;
++CONST ICP_REPORT_BROADCAST	:= 0x4;
++CONST ICP_REPORT_ALL		:= 0x7;
++
++function ICP_ReportText(report_text:=&quot;?&quot;, flags:=ICP_REPORT_DISABLE)
++	if ( !flags )
++		return 0;
++	endif
++	
++	if ( flags &amp; ICP_REPORT_CONSOLE )
++		Print(&quot;&quot;+report_text);
++	endif
++	
++	if ( flags &amp; ICP_REPORT_SYSLOG )
++		var script_name := GetProcess(GetPid()).name;
++		LogToFile(&quot;::log/ICP.log&quot;, &quot;[&quot;+script_name+&quot;]: &quot;+report_text, LOG_DATETIME);
++	endif
++	
++	if ( flags &amp; ICP_REPORT_BROADCAST )
++		Broadcast(&quot;&quot;+report_text);
++	endif
++	
++	return 1;
++endfunction
+
+Modified: trunk/096/pkg/utils/control/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/control/pkg.cfg	2006-05-13 10:16:45 UTC (rev 1390)
++++ trunk/096/pkg/utils/control/pkg.cfg	2006-05-13 10:25:34 UTC (rev 1391)
+@@ -11,7 +11,9 @@
+ 
+ Creator		Austin Heilman
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
+ Maintainer	Austin Heilman
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
+ 
+-#conflicts	none
++#Conflicts	none
++#Requires	none
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001359.html">[Poldistro-svn] r1390 - trunk/096/scripts/console
+</A></li>
+	<LI>Next message: <A HREF="001361.html">[Poldistro-svn] r1392 - in trunk/096/pkg/skills/lumberjacking: . include treeRegen
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1360">[ date ]</a>
+              <a href="thread.html#1360">[ thread ]</a>
+              <a href="subject.html#1360">[ subject ]</a>
+              <a href="author.html#1360">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

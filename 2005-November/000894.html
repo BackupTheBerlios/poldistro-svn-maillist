@@ -1,0 +1,1051 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r920 - in trunk/096/pkg: items/food items/food/config items/food/include skills/magery skills/magery/spellScripts/circle1
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r920%20-%20in%20trunk/096/pkg%3A%20items/food%20items/food/config%20items/food/include%20skills/magery%20skills/magery/spellScripts/circle1&In-Reply-To=%3C200511061014.jA6AEL69012241%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000893.html">
+   <LINK REL="Next"  HREF="000895.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r920 - in trunk/096/pkg: items/food items/food/config items/food/include skills/magery skills/magery/spellScripts/circle1</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r920%20-%20in%20trunk/096/pkg%3A%20items/food%20items/food/config%20items/food/include%20skills/magery%20skills/magery/spellScripts/circle1&In-Reply-To=%3C200511061014.jA6AEL69012241%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r920 - in trunk/096/pkg: items/food items/food/config items/food/include skills/magery skills/magery/spellScripts/circle1">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov  6 11:14:21 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000893.html">[Poldistro-svn] r919 - in trunk/096/pkg: skills/magery systems/attributes/hooks systems/combat/hooks
+</A></li>
+        <LI>Next message: <A HREF="000895.html">[Poldistro-svn] r921 - in trunk/096/pkg: items/food/config items/food/include skills/magery skills/magery/spellScripts/circle1
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#894">[ date ]</a>
+              <a href="thread.html#894">[ thread ]</a>
+              <a href="subject.html#894">[ subject ]</a>
+              <a href="author.html#894">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-06 11:14:09 +0100 (Sun, 06 Nov 2005)
+New Revision: 920
+
+Added:
+   trunk/096/pkg/items/food/config/food.cfg
+   trunk/096/pkg/items/food/include/
+   trunk/096/pkg/items/food/include/food.inc
+   trunk/096/pkg/skills/magery/spellScripts/circle1/createFood.src
+Removed:
+   trunk/096/pkg/items/food/food.cfg
+Modified:
+   trunk/096/pkg/skills/magery/spellStarter.src
+   trunk/096/pkg/skills/magery/spells.cfg
+Log:
+Added food.inc to more easily use existing food.cfg
+Moved food.cfg to the /config/ directory of its package.
+
+Added createFood.src spell
+
+Updated spells.cfg to have an entry to their spell scripts.
+
+Added: trunk/096/pkg/items/food/config/food.cfg
+===================================================================
+--- trunk/096/pkg/items/food/config/food.cfg	2005-11-06 09:23:16 UTC (rev 919)
++++ trunk/096/pkg/items/food/config/food.cfg	2005-11-06 10:14:09 UTC (rev 920)
+@@ -0,0 +1,116 @@
++Food veggie
++{
++	Food	0xF36
++	Food	0xD3A
++	Food	0xD39
++	Food	0xC82
++	Food	0xC81
++	Food	0xC80
++	Food	0xC7F
++	Food	0xC7C
++	Food	0xC7B
++	Food	0xC7A
++	Food	0xC79
++	Food	0xC78
++	Food	0xC77
++	Food	0xC75
++	Food	0xC74
++	Food	0xC73
++	Food	0xC72
++	Food	0xC71
++	Food	0xC70
++	Food	0xC6E
++	Food	0xC6D
++	Food	0xC6C
++	Food	0xC6B
++	Food	0xC6A
++	Food	0xC67
++	Food	0xC66
++	Food	0xC65
++	Food	0xC64
++	Food	0xC5D
++	Food	0xC5C
++	Food	0x9D2
++	Food	0x9D1
++	Food	0x9D0
++	Food	0x1EBF
++	Food	0x1EBE
++	Food	0x1EBD
++	Food	0x1A96
++	Food	0x1A95
++	Food	0x1A94
++	Food	0x1A93
++	Food	0x1A92
++	Food	0x172D
++	Food	0x172C
++	Food	0x172B
++	Food	0x172A
++	Food	0x1729
++	Food	0x1728
++	Food	0x1727
++	Food	0x1726
++	Food	0x1725
++	Food	0x1724
++	Food	0x1723
++	Food	0x1722
++	Food	0x1721
++	Food	0x1720
++	Food	0x171F
++	Food	0x171E
++	Food	0x171D
++	Food	0x100D
++	Food	0x100C
++
++}
++
++Food meat
++{
++	Food	9x9C9
++	Food	0xDD9
++	Food	0xDD8
++	Food	0xDD7
++	Food	0xDD6
++	Food	0x9F1
++	Food	0x9CF
++	Food	0x9CE
++	Food	0x9CD
++	Food	0x9CC
++	Food	0x9B9
++}
++
++Food grain
++{
++	Food	0xC5B
++	Food	0xC5A
++	Food	0xC58
++	Food	0xC57
++	Food	0xC56
++	Food	0x1EBD
++}
++
++Food metal
++{
++	Food	0x6308
++	Food	0x6307
++	Food	0x6306
++	Food	0x6305
++	Food	0x6304
++	Food	0x6303
++	Food	0x6302
++	Food	0x6301
++	Food	0x6300
++}
++
++Food fish
++{
++	Food	0xDD9
++	Food	0xDD8
++	Food	0xDD7
++	Food	0xDD6
++	Food	0x9CF
++	Food	0x9CE
++	Food	0x9CD
++	Food	0x9CC
++	Food	0x97B
++	Food	0x97A
++}
+
+Deleted: trunk/096/pkg/items/food/food.cfg
+===================================================================
+--- trunk/096/pkg/items/food/food.cfg	2005-11-06 09:23:16 UTC (rev 919)
++++ trunk/096/pkg/items/food/food.cfg	2005-11-06 10:14:09 UTC (rev 920)
+@@ -1,217 +0,0 @@
+-food veggie
+-{
+-  food 0x09d0
+-  food 0x09d1
+-  food 0x09d2
+-  food 0x0c5c
+-  food 0x0c5d
+-  food 0x0c64
+-  food 0x0c65
+-  food 0x0c66
+-  food 0x0c67
+-  food 0x0c6a
+-  food 0x0c6b
+-  food 0x0c6c
+-  food 0x0c6d
+-  food 0x0c6e
+-  food 0x0c70
+-  food 0x0c71
+-  food 0x0c72
+-  food 0x0c73
+-  food 0x0c74
+-  food 0x0c75
+-  food 0x0c77
+-  food 0x0c78
+-  food 0x0c79
+-  food 0x0c7a
+-  food 0x0c7b
+-  food 0x0c7c
+-  food 0x0c7f
+-  food 0x0c80
+-  food 0x0c81
+-  food 0x0c82
+-  food 0x0d39
+-  food 0x0d3a
+-  food 0x0f36
+-  food 0x100c
+-  food 0x100d
+-  food 0x171d
+-  food 0x171e
+-  food 0x171f
+-  food 0x1720
+-  food 0x1721
+-  food 0x1722
+-  food 0x1723
+-  food 0x1724
+-  food 0x1725
+-  food 0x1726
+-  food 0x1727
+-  food 0x1728
+-  food 0x1729
+-  food 0x172a
+-  food 0x172b
+-  food 0x172c
+-  food 0x172d
+-  food 0x1a92
+-  food 0x1a93
+-  food 0x1a94
+-  food 0x1a95
+-  food 0x1a96
+-  food 0x1ebd
+-  food 0x1ebe
+-  food 0x1ebf
+-}
+-
+-food meat
+-{
+-  food 0x9f1
+-  food 0x9b9
+-  food 0x09cc
+-  food 0x09cd
+-  food 0x09ce
+-  food 0x09cf
+-  food 0x0dd6
+-  food 0x0dd7
+-  food 0x0dd8
+-  food 0x0dd9
+-  food 9x9c9
+-}
+-
+-food grain
+-{
+-  food 0x1ebd
+-  food 0xc56
+-  food 0xc57
+-  food 0xc58
+-  food 0xc5a
+-  food 0xc5b
+-}
+-
+-food metal
+-{
+-  food 0x6300
+-  food 0x6301
+-  food 0x6302
+-  food 0x6303
+-  food 0x6304
+-  food 0x6305
+-  food 0x6306
+-  food 0x6307
+-  food 0x6308
+-}
+-
+-food fish
+-{
+-  food 0x97a
+-  food 0x97b
+-  food 0x9cc
+-  food 0x9cd
+-  food 0x9ce
+-  food 0x9cf
+-  food 0xdd6
+-  food 0xdd7
+-  food 0xdd8
+-  food 0xdd9
+-}
+-
+-food all
+-{
+-  food 0x09d0
+-  food 0x09d1
+-  food 0x09d2
+-  food 0x0c5c
+-  food 0x0c5d
+-  food 0x0c64
+-  food 0x0c65
+-  food 0x0c66
+-  food 0x0c67
+-  food 0x0c6a
+-  food 0x0c6b
+-  food 0x0c6c
+-  food 0x0c6d
+-  food 0x0c6e
+-  food 0x0c70
+-  food 0x0c71
+-  food 0x0c72
+-  food 0x0c73
+-  food 0x0c74
+-  food 0x0c75
+-  food 0x0c77
+-  food 0x0c78
+-  food 0x0c79
+-  food 0x0c7a
+-  food 0x0c7b
+-  food 0x0c7c
+-  food 0x0c7f
+-  food 0x0c80
+-  food 0x0c81
+-  food 0x0c82
+-  food 0x0d39
+-  food 0x0d3a
+-  food 0x0f36
+-  food 0x100c
+-  food 0x100d
+-  food 0x171d
+-  food 0x171e
+-  food 0x171f
+-  food 0x1720
+-  food 0x1721
+-  food 0x1722
+-  food 0x1723
+-  food 0x1724
+-  food 0x1725
+-  food 0x1726
+-  food 0x1727
+-  food 0x1728
+-  food 0x1729
+-  food 0x172a
+-  food 0x172b
+-  food 0x172c
+-  food 0x172d
+-  food 0x1a92
+-  food 0x1a93
+-  food 0x1a94
+-  food 0x1a95
+-  food 0x1a96
+-  food 0x1ebd
+-  food 0x1ebe
+-  food 0x1ebf
+-  food 0x9f1
+-  food 0x9b9
+-  food 0x09cc
+-  food 0x09cd
+-  food 0x09ce
+-  food 0x09cf
+-  food 0x0dd6
+-  food 0x0dd7
+-  food 0x0dd8
+-  food 0x0dd9
+-  food 9x9c9
+-  food 0x1ebd
+-  food 0xc56
+-  food 0xc57
+-  food 0xc58
+-  food 0xc5a
+-  food 0xc5b
+-  food 0x6300
+-  food 0x6301
+-  food 0x6302
+-  food 0x6303
+-  food 0x6304
+-  food 0x6305
+-  food 0x6306
+-  food 0x6307
+-  food 0x6308
+-  food 0x97a
+-  food 0x97b
+-  food 0x9cc
+-  food 0x9cd
+-  food 0x9ce
+-  food 0x9cf
+-  food 0xdd6
+-  food 0xdd7
+-  food 0xdd8
+-  food 0xdd9
+-}
+-
+-
+
+Added: trunk/096/pkg/items/food/include/food.inc
+===================================================================
+--- trunk/096/pkg/items/food/include/food.inc	2005-11-06 09:23:16 UTC (rev 919)
++++ trunk/096/pkg/items/food/include/food.inc	2005-11-06 10:14:09 UTC (rev 920)
+@@ -0,0 +1,40 @@
++/*
++ * $Id$
++ *
++ */
++
++use os;
++use util;
++use cfgfile;
++
++/*
++ * RandomFoodObjType(category:=&quot;All&quot;)
++ *
++ * Purpose
++ * Selects an objtype from food.cfg
++ *
++ * Parameters
++ * category:	Elem to use in food.cfg
++ *
++ * Return value
++ * Returns a number.
++ *
++ */
++function RandomFoodObjType(category:=0)
++	var cfg_file := ReadConfigFile(&quot;:food:config/food&quot;);
++	
++	var food_list := array{};
++	if ( category )
++		var cfg_elem := cfg_file[category];
++		food_list := GetConfigStringArray(cfg_elem, &quot;Food&quot;);
++	else
++		food_list := array{};
++		foreach elem_name in ( GetConfigStringKeys(cfg_file) )
++			var cfg_elem := cfg_file[elem_name];
++			food_list := food_list + GetConfigStringArray(cfg_elem, &quot;Food&quot;);
++			sleepms(2);
++		endforeach
++	endif
++	
++	return food_list[RandomInt(food_list.size())+1];
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/magery/spellScripts/circle1/createFood.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellScripts/circle1/createFood.src	2005-11-06 09:23:16 UTC (rev 919)
++++ trunk/096/pkg/skills/magery/spellScripts/circle1/createFood.src	2005-11-06 10:14:09 UTC (rev 920)
+@@ -0,0 +1,27 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:attributes:attributes&quot;;
++include &quot;:magery:spells&quot;;
++include &quot;:food&amp;drink:food&quot;;
++
++program SpellScript(params)
++	var who := params[1];
++	//var info := params[2];
++	params := 0; // No longer needed
++	
++	var food_item := RandomFoodObjType();
++	
++	var food := CreateItemInBackPack(who, food_item, 1);
++	
++	if ( food.errortext )
++		SendSysMessage(who, &quot;Error creating food -&gt;&quot;+food.errortext);
++	endif
++	
++	return 1;
++endprogram
+
+Modified: trunk/096/pkg/skills/magery/spellStarter.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellStarter.src	2005-11-06 09:23:16 UTC (rev 919)
++++ trunk/096/pkg/skills/magery/spellStarter.src	2005-11-06 10:14:09 UTC (rev 920)
+@@ -47,16 +47,16 @@
+ 		SendSysMessage(who, &quot;Something prevents you from casting.&quot;);
+ 		FailSpell(who);
+ 		return 0;
+-	elseif ( !ConsumeVital(who, MANA, spell_elem.ManaCost) )
++	elseif ( !EquipmentCheck(who) )
++		FailSpell(who);
++		return 0;
++	elseif ( !AP_ConsumeVital(who, MANA, spell_elem.ManaCost) )
+ 		SendSysMessage(who, &quot;You are too tired to cast.&quot;);
+ 		FailSpell(who);
+ 		return 0;
+ 	elseif ( !CheckReagents(who, spell_elem, scroll) )
+ 		FailSpell(who);
+ 		return 0;
+-	elseif ( !EquipmentCheck(who) )
+-		FailSpell(who);
+-		return 0;
+ 	elseif ( !CheckDelay(who, spell_elem) )
+ 		FailSpell(who);
+ 		SendSysMessage(who, &quot;Your concentration has been broken.&quot;);
+
+Modified: trunk/096/pkg/skills/magery/spells.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/spells.cfg	2005-11-06 09:23:16 UTC (rev 919)
++++ trunk/096/pkg/skills/magery/spells.cfg	2005-11-06 10:14:09 UTC (rev 920)
+@@ -3,6 +3,7 @@
+ 	SpellId		1
+ 	Name		Clumsy
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle1/clumsy
+ 
+ 	ManaCost	0
+ 	Delay		0
+@@ -19,6 +20,7 @@
+ 	SpellId		2
+ 	Name		Create Food
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle1/createFood
+ 
+ 	ManaCost	0
+ 	Delay		0
+@@ -36,6 +38,7 @@
+ 	SpellId		3
+ 	Name		Feeblemind
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle1/feebleMind
+ 
+ 	ManaCost	0
+ 	Delay		0
+@@ -52,6 +55,7 @@
+ 	SpellId		4
+ 	Name		Heal
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle1/heal
+ 
+ 	ManaCost	0
+ 	Delay		0
+@@ -69,6 +73,7 @@
+ 	SpellId		5
+ 	Name		Magic Arrow
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle1/magicArrow
+ 
+ 	PowerWords	In Por Ylem
+ 	Circle		1
+@@ -82,6 +87,7 @@
+ 	SpellId		6
+ 	Name		Night Sight
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle1/nightSight
+ 
+ 	PowerWords	In Lor
+ 	Circle		1
+@@ -95,6 +101,7 @@
+ 	SpellId		7
+ 	Name		Reactive Armor
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle1/reactiveArmor
+ 	
+ 	PowerWords	Flam Sanct
+ 	Circle		1
+@@ -109,6 +116,7 @@
+ 	SpellId		8
+ 	Name		Weaken
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle1/weaken
+ 	
+ 	PowerWords	Des Mani
+ 	Circle		1
+@@ -122,6 +130,7 @@
+ 	SpellId		9
+ 	Name		Agility
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle2/agility
+ 	
+ 	PowerWords	Ex Uus
+ 	Circle		2
+@@ -135,6 +144,7 @@
+ 	SpellId		10
+ 	Name		Cunning
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle2/cunning
+ 	
+ 	PowerWords	Uus Wis
+ 	Circle		2
+@@ -148,6 +158,7 @@
+ 	SpellId		11
+ 	Name		Cure
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle2/cure
+ 	
+ 	PowerWords	An Nox
+ 	Circle		2
+@@ -161,6 +172,7 @@
+ 	SpellId		12
+ 	Name		Harm
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle2/harm
+ 	
+ 	PowerWords	An Mani
+ 	Circle		2
+@@ -174,6 +186,7 @@
+ 	SpellId		13
+ 	Name		Magic Trap
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle2/magicTrap
+ 	
+ 	PowerWords	In Jux
+ 	Circle		2
+@@ -188,6 +201,7 @@
+ 	SpellId		14
+ 	Name		Magic Untrap
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle2/magicUntrap
+ 	
+ 	PowerWords	An Jux
+ 	Circle		2
+@@ -202,6 +216,7 @@
+ 	SpellId		15
+ 	Name		Protection
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle2/protection
+ 	
+ 	PowerWords	Uus Sanct
+ 	Circle		2
+@@ -216,6 +231,7 @@
+ 	SpellId		16
+ 	Name		Strength
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle2/strength
+ 	
+ 	PowerWords	Uus Mani
+ 	Circle		2
+@@ -229,6 +245,7 @@
+ 	SpellId		17
+ 	Name		Bless
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle3/bless
+ 	
+ 	PowerWords	Rel Sanct
+ 	Circle		3
+@@ -242,6 +259,7 @@
+ 	SpellId		18
+ 	Name		Fireball
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle23/fireBall
+ 	
+ 	PowerWords	Vas Flam
+ 	Circle		3
+@@ -255,6 +273,7 @@
+ 	SpellId		19
+ 	Name		Magic Lock
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle3/magicLock
+ 	
+ 	PowerWords	An Por
+ 	Circle		3
+@@ -269,6 +288,7 @@
+ 	SpellId		20
+ 	Name		Poison
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle3/magicUnlock
+ 	
+ 	PowerWords	In Nox
+ 	Circle		3
+@@ -281,6 +301,7 @@
+ 	SpellId		21
+ 	Name		Telekinesis
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle3/telekinesis
+ 	
+ 	PowerWords	Ort Por Ylem
+ 	Circle		3
+@@ -294,6 +315,7 @@
+ 	SpellId		22
+ 	Name		Teleport
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle3/teleport
+ 	
+ 	PowerWords	Rel Por
+ 	Circle		3
+@@ -307,6 +329,7 @@
+ 	SpellId		23
+ 	Name		Unlock
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle3/unlock
+ 	
+ 	PowerWords	Ex Por
+ 	Circle		3
+@@ -320,6 +343,7 @@
+ 	SpellId		24
+ 	Name		Wall of Stone
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle3/wallofStone
+ 	
+ 	PowerWords	In Sanct Ylem
+ 	Circle		3
+@@ -333,6 +357,7 @@
+ 	SpellId		25
+ 	Name		Arch Cure
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle4/archCure
+ 	
+ 	PowerWords	Vas An Nox
+ 	Circle		4
+@@ -347,6 +372,7 @@
+ 	SpellId		26
+ 	Name		Arch Protection
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle4/archProtection
+ 	
+ 	PowerWords	Vas Uus Sanct
+ 	Circle		4
+@@ -362,6 +388,7 @@
+ 	SpellId		27
+ 	Name		Curse
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle4/curse
+ 	
+ 	PowerWords	Des Sanct
+ 	Circle		4
+@@ -376,6 +403,7 @@
+ 	SpellId		28
+ 	Name		Fire Field
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle4/fireField
+ 	
+ 	PowerWords	In Flam Grav
+ 	Circle		4
+@@ -390,6 +418,7 @@
+ 	SpellId		29
+ 	Name		Greater Heal
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle4/greaterHeal
+ 	
+ 	PowerWords	In Vas Mani
+ 	Circle		4
+@@ -405,6 +434,7 @@
+ 	SpellId		30
+ 	Name		Lightning
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle4/lightning
+ 	
+ 	PowerWords	Por Ort Grav
+ 	Circle		4
+@@ -419,6 +449,7 @@
+ 	SpellId		31
+ 	Name		Mana Drain
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle4/manaDrain
+ 	
+ 	PowerWords	Ort Rel
+ 	Circle		4
+@@ -433,6 +464,7 @@
+ 	SpellId		32
+ 	Name		Recall
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle4/recall
+ 	
+ 	PowerWords	Kal Ort Por
+ 	Circle		4
+@@ -447,6 +479,7 @@
+ 	SpellId		33
+ 	Name		Blade Spirit
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle5/bladeSpirit
+ 	
+ 	PowerWords	In Jux Hur Ylem
+ 	Circle		5
+@@ -461,6 +494,7 @@
+ 	SpellId		34
+ 	Name		Dispel Field
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle5/dispelField
+ 	
+ 	PowerWords	An Grav
+ 	Circle		5
+@@ -476,6 +510,7 @@
+ 	SpellId		35
+ 	Name		Incognito
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle5/incognito
+ 	
+ 	PowerWords	Kal In Ex
+ 	Circle		5
+@@ -490,6 +525,7 @@
+ 	SpellId		36
+ 	Name		Spell Reflection
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle5/spellReflection
+ 	
+ 	PowerWords	In Jux Sanct
+ 	Circle		5
+@@ -504,6 +540,7 @@
+ 	SpellId		37
+ 	Name		Mind Blast
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle5/mindBlast
+ 	
+ 	PowerWords	Por Corp Wis
+ 	Circle		5
+@@ -519,6 +556,7 @@
+ 	SpellId		38
+ 	Name		Paralyze
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle5/paralyze
+ 	
+ 	PowerWords	An Ex Por
+ 	Circle		5
+@@ -533,6 +571,7 @@
+ 	SpellId		39
+ 	Name		Poison Field
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle5/poisonField
+ 	
+ 	PowerWords	In Nox Grav
+ 	Circle		5
+@@ -547,6 +586,7 @@
+ 	SpellId		40
+ 	Name		SummonCreature
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle5/summonCreature
+ 	
+ 	PowerWords	Kal Xen
+ 	Circle		5
+@@ -561,6 +601,7 @@
+ 	SpellId		41
+ 	Name		Dispel
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle6/dispel
+ 	
+ 	PowerWords	An Ort
+ 	Circle		6
+@@ -575,6 +616,7 @@
+ 	SpellId		42
+ 	Name		Energy Bolt
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle6/energyBolt
+ 	
+ 	PowerWords	Corp Por
+ 	Circle		6
+@@ -588,6 +630,7 @@
+ 	SpellId		43
+ 	Name		Explosion
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle6/explosion
+ 	
+ 	PowerWords	Vas Ort Flam
+ 	Circle		6
+@@ -602,6 +645,7 @@
+ 	SpellId		44
+ 	Name		Invisibility
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle6/invisibility
+ 	
+ 	PowerWords	An Lor Xen
+ 	Circle		6
+@@ -615,6 +659,7 @@
+ 	SpellId		45
+ 	Name		Mark
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle6/mark
+ 	
+ 	PowerWords	Kal Por Ylem
+ 	Circle		6
+@@ -629,6 +674,7 @@
+ 	SpellId		46
+ 	Name		Mass Curse
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle6/massCurse
+ 	
+ 	PowerWords	Vas Des Sanct
+ 	Circle		6
+@@ -644,6 +690,7 @@
+ 	SpellId		47
+ 	Name		Paralyze Field
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle6/paralyzeField
+ 	
+ 	PowerWords	In Ex Grav
+ 	Circle		6
+@@ -658,6 +705,7 @@
+ 	SpellId		48
+ 	Name		Reveal
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle6/reveal
+ 	
+ 	PowerWords	Wis  Quas
+ 	Circle		6
+@@ -671,6 +719,7 @@
+ 	SpellId		49
+ 	Name		Chain Lightning
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle7/chainLightning
+ 	
+ 	PowerWords	Vas Ort Grav
+ 	Circle		7
+@@ -686,6 +735,7 @@
+ 	SpellId		50
+ 	Name		Energy Field
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle7/energyField
+ 	
+ 	PowerWords	In Sanct Grav
+ 	Circle		7
+@@ -701,6 +751,7 @@
+ 	SpellId		51
+ 	Name		FlameStrike
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle7/flameStrike
+ 	
+ 	PowerWords	Kal Vas Flam
+ 	Circle		7
+@@ -714,6 +765,7 @@
+ 	SpellId		52
+ 	Name		Gate
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle7/gate
+ 	
+ 	PowerWords	Vas Rel Por
+ 	Circle		7
+@@ -728,6 +780,7 @@
+ 	SpellId		53
+ 	Name		Mana Vampire
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle7/manaVampire
+ 	
+ 	PowerWords	Ort Sanct
+ 	Circle		7
+@@ -743,6 +796,7 @@
+ 	SpellId		54
+ 	Name		Mass Dispel
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle7/massDispel
+ 	
+ 	PowerWords	Vas An Ort
+ 	Circle		7
+@@ -758,6 +812,7 @@
+ 	SpellId		55
+ 	Name		Meteor Swarm
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle7/meteorSwarm
+ 	
+ 	PowerWords	Kal Des Flam Ylem
+ 	Circle		7
+@@ -773,6 +828,7 @@
+ 	SpellId		56
+ 	Name		Polymorph
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle7/polymorph
+ 	
+ 	PowerWords	Vas Ylem Rel
+ 	Circle		7
+@@ -787,6 +843,7 @@
+ 	SpellId		57
+ 	Name		Earthquake
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle8/earthquake
+ 	
+ 	PowerWords	In Vas Por
+ 	Circle		8
+@@ -802,6 +859,7 @@
+ 	SpellId		58
+ 	Name		EnergyVortex
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle8/energyVortex
+ 	
+ 	PowerWords	Vas Corp Por
+ 	Animation	0x11
+@@ -818,6 +876,7 @@
+ 	SpellId		59
+ 	Name		Resurrection
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle8/resurrection
+ 	
+ 	PowerWords	An Corp
+ 	Circle		8
+@@ -832,6 +891,7 @@
+ 	SpellId		60
+ 	Name		Summon Air Elemental
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle8/summonAirElemental
+ 	
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Hur
+@@ -847,6 +907,7 @@
+ 	SpellId		61
+ 	Name		Summon Daemon
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle8/summonDeamon
+ 	
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Corp
+@@ -863,6 +924,7 @@
+ 	SpellId		62
+ 	Name		Summon Earth Elemental
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle8/summonEarthElemental
+ 	
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Ylem
+@@ -878,6 +940,7 @@
+ 	SpellId		63
+ 	Name		Summon Fire Elemental
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle8/summonFireElemental
+ 	
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Flam
+@@ -894,6 +957,7 @@
+ 	SpellId		64
+ 	Name		Summon Water Elemental
+ 	Script		spellBook/castSpell
++	SpellScript	spellScripts/circle8/summonWaterElemental
+ 	
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen An Flam
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000893.html">[Poldistro-svn] r919 - in trunk/096/pkg: skills/magery systems/attributes/hooks systems/combat/hooks
+</A></li>
+	<LI>Next message: <A HREF="000895.html">[Poldistro-svn] r921 - in trunk/096/pkg: items/food/config items/food/include skills/magery skills/magery/spellScripts/circle1
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#894">[ date ]</a>
+              <a href="thread.html#894">[ thread ]</a>
+              <a href="subject.html#894">[ subject ]</a>
+              <a href="author.html#894">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

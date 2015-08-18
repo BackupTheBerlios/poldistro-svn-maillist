@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1276 - trunk/096/pkg/systems/spawnSystem/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1276%20-%20trunk/096/pkg/systems/spawnSystem/include&In-Reply-To=%3C200605060326.k463QjsN009016%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001247.html">
+   <LINK REL="Next"  HREF="001249.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1276 - trunk/096/pkg/systems/spawnSystem/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1276%20-%20trunk/096/pkg/systems/spawnSystem/include&In-Reply-To=%3C200605060326.k463QjsN009016%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1276 - trunk/096/pkg/systems/spawnSystem/include">austin at berlios.de
+       </A><BR>
+    <I>Sat May  6 05:26:45 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001247.html">[Poldistro-svn] r1275 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+        <LI>Next message: <A HREF="001249.html">[Poldistro-svn] r1277 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1248">[ date ]</a>
+              <a href="thread.html#1248">[ thread ]</a>
+              <a href="subject.html#1248">[ subject ]</a>
+              <a href="author.html#1248">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-06 05:26:43 +0200 (Sat, 06 May 2006)
+New Revision: 1276
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/include/groups.inc
+   trunk/096/pkg/systems/spawnSystem/include/realms.inc
+   trunk/096/pkg/systems/spawnSystem/include/regions.inc
+Log:
+Added checking for the existance of a realm, region or group when creating.
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/groups.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/groups.inc	2006-05-06 03:17:40 UTC (rev 1275)
++++ trunk/096/pkg/systems/spawnSystem/include/groups.inc	2006-05-06 03:26:43 UTC (rev 1276)
+@@ -57,6 +57,11 @@
+  */
+ function SS_AddGroup(group_name, engine_type:=&quot;&quot;)
+ 	var data_file := SS_GetGroupDataFile();
++	
++	if ( data_file.FindElement(group_name) != error )
++		return error{&quot;errortext&quot;:=&quot;Group already exists.&quot;};
++	endif
++	
+ 	var result := data_file.CreateElement(group_name);
+ 	
+ 	if ( engine_type &amp;&amp; result )
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/realms.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/realms.inc	2006-05-06 03:17:40 UTC (rev 1275)
++++ trunk/096/pkg/systems/spawnSystem/include/realms.inc	2006-05-06 03:26:43 UTC (rev 1276)
+@@ -59,8 +59,12 @@
+ 	if ( !core_realms.Exists(Lower(realm_name)) )
+ 		return error{&quot;errortext&quot;:=&quot;'&quot;+realm_name+&quot;' is not a valid realm name.&quot;};
+ 	endif
++	var data_file := SS_GetRealmDataFile();
+ 	
+-	var data_file := SS_GetRealmDataFile();
++	if ( data_file.FindElement(realm_name) != error )
++		return error{&quot;errortext&quot;:=&quot;Realm already exists.&quot;};
++	endif
++	
+ 	return data_file.CreateElement(realm_name);
+ endfunction
+ 
+
+Modified: trunk/096/pkg/systems/spawnSystem/include/regions.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/regions.inc	2006-05-06 03:17:40 UTC (rev 1275)
++++ trunk/096/pkg/systems/spawnSystem/include/regions.inc	2006-05-06 03:26:43 UTC (rev 1276)
+@@ -56,8 +56,12 @@
+  */
+ function SS_AddRegion(region_name, realm_name:=&quot;&quot;)
+ 	var data_file := SS_GetRegionDataFile();
++	
++	if ( data_file.FindElement(region_name) != error )
++		return error{&quot;errortext&quot;:=&quot;Region already exists.&quot;};
++	endif
++	
+ 	var result := data_file.CreateElement(region_name);
+-	
+ 	if ( realm_name &amp;&amp; result )
+ 		SS_SetRegionRealm(region_name, Lower(realm_name));
+ 	endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001247.html">[Poldistro-svn] r1275 - trunk/096/pkg/systems/spawnSystem/include
+</A></li>
+	<LI>Next message: <A HREF="001249.html">[Poldistro-svn] r1277 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1248">[ date ]</a>
+              <a href="thread.html#1248">[ thread ]</a>
+              <a href="subject.html#1248">[ subject ]</a>
+              <a href="author.html#1248">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r781 - in trunk/096/pkg/mobiles: death timedScripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r781%20-%20in%20trunk/096/pkg/mobiles%3A%20death%20timedScripts/include&In-Reply-To=%3C200511010910.jA19Axqs014559%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000754.html">
+   <LINK REL="Next"  HREF="000756.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r781 - in trunk/096/pkg/mobiles: death timedScripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r781%20-%20in%20trunk/096/pkg/mobiles%3A%20death%20timedScripts/include&In-Reply-To=%3C200511010910.jA19Axqs014559%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r781 - in trunk/096/pkg/mobiles: death timedScripts/include">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 10:10:59 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000754.html">[Poldistro-svn] r780 - in trunk/096/pkg/mobiles/timedScripts: . include
+</A></li>
+        <LI>Next message: <A HREF="000756.html">[Poldistro-svn] r782 - trunk/096/scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#755">[ date ]</a>
+              <a href="thread.html#755">[ thread ]</a>
+              <a href="subject.html#755">[ subject ]</a>
+              <a href="author.html#755">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 10:10:58 +0100 (Tue, 01 Nov 2005)
+New Revision: 781
+
+Modified:
+   trunk/096/pkg/mobiles/death/npcdeath.src
+   trunk/096/pkg/mobiles/death/plyrdeath.src
+   trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc
+Log:
+Finished support for getting killed and proper terminations.
+
+Modified: trunk/096/pkg/mobiles/death/npcdeath.src
+===================================================================
+--- trunk/096/pkg/mobiles/death/npcdeath.src	2005-11-01 09:08:16 UTC (rev 780)
++++ trunk/096/pkg/mobiles/death/npcdeath.src	2005-11-01 09:10:58 UTC (rev 781)
+@@ -1,4 +1,4 @@
+-/* $Id: death.src 402 2005-10-04 09:33:15Z panosl $
++/* $Id$
+  *
+  * Purpose
+  * This script allows side effects to be triggered as a result of NPC death, like unmounting
+@@ -13,12 +13,15 @@
+ 
+ include &quot;include/noto&quot;;
+ include &quot;:containers:merchantUtil&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ include &quot;:death:death&quot;;
+ include &quot;:mounts:mounts&quot;;
+ 
+ program core_npcDeath(params)
+ 	var corpse := params[1];
+ 	
++	TS_Death(corpse); // Will still get the PID from the corpse.
++	
+ 	var template := GetObjProperty(corpse, &quot;npctemplate&quot;); // Set by the core.
+ 	var npc_cfg := NPC_GetNPCConfig(template);
+ 	var death_script := npc_cfg.DeathScript;
+
+Modified: trunk/096/pkg/mobiles/death/plyrdeath.src
+===================================================================
+--- trunk/096/pkg/mobiles/death/plyrdeath.src	2005-11-01 09:08:16 UTC (rev 780)
++++ trunk/096/pkg/mobiles/death/plyrdeath.src	2005-11-01 09:10:58 UTC (rev 781)
+@@ -1,4 +1,4 @@
+-/* $Id: chrdeath.src 402 2005-10-04 09:33:15Z panosl $
++/* $Id$
+  *
+  * Purpose
+  * This script allows side effects to be triggered as a result of Player death,
+@@ -13,6 +13,7 @@
+ include &quot;include/noto&quot;;
+ include &quot;include/reportMurder&quot;;
+ include &quot;:attributes:attributes&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
+ include &quot;:death:death&quot;;
+ include &quot;:mounts:mounts&quot;;
+ 
+@@ -20,6 +21,8 @@
+ 	var corpse := params[1];
+ 	var ghost := params[2];
+ 	
++	TS_Death(ghost);
++	
+ 	EraseObjProperty(ghost, &quot;IsMeditating&quot;);
+ 	
+ 	DP_PlayDeathSound(ghost);
+
+Modified: trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc
+===================================================================
+--- trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc	2005-11-01 09:08:16 UTC (rev 780)
++++ trunk/096/pkg/mobiles/timedScripts/include/timedScripts.inc	2005-11-01 09:10:58 UTC (rev 781)
+@@ -350,10 +350,10 @@
+  */
+ function TS_Death(mobile)
+ 	var event := struct;
+-	if ( mobile.IsA(POLCLASS_NPC) )
+-		event.+EVENT_NPC_DIED;
+-	else
++	if ( mobile.IsA(POLCLASS_MOBILE) )
+ 		event.+type := EVENT_PLAYER_DIED;
++	elseif ( mobile.IsA(POLCLASS_CORPSE) )
++		event.+type := EVENT_NPC_DIED;
+ 	endif
+ 	
+ 	var process := TS_GetControllerProcess(mobile);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000754.html">[Poldistro-svn] r780 - in trunk/096/pkg/mobiles/timedScripts: . include
+</A></li>
+	<LI>Next message: <A HREF="000756.html">[Poldistro-svn] r782 - trunk/096/scripts/misc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#755">[ date ]</a>
+              <a href="thread.html#755">[ thread ]</a>
+              <a href="subject.html#755">[ subject ]</a>
+              <a href="author.html#755">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

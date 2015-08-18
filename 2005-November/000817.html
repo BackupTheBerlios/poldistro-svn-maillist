@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r843 - in trunk/096/pkg: skills/taming systems/daynight systems/merchantnodes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r843%20-%20in%20trunk/096/pkg%3A%20skills/taming%20systems/daynight%20systems/merchantnodes&In-Reply-To=%3C200511021954.jA2JsKA8006238%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000816.html">
+   <LINK REL="Next"  HREF="000818.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r843 - in trunk/096/pkg: skills/taming systems/daynight systems/merchantnodes</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r843%20-%20in%20trunk/096/pkg%3A%20skills/taming%20systems/daynight%20systems/merchantnodes&In-Reply-To=%3C200511021954.jA2JsKA8006238%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r843 - in trunk/096/pkg: skills/taming systems/daynight systems/merchantnodes">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 20:54:20 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000816.html">[Poldistro-svn] r842 - in trunk/096: pkg/skills/magery scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000818.html">[Poldistro-svn] r844 - in trunk/096: pkg/skills/meditation pkg/skills/mining pkg/skills/poisoning pkg/skills/removetrap pkg/skills/tailoring pkg/skills/taming pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking pkg/skills/veterinary pkg/systems/attributes/commands/test scripts/items
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#817">[ date ]</a>
+              <a href="thread.html#817">[ thread ]</a>
+              <a href="subject.html#817">[ subject ]</a>
+              <a href="author.html#817">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 20:54:11 +0100 (Wed, 02 Nov 2005)
+New Revision: 843
+
+Modified:
+   trunk/096/pkg/skills/taming/happyCounter.src
+   trunk/096/pkg/systems/daynight/wEffect.src
+   trunk/096/pkg/systems/merchantnodes/guardNodeControl.src
+   trunk/096/pkg/systems/merchantnodes/merchantNodeControl.src
+   trunk/096/pkg/systems/merchantnodes/merchantNodeDestroy.src
+Log:
+Attribute updates
+
+Modified: trunk/096/pkg/skills/taming/happyCounter.src
+===================================================================
+--- trunk/096/pkg/skills/taming/happyCounter.src	2005-11-02 19:46:22 UTC (rev 842)
++++ trunk/096/pkg/skills/taming/happyCounter.src	2005-11-02 19:54:11 UTC (rev 843)
+@@ -8,7 +8,7 @@
+   var me := parms[1];
+   var timer := parms[2];
+   var happiness;
+-  while((GetHp(me) &gt; 0) &amp;&amp; (me.script == &quot;tamed&quot;))
++  while((AP_GetVital(me, HITS) &gt; 0) &amp;&amp; (me.script == &quot;tamed&quot;))
+     if(GetObjProperty(me,&quot;countercheck&quot;) != timer)
+       break;
+     endif
+
+Modified: trunk/096/pkg/systems/daynight/wEffect.src
+===================================================================
+--- trunk/096/pkg/systems/daynight/wEffect.src	2005-11-02 19:46:22 UTC (rev 842)
++++ trunk/096/pkg/systems/daynight/wEffect.src	2005-11-02 19:54:11 UTC (rev 843)
+@@ -55,7 +55,7 @@
+   SetObjProperty(mob, &quot;guardkill&quot;, 1);
+   PlayLightningBoltEffect( mob );
+   PlaySoundEffect(who, SOUND_EFFECT_THUNDER);
+-  ApplyRawDamage( mob, GetHp(mob) );;
++  ApplyRawDamage( mob, AP_GetVital(mob, HITS) );
+ endfunction
+ 
+ function DoThunder(who,list)
+
+Modified: trunk/096/pkg/systems/merchantnodes/guardNodeControl.src
+===================================================================
+--- trunk/096/pkg/systems/merchantnodes/guardNodeControl.src	2005-11-02 19:46:22 UTC (rev 842)
++++ trunk/096/pkg/systems/merchantnodes/guardNodeControl.src	2005-11-02 19:54:11 UTC (rev 843)
+@@ -111,7 +111,7 @@
+ function ValidateSpawns()
+   var chk := array;
+   foreach thing in npclist
+-    if(GetHP(thing))
++    if(AP_GetVital(thing, HITS))
+       chk.append(thing);
+     endif
+   endforeach
+@@ -126,7 +126,7 @@
+ function DespawnAll()
+   var chk := array;
+   foreach thing in npclist
+-    var hp := GetHP(thing);
++    var hp := AP_GetVital(thing, HITS);
+     if(hp)
+       MoveCharacterToLocation(thing, 5279, 1184, 0, MOVECHAR_FORCELOCATION);
+       ApplyRawDamage(thing, Cint(hp + 100));
+
+Modified: trunk/096/pkg/systems/merchantnodes/merchantNodeControl.src
+===================================================================
+--- trunk/096/pkg/systems/merchantnodes/merchantNodeControl.src	2005-11-02 19:46:22 UTC (rev 842)
++++ trunk/096/pkg/systems/merchantnodes/merchantNodeControl.src	2005-11-02 19:54:11 UTC (rev 843)
+@@ -181,7 +181,7 @@
+ 		foreach thing in npclist
+ 			if(entry[2] == GetObjProperty(thing, &quot;Anchor&quot;))
+ 				var npc := thing;
+-				if((entry[3] == 1) and (GetHP(npc)))
++				if((entry[3] == 1) and (AP_GetVital(npc, HITS)))
+ 					if(npc in chk)
+ 						// do nothing -- invalid entry --
+ 					else
+@@ -190,7 +190,7 @@
+ 				else
+ 					MoveCharacterToLocation(npc, 1, 1, 0, MOVECHAR_FORCELOCATION);
+ 					RevokePrivilege(npc, &quot;invul&quot;);
+-					ApplyRawDamage(npc, GetHP(npc) + 100);
++					ApplyRawDamage(npc, AP_GetVital(npc, HITS) + 100);
+ 				endif
+ 			endif
+ 			sleepms(2);
+@@ -203,7 +203,7 @@
+ 		else
+ 			MoveCharacterToLocation(npc, 1, 1, 0, MOVECHAR_FORCELOCATION);
+ 			RevokePrivilege(npc, &quot;invul&quot;);
+-			ApplyRawDamage(npc, GetHP(npc) + 100);
++			ApplyRawDamage(npc, AP_GetVital(npc, HITS) + 100);
+ 		endif
+ 		sleepms(2);
+ 	endforeach
+@@ -218,7 +218,7 @@
+ function DespawnAll()
+ 	var chk := array;
+ 	foreach thing in npclist
+-		var hp := GetHP(thing);
++		var hp := AP_GetVital(thing, HITS);
+ 		if(hp)
+ 			MoveCharacterToLocation(thing, 1, 1, 0, MOVECHAR_FORCELOCATION);
+ 			RevokePrivilege(thing, &quot;invul&quot;);
+
+Modified: trunk/096/pkg/systems/merchantnodes/merchantNodeDestroy.src
+===================================================================
+--- trunk/096/pkg/systems/merchantnodes/merchantNodeDestroy.src	2005-11-02 19:46:22 UTC (rev 842)
++++ trunk/096/pkg/systems/merchantnodes/merchantNodeDestroy.src	2005-11-02 19:54:11 UTC (rev 843)
+@@ -11,7 +11,7 @@
+     if(npc)
+       RevokePrivilege(npc, &quot;invul&quot;);
+       SetObjProperty(npc, &quot;guardkill&quot;, 1);
+-      ApplyRawDamage(npc, GetHP(npc) + 100);
++      ApplyRawDamage(npc, AP_GetVital(npc, HITS) + 100);
+     endif
+   endforeach
+   var type := GetObjProperty(item, &quot;Type&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000816.html">[Poldistro-svn] r842 - in trunk/096: pkg/skills/magery scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000818.html">[Poldistro-svn] r844 - in trunk/096: pkg/skills/meditation pkg/skills/mining pkg/skills/poisoning pkg/skills/removetrap pkg/skills/tailoring pkg/skills/taming pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking pkg/skills/veterinary pkg/systems/attributes/commands/test scripts/items
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#817">[ date ]</a>
+              <a href="thread.html#817">[ thread ]</a>
+              <a href="subject.html#817">[ subject ]</a>
+              <a href="author.html#817">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

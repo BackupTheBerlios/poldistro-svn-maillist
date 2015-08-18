@@ -1,0 +1,679 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r823 - trunk/096/pkg/skills/alchemy
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r823%20-%20trunk/096/pkg/skills/alchemy&In-Reply-To=%3C200511020917.jA29H7n8014170%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000796.html">
+   <LINK REL="Next"  HREF="000798.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r823 - trunk/096/pkg/skills/alchemy</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r823%20-%20trunk/096/pkg/skills/alchemy&In-Reply-To=%3C200511020917.jA29H7n8014170%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r823 - trunk/096/pkg/skills/alchemy">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 10:17:07 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000796.html">[Poldistro-svn] r822 - trunk/096/pkg/other
+</A></li>
+        <LI>Next message: <A HREF="000798.html">[Poldistro-svn] r824 - trunk/096/pkg/skills/alchemy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#797">[ date ]</a>
+              <a href="thread.html#797">[ thread ]</a>
+              <a href="subject.html#797">[ subject ]</a>
+              <a href="author.html#797">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 10:17:03 +0100 (Wed, 02 Nov 2005)
+New Revision: 823
+
+Modified:
+   trunk/096/pkg/skills/alchemy/alchemy.src
+   trunk/096/pkg/skills/alchemy/potion.inc
+Log:
+Attribute updates
+
+Modified: trunk/096/pkg/skills/alchemy/alchemy.src
+===================================================================
+--- trunk/096/pkg/skills/alchemy/alchemy.src	2005-11-02 09:11:15 UTC (rev 822)
++++ trunk/096/pkg/skills/alchemy/alchemy.src	2005-11-02 09:17:03 UTC (rev 823)
+@@ -9,31 +9,31 @@
+ include &quot;include/canAccess&quot;;
+ include &quot;include/noto&quot;;
+ 
+-const REAGENT_START := 0x0f78;
+-const REAGENT_STOP := 0x0f91;
+-const SOUND_EFFECT_GRIND := 0x243;
+-const SOUND_EFFECT_POUR := 0x241;
+-const SOUND_EFFECT_BUBBLE :=  0x4f;
+-const UOBJECT_EMPTY_BOTTLE := 0x0f0e;
++CONST REAGENT_START := 0x0f78;
++CONST REAGENT_STOP := 0x0f91;
++CONST SOUND_EFFECT_GRIND := 0x243;
++CONST SOUND_EFFECT_POUR := 0x241;
++CONST SOUND_EFFECT_BUBBLE :=	0x4f;
++CONST UOBJECT_EMPTY_BOTTLE := 0x0f0e;
+ 
+ var conf := ReadConfigFile(&quot;alchemy&quot;);
+-
++	
+ program use_mortar (who, mortar)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  if(!can_access(who, mortar))
+-    return;
+-  endif
+-  if(!ReserveItem(mortar))
+-    SendSysMessage(who, &quot;That is already in use.&quot;);
+-    return;
+-  endif
+-  Detach();
+-  if(GetObjProperty(mortar, &quot;contents&quot;))
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++	if(!can_access(who, mortar))
++		return;
++	endif
++	if(!ReserveItem(mortar))
++		SendSysMessage(who, &quot;That is already in use.&quot;);
++		return;
++	endif
++	Detach();
++	if(GetObjProperty(mortar, &quot;contents&quot;))
+ 	PourPotion(who, mortar);
+-  else
+-    SendSysMessage( who, &quot;What would you like to use that on?&quot; );
+-    make_the_potion(who, mortar);
+-  endif
+-  EraseObjProperty(mortar, &quot;#IsMixing&quot;);
++	else
++		SendSysMessage( who, &quot;What would you like to use that on?&quot; );
++		make_the_potion(who, mortar);
++	endif
++	EraseObjProperty(mortar, &quot;#IsMixing&quot;);
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/alchemy/potion.inc
+===================================================================
+--- trunk/096/pkg/skills/alchemy/potion.inc	2005-11-02 09:11:15 UTC (rev 822)
++++ trunk/096/pkg/skills/alchemy/potion.inc	2005-11-02 09:17:03 UTC (rev 823)
+@@ -3,284 +3,285 @@
+ use cfgfile;
+ 
+ var cfg := ReadConfigFile(&quot;alchemy&quot;);
+-if(!cfg)
+-  syslog(&quot;Failed to open alchemy.cfg: &quot; + cfg.errortext);
++if( !cfg )
++	syslog(&quot;Failed to open alchemy.cfg: &quot; + cfg.errortext);
+ endif
+ 
+ include &quot;:attributes:attributes&quot;;
++
+ function is_reagent(what)
+-  case(what.objtype)
+-    0xf7a: return 1;
+-    0xf7b: return 1;
+-    0xf84: return 1;
+-    0xf85: return 1;
+-    0xf86: return 1;
+-    0xf88: return 1;
+-    0xf8c: return 1;
+-    0xf8d: return 1;
+-  endcase
+-  return 0;
++	case(what.objtype)
++		0xf7a: return 1;
++		0xf7b: return 1;
++		0xf84: return 1;
++		0xf85: return 1;
++		0xf86: return 1;
++		0xf88: return 1;
++		0xf8c: return 1;
++		0xf8d: return 1;
++	endcase
++	return 0;
+ endfunction
+ 
+ function PourPotion(user,mortar)
+-  try_to_make_potion(user, &quot;spacefill&quot;, 1, mortar, 0);
++	try_to_make_potion(user, &quot;spacefill&quot;, 1, mortar, 0);
+ endfunction
+ 
+ function make_the_potion(user, mortar)
+-  var use_on := Target( user );
+-  if(!use_on)
+-    SendSysMessage(user, &quot;Targetting cancelled.&quot;);
+-    return;
+-  endif
+-  if(!can_access(user, use_on))
+-    return;
+-  endif
+-  if(is_reagent(use_on))
+-    if(!cfg)
+-      SendSysMessage(user, &quot;Alchemy config error. Please inform the staff.&quot;);
+-      return;
+-    endif
+-    var elem := cfg[use_on.objtype];
+-    if(!elem)
+-      SendSysMessage(user, &quot;Alchemy element error. Please inform the staff.&quot;);
+-      return;
+-    endif
+-    var possible := array;
+-    var tmenu := CreateMenu(&quot;Select a potion to make&quot;);
+-    var num_possibilities := 0;
+-    possible := GetConfigStringArray( elem, &quot;potion&quot;);
+-    foreach thingie in possible
+-      if(can_make(user, thingie, use_on))
+-        var titem := cfg[thingie].objtype;
+-        if(titem)
+-          thingie[&quot;_&quot;] := &quot; &quot;;
+-          AddMenuItem( tmenu, titem, thingie );
+-          num_possibilities := num_possibilities + 1;
+-        endif
+-      endif
+-    endforeach
+-    if(num_possibilities == 0)
+-      SendSysMessage(user, &quot;You can't make any potions!&quot;);
+-      return;
+-    endif
+-    var citem := SelectMenuItem2(user, tmenu);
+-    if(!citem.objtype)
+-      SendSysMessage(user, &quot;Targetting cancelled.&quot;);
+-      return -1;
+-    endif
+-    try_to_make_potion(user, possible[citem.index], 0, mortar, use_on);
+-  elseif(use_on == mortar)
+-    var last := GetObjProperty(mortar, &quot;LastMade&quot;);
+-    if(last)
+-  	  try_to_make_last(user, last, mortar);
+-  	else
+-  	  SendSysMessage(user, &quot;You cannot grind that.&quot;);
+-  	  return;
+-  	endif
+-  else
+-    SendSysMessage(user, &quot;That's not a reagent.&quot;);
+-  endif
++	var use_on := Target( user );
++	if(!use_on)
++		SendSysMessage(user, &quot;Targetting cancelled.&quot;);
++		return;
++	endif
++	if(!can_access(user, use_on))
++		return;
++	endif
++	if(is_reagent(use_on))
++		if(!cfg)
++			SendSysMessage(user, &quot;Alchemy config error. Please inform the staff.&quot;);
++			return;
++		endif
++		var elem := cfg[use_on.objtype];
++		if(!elem)
++			SendSysMessage(user, &quot;Alchemy element error. Please inform the staff.&quot;);
++			return;
++		endif
++		var possible := array;
++		var tmenu := CreateMenu(&quot;Select a potion to make&quot;);
++		var num_possibilities := 0;
++		possible := GetConfigStringArray( elem, &quot;potion&quot;);
++		foreach thingie in possible
++			if(can_make(user, thingie, use_on))
++				var titem := cfg[thingie].objtype;
++				if(titem)
++					thingie[&quot;_&quot;] := &quot; &quot;;
++					AddMenuItem( tmenu, titem, thingie );
++					num_possibilities := num_possibilities + 1;
++				endif
++			endif
++		endforeach
++		if(num_possibilities == 0)
++			SendSysMessage(user, &quot;You can't make any potions!&quot;);
++			return;
++		endif
++		var citem := SelectMenuItem2(user, tmenu);
++		if(!citem.objtype)
++			SendSysMessage(user, &quot;Targetting cancelled.&quot;);
++			return -1;
++		endif
++		try_to_make_potion(user, possible[citem.index], 0, mortar, use_on);
++	elseif(use_on == mortar)
++		var last := GetObjProperty(mortar, &quot;LastMade&quot;);
++		if(last)
++			try_to_make_last(user, last, mortar);
++		else
++			SendSysMessage(user, &quot;You cannot grind that.&quot;);
++			return;
++		endif
++	else
++		SendSysMessage(user, &quot;That's not a reagent.&quot;);
++	endif
+ endfunction
+ 
+ function can_make(user, potion, reg)
+-  reg := reg; // stops ecompile &quot;not used&quot; warning
+-  var skillneeded:= CInt(cfg[potion].skill);
+-  if(skillneeded &gt; 20)
+-    skillneeded := skillneeded - 20;
+-  else
+-    skillneeded := 0;
+-  endif
+-  if(GetEffectiveSkill(user, SKILLID_ALCHEMY) &gt;= skillneeded)
+-    return 1;
+-  else
+-    return 0;
+-  endif
++	reg := reg; // stops ecompile &quot;not used&quot; warning
++	var skillneeded:= CInt(cfg[potion].skill);
++	if(skillneeded &gt; 20)
++		skillneeded := skillneeded - 20;
++	else
++		skillneeded := 0;
++	endif
++	if( AP_GetSkill(user, &quot;Alchemy&quot;) &gt;= skillneeded)
++		return 1;
++	else
++		return 0;
++	endif
+ endfunction
+ 
+ function take_regs(user, potion, reg)
+-  var amount_needed:= cfg[potion].reagent_amount;
+-  set_critical(1);
+-  if(CInt(amount_needed) &lt;= reg.amount)
+-    SubtractAmount(reg, amount_needed);
+-    set_critical(0);
+-    return 1;
+-  else
+-    SendSysMessage(user, &quot;You ran out of reagents.&quot;);
+-    set_critical(0);
+-    return 0;
+-  endif
++	var amount_needed:= cfg[potion].reagent_amount;
++	set_critical(1);
++	if(CInt(amount_needed) &lt;= reg.amount)
++		SubtractAmount(reg, amount_needed);
++		set_critical(0);
++		return 1;
++	else
++		SendSysMessage(user, &quot;You ran out of reagents.&quot;);
++		set_critical(0);
++		return 0;
++	endif
+ endfunction
+ 
+ function try_to_make_potion(user, potion, in_mortar, mortar, reg)
+-  if(!in_mortar)
+-    potion[&quot; &quot;] := &quot;_&quot;;
+-    var difficulty := cfg[potion].skill;
+-    var points := cfg[potion].points;
+-    var product := cfg[potion].objtype;
+-    SetObjProperty(mortar, &quot;LastMade&quot;, potion);
+-    var loop := 0;
+-    while(loop &lt; 3)
+-      PlaySoundEffect(user, SOUND_EFFECT_GRIND);
+-      PrintTextAbovePrivate(user, &quot;You grind the reagent.&quot;,user);
+-      sleep(1);
+-      loop := loop + 1;
+-    endwhile
+-    if(!take_regs(user, potion, reg))
+-      return;
+-    endif
+-    if(CheckSkill(user, SKILLID_ALCHEMY, difficulty, points))
+-      var hasbottle:= 0;
+-      set_critical(1);
+-      foreach item in EnumerateItemsInContainer(user.backpack)
+-        if((item.objtype == UOBJECT_EMPTY_BOTTLE) &amp;&amp; (item.container.objtype != 0x1940))
+-          if(SubtractAmount(item, 1))
+-            hasbottle := 1;
+-            break;
+-          endif
+-        endif
+-      endforeach
+-      set_critical(0);
+-      if(RandomInt(10) &gt; 6)
+-        var skill := GetEffectiveSkill(user, SKILLID_ALCHEMY);
+-        ExceptionalFameMod(user, skill, difficulty, Cint(points / 4));
+-      endif
+-      if(hasbottle)
+-        var thing := CreateItemInBackpack(user, product, 1);
+-        if ( !thing )
+-          SendSysMessage(user, &quot;Failed to create potion! Please report this to the staff (error logged)&quot;);
+-          syslog( &quot;Alchemy potion creation (1) failed: &quot; + thing.errortext );
+-          return;
+-        endif
+-        PlaySoundEffect(user, SOUND_EFFECT_POUR);
+-        PrintTextAbovePrivate(user, &quot;You create the potion and put it in your backpack.&quot;, user);
+-        return;
+-      else
+-        PrintTextAbovePrivate(user, &quot;You don't have any bottles.&quot;, user);
+-        SetObjProperty(mortar, &quot;contents&quot;, product);
+-        return;
+-      endif
+-    else
+-      PlaySoundEffect(user, SOUND_EFFECT_POUR);
+-      PrintTextAbovePrivate(user, &quot;You pour out the useless mixture.&quot;, user);
+-      return;
+-    endif
+-  else
+-    var hasbottle:= 0;
+-    set_critical(1);
+-    foreach item in EnumerateItemsInContainer(user.backpack)
+-      if((item.objtype == UOBJECT_EMPTY_BOTTLE) &amp;&amp; (item.container.objtype != 0x1940))
+-        SubtractAmount(item, 1);
+-        hasbottle := 1;
+-        break;
+-      endif
+-    endforeach
+-    set_critical(0);
+-    if(hasbottle)
+-      var product := GetObjProperty(mortar, &quot;contents&quot;);
+-      var thing := CreateItemInBackpack(user, product, 1);
+-      if ( !thing )
+-        SendSysMessage(user, &quot;Failed to create item! Please report this to the staff (error logged)&quot;);
+-        syslog( &quot;Alchemy item creation failed: &quot; + thing.errortext );
+-        return;
+-      endif
+-      PlaySoundEffect(user, SOUND_EFFECT_POUR);
+-      PrintTextAbovePrivate(user, &quot;You create the item and put it in your backpack.&quot;, user);
+-      EraseObjProperty( mortar, &quot;contents&quot; );
+-      return;
+-    else
+-      PrintTextAbovePrivate(user, &quot;You don't have any bottles.&quot;, user);
+-      return;
+-    endif
+-  endif
++	if(!in_mortar)
++		potion[&quot; &quot;] := &quot;_&quot;;
++		var difficulty := cfg[potion].skill;
++		var points := cfg[potion].points;
++		var product := cfg[potion].objtype;
++		SetObjProperty(mortar, &quot;LastMade&quot;, potion);
++		var loop := 0;
++		while(loop &lt; 3)
++			PlaySoundEffect(user, SOUND_EFFECT_GRIND);
++			PrintTextAbovePrivate(user, &quot;You grind the reagent.&quot;,user);
++			sleep(1);
++			loop := loop + 1;
++		endwhile
++		if(!take_regs(user, potion, reg))
++			return;
++		endif
++		if(SkillCheck(user, &quot;Alchemy&quot;, difficulty) &gt; 0)
++			var hasbottle:= 0;
++			set_critical(1);
++			foreach item in EnumerateItemsInContainer(user.backpack)
++				if((item.objtype == UOBJECT_EMPTY_BOTTLE) &amp;&amp; (item.container.objtype != 0x1940))
++					if(SubtractAmount(item, 1))
++						hasbottle := 1;
++						break;
++					endif
++				endif
++			endforeach
++			set_critical(0);
++			if(RandomInt(10) &gt; 6)
++				var skill := AP_GetSkill(user, &quot;Alchemy&quot;);
++				ExceptionalFameMod(user, skill, difficulty, Cint(points / 4));
++			endif
++			if(hasbottle)
++				var thing := CreateItemInBackpack(user, product, 1);
++				if ( !thing )
++					SendSysMessage(user, &quot;Failed to create potion! Please report this to the staff (error logged)&quot;);
++					syslog( &quot;Alchemy potion creation (1) failed: &quot; + thing.errortext );
++					return;
++				endif
++				PlaySoundEffect(user, SOUND_EFFECT_POUR);
++				PrintTextAbovePrivate(user, &quot;You create the potion and put it in your backpack.&quot;, user);
++				return;
++			else
++				PrintTextAbovePrivate(user, &quot;You don't have any bottles.&quot;, user);
++				SetObjProperty(mortar, &quot;contents&quot;, product);
++				return;
++			endif
++		else
++			PlaySoundEffect(user, SOUND_EFFECT_POUR);
++			PrintTextAbovePrivate(user, &quot;You pour out the useless mixture.&quot;, user);
++			return;
++		endif
++	else
++		var hasbottle:= 0;
++		set_critical(1);
++		foreach item in EnumerateItemsInContainer(user.backpack)
++			if((item.objtype == UOBJECT_EMPTY_BOTTLE) &amp;&amp; (item.container.objtype != 0x1940))
++				SubtractAmount(item, 1);
++				hasbottle := 1;
++				break;
++			endif
++		endforeach
++		set_critical(0);
++		if(hasbottle)
++			var product := GetObjProperty(mortar, &quot;contents&quot;);
++			var thing := CreateItemInBackpack(user, product, 1);
++			if ( !thing )
++				SendSysMessage(user, &quot;Failed to create item! Please report this to the staff (error logged)&quot;);
++				syslog( &quot;Alchemy item creation failed: &quot; + thing.errortext );
++				return;
++			endif
++			PlaySoundEffect(user, SOUND_EFFECT_POUR);
++			PrintTextAbovePrivate(user, &quot;You create the item and put it in your backpack.&quot;, user);
++			EraseObjProperty( mortar, &quot;contents&quot; );
++			return;
++		else
++			PrintTextAbovePrivate(user, &quot;You don't have any bottles.&quot;, user);
++			return;
++		endif
++	endif
+ endfunction
+ 
+ function try_to_make_last(user, potion, mortar)
+-  var reg;
+-  case(potion)
+-    &quot;Refresh&quot;:            reg := FindRegs(user, 0xf7a);
+-    &quot;Total_Refresh&quot;:      reg := FindRegs(user, 0xf7a);
+-    &quot;Agility&quot;:            reg := FindRegs(user, 0xf7b);
+-    &quot;Greater_Agility&quot;:    reg := FindRegs(user, 0xf7b);
+-    &quot;Lesser_Cure&quot;:        reg := FindRegs(user, 0xf84);
+-    &quot;Cure&quot;:               reg := FindRegs(user, 0xf84);
+-    &quot;Greater_Cure&quot;:       reg := FindRegs(user, 0xf84);
+-    &quot;Lesser_Heal&quot;:        reg := FindRegs(user, 0xf85);
+-    &quot;Heal&quot;:               reg := FindRegs(user, 0xf85);
+-    &quot;Greater_Heal&quot;:       reg := FindRegs(user, 0xf85);
+-    &quot;Strength&quot;:           reg := FindRegs(user, 0xf86);
+-    &quot;Greater_Strength&quot;:   reg := FindRegs(user, 0xf86);
+-    &quot;Lesser_Poison&quot;:      reg := FindRegs(user, 0xf88);
+-    &quot;Poison&quot;:             reg := FindRegs(user, 0xf88);
+-    &quot;Greater_Poison&quot;:     reg := FindRegs(user, 0xf88);
+-    &quot;Deadly_Poison&quot;:      reg := FindRegs(user, 0xf88);
+-    &quot;Lesser_Explosion&quot;:   reg := FindRegs(user, 0xf8c);
+-    &quot;Explosion&quot;:          reg := FindRegs(user, 0xf8c);
+-    &quot;Greater_Explosion&quot;:  reg := FindRegs(user, 0xf8c);
+-    &quot;Nightsight&quot;:         reg := FindRegs(user, 0xf8d);
+-  endcase
+-  if(reg == &quot;none&quot;)
+-    SendSysMessage(user, &quot;You do not have enough reagents to make that.&quot;);
+-    return;
+-  endif
+-  potion[&quot; &quot;] := &quot;_&quot;;
+-  var difficulty := cfg[potion].skill;
+-  var points := cfg[potion].points;
+-  var product := cfg[potion].objtype;
+-  if(!take_regs(user, potion, reg))
+-    SendSysMessage(user, &quot;You do not have enough reagents to make that.&quot;);
+-    return;
+-  endif
+-  PlaySoundEffect(user, SOUND_EFFECT_GRIND);
+-  PrintTextAbovePrivate(user, &quot;You grind the reagent.&quot;,user);
+-  sleep(2);
+-  PlaySoundEffect(user, SOUND_EFFECT_GRIND);
+-  PrintTextAbovePrivate(user, &quot;You grind the reagent.&quot;,user);
+-  sleep(2);
+-  PlaySoundEffect(user, SOUND_EFFECT_GRIND);
+-  PrintTextAbovePrivate(user, &quot;You grind the reagent.&quot;,user);
+-  sleep(2);
+-  if(CheckSkill(user, SKILLID_ALCHEMY, difficulty, points))
+-    var hasbottle:= 0;
+-    set_critical(1);
+-    foreach item in EnumerateItemsInContainer(user.backpack)
+-      if((item.objtype == UOBJECT_EMPTY_BOTTLE) &amp;&amp; (item.container.objtype != 0x1940))
+-        if(SubtractAmount(item, 1))
+-          hasbottle := 1;
+-          break;
+-        endif
+-      endif
+-    endforeach
+-    set_critical(0);
+-    if(hasbottle)
+-      var thing := CreateItemInBackpack(user, product, 1);
+-      if ( !thing )
+-        SendSysMessage(user, &quot;Failed to create potion! Please report this to the staff (error logged)&quot;);
+-        syslog( &quot;Alchemy potion creation (2) failed: &quot; + thing.errortext );
+-        return;
+-      endif
+-      PlaySoundEffect(user, SOUND_EFFECT_POUR);
+-      SetObjProperty(mortar, &quot;LastMade&quot;, potion);
+-      PrintTextAbovePrivate(user, &quot;You create the potion and put it in your backpack.&quot;, user);
+-      return;
+-    else
+-      PrintTextAbovePrivate(user, &quot;You don't have any bottles.&quot;, user);
+-      SetObjProperty(mortar, &quot;contents&quot;, product);
+-      return;
+-    endif
+-  else
+-    PlaySoundEffect(user, SOUND_EFFECT_POUR);
+-    PrintTextAbovePrivate(user, &quot;You pour out the useless mixture.&quot;, user);
+-    return;
+-  endif
++	var reg;
++	case(potion)
++		&quot;Refresh&quot;:						reg := FindRegs(user, 0xf7a);
++		&quot;Total_Refresh&quot;:			reg := FindRegs(user, 0xf7a);
++		&quot;Agility&quot;:						reg := FindRegs(user, 0xf7b);
++		&quot;Greater_Agility&quot;:		reg := FindRegs(user, 0xf7b);
++		&quot;Lesser_Cure&quot;:				reg := FindRegs(user, 0xf84);
++		&quot;Cure&quot;:							 reg := FindRegs(user, 0xf84);
++		&quot;Greater_Cure&quot;:			 reg := FindRegs(user, 0xf84);
++		&quot;Lesser_Heal&quot;:				reg := FindRegs(user, 0xf85);
++		&quot;Heal&quot;:							 reg := FindRegs(user, 0xf85);
++		&quot;Greater_Heal&quot;:			 reg := FindRegs(user, 0xf85);
++		&quot;Strength&quot;:					 reg := FindRegs(user, 0xf86);
++		&quot;Greater_Strength&quot;:	 reg := FindRegs(user, 0xf86);
++		&quot;Lesser_Poison&quot;:			reg := FindRegs(user, 0xf88);
++		&quot;Poison&quot;:						 reg := FindRegs(user, 0xf88);
++		&quot;Greater_Poison&quot;:		 reg := FindRegs(user, 0xf88);
++		&quot;Deadly_Poison&quot;:			reg := FindRegs(user, 0xf88);
++		&quot;Lesser_Explosion&quot;:	 reg := FindRegs(user, 0xf8c);
++		&quot;Explosion&quot;:					reg := FindRegs(user, 0xf8c);
++		&quot;Greater_Explosion&quot;:	reg := FindRegs(user, 0xf8c);
++		&quot;Nightsight&quot;:				 reg := FindRegs(user, 0xf8d);
++	endcase
++	if(reg == &quot;none&quot;)
++		SendSysMessage(user, &quot;You do not have enough reagents to make that.&quot;);
++		return;
++	endif
++	potion[&quot; &quot;] := &quot;_&quot;;
++	var difficulty := cfg[potion].skill;
++	var points := cfg[potion].points;
++	var product := cfg[potion].objtype;
++	if(!take_regs(user, potion, reg))
++		SendSysMessage(user, &quot;You do not have enough reagents to make that.&quot;);
++		return;
++	endif
++	PlaySoundEffect(user, SOUND_EFFECT_GRIND);
++	PrintTextAbovePrivate(user, &quot;You grind the reagent.&quot;,user);
++	sleep(2);
++	PlaySoundEffect(user, SOUND_EFFECT_GRIND);
++	PrintTextAbovePrivate(user, &quot;You grind the reagent.&quot;,user);
++	sleep(2);
++	PlaySoundEffect(user, SOUND_EFFECT_GRIND);
++	PrintTextAbovePrivate(user, &quot;You grind the reagent.&quot;,user);
++	sleep(2);
++	if(SkillCheck(user, &quot;Alchemy&quot;, difficulty) &gt; 0 )
++		var hasbottle:= 0;
++		set_critical(1);
++		foreach item in EnumerateItemsInContainer(user.backpack)
++			if((item.objtype == UOBJECT_EMPTY_BOTTLE) &amp;&amp; (item.container.objtype != 0x1940))
++				if(SubtractAmount(item, 1))
++					hasbottle := 1;
++					break;
++				endif
++			endif
++		endforeach
++		set_critical(0);
++		if(hasbottle)
++			var thing := CreateItemInBackpack(user, product, 1);
++			if ( !thing )
++				SendSysMessage(user, &quot;Failed to create potion! Please report this to the staff (error logged)&quot;);
++				syslog( &quot;Alchemy potion creation (2) failed: &quot; + thing.errortext );
++				return;
++			endif
++			PlaySoundEffect(user, SOUND_EFFECT_POUR);
++			SetObjProperty(mortar, &quot;LastMade&quot;, potion);
++			PrintTextAbovePrivate(user, &quot;You create the potion and put it in your backpack.&quot;, user);
++			return;
++		else
++			PrintTextAbovePrivate(user, &quot;You don't have any bottles.&quot;, user);
++			SetObjProperty(mortar, &quot;contents&quot;, product);
++			return;
++		endif
++	else
++		PlaySoundEffect(user, SOUND_EFFECT_POUR);
++		PrintTextAbovePrivate(user, &quot;You pour out the useless mixture.&quot;, user);
++		return;
++	endif
+ endfunction
+ 
+ function FindRegs(who, type)
+-  var holder := &quot;none&quot;;
+-  foreach thing in EnumerateItemsInContainer(who.backpack)
+-    if(thing.objtype == type)
+-      holder := thing;
+-      break;
+-    endif
+-  endforeach
+-  return holder;
++	var holder := &quot;none&quot;;
++	foreach thing in EnumerateItemsInContainer(who.backpack)
++		if(thing.objtype == type)
++			holder := thing;
++			break;
++		endif
++	endforeach
++	return holder;
+ endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000796.html">[Poldistro-svn] r822 - trunk/096/pkg/other
+</A></li>
+	<LI>Next message: <A HREF="000798.html">[Poldistro-svn] r824 - trunk/096/pkg/skills/alchemy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#797">[ date ]</a>
+              <a href="thread.html#797">[ thread ]</a>
+              <a href="subject.html#797">[ subject ]</a>
+              <a href="author.html#797">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

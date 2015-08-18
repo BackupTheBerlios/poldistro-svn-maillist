@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r870 - in trunk/096: config pkg/mobiles/brainAI pkg/mobiles/brainAI/config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r870%20-%20in%20trunk/096%3A%20config%20pkg/mobiles/brainAI%20pkg/mobiles/brainAI/config&In-Reply-To=%3C200511030630.jA36Ujkl005109%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000842.html">
+   <LINK REL="Next"  HREF="000844.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r870 - in trunk/096: config pkg/mobiles/brainAI pkg/mobiles/brainAI/config</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r870%20-%20in%20trunk/096%3A%20config%20pkg/mobiles/brainAI%20pkg/mobiles/brainAI/config&In-Reply-To=%3C200511030630.jA36Ujkl005109%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r870 - in trunk/096: config pkg/mobiles/brainAI pkg/mobiles/brainAI/config">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Thu Nov  3 07:30:45 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000842.html">[Poldistro-svn] r869 - in trunk/096/pkg/skills/magery: . OLD commands config include spellScripts
+</A></li>
+        <LI>Next message: <A HREF="000844.html">[Poldistro-svn] r871 - in trunk/096: data pkg/mobiles/oldAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#843">[ date ]</a>
+              <a href="thread.html#843">[ thread ]</a>
+              <a href="subject.html#843">[ subject ]</a>
+              <a href="author.html#843">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-03 07:30:08 +0100 (Thu, 03 Nov 2005)
+New Revision: 870
+
+Modified:
+   trunk/096/config/npcdesc.cfg
+   trunk/096/pkg/mobiles/brainAI/config/hatelist.cfg
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+Moved sheep to brainAI pkg.
+
+Modified: trunk/096/config/npcdesc.cfg
+===================================================================
+--- trunk/096/config/npcdesc.cfg	2005-11-03 06:02:07 UTC (rev 869)
++++ trunk/096/config/npcdesc.cfg	2005-11-03 06:30:08 UTC (rev 870)
+@@ -2569,48 +2569,6 @@
+ 	AttackHitScript		:combat:mainHitScript
+ }
+ 
+-
+-NPCTemplate	sheep
+-{
+-	Name			a sheep
+-	Script			:oldAI:sheep
+-	ObjType			0xcf
+-	Color			0
+-	TrueColor		33784
+-	Gender			0
+-	Strength		19
+-	Intelligence		5
+-	Dexterity		25
+-	HITS			19
+-	MANA			0
+-	STAM			25
+-	Tactics			6
+-	Wrestling		5
+-	MagicResistance		5
+-	AttackSpeed		30
+-	AttackDamage		1d4
+-	AttackAttribute		Wrestling
+-	AttackHitSound		0xD9
+-	AttackMissSound		0x239
+-	DeathSound		0xdb
+-	DamagedSound		0xda
+-	IdleSound1		0xd7
+-	IdleSound2		0xd8
+-	AR			3
+-	tameskill		11
+-	herdskill		11
+-	food			veggie
+-	GuardIgnore		1
+-	provoke			15
+-	DStart			10
+-	CorpseItm		rawribs wool
+-	CorpseAmt		3 1
+-	NoLoot			1
+-	CProp  Karma		i0
+-	CProp  Fame		i1
+-	AttackHitScript		:combat:mainHitScript
+-}
+-
+ NPCTemplate	goat
+ {
+ 	Name			a goat
+
+Modified: trunk/096/pkg/mobiles/brainAI/config/hatelist.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/config/hatelist.cfg	2005-11-03 06:02:07 UTC (rev 869)
++++ trunk/096/pkg/mobiles/brainAI/config/hatelist.cfg	2005-11-03 06:30:08 UTC (rev 870)
+@@ -1,4 +1,4 @@
+-HateList Dog
++HateList dog
+ {
+ 	Hates	cat
+ 	Hates	bird
+@@ -16,7 +16,7 @@
+ 	Fears	greywolf
+ }
+ 
+-HateList Wolf
++HateList wolf
+ {
+ 	Hates	dog
+ 	Hates	cat
+@@ -30,7 +30,7 @@
+ 	Hates	deer
+ }
+ 
+-HateList Cow
++HateList cow
+ {
+ 	Hates	snake
+ 	Hates	icesnake
+@@ -40,4 +40,14 @@
+ 	Fears	frostwolf
+ 	Fears	whitewolf
+ 	Fears	greywolf
++}
++
++HateList sheep
++{
++	Fears	dog
++	Fears	wolf
++	Fears	direwolf
++	Fears	frostwolf
++	Fears	whitewolf
++	Fears	greywolf
+ }
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-03 06:02:07 UTC (rev 869)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-03 06:30:08 UTC (rev 870)
+@@ -130,7 +130,7 @@
+ 	AttackSpeed		30
+ 	AttackDamage		1d4
+ 	AttackHitSounds		a1:i123
+-	AttackMissSounds	a1:i0x239
++	AttackMissSounds	a1:i569
+ 	DeathSounds		a1:i125
+ 	DamagedSounds		a1:i124
+ 	IdleSounds		a2:i121i122		// Sounds stored in Packed Array form
+@@ -168,3 +168,70 @@
+ 
+ 	AttackHitScript		:combat:mainHitScript
+ }
++
++NPCTemplate	sheep
++{
++	Name			a sheep
++	Script			:brainAI:brain
++	ObjType			0xcf
++	Color			0
++	TrueColor		33784
++	Gender			0
++	runspeed		17
++
++	Strength		19
++	Intelligence		5
++	Dexterity		25
++
++	HITS			12
++	MANA			0
++	STAM			25
++
++	Anatomy			0.0
++	EvaluatingIntelligence	0.0
++	Magery			0.0
++	Meditation		0.0
++	Poisoning		0.0
++	ResistingSpells		5.0
++	Tactics			6.0
++	Wrestling		5.0
++
++	AttackSpeed		30
++	AttackDamage		1d2
++	AttackAttribute		Wrestling
++	AttackHitSounds		a1:i217
++	AttackMissSounds	a1:i569
++	DeathSounds		a1:i219
++	DamagedSounds		a1:i218
++	IdleSounds		a2:i215i216
++
++	AR			8
++
++	food			veggie
++	foodtype		veggie
++	packinstinct		none
++
++	GuardIgnore		1
++	DStart			10
++	CorpseItm		rawribs wool
++	CorpseAmt		3 3
++	NoLoot			1
++	CProp  Karma		i0
++	CProp  Fame		i1
++
++	AISetting	FleeLevel	i50 // 50%
++	AISetting	IdleTicks	i5
++	AISetting	SleepWait	i1000
++	AISetting	ListenRange	i7
++	AISetting	AreaSize	i5
++
++	AIScript	Combat		:brainAI:scripts/combat/genericAnimal
++	AIScript	EnterArea	:brainAI:scripts/enterArea/generic
++	AIScript	LeftArea	:brainAI:scripts/leftArea/generic
++	AIScript	LookAround	:brainAI:scripts/lookAround/findFeared
++	AIScript	ShouldWatch	:brainAI:scripts/shouldWatch/watchFeared
++	AIScript	Sleep		:brainAI:scripts/sleep/generic
++	AIScript	EndFight	:brainAI:scripts/endFight/endFightAnimal
++
++	AttackHitScript		:combat:mainHitScript
++}
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000842.html">[Poldistro-svn] r869 - in trunk/096/pkg/skills/magery: . OLD commands config include spellScripts
+</A></li>
+	<LI>Next message: <A HREF="000844.html">[Poldistro-svn] r871 - in trunk/096: data pkg/mobiles/oldAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#843">[ date ]</a>
+              <a href="thread.html#843">[ thread ]</a>
+              <a href="subject.html#843">[ subject ]</a>
+              <a href="author.html#843">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

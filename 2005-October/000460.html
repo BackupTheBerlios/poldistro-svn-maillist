@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r487 - trunk/096/pkg/items/walkon/teleport
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r487%20-%20trunk/096/pkg/items/walkon/teleport&In-Reply-To=%3C200510091411.j99EBbP1020023%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000459.html">
+   <LINK REL="Next"  HREF="000461.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r487 - trunk/096/pkg/items/walkon/teleport</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r487%20-%20trunk/096/pkg/items/walkon/teleport&In-Reply-To=%3C200510091411.j99EBbP1020023%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r487 - trunk/096/pkg/items/walkon/teleport">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct  9 16:11:37 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000459.html">[Poldistro-svn] r486 - trunk/096/pkg/items/walkon/firefield
+</A></li>
+        <LI>Next message: <A HREF="000461.html">[Poldistro-svn] r488 - trunk/096/pkg/items/walkon/teleport
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#460">[ date ]</a>
+              <a href="thread.html#460">[ thread ]</a>
+              <a href="subject.html#460">[ subject ]</a>
+              <a href="author.html#460">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-09 16:11:36 +0200 (Sun, 09 Oct 2005)
+New Revision: 487
+
+Modified:
+   trunk/096/pkg/items/walkon/teleport/walkon.src
+Log:
+
+
+Modified: trunk/096/pkg/items/walkon/teleport/walkon.src
+===================================================================
+--- trunk/096/pkg/items/walkon/teleport/walkon.src	2005-10-09 13:33:22 UTC (rev 486)
++++ trunk/096/pkg/items/walkon/teleport/walkon.src	2005-10-09 14:11:36 UTC (rev 487)
+@@ -0,0 +1,68 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use polsys;
++
++program walkOn(who, tile)
++	if ( JustTeleported(who) )
++		return 0;
++	endif
++		
++	var dest := GetObjProperty(tile, &quot;Destination&quot;);
++	
++	TeleportMobile(who, dest);
++	if ( !who.npctemplate )
++		TeleTamedPets(who, dest);
++	endif
++	
++	return 1;
++endprogram
++
++function JustTeleported(mobile)
++	var tele_time := CInt(GetObjProperty(mobile, &quot;#Teleported&quot;));
++	if ( tele_time &gt; ReadMillisecondClock()-500 )
++		// Mobile just teleported Too soon to teleport again.
++		return 1;
++	else
++		// Safe to teleport the mobile
++		return 0;
++	endif
++endfunction
++
++function TeleportMobile(mobile, byref dest)
++	SetObjProperty(mobile, &quot;#Teleported&quot;, ReadMillisecondClock());
++	
++	var moved;
++	if ( mobile.realm != dest.realm )
++		moved := MoveObjectToRealm(mobile, dest.realm, dest.x, dest.y, dest.z, MOVECHAR_FORCELOCATION);
++	else
++		moved := MoveCharacterToLocation(mobile, dest.x, dest.y, dest.z, MOVECHAR_FORCELOCATION);
++	endif
++	
++	if ( moved.errortext )
++		SendSysMessage(mobile, &quot;Teleport Error: &quot;+moved.errortext);
++		return 0;
++	endif
++	
++	return 1;
++endfunction
++
++function TeleTamedPets(who, byref dest)
++	foreach mobile in (ListMobilesNearLocationEX(dest.x, dest.y, dest.z, 8, LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN, dest.realm))
++		if ( (mobile.master).serial == who.serial )
++			if ( JustTeleported(mobile) )
++				continue;
++			else
++				TeleportMobile(mobile, dest);
++			endif
++		endif
++		sleepms(2);
++	endforeach
++endfunction
++
++	
++	
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000459.html">[Poldistro-svn] r486 - trunk/096/pkg/items/walkon/firefield
+</A></li>
+	<LI>Next message: <A HREF="000461.html">[Poldistro-svn] r488 - trunk/096/pkg/items/walkon/teleport
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#460">[ date ]</a>
+              <a href="thread.html#460">[ thread ]</a>
+              <a href="subject.html#460">[ subject ]</a>
+              <a href="author.html#460">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

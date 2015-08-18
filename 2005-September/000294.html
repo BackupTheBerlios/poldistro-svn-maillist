@@ -1,0 +1,3873 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r316 - in trunk/096/pkg: skills/blacksmithy skills/blacksmithy/config skills/blacksmithy/tongs systems/crafting systems/crafting/include systems/crafting/method
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r316%20-%20in%20trunk/096/pkg%3A%20skills/blacksmithy%20skills/blacksmithy/config%20skills/blacksmithy/tongs%20systems/crafting%20systems/crafting/include%20systems/crafting/method&In-Reply-To=%3C200509292346.j8TNkF3A025097%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000293.html">
+   <LINK REL="Next"  HREF="000295.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r316 - in trunk/096/pkg: skills/blacksmithy skills/blacksmithy/config skills/blacksmithy/tongs systems/crafting systems/crafting/include systems/crafting/method</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r316%20-%20in%20trunk/096/pkg%3A%20skills/blacksmithy%20skills/blacksmithy/config%20skills/blacksmithy/tongs%20systems/crafting%20systems/crafting/include%20systems/crafting/method&In-Reply-To=%3C200509292346.j8TNkF3A025097%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r316 - in trunk/096/pkg: skills/blacksmithy skills/blacksmithy/config skills/blacksmithy/tongs systems/crafting systems/crafting/include systems/crafting/method">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Fri Sep 30 01:46:15 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000293.html">[Poldistro-svn] r315 - trunk/096/pkg/items/sysbook/book
+</A></li>
+        <LI>Next message: <A HREF="000295.html">[Poldistro-svn] r317 - in trunk/096/pkg/items/sysbook: book include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#294">[ date ]</a>
+              <a href="thread.html#294">[ thread ]</a>
+              <a href="subject.html#294">[ subject ]</a>
+              <a href="author.html#294">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-30 01:45:05 +0200 (Fri, 30 Sep 2005)
+New Revision: 316
+
+Added:
+   trunk/096/pkg/skills/blacksmithy/SmithMenu.cfg
+   trunk/096/pkg/skills/blacksmithy/tongs/
+   trunk/096/pkg/skills/blacksmithy/tongs/tongsMethod.src
+   trunk/096/pkg/systems/crafting/include/
+   trunk/096/pkg/systems/crafting/include/craftGumps.inc
+   trunk/096/pkg/systems/crafting/include/crafting.inc
+   trunk/096/pkg/systems/crafting/include/craftingRepair.inc
+   trunk/096/pkg/systems/crafting/include/craftingSkill.inc
+   trunk/096/pkg/systems/crafting/include/toolWear.inc
+   trunk/096/pkg/systems/crafting/method/
+   trunk/096/pkg/systems/crafting/method/toolWearMethod.inc
+Modified:
+   trunk/096/pkg/skills/blacksmithy/blacksmithy.cfg
+   trunk/096/pkg/skills/blacksmithy/config/icp.cfg
+   trunk/096/pkg/skills/blacksmithy/itemdesc.cfg
+   trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src
+Log:
+
+
+Added: trunk/096/pkg/skills/blacksmithy/SmithMenu.cfg
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/SmithMenu.cfg	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/skills/blacksmithy/SmithMenu.cfg	2005-09-29 23:45:05 UTC (rev 316)
+@@ -0,0 +1,124 @@
++##########################################################################
++# Format for Crafting Menus Config Files:
++#
++#  Index Entry for Config:
++#
++#     Craftitem Index      &lt;- This is the Index. Contains the Sub Menu Names
++#     {
++#      Title	   Example &lt;- HTML Name of the Menu
++#      Skill       blacksmithy  &lt;- Skill the menu is for. Same as the ID's in pol
++#      SkillID     blacksmithy  &lt;- SkillID of the skill listed in Skill. Needs removed
++#      Group       Axes    &lt;- Used for each Sub Menu Name
++#     }
++#
++#  Sub Menu Entry for Config:
++#
++#     Craftitem RingMail   &lt;- Should match the Sub-Menu Group name in Index
++#     {
++#     	Item	RingmailGloves   &lt;- For each item in the sub-menu. You use the
++#                                   objtype name here, not the objtype.
++#     }
++#
++##########################################################################
++
++Craftitem Index
++{
++        Title   &lt;center&gt;Blacksmith Selection Menu&lt;/center&gt;
++        Skill   blacksmithy
++        SkillID blacksmithy
++	Group	Axes
++	Group	Blades
++	Group	Blunt
++	Group	Polearms
++	Group	Shields
++	Group	RingMail
++	Group	ChainMail
++	Group	Platemail
++	Group	Helmets
++}
++
++Craftitem RingMail
++{
++	Item	RingmailGloves
++	Item	RingmailLeggings
++	Item	RingmailSleeves
++	Item	RingmailTunic
++}
++
++Craftitem ChainMail
++{
++	Item	ChainmailCoif
++	Item	ChainmailLeggings
++	Item	ChainmailTunic
++}
++
++Craftitem Platemail
++{
++	Item	PlatemailBreastplate
++	Item	PlatemailArms
++	Item	PlatemailGloves
++	Item	PlatemailGorget
++	Item	PlatemailLegs
++	Item	FemalePlate
++}
++
++Craftitem Helmets
++{
++	Item	Bascinet
++	Item	CloseHelm
++	Item	Helmet
++	Item	NoseHelm
++	Item	PlateHelm
++}
++
++Craftitem Shields
++{
++	Item	BronzeShield
++	Item	Buckler
++	Item	KiteShield
++	Item	KiteShieldB1
++	Item	HeaterShield
++	Item	MetalShield
++}
++
++
++Craftitem Axes
++{
++	Item	axe
++	Item	BattleAxe
++	Item	DoubleAxe
++	Item	ExecutionersAxe
++	Item	LargeBattleAxe
++	Item	TwoHandedAxe
++	Item	WarAxe
++}
++
++Craftitem Blunt
++{
++	Item	HammerPick
++	Item	Mace
++	Item	Maul
++	Item	WarHammer
++	Item	WarMace
++}
++
++Craftitem Polearms
++{
++	Item	Bardiche
++	Item	Halberd
++	Item	ShortSpear
++	Item	Spear
++	Item	WarFork
++}
++
++Craftitem Blades
++{
++	Item	BroadSword
++	Item	Cutlass
++	Item	Dagger
++	Item	Katana
++	Item	Kryss
++	Item	longsword
++	Item	Scimitar
++	Item	VikingSword
++}
+
+Modified: trunk/096/pkg/skills/blacksmithy/blacksmithy.cfg
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/blacksmithy.cfg	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/skills/blacksmithy/blacksmithy.cfg	2005-09-29 23:45:05 UTC (rev 316)
+@@ -1,443 +1,726 @@
+-#note: arbitrary point values!
++##########################################################################
++# Format for blacksmithy.cfg:
++#
++#     blacksmithy 0xf49   &lt;- Objtype of the item
++#     {
++#      name	   axe      &lt;- Name of the item
++#      material    14       &lt;- Material Required
++#      skill       55.0     &lt;- Skill Required of Blacksmith to make xx.x formated
++#      difficulty  55.0     &lt;- Skill Difficulty to craft the item
++#      points      55.0     &lt;- Points given for crafting this item, xx.x formated
++#      skillID     ArmsLore &lt;- Attributes.cfg name for secondary skill
++#      type        metal    &lt;- Type of material used to craft this
++#      exceptional 1        &lt;- 0/1 Flag. 1 = Can be exceptional
++#      mark        1        &lt;- 0/1 Flag. 1 = Can retain maker's mark
++#      retain      1        &lt;- 0/1 Flag. 1 = Can retain color of ore used
++#     }
++#
++# Notes: 1.) Objtype in entry header must NOT use 0x0aaa format, but 0xaaa
++##########################################################################
+ 
+-blacksmithy 0x0f49
+-{
+- name	axe
+- material 14
+- skill 55
+- maxhp 80
+- points 55
+-}
+ 
+-blacksmithy 0x0f47
++###############################################
++# Ringmail
++###############################################
++blacksmithy 0x13F2
+ {
+-name	battle axe
+- material 14
+- skill 50
+- maxhp 80
+- points 50
++  name		ringmail gloves
++  material	10
++  skill		12.0
++  difficulty	12.0
++  points	22.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x0f4b
++blacksmithy 0x13F0
+ {
+-name	double axe
+- material 12
+- skill 49
+- maxhp 110
+- points 49
++  name		ringmail leggings
++  material	16
++  skill		19.4
++  difficulty	19.4
++  points	29.4
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x0f45
++blacksmithy 0x13EE
+ {
+-name	executioner's axe
+- material 16
+- skill 54
+- maxhp 90
+- points 54
++  name		ringmail sleeves
++  material	14
++  skill		16.9
++  difficulty	16.9
++  points	26.9
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13fa
++blacksmithy 0x13EC
+ {
+-name	large battle axe
+- material 14
+- skill 48
+- maxhp 110
+- points 48
++  name		ringmail tunic
++  material	18
++  skill		21.9
++  difficulty	21.9
++  points	31.9
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1442
++
++###############################################
++# Chainmail
++###############################################
++blacksmithy 0x13BB
+ {
+-name	two-handed axe
+- material 16
+- skill 53
+- maxhp 70
+- points 53
++  name		chainmail coif
++  material	10
++  skill		14.5
++  difficulty	14.5
++  points	54.5
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13af
++blacksmithy 0x13BE
+ {
+-name	war axe
+- material 16
+- skill 59
+- maxhp 80
+- points 59
++  name		chainmail leggings
++  material	18
++  skill		36.7
++  difficulty	36.7
++  points	76.7
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13bb
++blacksmithy 0x13BF
+ {
+-name	chainmail coif
+- material 10
+- skill 34
+- maxhp 70
+- points 34
++  name		chainmail tunic
++  material	20
++  skill		39.1
++  difficulty	39.1
++  points	79.1
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13be
++
++###############################################
++# Platemail
++###############################################
++blacksmithy 0x1410
+ {
+-name	chainmail leggings
+- material 18
+- skill 56
+- maxhp 90
+- points 56
++  name		platemail arms
++  material	18
++  skill		66.3
++  difficulty	66.3
++  points	106.3
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13bf
++blacksmithy 0x1414
+ {
+-name	chainmail tunic
+- material 20
+- skill 59
+- maxhp 110
+- points 59
++  name		platemail gloves
++  material	12
++  skill		58.9
++  difficulty	58.9
++  points	98.9
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x140c
++blacksmithy 0x1413
+ {
+-name	bascinet
+- material 15
+- skill 28
+- maxhp 90
+- points 28
++  name		platemail gorget
++  material	10
++  skill		56.4
++  difficulty	56.4
++  points	96.4
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1408
++blacksmithy 0x1411
+ {
+-name	close helm
+- material 15
+- skill 57
+- maxhp 100
+- points 57
++  name		platemail legs
++  material	20
++  skill		68.8
++  difficulty	68.8
++  points	108.8
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x140a
++blacksmithy 0x1415
+ {
+-name	helmet
+- material 15
+- skill 57
+- maxhp 90
+- points 57
++  name		platemail breastplate
++  material	25
++  skill		75.0
++  difficulty	75.0
++  points	115.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x140e
++blacksmithy 0x1c04
+ {
+-name	nose helm
+- material 15
+- skill 57
+- maxhp 100
+- points 57
++  name		female plate armor
++  material	20
++  skill		44.1
++  difficulty	44.1
++  points	84.1
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1412
++###############################################
++# Helmets
++###############################################
++blacksmithy 0x140C
+ {
+-name	plate helm
+- material 15
+- skill 82
+- maxhp 110
+- points 82
++  name		bascinet
++  material	15
++  skill		8.3
++  difficulty	8.3
++  points	18.3
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x143c
++blacksmithy 0x1408
+ {
+-name	hammer pick
+- material 18
+- skill 45
+- maxhp 70
+- points 45
++  name		close helmet
++  material	15
++  skill		37.9
++  difficulty	37.9
++  points	47.9
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x0f5c
++blacksmithy 0x140A
+ {
+-name	mace
+- material 6
+- skill 34
+- maxhp 70
+- points 34
++  name		helmet
++  material	15
++  skill		37.9
++  difficulty	37.9
++  points	47.9
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x143a
++blacksmithy 0x140E
+ {
+-name	maul
+- material 10
+- skill 39
+- maxhp 70
+- points 39
++  name		norse helm
++  material	15
++  skill		37.9
++  difficulty	37.9
++  points	47.9
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1438
++blacksmithy 0x1412
+ {
+-name	war hammer
+- material 16
+- skill 54
+- maxhp 110
+- points 54
++  name		plate helm
++  material	15
++  skill		62.6
++  difficulty	62.6
++  points	102.6
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1406
++
++###############################################
++# Shields
++###############################################
++blacksmithy 0x1B73
+ {
+-name	war mace
+- material 14
+- skill 48
+- maxhp 110
+- points 48
++  name		buckler
++  material	10
++  skill		0.0
++  difficulty	2.0
++  points	11.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1c04
++blacksmithy 0x1B72
+ {
+-name	plate armor
+- material 20
+- skill 64
+- maxhp 120
+- points 64
++  name		bronze shield
++  material	12
++  skill		0.0
++  difficulty	2.0
++  points	12.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1415
++blacksmithy 0x1B76
+ {
+-name	platemail breastplate
+- material 25
+- skill 95
+- maxhp 130
+- points 95
++  name		heater shield
++  material	18
++  skill		24.3
++  difficulty	24.3
++  points	34.3
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1414
++blacksmithy 0x1B7B
+ {
+-name	platemail gloves
+- material 12
+- skill 78
+- maxhp 80
+- points 78
++  name		metal shield
++  material	14
++  skill		0.0
++  difficulty	2.0
++  points	12.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1413
++blacksmithy 0x1B74
+ {
+-name	platemail gorget
+- material 10
+- skill 76
+- maxhp 80
+- points 76
++  name		metal kite shield
++  material	16
++  skill		4.6
++  difficulty	4.6
++  points	14.6
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1411
++blacksmithy 0x1B78
+ {
+-name	platemail leggings
+- material 20
+- skill 88
+- maxhp 115
+- points 88
++  name		tear kite shield
++  material	16
++  skill		4.6
++  difficulty	4.6
++  points	14.6
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1410
++###############################################
++# Bladed
++###############################################
++
++blacksmithy 0xF5E
+ {
+-name	platemail arms
+- material 18
+- skill 86
+- maxhp 100
+- points 86
++  name		broadsword
++  material	10
++  skill		35.4
++  difficulty	35.4
++  points	45.4
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x0f4e
++blacksmithy 0x1440
+ {
+-name	bardiche
+- material 18
+- skill 65
+- maxhp 70
+- points 65
++  name		cutlass
++  material	8
++  skill		24.3
++  difficulty	24.3
++  points	34.3
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x143e
++blacksmithy 0xF51
+ {
+-name	halberd
+- material 20
+- skill 69
+- maxhp 80
+- points 69
++  name		dagger
++  material	3
++  skill		0.0
++  difficulty	0.0
++  points	10.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13f2
++blacksmithy 0x13FE
+ {
+-name	ringmail gloves
+- material 10
+- skill 32
+- maxhp 60
+- points 32
++  name		katana
++  material	8
++  skill		44.1
++  difficulty	44.1
++  points	54.1
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13f0
++blacksmithy 0x1401
+ {
+-name	ringmail leggings
+- material 16
+- skill 39
+- maxhp 70
+- points 39
++  name		kryss
++  material	8
++  skill		36.7
++  difficulty	36.7
++  points	46.7
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13ee
++blacksmithy 0xF60
+ {
+-name	ringmail sleeves
+- material 14
+- skill 36
+- maxhp 70
+- points 36
++  name		longsword
++  material	12
++  skill		28.0
++  difficulty	28.0
++  points	38.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13ec
++blacksmithy 0x13B9
+ {
+-name	 ringmail tunic
+- material  18
+- skill 41
+- maxhp 75
+- points 41
++  name		viking sword
++  material	14
++  skill		24.3
++  difficulty	24.3
++  points	34.3
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1b72
++
++###############################################
++# Axes
++###############################################
++blacksmithy 0xF49
+ {
+-name	bronze shield
+- material 12
+- skill 21
+- maxhp 70
+- points 21
++  name		axe
++  material	14
++  skill		34.2
++  difficulty	34.2
++  points	44.2
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1b73
++blacksmithy 0xF47
+ {
+-name	buckler
+- material 10
+- skill 21
+- maxhp 61
+- points 21
++  name		battle axe
++  material	14
++  skill		30.5
++  difficulty	30.5
++  points	40.5
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1b76
++blacksmithy 0xF4B
+ {
+-name	heater
+- material 18
+- skill 44
+- maxhp 130
+- points 44
++  name		double axe
++  material	12
++  skill		29.3
++  difficulty	29.3
++  points	39.3
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1b74
++blacksmithy 0xf45
+ {
+-name	kite shield
+- material 16
+- skill 24
+- maxhp 105
+- points 24
++  name		executioner's axe
++  material	14
++  skill		34.2
++  difficulty	34.2
++  points	44.2
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1b7b
++blacksmithy 0x13FA
+ {
+-name	metal shield
+- material 14
+- skill 21
+- maxhp 70
+- points 21
++  name		large battle axe
++  material	12
++  skill		28.0
++  difficulty	28.0
++  points	38.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1b78
++blacksmithy 0x1442
+ {
+-name	 wooden kite shield
+- material 8
+- skill 21
+- maxhp 70
+- points 21
++  name		two handed axe
++  material	16
++  skill		33.0
++  difficulty	33.0
++  points	43.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1402
++blacksmithy 0x13AF
+ {
+-name	short spear
+- material 6
+- skill 65
+- maxhp 70
+- points 65
++  name		war axe
++  material	16
++  skill		39.1
++  difficulty	39.1
++  points	49.1
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x0f63
++
++###############################################
++# Pole Arms
++###############################################
++blacksmithy 0xF4E
+ {
+-name	spear
+- material 12
+- skill 69
+- maxhp 80
+- points 69
++  name		bardiche
++  material	18
++  skill		31.7
++  difficulty	31.7
++  points	41.7
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1404
++blacksmithy 0x143E
+ {
+-name	war fork
+- material 12
+- skill 57
+- maxhp 110
+- points 57
++  name		halberd
++  material	20
++  skill		39.1
++  difficulty	39.1
++  points	49.1
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x0f5e
++blacksmithy 0x1402
+ {
+-name	broad sword
+- material 10
+- skill 55
+- maxhp 60
+- points 55
++  name		short spear
++  material	6
++  skill		45.3
++  difficulty	45.3
++  points	55.3
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1440
++blacksmithy 0xF63
+ {
+-name	cutlass
+- material 8
+- skill 44
+- maxhp 70
+- points 44
++  name		spear
++  material	12
++  skill		49.0
++  difficulty	49.0
++  points	59.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x0f51
++blacksmithy 0x1404
+ {
+-name	dagger
+- material 3
+- skill 20
+- maxhp 40
+- points 21
++  name		war fork
++  material	12
++  skill		42.9
++  difficulty	42.9
++  points	42.9
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13fe
++
++###############################################
++# Bashing
++###############################################
++blacksmithy 0x143C
+ {
+-name	katana
+- material 8
+- skill 64
+- maxhp 90
+- points 64
++  name		hammer pick
++  material	16
++  skill		34.2
++  difficulty	34.2
++  points	44.2
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x1401
++blacksmithy 0xF5C
+ {
+-name	kryss
+- material 8
+- skill 56
+- maxhp 90
+- points 56
++  name		mace
++  material	6
++  skill		14.5
++  difficulty	14.5
++  points	24.5
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x0f60
++blacksmithy 0x143A
+ {
+-name	long sword
+- material 12
+- skill 48
+- maxhp 70
+- points 48
++  name		maul
++  material	10
++  skill		19.4
++  difficulty	19.4
++  points	29.4
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13b5
++blacksmithy 0x1406
+ {
+-name	scimitar
+- material 10
+- skill 51
+- maxhp 90
+- points 51
++  name		war mace
++  material	14
++  skill		28.0
++  difficulty	28.0
++  points	38.0
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+ 
+-blacksmithy 0x13b9
++blacksmithy 0x1438
+ {
+-name	viking sword
+- material 14
+- skill 44
+- maxhp 95
+- points 44
++  name		war hammer
++  material	16
++  skill		34.2
++  difficulty	34.2
++  points	44.2
++  skillID       ArmsLore
++  type		metal
++  exceptional	1
++  mark		1
++  retain	1
+ }
+-
+
+Modified: trunk/096/pkg/skills/blacksmithy/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/config/icp.cfg	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/skills/blacksmithy/config/icp.cfg	2005-09-29 23:45:05 UTC (rev 316)
+@@ -4,8 +4,8 @@
+         Version         1.0
+         Description     Blacksmithy Skill
+ 
+-        Creator         Distro Team
+-        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++        Creator         MuadDib
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
+ 
+         Maintainer      Distro Team
+         M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+
+Modified: trunk/096/pkg/skills/blacksmithy/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/itemdesc.cfg	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/skills/blacksmithy/itemdesc.cfg	2005-09-29 23:45:05 UTC (rev 316)
+@@ -2,23 +2,25 @@
+ 
+ Item 0xeed
+ {
+-    Name            GoldCoin
+-    desc            gold coin%s%
+-    InsertNoise     sound_gold1in
++	Name            GoldCoin
++	desc            gold coin%s%
++	InsertNoise     sound_gold1in
+ }
+ 
+ Item 0xfbb
+ {
+-    Name            tongs
+-    Script          :blacksmithy:makeBlacksmithItems
+-    VendorSellsFor  24
+-    VendorBuysFor   12
++	Name            tongs
++	Script          :blacksmithy:makeBlacksmithItems
++	MethodScript	:blacksmithy:tongs/tongsMethod.ecl
++	VendorSellsFor  24
++	VendorBuysFor   12
+ }
+ 
+ Item 0xfbc
+ {
+-    Name            tongs2
+-    Script          :blacksmithy:makeBlacksmithItems
+-    VendorSellsFor  24
+-    VendorBuysFor   12
++	Name            tongs2
++	Script          :blacksmithy:makeBlacksmithItems
++	MethodScript	:blacksmithy:tongs/tongsMethod.ecl
++	VendorSellsFor  24
++	VendorBuysFor   12
+ }
+
+Modified: trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src	2005-09-29 23:45:05 UTC (rev 316)
+@@ -1,537 +1,73 @@
+-use polsys;
++// //$Id$
++
++use math;
+ use cfgfile;
+ use util;
+ 
+-include &quot;:gumps:include/old/old-gumps&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/gumpUtil&quot;;
+-include &quot;include/dist&quot;;
+-include &quot;util/repair&quot;;
+-include &quot;include/client&quot;;
+-include &quot;include/sound&quot;;
+-include &quot;include/objtype&quot;;
+-include &quot;include/client&quot;;
+-include &quot;include/objtype&quot;;
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
++include &quot;:crafting:crafting&quot;;
++include &quot;:crafting:craftingRepair&quot;;
++include &quot;:crafting:toolWear&quot;;
+ include &quot;include/canAccess&quot;;
+-include &quot;include/toolWear&quot;;
+-include &quot;include/noto&quot;;
+ 
+-var itemcfg   := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-var smith_cfg := ReadConfigFile(&quot;blacksmithy&quot;);
+-gfref.x := 50;
+-gfref.y := 50;
+-var O := 501;
++var item_config     := ReadConfigFile(&quot;:*:itemdesc&quot;);
++var craft_config    := ReadConfigFile(&quot;:blacksmithy:blacksmithy&quot;);
++var resource_config := ReadConfigFile(&quot;:crafting:config/resourceList&quot;);
+ 
++program use_SmithTool(who, tool)
+ 
+-program use_hammer(who, hammer)
+-  if(!can_access(who, hammer))
+-    return;
+-  endif
+-  if(!hammer.movable)
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  if(!ReserveItem(hammer))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  GFInitGump(0, 0);
+-  GFNoDispose();
+-  GFNoClose();
+-  GFPage(0);
+-  GFResizePic(0, 60, 2600, 500, 400);
+-  GFGumpPic( 20, 120, 5100);
+-  GFGumpPic( 28, 120, 5101);
+-  GFGumpPic(118, 120, 5101);
+-  GFGumpPic(208, 120, 5101);
+-  GFGumpPic(298, 120, 5101);
+-  GFGumpPic(370, 120, 5101);
+-  GFGumpPic(460, 120, 5102);
+-  GFGumpPic( 20, 128, 5103);
+-  GFGumpPic( 28, 128, 5104);
+-  GFGumpPic(118, 128, 5104);
+-  GFGumpPic(208, 128, 5104);
+-  GFGumpPic(298, 128, 5104);
+-  GFGumpPic(370, 128, 5104);
+-  GFGumpPic(460, 128, 5105);
+-  GFGumpPic( 20, 136, 5058);
+-  GFGumpPic(118, 136, 5058);
+-  GFGumpPic(232, 136, 5058);
+-  GFGumpPic(350, 136, 5058);
+-  GFGumpPic( 20, 136, 5106);
+-  GFGumpPic( 28, 136, 5107);
+-  GFGumpPic(118, 136, 5107);
+-  GFGumpPic(208, 136, 5107);
+-  GFGumpPic(298, 136, 5107);
+-  GFGumpPic(370, 136, 5107);
+-  GFGumpPic(460, 136, 5108);
+-  GFGumpPic( 28, 278, 5104);
+-  GFGumpPic(118, 278, 5104);
+-  GFGumpPic(208, 278, 5104);
+-  GFGumpPic(298, 278, 5104);
+-  GFGumpPic(368, 278, 5104);
+-  GFGumpPic( 20, 278, 5103);
+-  GFGumpPic(460, 278, 5105);
+-  GFGumpPic( 20, 226, 5058);
+-  GFGumpPic(118, 226, 5058);
+-  GFGumpPic(232, 226, 5058);
+-  GFGumpPic(350, 226, 5058);
+-  GFGumpPic( 20, 366, 5106);
+-  GFGumpPic( 28, 366, 5107);
+-  GFGumpPic(118, 366, 5107);
+-  GFGumpPic(208, 366, 5107);
+-  GFGumpPic(298, 366, 5107);
+-  GFGumpPic(370, 366, 5107);
+-  GFGumpPic(460, 366, 5108);
+-  GFGumpPic( 20, 350, 5100);
+-  GFGumpPic( 28, 350, 5101);
+-  GFGumpPic(118, 350, 5101);
+-  GFGumpPic(208, 350, 5101);
+-  GFGumpPic(298, 350, 5101);
+-  GFGumpPic(370, 350, 5101);
+-  GFGumpPic(460, 350, 5102);
+-  GFTextLine(110,  80, 900, &quot;BLACKSMITH SELECTION MENU&quot;);
+-  GFTextLine( 30, 121,   0, &quot;Ringmail&quot;);
+-  GFTextLine(150, 121,   0, &quot;Chainmail&quot;);
+-  GFTextLine(260, 121,   0, &quot;Platemail&quot;);
+-  GFTextLine(370, 121,   0, &quot;Helmets&quot;);
+-  GFTextLine( 30, 351,   0, &quot;Shields&quot;);
+-  GFTextLine(120, 351,   0, &quot;Bladed&quot;);
+-  GFTextLine(205, 351,   0, &quot;Axes&quot;);
+-  GFTextLine(275, 351,   0, &quot;Polearms&quot;);
+-  GFTextLine(375, 351,   0, &quot;Bashing&quot;);
+-  GFTextLine( 90, 380, 900, &quot;Make Last&quot;);
+-  GFTextLine(320, 380, 900, &quot;Repair Item&quot;);
+-  var repair  := GFButtonID(300, 384,   3, 4, 97);
+-  var lastitm := GFButtonID( 70, 384,   3, 4, 99);
+-  var close   := GFButtonID(410, 380, 242, 241, 1);
+-  GFButtonPage(110, 123, 5209, 5209,  2);
+-  GFButtonPage(230, 123, 5209, 5209,  3);
+-  GFButtonPage(340, 123, 5209, 5209,  4);
+-  GFButtonPage(435, 123, 5209, 5209,  5);
+-  GFButtonPage( 90, 353, 5209, 5209,  6);
+-  GFButtonPage(180, 353, 5209, 5209,  7);
+-  GFButtonPage(250, 353, 5209, 5209,  8);
+-  GFButtonPage(345, 353, 5209, 5209,  9);
+-  GFButtonPage(440, 353, 5209, 5209, 10);
+-  GFTextLine(  300, 420, 900, &quot;How Many?&quot;);
+-  GFGumpPic(390, 417, 2443);
+-  var sa := GetObjProperty(who, &quot;#SmithAmt&quot;);
+-  if(!sa)
+-    sa := 1;
+-  endif
+-  var ct := GFTextEntry(400, 420, 100, 30, 0, sa);
+-  ComposeSubMenu(who);
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  var res := GFSendGump(who);
+-  if((res[0] == 999) || (res[close.keyid]))
+-    SendSysMessage(who, &quot;Cancelled&quot;);
+-    return;
+-  endif
+-  var amt := CInt(SplitWords(res[ct.keyid])[2]);
+-  if(!amt)
+-    amt := 1;
+-  elseif(amt &gt; 10)
+-    SendSysMessage(who, &quot;You can only make up to 10 at a time.&quot;);
+-    return;
+-  endif
+-  SetObjProperty(who, &quot;#SmithAmt&quot;, amt);
+-  var cont := hammer.container;
+-  if((!cont) || (cont.serial == who.serial))
+-    cont := who.backpack;
+-  endif
+-  var the_objtype := res[0];
+-  if(res[repair.keyid])
+-    repair_this(who);
+-    return;
+-  elseif(res[lastitm.keyid])
+-    the_objtype := GetObjProperty(who, &quot;LastBlacksmithItem&quot;);
+-    if(!the_objtype)
+-      SendSysMessage(who, &quot;You have never smithed before.&quot;);
+-      return;
+-    endif
+-  endif
+-  SetObjProperty(who, &quot;LastBlacksmithItem&quot;, the_objtype);
+-  makeBlacksmithItems(who, the_objtype, amt, cont, hammer);
+-endprogram
++	if(!can_access(who, tool))
++		return 0;
++	endif
++	if((!tool.movable) or !ReserveItem(tool))
++		SendSysMessage(who, &quot;You cannot use that&quot;);
++		return 0;
++	endif
++	if(!tool in ListEquippedItems(who))
++		if(tool.container.serial != who.backpack.serial)
++			SendSysMessage(who, &quot;That item is not in your backpack nor equipped.&quot;);
++			return 0;
++		endif
++	endif
+ 
+-function ComposeSubMenu(who)
+-  var num := 2;
+-  var skill := (GetEffectiveSkill(who, SKILLID_BLACKSMITHY) + 20);
+-  var color := 0;
+-  var cfg := ReadConfigFile(&quot;:blacksmithy:blacksmithy&quot;);
+-  while(num &lt; 11)
+-    case(num)
+-       2: GFPage(2);        // Page 2 (Ringmail)
+-          if(skill &gt;= CInt(cfg[5106].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(150, 200, 210, 211, 1, 5106);
+-          endif
+-          GFTextLine( 90, 175, color, &quot;ringmail gloves&quot;);
+-          GFTilePic( 100, 200, 5099);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5102].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(300, 200, 210, 211, 1, 5102);
+-          endif
+-          GFTextLine(240, 175, color, &quot;ringmail sleeves&quot;);
+-          GFTilePic( 250, 200, 5103);
+-         color := 0;
+-          if(skill &gt;= CInt(cfg[5104].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(150, 295, 210, 211, 1, 5104);
+-          endif
+-          GFTextLine( 90, 270, color, &quot;ringmail leggings&quot;);
+-          GFTilePic( 100, 295, 5104);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5100].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(300, 295, 210, 211, 1, 5100);
+-          endif
+-          GFTextLine(240, 270, color, &quot;ringmail tunic&quot;);
+-          GFTilePic( 250, 295, 5100);
+-          color := 0;
+-       3: GFPage(3);        // Page 3 (Chainmail)
+-          if(skill &gt;= CInt(cfg[5051].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(150, 200, 210, 211, 1, 5051);
+-          endif
+-          GFTextLine( 90, 175, color, &quot;chainmail coif&quot;);
+-          GFTilePic( 100, 200, 5051);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5054].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(300, 200, 210, 211, 1, 5054);
+-          endif
+-          GFTextLine(240, 175, color, &quot;chainmail leggings&quot;);
+-          GFTilePic( 250, 200, 5054);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5055].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(150, 295, 210, 211, 1, 5055);
+-          endif
+-          GFTextLine( 90, 270, color, &quot;chainmail tunic&quot;);
+-          GFTilePic( 100, 295, 5055);
+-          color := 0;
+-       4: GFPage(4);        // Page 4 (Platemail)
+-          if(skill &gt;= CInt(cfg[5139].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(100, 200, 210, 211, 1, 5139);
+-          endif
+-          GFTextLine( 60, 175, color, &quot;platemail gorget&quot;);
+-          GFTilePic(  70, 200, 5139);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5140].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(260, 200, 210, 211, 1, 5140);
+-          endif
+-          GFTextLine(200, 175, color, &quot;platemail gloves&quot;);
+-          GFTilePic( 210, 200, 5140);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5136].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(400, 200, 210, 211, 1, 5136);
+-          endif
+-          GFTextLine(340, 175, color, &quot;platemail arms&quot;);
+-          GFTilePic( 350, 200, 5136);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5137].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(120, 295, 210, 211, 1, 5137);
+-          endif
+-          GFTextLine( 60, 270, color, &quot;platemail leggings&quot;);
+-          GFTilePic(  70, 295, 5137);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5141].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(260, 295, 210, 211, 1, 5141);
+-          endif
+-          GFTextLine(200, 270, color, &quot;breastplate&quot;);
+-          GFTilePic( 210, 295, 5141);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[7172].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(400, 295, 210, 211, 1, 7172);
+-          endif
+-          GFTextLine(340, 270, color, &quot;female plate&quot;);
+-          GFTilePic( 350, 295, 7172);
+-          color := 0;
+-       5: GFPage(5);        //Page 5 (Helmets)
+-          if(skill &gt;= CInt(cfg[5130].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 5130);
+-          endif
+-          GFTextLine( 65, 175, color, &quot;helmet&quot;);
+-          GFTilePic(  60, 200, 5130);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5132].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 5132);
+-          endif
+-          GFTextLine(160, 175, color, &quot;bascinet&quot;);
+-          GFTilePic( 160, 200, 5132);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5134].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 5134);
+-          endif
+-          GFTextLine(260, 175, color, &quot;nose helm&quot;);
+-          GFTilePic( 260, 200, 5134);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5128].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 5128);
+-          endif
+-          GFTextLine(360, 175, color, &quot;close helmet&quot;);
+-          GFTilePic( 360, 200, 5128);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5138].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 5138);
+-          endif
+-          GFTextLine( 65, 270, color, &quot;plate helm&quot;);
+-          GFTilePic(  60, 295, 5138);
+-          color := 0;
+-       6: GFPage(6);        //Page 6 (Shields)
+-          if(skill &gt;= CInt(cfg[7027].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 7027);
+-          endif
+-          GFTextLine( 65, 175, color, &quot;buckler&quot;);
+-          GFTilePic(  60, 200, 7027);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[7026].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 7026);
+-          endif
+-          GFTextLine(160, 175, color, &quot;bronze shield&quot;);
+-          GFTilePic( 160, 200, 7026);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[7035].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 7035);
+-          endif
+-          GFTextLine(260, 175, color, &quot;metal shield&quot;);
+-          GFTilePic( 260, 200, 7035);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[7028].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 7032);
+-          endif
+-          GFTextLine(360, 175, color, &quot;kite shield&quot;);
+-          GFTilePic( 360, 200, 7032);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[7032].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 7028);
+-          endif
+-          GFTextLine( 65, 270, color, &quot;kite shield&quot;);
+-          GFTilePic(  60, 295, 7028);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[7030].&quot;skill&quot;))
+-            color := 900;
+-           GFButtonIDC(210, 295, 210, 211, 1, 7030);
+-          endif
+-          GFTextLine(160, 270, color, &quot;heater shield&quot;);
+-          GFTilePic( 160, 295, 7030);
+-          color := 0;
+-       7: GFPage(7);        //Page 7 (Bladed)
+-          if(skill &gt;= CInt(cfg[3921].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 3921);
+-          endif
+-          GFTextLine( 65, 175, color, &quot;dagger&quot;);
+-          GFTilePic(  60, 200, 3921);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5184].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 5184);
+-          endif
+-          GFTextLine(160, 175, color, &quot;cutlass&quot;);
+-          GFTilePic( 160, 200, 5185);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5118].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 5118);
+-          endif
+-          GFTextLine(260, 175, color, &quot;katana&quot;);
+-          GFTilePic( 260, 200, 5119);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5121].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 5121);
+-          endif
+-          GFTextLine(360, 175, color, &quot;kryss&quot;);
+-          GFTilePic( 360, 200, 5121);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5045].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 5045);
+-          endif
+-          GFTextLine( 65, 270, color, &quot;scimitar&quot;);
+-          GFTilePic(  60, 295, 5046);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[3934].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(210, 295, 210, 211, 1, 3934);
+-          endif
+-          GFTextLine(160, 270, color, &quot;broadsword&quot;);
+-          GFTilePic( 160, 295, 3934);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[3936].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(310, 295, 210, 211, 1, 3936);
+-          endif
+-          GFTextLine(260, 270, color, &quot;longsword&quot;);
+-          GFTilePic( 245, 295, 3937);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5049].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(410, 295, 210, 211, 1, 5049);
+-          endif
+-          GFTextLine(360, 270, color, &quot;viking sword&quot;);
+-          GFTilePic( 360, 295, 5049);
+-          color := 0;
+-       8: GFPage(8);        //Page 8 (Axes)
+-          if(skill &gt;= CInt(cfg[3911].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 3911);
+-          endif
+-          GFTextLine( 65, 175, color, &quot;battle axe&quot;);
+-          GFTilePic(  60, 200, 3911);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[3909].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(260, 200, 210, 211, 1, 3909);
+-          endif
+-          GFTextLine(200, 175, color, &quot;executioner's axe&quot;);
+-          GFTilePic( 200, 200, 3909);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5186].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 5186);
+-          endif
+-          GFTextLine(360, 175, color, &quot;two handed axe&quot;);
+-          GFTilePic( 360, 200, 5187);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[3915].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 3915);
+-          endif
+-          GFTextLine( 65, 270, color, &quot;double axe&quot;);
+-          GFTilePic(  60, 295, 3915);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[3913].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(210, 295, 210, 211, 1, 3913);
+-          endif
+-          GFTextLine(180, 270, color, &quot;axe&quot;);
+-          GFTilePic( 160, 295, 3913);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5039].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(310, 295, 210, 211, 1, 5039);
+-          endif
+-          GFTextLine(260, 270, color, &quot;war axe&quot;);
+-          GFTilePic( 255, 295, 5040);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5114].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(410, 295, 210, 211, 1, 5114);
+-          endif
+-          GFTextLine(360, 270, color, &quot;large battle axe&quot;);
+-          GFTilePic( 360, 295, 5115);
+-          color := 0;
+-       9: GFPage(9);        //Page 9 (Polearms)
+-          if(skill &gt;= CInt(cfg[5122].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 5122);
+-          endif
+-          GFTextLine( 65, 175, color, &quot;short spear&quot;);
+-          GFTilePic(  55, 200, 5123);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[3939].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 3939);
+-          endif
+-          GFTextLine(160, 175, color, &quot;spear&quot;);
+-          GFTilePic( 105, 200, 3938);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5124].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 5124);
+-          endif
+-          GFTextLine(260, 175, color, &quot;war fork&quot;);
+-          GFTilePic( 260, 200, 5125);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[3918].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 3918);
+-          endif
+-          GFTextLine(360, 175, color, &quot;bardiche&quot;);
+-          GFTilePic( 325, 200, 3917);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5182].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 5182);
+-          endif
+-          GFTextLine( 65, 270, color, &quot;halberd&quot;);
+-          GFTilePic(  10, 295, 5183);
+-          color := 0;
+-      10: GFPage(10);       //Page 10 (Bashing)
+-          if(skill &gt;= CInt(cfg[3932].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 200, 210, 211, 1, 3932);
+-          endif
+-          GFTextLine( 65, 175, color, &quot;mace&quot;);
+-          GFTilePic(  60, 200, 3932);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5178].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(210, 200, 210, 211, 1, 5178);
+-          endif
+-          GFTextLine(160, 175, color, &quot;maul&quot;);
+-          GFTilePic( 160, 200, 5179);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5126].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(310, 200, 210, 211, 1, 5126);
+-          endif
+-          GFTextLine(260, 175, color, &quot;war mace&quot;);
+-          GFTilePic( 260, 200, 5127);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5176].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(410, 200, 210, 211, 1, 5176);
+-          endif
+-          GFTextLine(360, 175, color, &quot;war hammer&quot;);
+-          GFTilePic( 360, 200, 5176);
+-          color := 0;
+-          if(skill &gt;= CInt(cfg[5180].&quot;skill&quot;))
+-            color := 900;
+-            GFButtonIDC(110, 295, 210, 211, 1, 5180);
+-          endif
+-          GFTextLine( 65, 270, color, &quot;hammer pick&quot;);
+-          GFTilePic(  60, 295, 5181);
+-          color := 0;
+-    endcase
+-    num := num + 1;
+-  endwhile
+-  return;
+-endfunction
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
+ 
+-function GFButtonIDC(x, y, release, press, close, retval)
+-        var line := &quot;button &quot; + CStr(gfref.x + CInt(x)) + &quot; &quot; + CStr(gfref.y + CInt(y));
+-        line := line + &quot; &quot; + CStr(CInt(release)) + &quot; &quot; + CStr(CInt(press)) + &quot; &quot;;
+-        line := line + CStr(CInt(close)) + &quot; 0 &quot;;
+-        line := line + CStr(CInt(retval));
+-        gflayout.append( line );
+-endfunction
++	var rinfo := sendCraftGump(who, &quot;blacksmithy&quot;);
+ 
+-function makeBlacksmithItems(who, what, amt, cont, hammer)
++	// OK was pressed, close it on out
++	if(rinfo == 0)
++		return 0;
++	endif
++
++	var the_objtype := rinfo[1];
++	var amt         := rinfo[2];
++	var repairit    := rinfo[3];
++	var resmeltit   := rinfo[4];
++
++	if(repairit)
++		repair_this(who, craft_skill);
++		return 0;
++	endif
++	if(resmeltit)
++		resmelt(who, craft_skill);
++		return 0;
++	endif
++
++	makeBlacksmithItems(who, the_objtype, amt, tool);
++
++endprogram
++
++function makeBlacksmithItems(who, what, amt, tool)
++
++  if(!what)
++    SendSysMessage(who, &quot;Cancelled&quot;);
++    return;
++  endif
+   var anvil_near := 0;
+-  foreach item in ListItemsNearLocation(who.x, who.y, who.z, 3, who.realm)
++  foreach item in ListItemsNearLocation(who.x, who.y, who.z, 3)
+     if((item.objtype == 0x0faf) || (item.objtype == 0x0fb0))
+       anvil_near := 1;
+       break;
+@@ -541,225 +77,59 @@
+     SendSysMessage(who, &quot;You must be near an anvil to smith items.&quot;);
+     return;
+   endif
+-  var tname, skil, material, pts, points, maxhp, itemname;
+-  var nme, excmod, val, num, rint, word, theitem, holder;
+-  SendSysMessage(who, &quot;Select the ingots you wish to use.&quot;);
+-  var use_on := Target(who);
+-  if(!can_access(who, use_on))
++
++  // Metal is sent for the ResourceList entry type.
++  var itemchk := MaterialSelection(who, craft_skill, lower(&quot;Metal&quot;));
++  if(!itemchk)
+     return;
+   endif
+-  if(!Accessible(who, use_on) || (Distance(who, use_on) &gt; 2))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  var is_ingot := 0;
+-  var ptmod := 0;
+-  case(use_on.objtype)
+-    0x6309: is_ingot := 1; ptmod := 0;
+-        0x630a: is_ingot := 1; ptmod := 5;
+-    0x630b: is_ingot := 1; ptmod := 5;
+-    0x630c: is_ingot := 1; ptmod := 10;
+-    0x630d: is_ingot := 1; ptmod := 10;
+-    0x630e: is_ingot := 1; ptmod := 15;
+-    0x630f: is_ingot := 1; ptmod := 15;
+-    0x6310: is_ingot := 1; ptmod := 20;
+-    0x6311: is_ingot := 1; ptmod := 25;
+-  endcase
+-  if(is_ingot == 0)
+-    SendSysMessage(who, &quot;You can only use that on ingots!&quot;);
+-    return;
+-  endif
+-  if(use_on.movable == 0)
+-    SendSysMessage(who, &quot;You cannot smith that.&quot;);
+-    return;
+-  endif
+-  if(!checkSkillForDifferentMetals(who, use_on))
+-    SendSysMessage(who, &quot;You have no chance to successfully work with that metal.&quot;);
+-    return;
+-  endif
+-  if(!Accessible(who, use_on))
+-    SendSysMessage(who, &quot;You don't have any ingots!&quot;);
+-    return;
+-  endif
+-  if(!ReserveItem(use_on))
+-    SendSysMessage(who, &quot;That item is already in use.&quot;);
+-    return;
+-  endif
+-  if(!what)
+-    SendSysMessage(who, &quot;Targetting cancelled&quot;);
+-    return;
+-  endif
+-  maxhp    := smith_cfg[what].maxhp;
+-  itemname := smith_cfg[what].name;
+-  material := CInt(smith_cfg[what].material);
+-  skil     := CInt(smith_cfg[what].skill);
+-  points   := CInt(smith_cfg[what].points) * 2;
+-  var counter := 0;
+-  var x := who.x;
+-  var y := who.y;
+-  var skchk := GetEffectiveSkill(who, SKILLID_BLACKSMITHY);
+-  pts := getPoints(who, skil, pts);
+-  excmod := CInt(GetEffectiveSkill(who, SKILLID_ARMSLORE) / 10) + 3;
+-  var modpts := 0;
+-  if(skchk &gt; (skil - 20))
+-    modpts := (skchk - skil);
+-  endif
++  var use_on := itemchk[1];
++  var ptmod := itemchk[3];
++
++  var num, theitem;
++  var itemname := craft_config[what].name;
++  var material := Cint(craft_config[what].material);
++  var reqd := Cint(craft_config[what].skill);
++  var diff := Cint(craft_config[what].difficulty);
++  var pts  := Cint(craft_config[what].points);
++  pts      := CInt(pts + ptmod);
++  var counter := 0, x := who.x, y := who.y;
++
+   while(counter &lt; amt)
+     if((who.x != x) || (who.y != y))
+       SendSysMessage(who, &quot;You stop smithing.&quot;);
+       break;
+     endif
+-    if(!hammer)
++    if(!tool)
+       break;
+     endif
++    sleep(2);
+     if(GetAmount(use_on) &gt;= material)
+-      PlaySoundEffect(who, SFX_ANVIL);
+-      sleep(2);
+-      PlaySoundEffect(who, SFX_ANVIL);
+-      sleep(2);
+-      PlaySoundEffect(who, SFX_ANVIL);
+-      sleep(2);
+-      pts := CInt(points + ptmod);
+-      if(CheckSkill(who, SKILLID_BLACKSMITHY, skil, 0))
+-        nme := &quot;&quot;;
+-        theitem := CreateItemInContainer(cont, what, 1);
+-        if(theitem)
+-          CheckToolWear(who, hammer, SKILLID_BLACKSMITHY);
+-          if(!theitem.isa(POLCLASS_WEAPON))
+-            case(use_on.objtype)
+-              0x6309:   nme := &quot;&quot;             + itemname; theitem.color := 0x0;
+-                  0x630a:   nme := &quot;dull copper &quot; + itemname; theitem.color := 0x8415;
+-              0x630b:   nme := &quot;shadow &quot;      + itemname; theitem.color := 0x8455;
+-              0x630c:   nme := &quot;copper &quot;      + itemname; theitem.color := 0x845e;
+-              0x630d:   nme := &quot;bronze &quot;      + itemname; theitem.color := 0x86b2;
+-              0x630e:   nme := &quot;golden &quot;      + itemname; theitem.color := 0x88a6;
+-              0x630f:   nme := &quot;agapite &quot;     + itemname; theitem.color := 0x83ea;
+-              0x6310:   nme := &quot;verite &quot;      + itemname; theitem.color := 0x889f;
+-              0x6311:   nme := &quot;valorite &quot;    + itemname; theitem.color := 0x8539;
+-            endcase
+-          else
+-            nme := itemname;
+-          endif
+-          if(!SubtractAmount(use_on, material))
+-            DestroyItem(theitem);
+-            return;
+-          endif
+-          AwardRawSkillPoints(who, SKILLID_BLACKSMITHY, pts);
+-          rint := randomint(100);
+-          if((excmod + modpts) &gt;= rint)
+-            theitem.quality := 1.2;
+-            theitem.hp      := theitem.maxhp;
+-            ExceptionalFameMod(who, skchk, skil, CInt(points / 2));
+-            SendSysMessage(who, &quot;You make an exceptional item and put it in your pack.&quot;);
+-            if(GetEffectiveSkill(who, SKILLID_BLACKSMITHY) &gt;= 99)
+-              tname := &quot;an exceptional &quot; + nme + &quot; [Crafted by &quot; + who.name + &quot;]&quot;;
+-            else
+-              tname := &quot;an exceptional &quot; + nme;
+-            endif
+-          else
+-            rint := randomint(100);
+-            holder := GetBaseMod(skchk, skil, (excmod - 3));
+-            if(rint &lt; holder)
+-              SendSysMessage( who, &quot;You create the item, but it's quality is below average.&quot; );
+-              val := randomint(2) + 1;
+-              case(val)
+-                1: theitem.quality := 0.7;
+-                2: theitem.quality := 0.8;
+-                3: theitem.quality := 0.9;
+-              endcase
+-              theitem.hp := theitem.maxhp;
+-            else
+-              SendSysMessage( who, &quot;You create the item and place it in your pack.&quot; );
+-              theitem.quality := 1.0;
+-              theitem.hp := theitem.maxhp;
+-            endif
+-            if((nme[1] == &quot;a&quot;) || (nme[1] == &quot;e&quot;) || (nme[1] == &quot;i&quot;) || (nme[1] == &quot;o&quot;) || (nme[1] == &quot;u&quot;))
+-              word := &quot;an &quot;;
+-            else
+-              word := &quot;a &quot;;
+-            endif
+-            tname := &quot;&quot; + word + nme;
+-          endif
+-          SetName(theitem, tname);
++      if(CraftCheckSkill(who, craft_skill, diff, pts))
++        playCraftWork(who, SFX_ANVIL);
++        sleep(2);
++        theitem := CreateCraftItem(who, craft_skill, use_on, use_on.objtype, what, material, itemname, reqd);
++        if(theitem or theitem != 0)
++          CheckToolWear (who, tool, craft_skill);
+         else
+-          SendSysMessage(who, &quot;Could not fit item in backpack. Aborting.&quot;);
+-          break;
++          SubtractAmount(use_on, (material / 2));
++          SendSysMessage(who, &quot;You failed to create the item, and some of your materials are lost.&quot;);
++          counter := counter + 1;
++          continue;
+         endif
+       else
+-        var baseskill := GetBaseSkillBaseValue(who, SKILLID_BLACKSMITHY);
+-        if(baseskill &lt; 100)
+-          pts := pts / 2;
+-          AwardPoints( who, SKILLID_BLACKSMITHY, pts);
++        num := CInt(randomint(material)/2) + 1;
++        if(SubtractAmount(use_on, num))
++          SendSysMessage(who, &quot;You lost some metal&quot;);
+         endif
+-        num := randomint(material) /2;
+-        SubtractAmount(use_on, num);
+-        SendSysMessage(who, &quot;You destroy some ingots.&quot;);
+       endif
+     else
+-      SendSysMessage(who, &quot;You don't have enough ingots!&quot;);
+-      return;
++      SendSysMessage(who, &quot;You don't have the resources required to make that item.&quot;);
++      counter := 100;
++      break;
+     endif
+     counter := counter + 1;
+   endwhile
+-endfunction
++  return;
+ 
+-function GetBaseMod(skill, diff, emod)
+-  var holder := 0;
+-  var max := diff + 20;
+-  var min := diff - 20;
+-  if(skill &gt; max)
+-    holder := 20;
+-  elseif((skill &lt;= max) and (skill &gt;= min))
+-    holder := 20 + CInt((max - skill) / 2);
+-  else
+-    holder :=  40;
+-  endif
+-  return CInt(holder - emod);
+ endfunction
+-
+-function getPoints(who, diff, pts)
+-  var skill := GetEffectiveSkill(who, SKILLID_BLACKSMITHY);
+-  if(diff &gt; 20)
+-    diff := diff - 20;
+-  else
+-    diff := 1;
+-  endif
+-  if(skill &gt; diff)
+-    if((skill - diff) &lt;= 5)
+-      pts := pts;
+-    elseif((skill - diff) &lt;= 10)
+-      pts := (pts * 3) / 4;
+-    elseif((skill - diff) &lt;= 15)
+-      pts := pts / 2;
+-    elseif((skill - diff) &lt;= 20)
+-      pts := pts / 4;
+-    else
+-      pts := 0;
+-    endif
+-  endif
+-  return pts;
+-endfunction
+-
+-function checkSkillForDifferentMetals(who, ingot)
+-  case( ingot.objtype )
+-    0x6309:   return(checkHisSkill(who,  0));
+-        0x630a:   return(checkHisSkill(who, 65));
+-    0x630b:   return(checkHisSkill(who, 70));
+-    0x630c:   return(checkHisSkill(who, 75));
+-    0x630d:   return(checkHisSkill(who, 80));
+-    0x630e:   return(checkHisSkill(who, 85));
+-    0x630f:   return(checkHisSkill(who, 90));
+-    0x6310:   return(checkHisSkill(who, 95));
+-    0x6311:   return(checkHisSkill(who, 99));
+-    default:  SendSysMessage(who, &quot;You can't forge that.&quot;);
+-  endcase
+-endfunction
+-
+-function checkHisSkill(who, skill)
+-  var his_skill := GetEffectiveSkill(who, SKILLID_BLACKSMITHY);
+-  if(his_skill &gt;= skill)
+-    return 1;
+-  else
+-    return 0;
+-  endif
+-endfunction
+
+Added: trunk/096/pkg/skills/blacksmithy/tongs/tongsMethod.src
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/tongs/tongsMethod.src	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/skills/blacksmithy/tongs/tongsMethod.src	2005-09-29 23:45:05 UTC (rev 316)
+@@ -0,0 +1,10 @@
++use uo;
++
++include &quot;:crafting:method/toolWearMethod&quot;;
++
++program install()
++
++	print( &quot;Installing Tongs MethodScript....&quot; );
++	return 1;
++
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/crafting/include/craftGumps.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/craftGumps.inc	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/systems/crafting/include/craftGumps.inc	2005-09-29 23:45:05 UTC (rev 316)
+@@ -0,0 +1,526 @@
++// //$Id$
++
++var craft_gumps := DFOpenDataFile(&quot;:crafting:CraftGumps&quot;, DF_CREATE);
++var menu_config := ReadConfigFile( &quot;:crafting:config/craftConfig&quot; );
++var arinfo   := array;
++var arcnt    := 61500;
++var craft_settings;
++var atc := 1;
++var PageNum := 1;
++
++
++// This function is the main backbone for building the Crafting Menu.
++function sendCraftGump(who, skill_name)
++
++	var menu_file    := menu_config[skill_name].MenuFile;
++	var skill_config := ReadConfigFile(menu_file);
++	craft_skill      := menu_config[skill_name].Attribute;
++
++	while( 1 )
++
++		craftL := craft_settings[skill_name].last;
++		rcolor := craft_settings[skill_name].retain;
++		makermark := craft_settings[skill_name].mark;
++
++		var craft_gump := Craft_IndexGump(who, skill_name);
++		if( !craft_gump )
++			exit;
++		endif
++	        var res := GFSendGump(who, craft_gump);
++
++		// Exit the menu, return 0 so crafting script knows it was cancled
++		if(res[0] == 1)
++			return 0;
++		endif
++
++		var the_objtype := res[0];
++
++		// Handle setting up of Objtype if they pressed &quot;Last Item&quot;. Returns with
++		// an error if you haven't crafted anything with the skill yet.
++		if( res[61450] )
++			the_objtype := craftL;
++			if( !the_objtype || (TypeOf(the_objtype) == &quot;Struct&quot;) )
++				SendSysMessage(who, &quot;You haven't made anything yet.&quot;);
++				return 0;
++			endif
++		endif
++
++		// See if the Use Material Color button was pressed.
++		if(res[61452])
++			case(rcolor)
++			  1: craft_settings[skill_name].retain := 0;
++			     SetObjProperty(who, &quot;Craft&quot;, craft_settings);
++			  default: craft_settings[skill_name].retain := 1;
++			     SetObjProperty(who, &quot;Craft&quot;, craft_settings);
++			endcase
++			continue;
++		endif
++
++		// See if the Maker's Mark button was pressed.
++		if(res[61453])
++			case(makermark)
++			  1: craft_settings[skill_name].mark := 0;
++			     SetObjProperty(who, &quot;Craft&quot;, craft_settings);
++			  default: craft_settings[skill_name].mark := 1;
++			     SetObjProperty(who, &quot;Craft&quot;, craft_settings);
++			endcase
++			continue;
++		endif
++
++		// This decides if you pressed the Info button, if so, sends info gump
++		if( (res[0] &gt;= 61500) &amp;&amp; (res[0] &lt;= 62000) )
++			the_objtype := arinfo[(res[0] - 61499)];
++			var infores := GFCraftInfoPage(who, the_objtype, skill_config);
++			case(infores)
++			  0: continue;
++			  default: the_objtype := infores;
++			endcase
++		endif
++
++		// Sets the objtype in the Last Item cprop. Redundant to ensure it sets.
++		// If a button return (the_objtype) is between 0xF000 and 0xFFFF it is NOT
++		// a craftable objtype anyway.
++		craft_settings[skill_name].last := the_objtype;
++		SetObjProperty(who, &quot;Craft&quot;, craft_settings);
++
++
++		// If the second skill or main required to craft the item is higher than what the player has, skip
++		// now as they cannot craft it yet.
++		if( TypeOf(craft_config[Hex(the_objtype)].skillid) == &quot;String&quot; )
++			if((AP_GetSkill(who, craft_config[Hex(the_objtype)].skillid) &lt; craft_config[Hex(the_objtype)].skill2)
++			    || (AP_GetSkill(who, craft_skill) &lt; craft_config[Hex(the_objtype)].skill))
++				SendSysMessage(who, &quot;You are not skilled enough to make that item.&quot;);
++				return 0;
++			endif
++		endif
++
++		// Sets the amount you had entered into an array to return to crafting
++		atc := Cint(SplitWords(res[1998])[2]);
++		if(!atc || CInt(atc) &lt; 1)
++			atc := 1;
++		elseif(atc &gt; CInt(menu_config[skill_name].MaxAmount))
++			SendSysMessage(who, &quot;You can only make between 1 and &quot; + menu_config[skill_name].MaxAmount + &quot; at a time.&quot;);
++			return 0;
++		endif
++		craft_settings[skill_name].amount := atc;
++		SetObjProperty(who, &quot;Craft&quot;, craft_settings);
++
++		// Build the return array and give it to crafting.
++		var minfo := array;
++		minfo.append(the_objtype);
++		minfo.append(atc);
++		minfo.append((res[61451]));
++		minfo.append((res[61454]));
++		return minfo;
++
++	endwhile
++
++endfunction
++
++
++function Craft_IndexGump(who, skill_name)
++
++	var menu_file    := menu_config[skill_name].MenuFile;
++	var skill_config := ReadConfigFile(menu_file);
++
++	// Craft Cprop is a dictionary storing the information for each crafting skill
++	craft_settings := GetObjProperty(who, &quot;Craft&quot;);
++	if( TypeOf(craft_settings) != &quot;Dictionary&quot; )
++		craft_settings := cBaseCraftDict();
++		SetObjProperty(who, &quot;Craft&quot;, craft_settings);
++	endif
++
++	// Now let's get the amount, based on the menu file) from the Cprop.
++	atc := craft_settings[skill_name].amount;
++	// If it == nothing, or is an error, set it to 1. Error should never occur, but, just in case.
++	if( !atc || TypeOf(atc) != &quot;Integer&quot; )
++		atc := 1;
++	endif
++	// Done here, it resets the last item crafted when using the menu.
++	rcolor := craft_settings[skill_name].retain;
++	makermark := craft_settings[skill_name].mark;
++
++	// Resets the array for objtypes within the menu. Used with
++	// The info page and it's buttons.
++	arinfo  := array;
++	// Button counter for the Info buttons for items. This way, we can seperate craft now buttons
++	// from the info buttons. Just remember to make sure any item's button # should NOT be within
++	// the 61500 to 62000 range. If you have 50 items, button range will be 61500 to 61550. So please
++	// take care with your items.
++	arcnt   := 61500;
++
++	var gump := GFCreateGump(50, 50);
++	GFResizePic(gump, 0, 0, 5054, 530, 437);
++	GFGumpPic(gump, 10, 10, 2624);
++	GFGumpPic(gump, 10, 205, 2624);
++	GFGumpPic(gump, 10, 225, 2624);
++	GFGumpPic(gump, 250, 10, 2624);
++	GFGumpPic(gump, 250, 205, 2624);
++	GFGumpPic(gump, 250, 225, 2624);
++	GFGumpPic(gump, 10, 33, 5055);
++	GFGumpPic(gump, 90, 33, 5055);
++	GFGumpPic(gump, 10, 43, 5061);
++	GFGumpPic(gump, 90, 43, 5061);
++	GFGumpPic(gump, 10, 285, 5055);
++	GFGumpPic(gump, 90, 285, 5055);
++	GFGumpPic(gump, 10, 330, 5055);
++	GFGumpPic(gump, 90, 330, 5055);
++	GFHTMLArea(gump, 10, 12, 510, 20, &quot;&lt;basefont color=#ffffff&gt;&quot;+CStr(GetConfigString(skill_config[&quot;Index&quot;], &quot;Title&quot;)));
++	GFHTMLArea(gump, 50, 405, 150, 18, &quot;&lt;basefont color=#ffffff&gt;Exit&quot;);
++	GFAddButton(gump, 15, 402, 4017, 4019, GF_CLOSE_BTN, 1);
++
++	if( menu_config[&quot;Setup&quot;].MakeLast == 1 )
++		GFHTMLArea(gump, 305, 405, 150, 18, &quot;&lt;basefont color=#ffffff&gt;Make Last&quot;);
++		GFAddButton(gump, 270, 402, 4005, 4007, GF_CLOSE_BTN, 61450);
++	endif
++
++	GFHTMLArea(gump, 410, 405, 75, 20, &quot;&lt;basefont color=#ffffff&gt;Amount&quot;);
++	GFGumpPic(gump, 455, 402, 2443);
++	atc := GFTextEntry(gump, 465, 405, 100, 30, 1152, atc);
++
++	GFHTMLArea(gump, 10, 302, 150, 20, &quot;&lt;basefont color=#ffffff&gt;&lt;center&gt;Notices&lt;/center&gt;&quot;);
++	GFHTMLArea(gump, 10, 37, 200, 20, &quot;&lt;basefont color=#ffffff&gt;&lt;center&gt;Categories&lt;/center&gt;&quot;);
++	GFHTMLArea(gump, 215, 37, 305, 20, &quot;&lt;basefont color=#ffffff&gt;&lt;center&gt;Selections&lt;/center&gt;&quot;);
++
++	if( menu_config[skill_name].MakersMark == 1 )
++		if( makermark == 1 )
++			GFHTMLArea(gump, 305, 345, 150, 18, &quot;&lt;basefont color=#ffffff&gt;Mark Item&quot;);
++		else
++			GFHTMLArea(gump, 305, 345, 150, 18, &quot;&lt;basefont color=#ffffff&gt;*Do Not Mark&quot;);
++		endif
++		GFAddButton(gump, 270, 342, 4005, 4007, GF_CLOSE_BTN, 61453);
++	endif
++	if( menu_config[skill_name].RetainColor == 1 )
++		if( rcolor == 1 )
++			GFHTMLArea(gump, 305, 365, 150, 18, &quot;&lt;basefont color=#ffffff&gt;Use Material Color&quot;);
++		else
++			GFHTMLArea(gump, 305, 365, 150, 18, &quot;&lt;basefont color=#ffffff&gt;*Do Not Color&quot;);
++		endif
++		GFAddButton(gump, 270, 362, 4005, 4007, GF_CLOSE_BTN, 61452);
++	endif
++	if( menu_config[skill_name].Repair == 1 )
++		GFHTMLArea(gump, 305, 385, 150, 18, &quot;&lt;basefont color=#ffffff&gt;Repair Item&quot;);
++		GFAddButton(gump, 270, 382, 4005, 4007, GF_CLOSE_BTN, 61451);
++	endif
++	if( menu_config[&quot;Setup&quot;].Resmelt == 1 )
++		if( menu_config[skill_name].Smelt == 1 )
++			GFHTMLArea(gump, 50, 385, 150, 18, &quot;&lt;basefont color=#ffffff&gt;Resmelt Item&quot;);
++			GFAddButton(gump, 15, 382, 4005, 4007, GF_CLOSE_BTN, 61454);
++		endif
++	endif
++
++
++	// This foreach builds all the pages for Categories and Selections
++	// IndexY = the Y position for lines in the Categories.
++	var IndexY := 63;
++	// Page Number counter to keep track of pages while building the gump
++	PageNum := 1;
++	foreach MenuName in GetConfigStringArray(skill_config[&quot;Index&quot;], &quot;Group&quot;)
++		// Add the Category to page 0 for background
++		GFPage(gump, &quot;0&quot;);
++		GFAddButton(gump, 15, (IndexY-3), 4005, 4007, GF_PAGE_BTN, PageNum);
++		while (MenuName[&quot;_&quot;])
++			MenuName[&quot;_&quot;] := &quot; &quot;;
++			sleepms(1);
++		endwhile
++		GFHTMLArea(gump, 50, IndexY, 150, 18, (&quot;&lt;basefont color=#ffffff&gt;&quot;+MenuName));
++		// Now let's build the page for this Category
++		GFPage(gump, PageNum);
++		GFCraftNewPage(gump, skill_config, MenuName);
++		// Cycle all the variables up accordingly
++		if( PageNum &gt;= 15 )
++			syslog(&quot;Crafting: Max Amount of menus exceeded! Reduce amount of Groups in &quot; + menu_file);
++			SendSysMessage(who, &quot;Error! Max Amount of Menus Exceeded. Please report to shard staff.&quot;);
++			return 0;
++		endif
++		IndexY := IndexY + 20;
++		PageNum := PageNum+1;
++	endforeach
++
++	return gump;
++
++endfunction
++
++// Used to draw each additional page to the overall gump
++function GFCraftNewPage(byref gump, skill_config, MenuName)
++
++	var ItemX    := 255;
++	var ButtonX  := 220;
++	var ItemY    := 63;
++	var ButtonX2 := 480;
++	foreach item in GetConfigStringArray(skill_config[MenuName], &quot;Item&quot;)
++		var objtype   := GetObjTypeByName(item);
++		if(TypeOf(objtype) == &quot;Struct&quot;)
++			continue;
++		endif
++		var itemdesc  := TruncatePlural(objtype);
++
++		if(TypeOf(itemdesc) == &quot;Struct&quot;)
++			continue;
++		endif
++		itemdesc := lower(itemdesc);
++
++		if(ItemY &gt;= 243)
++			ItemY := 63;
++			GFAddButton(gump, 370, 260, 4005, 4007, GF_PAGE_BTN, (PageNum+1));
++			GFHTMLArea(gump, 405, 263, 100, 18, &quot;&lt;basefont color=#ffffff&gt;Next Page&quot;);
++			PageNum := PageNum+1;
++			GFPage(gump, PageNum);
++			GFAddButton(gump, 220, 260, 4005, 4007, GF_PAGE_BTN, (PageNum-1));
++			GFHTMLArea(gump, 255, 263, 100, 20, &quot;&lt;basefont color=#ffffff&gt;Prevoius Page&quot;);
++		endif
++		GFHTMLArea(gump, ItemX, ItemY, 220, 18, (&quot;&lt;basefont color=#ffffff&gt;&quot;+itemdesc));
++		GFAddButton(gump, ButtonX, (ItemY-3), 4005, 4007, GF_CLOSE_BTN, objtype);
++		if( menu_config[&quot;Setup&quot;].Info == 1 )
++			GFAddButton(gump, ButtonX2, (ItemY-3), 4011, 4012, GF_CLOSE_BTN, arcnt);
++			arinfo.append(objtype);
++			arcnt := arcnt + 1;
++		endif
++		ItemY := ItemY + 20;
++		sleepms(1);
++	endforeach
++
++	return 1;
++
++endfunction
++
++// Used for creating the Info Page gump for an item selected from the
++// crafting gump. This gump will display the information about item such
++// as skills required, their amt required, materials and their required
++// amount per peice, success chances and exceptional chances based on
++// skill the character has, show a picture of the item (Non-colored).
++// Also says if the item can be exceptionally made and if can have the
++// name of it's maker put on the item at GM skill. Can either return to
++// the Crafting gump, or create the item immediately from this page.
++function GFCraftInfoPage(who, objtype, skill_config)
++
++	objtype := Hex(objtype);
++	var i_config := ReadConfigFile(&quot;:*:itemdesc&quot;);
++	var thisitem := i_config[objtype];
++	if(TypeOf(thisitem) != &quot;ConfigElemRef&quot;)
++		thisitem := i_config[(&quot;0x0&quot;+(CStr(objtype) - &quot;0x&quot;))];
++	endif
++	var elem     := craft_config[objtype];
++	var graphic  := CInt(thisitem.graphic);
++	var itemdesc := TruncatePlural(objtype);
++	itemdesc := lower(itemdesc);
++
++	if(!graphic || TypeOf(graphic) == &quot;Struct&quot;)
++		graphic := CInt(objtype);
++	endif
++
++	var tooltip := thisitem.tooltip;
++	if(TypeOf(tooltip) != &quot;String&quot;)
++		tooltip := 0;
++	endif
++
++	// Set the variables for skill required levels
++	var skillreq  := elem.skill;
++	var diff      := elem.difficulty;
++	var skillreqb := elem.skill2;
++	if(!skillreqb || skillreqb.errortext)
++		skillreqb  := 0;
++	endif
++
++	// Set up skill 2 if one required
++	var aid_skill := elem.skillID;
++	// Get their xxx.x skill amount
++	var temp1 := CDbl(AP_GetSkill(who, craft_skill));
++	// Get their xxx.x skill amount of the secondary skill entry
++	var temp2 := CDbl(AP_GetSkill(who, craft_config[objtype].skillID));
++	// If there was no secondary skill in the cfg entry, set it to main skill
++	if(temp2 == error)
++		temp2 := temp1;
++	endif
++	// Figure the sickening odd Success Chance percentages.
++	var schance   := 0.0;
++	if((TypeOf(aid_skill) == &quot;Integer&quot;) &amp;&amp; (skillreqb != 0))
++		if(TypeOf(skillreqb) == &quot;Double&quot; or TypeOf(skillreqb) == &quot;Integer&quot;)
++			// Although CraftCheckSkill() would return 0%, let's not run all that code
++			// since it is a given anyway.
++			if(skillreqb &gt; temp2)
++				schance := &quot;0%&quot;;
++			else
++				schance := CStr(CraftCheckSkill(who, craft_skill, diff, 0, 1))+&quot;%&quot;;
++			endif
++		endif
++	else
++		if(skillreq &gt; temp1)
++			schance := &quot;0%&quot;;
++		else
++			schance := CStr(CraftCheckSkill(who, craft_skill, diff, 0, 1))+&quot;%&quot;;
++		endif
++	endif
++	if(elem.placeholder == 1)
++		schance := &quot;100%&quot;;
++	endif
++	if(TypeOf(aid_skill) != &quot;String&quot;)
++		aid_skill := 0;
++	endif
++
++	// Get the material type required to craft the item.
++	var matname   := lower(elem.type);
++
++	// Get the materials amount required to craft the item
++	var material  := elem.material;
++
++	if((elem.material2 &gt; 0) &amp;&amp; (elem.material2 != error))
++		// Material 2 name
++		matname := matname + &quot;\n&quot; + elem.material2obj;
++		material := material + &quot;\n&quot; + elem.material2;
++	endif
++
++	// Below added for checking for parts. If parts are present, then create the part list
++	// instead.
++	var tmatname  := 0;
++	var tmpmat    := &quot;&quot;;
++	if(TypeOf(elem.parts) == &quot;String&quot;)
++		tmpmat := SplitWords(elem.parts);
++		matname  := &quot;&quot;;
++		material := &quot;&quot;;
++		if((len(tmpmat)/2) &lt; 5)
++			for j := 1 to (len(tmpmat)/2)
++				tmatname := GetItemDescriptor(tmpmat[j]);
++				if(tmpmat[j+(len(tmpmat)/2)] &gt; 1)
++					tmatname := tmatname.desc+&quot;s&quot;;
++				else
++					tmatname := tmatname.desc;
++				endif
++				case(j)
++					1:
++					2:
++					3: matname := matname + tmatname + &quot;\n&quot;;
++					4: matname := matname + tmatname;
++					default: matname := matname + tmatname + &quot;\n&quot;;
++				endcase
++				material := material + (tmpmat[j+(len(tmpmat)/2)]) + &quot;\n&quot;;
++			endfor
++		else
++			material := 0;
++			for j := 1 to (len(tmpmat)/2)
++				tmatname := GetItemDescriptor(tmpmat[j]);
++				if(tmpmat[j+(len(tmpmat)/2)] &gt; 1)
++					tmatname := tmatname.desc+&quot;s&quot;;
++				else
++					tmatname := tmatname.desc;
++				endif
++				if(j == (len(tmpmat)/2))
++					matname := matname + &quot;&amp; &quot; + (tmpmat[j+(len(tmpmat)/2)]) + &quot; &quot; + tmatname + &quot; required&quot;;
++				else
++					matname := matname + (tmpmat[j+(len(tmpmat)/2)]) + &quot; &quot; + tmatname + &quot;, &quot;;
++				endif
++			endfor
++		endif
++	endif
++
++	// Exception % chance wording.
++	var echance   := 0;
++	if(elem.Exceptional == 1)
++		echance := CStr(ExceptionalCraft(temp1, skillreq, temp2, 1))+&quot;%&quot;;
++	endif
++
++	var gump := GFCreateGump(50, 50);
++	GFResizePic(gump, 0, 0, 5054, 530, 417);
++	GFGumpPic(gump, 10, 10, 2624);
++	GFGumpPic(gump, 10, 205, 2624);
++	GFGumpPic(gump, 250, 10, 2624);
++	GFGumpPic(gump, 250, 205, 2624);
++	GFGumpPic(gump, 10, 30, 5055);
++	GFGumpPic(gump, 90, 30, 5055);
++	GFResizePic(gump, 160, 120, 5054, 356, 13);
++	GFGumpPic(gump, 10, 210, 5055);
++	GFGumpPic(gump, 90, 210, 5055);
++	GFGumpPic(gump, 10, 290, 5055);
++	GFGumpPic(gump, 90, 290, 5055);
++	GFGumpPic(gump, 10, 370, 5055);
++	GFGumpPic(gump, 90, 370, 5055);
++	GFHTMLArea(gump, 10, 27, 150, 18, &quot;&lt;basefont color=#ffffff&gt;ITEM&quot;);
++	GFHTMLArea(gump, 170, 177, 150, 18, &quot;&lt;basefont color=#ffffff&gt;SKILLS&quot;);
++	GFHTMLArea(gump, 10, 207, 150, 18, &quot;&lt;basefont color=#ffffff&gt;MATERIALS&quot;);
++	GFHTMLArea(gump, 10, 287, 150, 18, &quot;&lt;basefont color=#ffffff&gt;OTHER&quot;);
++	GFAddButton(gump, 15, 387, 4014, 4016, GF_CLOSE_BTN, 1);
++	GFHTMLArea(gump, 50, 390, 150, 18, &quot;&lt;basefont color=#ffffff&gt;BACK&quot;);
++	GFAddButton(gump, 270, 387, 4005, 4007, GF_CLOSE_BTN, CInt(objtype));
++	GFHTMLArea(gump, 305, 390, 150, 18, &quot;&lt;basefont color=#ffffff&gt;MAKE NOW&quot;);
++	GFTilePic(gump, 20, 50, CInt(graphic));
++	GFHTMLArea(gump, 430, 132, 150, 18, (&quot;&lt;basefont color=#ffffff&gt;&quot; + skillreq));
++
++	// Tooltip info from itemdesc.cfg appended in.
++	if(tooltip != 0)
++		GFHTMLArea(gump, 170, 300, 300, 40, (&quot;&lt;basefont color=#ffffff&gt;&quot; + tooltip));
++	endif
++	// Set up the text for if the item can retain the color of material
++	if(craft_config[objtype].retain == 1)
++		GFTextLine(gump, 500, 220, 1153, &quot;*&quot;);
++		GFTextLine(gump, 170, 335, 1153, &quot;* The item retains the color of the material&quot;);
++	endif
++	if(craft_config[objtype].mark == 1)
++		GFTextLine(gump, 170, 355, 1153, &quot;This item may hold its maker's mark&quot;);
++	endif
++	// Material Required
++	GFHTMLArea(gump, 170, 219, 300, 80, (&quot;&lt;basefont color=#ffffff&gt;&quot; + matname));
++	if(material != 0)
++		GFHTMLArea(gump, 430, 219, 10, 80, (&quot;&lt;basefont color=#ffffff&gt;&quot; + material));
++	endif
++	// Success Chance % text
++	GFTextLine(gump, 170, 80, 1153, &quot;Success Chance:&quot;);
++	GFTextLine(gump, 430, 80, 1153, schance);
++	// Excpetional Chance % text
++	if(echance != 0)
++		GFTextLine(gump, 170, 100, 1153, &quot;Exceptional Chance:&quot;);
++		GFTextLine(gump, 430, 100, 1153, echance);
++	endif
++	// Title of the menu
++	GFHTMLArea(gump, 10, 12, 510, 20, (&quot;&lt;basefont color=#ffffff&gt;&quot;+CStr(GetConfigString(skill_config[&quot;Index&quot;], &quot;Title&quot;))));
++	// Item Name
++	GFHTMLArea(gump, 330, 40, 150, 20, (&quot;&lt;basefont color=#ffffff&gt;&quot;+itemdesc));
++	// Skill name
++	GFHTMLArea(gump, 170, 132, 150, 20, (craft_skill + &quot; required&quot;));
++
++	if((skillreqb &gt; 0) &amp;&amp; (skillreqb != error))
++		// Skill 2 name
++		GFHTMLArea(gump, 170, 152, 150, 20, (aid_skill + &quot; required&quot;));
++		GFHTMLArea(gump, 430, 152, 150, 20, skillreqb);
++	endif
++
++	var ifres := GFSendGump(who, gump);
++
++	if(ifres[0] == 1)
++		return 0;
++	else
++		return ifres[0];
++	endif
++
++endfunction
++
++
++function cBaseCraftDict()
++
++	var baseDict  := dictionary;
++	foreach skillentry in GetConfigStringArray(menu_config[&quot;Skills&quot;], &quot;Skill&quot;)
++		var temp := dictionary;
++		temp.+skill  := menu_config[skillentry].Name;
++		temp.+amount := CInt(menu_config[&quot;Setup&quot;].DefaultAmount);
++		temp.+mark   := CInt(menu_config[skillentry].MakersMark);
++		temp.+retain := CInt(menu_config[skillentry].RetainColor);
++		temp.+last   := 0;
++		baseDict[temp.skill] := temp;
++	endforeach
++
++	return baseDict;
++
++endfunction
++
++function Craft_RetrieveGump(elem_name, prop_name)
++
++        var elem := DFFindElement(craft_gumps, elem_name);
++        return (elem.GetProp(prop_name));
++
++endfunction
++
++function Craft_SaveGump(elem_name, gump, prop_name)
++
++        var elem := DFFindElement(craft_gumps, elem_name, DF_CREATE);
++        return (elem.SetProp(prop_name, gump));
++
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/crafting/include/crafting.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/crafting.inc	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/systems/crafting/include/crafting.inc	2005-09-29 23:45:05 UTC (rev 316)
+@@ -0,0 +1,528 @@
++// //$Id$
++
++////////////////////////////////////////////////////////////////////////////////////////////////////
++//
++//  name:    Main Crafting Backbone (include file)
++//  version: 1.0b3
++//  author:  MuadDib
++//
++//  Purpose: Functions for creating crafting menus, info menus, item creation, resource selection,
++//           skill gain, etc.
++//
++//  Notes:   Acknowledgement to Valkyrie and Austin for coding ideas, based off a combination of a
++//           work-in-progress of her's, and mine both
++//
++//  Changes: Sept 5, 2005 -- TruncatePlural() replaced. New function by Austin.
++//                        -- Did some comment changes, removed unused variables and functions.
++//                        -- Removed requirement for an altered gumpUtil.inc. Can use standard
++//                           Distro version now.
++//           Sept 6, 2005 -- Info Gump changed in respect with Parts for Assembly items. For items
++//                           that use less than 5 parts, each item is listed seperately now. If
++//                           it contains 5 or more parts, it gives the old HTML method giving them
++//                           in a sentence form, for more custom and ingenious assembly items requiring
++//                           much more to craft (ewwwwww).
++//                        -- Material and Material Name areas both now use a HTML gump area for
++//                           showing their text for Assembly. Less code and less bandwidth.
++//                        -- Matierial and Material name for standard, and dual material, items are
++//                           now handled via the HTML gump method as parts. MUCH less code and bw
++//                           are the end result for this change also.
++//                        -- Added function playCraftWork(). This function is used to display a craft
++//                           skill's action animation, sound, the loops to do it in, and the delay
++//                           between loops. Sound is required, loops defaults to 0 if none sent, and
++//                           delay defaults to 2 seconds if none sent, Action defaults to 0 (none) if
++//                           none sent. All delays are in seconds.
++//           Sept 7, 2005 -- Optimized a TON of if/else and if/elseif statements by converting them
++//                           to case() statements where possible in the main menu's code and the info
++//                           screen code.
++//                        -- Altered most buttons out of the 1000 and 8000 range due to possible
++//                           objtype conflicts. Info buttons now use 61500 through 62000. Repair,
++//                           smelt, maker's mark, and retain color all converted also for this bug.
++//           Sept 8, 2005 -- Changed TruncatePlural() to return a struct{errortext} if it could
++//                           not find a &quot;name&quot; or &quot;desc&quot; entry for an itemdesc.cfg entry.
++//                        -- Changed DrawNewPage to skip items with invalid Objtype names given
++//                           in the Menu file, and with invalid objtype returned from TruncatePlural().
++//           Sep 14, 2005 -- Redid code to set Last Item cprop checks.
++//
++//
++//  To-Do:   1.) Break this down even more. Such as &quot;crafting_menu.inc&quot;, &quot;crafting_skill.inc&quot;,
++//               &quot;crafting_util.inc&quot;, and so on.
++//           2.) Centralize Crafting Package. Move the skills.cfg information BACK into the
++//               central skills.cfg in /config. Directory layout as follows:
++//               pkg -&gt; Crafting -&gt; Include
++//                               -&gt; Repair
++//                               -&gt; Util    -&gt; textcmd/admin
++//                   -&gt; Skills   -&gt; Alchemy     -&gt; mortar
++//                               -&gt; Blacksmithy -&gt; smithing
++//                               -&gt; Etc etc.    -&gt; usescripts, etc etc.
++//           3.) Finish up repair contracts and tool wear.
++//           4.) Create some cusotmized crafting includes for inscription, etc that require it.
++//           5.) Create textcmds for editing the Menu and item configs, to add new items ingame.
++//           6.) Create MethodScript system for Toolwear!
++//           7.) UPGRADE to use the new gumps package by Austin for the newest distro.
++//           8.) UPGRADE all buttons (except ones to make the item, which uses the button's objtype)
++//               to use the 0xF000 - 0xFFFF range. That range is CORE RESERVED for objtypes, thus,
++//               should NEVER contain custom items added by shard admins. Therefore anything in that
++//               range should not be craftable and thus, not in these menus.
++//           9.) Remove all sound and animation function calls from crafting. Change it to use a
++//               single function called as &quot;playCraftWork(anim, sound, loop:=0;, delay:=0;)&quot;
++//
++// Strings to find and fix under new attributes:
++// AwardPoints(who, Cint(craft_config[objtype].skillID), 1);
++// AwardPoints(who, skillid, 1);
++//
++//
++////////////////////////////////////////////////////////////////////////////////////////////////////
++use polsys;
++use datafile;
++
++include &quot;include/objtype&quot;;
++include &quot;:crafting:include/craftGumps&quot;;
++include &quot;:crafting:include/craftingSkill&quot;;
++include &quot;:gumps:include/gumps&quot;;
++include &quot;:gumps:include/gumps_ex&quot;;
++
++var craft_skill;
++var craftL    := 0;
++var rcolor    := 1;
++var makermark := 1;
++
++// Function used to target material and check ability for crafting.
++// Returns an array of ItemRef for the item and Objtype for the
++// resourceList of the material, and the Points bonus the resource
++// gives for using it. If chk is passed, it is used for the &quot;cprop&quot;
++// to check the item for. This is used for example, for boards that
++// was originally colored logs. The colored log objtype is stored
++// in the cprop, and is used to get it's &quot;ResourceList&quot; reference.
++function MaterialSelection(who, craft_skill, type, chk:=0)
++
++  SendSysMessage(who, &quot;Select the &quot;+lower(type)+&quot; you would like to work with.&quot;);
++  var material := Target(who);
++  if(!material)
++    return 0;
++  endif
++  if(material.container.serial != who.backpack.serial)
++    SendSysMessage(who, &quot;That is not in your backpack.&quot;);
++    return 0;
++  endif
++  if((!can_access(who, material)) || (!Accessible(who, material)) || (Distance(who, material) &gt; 2)
++       || (material.movable == 0) || (!ReserveItem(material)))
++    SendSysMessage(who, &quot;You cannot use that.&quot;);
++    return 0;
++  endif
++  var materialobjtype := 0;
++  if(chk)
++    if(GetObjProperty(material, chk))
++      materialobjtype := GetObjProperty(material, chk);
++    else
++      materialobjtype := material.objtype;
++    endif
++  else
++    materialobjtype := material.objtype;
++  endif
++  if(!canUseMaterial(who, materialobjtype, craft_skill))
++    SendSysMessage(who, &quot;You are not skilled enough to make anything out of that.&quot;);
++    return 0;
++  endif
++  var rtype := lower(resource_config[materialobjtype].Type);
++  var materialchk := 0;
++  if(rtype == type)
++    materialchk := 1;
++  endif
++  if(materialchk == 0)
++    SendSysMessage(who, &quot;That's not the proper material.&quot;);
++    return 0;
++  endif
++  if((material.objtype &gt;= UOBJ_BOLT_START) &amp;&amp; (material.objtype &lt;= UOBJ_BOLT_END))
++    var totalcloth := material.amount * 50;
++    var cloth;
++    if(DestroyItem(material))
++      cloth := CreateItemInBackpack(who, 0x1767, totalcloth);
++      if(!cloth)
++        cloth := CreateItemAtLocation(who.x, who.y, who.z, 0x1767, totalcloth);
++      endif
++    endif
++    material := cloth;
++  endif
++
++  var retarray := array;
++  retarray.append(material);
++  retarray.append(materialobjtype);
++  retarray.append(resource_config[materialobjtype].Ptmod);
++  return retarray;
++
++endfunction
++
++// Used to create the actual item, handle it's coloring and marking of
++// exceptional naming of the item itself. Returns objref if success, 0 if fail.
++// All asked for items in the function line are able to be sent no matter the skill
++// the script is for with crafting. Use_onobjtype is there only for when you are
++// working with let's say boards for example, where they will have a cprop contianing
++// the objtype of the original logs they was made from. Else you simply pass
++// use_on.objtype for that. This will keep the customizability open for adding in
++// special resources for crafting here also.
++function CreateCraftItem(who, craft_skill, use_on, use_onobjtype, objtype, amount, itemname, reqd)
++
++ var theitem := CreateItemInBackpack(who, objtype, 1);
++ var elem    := FindConfigElem(resource_config, use_onobjtype);
++ if(theitem)
++   var nme := (resource_config[use_onobjtype].Name) + &quot; &quot; + itemname;
++   if(find(nme, &quot;plain &quot;, 1))
++     nme[find(nme, &quot;plain &quot;, 1),6] := &quot;&quot;;
++   endif
++   if((rcolor == 1) &amp;&amp; (craft_config[objtype].retain == 1))
++     if(resource_config[use_onobjtype].Color)
++       theitem.color := resource_config[use_onobjtype].Color;
++     else
++       theitem.color := use_on.color;
++     endif
++   endif
++   SetObjProperty(theitem, &quot;material&quot;, use_onobjtype);
++   if(!SubtractAmount(use_on, amount))
++     SendSysMessage(who, &quot;You don't have enough materials in your backpack!&quot;);
++     DestroyItem(theitem);
++     return -1;
++   endif
++   var myskill := CDbl(AP_GetSkill(who, craft_skill));
++   var aidskill := CDbl(AP_GetSkill(who, craft_config[objtype].skillID));
++   // This snags the Qualities of the resource to use on item creation.
++   // Format in the cfg for Quality is &lt;dmg mod&gt; &lt;ar mod&gt; &lt;hp mod&gt;.
++   // 0 for a mod means there isn't one. Space delimited in the cfg,
++   // this allows us to simply use SplitWords on it to make the array
++   // of each of the settings.
++   var temp := GetConfigString(elem, &quot;Quality&quot;);
++   temp := SplitWords(temp);
++   var power  := GetConfigString(elem, &quot;Power&quot;);
++   if( (TypeOf(power) != &quot;String&quot;) )
++     power := 0;
++   endif
++   var wpower := GetConfigString(elem, &quot;WPower&quot;);
++   if( (TypeOf(wpower) != &quot;String&quot;) )
++     wpower := 0;
++   endif
++   if((craft_config[objtype].Exceptional == 1) &amp;&amp; (ExceptionalCraft(myskill, reqd, aidskill)))
++//     AwardPoints(who, craft_skill, 1);
++     SetObjProperty(theitem, &quot;Exceptional&quot;, 1);
++     if( TypeOf(craft_config[objtype].skillID) == &quot;String&quot; )
++//       AwardPoints(who, Cint(craft_config[objtype].skillID), 1);
++     endif
++     if((craft_config[objtype].Mark == 1))
++       if((makermark == 1) &amp;&amp; (myskill &gt;= 100))
++         nme := &quot;an exceptional &quot; + nme + &quot; [Crafted by &quot; + who.name + &quot;]&quot;;
++       else
++         nme := &quot;an exceptional &quot; + nme;
++       endif
++     else
++       nme := &quot;an exceptional &quot; + nme;
++     endif
++     if(theitem.isA(POLCLASS_WEAPON))
++       theitem.dmg_mod := CInt(temp[1])+(RandomInt(4));
++     elseif(theitem.isA(POLCLASS_ARMOR))
++       theitem.ar_mod := CInt(temp[2])+(RandomInt(4));
++     endif
++     theitem.maxhp_mod := CInt(temp[3])+(RandomInt(11));
++     theitem.hp := theitem.maxhp;
++     SendSysMessage(who, &quot;You create an exceptional quality item.&quot;);
++   else
++     var rint := randomint(AP_GetSkill(who, craft_skill));
++     if(reqd &gt;= 23)
++       reqd := reqd - 20;
++     else
++       reqd := 3;
++     endif
++     if(rint &lt; reqd)
++       SendSysMessage(who, &quot;You were barely able to make this item.  Its quality is below average.&quot;);
++       if(theitem.isA(POLCLASS_WEAPON))
++         theitem.dmg_mod := CInt(temp[1])-(RandomInt(2)+1);
++       elseif(theitem.isA(POLCLASS_ARMOR))
++         theitem.ar_mod := CInt(temp[2])-(RandomInt(2)+1);
++       endif
++       theitem.maxhp_mod := CInt(temp[3])-(RandomInt(10)+1);
++       theitem.hp := theitem.maxhp;
++     else
++       SendSysMessage(who, &quot;You create the item and put it in your backpack.&quot;);
++       if(theitem.isA(POLCLASS_WEAPON))
++         theitem.dmg_mod := CInt(temp[1]);
++       elseif(theitem.isA(POLCLASS_ARMOR))
++         theitem.ar_mod := CInt(temp[2]);
++       endif
++       theitem.maxhp_mod := CInt(temp[3]);
++       theitem.hp := theitem.maxhp;
++     endif
++     var word := &quot;&quot;;
++     if((nme[1] == &quot;a&quot;) || (nme[1] == &quot;e&quot;) || (nme[1] == &quot;i&quot;) || (nme[1] == &quot;o&quot;) || (nme[1] == &quot;u&quot;))
++       word := &quot;an &quot;;
++     else
++       word := &quot;a &quot;;
++     endif
++     nme := &quot;&quot; + word + nme;
++     nme := nme - &quot;plain &quot;;
++   endif
++   SetName(theitem, nme);
++   if(theitem.isA(POLCLASS_CONTAINER))
++     SetObjProperty(theitem, &quot;trappable&quot;, 1);
++   elseif(theitem.isA(POLCLASS_ITEM))
++     SetToolDurability(who, theitem, craft_skill);
++   endif
++//   if((power) &amp;&amp; (theitem.isa(POLCLASS_ARMOR)))
++//     SetObjProperty(theitem, &quot;power&quot;, power);
++//     theitem.equipscript := &quot;equiparmor&quot;;
++//     theitem.unequipscript := &quot;unequiparmor&quot;;
++//   elseif((wpower == &quot;SILVER&quot;) &amp;&amp; theitem.isA(POLCLASS_WEAPON))
++//     SetObjProperty(theitem, &quot;SilverHit&quot;, 1);
++//   elseif(wpower &amp;&amp; theitem.isA(POLCLASS_WEAPON))
++//     SetObjProperty(theitem, &quot;wpower&quot;, power);
++//     theitem.equipscript := &quot;equipweapon&quot;;
++//     theitem.unequipscript := &quot;unequipweapon&quot;;
++//   endif
++ else
++   SendSysMessage(who, &quot;You don't have enough room in your backpack!&quot;);
++   return 0;
++ endif
++
++ return theitem;
++
++endfunction
++
++// This function is used to create items that are marked &quot;assemble&quot; in the
++// crafting configs. Reads a prop from the cfg entry for a list of parts and
++// their amounts then checks the player's backpack for the items and works it.
++function CreateAssembly(who, tool, objtype, amt)
++
++  var skill := craft_config[objtype].skill, theitem;
++  var mainSkill := CInt(AP_GetSkill(who, craft_skill));
++  var modpts := 0;
++  if(mainSkill &gt;= skill)
++    modpts := (mainSkill - (skill - 10));
++  endif
++  var diff := Cint(craft_config[objtype].difficulty);
++  var pts  := Cint(craft_config[objtype].points);
++  pts := pts + modpts;
++  var counter := 0, chk := 0;
++  // Get a list of the parts from the cfg entry. Format from config is listed in cfg
++  // header. Objtypes first, then amount for each objtype, in the same respective order.
++  // To match them together, we divid the length of the array by 2 then use that.
++  // Example : mod := len(array)/2;
++  // Example2: objtype := array[x]; amt := array[x+mod];
++  var partslist := SplitWords(craft_config[objtype].parts);
++  if(!partslist or partslist.errortext)
++    SendSysMessage(who, &quot;This item does not require parts to be made! Contact a GM.&quot;);
++    return;
++  endif
++  var mod := len(partslist)/2;
++  var partcounter, partarray, checker;
++  var x := who.x, y := who.y;
++
++  while(counter &lt; amt)
++    if((who.x != x) || (who.y != y))
++      break;
++    endif
++    if(chk == 1)
++      break;
++    endif
++    partarray := {};
++    checker := 0;
++    chk := 0;
++    // We use the Enumerate in a variable like this so as to work with it
++    // as an array. This way no need to enumerate every for/endfor cycle.
++    var blist := EnumerateItemsInContainer(who.backpack);
++    for i := 1 to mod
++      partcounter := 0;
++      foreach thing in blist
++        // If thing.objtype is the same as the objtype in the part list array position....
++        if(CInt(thing.objtype) == CInt(partslist[i]))
++          // If the amount is less than the counter for this item type, append it to the
++          // array for deletion later.
++          if(partcounter &lt; CInt(partslist[i+mod]))
++            if(ReserveItem(thing))
++              partarray.append(thing);
++              partcounter := partcounter + 1;
++            endif
++          endif
++        endif
++      endforeach
++      // We add 2 to the checker var here once all required peices are added. We use
++      // this later to divide by 2. If divided by 2, it equals the mod variable, we know
++      // all the required peices are in their backpack. That works, because it is the same
++      // method for the partslist array which is an amount entry for each objtype entry.
++      // Sure, we could use 1, then divide the mod by 2 also for this to work. But I was
++      // in one of my moods ;)
++      if(partcounter == CInt(partslist[i+mod]))
++        checker := checker + 2;
++      endif
++    endfor
++    if((checker /2) != mod)
++      SendSysMessage(who, &quot;You do not have the required materials to make that.&quot;);
++      return;
++    else
++      sleep(2);
++      if(CraftCheckSkill(who, mainSkill, diff, pts))
++        PlaySoundEffect(who, 0x23e);
++        sleep(2);
++        foreach thing in partarray
++          if(!DestroyItem(thing))
++            SendSysMessage(who, &quot;You do not have the ready materials to make that.&quot;);
++            return;
++          endif
++        endforeach
++        theitem := CreateItemInBackpack(who, objtype, 1);
++        if(!theitem)
++          SendSysMessage(who, &quot;You don't have enough room in your backpack!&quot;);
++          return 0;
++        endif
++        CheckToolWear (who, tool, mainSkill);
++        theitem.movable := 1;
++        SendSysMessage(who, &quot;You create the item and put it in your backpack.&quot;);
++      endif
++    endif
++    if(theitem.isA(POLCLASS_CONTAINER))
++      SetObjProperty(theitem, &quot;trappable&quot;, 1);
++    endif
++    counter := counter + 1;
++  endwhile
++
++endfunction
++
++//
++//  TruncatePlural()
++//
++//  * Returns the name for the item of the objtype passed.
++//
++function TruncatePlural(obj_type, add_S := 0)
++        obj_type := CInt(obj_type);
++
++        var config := ReadConfigFile(&quot;:*:itemdesc&quot;);
++        config := config[obj_type];
++
++        var name;
++        if (config.desc)
++                name := config.desc;
++        elseif (config.name)
++                name := config.name;
++        else
++                return error{&quot;errortext&quot;:=&quot;Invalid Objtype : &quot; + hex(obj_type) + &quot;.&quot;};
++        endif
++
++        if ( !name[&quot;%&quot;] )
++                if ( add_S == 0 )
++                        return name;
++                endif
++                if ( name[len(name)] in {&quot;s&quot;} )
++                        return name;
++                elseif ( name[len(name)] in {&quot;h&quot;,&quot;j&quot;,&quot;x&quot;,&quot;z&quot;} )
++                        return name + &quot;es&quot;;
++                endif
++                return name + &quot;s&quot;;
++        endif
++
++        // Will deal with:
++        //
++        //      Bread Stick%s
++        //      Bread Loa%ves/f%
++        //      Lump%s% of Coal
++        //      Loa%ves/f% of Bread
++        //
++        var first := find(name, &quot;%&quot;, 1);
++        var slash := find(name, &quot;/&quot;, first);
++        var second := find(name, &quot;%&quot;, first + 1);
++        if ( slash &amp;&amp; !second )
++                // Force-append a % if a '/' exists!
++                name := name + &quot;%&quot;;
++                second := len(name);
++        elseif ( !slash )
++                slash := second;
++        endif
++
++        // wwwww%xx[/yy]%[zzzzz]
++        // 12345678     9 01234
++        // 12345678 901 2 34567
++
++        var s_plur := name[first+1, slash-(first+1)];
++        var s_sing := &quot;&quot;;
++        if ( slash != first )
++                s_sing := name[slash+1, second-(slash+1)];
++        endif
++
++        var s_first := name[1, first-1];
++        var s_middle := s_plur;
++        var s_last := &quot;&quot;;
++        if ( len(name) &gt; second )
++                s_last := name[second+1, len(name)-second];
++        endif
++
++        if ( add_S == 0 )
++                s_middle := s_sing;
++        endif
++
++        if ( !s_first )
++                s_first := &quot;&quot;;
++        endif
++        if ( !s_middle )
++                s_middle := &quot;&quot;;
++        endif
++        if ( !s_last )
++                s_last := &quot;&quot;;
++        endif
++        return s_first + s_middle + s_last;
++
++endfunction
++
++
++// Used to check the skill of the character vs the
++// the skill of the resource_config (resources config) to
++// see if they can work with the material.
++function canUseMaterial(who, use_on, craft_skill)
++
++  if( AP_GetSkill(who, craft_skill) &gt;= resource_config[use_on].Skill )
++    return 1;
++  else
++    return 0;
++  endif
++
++endfunction
++
++// This function is used for those who have items from objtype 0 to 16383 the same
++// as the items in the tiledata. It will convert the objtype to the correct Cliloc
++// ID for it's name. Can be used in menu scripts such as crafting, etc. Just remember
++// to pass the objtype as CInt(objtype) so it converts the hex to Integer.
++// NOTE: Clilocs was implemented in uh, client 3.x+ I believe.
++// 1020000 - First tiledata name entry
++// 1036383 - Last tiledata name entry
++// **** OLD AND OBSOLETE. NO LONGER USING CLILOCS IN THIS CRAFTING. LEFT
++// **** IN FOR REFERENCE AND KNOWLEDGE
++function ClilocObjtype(objtype)
++
++  return -1;
++  if((objtype &gt;= 0) &amp;&amp; (objtype &lt;= 16383) &amp;&amp; objtype != error)
++    return CInt(objtype)+1020000;
++  else
++    return -1;
++  endif
++
++endfunction
++
++
++// This function is used to display a craft skill's action,
++// sound, the loops to do it in, and the delay between loops.
++// Sound is required, loops defaults to 0 if none sent, and delay
++// defaults to 2 seconds if none sent, Action defaults to 0
++// (none) if none sent. Who is who the info is to be sent to.
++// All delays are in seconds.
++function playCraftWork(who, craftSound, loops:=0, delay:=2, craftAction:=0)
++
++
++  if(loops)
++    for i := 1 to loops
++      if(craftAction)
++        PerformAction( who, craftAction );
++      endif
++      PlaySoundEffect(who, craftSound);
++      sleep(delay);
++    endfor
++  else
++    PlaySoundEffect(who, craftSound);
++    sleep(delay);
++  endif
++
++  return;
++
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/crafting/include/craftingRepair.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/craftingRepair.inc	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/systems/crafting/include/craftingRepair.inc	2005-09-29 23:45:05 UTC (rev 316)
+@@ -0,0 +1,350 @@
++// //$Id$
++
++////////////////////////////////////////////////////////////////////////////////////////////////////
++//
++//  name:    repair.inc
++//  version: 2.0
++//  author:  MuadDib
++//
++//  Purpose: Contains all the central Repair functions involving repairing items, using repair
++//           deeds, etc.
++//
++//  Changes: Sept 14, 2005 - Updated repair_item() for swing counter (new crafting ready)
++//                         - Added CreateRepairDeed() Function with support for the following skills:
++//                           Smithy, Bowcraft, Carpenter, Tailor (new crafting ready)
++//                         - Moved repair_this() function to the include (new crafting ready)
++//                         - Moved s_weapon_armor() to the include (new crafting ready)
++//                         - Moved resmelt() to include (New crafting ready)
++//
++////////////////////////////////////////////////////////////////////////////////////////////////////
++
++include &quot;include/sound&quot;;
++
++function repair_item(character, what, craft_skill )
++  var maxhp;
++  maxhp := what.maxhp;
++  maxhp := cint(maxhp * what.quality);
++  var thehp := what.hp;
++  var damaged := maxhp - thehp;
++  var hisskill := AP_GetSkill(character, craft_skill);
++  var damageamount := 0.0;
++  damageamount := (125 -  hisskill)/3000.0;
++  if(what.hp == what.maxhp)
++    SendSysMessage(character, &quot;That item is not damaged.&quot;);
++    return;
++  endif
++  if((what.hp &lt;= 0) || (what.quality &lt;= 0.1) || (!what.quality))
++    SendSysMessage(character, &quot;The brittle material breaks when you handle it&quot;);
++    DestroyItem(what);
++    return;
++  endif
++  if(what.quality &lt;= damageamount)
++    SendSysMessage(character, &quot;The brittle material breaks when you handle it&quot;);
++    DestroyItem(what);
++    return;
++  endif
++  what.quality := what.quality - damageamount;
++  if((what.hp &lt;= 0) || (what.quality &lt;= 0.1) || (!what.quality))
++    SendSysMessage(character, &quot;The brittle material breaks when you handle it&quot;);
++    DestroyItem(what);
++    return;
++  endif
++  if (SkillCheck(character, craft_skill, cint(damaged / 3), 0))
++    var repaired_amount := cint( ((randomint(hisskill) + 1))/2);
++    if (damaged == 1)
++      repaired_amount := 1;
++    endif
++    if (thehp + repaired_amount &gt; what.maxhp)
++      what.hp := what.maxhp;
++      EraseObjProperty(what, &quot;swings&quot;);
++      SendSysMessage(character, &quot;You  repair the item completely&quot;);
++    else
++      what.hp := thehp + repaired_amount;
++      SendSysMessage(character, &quot;You successfully repair some of the damage&quot;);
++    endif
++    if ((what.hp &lt;= 0) || (what.quality &lt;= 0.1) || (!what.quality))
++      SendSysMessage(character, &quot;The brittle material breaks when you handle it&quot;);
++      DestroyItem(what);
++      return;
++    endif
++  else
++    var damage_amount := randomint(10);
++    if (thehp &lt;= damage_amount)
++      DestroyItem(what);
++      SendSysMessage(character, &quot;You fail and destroy the item&quot;);
++    endif
++    thehp := thehp - damage_amount;
++    what.hp := thehp;
++    if(randomint(2) == 1)
++      what.quality := what.quality - (damaged/100);
++    endif
++    if(thehp &lt;= 0)
++      DestroyItem(what);
++      SendSysMessage(character, &quot;You fail and destroy the item&quot;);
++    else
++      SendSysMessage(character, &quot;You fail and damage the item&quot;);
++    endif
++    if ((what.hp &lt;= 0) || (what.quality &lt;= 0.1) || (!what.quality))
++      SendSysMessage(character, &quot;The brittle material breaks when you handle it&quot;);
++      DestroyItem(what);
++      return;
++    endif
++  endif
++endfunction
++
++function CreateRepairDeed(who, scroll, craft_skill)
++
++  var type, title, color;
++  case(CInt(craft_skill))
++     ATTRIBUTE_BLACKSMITHY: 		type := &quot;Blacksmith&quot;; color := CInt(2107);
++     ATTRIBUTE_BOWCRAP_T_FLETCHING: 	type := &quot;Bowyer&quot;; color := CInt(2116);
++     ATTRIBUTE_CARPENTRY: 		type := &quot;Carpenter&quot;; color := CInt(2113);
++     ATTRIBUTE_TAILORING: 		type := &quot;Tailor&quot;; color := CInt(2128);
++  endcase
++  var ramt := AP_GetSkill(who, craft_skill);
++  if(ramt &lt; 50)
++    SendSysMessage(who, &quot;You must be at least apprentice level to create a repair service contract.&quot;);
++    return;
++  endif
++  if(ramt &lt; 60 )
++    title := &quot;A repair service contract from an Apprentice &quot; + type;
++  elseif(ramt &lt; 70 )
++    title := &quot;A repair service contract from a Journeyman &quot; + type;
++  elseif(ramt &lt; 80 )
++    title := &quot;A repair service contract from an Expert &quot; + type;
++  elseif(ramt &lt; 90 )
++    title := &quot;A repair service contract from an Adept &quot; + type;
++  elseif(ramt &lt; 100 )
++    title := &quot;A repair service contract from a Master &quot; + type;
++  elseif(ramt &lt; 110 )
++    title := &quot;A repair service contract from a Grandmaster &quot; + type;
++  elseif(ramt &lt; 120 )
++    title := &quot;A repair service contract from an Elder &quot; + type;
++  elseif(ramt &lt; 130 )
++    title := &quot;A repair service contract from a Legendary &quot; + type;
++  endif
++  type := lower(type);
++  var ret := GetItemDescriptor(0xee09);
++  ret.Color := color;
++  ret.CProps.insert(&quot;type&quot;, type);
++  ret.CProps.insert(&quot;skillid&quot;, craft_skill);
++  ret.CProps.insert(&quot;ramt&quot;, ramt);
++  var theitem := CreateItemInBackpack(who, ret, 1);
++  if(theitem)
++    SubtractAmount(scroll, 1);
++  endif
++  SetName(theitem, title);
++  return;
++
++endfunction
++
++function repair_this(who, craft_skill := ATTRIBUTE_BLACKSMITHY)
++  SendSysMessage(who, &quot;Select item to repair.&quot;);
++  var use_on := Target(who);
++  if(!can_access(who, use_on))
++    return;
++  endif
++  if(use_on.movable == 0)
++    SendSysMessage(who, &quot;You cannot repair that.&quot;);
++    return;
++  endif
++  if((!Accessible(who, use_on)) or (distance(who, use_on) &gt; 2))
++    SendSysMessage(who, &quot;You cannot reach that.&quot;);
++    return;
++  endif
++  if(CInt(use_on.objtype) == CInt(0xe34))
++    case(CInt(craft_skill))
++       ATTRIBUTE_BLACKSMITHY:            CreateRepairDeed(who, use_on, craft_skill);
++       ATTRIBUTE_BOWCRAP_T_FLETCHING:    CreateRepairDeed(who, use_on, craft_skill);
++       ATTRIBUTE_CARPENTRY:   		 CreateRepairDeed(who, use_on, craft_skill);
++       ATTRIBUTE_TAILORING:   		 CreateRepairDeed(who, use_on, craft_skill);
++    endcase
++    return;
++  endif
++  var forge := 0;
++  case(CInt(craft_skill))
++     ATTRIBUTE_BLACKSMITHY: forge := 1;
++  endcase
++  if(!forge)
++    if(is_weapon_armor(use_on.objtype))
++      repair_item( who, use_on, craft_skill);
++    else
++      SendSysMessage(who, &quot;You cannot repair that.&quot;);
++    endif
++  else
++    if(is_weapon_armor(use_on.objtype))
++      var near_items := ListItemsNearLocation(who.x, who.y, who.z,3);
++      foreach item in near_items
++        if ((item.objtype == UOBJ_ANVIL1) || (item.objtype == UOBJ_ANVIL2))
++          repair_item( who, use_on, craft_skill);
++          return;
++        endif
++      endforeach
++      SendSysMessage( who, &quot;You must be near an anvil to repair items!&quot; );
++      return;
++    else
++      SendSysMessage(who, &quot;You cannot repair that&quot;);
++    endif
++  endif
++  return;
++endfunction
++
++function is_weapon_armor(what)
++  var combatcfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
++  var elem := FindConfigElem(combatcfg, what);
++  var repairable := GetConfigInt(elem, &quot;repairable&quot;);
++  if (repairable == 1)
++    return 1;
++  else
++    return 0;
++  endif
++endfunction
++
++function resmelt(who, the_attribute)
++
++	var near_items := ListItemsNearLocation(who.x, who.y, who.z, 3);
++	var forge_near := 0;
++	foreach forge in near_items
++		if((forge.objtype == 0xfb1) || ((forge.objtype &gt;= 0x197a) &amp;&amp; (forge.objtype &lt;= 0x19a9)))
++			forge_near := 1;
++			break;
++		endif
++	endforeach
++	if(forge_near == 0)
++		SendSysMessage(who, &quot;You must be near a forge.&quot;);
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;Select the item you wish to melt.&quot;);
++	var use_on := Target(who, TGTOPT_CHECK_LOS);
++	if(!use_on || !can_access(who, use_on))
++		return 0;
++	endif
++	if(use_on.container.serial != who.backpack.serial)
++		SendSysMessage(who, &quot;That is not in your backpack.&quot;);
++		return 0;
++	endif
++	if(!Accessible(who, use_on) || !ReserveItem( use_on ))
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++	if(use_on.movable == 0)
++		SendSysMessage(who, &quot;You cannot use that while it is locked down.&quot;);
++		return 0;
++	endif
++	if(use_on in ListEquippedItems(who))
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++
++	var cfgarray := GetConfigStringKeys(resource_config);
++	var ingot := -1;
++	if(use_on.isA(POLCLASS_CONTAINER))
++		var contitems := EnumerateItemsInContainer(use_on);
++		var skill, amt;
++		var loop_counter := 3;
++		foreach thing in contitems
++			loop_counter := loop_counter + 1;
++			if( loop_counter == 4 )
++				SendSysMessage(who, &quot;Smelting items in container......&quot;);
++				loop_counter := 0;
++			endif
++			if(craft_config[thing.objtype])
++				skill := craft_config[thing.objtype].skill;
++				amt := CInt(craft_config[thing.objtype].material);
++				if((!skill) || (!amt))
++					return 0;
++				endif
++				skill := CInt(skill/2);
++				if(skill &lt; 5)
++					skill := 5;
++				endif
++				amt := CInt((amt * AP_GetSkill(who, the_attribute) * 75 ) / 10000);
++				if(amt &lt; 1)
++					amt := 1;
++				endif
++				ingot := -1;
++				var mattype := CInt(GetObjProperty(use_on, &quot;material&quot;));
++				if(mattype &gt; 0)
++					if(mattype != error)
++						ingot := mattype;
++					endif
++				endif
++				if(ingot == -1)
++					foreach entry in cfgarray
++						if(lower(resource_config[entry].Type) == &quot;metal&quot;)
++							if(CInt(resource_config[entry].Color) == CInt(thing.color))
++								ingot := entry;
++							endif
++						endif
++					endforeach
++				endif
++				if(ingot == -1)
++					SendSysMessage(who, &quot;You have no idea how to smelt this strange ore!&quot;);
++					return 0;
++				endif
++				PlaySoundEffect(who, 0x2c);
++				sleep(1);
++				PlaySoundEffect(who, 0x22);
++				if(DestroyItem(thing))
++					if(SkillCheck(who, the_attribute, skill, 10))
++						CreateItemInContainer(who.backpack, ingot, amt);
++					else
++						SendSysMessage(who, &quot;You destroy the item.&quot;);
++					endif
++				endif
++			endif
++			sleepms(500);
++		endforeach
++	else
++		if(!craft_config[use_on.objtype])
++			return 0;
++		endif
++		ingot := -1;
++		var skill := craft_config[use_on.objtype].skill;
++		var amt := CInt(craft_config[use_on.objtype].material);
++		if((!skill) || (!amt))
++			return 0;
++		endif
++		skill := CInt(skill/2);
++		if(skill &lt; 5)
++			skill := 5;
++		endif
++		amt := CInt((amt * AP_GetSkill(who, the_attribute) * 75 ) / 10000);
++		if(amt &lt; 1)
++			amt := 1;
++		endif
++		var mattype := CInt(GetObjProperty(use_on, &quot;material&quot;));
++		if(mattype &gt; 0)
++			if(mattype != error)
++				ingot := mattype;
++			endif
++		endif
++		if(ingot == -1)
++			foreach entry in cfgarray
++				if(lower(resource_config[entry].Type) == &quot;metal&quot;)
++					if(CInt(resource_config[entry].Color) == CInt(use_on.color))
++						ingot := entry;
++					endif
++				endif
++			endforeach
++		endif
++		if(ingot == -1)
++			SendSysMessage(who, &quot;You have no idea how to smelt this strange ore!&quot;);
++			return 0;
++		endif
++		PlaySoundEffect(who, 0x2c);
++		sleep(1);
++		if( DestroyItem(use_on) )
++			PlaySoundEffect(who, 0x22);
++			if(SkillCheck(who, the_attribute, skill, 10))
++				CreateItemInContainer(who.backpack, ingot, amt);
++			else
++				SendSysMessage(who, &quot;You destroy the item.&quot;);
++			endif
++		else
++			SendSysMessage(who, &quot;Couldn't destroy &quot;+ use_on.name);
++		endif
++	endif
++
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/crafting/include/craftingSkill.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/craftingSkill.inc	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/systems/crafting/include/craftingSkill.inc	2005-09-29 23:45:05 UTC (rev 316)
+@@ -0,0 +1,104 @@
++// //$Id$
++
++// This is a modified version of the ShilCheckSkill export. The purpose
++// of this function is to mimic the OSI % chance system crafting uses.
++function CraftCheckSkill(who, craft_skill, difficulty, points, report:=0)
++
++  difficulty := CDbl(difficulty);
++  points := CDbl(points);
++  if(difficulty == error)
++    return 0;
++  elseif(difficulty == 0.0)
++    return 1;
++  endif
++  var chance;
++  var GainCap := 1200;
++  // I'm Lazy. Change this later.
++  var effective := CDbl(AP_GetSkill(who, craft_skill));
++  var hunger  := CInt(GetObjProperty(who, &quot;hunger&quot;));
++  if(!hunger || hunger.errortext)
++    hunger := 2;
++  endif
++  case(hunger)
++     0: effective := (effective - 10.1); points := (points * 0.95);
++     1: effective := (effective + 20.1); points := (points * 1.05);
++     5:
++     6: effective := (effective - 15.1); points := (points * 0.95);
++     7:
++     8: effective := (effective - 20.1); points := (points * 0.97);
++     9:
++    10: effective := (effective - 40.1); points := (points * 0.95);
++  endcase
++  if(effective &lt; 0)
++    effective := 0.0;
++  endif
++  chance := (effective - difficulty) * 2.0 * 10.0;
++  var GainCheck := chance;
++  if(chance &lt; 0)
++    chance := 0;
++  elseif(chance &gt; 1000)
++    chance := 1000;
++  endif
++  if(report)
++    return Cdbl(chance/10.0);
++  endif
++  var temp_chance;
++  temp_chance := (effective - difficulty) * 2.5 + 500;
++  if(temp_chance &lt; 0)
++    temp_chance := 0;
++  elseif(temp_chance &gt; 1000)
++    temp_chance := 1000;
++  endif
++  if(points != 0)
++    points  := points * ((1000-temp_chance) / 1000);
++  endif
++  if(GainCheck &gt;= GainCap)
++    points := 0;
++  endif
++  if(RandomInt(1000) &lt; chance)
++    if(points &gt; 0)
++//      AwardPoints(who, craft_skill, points);
++    endif
++    return 1;
++  else
++    if(effective &lt; 10)
++      if(points &gt; 0)
++//        AwardPoints(who, craft_skill, points);
++      endif
++    endif
++    return 0;
++  endif
++endfunction
++
++// This is a modified version of the CraftCheckSkill. The purpose
++// of this function is to mimic the OSI % chance system exceptional.
++// This system is, .2% chance per .1 skill above the required skill (+30)
++// to craft the item as exceptional. Aidskill has been added to help
++// add a custom method for POL on this. Aidskills would be either
++// arms lore (as in with blacksmithy), or otherwise it is the
++// Secondary skill required to craft the item. See the config files
++// In the crafting pkgs for their layouts and the defining of them.
++function ExceptionalCraft(skill, reqd, aidskill:=0, report:=0);
++
++  if(!aidskill or aidskill.errortext)
++    aidskill := skill;
++  endif
++  skill := CDbl(skill);
++  reqd := CDbl(reqd) + 30.0;
++  var excmod := skill + (aidskill/3.3333333333333333333333333333333);
++  var chance := (excmod - reqd) * 2.0 * 10.0;
++  if(chance &lt; 0)
++    chance := 0;
++  elseif(chance &gt; 1000)
++    chance := 1000;
++  endif
++  if(report)
++    return Cdbl(chance/10.0);
++  endif
++  if(RandomInt(1000) &lt; chance)
++    return 1;
++  else
++    return 0;
++  endif
++
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/crafting/include/toolWear.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/toolWear.inc	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/systems/crafting/include/toolWear.inc	2005-09-29 23:45:05 UTC (rev 316)
+@@ -0,0 +1,71 @@
++// //$Id$
++
++function CheckToolWear (who, tool, craft_skill)
++  var swings := GetObjProperty(tool,&quot;swings&quot;);
++  if(!swings)
++    var mods := GetObjProperty(tool, &quot;durability&quot;);
++    var bonus := 0;
++    case(mods)
++      &quot;durable&quot;:        bonus := 10;
++      &quot;substantial&quot;:    bonus := 20;
++      &quot;massive&quot;:        bonus := 30;
++      &quot;fortified&quot;:      bonus := 40;
++      &quot;indestructable&quot;: bonus := 50;
++    endcase
++    swings := Cint(50 * tool.quality) + bonus;
++    SetObjProperty(tool,&quot;swings&quot;, swings);
++  endif
++  if(swings &lt;= 0)
++    DestroyItem(tool);
++    SendSysMessage(who,&quot;Your tool broke.&quot;);
++  else
++    var skill := AP_GetSkill(who, craft_skill);
++    if(skill &gt; 80)
++      skill := 80;
++    elseif(skill &lt; 20)
++      skill := 20;
++    endif
++    if((RandomInt(100)+1) &gt; skill)
++      if(tool.isa(POLCLASS_WEAPON))
++        if(tool.hp &gt; 1)
++          SetObjProperty(tool,&quot;swings&quot;, (swings - 1));
++          tool.hp := tool.hp - 1;
++        elseif((tool.hp &gt; tool.maxhp) or (tool.hp == 1))
++          SendSysMessage(who,&quot;Your tool broke.&quot;);
++          DestroyItem(tool);
++        endif
++      else
++        SetObjProperty(tool,&quot;swings&quot;, (swings - 1));
++      endif
++    endif
++  endif
++endfunction
++
++function SetToolDurability(who, tool, craft_skill)
++
++  var toolfile := ReadConfigFile(&quot;:*:itemdesc&quot;);
++  var toolscript := toolfile[tool.objtype].Script;
++
++  if(!toolscript.errortext)
++    if(!tool.isA(POLCLASS_CONTAINER) &amp;&amp; !tool.isA(POLCLASS_ARMOR))
++      var myskill := AP_GetSkill(who, craft_skill);
++      var swings := 0;
++      var mods := GetObjProperty(tool, &quot;durability&quot;);
++      var bonus := 0;
++      case(mods)
++        &quot;durable&quot;:        bonus := 10;
++        &quot;substantial&quot;:    bonus := 20;
++        &quot;massive&quot;:        bonus := 30;
++        &quot;fortified&quot;:      bonus := 40;
++        &quot;indestructable&quot;: bonus := 50;
++        default: bonus := 0;
++      endcase
++      swings := Cint(50 + myskill) + bonus;
++      SetObjProperty(tool, &quot;swings&quot;, swings);
++      if(!tool.quality or tool.quality == error)
++        tool.quality := 1.0;
++      endif
++    endif
++  endif
++
++endfunction
+
+Added: trunk/096/pkg/systems/crafting/method/toolWearMethod.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/method/toolWearMethod.inc	2005-09-29 23:19:04 UTC (rev 315)
++++ trunk/096/pkg/systems/crafting/method/toolWearMethod.inc	2005-09-29 23:45:05 UTC (rev 316)
+@@ -0,0 +1,71 @@
++// //$Id$
++
++exported function CheckToolWear (tool, who, craft_skill)
++  var swings := GetObjProperty(tool,&quot;swings&quot;);
++  if(!swings)
++    var mods := GetObjProperty(tool, &quot;durability&quot;);
++    var bonus := 0;
++    case(mods)
++      &quot;durable&quot;:        bonus := 10;
++      &quot;substantial&quot;:    bonus := 20;
++      &quot;massive&quot;:        bonus := 30;
++      &quot;fortified&quot;:      bonus := 40;
++      &quot;indestructable&quot;: bonus := 50;
++    endcase
++    swings := Cint(50 * tool.quality) + bonus;
++    SetObjProperty(tool,&quot;swings&quot;, swings);
++  endif
++  if(swings &lt;= 0)
++    DestroyItem(tool);
++    SendSysMessage(who,&quot;Your tool broke.&quot;);
++  else
++    var skill := AP_GetSkill(who, craft_skill);
++    if(skill &gt; 80)
++      skill := 80;
++    elseif(skill &lt; 20)
++      skill := 20;
++    endif
++    if((RandomInt(100)+1) &gt; skill)
++      if(tool.isa(POLCLASS_WEAPON))
++        if(tool.hp &gt; 1)
++          SetObjProperty(tool,&quot;swings&quot;, (swings - 1));
++          tool.hp := tool.hp - 1;
++        elseif((tool.hp &gt; tool.maxhp) or (tool.hp == 1))
++          SendSysMessage(who,&quot;Your tool broke.&quot;);
++          DestroyItem(tool);
++        endif
++      else
++        SetObjProperty(tool,&quot;swings&quot;, (swings - 1));
++      endif
++    endif
++  endif
++endfunction
++
++exported function SetToolDurability(tool, who, craft_skill)
++
++  var toolfile := ReadConfigFile(&quot;:*:itemdesc&quot;);
++  var toolscript := toolfile[tool.objtype].Script;
++
++  if(!toolscript.errortext)
++    if(!tool.isA(POLCLASS_CONTAINER) &amp;&amp; !tool.isA(POLCLASS_ARMOR))
++      var myskill := AP_GetSkill(who, craft_skill);
++      var swings := 0;
++      var mods := GetObjProperty(tool, &quot;durability&quot;);
++      var bonus := 0;
++      case(mods)
++        &quot;durable&quot;:        bonus := 10;
++        &quot;substantial&quot;:    bonus := 20;
++        &quot;massive&quot;:        bonus := 30;
++        &quot;fortified&quot;:      bonus := 40;
++        &quot;indestructable&quot;: bonus := 50;
++        default: bonus := 0;
++      endcase
++      swings := Cint(50 + myskill) + bonus;
++      SetObjProperty(tool, &quot;swings&quot;, swings);
++      if(!tool.quality or tool.quality == error)
++        tool.quality := 1.0;
++      endif
++    endif
++  endif
++
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000293.html">[Poldistro-svn] r315 - trunk/096/pkg/items/sysbook/book
+</A></li>
+	<LI>Next message: <A HREF="000295.html">[Poldistro-svn] r317 - in trunk/096/pkg/items/sysbook: book include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#294">[ date ]</a>
+              <a href="thread.html#294">[ thread ]</a>
+              <a href="subject.html#294">[ subject ]</a>
+              <a href="author.html#294">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

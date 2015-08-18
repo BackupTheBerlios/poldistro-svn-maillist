@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r609 - trunk/096/pkg/systems/spawnSystem/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r609%20-%20trunk/096/pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200510151111.j9FBBZCJ009847%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000578.html">
+   <LINK REL="Next"  HREF="000580.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r609 - trunk/096/pkg/systems/spawnSystem/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r609%20-%20trunk/096/pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200510151111.j9FBBZCJ009847%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r609 - trunk/096/pkg/systems/spawnSystem/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sat Oct 15 13:11:35 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000578.html">[Poldistro-svn] r608 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="000580.html">[Poldistro-svn] r610 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#579">[ date ]</a>
+              <a href="thread.html#579">[ thread ]</a>
+              <a href="subject.html#579">[ subject ]</a>
+              <a href="author.html#579">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-15 13:11:33 +0200 (Sat, 15 Oct 2005)
+New Revision: 609
+
+Modified:
+   trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+Log:
+Its kinda starting to work! ooooo
+
+Modified: trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2005-10-15 08:59:00 UTC (rev 608)
++++ trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2005-10-15 11:11:33 UTC (rev 609)
+@@ -8,6 +8,11 @@
+ 
+ unload_scripts(&quot;&quot;);
+ 
++// Used for button ranges
++const REALM_START	:= 0xA000;
++const REGION_START	:= 0xB000;
++const GROUP_START	:= 0xC000;
++
+ const START_ID		:= 0x1;
+ const ADD_REALM_BTN	:= 0x5;
+ const ADD_REGION_BTN	:= 0x6;
+@@ -30,6 +35,12 @@
+ 		if ( input )
+ 			if ( cur_menu == SHOW_REALMS_BTN )
+ 				input := BuildRealmListGump(who);
++			elseif ( cur_menu == SHOW_REGIONS_BTN )
++				if ( input &gt;= REGION_START )
++					input := BuildRegionInfoGump(who, cur_realm, cur_region);
++				else
++					input := BuildRegionListGump(who, cur_realm);
++				endif
+ 			endif
+ 		endif
+ 		
+@@ -37,6 +48,14 @@
+ 		
+ 		if ( !input )
+ 			break;
++		elseif ( input &gt;= REGION_START )
++			cur_menu := SHOW_REGIONS_BTN;
++			var region_list := SS_GetRegionsInRealm(cur_realm).keys();
++			cur_region := region_list[input-REGION_START];
++		elseif ( input &gt;= REALM_START )
++			cur_menu := SHOW_REGIONS_BTN;
++			var realm_list := SS_GetRealmNames();
++			cur_realm := realm_list[input-REALM_START];
+ 		elseif ( input == SHOW_REALMS_BTN )
+ 			cur_menu := SHOW_REALMS_BTN;
+ 		endif
+@@ -81,7 +100,7 @@
+ 	GFTextMid(gump, 145, 20, 485, 2100, &quot;Realm List&quot;);
+ 	var y_pos := 50;
+ 	foreach realm_name in realm_list
+-		GFAddButton(gump, 155, y_pos+3, 2117, 2118, GF_CLOSE_BTN, _realm_name_iter);
++		GFAddButton(gump, 155, y_pos+3, 2117, 2118, GF_CLOSE_BTN, (REALM_START+_realm_name_iter));
+ 		GFTextLine(gump, 175, y_pos, 2100, realm_name);
+ 		
+ 		y_pos := y_pos+20;
+@@ -99,7 +118,7 @@
+ 	GFTextMid(gump, 145, 20, 485, 2100, &quot;Region List [&quot;+realm_name+&quot;]&quot;);
+ 	var y_pos := 50;
+ 	foreach region_name in (region_list)
+-		GFAddButton(gump, 155, y_pos+3, 2117, 2118, GF_CLOSE_BTN, _region_name_iter);
++		GFAddButton(gump, 155, y_pos+3, 2117, 2118, GF_CLOSE_BTN, (REGION_START+_region_name_iter));
+ 		GFTextLine(gump, 175, y_pos, 2100, region_name);
+ 		
+ 		y_pos := y_pos+20;
+@@ -108,7 +127,6 @@
+ 	
+ 	var input := GFSendGump(who, gump);
+ 	return input[0];
+-	
+ endfunction
+ 
+ function BuildRegionInfoGump(who, realm_name, region_name)
+@@ -117,6 +135,10 @@
+ 	
+ 	GFTextMid(gump, 145, 20, 485, 2100, &quot;Region Information [&quot;+region_name+&quot;]&quot;);
+ 	
++	var coords := SS_GetRegionCoordinates(region_name);
++	GFTextLine(gump, 145, 45, 2100, &quot;Coordinates:&quot;);
++	GFTextEntry(gump, 230, 45, 200, 20, 2100, coords);
++	
+ 	var input := GFSendGump(who, gump);
+ 	return input[0];
+ endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000578.html">[Poldistro-svn] r608 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="000580.html">[Poldistro-svn] r610 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#579">[ date ]</a>
+              <a href="thread.html#579">[ thread ]</a>
+              <a href="subject.html#579">[ subject ]</a>
+              <a href="author.html#579">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

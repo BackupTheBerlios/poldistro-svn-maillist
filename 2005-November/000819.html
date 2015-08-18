@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r845 - trunk/096/pkg/skills/fishing
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r845%20-%20trunk/096/pkg/skills/fishing&In-Reply-To=%3C200511022023.jA2KNgJS024712%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000818.html">
+   <LINK REL="Next"  HREF="000820.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r845 - trunk/096/pkg/skills/fishing</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r845%20-%20trunk/096/pkg/skills/fishing&In-Reply-To=%3C200511022023.jA2KNgJS024712%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r845 - trunk/096/pkg/skills/fishing">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 21:23:42 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000818.html">[Poldistro-svn] r844 - in trunk/096: pkg/skills/meditation pkg/skills/mining pkg/skills/poisoning pkg/skills/removetrap pkg/skills/tailoring pkg/skills/taming pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking pkg/skills/veterinary pkg/systems/attributes/commands/test scripts/items
+</A></li>
+        <LI>Next message: <A HREF="000820.html">[Poldistro-svn] r846 - trunk/096/pkg/items/ministatues
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#819">[ date ]</a>
+              <a href="thread.html#819">[ thread ]</a>
+              <a href="subject.html#819">[ subject ]</a>
+              <a href="author.html#819">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-02 21:23:42 +0100 (Wed, 02 Nov 2005)
+New Revision: 845
+
+Modified:
+   trunk/096/pkg/skills/fishing/fishing.src
+   trunk/096/pkg/skills/fishing/fishingFunctions.inc
+Log:
+Someone broke it changing ATTRIBUTE_FISHING to FISHING.
+
+Modified: trunk/096/pkg/skills/fishing/fishing.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishing.src	2005-11-02 20:18:08 UTC (rev 844)
++++ trunk/096/pkg/skills/fishing/fishing.src	2005-11-02 20:23:42 UTC (rev 845)
+@@ -86,7 +86,7 @@
+ 				SendSysMessage(who, &quot;There doesn't seem to be any fish here.&quot;);
+ 				return 0;
+ 			endif
+-			if( SkillCheck(who, FISHING, difficulty) &gt; 0)
++			if( SkillCheck(who, ATTRIBUTE_FISHING, difficulty) &gt; 0)
+ 				var fishreturned := HarvestResource(&quot;fish&quot;, targetsquare.x, targetsquare.y, 1, 1, who.realm);
+ 				if( !fishreturned )
+ 					SendSysMessage(who, &quot;Oops, you let that one get away!&quot;);
+@@ -111,7 +111,7 @@
+ function GetTheCatch(who, targetsquare, fishingpole)
+ 
+ 	var fishtype;
+-	var currentskill := AP_GetSkill(who, FISHING);
++	var currentskill := AP_GetSkill(who, ATTRIBUTE_FISHING);
+ 	var thisone := RandomInt(100)+ 1;
+ 	if(thisone &lt;= 94)
+ 		fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
+@@ -161,7 +161,7 @@
+ 		endif
+ 	else
+ 		if( CreateItemInContainer(who.backpack, fishtype, 1) )
+-			CheckToolWear (who, fishingpole, FISHING);
++			CheckToolWear (who, fishingpole, ATTRIBUTE_FISHING);
+ 		endif
+         endif
+ 
+
+Modified: trunk/096/pkg/skills/fishing/fishingFunctions.inc
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishingFunctions.inc	2005-11-02 20:18:08 UTC (rev 844)
++++ trunk/096/pkg/skills/fishing/fishingFunctions.inc	2005-11-02 20:23:42 UTC (rev 845)
+@@ -188,7 +188,7 @@
+ function GetSOSTreasure(who, targetsquare, sosmsg)
+ 
+ 	targetsquare := targetsquare;
+-	if( SkillCheck(who, FISHING, 80, 200) &gt; 0 )
++	if( SkillCheck(who, ATTRIBUTE_FISHING, 80, 200) &gt; 0 )
+ 		var itemcfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+ 		var it, oldname;
+ 		if( RandomInt(100) &lt; 75 )
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000818.html">[Poldistro-svn] r844 - in trunk/096: pkg/skills/meditation pkg/skills/mining pkg/skills/poisoning pkg/skills/removetrap pkg/skills/tailoring pkg/skills/taming pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking pkg/skills/veterinary pkg/systems/attributes/commands/test scripts/items
+</A></li>
+	<LI>Next message: <A HREF="000820.html">[Poldistro-svn] r846 - trunk/096/pkg/items/ministatues
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#819">[ date ]</a>
+              <a href="thread.html#819">[ thread ]</a>
+              <a href="subject.html#819">[ subject ]</a>
+              <a href="author.html#819">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

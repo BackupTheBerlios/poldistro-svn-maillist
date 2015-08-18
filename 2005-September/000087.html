@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r105 - trunk/096/batchfiles
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r105%20-%20trunk/096/batchfiles&In-Reply-To=%3C200509130730.j8D7UVWF016920%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000086.html">
+   <LINK REL="Next"  HREF="000088.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r105 - trunk/096/batchfiles</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r105%20-%20trunk/096/batchfiles&In-Reply-To=%3C200509130730.j8D7UVWF016920%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r105 - trunk/096/batchfiles">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep 13 09:30:31 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000086.html">[Poldistro-svn] r104 - in trunk/096/pkg/mobiles/ai_brain: commands/gm complete/testnpc
+</A></li>
+        <LI>Next message: <A HREF="000088.html">[Poldistro-svn] r106 - trunk/096/pkg/systems/merchantnodes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#87">[ date ]</a>
+              <a href="thread.html#87">[ thread ]</a>
+              <a href="subject.html#87">[ subject ]</a>
+              <a href="author.html#87">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-13 09:30:30 +0200 (Tue, 13 Sep 2005)
+New Revision: 105
+
+Modified:
+   trunk/096/batchfiles/cleanup.bat
+Log:
+remove custom file type works now
+
+Modified: trunk/096/batchfiles/cleanup.bat
+===================================================================
+--- trunk/096/batchfiles/cleanup.bat	2005-09-11 13:46:58 UTC (rev 104)
++++ trunk/096/batchfiles/cleanup.bat	2005-09-13 07:30:30 UTC (rev 105)
+@@ -15,7 +15,7 @@
+ ECHO  [ e ] - Remove *.lst files
+ ECHO  [ f ] - Remove *.dbg files
+ ECHO  [ g ] - Remove *.dbg.txt
+-ECHO  [ h ] - Remove other (disabled)
++ECHO  [ h ] - Remove other
+ ECHO.
+ ECHO  [ x ] - Back
+ 
+@@ -29,6 +29,7 @@
+ IF /i &quot;%CMD%&quot; == &quot;e&quot; SET REMOVE_TYPE=*.lst
+ IF /i &quot;%CMD%&quot; == &quot;f&quot; SET REMOVE_TYPE=*.dbg
+ IF /i &quot;%CMD%&quot; == &quot;g&quot; SET REMOVE_TYPE=*.dbg.txt
++IF /i &quot;%CMD%&quot; == &quot;h&quot; GOTO DELETE_CUSTOM()
+ IF /i &quot;%CMD%&quot; == &quot;x&quot; GOTO :QUIT()
+ 
+ IF NOT &quot;%REMOVE_TYPE%&quot;==&quot;&quot; GOTO REMOVE()
+@@ -44,8 +45,13 @@
+ 
+ REM -- REMOVE FUNCTION()
+ :REMOVE()
+-DEL /S %REMOVE_TYPE%
++IF NOT &quot;%REMOVE_TYPE%&quot;==&quot;&quot; DEL /S %REMOVE_TYPE%
+ GOTO RETURN_TO_MENU()
+ 
++REM -- DELETE_CUSTOM FUNCTION()
++:DELETE_CUSTOM()
++SET /p REMOVE_TYPE=File type to remove (e.g. *.bak or orphans.txt):
++GOTO REMOVE()
++
+ REM -- QUIT() FUNCTION
+ :QUIT()
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000086.html">[Poldistro-svn] r104 - in trunk/096/pkg/mobiles/ai_brain: commands/gm complete/testnpc
+</A></li>
+	<LI>Next message: <A HREF="000088.html">[Poldistro-svn] r106 - trunk/096/pkg/systems/merchantnodes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#87">[ date ]</a>
+              <a href="thread.html#87">[ thread ]</a>
+              <a href="subject.html#87">[ subject ]</a>
+              <a href="author.html#87">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

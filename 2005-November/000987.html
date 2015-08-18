@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1014 - trunk/096/pkg/mobiles/brainAI/bundled/banker
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1014%20-%20trunk/096/pkg/mobiles/brainAI/bundled/banker&In-Reply-To=%3C200511191141.jAJBfiNZ031114%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000986.html">
+   <LINK REL="Next"  HREF="000988.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1014 - trunk/096/pkg/mobiles/brainAI/bundled/banker</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1014%20-%20trunk/096/pkg/mobiles/brainAI/bundled/banker&In-Reply-To=%3C200511191141.jAJBfiNZ031114%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1014 - trunk/096/pkg/mobiles/brainAI/bundled/banker">austin at berlios.de
+       </A><BR>
+    <I>Sat Nov 19 12:41:44 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000986.html">[Poldistro-svn] r1013 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="000988.html">[Poldistro-svn] r1015 - in trunk/096/pkg/items/hair: . config hairdye
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#987">[ date ]</a>
+              <a href="thread.html#987">[ thread ]</a>
+              <a href="subject.html#987">[ subject ]</a>
+              <a href="author.html#987">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-19 12:41:33 +0100 (Sat, 19 Nov 2005)
+New Revision: 1014
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/bundled/banker/listen.src
+Log:
+Supports withdrawl and check commands now.
+
+Modified: trunk/096/pkg/mobiles/brainAI/bundled/banker/listen.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/banker/listen.src	2005-11-16 07:45:16 UTC (rev 1013)
++++ trunk/096/pkg/mobiles/brainAI/bundled/banker/listen.src	2005-11-19 11:41:33 UTC (rev 1014)
+@@ -5,6 +5,7 @@
+ include &quot;:brainAI:npcNerves&quot;;
+ include &quot;:brainAI:npcCommands&quot;;
+ include &quot;:containers:storageAreas&quot;;
++include &quot;:containers:containers&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+@@ -13,7 +14,7 @@
+ 	//var settings	:= params[4];
+ 	//var scripts	:= params[5];
+ 	params := 0; // Not needed anymore.
+-	
++
+ 	while ( npc )
+ 		if ( event )
+ 			case ( event.type )
+@@ -23,19 +24,19 @@
+ 				default:
+ 					break;
+ 			endcase
+-			
++
+ 			event := 0;
+ 		endif
+-		
++
+ 		sleepms(5);
+ 		event := wait_for_event(100000);
+ 	endwhile
+ endprogram
+ 
+ function SpeechEvent(npc, byref event)
+-	var text := event.text;
++	var text := Lower(event.text);
+ 	var source := event.source;
+-	
++
+ 	if ( source.IsA(POLCLASS_NPC) )
+ 		// Remember - NPCs can send speech events now.
+ 		return 0;
+@@ -43,20 +44,58 @@
+ 		// No line of sight - ignore speech.
+ 		return 0;
+ 	endif
+-	
++
++	// Support for regional banking.
++	// Example: Seperate bank boxes for Britain, Trinsic, Moonglow, etc.
+ 	var bank_region := GetObjProperty(npc, &quot;StorageArea&quot;);
+ 	if ( !bank_region )
+ 		bank_region := CP_DEFAULT_AREA;
+ 	endif
+-	
++
+ 	var bank_box := CP_GetStorageContainerForMobile(source, bank_region, CP_CREATE);
+ 	if ( text[&quot;bank&quot;] || text[&quot;box&quot;] )
+-		AI_Turn(npc, source, NETURN_TOWARD);		
++		AI_Turn(npc, source, NETURN_TOWARD);
+ 		SendOpenSpecialContainer(source, bank_box);
++	elseif ( text[&quot;withdrawl &quot;] )
++		WithdrawlGold(npc, source, bank_box, text);
++	elseif ( text[&quot;check &quot;] )
++		var amount := FindAmountInSpeech(&quot;check&quot;, text);
++		CheckGoldAmount(npc, bank_box, amount);
+ 	endif
+-	// To-do:
+-	// Gold withdrawl and deposit support?
+-	//	
+-	
++
+ 	return 1;
+ endfunction
++
++function WithdrawlGold(npc, who, bank_box, byref text)
++	var amount := FindAmountInSpeech(&quot;withdrawl&quot;, text);
++	if ( !CheckGoldAmount(npc, bank_box, amount) )
++		return 0;
++	endif
++
++	ConsumeSubstance(bank_box, GetObjTypeByName(&quot;GoldCoin&quot;), amount);
++	CreateItemInBackPack(who, &quot;GoldCoin&quot;, amount);
++
++	return 1;
++endfunction
++
++function CheckGoldAmount(npc, bank_box, amount)
++	var total_gold := AmountInContainer(bank_box, GetObjTypeByName(&quot;GoldCoin&quot;));
++	if ( amount == 0 )
++		AI_Speak(npc, &quot;Everyone has atleast zero gold!&quot;);
++		return 0;
++	elseif ( amount &gt; total_gold )
++		AI_Speak(npc, &quot;You do not have that much gold in your box.&quot;);
++		return 0;
++	else
++		AI_Speak(npc, &quot;You have enough gold.&quot;);
++		return 1;
++	endif
++endfunction
++
++function FindAmountInSpeech(key, text)
++	var key_pos := Find(text, key, 1);
++	text[1, (key_pos+Len(key))] := &quot;&quot;;
++
++	text := SplitWords(text);
++	return CInt(text[1]);
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000986.html">[Poldistro-svn] r1013 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="000988.html">[Poldistro-svn] r1015 - in trunk/096/pkg/items/hair: . config hairdye
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#987">[ date ]</a>
+              <a href="thread.html#987">[ thread ]</a>
+              <a href="subject.html#987">[ subject ]</a>
+              <a href="author.html#987">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,1324 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r402 - in trunk/096: pkg/commands/gm pkg/utils/datafile/include scripts/misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r402%20-%20in%20trunk/096%3A%20pkg/commands/gm%20pkg/utils/datafile/include%20scripts/misc&In-Reply-To=%3C200510040933.j949XTeh027328%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000379.html">
+   <LINK REL="Next"  HREF="000381.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r402 - in trunk/096: pkg/commands/gm pkg/utils/datafile/include scripts/misc</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r402%20-%20in%20trunk/096%3A%20pkg/commands/gm%20pkg/utils/datafile/include%20scripts/misc&In-Reply-To=%3C200510040933.j949XTeh027328%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r402 - in trunk/096: pkg/commands/gm pkg/utils/datafile/include scripts/misc">panosl at berlios.de
+       </A><BR>
+    <I>Tue Oct  4 11:33:29 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000379.html">[Poldistro-svn] r401 - in trunk/096/pkg/items/mounts: . commands commands/seer config include
+</A></li>
+        <LI>Next message: <A HREF="000381.html">[Poldistro-svn] r403 - in trunk/096/pkg/commands: coun gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#380">[ date ]</a>
+              <a href="thread.html#380">[ thread ]</a>
+              <a href="subject.html#380">[ subject ]</a>
+              <a href="author.html#380">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-10-04 11:33:15 +0200 (Tue, 04 Oct 2005)
+New Revision: 402
+
+Removed:
+   trunk/096/pkg/commands/gm/res.src
+Modified:
+   trunk/096/pkg/commands/gm/resme.src
+   trunk/096/pkg/utils/datafile/include/datafile.inc
+   trunk/096/scripts/misc/boat.src
+   trunk/096/scripts/misc/chrdeath.src
+   trunk/096/scripts/misc/dblclickself.src
+   trunk/096/scripts/misc/death.src
+   trunk/096/scripts/misc/logoff.src
+   trunk/096/scripts/misc/logofftest.src
+   trunk/096/scripts/misc/logon.src
+   trunk/096/scripts/misc/oncreate.src
+   trunk/096/scripts/misc/ondelete.src
+   trunk/096/scripts/misc/reconnect.src
+   trunk/096/scripts/misc/skillwin.src
+Log:
+
+
+Deleted: trunk/096/pkg/commands/gm/res.src
+===================================================================
+--- trunk/096/pkg/commands/gm/res.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/pkg/commands/gm/res.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,19 +0,0 @@
+-use uo;
+-
+-include &quot;include/res&quot;;
+-include &quot;include/client&quot;;
+-include &quot;include/resPenalty&quot;;
+-
+-program textcmd_res(speaker)
+-  var tgt := TargetCoordinates(speaker);
+-  if(tgt.mobile)
+-    if(tgt.mobile.dead)
+-	  if(ResNow(tgt.mobile)==1)
+-        Resurrect(tgt.mobile);
+-    	ResPenalties(tgt.mobile);
+-      endif
+-    else
+-      SendSysMessage(speaker, &quot;But that's not dead!&quot;);
+-    endif
+-  endif
+-endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/commands/gm/resme.src
+===================================================================
+--- trunk/096/pkg/commands/gm/resme.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/pkg/commands/gm/resme.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,3 +1,9 @@
++/* $Id$
++ *
++ * TODO
++ * Wait for Austin to implement the corpse method/member.
++ *
++ */
+ use os;
+ use uo;
+ use boat;
+@@ -2,27 +8,23 @@
+ 
++include &quot;include/messages&quot;;
++include &quot;include/localization&quot;;
+ 
+-program textcmd_resme( who )
+-  if(who.dead)
+-    Resurrect( who );
+-    foreach item in ListItemsNearLocation(who.x, who.y, who.z, 0, who.realm)
+-      if(GetObjProperty(item,&quot;serial&quot;) == who.serial)
+-//        foreach thing in ListEquippedItems(who)
+-//          if(thing.objtype == 0x1f03)
+-//            MoveItemToContainer(thing, who.backpack);
+-//          endif
+-//        endforeach
+-//        foreach thing in ListEquippedItems(item)
+-//          equipitem(who, thing);
+-//        endforeach
+-        foreach thing in EnumerateItemsInContainer(item)
+-          if(thing.container == item)
+-            MoveItemToContainer(thing, who.backpack);
+-          endif
+-        endforeach
+-      endif
+-      break;
+-    endforeach
+-  else
+-    SendSysMessage( who, &quot;But I'm not dead yet!&quot; );
+-  endif
++
++program command_res(who, params)
++	if (!params)
++		//
++	elseif (params == &quot;me&quot;)
++		//
++		if (!who.dead)
++			SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
++		else
++			SendSysMessage(who, CStr(body));
++			Resurrect(who);
++			DestroyItem(body);
++		endif
++	else
++		SendMessage(who, MSG_USE_HELP, array{&quot;res&quot;}, MSG_COMMAND);
++	endif
++
++	return;
+ endprogram
+
+Modified: trunk/096/pkg/utils/datafile/include/datafile.inc
+===================================================================
+--- trunk/096/pkg/utils/datafile/include/datafile.inc	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/pkg/utils/datafile/include/datafile.inc	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,3 +1,26 @@
++/* $Id$
++ *
++ * Purpose
++ * TODO
++ *
++ * Function List *
++ * DFFindElement(byref file_ref, elem_name, create)
++ * DFGetElemNames(byref file_ref)
++ * DFGetElemProps(elem_ref)
++ * DFGetProp(byref elem_ref, prop_name, create, assign_val)
++ * DFOpenDataFile(file_name, create, flags)
++ * CfgToDF(cfg_name, df_name, propnames)
++ * DFToCfg(df_name, cfg_name)
++ *
++ * Private Function List *
++ * DF_OutPut(text)
++ *
++ * Global Variables *
++ * Datafile.em constants
++ * const DF_KEYTYPE_STRING       := 0x00; // default
++ * const DF_KEYTYPE_INTEGER      := 0x01;
++ *
++ */
+ use uo;
+ use os;
+ use basic;
+@@ -4,68 +27,14 @@
+ use cfgfile;
+ use datafile;
+ 
+-/*===============================================================
+-* Current Version
+-* DATAFILE.INC - v2.0
+-* Updated 9/17/2005 5:04AM
+-*
+-* include &quot;:datafile:include/datafile&quot;;
+-*
+-* -- Revision v2.0 --
+-* Austin:
+-*  Changed:
+-*	Now a package, rather than loose include file.
+-*	Cleaned up to match new distro comment, code and package directory structure standards.
+-*
+-* -- Revision 1.3 --
+-* Austin:
+-*  Added:
+-*	Global variable called 'DF_DEBUG_MODE'
+-*		Setting it to 0 in your script will make the functions
+-*		no longer SysLog() information to the console. By default
+-*		it is enabled.
+-*
+-*  Fixed:
+-*	Bug in DFSetProp() when I improved the .errortext return stuff.
+-*
+-* -- Revision 1.2 --
+-* Austin
+-*  Added:
+-*	Flags option for DFOpenDataFile()
+-*	DFGetElemNames()
+-*
+-*  Changed:
+-*	Changed the error stuff, to return .errortext
+-===============================================================*/
+-
+-/////////////////////////////////////////////////////////////////
+-// * Function List *
+-// DFFindElement(byref file_ref, elem_name, create)
+-// DFGetElemNames(byref file_ref)
+-// DFGetElemProps(elem_ref)
+-// DFGetProp(byref elem_ref, prop_name, create, assign_val)
+-// DFOpenDataFile(file_name, create, flags)
+-//
+-// CfgToDF(cfg_name, df_name, propnames)
+-// DFToCfg(df_name, cfg_name)
+-//
+-/////////////////////////////////////////////////////////////////
+-// * Internal/Private Function List *
+-// DF_OutPut(text)
+-//
+-/////////////////////////////////////////////////////////////////
+-// * Global Variables *
+-//
+-// Datafile.em constants
+-// const DF_KEYTYPE_STRING       := 0x00; // default
+-// const DF_KEYTYPE_INTEGER      := 0x01;
+-//
+ // Determines if a file or elem will be created when a read attempt is made.
+ const DF_NO_CREATE	:= 0;
+ const DF_CREATE		:= 1;
++
+ // Set to 0 in your script to turn off SysLog() calls.
+ var DF_DEBUG_MODE	:= 1;
+ 
++
+ /*
+  * DFOpenDataFile(filename, create, flags)
+  *
+@@ -102,6 +71,7 @@
+ 	endif
+ endfunction
+ 
++
+ /*
+  * DFGetElemNames(byref file_ref)
+  *
+@@ -126,6 +96,7 @@
+ 	endif
+ endfunction
+ 
++
+ /*
+  * DFFindElement(byref file_ref, elem_name, create)
+  *
+@@ -160,6 +131,7 @@
+ 	endif
+ endfunction
+ 
++
+ /*
+  * DFGetElemProps(byref elem_ref)
+  *
+@@ -184,6 +156,7 @@
+ 	endif
+ endfunction
+ 
++
+ /*
+  * DFGetProp(byref elem_ref, prop_name, create, assign_val)
+  *
+@@ -222,6 +195,7 @@
+ 	endif
+ endfunction
+ 
++
+ //===============================================================
+ /*
+ // -=Experimental Function=-
+@@ -271,6 +245,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+ // -=Experimental Function=-
+ // Convert a config file to a data file.
+@@ -334,6 +309,7 @@
+ 	return 1;
+ endfunction
+ 
++
+ /*
+  * DF_OutPut(text)
+  *
+
+Modified: trunk/096/scripts/misc/boat.src
+===================================================================
+--- trunk/096/scripts/misc/boat.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/boat.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,11 +1,19 @@
+-/////////////////////////////////////////////////////////////////////////////
+-// The boat control script has been moved into the 'boat' package
+-// which can be found in pkg/std/boat
+-/////////////////////////////////////////////////////////////////////////////
+-
++/* $Id$
++ *
++ * Purpose
++ * This script acts as a control script for a boat. Use it for navigation commands 
++ * (e.g. the tillerman control script), boat decay, etc.
++ *
++ * Note
++ * The boat control script has been moved into the 'boat' package
++ * which can be found in /pkg/systems/boat/
++ *
++ */
+ use os;
+ 
+-program autostart_boat( param )
+-	start_script( &quot;:boat:boat&quot;, param );
++
++program autostart_boat(param)
++	start_script(&quot;:boat:boat&quot;, param);
++
++	return;
+ endprogram
+-
+
+Modified: trunk/096/scripts/misc/chrdeath.src
+===================================================================
+--- trunk/096/scripts/misc/chrdeath.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/chrdeath.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,3 +1,11 @@
++/* $Id$
++ *
++ * Purpose
++ * This script allows side effects to be triggered as a result of Player death,
++ * like unmounting players off their mount, allowing ghosts to report their murderer,
++ * Auto-Resurrect choices, etc.
++ *
++ */
+ use uo;
+ use os;
+ use util;
+@@ -3,69 +11,74 @@
+ 
+ include &quot;:npcutils:NPCBackpacks&quot;;
+-include &quot;include/attributes&quot;;
++//include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ include &quot;include/statMod&quot;;
+ include &quot;include/noto&quot;;
+ include &quot;include/reportMurder&quot;;
+ 
+-program chrdeath(corpse,ghost)
+-  EraseObjProperty(ghost, &quot;IsMeditating&quot;);
+-//  ghost.SetPoisoned(0);
+-  var killer := GetObjProperty(ghost, &quot;LastHit&quot;);
+-  if(killer != error)
+-    AdjustNoto((SystemFindObjectBySerial(killer[2], SYSFIND_SEARCH_OFFLINE_MOBILES)), ghost);
+-  endif
+-  var fame := CInt(GetObjProperty(ghost, &quot;Fame&quot;));
+-  fame := (fame - CInt(fame / 20));
+-  SetObjProperty(ghost, &quot;Fame&quot;, fame);
+-  SetObjProperty(corpse,&quot;serial&quot;, ghost.serial);
+-  dismount(corpse);
+-  CheckForAutoRes(ghost, corpse);
+-  var corpsenamearray := SplitWords(corpse.name);
+-  var corpsenamearraylen := len(corpsenamearray);
+-  var x, corpsename := &quot;&quot;;
+-  for (x := 4; x &lt;= corpsenamearraylen; x := x + 1)
+-    corpsename := corpsename + &quot; &quot; + corpsenamearray[x];
+-  endfor
+-  if(len(ghost.reportables)&gt;0)
+-	SendReportGump(ghost);
+-  endif
++
++program core_chrDeath(corpse, ghost)
++	EraseObjProperty(ghost, &quot;IsMeditating&quot;);
++	//  ghost.SetPoisoned(0);
++  	var killer := GetObjProperty(ghost, &quot;LastHit&quot;);
++  	if (killer != error)
++		AdjustNoto((SystemFindObjectBySerial(killer[2], SYSFIND_SEARCH_OFFLINE_MOBILES)), ghost);
++	endif
++	var fame := CInt(GetObjProperty(ghost, &quot;Fame&quot;));
++	fame := (fame - CInt(fame / 20));
++	SetObjProperty(ghost, &quot;Fame&quot;, fame);
++	SetObjProperty(corpse,&quot;serial&quot;, ghost.serial);
++	dismount(corpse);
++	CheckForAutoRes(ghost, corpse);
++	var corpsenamearray := SplitWords(corpse.name);
++	var corpsenamearraylen := len(corpsenamearray);
++	var x, corpsename := &quot;&quot;;
++	for (x := 4; x &lt;= corpsenamearraylen; x := x + 1)
++		corpsename := corpsename + &quot; &quot; + corpsenamearray[x];
++	endfor
++	if (len(ghost.reportables) &gt; 0)
++		SendReportGump(ghost);
++	endif
+ endprogram
+ 
++
+ function CheckForAutoRes(who, corpse)
+-  if(CInt(GetObjProperty(corpse, &quot;AutoRes&quot;)) == 1)
+-	Resurrect(who);
+-	SetHp(who, GetMaxHP(who));
+-	SetMana(who, GetMaxMana(who));
+-	SetStamina(who, GetMaxStamina(who));
+-	var mypack := who.backpack;
+-    if(!mypack)
+-      return;
+-    endif
+-	foreach thing in EnumerateItemsInContainer(corpse)
+-	  if(thing.container == corpse)
+-	    if(!EquipItem(who, thing))
+-		  MoveItemToContainer(thing, mypack);
+-	    endif
+-	  endif
+-	endforeach
+-  endif
++	if(CInt(GetObjProperty(corpse, &quot;AutoRes&quot;)) == 1)
++		Resurrect(who);
++		AP_RefreshVitals(who);	
++		var mypack := who.backpack;
++		if (!mypack)
++			return;
++		endif
++		foreach thing in EnumerateItemsInContainer(corpse)
++			if (thing.container == corpse)
++				if (!EquipItem(who, thing))
++					MoveItemToContainer(thing, mypack);
++				endif
++			endif
++		endforeach
++	endif
++
++	return;
+ endfunction
+ 
+ function dismount(corpse)
+-  var mount := GetEquipmentByLayer( corpse, 25 );
+-  foreach item in EnumerateItemsInContainer(corpse)
+-	if (item.objtype == 0xf021)
+-	  mount := item;
+-	  break;
++	var mount := GetEquipmentByLayer( corpse, 25 );
++	foreach item in EnumerateItemsInContainer(corpse)
++		if (item.objtype == 0xf021)
++			mount := item;
++			break;
++		endif
++	endforeach
++	if (!mount)
++		return;
+ 	endif
+-  endforeach
+-  if (!mount)
++	var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
++	animal.facing := corpse.facing;
++	EraseObjProperty(animal, &quot;mounted&quot;);
++	EraseObjProperty(animal, &quot;mounted_on&quot;);
++	MoveCharacterToLocation( animal, corpse.x, corpse.y, corpse.z, MOVECHAR_FORCELOCATION);
++	DestroyItem(mount);
++
+ 	return;
+-  endif
+-  var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
+-  animal.facing := corpse.facing;
+-  EraseObjProperty(animal, &quot;mounted&quot;);
+-  EraseObjProperty(animal, &quot;mounted_on&quot;);
+-  MoveCharacterToLocation( animal, corpse.x, corpse.y, corpse.z, MOVECHAR_FORCELOCATION);
+-  DestroyItem(mount);
+-endfunction
+\ No newline at end of file
++endfunction
+
+Modified: trunk/096/scripts/misc/dblclickself.src
+===================================================================
+--- trunk/096/scripts/misc/dblclickself.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/dblclickself.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,3 +1,10 @@
++/* $Id$
++ *
++ * Purpose
++ * This script allows an alternate behavior other than the default 'open paperdoll' behavior.
++ * Useful for things like dismounting.
++ *
++ */
+ use uo;
+ use os;
+ use npc;
+@@ -6,7 +13,8 @@
+ include &quot;include/client&quot;;
+ include &quot;:mounts:mounts&quot;;
+ 
+-program dblClickSelf(who)
++
++program core_dblClickSelf(who)
+ 	var mount := GetEquipmentByLayer(who, LAYER_MOUNT);
+ 	if ( mount &amp;&amp; !who.warmode )
+ 		return MP_Unmount(who);
+
+Modified: trunk/096/scripts/misc/death.src
+===================================================================
+--- trunk/096/scripts/misc/death.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/death.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,3 +1,11 @@
++/* $Id$
++ *
++ * Purpose
++ * This script allows side effects to be triggered as a result of NPC death, like unmounting
++ * players off their dying mount, playing death sounds, etc. This script is common for all NPCs,
++ * and is called for each.
++ *
++ */
+ use uo;
+ use os;
+ use util;
+@@ -11,158 +19,160 @@
+ var cfg := ReadConfigFile(&quot;npcdesc&quot;);
+ 
+ 
+-program npcDeath(corpse)
++program core_npcDeath(corpse)
++	// if he had things to restock, destroy them, he's dead now.
++	if (GetObjProperty(corpse, &quot;restockserial&quot;))
++		var stocklist := SystemFindObjectBySerial(CInt(GetObjProperty(corpse, &quot;restockserial&quot;)));
++		DestroyItem(stocklist);
++	endif
+ 
+-  // if he had things to restock, destroy them, he's dead now.
+-  if(GetObjProperty(corpse, &quot;restockserial&quot;))
+-    var stocklist := SystemFindObjectBySerial(CInt(GetObjProperty(corpse, &quot;restockserial&quot;)));
+-    DestroyItem(stocklist);
+-  endif
++	// give noto and fame to the killer as appropriate.
++	var killer := GetObjProperty(corpse, &quot;LastHit&quot;);
++	if ((killer != error) &amp;&amp; (!GetObjProperty(corpse, &quot;guardkill&quot;)))
++		var kwho := SystemFindObjectBySerial(killer[2], SYSFIND_SEARCH_OFFLINE_MOBILES);
++		AdjustNoto(kwho, corpse);
+ 
+-  // give noto and fame to the killer as appropriate.
+-  var killer := GetObjProperty(corpse, &quot;LastHit&quot;);
+-  if((killer != error) &amp;&amp; (!GetObjProperty(corpse, &quot;guardkill&quot;)))
+-    var kwho := SystemFindObjectBySerial(killer[2], SYSFIND_SEARCH_OFFLINE_MOBILES);
+-    AdjustNoto(kwho, corpse);
+-    
+-    // If killer was provoked, give noto to provoker
+-    var provoked := array;
+-    provoked := GetObjProperty(kwho, &quot;Provoked&quot;); 
+-    if(provoked) 
+-      kwho := SystemFindObjectBySerial(provoked[2], SYSFIND_SEARCH_OFFLINE_MOBILES);
+-      AdjustNoto(kwho, corpse);
+-      EraseObjProperty(killer[2], &quot;Provoked&quot;);
+-    endif
+-  endif
++		// If killer was provoked, give noto to provoker
++		var provoked := array;
++		provoked := GetObjProperty(kwho, &quot;Provoked&quot;); 
++		if (provoked) 
++			kwho := SystemFindObjectBySerial(provoked[2], SYSFIND_SEARCH_OFFLINE_MOBILES);
++			AdjustNoto(kwho, corpse);
++			EraseObjProperty(killer[2], &quot;Provoked&quot;);
++		endif
++	endif
+ 
+-  // A convoluted way to dismount the dead, if it was a player.
+-  var char;
+-  var mounted_char;
+-  var onchars := EnumerateOnlineCharacters();
+-  if(GetObjProperty(corpse,&quot;mounted&quot;))
+-    char := GetObjProperty(corpse,&quot;mounted_on&quot;);
+-    foreach person in onchars
+-      if(person.serial == CInt(char))
+-        mounted_char := person;
+-        break;
+-      endif
+-    endforeach
+-    dismountme(mounted_char, corpse);
+-  endif
++	// A convoluted way to dismount the dead, if it was a player.
++	var char;
++	var mounted_char;
++	var onchars := EnumerateOnlineCharacters();
++	if (GetObjProperty(corpse,&quot;mounted&quot;))
++		char := GetObjProperty(corpse,&quot;mounted_on&quot;);
++		foreach person in onchars
++			if (person.serial == CInt(char))
++				mounted_char := person;
++				break;
++			endif
++		endforeach
++		dismountme(mounted_char, corpse);
++	endif
+ 
+-  // Play the death sound!
+-  var elem := GetObjProperty(corpse, &quot;npctemplate&quot;);
+-  var deathsound := 0;
+-  var graphic := GetObjProperty(corpse, &quot;Graphic&quot;);
+-  if((graphic != 0x190) &amp;&amp; (graphic != 0x191))
+-    deathsound := cfg[elem].&quot;deathsound&quot;;
+-    if (deathsound)
+-      PlaySoundEffect(corpse, deathsound);
+-    endif
+-  endif
++	// Play the death sound!
++	var elem := GetObjProperty(corpse, &quot;npctemplate&quot;);
++	var deathsound := 0;
++	var graphic := GetObjProperty(corpse, &quot;Graphic&quot;);
++	if ((graphic != 0x190) &amp;&amp; (graphic != 0x191))
++		deathsound := cfg[elem].&quot;deathsound&quot;;
++		if (deathsound)
++			PlaySoundEffect(corpse, deathsound);
++		endif
++	endif
+ 
+-  set_critical(1);
+-  // Dismount NPCs.
+-  dismount(corpse);
++	set_critical(1);
++	// Dismount NPCs.
++	dismount(corpse);
+ 
+-  // Tell spawnregion that the recently deceased is dead.
+-  Run_Script_To_Completion(&quot;:spawnregion:death&quot;, corpse);
+-  if(GetObjProperty(corpse, &quot;regspawn&quot;))
+-	var spawnname := GetObjProperty(corpse, &quot;regspawn&quot;);
+-	var numspawns := CInt(GetGlobalProperty(spawnname))-1;
+-	SetGlobalProperty(spawnname,numspawns);
+-  endif
+-  set_critical(0);
++	// Tell spawnregion that the recently deceased is dead.
++	Run_Script_To_Completion(&quot;:spawnregion:death&quot;, corpse);
++	if(GetObjProperty(corpse, &quot;regspawn&quot;))
++		var spawnname := GetObjProperty(corpse, &quot;regspawn&quot;);
++		var numspawns := CInt(GetGlobalProperty(spawnname))-1;
++		SetGlobalProperty(spawnname,numspawns);
++	endif
++	set_critical(0);
+ 
+-  // Destroy the corpse if it was guardkilled. No easy looting.
+-  if(GetObjProperty(corpse, &quot;guardkill&quot;))
+-    DestroyItem(corpse);
+-    return;
+-  endif
++	// Destroy the corpse if it was guardkilled. No easy looting.
++	if(GetObjProperty(corpse, &quot;guardkill&quot;))
++		DestroyItem(corpse);
++		return;
++	endif
+ 
+-  // Destroy weapons and armor on employee, though I'm not sure why,
+-  // and then move their backpack into their corpse.
+-  if(GetObjProperty(corpse,&quot;npctemplate&quot;) == &quot;employee&quot;)
+-    foreach thing in EnumerateItemsInContainer(corpse)
+-      if((thing.layer) &amp;&amp; (thing.isa(POLCLASS_WEAPON) || thing.isa(POLCLASS_ARMOR)))
+-        DestroyItem(thing);
+-      endif
+-    endforeach
+-  endif
+-  MoveBackpackToCorpse(corpse);
++	// Destroy weapons and armor on employee, though I'm not sure why,
++	// and then move their backpack into their corpse.
++	if (GetObjProperty(corpse,&quot;npctemplate&quot;) == &quot;employee&quot;)
++		foreach thing in EnumerateItemsInContainer(corpse)
++			if ((thing.layer) &amp;&amp; (thing.isa(POLCLASS_WEAPON) || thing.isa(POLCLASS_ARMOR)))
++				DestroyItem(thing);
++			endif
++		endforeach
++	endif
++	MoveBackpackToCorpse(corpse);
+   
+-  // Deal with playervendors
+-  if(GetObjProperty(corpse, &quot;npctemplate&quot;) == &quot;playervendor&quot;)
+-    var itemdesc := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-    var elm, dsc;
+-    foreach thing in EnumerateItemsInContainer(corpse)
+-      EraseObjProperty(thing, &quot;Vendored&quot;);
+-      if(GetObjProperty(thing, &quot;Vendor&quot;))
+-        DestroyItem(thing);
+-      else
+-        var oldname := GetObjProperty(thing, &quot;OldName&quot;);
+-        if(oldname)
+-          SetName(thing, oldname);
+-        else
+-          elm := FindConfigElem(itemdesc, thing.objtype);
+-          dsc := itemdesc[thing.objtype].desc;
+-          SetName(thing, dsc);
+-        endif
+-        EraseObjProperty(thing, &quot;Master&quot;);
+-        EraseObjProperty(thing, &quot;OldName&quot;);
+-        EraseObjProperty(thing, &quot;price&quot;);
+-      endif
+-    endforeach
+-  endif
++	// Deal with playervendors
++	if (GetObjProperty(corpse, &quot;npctemplate&quot;) == &quot;playervendor&quot;)
++		var itemdesc := ReadConfigFile(&quot;:*:itemdesc&quot;);
++		var elm, dsc;
++		foreach thing in EnumerateItemsInContainer(corpse)
++			EraseObjProperty(thing, &quot;Vendored&quot;);
++			if (GetObjProperty(thing, &quot;Vendor&quot;))
++				DestroyItem(thing);
++			else
++				var oldname := GetObjProperty(thing, &quot;OldName&quot;);
++				if (oldname)
++					SetName(thing, oldname);
++				else
++					elm := FindConfigElem(itemdesc, thing.objtype);
++					dsc := itemdesc[thing.objtype].desc;
++					SetName(thing, dsc);
++				endif
++				EraseObjProperty(thing, &quot;Master&quot;);
++				EraseObjProperty(thing, &quot;OldName&quot;);
++				EraseObjProperty(thing, &quot;price&quot;);
++			endif
++		endforeach
++	endif
+ 
+-  // summoned creatures leave no corpse
+-  if(GetObjProperty(corpse, &quot;summoned&quot;))
+-    DestroyItem(corpse);
+-  // if the creature has no corpse, move all the stuff in the corpse to the ground
+-  // and then destroy the corpse.
+-  elseif(GetObjProperty(corpse, &quot;nocorpse&quot;))
+-    foreach item in EnumerateItemsInContainer(corpse);
+-      MoveItemToLocation(item, corpse.x, corpse.y, corpse.z, MOVEITEM_FORCELOCATION);
+-    endforeach
+-    DestroyItem(corpse);
+-  else
+-    // This was here but I'm not sure what it was meant to do... doesn't so anything
+-    // right now, so I'm commenting out to remove the 'unused var' warning, but I'll
+-    // leave the code here in case anyone can figure out what it was meant for.
+-//    var corpseof := GetObjProperty(corpse,&quot;npctemplate&quot;);
+-  endif
++	// summoned creatures leave no corpse
++	if (GetObjProperty(corpse, &quot;summoned&quot;))
++		DestroyItem(corpse);
++		// if the creature has no corpse, move all the stuff in the corpse to the ground
++		// and then destroy the corpse.
++	elseif (GetObjProperty(corpse, &quot;nocorpse&quot;))
++		foreach item in EnumerateItemsInContainer(corpse);
++			MoveItemToLocation(item, corpse.x, corpse.y, corpse.z, MOVEITEM_FORCELOCATION);
++		endforeach
++		DestroyItem(corpse);
++	else
++	// This was here but I'm not sure what it was meant to do... doesn't so anything
++	// right now, so I'm commenting out to remove the 'unused var' warning, but I'll
++	// leave the code here in case anyone can figure out what it was meant for.
++	//    var corpseof := GetObjProperty(corpse,&quot;npctemplate&quot;);
++	endif
+   
+-  // This requires NPCKeeper. Destroy storage areas associated with the NPC.
+-  var theserial := CInt(GetObjProperty(corpse, &quot;AiSerial&quot;));
+-  var thestorage, inv_fs, inv_pb, inv_1c;
+-  var cont := &quot;Bankbox  &quot;+ Hex(theserial);
+-  thestorage := FindStorageArea(&quot;Tamed Storage&quot;);
+-  if(DestroyRootItemInStorageArea(thestorage, cont))
+-    print(&quot;Tamed storage for &quot;+ Hex(theserial) +&quot; destroyed.&quot;);
+-  else
+-    thestorage := FindStorageArea(&quot;Merchant Storage&quot;);
+-    inv_fs := theserial +&quot; FS&quot;;
+-    inv_pb := theserial +&quot; PB&quot;;
+-    inv_1c := theserial +&quot; 1C&quot;;
+-    if(DestroyRootItemInStorageArea(thestorage, inv_fs))
+-      DestroyRootItemInStorageArea(thestorage, inv_pb);
+-      DestroyRootItemInStorageArea(thestorage, inv_1c);
+-      print(&quot;Merchant storage for &quot;+ Hex(theserial) +&quot; destroyed.&quot;);
+-    endif
+-  endif 
+-  
++	// This requires NPCKeeper. Destroy storage areas associated with the NPC.
++	var theserial := CInt(GetObjProperty(corpse, &quot;AiSerial&quot;));
++	var thestorage, inv_fs, inv_pb, inv_1c;
++	var cont := &quot;Bankbox  &quot;+ Hex(theserial);
++	thestorage := FindStorageArea(&quot;Tamed Storage&quot;);
++	if (DestroyRootItemInStorageArea(thestorage, cont))
++		print(&quot;Tamed storage for &quot;+ Hex(theserial) +&quot; destroyed.&quot;);
++	else
++		thestorage := FindStorageArea(&quot;Merchant Storage&quot;);
++		inv_fs := theserial +&quot; FS&quot;;
++		inv_pb := theserial +&quot; PB&quot;;
++		inv_1c := theserial +&quot; 1C&quot;;
++		if (DestroyRootItemInStorageArea(thestorage, inv_fs))
++			DestroyRootItemInStorageArea(thestorage, inv_pb);
++			DestroyRootItemInStorageArea(thestorage, inv_1c);
++			print(&quot;Merchant storage for &quot;+ Hex(theserial) +&quot; destroyed.&quot;);
++		endif
++	endif 
++
++	return;
+ endprogram
+ 
++
+ function dismount(corpse)
+-	var mount := 0;GetEquipmentByLayer( corpse, 25 );
++	var mount := 0;
++	GetEquipmentByLayer( corpse, 25 );
+ 	foreach item in EnumerateItemsInContainer(corpse)
+-	  if (item.objtype == 0xf021)
+-		mount := item;
+-		break;
+-	  endif
++		if (item.objtype == 0xf021)
++			mount := item;
++			break;
++		endif
+ 	endforeach
+ 	if (!mount)
+-	  return;
++		return;
+ 	endif
+ 	var critter := &quot;&quot;;
+ 	case (mount.graphic)
+@@ -176,50 +186,57 @@
+ 	0x3ea5:	critter := &quot;forestostard&quot;;
+ 	endcase
+ 	if (mount.color == 1109)
+-	  critter := &quot;nightmare&quot;;
++		critter := &quot;nightmare&quot;;
+ 	endif
+-    if(!GetObjProperty(corpse,&quot;doppelganger&quot;))
+-	  var animal := CreateNpcFromTemplate(critter, corpse.x, corpse.y, corpse.z,0, corpse.realm);
+-	  animal.color := mount.color;
+-    endif
+-	DestroyItem( mount );
++	if (!GetObjProperty(corpse,&quot;doppelganger&quot;))
++		var animal := CreateNpcFromTemplate(critter, corpse.x, corpse.y, corpse.z,0, corpse.realm);
++		animal.color := mount.color;
++	endif
++	DestroyItem(mount);
++
++	return;
+ endfunction
+ 
++
+ function dismountme(who, corpse)
+-  var mount := GetEquipmentByLayer(who, 25 );
+-  var clone := GetObjProperty(corpse,&quot;npctemplate&quot;);
+-  var newcorpse := CreateNpcFromTemplate(clone, corpse.x, corpse.y, corpse.z, 0, corpse.realm);
+-  var serial := newcorpse.serial;
+-  SetObjProperty(newcorpse,&quot;myserial&quot;, serial);
+-  newcorpse.color := corpse.color;
+-  newcorpse.facing := who.facing;
+-  MoveCharacterToLocation(newcorpse, who.x, who.y, who.z, MOVECHAR_FORCELOCATION);
+-  var x := newcorpse.x;
+-  var y := newcorpse.y;
+-  var z := newcorpse.z;
+-  newcorpse.facing := who.facing;
+-  ApplyRawDamage(newcorpse, GetHp(newcorpse)+3);
+-  var contain;
+-  foreach cpse in ListItemsAtLocation(x, y, z, who.realm );
+-    if(CInt(GetObjProperty(cpse,&quot;myserial&quot;)) == serial)
+-      contain := cpse;
+-      break;
+-    endif
+-  endforeach
+-  contain.name := corpse.name;
+-  foreach item in ListRootItemsInContainer(corpse)
+-    MoveItemToContainer(item, contain);
+-  endforeach
+-  DestroyItem(corpse);
+-  DestroyItem(mount);
++	var mount := GetEquipmentByLayer(who, 25 );
++	var clone := GetObjProperty(corpse,&quot;npctemplate&quot;);
++	var newcorpse := CreateNpcFromTemplate(clone, corpse.x, corpse.y, corpse.z, 0, corpse.realm);
++	var serial := newcorpse.serial;
++	SetObjProperty(newcorpse,&quot;myserial&quot;, serial);
++	newcorpse.color := corpse.color;
++	newcorpse.facing := who.facing;
++	MoveCharacterToLocation(newcorpse, who.x, who.y, who.z, MOVECHAR_FORCELOCATION);
++	var x := newcorpse.x;
++	var y := newcorpse.y;
++	var z := newcorpse.z;
++	newcorpse.facing := who.facing;
++	ApplyRawDamage(newcorpse, GetHp(newcorpse)+3);
++	var contain;
++	foreach cpse in ListItemsAtLocation(x, y, z, who.realm );
++		if (CInt(GetObjProperty(cpse,&quot;myserial&quot;)) == serial)
++			contain := cpse;
++			break;
++		endif
++	endforeach
++	contain.name := corpse.name;
++	foreach item in ListRootItemsInContainer(corpse)
++		MoveItemToContainer(item, contain);
++	endforeach
++	DestroyItem(corpse);
++	DestroyItem(mount);
++
++	return;
+ endfunction
+ 
++
+ function ListRootItemsInContainer(container)
+-  var ret := { };
+-  foreach item in EnumerateItemsInContainer(container)
+-    if ( item.container.serial == container.serial )
+-	  ret[len(ret)+1] := item;
+-    endif
+-  endforeach
+-  return ret;
+-endfunction
+\ No newline at end of file
++	var ret := { };
++	foreach item in EnumerateItemsInContainer(container)
++		if (item.container.serial == container.serial)
++			ret[len(ret)+1] := item;
++		endif
++	endforeach
++
++	return ret;
++endfunction
+
+Modified: trunk/096/scripts/misc/logoff.src
+===================================================================
+--- trunk/096/scripts/misc/logoff.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/logoff.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,3 +1,10 @@
++/* $Id$
++ *
++ * Purpose
++ * This script allows the scripter to run cleanup code after a character exits the world.
++ * Useful for stuff like cleaning up summoned NPCs, etc.
++ *
++ */
+ use uo;
+ use util;
+ use math;
+@@ -10,59 +17,67 @@
+ const EVID_UNEQUIP   := 0x123456;
+ const EVID_DISCHARGE := 0x123457;
+ 
+-program onlogoff(who)
+-  var acct := FindAccount(who.acctname);
+-  acct.setprop(&quot;LastLogin&quot;, readGameclock());
+-  var sessiontime := ReadGameClock() - GetObjProperty(who,&quot;logontime&quot;);
+-  var timer := GetObjProperty(who,&quot;onlinetimer&quot;);
+-  if(!timer)
+-    timer := 0;
+-  endif
+-  SetObjProperty(who,&quot;onlinetimer&quot;,timer+sessiontime);
+-  EraseObjProperty(who,&quot;LoggedIn&quot;);
+-  RemoveMods(who);
+-  var mount := GetEquipmentByLayer(who, 25 );
+-  if(mount)
+-    if(GetObjProperty(mount, &quot;summoned&quot;))
+-      var ser := Cint(GetObjProperty(mount, &quot;serial&quot;));
+-      var critter := SystemFindObjectBySerial(ser);
+-      if(critter)
+-        ApplyRawDamage(critter, 2000);
+-      endif
+-      DestroyItem(mount);
+-    else
+-      var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
+-      SetObjProperty(animal,&quot;onhold&quot;, 1);
+-    endif
+-  endif
+-  staffnotify(who);
++
++program core_logoff(who)
++	var acct := FindAccount(who.acctname);
++	acct.setprop(&quot;LastLogin&quot;, readGameclock());
++	var sessiontime := ReadGameClock() - GetObjProperty(who,&quot;logontime&quot;);
++	var timer := GetObjProperty(who,&quot;onlinetimer&quot;);
++	if (!timer)
++		timer := 0;
++	endif
++	SetObjProperty(who,&quot;onlinetimer&quot;,timer+sessiontime);
++	EraseObjProperty(who,&quot;LoggedIn&quot;);
++	RemoveMods(who);
++	var mount := GetEquipmentByLayer(who, 25 );
++	if (mount)
++		if (GetObjProperty(mount, &quot;summoned&quot;))
++			var ser := Cint(GetObjProperty(mount, &quot;serial&quot;));
++			var critter := SystemFindObjectBySerial(ser);
++			if (critter)
++				ApplyRawDamage(critter, 2000);
++			endif
++			DestroyItem(mount);
++		else
++			var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
++			SetObjProperty(animal,&quot;onhold&quot;, 1);
++		endif
++	endif
++	staffnotify(who);
++
++	return;
+ endprogram
+ 
++
+ function staffnotify(who)
+-  var pid := 0;
+-  while(!pid)
+-    sleepms(50);
+-    pid := GetGlobalProperty(&quot;#stafflist&quot;);
+-  endwhile
+-  pid := getprocess(pid);
+-  if(!pid)
+-    return;
+-  endif
+-  var k := struct;
+-  k.+player := who;
+-  k.+type  := EVID_PLAYER_LOGOFF;
+-  pid.sendevent(k);
++	var pid := 0;
++	while (!pid)
++		sleepms(50);
++		pid := GetGlobalProperty(&quot;#stafflist&quot;);
++	endwhile
++	pid := getprocess(pid);
++	if (!pid)
++		return;
++	endif
++	var k := struct;
++	k.+player := who;
++	k.+type  := EVID_PLAYER_LOGOFF;
++	pid.sendevent(k);
++
++	return;
+ endfunction
+ 
++
+ function RemoveMods(who)
+-  foreach item in ListEquippedItems(who)
+-    var proc := GetProcess(Cint(GetObjProperty(item, &quot;Pid&quot;)));
+-    if(proc)
+-      var ev := {};
+-      ev.+type := EVID_UNEQUIP;
+-      proc.sendevent(ev);
+-    endif
+-  endforeach
+-  EraseObjProperty(who, &quot;EquipTimers&quot;);
+-  return;
+-endfunction
+\ No newline at end of file
++	foreach item in ListEquippedItems(who)
++		var proc := GetProcess(Cint(GetObjProperty(item, &quot;Pid&quot;)));
++		if (proc)
++			var ev := {};
++			ev.+type := EVID_UNEQUIP;
++			proc.sendevent(ev);
++		endif
++	endforeach
++	EraseObjProperty(who, &quot;EquipTimers&quot;);
++
++	return;
++endfunction
+
+Modified: trunk/096/scripts/misc/logofftest.src
+===================================================================
+--- trunk/096/scripts/misc/logofftest.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/logofftest.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,3 +1,10 @@
++/* $Id$
++ *
++ * Purpose
++ * This script allows the scripter to control how long the character lingers in the world
++ * after logoff.
++ *
++ */
+ use uo;
+ 
+ include &quot;include/eventID&quot;;
+@@ -3,58 +10,64 @@
+ include &quot;include/innCheck&quot;;
+ 
+-program logofftest(who)
+-  if((who.cmdlevel &gt; 1) || (GetObjProperty(who,&quot;justbanned&quot;)))
+-    return 0;
+-  endif
+-  EraseObjProperty(who, &quot;#Online&quot;);
+-  var safelogoff := 0;
+-  if (CInt(GetObjProperty(who, &quot;#camped&quot;))== 1)
+-    EraseObjProperty(who, &quot;#camped&quot;);
+-    safelogoff := 1;
+-  elseif(Inncheck(who))
+-    safelogoff := 1;
+-  endif
+-  if(!safelogoff)
+-    if(who.multi.serial)
+-      var house := who.multi;
+-      if(who.acctname == (GetObjProperty(house, &quot;owneracct&quot;)))
+-        safelogoff := 1;
+-      else
+-        foreach player in (GetObjProperty(house, &quot;friendlist&quot;))
+-          if(who.serial == player)
+-            safelogoff := 1;
+-          endif
+-        endforeach
+-        foreach player in (GetObjProperty(house,&quot;coownlist&quot;))
+-          if(who.serial == player)
+-            safelogoff := 1;
+-          endif
+-        endforeach
+-      endif
+-    endif
+-  endif
+-  if(!safelogoff)
+-    staffnotify(who);
+-    return 300;  // wait 5 minutes
+-  elseif(safelogoff == 1)
+-    return 0;   // ok to log off
+-  else
+-    return safelogoff;
+-  endif
++
++program core_logoffTest(who)
++	if ((who.cmdlevel &gt; 1) || (GetObjProperty(who,&quot;justbanned&quot;)))
++		return 0;
++	endif
++	EraseObjProperty(who, &quot;#Online&quot;);
++	var safelogoff := 0;
++	if (CInt(GetObjProperty(who, &quot;#camped&quot;))== 1)
++		EraseObjProperty(who, &quot;#camped&quot;);
++		safelogoff := 1;
++	elseif (Inncheck(who))
++		safelogoff := 1;
++	endif
++
++	if (!safelogoff)
++		if (who.multi.serial)
++			var house := who.multi;
++			if (who.acctname == (GetObjProperty(house, &quot;owneracct&quot;)))
++				safelogoff := 1;
++			else
++				foreach player in (GetObjProperty(house, &quot;friendlist&quot;))
++					if (who.serial == player)
++						safelogoff := 1;
++					endif
++				endforeach
++				foreach player in (GetObjProperty(house,&quot;coownlist&quot;))
++					if (who.serial == player)
++						safelogoff := 1;
++					endif
++				endforeach
++			endif
++		endif
++	endif
++
++	if (!safelogoff)
++		staffnotify(who);
++		return 300;  // wait 5 minutes
++	elseif (safelogoff == 1)
++		return 0;   // ok to log off
++	else
++		return safelogoff;
++	endif
+ endprogram
+ 
++
+ function staffnotify(who)
+-  var pid := 0;
+-  while(!pid)
+-    sleepms(50);
+-    pid := GetGlobalProperty(&quot;#stafflist&quot;);
+-  endwhile
+-  pid := getprocess(pid);
+-  if(!pid)
+-    return;
+-  endif
+-  var k := struct;
+-  k.+player := who;
+-  k.+type  := EVID_PLAYER_DELAY;
+-  pid.sendevent(k);
+-endfunction
+\ No newline at end of file
++	var pid := 0;
++	while (!pid)
++		sleepms(50);
++		pid := GetGlobalProperty(&quot;#stafflist&quot;);
++	endwhile
++	pid := getprocess(pid);
++	if (!pid)
++		return;
++	endif
++	var k := struct;
++	k.+player := who;
++	k.+type  := EVID_PLAYER_DELAY;
++	pid.sendevent(k);
++
++	return;
++endfunction
+
+Modified: trunk/096/scripts/misc/logon.src
+===================================================================
+--- trunk/096/scripts/misc/logon.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/logon.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,3 +1,10 @@
++/* $Id$
++ *
++ * Purpose
++ * This script allows code to run when the player logs in. Can be used for welcome messages, etc.
++ * This script runs critical, so be careful how much code you run!
++ *
++ */
+ use uo;
+ use os;
+ use util;
+@@ -11,7 +18,7 @@
+ include &quot;include/noto&quot;;
+ 
+ 
+-program onlogon(who)
++program core_logon(who)
+ 	TrackIP(who);
+ 	RestoreMods(who);
+ 	SetObjProperty(who,&quot;logontime&quot;,ReadGameClock());
+@@ -323,4 +330,3 @@
+ 
+ 	return;
+ endfunction
+-
+
+Modified: trunk/096/scripts/misc/oncreate.src
+===================================================================
+--- trunk/096/scripts/misc/oncreate.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/oncreate.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,3 +1,10 @@
++/* $Id$
++ *
++ * Purpose
++ * This script allows the scripter to run code when a new character is created.
++ * Useful for giving out starting equipment, etc.
++ *
++ */
+ use uo;
+ 
+ include &quot;include/startEqp&quot;;
+
+Modified: trunk/096/scripts/misc/ondelete.src
+===================================================================
+--- trunk/096/scripts/misc/ondelete.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/ondelete.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,3 +1,9 @@
++/* $Id$
++ *
++ * Purpose
++ * This script allows the scripter to run code when a character is deleted.
++ *
++ */
+ use uo;
+ 
+ include &quot;include/startEqp&quot;;
+
+Modified: trunk/096/scripts/misc/reconnect.src
+===================================================================
+--- trunk/096/scripts/misc/reconnect.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/reconnect.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,9 +1,17 @@
++/* $Id$
++ *
++ * Purpose
++ * This script allows code to run when the player logs in after having recently logged off.
++ *
++ */
+ use uo;
+ use os;
+ 
++include &quot;include/client&quot;;
+ 
+-program reconnect(who)
+-	var mount := GetEquipmentByLayer(who, 25 );
++
++program core_reconnect(who)
++	var mount := GetEquipmentByLayer(who, LAYER_MOUNT);
+ 	if (mount)
+ 		var animal := SystemFindObjectBySerial(CInt(GetObjProperty(mount,&quot;serial&quot;)));
+ 		EraseObjProperty(animal,&quot;onhold&quot;);
+@@ -20,4 +28,5 @@
+ 		endif
+ 	endforeach
+ 
++	return;
+ endprogram
+
+Modified: trunk/096/scripts/misc/skillwin.src
+===================================================================
+--- trunk/096/scripts/misc/skillwin.src	2005-10-04 08:05:53 UTC (rev 401)
++++ trunk/096/scripts/misc/skillwin.src	2005-10-04 09:33:15 UTC (rev 402)
+@@ -1,4 +1,4 @@
+-/* $$
++/* $Id$
+  *
+  * Purpose
+  * This script is called when a player clicks the skill button in his paperdoll.
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000379.html">[Poldistro-svn] r401 - in trunk/096/pkg/items/mounts: . commands commands/seer config include
+</A></li>
+	<LI>Next message: <A HREF="000381.html">[Poldistro-svn] r403 - in trunk/096/pkg/commands: coun gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#380">[ date ]</a>
+              <a href="thread.html#380">[ thread ]</a>
+              <a href="subject.html#380">[ subject ]</a>
+              <a href="author.html#380">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

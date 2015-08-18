@@ -1,0 +1,3089 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r332 - in trunk/096/pkg: commands/coun commands/gm skills/anatomy skills/armslore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r332%20-%20in%20trunk/096/pkg%3A%20commands/coun%20commands/gm%20skills/anatomy%20skills/armslore&In-Reply-To=%3C200509301218.j8UCIcem029704%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000309.html">
+   <LINK REL="Next"  HREF="000311.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r332 - in trunk/096/pkg: commands/coun commands/gm skills/anatomy skills/armslore</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r332%20-%20in%20trunk/096/pkg%3A%20commands/coun%20commands/gm%20skills/anatomy%20skills/armslore&In-Reply-To=%3C200509301218.j8UCIcem029704%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r332 - in trunk/096/pkg: commands/coun commands/gm skills/anatomy skills/armslore">panosl at berlios.de
+       </A><BR>
+    <I>Fri Sep 30 14:18:38 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000309.html">[Poldistro-svn] r331 - trunk/096/pkg/systems
+</A></li>
+        <LI>Next message: <A HREF="000311.html">[Poldistro-svn] r333 - trunk/096/pkg/items/containers/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#310">[ date ]</a>
+              <a href="thread.html#310">[ thread ]</a>
+              <a href="subject.html#310">[ subject ]</a>
+              <a href="author.html#310">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-09-30 14:18:34 +0200 (Fri, 30 Sep 2005)
+New Revision: 332
+
+Added:
+   trunk/096/pkg/commands/coun/counpage.src.temp
+   trunk/096/pkg/commands/gm/gmpage.src.temp
+   trunk/096/pkg/commands/gm/info.src.temp
+   trunk/096/pkg/commands/gm/iteminfo.src.temp
+   trunk/096/pkg/commands/gm/wipebank.src.temp
+Removed:
+   trunk/096/pkg/commands/coun/counpage.src
+   trunk/096/pkg/commands/gm/gmpage.src
+   trunk/096/pkg/commands/gm/info.src
+   trunk/096/pkg/commands/gm/iteminfo.src
+   trunk/096/pkg/commands/gm/thawme.src
+   trunk/096/pkg/commands/gm/wipebank.src
+Modified:
+   trunk/096/pkg/commands/coun/conceal.src
+   trunk/096/pkg/commands/gm/thaw.src
+   trunk/096/pkg/skills/anatomy/anatomy.src
+   trunk/096/pkg/skills/armslore/armsLore.src
+Log:
+All files that have a .temp extension need to be removed
+(either deprecated by our newer packages) or rewritten.
+
+They're not our major priority though.
+
+Modified: trunk/096/pkg/commands/coun/conceal.src
+===================================================================
+--- trunk/096/pkg/commands/coun/conceal.src	2005-09-30 09:54:57 UTC (rev 331)
++++ trunk/096/pkg/commands/coun/conceal.src	2005-09-30 12:18:34 UTC (rev 332)
+@@ -1,5 +1,8 @@
+-//TODO: convert the remaining SendSysMessage()
+-//	must check agaist cmdlevel within the script
++/* $Id$
++ *
++ * TODO: convert the remaining SendSysMessage()
++ * must check agaist cmdlevel within the script
++ */
+ use uo; 
+ 
+ include &quot;include/log&quot;;
+
+Deleted: trunk/096/pkg/commands/coun/counpage.src
+===================================================================
+--- trunk/096/pkg/commands/coun/counpage.src	2005-09-30 09:54:57 UTC (rev 331)
++++ trunk/096/pkg/commands/coun/counpage.src	2005-09-30 12:18:34 UTC (rev 332)
+@@ -1,621 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-
+-include &quot;:gumps:include/old/old-gumps&quot;;
+-include &quot;include/gumpUtil&quot;;
+-include &quot;:bank:bank&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;:gmtools:info&quot;;
+-include &quot;:gmtools:accountLayout&quot;;
+-
+-var gmpages := GetGlobalProperty(&quot;counpages&quot;);
+-
+-
+-program textcmd_pagegm(who)
+-	pagemenu(who);
+-endprogram
+-
+-
+-function pagemenu(who)
+-	GFInitGump(0, 0);
+-	GFPage(0);
+-	GFGumpPic(0,   0,  206);
+-	GFGumpPic(44,   0,  201);
+-	GFGumpPic(244,   0,  201);
+-	GFGumpPic(444,   0,  201);
+-	GFGumpPic(840,   0,  207);
+-	GFGumpPic(  0,  40,  202);
+-	GFGumpPic( 44,  40, 2604);
+-	GFGumpPic(244,  40, 2604);
+-	GFGumpPic(444,  40, 2604);
+-	GFGumpPic(840,  40,  203);
+-	GFGumpPic(  0, 350,  204);
+-	GFGumpPic( 44, 350,  233);
+-	GFGumpPic(240, 350,  233);
+-	GFGumpPic(440, 350,  233);
+-	GFGumpPic(840, 350,  205);
+-	GFGumpPic( 40,  35,   40);
+-  GFGumpPic( 95,  35,   40);
+-  GFGumpPic(185,  35,   40);
+-  GFGumpPic(275,  35,   40);
+-  GFGumpPic(365,  35,   40);
+-  GFGumpPic(455,  35,   40);
+-  GFGumpPic(545,  35,   40);
+-  GFGumpPic( 40,  65,   40);
+-  GFGumpPic( 95,  65,   40);
+-  GFGumpPic(185,  65,   40);
+-  GFGumpPic(275,  65,   40);
+-  GFGumpPic(365,  65,   40);
+-  GFGumpPic(455,  65,   40);
+-  GFGumpPic(545,  65,   40);
+-  GFGumpPic(635,  35,   40);
+-  GFGumpPic(725,  35,   40);
+-  GFGumpPic(745,  35,   40);
+-  GFGumpPic(635,  65,   40);
+-  GFGumpPic(725,  65,   40);
+-  GFGumpPic(745,  65,   40);
+-  GFTextLine(205,  15,    0, &quot;Counselor Page Menu, select an option&quot;);
+-  GFTextLine( 50,  80,  500, &quot;D&quot;);
+-  GFTextLine( 70,  80,  500, &quot;G&quot;);
+-  GFTextLine( 90,  80,  500, &quot;M&quot;);
+-  GFTextLine(135,  80,  500, &quot;Name&quot;);
+-  GFTextLine(295,  80,  500, &quot;Request&quot;);
+-  GFButtonPage(225,  47, 2117, 2118, 1);
+-  GFButtonPage(255,  47, 2117, 2118, 2);
+-  GFButtonPage(285,  47, 2117, 2118, 3);
+-  GFButtonPage(315,  47, 2117, 2118, 4);
+-  GFButtonPage(345,  47, 2117, 2118, 5);
+-  GFButtonPage(375,  47, 2117, 2118, 6);
+-  GFButtonPage(405,  47, 2117, 2118, 7);
+-  GFButtonPage(435,  47, 2117, 2118, 8);
+-  GFButtonPage(465,  47, 2117, 2118, 9);
+-  GFButtonPage(495,  47, 2117, 2118, 10);
+-  ComposeSubMenu();
+-  var res := GFSendGump(who);
+-  if(res[0] == 0)
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  else
+-    var hld := Cint(res[0] / 100);
+-    var ind := gmpages[hld];
+-    var val := (res[0] - (hld * 100));
+-    var chr := SystemFindObjectBySerial(ind[3]);
+-    case(val)
+-      2: gmpages := RemoveElement(gmpages, hld);
+-         SetGlobalProperty(&quot;counpages&quot;, gmpages);
+-         SendSysMessage(who, &quot;Page Deleted.&quot;);
+-      3: if(!chr)
+-           SendSysMessage(who, &quot;ERROR: Could not find mobile.&quot;);
+-           return;
+-         endif
+-         MoveCharacterToLocation(who, chr.x, chr.y, chr.z, MOVECHAR_FORCELOCATION );
+-         SendSysMessage(who, &quot;Going to &quot; + chr.name);
+-      4: if(!chr)
+-           SendSysMessage(who, &quot;ERROR: Could not find mobile.&quot;);
+-           return;
+-         endif
+-         var themessage := RequestInput(who, who.backpack, &quot;What message would you like to send to &quot; + chr.name + &quot;?&quot;);
+-         if (!themessage)
+-           SendSysMessage(who,&quot;Cancelled.&quot;);
+-           return;
+-         endif
+-         SendSysMessage(chr, &quot;Message from &quot; + who.name + &quot;: &quot; + themessage);
+-         foreach staff in EnumerateOnlineCharacters()
+-           if ( (staff.cmdlevel == 5) &amp;&amp; (GetObjProperty(staff, &quot;HearMsgs&quot;) ) )
+-             SendSysMessage(staff, &quot;Msg from &quot; + who.name + &quot; to &quot; + chr.name + &quot;: &quot; + themessage);
+-           endif
+-         endforeach
+-    endcase
+-  endif
+-  pagemenu(who);
+-endfunction
+-
+-function ComposeSubMenu()
+-	var num := 1;
+-	var amt := 2;
+-	var who, txt, ser, i;
+-	var val := 1;
+-	GFPage(1);
+-	foreach thing in gmpages
+-		if (num &gt; 10)
+-			GFPage(amt);
+-			amt := amt + 1;
+-			num := 1;
+-		endif
+-		who := thing[1];
+-		txt := thing[2];
+-		ser := thing[3];
+-		i := (num * 20) + 90;
+-		GFButtonIDC( 53, i, 2361, 2362, 1, (val*100)+2);
+-		GFButtonIDC( 73, i, 2361, 2362, 1, (val*100)+3);
+-		GFButtonIDC( 93, i, 2361, 2362, 1, (val*100)+4);
+-		GFTextLine(135, (i - 5), 0, who);
+-		GFTextLine(285, (i - 5), 0, txt);
+-		val := val + 1;
+-		num := num + 1;
+-	endforeach
+-endfunction
+-
+-
+-function RemoveElement(arry, position)
+-	var newarray := { };
+-
+-	foreach thing in arry
+-		if(thing != arry[position])
+-			newarray.append(thing);
+-		endif
+-	endforeach
+-
+-	return newarray;
+-endfunction
+-
+-
+-function GFButtonIDC(x, y, release, press, close, retval)
+-	var line := &quot;button &quot; + CStr(gfref.x + Cint(x)) + &quot; &quot; + CStr(gfref.y + Cint(y));
+-	line := line + &quot; &quot; + CStr(Cint(release)) + &quot; &quot; + CStr(Cint(press)) + &quot; &quot;;
+-	line := line + Cstr(close) + &quot; 0 &quot;;
+-	line := line + CStr(retval);
+-	gflayout.append( line );
+-endfunction
+-
+-
+-function maintainaccountgump(who, chr)
+-var trg := FindAccount(chr.acctname);
+-if(!trg)
+-SendSysMessage(who,&quot;Cancelled.&quot;);
+-else
+-if(!trg.getprop(&quot;email&quot;));
+-trg.setprop(&quot;email&quot;, &quot;&quot;);
+-endif
+-if(!trg.getprop(&quot;notes&quot;));
+-trg.setprop(&quot;notes&quot;, &quot;&quot;);
+-endif
+-if(!trg.getprop(&quot;releaseday&quot;));
+-      trg.setprop(&quot;releaseday&quot;, &quot;&quot;);
+-    endif
+-    testdata[16] := trg.name;
+-    if(trg.banned == 1)
+-      testdata[17] := &quot;banned&quot;;
+-    elseif(trg.enabled == 0)
+-      testdata[17] := &quot;jailed&quot;;
+-    else
+-      testdata[17] := &quot;active&quot;;
+-    endif
+-    testdata[18] := trg.GetCharacter(1).name;
+-    if(testdata[18] == error)
+-      testdata[18] := &quot;&quot;;
+-    endif
+-    testdata[19] := trg.GetCharacter(2).name;
+-    if(testdata[19] == error)
+-      testdata[19] := &quot;&quot;;
+-    endif
+-    testdata[20] := trg.GetCharacter(3).name;
+-    if(testdata[20] == error)
+-      testdata[20] := &quot;&quot;;
+-    endif
+-    testdata[21] := trg.GetCharacter(4).name;
+-    if(testdata[21] == error)
+-      testdata[21] := &quot;&quot;;
+-    endif
+-    testdata[22] := trg.GetCharacter(5).name;
+-    if(testdata[22] == error)
+-      testdata[22] := &quot;&quot;;
+-    endif
+-    var mail := trg.getprop(&quot;email&quot;);
+-    if(!mail)
+-      mail := &quot;Not Provided&quot;;
+-    endif
+-    testdata[23] := mail;
+-    if(!trg)
+-      SendSysMessage(who,&quot;Cancelled.&quot;);
+-      return;
+-    endif
+-    SetNotes(trg.name); // Modified by Shinigami
+-    if(trg.enabled == 0)
+-      testlayout.append(&quot;button  400 195 2662 2662 1 0 10&quot;);    //jail index box
+-      testlayout.append(&quot;gumppic 400 185 2660 2660 1 0 10&quot;);    //jail index box
+-      testlayout.append(&quot;text    320 190  910 37&quot;); //jail duration text   (white)
+-      testlayout.append(&quot;text    440 190  910 38&quot;); //jail duration text   (white)
+-      testlayout.append(&quot;text    408 190  100 39&quot;); //jail tine left text  (blue)
+-      var releaseday := trg.getprop(&quot;releaseday&quot;);
+-      var timeremaining :=(((releaseday - ReadGameClock())/86400) + 1);
+-      if(timeremaining &lt; 2)
+-        timeremaining := 0;
+-      endif
+-      testdata[40] := timeremaining;
+-    endif
+-    var accounttool := SendDialogGump(who, testlayout, testdata);
+-    case(accounttool[0])
+-      2: jail(who, trg.name);
+-      3: Notes(trg.name, accounttool); //notes(who, trg.name); // Modified by Shinigami
+-      4: editemail(who, trg);
+-      5: info(who, trg.GetCharacter(1).serial, trg);
+-      6: info(who, trg.GetCharacter(2).serial, trg);
+-      7: info(who, trg.GetCharacter(3).serial, trg);
+-      8: info(who, trg.GetCharacter(4).serial, trg);
+-      9: info(who, trg.GetCharacter(5).serial, trg);
+-     10: editjail(who, trg);
+-     11: ban(who, trg.name);
+-    endcase
+-  endif
+-  pagemenu(who);
+-endfunction
+-
+-
+-function SetNotes(acctname) // Added by Shinigami
+-  var act:=FindAccount(acctname);
+-  var note:=act.GetProp(&quot;notes&quot;);
+-  if((!note) ||(note==error))
+-    note:=&quot;&quot;;
+-  endif
+-  var split:=SplitWords(note);
+-  var width:=0;
+-  var lines:=0;
+-  var index:=1;
+-  while((index&lt;=len(split)) &amp;&amp;(lines&lt;=12))
+-    if(width==0)
+-      var testword:=split[index];
+-      lines:=lines+1;
+-      testdata[25+lines] := testword;
+-      width := GumpTextWidthFast(testword);
+-      index:=index+1;
+-    else
+-      var testword:=&quot; &quot;+split[index];
+-      var testwidth:=GumpTextWidthFast(testword);
+-      if(width+testwidth&lt;CInt(790/1.5))
+-        testdata[25+lines]:=testdata[25+lines]+testword;
+-        width:=width+testwidth;
+-        index:=index+1;
+-      else
+-        width:=0;
+-      endif
+-    endif
+-  endwhile
+-  if(lines&gt;12)
+-    testdata[24+lines]:=testdata[24+lines]+&quot;...&quot;;
+-  else
+-    while(lines&lt;12)
+-      lines:=lines+1;
+-      testdata[25+lines]:=&quot;&quot;;
+-    endwhile
+-  endif
+-endfunction
+-
+-
+-function editjail(who, trg);
+-  var val := CInt(SendTextEntryGump(who, &quot;enter new total?(Max 14)&quot;, 40));
+-  var time;
+-  case(val)
+-     1: time := 86400;
+-     2: time := 172800;
+-     3: time := 259200;
+-     4: time := 345600;
+-     5: time := 432000;
+-     6: time := 518400;
+-     7: time := 604800;
+-     8: time := 691200;
+-     9: time := 777600;
+-    10: time := 864000;
+-    11: time := 950400;
+-    12: time := 1036800;
+-    13: time := 1123200;
+-    14: time := 1209600;
+-  endcase
+-  trg.setprop(&quot;releaseday&quot;,(ReadGameClock() + time));
+-endfunction
+-
+-
+-function ban(who, acctname);
+-  var banverify := SendDialogGump(who, banlayout, bandata);
+-  var act := FindAccount(acctname);
+-  case(banverify[0])
+-    1: var characters := EnumerateOnlineCharacters();
+-       foreach char in characters
+-         if(char.acctname == acctname)
+-           SendSysMessage(char, &quot;You were kicked by &quot; + who.name + &quot;.&quot;);
+-           SetObjProperty(char,&quot;justbanned&quot;, 1);
+-           DisconnectClient(char);
+-           break;
+-         endif
+-       endforeach
+-       foreach chr in characters
+-         if(chr.cmdlevel &gt; 1)
+-           SendSysMessage(chr, &quot;Account &quot; + acctname + &quot; has been banned.&quot;);
+-         endif
+-       endforeach
+-       Detach();
+-       sleep(10);
+-       act.ban();
+-           var x, i;
+-       WipeBankBox(act.GetCharacter(1));
+-           for(i := 1; i &lt;= 25; i := i + 1)
+-             x := GetEquipmentByLayer(act.GetCharacter(1), i);
+-             MoveItemToContainer(x, act.GetCharacter(1).backpack);
+-           endfor
+-       DestroyItem(act.GetCharacter(1).backpack);
+-       act.DeleteCharacter(1);
+-       i := 0;
+-       WipeBankBox(act.GetCharacter(2));
+-           for(i := 1; i &lt;= 25; i := i + 1)
+-             x := GetEquipmentByLayer(act.GetCharacter(2), i);
+-             MoveItemToContainer(x, act.GetCharacter(2).backpack);
+-           endfor
+-       DestroyItem(act.GetCharacter(2).backpack);
+-       act.DeleteCharacter(2);
+-       i := 0;
+-       WipeBankBox(act.GetCharacter(3));
+-           for(i := 1; i &lt;= 25; i := i + 1)
+-             x := GetEquipmentByLayer(act.GetCharacter(3), i);
+-             MoveItemToContainer(x, act.GetCharacter(3).backpack);
+-           endfor
+-       DestroyItem(act.GetCharacter(3).backpack);
+-       act.DeleteCharacter(3);
+-       i := 0;
+-       WipeBankBox(act.GetCharacter(4));
+-           for(i := 1; i &lt;= 25; i := i + 1)
+-             x := GetEquipmentByLayer(act.GetCharacter(4), i);
+-             MoveItemToContainer(x, act.GetCharacter(4).backpack);
+-           endfor
+-       DestroyItem(act.GetCharacter(4).backpack);
+-       act.DeleteCharacter(4);
+-       i := 0;
+-       WipeBankBox(act.GetCharacter(5));
+-           for(i := 1; i &lt;= 24; i := i + 1)
+-             x := GetEquipmentByLayer(act.GetCharacter(5), i);
+-             MoveItemToContainer(x, act.GetCharacter(5).backpack);
+-           endfor
+-       DestroyItem(act.GetCharacter(5).backpack);
+-       act.DeleteCharacter(5);
+-    2: SendSysMessage(who,&quot;cancelled&quot;);
+-       return;
+-  endcase
+-endfunction
+-
+-
+-function Notes(acctname, result) // Added by Shinigami
+-	var note := result[25];
+-	note[1, find(note, &quot;: &quot;, 1)+1]:=&quot;&quot;;
+-	var subnote;
+-	var i;
+-
+-	for (i:=26; i&lt;=36; i:=i+1)
+-		subnote:=result[i];
+-		subnote[1, find(subnote, &quot;: &quot;, 1)+1]:=&quot;&quot;;
+-		if (subnote!=&quot;&quot;)
+-			note := note + &quot; &quot; + subnote;
+-		endif
+-	endfor
+-	var act := FindAccount(acctname);
+-	act.setprop(&quot;notes&quot;, note);
+-endfunction
+-
+-
+-function editemail(who, trg);
+-	var val := CStr(SendTextEntryGump(who, &quot;enter the new email address?&quot;, 40));
+-	trg.setprop(&quot;email&quot;, val);
+-endfunction
+-
+-
+-function jail(who, acctname);
+-  var val := CInt(SendTextEntryGump(who, &quot;How many days will this account remain jailed?(Max 14)&quot;, 40));
+-  var time;
+-  case(val)
+-     1: time := 86400;
+-     2: time := 172800;
+-     3: time := 259200;
+-     4: time := 345600;
+-     5: time := 432000;
+-     6: time := 518400;
+-     7: time := 604800;
+-     8: time := 691200;
+-     9: time := 777600;
+-    10: time := 864000;
+-    11: time := 950400;
+-    12: time := 1036800;
+-    13: time := 1123200;
+-    14: time := 1209600;
+-  endcase
+-  var act := FindAccount(acctname);
+-  act.setprop(&quot;releaseday&quot;,(ReadGameClock() + time));
+-  var characters := EnumerateOnlineCharacters();
+-  act.disable();
+-  foreach char in characters
+-    if(char.acctname == acctname)
+-      SendSysMessage(char, &quot;You were kicked by &quot; + who.name + &quot;.&quot;);
+-      DisconnectClient(char);
+-      break;
+-    endif
+-  endforeach
+-endfunction
+-
+-function GetAccountLayoutLength();
+-	return(len(gotolayout));
+-endfunction
+-
+-function GetAccountDataLength();
+-	return(len(accountdata));
+-endfunction
+-
+-function info(who, character, trg)
+-  var online := 0;
+-  foreach char in EnumerateOnlineCharacters()
+-    if(char.serial == character)
+-      character := char;
+-      online := 1;
+-    endif
+-  endforeach
+-  if(online == 0)
+-    character := SystemFindObjectBySerial(character, SYSFIND_SEARCH_OFFLINE_MOBILES);
+-  endif
+-  if(!character)
+-     SendSysMessage(who, &quot;That player does not exist. Cancelled.&quot;);
+-  else
+-    infodata[1] := &quot;Info On: &quot; + character.name;
+-    FillInStats(character);
+-    FillInSkills(character);
+-    FillInWeapon(character);
+-    var result := SendDialogGump(who, infolayout, infodata);
+-    var reskey;
+-    foreach key in(result.keys)
+-      if(key &gt;= 1000)
+-        reskey := key;
+-      endif
+-    endforeach
+-    case(result[0])
+-       1:   //fall through intentional
+-       2:
+-       3:
+-       4:
+-       5:
+-       6:
+-       7:
+-       9:
+-      11:
+-      14:
+-      13:
+-      15: EditStat(who, character, result[0], trg);
+-      16: EditSkill(who, character, reskey-1000, trg);
+-      17: character.frozen := 1; SendSysMessage(who, character.name + &quot; is frozen.&quot;);
+-      18: character.frozen := 0; SendSysMessage(who, character.name + &quot; is unfrozen.&quot;);
+-      19: if(!character.isA(POLCLASS_NPC))
+-            SendSysMessage(character, &quot;You were kicked by &quot; + who.name + &quot;.&quot;);
+-            DisconnectClient(character);
+-          endif
+-      20: MoveCharacterToLocation(character, 1, 1, 0);
+-      21: if(!character.isA(POLCLASS_NPC))
+-            var bankbox := FindBankBox(character);
+-            SendOpenSpecialContainer(who, bankbox);
+-          else
+-            SendSysMessage(who, &quot;Only can be used on players.&quot;);
+-          endif
+-      22: if(!character.isA(POLCLASS_NPC))
+-            SendOpenSpecialContainer(who, character.backpack);
+-          else
+-            SendSysMessage(who, &quot;Only can be used on players.&quot;);
+-          endif
+-      23: MoveCharacterToLocation(character, who.x, who.y, who.z);
+-      24: SetName(character, RequestInput(who, who.backpack, &quot;Enter a new name.&quot;));
+-    endcase
+-  endif
+-endfunction
+-
+-
+-function FillInStats(who)
+-	var levelname;
+-	
+-	case(who.cmdlevel)
+-		0: levelname := &quot;Player&quot;;
+-		1: levelname := &quot;Counselor&quot;;
+-		2: levelname := &quot;Seer&quot;;
+-		3: levelname := &quot;GM&quot;;
+-		4: levelname := &quot;Admin&quot;;
+-		5: levelname := &quot;Development&quot;;
+-	endcase
+-	infodata[8] := GetStrength(who);
+-	infodata[10] := GetIntelligence(who);
+-	infodata[12] := GetDexterity(who);
+-	infodata[14] := who.x;
+-	infodata[16] := who.y;
+-	infodata[18] := who.z;
+-	infodata[20] := GetHp(who) + &quot;/&quot; + GetMaxHp(who);
+-	infodata[22] := GetMana(who) + &quot;/&quot; + GetMaxMana(who);
+-	infodata[24] := GetStamina(who) + &quot;/&quot; + GetMaxStamina(who);
+-	infodata[26] := who.ar;
+-	infodata[28] := who.graphic;
+-	infodata[30] := who.color;
+-	infodata[144] := levelname;
+-	infodata[146] := who.acctname;
+-endfunction
+-
+-
+-function FillInSkills(who)
+-	var datindx;
+-	var skillindx := 0;
+-	for(datindx := 32; datindx &lt;= 128; datindx := datindx + 2)
+-		infodata[datindx] := GetEffectiveSkill(who, skillindx);
+-		skillindx := skillindx + 1;
+-	endfor
+-endfunction
+-
+-
+-function FillInWeapon(who)
+-	var weapfile := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-	var npcfile := ReadConfigFile(&quot;::npcdesc&quot;);
+-
+-	if (who.weapon)
+-		var idx := find(who.weapon.name, &quot;[&quot;, 1); //ignore maker's mark
+-		if (idx!=0)
+-			var tempn := who.weapon.desc;
+-			tempn := tempn[1,idx-1];
+-			infodata[138] := tempn;
+-		else
+-			if (who.weapon.desc == &quot;nodraw&quot;)
+-				infodata[138] := &quot;Wrestling&quot;;
+-			else
+-				infodata[138] := who.weapon.desc;
+-			endif
+-		endif
+-		var dam := weapfile[who.weapon.objtype].Damage;
+-		if (!dam)
+-			infodata[140] := &quot;n/a&quot;;
+-		else
+-			infodata[140] := dam;
+-		endif
+-		infodata[142] := who.weapon.hp + &quot; / &quot; + who.weapon.maxhp;
+-	else
+-		infodata[138] := &quot;n/a&quot;;
+-		infodata[140] := &quot;n/a&quot;;
+-		infodata[142] := &quot;n/a&quot;;
+-		if (who.isA(POLCLASS_NPC)) //Hi, i'm an NPC
+-			var dam := npcfile[who.npctemplate].AttackDamage;
+-			var weap := npcfile[who.npctemplate].AttackSkillId;
+-			var ar := npcfile[who.npctemplate].AR;
+-			if (weap)
+-				infodata[138] := weap;
+-			endif
+-			if (dam)
+-				infodata[140] := dam;
+-			endif
+-			if (ar)
+-				infodata[142] := &quot;AR: &quot; + ar;
+-			endif
+-		endif
+-	endif
+-endfunction
+-
+-
+-function EditStat(who, character, result, trg)
+-	SendSysMessage(who, &quot;Caution! Values are changed immediately, Integers only!. Hit ESC to cancel.&quot;);
+-	var val := CInt(RequestInput(who, who.backpack, &quot;Enter a new value.&quot;));
+-	if(!val)
+-		SendSysMessage(who, &quot;Cancelled.&quot;);
+-	else
+-		case(result)
+-			1: SetBaseStrength(character,val);
+-			2: SetBaseIntelligence(character,val);
+-			3: SetBaseDexterity(character,val);
+-			4: MoveCharacterToLocation(character, val, character.y, character.z);
+-			5: MoveCharacterToLocation(character, character.x, val, character.z);
+-			6: MoveCharacterToLocation(character, character.x, character.y, val);
+-			7: SetHp(character, val);
+-			9: SetMana(character, val);
+-			11: SetStamina(character, val);
+-			13: character.ar_mod := 0;
+-				character.ar_mod := val - character.ar;
+-			14: character.graphic := val;
+-			15: character.color := val;
+-		endcase
+-	endif
+-endfunction
+-
+-function EditSkill(who, character, skill, trg);
+-	SendSysMessage(who, &quot;Caution! Values are changed immediately, Integers only!. Hit ESC to cancel.&quot;);
+-	var val := CInt(RequestInput(who, who.backpack, &quot;Enter a new value.&quot;)) * 10;
+-	if ((!val) &amp;&amp;(val != 0))
+-		SendSysMessage(who, &quot;Cancelled.&quot;);
+-	else
+-		SetBaseSkillBaseValue(character, skill, val);
+-	endif
+-endfunction
+-
+
+Copied: trunk/096/pkg/commands/coun/counpage.src.temp (from rev 331, trunk/096/pkg/commands/coun/counpage.src)
+
+Deleted: trunk/096/pkg/commands/gm/gmpage.src
+===================================================================
+--- trunk/096/pkg/commands/gm/gmpage.src	2005-09-30 09:54:57 UTC (rev 331)
++++ trunk/096/pkg/commands/gm/gmpage.src	2005-09-30 12:18:34 UTC (rev 332)
+@@ -1,625 +0,0 @@
+-use uo;
+-use util;
+-use os;
+-
+-include &quot;:gumps:include/old/old-gumps&quot;;
+-include &quot;include/gumpUtil&quot;;
+-include &quot;:bank:bank&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;:gmtools:info&quot;;
+-include &quot;:gmtools:accountLayout&quot;;
+-
+-var gmpages := GetGlobalProperty(&quot;gmpages&quot;);
+-
+-program textcmd_pagegm(who)
+-  pagemenu(who);
+-endprogram
+-
+-function pagemenu( who )
+-  GFInitGump(0, 0);
+-  GFPage(0);
+-  GFGumpPic(  0,   0,  206);
+-  GFGumpPic( 44,   0,  201);
+-  GFGumpPic(244,   0,  201);
+-  GFGumpPic(444,   0,  201);
+-  GFGumpPic(840,   0,  207);
+-  GFGumpPic(  0,  40,  202);
+-  GFGumpPic( 44,  40, 2604);
+-  GFGumpPic(244,  40, 2604);
+-  GFGumpPic(444,  40, 2604);
+-  GFGumpPic(840,  40,  203);
+-  GFGumpPic(  0, 350,  204);
+-  GFGumpPic( 44, 350,  233);
+-  GFGumpPic(240, 350,  233);
+-  GFGumpPic(440, 350,  233);
+-  GFGumpPic(840, 350,  205);
+-  GFGumpPic( 40,  35,   40);
+-  GFGumpPic( 95,  35,   40);
+-  GFGumpPic(185,  35,   40);
+-  GFGumpPic(275,  35,   40);
+-  GFGumpPic(365,  35,   40);
+-  GFGumpPic(455,  35,   40);
+-  GFGumpPic(545,  35,   40);
+-  GFGumpPic( 40,  65,   40);
+-  GFGumpPic( 95,  65,   40);
+-  GFGumpPic(185,  65,   40);
+-  GFGumpPic(275,  65,   40);
+-  GFGumpPic(365,  65,   40);
+-  GFGumpPic(455,  65,   40);
+-  GFGumpPic(545,  65,   40);
+-  GFGumpPic(635,  35,   40);
+-  GFGumpPic(725,  35,   40);
+-  GFGumpPic(745,  35,   40);
+-  GFGumpPic(635,  65,   40);
+-  GFGumpPic(725,  65,   40);
+-  GFGumpPic(745,  65,   40);
+-  GFTextLine(205,  15,    0, &quot;GMPage Menu, select an option&quot;);
+-  GFTextLine( 50,  45,    0, &quot;Delete all pages:&quot;);
+-  GFTextLine( 30,  80,  500, &quot;I&quot;);
+-  GFTextLine( 50,  80,  500, &quot;D&quot;);
+-  GFTextLine( 70,  80,  500, &quot;G&quot;);
+-  GFTextLine( 90,  80,  500, &quot;M&quot;);
+-  GFTextLine(135,  80,  500, &quot;Name&quot;);
+-  GFTextLine(295,  80,  500, &quot;Request&quot;);
+-  GFButtonIDC(170,  43,  208,  209, 1, 999);
+-  GFButtonPage(225,  47, 2117, 2118, 1);
+-  GFButtonPage(255,  47, 2117, 2118, 2);
+-  GFButtonPage(285,  47, 2117, 2118, 3);
+-  GFButtonPage(315,  47, 2117, 2118, 4);
+-  GFButtonPage(345,  47, 2117, 2118, 5);
+-  GFButtonPage(375,  47, 2117, 2118, 6);
+-  GFButtonPage(405,  47, 2117, 2118, 7);
+-  GFButtonPage(435,  47, 2117, 2118, 8);
+-  GFButtonPage(465,  47, 2117, 2118, 9);
+-  GFButtonPage(495,  47, 2117, 2118, 10);
+-  ComposeSubMenu();
+-  var res := GFSendGump(who);
+-  if(res[0] == 999)
+-    SendSysMessage(who, &quot;Erasing all GM Pages&quot;);
+-    EraseGlobalProperty(&quot;gmpages&quot;);
+-    return;
+-  elseif(res[0] == 0)
+-    SendSysMessage(who, &quot;Cancelled.&quot;);
+-    return;
+-  else
+-    var hld := Cint(res[0] / 100);
+-    var ind := gmpages[hld];
+-    var val := (res[0] - (hld * 100));
+-    var chr := SystemFindObjectBySerial(ind[3], SYSFIND_SEARCH_OFFLINE_MOBILES);
+-    case(val)
+-      1: if(!chr)
+-           SendSysMessage(who, &quot;ERROR: Could not find mobile.&quot;);
+-         else
+-           maintainaccountgump(who, chr);
+-         endif
+-      2: gmpages := RemoveElement(gmpages, hld);
+-         SetGlobalProperty(&quot;gmpages&quot;, gmpages);
+-         SendSysMessage(who, &quot;Page Deleted.&quot;);
+-      3: if(!chr)
+-           SendSysMessage(who, &quot;ERROR: Could not find mobile.&quot;);
+-         else
+-           MoveCharacterToLocation(who, chr.x, chr.y, chr.z, MOVECHAR_FORCELOCATION );
+-           SendSysMessage(who, &quot;Going to &quot; + chr.name + &quot;.&quot;);
+-         endif
+-      4: if(!chr)
+-           SendSysMessage(who, &quot;ERROR: Could not find mobile.&quot;);
+-         else
+-           var themessage := RequestInput(who, who.backpack, &quot;What message would you like to send to &quot; + chr.name + &quot;?&quot;);
+-           if(!themessage)
+-             SendSysMessage(who,&quot;Cancelled.&quot;);
+-             return;
+-           else
+-             SendSysMessage(chr, &quot;Message from &quot; + who.name + &quot;: &quot; + themessage);
+-             foreach staff in EnumerateOnlineCharacters()
+-               if ( (staff.cmdlevel == 5) &amp;&amp; (GetObjProperty(staff, &quot;HearMsgs&quot;) ) )
+-                 SendSysMessage(staff, &quot;Msg from &quot; + who.name + &quot; to &quot; + chr.name + &quot;: &quot; + themessage);
+-               endif
+-             endforeach
+-           endif
+-         endif
+-    endcase
+-  endif
+-  pagemenu(who);
+-endfunction
+-
+-function ComposeSubMenu()
+-  var num := 1;
+-  var amt := 2;
+-  var who, txt, ser, i;
+-  var val := 1;
+-  GFPage(1);
+-  var color := 0;
+-  var online := EnumerateOnlineCharacters();
+-  var arry := {};
+-  foreach thing in online
+-    arry.append(thing.serial);
+-  endforeach
+-  foreach thing in gmpages
+-    if(num &gt; 10)
+-      GFPage(amt);
+-      amt := amt + 1;
+-      num := 1;
+-    endif
+-    who := thing[1];
+-    txt := thing[2];
+-    ser := thing[3];
+-    i := (num * 20) + 90;
+-    GFButtonIDC( 28, (i - 5),  208,  209, 1, (val*100)+1);
+-    GFButtonIDC( 53, i, 2361, 2362, 1, (val*100)+2);
+-    GFButtonIDC( 73, i, 2361, 2362, 1, (val*100)+3);
+-    GFButtonIDC( 93, i, 2361, 2362, 1, (val*100)+4);
+-    if(ser in arry)
+-      color := 72;
+-    else
+-      color := 31;
+-    endif
+-    GFTextLine(135, (i - 5), color, who);
+-    GFTextLine(285, (i - 5), 0, txt);
+-    val := val + 1;
+-    num := num + 1;
+-    color := 0;
+-  endforeach
+-endfunction
+-
+-function RemoveElement(arry, position)
+-  var newarray := { };
+-  foreach thing in arry
+-    if(thing != arry[position])
+-      newarray.append(thing);
+-    endif
+-  endforeach
+-  return newarray;
+-endfunction
+-
+-function GFButtonIDC(x, y, release, press, close, retval)
+-        var line := &quot;button &quot; + CStr(gfref.x + Cint(x)) + &quot; &quot; + CStr(gfref.y + Cint(y));
+-        line := line + &quot; &quot; + CStr(Cint(release)) + &quot; &quot; + CStr(Cint(press)) + &quot; &quot;;
+-        line := line + Cstr(close) + &quot; 0 &quot;;
+-        line := line + CStr(retval);
+-        gflayout.append( line );
+-endfunction
+-
+-function maintainaccountgump(who, chr)
+-  var trg := FindAccount(chr.acctname);
+-  if(!trg)
+-    SendSysMessage(who,&quot;cancelled&quot;);
+-  else
+-    if(!trg.getprop(&quot;email&quot;));
+-      trg.setprop(&quot;email&quot;, &quot;&quot;);
+-    endif
+-    if(!trg.getprop(&quot;notes&quot;));
+-      trg.setprop(&quot;notes&quot;, &quot;&quot;);
+-    endif
+-    if(!trg.getprop(&quot;releaseday&quot;));
+-      trg.setprop(&quot;releaseday&quot;, &quot;&quot;);
+-    endif
+-    testdata[16] := trg.name;
+-    if(trg.banned == 1)
+-      testdata[17] := &quot;banned&quot;;
+-    elseif(trg.enabled == 0)
+-      testdata[17] := &quot;jailed&quot;;
+-    else
+-      testdata[17] := &quot;active&quot;;
+-    endif
+-    testdata[18] := trg.GetCharacter(1).name;
+-    if(testdata[18] == error)
+-      testdata[18] := &quot;&quot;;
+-    endif
+-    testdata[19] := trg.GetCharacter(2).name;
+-    if(testdata[19] == error)
+-      testdata[19] := &quot;&quot;;
+-    endif
+-    testdata[20] := trg.GetCharacter(3).name;
+-    if(testdata[20] == error)
+-      testdata[20] := &quot;&quot;;
+-    endif
+-    testdata[21] := trg.GetCharacter(4).name;
+-    if(testdata[21] == error)
+-      testdata[21] := &quot;&quot;;
+-    endif
+-    testdata[22] := trg.GetCharacter(5).name;
+-    if(testdata[22] == error)
+-      testdata[22] := &quot;&quot;;
+-    endif
+-    var mail := trg.getprop(&quot;email&quot;);
+-    if(!mail)
+-      mail := &quot;Not Provided&quot;;
+-    endif
+-    testdata[23] := mail;
+-    if(!trg)
+-      SendSysMessage(who,&quot;canceled&quot;);
+-      return;
+-    endif
+-    SetNotes(trg.name); // Modified by Shinigami
+-    if(trg.enabled == 0)
+-      testlayout.append(&quot;button  400 195 2662 2662 1 0 10&quot;);    //jail index box
+-      testlayout.append(&quot;gumppic 400 185 2660 2660 1 0 10&quot;);    //jail index box
+-      testlayout.append(&quot;text    320 190  910 37&quot;); //jail duration text   (white)
+-      testlayout.append(&quot;text    440 190  910 38&quot;); //jail duration text   (white)
+-      testlayout.append(&quot;text    408 190  100 39&quot;); //jail tine left text  (blue)
+-      var releaseday := trg.getprop(&quot;releaseday&quot;);
+-      var timeremaining :=(((releaseday - ReadGameClock())/86400) + 1);
+-      if(timeremaining &lt; 2)
+-        timeremaining := 0;
+-      endif
+-      testdata[40] := timeremaining;
+-    endif
+-    var accounttool := SendDialogGump(who, testlayout, testdata);
+-    case(accounttool[0])
+-      2: jail(who, trg.name);
+-      3: Notes(trg.name, accounttool); //notes(who, trg.name); // Modified by Shinigami
+-      4: editemail(who, trg);
+-      5: info(who, trg.GetCharacter(1).serial);
+-      6: info(who, trg.GetCharacter(2).serial);
+-      7: info(who, trg.GetCharacter(3).serial);
+-      8: info(who, trg.GetCharacter(4).serial);
+-      9: info(who, trg.GetCharacter(5).serial);
+-     10: editjail(who, trg);
+-     11: ban(who, trg.name);
+-    endcase
+-  endif
+-endfunction
+-
+-function SetNotes(acctname) // Added by Shinigami
+-  var act:=FindAccount(acctname);
+-  var note:=act.GetProp(&quot;notes&quot;);
+-  if((!note) ||(note==error))
+-    note:=&quot;&quot;;
+-  endif
+-  var split:=SplitWords(note);
+-  var width:=0;
+-  var lines:=0;
+-  var index:=1;
+-  while((index&lt;=len(split)) &amp;&amp;(lines&lt;=12))
+-    if(width==0)
+-      var testword:=split[index];
+-      lines:=lines+1;
+-      testdata[25+lines] := testword;
+-      width := GumpTextWidthFast(testword);
+-      index:=index+1;
+-    else
+-      var testword:=&quot; &quot;+split[index];
+-      var testwidth:=GumpTextWidthFast(testword);
+-      if(width+testwidth&lt;CInt(790/1.5))
+-        testdata[25+lines]:=testdata[25+lines]+testword;
+-        width:=width+testwidth;
+-        index:=index+1;
+-      else
+-        width:=0;
+-      endif
+-    endif
+-  endwhile
+-  if(lines&gt;12)
+-    testdata[24+lines]:=testdata[24+lines]+&quot;...&quot;;
+-  else
+-    while(lines&lt;12)
+-      lines:=lines+1;
+-      testdata[25+lines]:=&quot;&quot;;
+-    endwhile
+-  endif
+-endfunction
+-
+-function editjail(who, trg);
+-  var val := CInt(SendTextEntryGump(who, &quot;enter new total?(Max 14)&quot;, 40));
+-  var time;
+-  case(val)
+-     1: time := 86400;
+-     2: time := 172800;
+-     3: time := 259200;
+-     4: time := 345600;
+-     5: time := 432000;
+-     6: time := 518400;
+-     7: time := 604800;
+-     8: time := 691200;
+-     9: time := 777600;
+-    10: time := 864000;
+-    11: time := 950400;
+-    12: time := 1036800;
+-    13: time := 1123200;
+-    14: time := 1209600;
+-  endcase
+-  trg.setprop(&quot;releaseday&quot;,(ReadGameClock() + time));
+-endfunction
+-
+-function ban(who, acctname);
+-  var banverify := SendDialogGump(who, banlayout, bandata);
+-  var act := FindAccount(acctname);
+-  case(banverify[0])
+-    1: var characters := EnumerateOnlineCharacters();
+-       foreach char in characters
+-         if(char.acctname == acctname)
+-           SendSysMessage(char, &quot;You were kicked by &quot; + who.name + &quot;.&quot;);
+-           SetObjProperty(char,&quot;justbanned&quot;, 1);
+-           DisconnectClient(char);
+-           break;
+-         endif
+-       endforeach
+-       foreach chr in characters
+-         if(chr.cmdlevel &gt; 1)
+-           SendSysMessage(chr, &quot;account &quot; + acctname + &quot; has been banned.&quot;);
+-         endif
+-       endforeach
+-       Detach();
+-       sleep(10);
+-       act.ban();
+-           var x, i;
+-       WipeBankBox(act.GetCharacter(1));
+-           for(i := 1; i &lt;= 25; i := i + 1)
+-             x := GetEquipmentByLayer(act.GetCharacter(1), i);
+-             MoveItemToContainer(x, act.GetCharacter(1).backpack);
+-           endfor
+-       DestroyItem(act.GetCharacter(1).backpack);
+-       act.DeleteCharacter(1);
+-       i := 0;
+-       WipeBankBox(act.GetCharacter(2));
+-           for(i := 1; i &lt;= 25; i := i + 1)
+-             x := GetEquipmentByLayer(act.GetCharacter(2), i);
+-             MoveItemToContainer(x, act.GetCharacter(2).backpack);
+-           endfor
+-       DestroyItem(act.GetCharacter(2).backpack);
+-       act.DeleteCharacter(2);
+-       i := 0;
+-       WipeBankBox(act.GetCharacter(3));
+-           for(i := 1; i &lt;= 25; i := i + 1)
+-             x := GetEquipmentByLayer(act.GetCharacter(3), i);
+-             MoveItemToContainer(x, act.GetCharacter(3).backpack);
+-           endfor
+-       DestroyItem(act.GetCharacter(3).backpack);
+-       act.DeleteCharacter(3);
+-       i := 0;
+-       WipeBankBox(act.GetCharacter(4));
+-           for(i := 1; i &lt;= 25; i := i + 1)
+-             x := GetEquipmentByLayer(act.GetCharacter(4), i);
+-             MoveItemToContainer(x, act.GetCharacter(4).backpack);
+-           endfor
+-       DestroyItem(act.GetCharacter(4).backpack);
+-       act.DeleteCharacter(4);
+-       i := 0;
+-       WipeBankBox(act.GetCharacter(5));
+-           for(i := 1; i &lt;= 24; i := i + 1)
+-             x := GetEquipmentByLayer(act.GetCharacter(5), i);
+-             MoveItemToContainer(x, act.GetCharacter(5).backpack);
+-           endfor
+-       DestroyItem(act.GetCharacter(5).backpack);
+-       act.DeleteCharacter(5);
+-    2: SendSysMessage(who,&quot;cancelled&quot;);
+-       return;
+-  endcase
+-endfunction
+-
+-function Notes(acctname, result) // Added by Shinigami
+-  var note:=result[25];
+-  note[1, find(note, &quot;: &quot;, 1)+1]:=&quot;&quot;;
+-  var subnote;
+-  var i;
+-  for(i:=26; i&lt;=36; i:=i+1)
+-    subnote:=result[i];
+-    subnote[1, find(subnote, &quot;: &quot;, 1)+1]:=&quot;&quot;;
+-    if(subnote!=&quot;&quot;)
+-      note:=note+&quot; &quot;+subnote;
+-    endif
+-  endfor
+-  var act:=FindAccount(acctname);
+-  act.setprop(&quot;notes&quot;, note);
+-endfunction
+-
+-function editemail(who, trg);
+-  var val := CStr(SendTextEntryGump(who, &quot;enter the new email address?&quot;, 40));
+-  trg.setprop(&quot;email&quot;, val);
+-endfunction
+-
+-function jail(who, acctname);
+-  var val := CInt(SendTextEntryGump(who, &quot;How many days will this account remain jailed?(Max 14)&quot;, 40));
+-  var time;
+-  case(val)
+-     1: time := 86400;
+-     2: time := 172800;
+-     3: time := 259200;
+-     4: time := 345600;
+-     5: time := 432000;
+-     6: time := 518400;
+-     7: time := 604800;
+-     8: time := 691200;
+-     9: time := 777600;
+-    10: time := 864000;
+-    11: time := 950400;
+-    12: time := 1036800;
+-    13: time := 1123200;
+-    14: time := 1209600;
+-  endcase
+-  var act := FindAccount(acctname);
+-  act.setprop(&quot;releaseday&quot;,(ReadGameClock() + time));
+-  var characters := EnumerateOnlineCharacters();
+-  act.disable();
+-  foreach char in characters
+-    if(char.acctname == acctname)
+-      SendSysMessage(char, &quot;You were kicked by &quot; + who.name + &quot;.&quot;);
+-      DisconnectClient(char);
+-      break;
+-    endif
+-  endforeach
+-endfunction
+-
+-function GetAccountLayoutLength();
+-    return(len(gotolayout));
+-endfunction
+-
+-function GetAccountDataLength();
+-    return(len(accountdata));
+-endfunction
+-
+-function info(who, character)
+-  var online := 0;
+-  foreach char in EnumerateOnlineCharacters()
+-    if(char.serial == character)
+-      character := char;
+-      online := 1;
+-    endif
+-  endforeach
+-  if(online == 0)
+-    character := SystemFindObjectBySerial(character, SYSFIND_SEARCH_OFFLINE_MOBILES);
+-  endif
+-  if(!character)
+-     SendSysMessage(who, &quot;That player does not exist. Cancelled.&quot;);
+-  else
+-    infodata[1] := &quot;Info On: &quot; + character.name;
+-    FillInStats(character);
+-    FillInSkills(character);
+-    FillInWeapon(character);
+-    var result := SendDialogGump(who, infolayout, infodata);
+-    var reskey;
+-    foreach key in(result.keys)
+-      if(key &gt;= 1000)
+-        reskey := key;
+-      endif
+-    endforeach
+-    case(result[0])
+-       1:   //fall through intentional
+-       2:
+-       3:
+-       4:
+-       5:
+-       6:
+-       7:
+-       9:
+-      11:
+-      14:
+-      13:
+-      15: EditStat(who, character, result[0]);
+-      16: EditSkill(who, character, reskey-1000);
+-      17: character.frozen := 1; SendSysMessage(who, character.name + &quot; is frozen.&quot;);
+-      18: character.frozen := 0; SendSysMessage(who, character.name + &quot; is unfrozen.&quot;);
+-      19: if(!character.isA(POLCLASS_NPC))
+-            SendSysMessage(character, &quot;You were kicked by &quot; + who.name + &quot;.&quot;);
+-            DisconnectClient(character);
+-          endif
+-      20: MoveCharacterToLocation(character, 1, 1, 0);
+-      21: if(!character.isA(POLCLASS_NPC))
+-            var bankbox := FindBankBox(character);
+-            SendOpenSpecialContainer(who, bankbox);
+-          else
+-            SendSysMessage(who, &quot;Only can be used on players.&quot;);
+-          endif
+-      22: if(!character.isA(POLCLASS_NPC))
+-            SendOpenSpecialContainer(who, character.backpack);
+-          else
+-            SendSysMessage(who, &quot;Only can be used on players.&quot;);
+-          endif
+-      23: MoveCharacterToLocation(character, who.x, who.y, who.z);
+-      24: SetName(character, RequestInput(who, who.backpack, &quot;Enter a new name.&quot;));
+-    endcase
+-  endif
+-endfunction
+-
+-function FillInStats(who)
+-  var levelname;
+-  case(who.cmdlevel)
+-      0: levelname := &quot;Player&quot;;
+-      1: levelname := &quot;Counselor&quot;;
+-      2: levelname := &quot;Seer&quot;;
+-      3: levelname := &quot;GM&quot;;
+-      4: levelname := &quot;Admin&quot;;
+-      5: levelname := &quot;Development&quot;;
+-  endcase
+-  infodata[8] := GetStrength(who);
+-  infodata[10] := GetIntelligence(who);
+-  infodata[12] := GetDexterity(who);
+-  infodata[14] := who.x;
+-  infodata[16] := who.y;
+-  infodata[18] := who.z;
+-  infodata[20] := GetHp(who) + &quot;/&quot; + GetMaxHp(who);
+-  infodata[22] := GetMana(who) + &quot;/&quot; + GetMaxMana(who);
+-  infodata[24] := GetStamina(who) + &quot;/&quot; + GetMaxStamina(who);
+-  infodata[26] := who.ar;
+-  infodata[28] := who.graphic;
+-  infodata[30] := who.color;
+-  infodata[144] := levelname;
+-  infodata[146] := who.acctname;
+-endfunction
+-
+-function FillInSkills(who)
+-  var datindx;
+-  var skillindx := 0;
+-  for(datindx := 32; datindx &lt;= 128; datindx := datindx + 2)
+-    infodata[datindx] := GetEffectiveSkill(who, skillindx);
+-    skillindx := skillindx + 1;
+-   endfor
+-endfunction
+-
+-function FillInWeapon(who)
+-  var weapfile := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-  var npcfile := ReadConfigFile(&quot;::npcdesc&quot;);
+-  if(who.weapon)
+-    var idx := find(who.weapon.name, &quot;[&quot;, 1); //ignore maker's mark
+-    if(idx!=0)
+-      var tempn := who.weapon.desc;
+-      tempn := tempn[1,idx-1];
+-      infodata[138] := tempn;
+-    else
+-      if(who.weapon.desc == &quot;nodraw&quot;)
+-        infodata[138] := &quot;Wrestling&quot;;
+-      else
+-        infodata[138] := who.weapon.desc;
+-      endif
+-    endif
+-    var dam := weapfile[who.weapon.objtype].Damage;
+-    if(!dam)
+-      infodata[140] := &quot;n/a&quot;;
+-    else
+-      infodata[140] := dam;
+-    endif
+-    infodata[142] := who.weapon.hp + &quot; / &quot; + who.weapon.maxhp;
+-   else
+-    infodata[138] := &quot;n/a&quot;;
+-    infodata[140] := &quot;n/a&quot;;
+-    infodata[142] := &quot;n/a&quot;;
+-    if(who.isA(POLCLASS_NPC)) //Hi, i'm an NPC
+-      var dam := npcfile[who.npctemplate].AttackDamage;
+-      var weap := npcfile[who.npctemplate].AttackSkillId;
+-      var ar := npcfile[who.npctemplate].AR;
+-      if(weap)
+-        infodata[138] := weap;
+-      endif
+-      if(dam)
+-        infodata[140] := dam;
+-      endif
+-      if(ar)
+-        infodata[142] := &quot;AR: &quot; + ar;
+-      endif
+-    endif
+-  endif
+-endfunction
+-
+-function EditStat(who, character, result)
+-    SendSysMessage(who, &quot;Caution! Values are changed immediately, Integers only!. Hit ESC to cancel.&quot;);
+-    var val := CInt(RequestInput(who, who.backpack, &quot;Enter a new value.&quot;));
+-    if(!val)
+-      SendSysMessage(who, &quot;Cancelled.&quot;);
+-    else
+-      case(result)
+-         1: SetBaseStrength(character,val);
+-         2: SetBaseIntelligence(character,val);
+-         3: SetBaseDexterity(character,val);
+-         4: MoveCharacterToLocation(character, val, character.y, character.z);
+-         5: MoveCharacterToLocation(character, character.x, val, character.z);
+-         6: MoveCharacterToLocation(character, character.x, character.y, val);
+-         7: SetHp(character, val);
+-         9: SetMana(character, val);
+-        11: SetStamina(character, val);
+-        13: character.ar_mod := 0;
+-            character.ar_mod := val - character.ar;
+-        14: character.graphic := val;
+-        15: character.color := val;
+-      endcase
+-    endif
+-endfunction
+-
+-function EditSkill(who, character, skill);
+-    SendSysMessage(who, &quot;Caution! Values are changed immediately, Integers only!. Hit ESC to cancel.&quot;);
+-    var val := CInt(RequestInput(who, who.backpack, &quot;Enter a new value.&quot;)) * 10;
+-    if((!val) &amp;&amp;(val != 0))
+-      SendSysMessage(who, &quot;Cancelled.&quot;);
+-    else
+-      SetBaseSkillBaseValue(character, skill, val);
+-    endif
+-endfunction
+\ No newline at end of file
+
+Copied: trunk/096/pkg/commands/gm/gmpage.src.temp (from rev 331, trunk/096/pkg/commands/gm/gmpage.src)
+
+Deleted: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-09-30 09:54:57 UTC (rev 331)
++++ trunk/096/pkg/commands/gm/info.src	2005-09-30 12:18:34 UTC (rev 332)
+@@ -1,1168 +0,0 @@
+-// command .info  started June 19, 2000
+-// Zulu (<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">zulu at zuluhotel.com</A>)
+-// last updated June 25, 2000
+-
+-use uo;
+-use os;
+-use cfgfile;
+-use basic;
+-
+-include &quot;:bank:bank&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/yesNo&quot;;
+-include &quot;include/gumpUtil&quot;;
+-include &quot;include/math&quot;;
+-
+-const TEXTSTARTLOCY :=  70;
+-
+-var layout := array(
+-&quot;page 0&quot;,
+-&quot;nodispose&quot;,
+-&quot;resizepic  50   0 2600 540 405&quot;, // background
+-&quot;text 120 18 5 150&quot;, //prefix name
+-&quot;text 120 38 5 0&quot;, //name
+-&quot;text 120 58 5 151&quot;, //suffix name
+-&quot;text 400 18 5 152&quot;, //race label
+-&quot;text 440 18 5 153&quot;, //race
+-&quot;text 400 38 5 163&quot;, //jail label
+-&quot;text 440 38 5 164&quot;, //jail days
+-&quot;button 380 20 2118 2117 1 1 28&quot;, //race
+-&quot;button 250 20 2118 2117 1 1 40&quot;, //guild
+-&quot;text 270 18 5 165&quot;, //guild
+-&quot;button 100 20 2118 2117 1 1 25&quot;, //rename prefix
+-&quot;button 100 40 2118 2117 1 1 24&quot;, //rename
+-&quot;button 100 60 2118 2117 1 1 26&quot;, //rename suffix
+-
+-&quot;page 1&quot;,
+-&quot;button 440 58 5540 5541 0 2&quot;,
+-&quot;text 130  80 300 6&quot;,
+-&quot;text 130 100 300 8&quot;,
+-&quot;text 130 120 300 10&quot;,
+-&quot;text 130 140 300 12&quot;,
+-&quot;text 130 160 300 14&quot;,
+-&quot;text 130 180 300 16&quot;,
+-&quot;text 130 200 300 18&quot;,
+-&quot;text 130 220 300 20&quot;,
+-&quot;text 130 240 300 22&quot;,
+-&quot;text 130 260 300 24&quot;,
+-&quot;text 130 280 300 26&quot;,
+-&quot;text 130 300 300 28&quot;,
+-&quot;text 130 320 300 148&quot;,
+-&quot;text 130 340 300 142&quot;,
+-&quot;text 130 360 300 144&quot;,
+-&quot;text 230  80 995 7&quot;,
+-&quot;text 230 100 995 9&quot;,
+-&quot;text 230 120 995 11&quot;,
+-&quot;text 230 140 995 13&quot;,
+-&quot;text 230 160 995 15&quot;,
+-&quot;text 230 180 995 17&quot;,
+-&quot;text 230 200 995 19&quot;,
+-&quot;text 230 220 995 21&quot;,
+-&quot;text 230 240 995 23&quot;,
+-&quot;text 230 260 995 25&quot;,
+-&quot;text 230 280 995 27&quot;,
+-&quot;text 230 300 995 29&quot;,
+-&quot;text 230 320 995 149&quot;,
+-&quot;text 230 340 995 143&quot;,
+-&quot;text 230 360 995 145&quot;,
+-&quot;button 370  82 2118 2117 1 1 1&quot;,
+-&quot;button 370 102 2118 2117 1 1 2&quot;,
+-&quot;button 370 122 2118 2117 1 1 3&quot;,
+-&quot;button 370 142 2118 2117 1 1 4&quot;,
+-&quot;button 370 162 2118 2117 1 1 5&quot;,
+-&quot;button 370 182 2118 2117 1 1 6&quot;,
+-&quot;button 370 202 2118 2117 1 1 7&quot;,  // hp
+-&quot;button 370 222 2118 2117 1 1 9&quot;,  // xmana
+-&quot;button 370 242 2118 2117 1 1 11&quot;, // stam
+-&quot;button 370 262 2118 2117 1 1 13&quot;,
+-&quot;button 370 282 2118 2117 1 1 14&quot;,
+-&quot;button 370 302 2118 2117 1 1 15&quot;,
+-&quot;button 370 322 2118 2117 1 1 27&quot;,
+-&quot;text 320  80 0 128&quot;,
+-&quot;text 320 100 0 128&quot;,
+-&quot;text 320 120 0 128&quot;,
+-&quot;text 320 140 0 128&quot;,
+-&quot;text 320 160 0 128&quot;,
+-&quot;text 320 180 0 128&quot;,
+-&quot;text 320 200 0 128&quot;,
+-&quot;text 320 220 0 128&quot;,
+-&quot;text 320 240 0 128&quot;,
+-&quot;text 275 260 0 128&quot;,
+-&quot;text 305 260 0 4&quot;,
+-&quot;text 320 280 0 128&quot;,
+-&quot;text 320 300 0 128&quot;,
+-&quot;text 320 320 0 128&quot;,
+-
+-&quot;page 2&quot;,
+-&quot;button 400 58 5537 5538 0 1&quot;,
+-&quot;button 440 58 5540 5541 0 5&quot;,
+-&quot;text 130  80 300 30&quot;,
+-&quot;text 130  95 300 32&quot;,
+-&quot;text 130 110 300 34&quot;,
+-&quot;text 130 125 300 36&quot;,
+-&quot;text 130 140 300 38&quot;,
+-&quot;text 130 155 300 40&quot;,
+-&quot;text 130 170 300 42&quot;,
+-&quot;text 130 185 300 44&quot;,
+-&quot;text 130 200 300 46&quot;,
+-&quot;text 130 215 300 48&quot;,
+-&quot;text 130 230 300 50&quot;,
+-&quot;text 130 245 300 52&quot;,
+-&quot;text 130 260 300 54&quot;,
+-&quot;text 130 275 300 56&quot;,
+-&quot;text 130 290 300 58&quot;,
+-&quot;text 130 305 300 60&quot;,
+-&quot;text 130 320 300 62&quot;,
+-&quot;text 130 335 300 64&quot;,
+-&quot;text 281  80 995 31&quot;,
+-&quot;text 281  95 995 33&quot;,
+-&quot;text 281 110 995 35&quot;,
+-&quot;text 281 125 995 37&quot;,
+-&quot;text 281 140 995 39&quot;,
+-&quot;text 281 155 995 41&quot;,
+-&quot;text 281 170 995 43&quot;,
+-&quot;text 281 185 995 45&quot;,
+-&quot;text 281 200 995 47&quot;,
+-&quot;text 281 215 995 49&quot;,
+-&quot;text 281 230 995 51&quot;,
+-&quot;text 281 245 995 53&quot;,
+-&quot;text 281 260 995 55&quot;,
+-&quot;text 281 275 995 57&quot;,
+-&quot;text 281 290 995 59&quot;,
+-&quot;text 281 305 995 61&quot;,
+-&quot;text 281 320 995 63&quot;,
+-&quot;text 281 335 995 65&quot;,
+-&quot;radio 311  84 2362 2361 0 1000&quot;,
+-&quot;radio 311  99 2362 2361 0 1001&quot;,
+-&quot;radio 311 114 2362 2361 0 1002&quot;,
+-&quot;radio 311 129 2362 2361 0 1003&quot;,
+-&quot;radio 311 144 2362 2361 0 1004&quot;,
+-&quot;radio 311 159 2362 2361 0 1005&quot;,
+-&quot;radio 311 174 2362 2361 0 1006&quot;,
+-&quot;radio 311 189 2362 2361 0 1007&quot;,
+-&quot;radio 311 204 2362 2361 0 1008&quot;,
+-&quot;radio 311 219 2362 2361 0 1009&quot;,
+-&quot;radio 311 234 2362 2361 0 1010&quot;,
+-&quot;radio 311 249 2362 2361 0 1011&quot;,
+-&quot;radio 311 264 2362 2361 0 1012&quot;,
+-&quot;radio 311 279 2362 2361 0 1013&quot;,
+-&quot;radio 311 294 2362 2361 0 1014&quot;,
+-&quot;radio 311 309 2362 2361 0 1015&quot;,
+-&quot;radio 311 324 2362 2361 0 1016&quot;,
+-&quot;radio 311 339 2362 2361 0 1017&quot;,
+-&quot;button 285 365 2648 2647 0 3&quot;,
+-&quot;button 215 360 2130 2129 3 2 16&quot;,
+-&quot;button 150 360 2121 2120 1 2 -1&quot;,
+-
+-&quot;page 3&quot;,
+-&quot;button 400 58 5537 5538 0 1&quot;,
+-&quot;button 440 58 5540 5541 0 5&quot;,
+-&quot;text 130  80 300 66&quot;,
+-&quot;text 130  95 300 68&quot;,
+-&quot;text 130 110 300 70&quot;,
+-&quot;text 130 125 300 72&quot;,
+-&quot;text 130 140 300 74&quot;,
+-&quot;text 130 155 300 76&quot;,
+-&quot;text 130 170 300 78&quot;,
+-&quot;text 130 185 300 80&quot;,
+-&quot;text 130 200 300 82&quot;,
+-&quot;text 130 215 300 84&quot;,
+-&quot;text 130 230 300 86&quot;,
+-&quot;text 130 245 300 88&quot;,
+-&quot;text 130 260 300 90&quot;,
+-&quot;text 130 275 300 92&quot;,
+-&quot;text 130 290 300 94&quot;,
+-&quot;text 130 305 300 96&quot;,
+-&quot;text 130 320 300 98&quot;,
+-&quot;text 130 335 300 100&quot;,
+-&quot;text 281  80 995 67&quot;,
+-&quot;text 281  95 995 69&quot;,
+-&quot;text 281 110 995 71&quot;,
+-&quot;text 281 125 995 73&quot;,
+-&quot;text 281 140 995 75&quot;,
+-&quot;text 281 155 995 77&quot;,
+-&quot;text 281 170 995 79&quot;,
+-&quot;text 281 185 995 81&quot;,
+-&quot;text 281 200 995 83&quot;,
+-&quot;text 281 215 995 85&quot;,
+-&quot;text 281 230 995 87&quot;,
+-&quot;text 281 245 995 89&quot;,
+-&quot;text 281 260 995 91&quot;,
+-&quot;text 281 275 995 93&quot;,
+-&quot;text 281 290 995 95&quot;,
+-&quot;text 281 305 995 97&quot;,
+-&quot;text 281 320 995 99&quot;,
+-&quot;text 281 335 995 101&quot;,
+-&quot;radio 311  84 2362 2361 0 1018&quot;,
+-&quot;radio 311  99 2362 2361 0 1019&quot;,
+-&quot;radio 311 114 2362 2361 0 1020&quot;,
+-&quot;radio 311 129 2362 2361 0 1021&quot;,
+-&quot;radio 311 144 2362 2361 0 1022&quot;,
+-&quot;radio 311 159 2362 2361 0 1023&quot;,
+-&quot;radio 311 174 2362 2361 0 1024&quot;,
+-&quot;radio 311 189 2362 2361 0 1025&quot;,
+-&quot;radio 311 204 2362 2361 0 1026&quot;,
+-&quot;radio 311 219 2362 2361 0 1027&quot;,
+-&quot;radio 311 234 2362 2361 0 1028&quot;,
+-&quot;radio 311 249 2362 2361 0 1029&quot;,
+-&quot;radio 311 264 2362 2361 0 1030&quot;,
+-&quot;radio 311 279 2362 2361 0 1031&quot;,
+-&quot;radio 311 294 2362 2361 0 1032&quot;,
+-&quot;radio 311 309 2362 2361 0 1033&quot;,
+-&quot;radio 311 324 2362 2361 0 1034&quot;,
+-&quot;radio 311 339 2362 2361 0 1035&quot;,
+-&quot;button 305 365 2650 2651 0 2&quot;,
+-&quot;button 285 365 2648 2647 0 4&quot;,
+-&quot;button 215 360 2130 2129 3 2 16&quot;,
+-&quot;button 150 360 2121 2120 1 2 -1&quot;,
+-
+-&quot;page 4&quot;,
+-&quot;button 400 58 5537 5538 0 1&quot;,
+-&quot;button 440 58 5540 5541 0 5&quot;,
+-&quot;text 130  80 300 102&quot;,
+-&quot;text 130  95 300 104&quot;,
+-&quot;text 130 110 300 106&quot;,
+-&quot;text 130 125 300 108&quot;,
+-&quot;text 130 140 300 110&quot;,
+-&quot;text 130 155 300 112&quot;,
+-&quot;text 130 170 300 114&quot;,
+-&quot;text 130 185 300 116&quot;,
+-&quot;text 130 200 300 118&quot;,
+-&quot;text 130 215 300 120&quot;,
+-&quot;text 130 230 300 122&quot;,
+-&quot;text 130 245 300 124&quot;,
+-&quot;text 130 260 300 126&quot;,
+-&quot;text 281  80 995 103&quot;,
+-&quot;text 281  95 995 105&quot;,
+-&quot;text 281 110 995 107&quot;,
+-&quot;text 281 125 995 109&quot;,
+-&quot;text 281 140 995 111&quot;,
+-&quot;text 281 155 995 113&quot;,
+-&quot;text 281 170 995 115&quot;,
+-&quot;text 281 185 995 117&quot;,
+-&quot;text 281 200 995 119&quot;,
+-&quot;text 281 215 995 121&quot;,
+-&quot;text 281 230 995 123&quot;,
+-&quot;text 281 245 995 125&quot;,
+-&quot;text 281 260 995 127&quot;,
+-&quot;radio 311  84 2362 2361 0 1036&quot;,
+-&quot;radio 311  99 2362 2361 0 1037&quot;,
+-&quot;radio 311 114 2362 2361 0 1038&quot;,
+-&quot;radio 311 129 2362 2361 0 1039&quot;,
+-&quot;radio 311 144 2362 2361 0 1040&quot;,
+-&quot;radio 311 159 2362 2361 0 1041&quot;,
+-&quot;radio 311 174 2362 2361 0 1042&quot;,
+-&quot;radio 311 189 2362 2361 0 1043&quot;,
+-&quot;radio 311 204 2362 2361 0 1044&quot;,
+-&quot;radio 311 219 2362 2361 0 1045&quot;,
+-&quot;radio 311 234 2362 2361 0 1046&quot;,
+-&quot;radio 311 249 2362 2361 0 1047&quot;,
+-&quot;radio 311 264 2362 2361 0 1048&quot;,
+-&quot;button 305 365 2650 2651 0 3&quot;,
+-&quot;button 215 360 2130 2129 3 2 16&quot;,
+-&quot;button 150 360 2121 2120 1 2 -1&quot;,
+-&quot;page 5&quot;,
+-&quot;button 400 58 5537 5538 0 2&quot;,
+-&quot;text 130  80 300 129&quot;, //freeze
+-&quot;text 130 100 300 130&quot;, //unfreeze
+-&quot;text 130 120 300 154&quot;, // lightning
+-&quot;text 130 140 300 155&quot;, // message
+-&quot;text 130 160 300 156&quot;, // resurrect
+-&quot;text 130 180 300 131&quot;, //kick
+-&quot;text 130 200 300 132&quot;, //jail
+-&quot;text 130 220 300 157&quot;, //forgive
+-&quot;text 290  80 300 158&quot;, //notes
+-&quot;text 290 100 300 133&quot;, //bank
+-&quot;text 290 120 300 134&quot;, //pack
+-&quot;text 290 140 300 159&quot;, //goto
+-&quot;text 290 160 300 135&quot;, //summon
+-&quot;text 290 180 300 160&quot;, //summon cage
+-&quot;text 290 200 300 161&quot;, // kill
+-&quot;text 290 220 300 162&quot;, // ban
+-&quot;button 220  82 2118 2117 1 0 17&quot;, // freeze
+-&quot;button 220 102 2118 2117 1 0 18&quot;, // unfreeze
+-&quot;button 220 122 2118 2117 1 0 30&quot;, // lightning
+-&quot;button 220 142 2118 2117 1 0 31&quot;, // message
+-&quot;button 220 162 2118 2117 1 0 32&quot;, // resurrect
+-&quot;button 220 182 2118 2117 1 0 19&quot;, // kick
+-&quot;button 220 202 2118 2117 1 0 20&quot;, // jail
+-&quot;button 220 222 2118 2117 1 0 29&quot;, // forgive
+-&quot;button 390  82 2118 2117 1 0 33&quot;, // notes
+-&quot;button 390 102 2118 2117 1 0 21&quot;, // bank
+-&quot;button 390 122 2118 2117 1 0 22&quot;, // pack
+-&quot;button 390 142 2118 2117 1 0 34&quot;, // goto
+-&quot;button 390 162 2118 2117 1 0 23&quot;, // summon
+-&quot;button 390 182 2118 2117 1 0 35&quot;, // summon cage
+-&quot;button 390 202 2118 2117 1 0 36&quot;, // kill
+-&quot;button 390 222 2118 2117 1 0 37&quot;, // ban
+-&quot;text 200 260 300 136&quot;,
+-&quot;text 200 280 300 138&quot;,
+-&quot;text 200 300 300 140&quot;,
+-&quot;text 300 260 995 137&quot;,
+-&quot;text 300 280 995 139&quot;,
+-&quot;text 300 300 995 141&quot;
+-);
+-
+-var data := array(
+-       &quot;&quot;,                     //0 Mobile name
+-       &quot;Stats&quot;,                //1
+-       &quot;Skills&quot;,               //2
+-       &quot;Other&quot;,                //3
+-       &quot;(temp)&quot;,               //4
+-       &quot;/&quot;,                    //5
+-       &quot;Strength&quot;,             //6
+-       &quot;&quot;,                     //7 mob str
+-       &quot;Intelligence&quot;,         //8
+-       &quot;&quot;,                     //9 mob int
+-       &quot;Dexterity&quot;,            //10
+-       &quot;&quot;,                     //11 mob dex
+-       &quot;X&quot;,                    //12
+-       &quot;&quot;,                     //13 mob x
+-       &quot;Y&quot;,                    //14
+-       &quot;&quot;,                     //15 mob y
+-       &quot;Z&quot;,                    //16
+-       &quot;&quot;,                     //17 mob z
+-       &quot;HP/MHP&quot;,               //18
+-       &quot;&quot;,                     //19 mob hp/maxhp
+-       &quot;MP/MMP&quot;,               //20
+-       &quot;&quot;,                     //21 mob mana/maxmana
+-       &quot;ST/MST&quot;,               //22
+-       &quot;&quot;,                     //23 mob stam/maxstam
+-       &quot;AR&quot;,                   //24
+-       &quot;&quot;,                     //25 mob ar
+-       &quot;Graphic&quot;,              //26
+-       &quot;&quot;,                     //27 mob graphic
+-       &quot;Color&quot;,                //28
+-       &quot;&quot;,                     //29 mob color
+-       &quot;ALCHEMY&quot;,              //30
+-       &quot;&quot;,
+-       &quot;ANATOMY&quot;,              //32
+-       &quot;&quot;,
+-       &quot;ANIMALLORE&quot;,           //34
+-       &quot;&quot;,
+-       &quot;ITEMID&quot;,               //36
+-       &quot;&quot;,
+-       &quot;ARMSLORE&quot;,             //38
+-       &quot;&quot;,
+-       &quot;PARRYING&quot;,             //40
+-       &quot;&quot;,
+-       &quot;BEGGING&quot;,              //42
+-       &quot;&quot;,
+-       &quot;BLACKSMITHY&quot;,          //44
+-       &quot;&quot;,
+-       &quot;BOWCRAFT&quot;,             //46
+-       &quot;&quot;,
+-       &quot;PEACEMAKING&quot;,          //48
+-       &quot;&quot;,
+-       &quot;CAMPING&quot;,              //50
+-       &quot;&quot;,
+-       &quot;CARPENTRY&quot;,            //52
+-       &quot;&quot;,
+-       &quot;CARTOGRAPHY&quot;,          //54
+-       &quot;&quot;,
+-       &quot;COOKING&quot;,              //56
+-       &quot;&quot;,
+-       &quot;DETECTHIDDEN&quot;,         //58
+-       &quot;&quot;,
+-       &quot;ENTICEMENT&quot;,           //60
+-       &quot;&quot;,
+-       &quot;EVALINT&quot;,              //62
+-       &quot;&quot;,
+-       &quot;HEALING&quot;,              //64
+-       &quot;&quot;,
+-       &quot;FISHING&quot;,              //66
+-       &quot;&quot;,
+-       &quot;FORENSICS&quot;,            //68
+-       &quot;&quot;,
+-       &quot;HERDING&quot;,              //70
+-       &quot;&quot;,
+-       &quot;HIDING&quot;,               //72
+-       &quot;&quot;,
+-       &quot;PROVOCATION&quot;,          //74
+-       &quot;&quot;,
+-       &quot;INSCRIPTION&quot;,          //76
+-       &quot;&quot;,
+-       &quot;LOCKPICKING&quot;,          //78
+-       &quot;&quot;,
+-       &quot;MAGERY&quot;,               //80
+-       &quot;&quot;,
+-       &quot;RESIST&quot;,               //82
+-       &quot;&quot;,
+-       &quot;TACTICS&quot;,              //84
+-       &quot;&quot;,
+-       &quot;SNOOPING&quot;,             //86
+-       &quot;&quot;,
+-       &quot;MUSICIANSHIP&quot;,         //88
+-       &quot;&quot;,
+-       &quot;POISONING&quot;,            //90
+-       &quot;&quot;,
+-       &quot;ARCHERY&quot;,              //92
+-       &quot;&quot;,
+-       &quot;SPIRITSPEAK&quot;,          //94
+-       &quot;&quot;,
+-       &quot;STEALING&quot;,             //96
+-       &quot;&quot;,
+-       &quot;TAILORING&quot;,            //98
+-       &quot;&quot;,
+-       &quot;TAMING&quot;,               //100
+-       &quot;&quot;,
+-       &quot;TASTEID&quot;,              //102
+-       &quot;&quot;,
+-       &quot;TINKERING&quot;,            //104
+-       &quot;&quot;,
+-       &quot;TRACKING&quot;,             //106
+-       &quot;&quot;,
+-       &quot;VETERINARY&quot;,           //108
+-       &quot;&quot;,
+-       &quot;SWORDS&quot;,               //110
+-       &quot;&quot;,
+-       &quot;MACES&quot;,                //112
+-       &quot;&quot;,
+-       &quot;FENCING&quot;,              //114
+-       &quot;&quot;,
+-       &quot;WRESTLING&quot;,            //116
+-       &quot;&quot;,
+-       &quot;LUMBERJACK&quot;,           //118
+-       &quot;&quot;,
+-       &quot;MINING&quot;,               //120
+-       &quot;&quot;,
+-       &quot;MEDITATION&quot;,           //122
+-       &quot;&quot;,
+-       &quot;STEALTH&quot;,              //124
+-       &quot;&quot;,
+-       &quot;REMOVETRAP&quot;,           //126
+-       &quot;&quot;,
+-       &quot;Edit&quot;,                 //127
+-       &quot;Freeze&quot;,
+-       &quot;Unfreeze&quot;,             //129
+-       &quot;Kick&quot;,
+-       &quot;Jail&quot;,                 //131
+-       &quot;Open Bank&quot;,
+-       &quot;Open Pack&quot;,            //133
+-       &quot;Summon&quot;,
+-       &quot;Weapon:&quot;,              //135
+-       &quot;&quot;,
+-       &quot;Damage:&quot;,              //137
+-       &quot;&quot;,
+-       &quot;HP/MAX:&quot;,              //139
+-       &quot;&quot;,
+-       &quot;CmdLevel:&quot;,            //141
+-       &quot;&quot;,
+-       &quot;Acctname:&quot;,            //143
+-       &quot;&quot;,
+-       &quot;&quot;,		       //145
+-       &quot;&quot;,
+-       &quot;Gender&quot;,	       //147
+-       &quot;&quot;,
+-       &quot;&quot;,		       //149 - prefix
+-       &quot;&quot;,		       //suffix
+-       &quot;Race:&quot;,
+-       &quot;&lt;none&gt;&quot;,
+-       &quot;Lightning&quot;,
+-       &quot;Message&quot;,
+-       &quot;Resurrect&quot;,
+-       &quot;Forgive&quot;,
+-       &quot;Notes&quot;,
+-       &quot;Goto/Send&quot;,
+-       &quot;Summon Cage&quot;,
+-       &quot;Kill&quot;,
+-       &quot;Ban&quot;,
+-       &quot;Jail:&quot;,
+-       &quot;&quot;,
+-       &quot;Remove Guild&quot;
+-);
+-
+-var layout3 := {
+-&quot;page 0&quot;,
+-&quot;nodispose&quot;,
+-&quot;nomove&quot;,
+-&quot;resizepic  20 20 2620 517 260&quot;, // background
+-
+-&quot;text     30  0  910 0 &quot;,
+-&quot;text    410  0  910 1 &quot;,
+-
+-&quot;button  508 0 4011 4013 1 0 1&quot;, //modify notes button
+-
+-&quot;textentry 30 30 500 20 910 2 2&quot;,
+-&quot;textentry 30 50 500 20 910 3 3&quot;,
+-&quot;textentry 30 70 500 20 910 4 4&quot;,
+-&quot;textentry 30 90 500 20 910 5 5&quot;,
+-&quot;textentry 30 110 500 20 910 6 6&quot;,
+-&quot;textentry 30 130 500 20 910 7 7&quot;,
+-&quot;textentry 30 150 500 20 910 8 8&quot;,
+-&quot;textentry 30 170 500 20 910 9 9&quot;,
+-&quot;textentry 30 190 500 20 910 10 10&quot;,
+-&quot;textentry 30 210 500 20 910 11 11&quot;,
+-&quot;textentry 30 230 500 20 910 12 12&quot;,
+-&quot;textentry 30 250 500 20 910 13 13&quot;
+-};
+-
+-var testdata := {
+-    &quot;Account Notes:&quot;,
+-    &quot;Save Notes:&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;,
+-    &quot;&quot;
+-};
+-
+-var golayout := array(
+-&quot;page 0&quot;,
+-&quot;nodispose&quot;,
+-&quot;nomove&quot;,
+-&quot;resizepic  50   0 2600 540 405&quot;, // background
+-
+-&quot;text 120 59 300 0&quot;,
+-&quot;text 220 59 300 1&quot;,
+-&quot;text 270 59 300 2&quot;,
+-&quot;text 320 59 300 0&quot;,
+-&quot;text 420 59 300 1&quot;,
+-&quot;text 470 59 300 2&quot;
+-
+-);
+-
+-var godata := array(
+-       &quot;Location&quot;,         //0
+-       &quot;Goto&quot;,
+-       &quot;Send&quot;
+-);
+-
+-program textcmd_info( character )
+-  var who, newname, whoname, tempitem, charcmdlevel := character.cmdlevel;
+-  SendSysMessage( character, &quot;Select a MOBILE.&quot; );
+-  who :=  Target( character, TGTOPT_NOCHECK_LOS );
+-  if(!who || !GetStrength(who))
+-    SendSysMessage(character,&quot;Invalid selection.&quot;);
+-    return;
+-  endif
+-  whoname := who.name;
+-  if(GetObjProperty(who,&quot;guardtype&quot;)==2)
+-	data[1] := &quot;Chaos &quot; + whoname;
+-  elseif (GetObjProperty(who,&quot;guardtype&quot;)==1)
+-    data[1] := &quot;Order &quot; + whoname;
+-  else
+-	data[1] := whoname;
+-  endif
+-  data[150] := who.gender;
+-  data[151] := who.title_prefix;
+-  data[152] := who.title_suffix;
+-  var acc := who.acct;
+-  var release := acc.getprop(&quot;Release&quot;);
+-  tempitem := who.title_race;
+-  if(tempitem!=&quot;&quot;)
+-    data[154] := who.title_race;
+-  endif
+-  var guild_id:=GetObjProperty(who,&quot;guild_id&quot;);
+-  if(guild_id.errortext)
+-    layout[13]:=&quot;&quot;;
+-    layout[14]:=&quot;&quot;;
+-  endif
+-  FillInStats( who );
+-  FillInSkills( who );
+-  FillInWeapon( who );
+-  if(!who.isA(POLCLASS_NPC))
+-    tempitem := (((release - ReadGameClock())/86400) + 1);
+-    if(tempitem&lt;0)
+-      tempitem:=0;
+-    endif
+-    data[165] := tempitem;
+-  else
+-    data[154] :=&quot;n/a&quot;;
+-    data[165] :=&quot;n/a&quot;;
+-    data[146] :=&quot;n/a&quot;;
+-  endif
+-  var result := SendDialogGump( character, layout, data );
+-  var reskey;
+-  foreach key in (result.keys)
+-    if(key &gt;= 1000)
+-      reskey := key;
+-    endif
+-  endforeach
+-  if(result[0]==0)
+-    return;
+-  endif
+-  if(result[0]&lt;=15)
+-    EditStat( who, character, result[0] );
+-    return;
+-  endif
+-  if(result[0]==16)
+-    EditSkill( who, character, reskey-1000 );
+-    return;
+-  endif
+-  if(result[0]==17)
+-    who.frozen := 1;
+-    SendSysMessage( character, whoname + &quot; is frozen.&quot;);
+-    return;
+-  endif
+-  if(result[0]==18)
+-    who.frozen := 0;
+-    SendSysMessage( character, whoname + &quot; is unfrozen.&quot;);
+-    return;
+-  endif
+-  if (result[0]==19)
+-    if (charcmdlevel&lt;=2)
+-      noaccess(character);
+-      return;
+-    endif
+-    if(!who.isA(POLCLASS_NPC))
+-      SendSysMessage(who, &quot;You have been kicked off the server by &quot; + character.name + &quot;.&quot;);
+-      DisconnectClient( who );
+-    endif
+-    return;
+-  endif
+-  if(result[0]==20) // jail
+-    if(who.npctemplate)
+-      return;
+-    endif
+-    if(release&gt;0)
+-      SendSysMessage( character, whoname + &quot; is already jailed.&quot;);
+-      return;
+-    endif
+-    var val := CInt(SendTextEntryGump( character, &quot;How many days will this account remain jailed? (Max 14)&quot;, 40 ));
+-    var time:=0;
+-    case(val)
+-       1: time := 86400;
+-       2: time := 172800;
+-       3: time := 259200;
+-       4: time := 345600;
+-       5: time := 432000;
+-       6: time := 518400;
+-       7: time := 604800;
+-       8: time := 691200;
+-       9: time := 777600;
+-      10: time := 864000;
+-      11: time := 950400;
+-      12: time := 1036800;
+-      13: time := 1123200;
+-      14: time := 1209600;
+-    endcase
+-    if(time==0)
+-      SendSysMessage(character, &quot;Cancelled.&quot;);
+-      return;
+-    endif
+-    acc.setprop(&quot;Release&quot;, (ReadGameClock() + time));
+-    MoveCharacterToLocation( who, 1, 1, 0, 0);
+-    SendSysMessage( who, &quot;You have been jailed&quot;);
+-    SendSysMessage( character, whoname + &quot; has been jailed.&quot; );
+-    return;
+-  endif
+-  if(result[0]==29) // forgive
+-    if(who.npctemplate)
+-      return;
+-    endif
+-    if(release==0)
+-      SendSysMessage( character, whoname + &quot; wasn't jailed.&quot;);
+-      return;
+-    endif
+-    acc.setprop(&quot;Release&quot;,0);
+-    SendSysMessage( who, &quot;You have been freed.&quot;);
+-    SendSysMessage( character, whoname + &quot; has been freed.&quot; );
+-    MoveCharacterToLocation( who, 1, 1, 20, 0);
+-    return;
+-  endif
+-
+-if (result[0]==21)
+-if( !who.npctemplate )
+-var bankbox := FindBankBox( who );
+-SendOpenSpecialContainer( character, bankbox );
+-else
+-SendSysMessage( character, &quot;This can only be used on players.&quot; );
+-endif
+-return;
+-endif
+-if (result[0]==22)
+-if( !who.npctemplate )
+-SendOpenSpecialContainer( character, who.backpack );
+-else
+-SendSysMessage( character, &quot;This can only be used on players.&quot; );
+-endif
+-return;
+-endif
+-if (result[0]==23) // summon
+-MoveCharacterToLocation( who, character.x, character.y, character.z );
+-showflame(who);
+-return;
+-endif
+-if (result[0]==24) // rename
+-newname := RequestInput( character, character.backpack, &quot;Enter a new name:&quot;);
+-if (!newname)
+-SendSysMessage(character, &quot;Cancelled.&quot;);
+-else
+-SetName( who, newname );
+-SendSysMessage(who, &quot;Your name has been changed.&quot;);
+-endif
+-return;
+-endif
+-if (result[0]==25) // rename prefix
+-newname := RequestInput( character, character.backpack, &quot;Enter a new prefix name:&quot;);
+-if (!newname)
+-SendSysMessage(character, &quot;Cancelled.&quot;);
+-else
+-who.title_prefix := newname;
+-SendSysMessage(who, &quot;Your name has been changed.&quot;);
+-endif
+-return;
+-endif
+-if (result[0]==26) // rename suffix
+-newname := RequestInput( character, character.backpack, &quot;Enter a new suffix name:&quot;);
+-if (!newname)
+-SendSysMessage(character, &quot;Cancelled.&quot;);
+-else
+-who.title_suffix := newname;
+-SendSysMessage(who, &quot;Your name has been changed.&quot;);
+-endif
+-return;
+-endif
+-if (result[0]==27) // Gender
+-tempitem := CInt(RequestInput( character, character.backpack, &quot;Enter a gender(0=male, 1=female)&quot;));
+-if ((tempitem==1) || (tempitem==0))
+-who.gender := tempitem;
+-SendSysMessage(who, &quot;Your gender has been changed.&quot;);
+-else
+-SendSysMessage(character, &quot;Canceled.&quot;);
+-endif
+-return;
+-endif
+-if (result[0]==28) // race
+-if (who.npctemplate) return; endif
+-if (charcmdlevel&lt;=2)
+-noaccess(character);
+-return;
+-endif
+-if ( YesNo(character,&quot;Delete Race?&quot;) )
+-who.title_race :=&quot;&quot;;
+-who.color := who.truecolor;
+-SendSysMessage( character, &quot;Race has been removed.&quot; );
+-SendSysMessage( who, &quot;Your race has been removed.&quot; );
+-else
+-SendSysMessage(character, &quot;Cancelled.&quot;);
+-endif
+-return;
+-endif
+-if (result[0]==40) // guild
+-if (who.npctemplate) return; endif
+-if (charcmdlevel&lt;=2)
+-noaccess(character);
+-return;
+-endif
+-removeguild(character,who);
+-return;
+-endif
+-if (result[0]==30) // lightning
+-PlayLightningBoltEffect(who);
+-PlaySoundEffect( who, 0x0207 );
+-SendSysMessage( who, &quot;You are being warned.&quot; );
+-SendSysMessage( character, whoname + &quot; has been warned.&quot; );
+-sleep(2);
+-PlayLightningBoltEffect(who);
+-PlaySoundEffect( who, 0x0029 );
+-return;
+-endif
+-if (result[0]==31) // message
+-var themessage := RequestInput(character, character.backpack, &quot;What message would you like to send &quot; + whoname + &quot;?&quot;);
+-if (!themessage)
+-        SendSysMessage(character, &quot;Cancelled.&quot;);
+-        return;
+-endif
+-SendSysMessage(who, &quot;MSG from Staff: &quot; + themessage);
+-SendSysMessage(character, &quot;MSG sent.&quot;);
+-return;
+-endif
+-if (result[0]==32) // resurrect
+-var newcolor, racepicked := who.title_race;
+-if (who.dead)
+-Resurrect( who );
+-if (racepicked==&quot;Elf&quot;)
+-	newcolor := 770;
+-elseif (racepicked==&quot;Dark-Elf&quot;)
+-	newcolor := 33877;
+-elseif (racepicked==&quot;Goblin&quot;)
+-	newcolor := 34186;
+-elseif (racepicked==&quot;Barbarian&quot;)
+-	newcolor := 33804;
+-elseif (racepicked==&quot;Dwarf&quot;)
+-	newcolor := 33888;
+-else
+-	newcolor := who.truecolor;
+-endif
+-	who.color := newcolor;
+-else
+-        SendSysMessage( character, whoname + &quot; is not dead!&quot; );
+-endif
+-return;
+-endif
+-if (result[0]==33) // notes
+-if (who.npctemplate) return; endif
+-var note:=acc.GetProp(&quot;Notes&quot;);
+-SetNotes(note);
+-var whataction := SendDialogGump( character, layout3, testdata );
+-if (whataction[0]!=1) return; endif
+-var subnote, i;
+-note :=&quot;&quot;;
+-for (i:=2; i&lt;=12; i:=i+1)
+-subnote:=whataction[i];
+-subnote[1, find(subnote, &quot;: &quot;, 1)+1]:=&quot;&quot;;
+-if (subnote!=&quot;&quot;)
+-note:=note+&quot; &quot;+subnote;
+-endif
+-endfor
+-acc.setprop(&quot;Notes&quot;, note);
+-return;
+-endif
+-if (result[0]==34) // goto
+-invokegomenu( character);
+-return;
+-endif
+-if (result[0]==35) // summon cage
+-MoveCharacterToLocation(who, character.x+1, character.y+1, character.z, MOVECHAR_FORCELOCATION);
+-tempitem := CreateItemAtLocation( who.x-1,who.y, who.z, 0x821, 1, who.realm );
+-tempitem.decay :=20;
+-tempitem := CreateItemAtLocation( who.x+1,who.y, who.z, 0x821, 1, who.realm );
+-tempitem.decay :=20;
+-tempitem := CreateItemAtLocation( who.x-1,who.y+1, who.z, 0x821, 1, who.realm );
+-tempitem.decay :=20;
+-tempitem := CreateItemAtLocation( who.x+1,who.y+1, who.z, 0x821, 1, who.realm );
+-tempitem.decay :=20;
+-tempitem := CreateItemAtLocation( who.x,who.y-1, who.z, 0x823, 1, who.realm );
+-tempitem.decay :=20;
+-tempitem := CreateItemAtLocation( who.x,who.y+1, who.z, 0x823, 1, who.realm );
+-tempitem.decay :=20;
+-tempitem := CreateItemAtLocation( who.x+1,who.y-1, who.z, 0x823, 1, who.realm );
+-tempitem.decay :=20;
+-tempitem := CreateItemAtLocation( who.x+1,who.y+1, who.z, 0x823, 1 , who.realm);
+-tempitem.decay :=20;
+-who.paralyzed := 1;
+-showflame(who);
+-return;
+-endif
+-if (result[0]==36) // kill
+-if (charcmdlevel&lt;=2)
+-noaccess(character);
+-return;
+-endif
+-if (!who.dead)
+-RevokePrivilege( who, &quot;invul&quot; );
+-SetObjProperty(who, &quot;guardkill&quot;, 1);
+-ApplyRawDamage( who, GetHp(who) );
+-SendSysMessage( character, whoname + &quot; has been killed!&quot; );
+-else
+-SendSysMessage( character, whoname + &quot; is not dead!&quot; );
+-endif
+-return;
+-endif
+-if (result[0]==37) // ban
+-if (who.npctemplate) return; endif
+-if (charcmdlevel&lt;=3)
+-noaccess(character);
+-return;
+-endif
+-SendSysMessage(who, &quot;Your account has been banned by &quot; + character.name + &quot;.&quot;);
+-var acc := who.acct;
+-acc.ban();
+-return;
+-endif
+-endprogram
+-
+-function removeguild(who,client)
+-var guild_id:=GetObjProperty(client,&quot;guild_id&quot;);
+-var guild:=FindGuild(guild_id);
+-SendSysMessage(who,&quot;Remove their guild?&quot;,3,34);
+-var answer:=YesNo(who,&quot;Remove Guild?&quot;);
+-if (!answer)
+-SendSysMessage(who,&quot;Guild not removed.&quot;,3,34);
+-return;
+-endif
+-var gm:=findgm(guild);
+-if (client.serial==gm[2]) guild.setprop(&quot;gm&quot;,0); endif
+-guild.removemember(client);
+-EraseObjProperty(client,&quot;guild_id&quot;);
+-EraseObjProperty(client,&quot;fealty&quot;);
+-fixnameguild(client);
+-client.title_guild:=&quot;&quot;;
+-EraseObjProperty(client,&quot;abv&quot;);
+-EraseObjProperty(client,&quot;talkchat&quot;);
+-EraseObjProperty(client,&quot;hearchat&quot;);
+-SendSysMessage(client,&quot;You are no longer a member of &quot;+guild.getprop(&quot;guildname&quot;)+&quot;.&quot;,3,70);
+-SendSysMessage(who,&quot;Guild has been removed.&quot;,3,70);
+-var i,all:=guild.members;
+-if (all.size()==0)
+-all:=guild.allyguilds;
+-if (all.size()!=0)
+-for(i:=1;i&lt;=all.size();i:=i+1)
+-guild.removeallyguild(all[i]);
+-endfor
+-endif
+-all:=guild.enemyguilds;
+-if (all.size()!=0)
+-for(i:=1;i&lt;=all.size();i:=i+1)
+-guild.removeenemyguild(all[i]);
+-endfor
+-endif
+-DestroyGuild(guild);
+-SendSysMessage(who,&quot;You will need to delete the old guildstone.&quot;,3,34);
+-endif
+-endfunction
+-
+-function fixnameguild(who)
+-  var abv:=GetObjProperty(who,&quot;abv&quot;),result:=find(who.name,&quot; [&quot;+abv+&quot;]&quot;,1),name:=who.name;
+-  result:=result-1;
+-  name:=name[1,result];
+-  who.name:=name;
+-endfunction
+-
+-function findgm(guild)
+-  var returninfo:={&quot;In Vote&quot;,&quot;0&quot;},i,all:=guild.members,gm:=guild.getprop(&quot;gm&quot;);
+-  for(i:=1;i&lt;=all.size();i:=i+1)
+-    if(all[i].serial==gm)
+-      returninfo[1]:=all[i].name;
+-      returninfo[2]:=all[i].serial;
+-      returninfo[3]:=all[i];
+-    endif
+-  endfor
+-  return returninfo;
+-endfunction
+-
+-function noaccess(who)
+-  SendSysMessage( who, &quot;You do not have rights to change that.&quot; );
+-  return;
+-endfunction
+-
+-function FillInStats( who )
+-   var levelname;
+-   case( who.cmdlevel )
+-      0: levelname := &quot;Player&quot;;
+-      1: levelname := &quot;Counselor&quot;;
+-      2: levelname := &quot;Seer&quot;;
+-      3: levelname := &quot;GM&quot;;
+-      4: levelname := &quot;Admin&quot;;
+-      5: levelname := &quot;Development&quot;;
+-   endcase
+-   data[8] := GetStrength(who);
+-   data[10] := GetIntelligence(who);
+-   data[12] := GetDexterity(who);
+-   data[14] := who.x;
+-   data[16] := who.y;
+-   data[18] := who.z;
+-   data[20] := GetHp(who) + &quot;/&quot; + GetMaxHp(who);
+-   data[22] := GetMana(who) + &quot;/&quot; + GetMaxMana(who);
+-   data[24] := GetStamina(who) + &quot;/&quot; + GetMaxStamina(who);
+-   data[26] := who.ar;
+-   data[28] := who.graphic;
+-   data[30] := who.color;
+-   data[144] := levelname;
+-   data[146] := who.acctname;
+-endfunction
+-
+-function FillInSkills( who )
+-   var datindx;
+-   var skillindx := 0;
+-   for( datindx := 32; datindx &lt;= 128; datindx := datindx + 2 )
+-       data[datindx] := GetEffectiveSkill( who, skillindx);
+-       skillindx := skillindx + 1;
+-   endfor
+-endfunction
+-
+-function FillInWeapon( who )
+-   var weapfile := ReadConfigFile( &quot;:combat:itemdesc&quot; );
+-   var npcfile := ReadConfigFile( &quot;::npcdesc&quot; );
+-   if(who.weapon)
+-      var idx := find( who.weapon.name, &quot;[&quot;, 1 ); //ignore maker's mark
+-      if(idx!=0)
+-          var tempn := who.weapon.desc;
+-          tempn := tempn[1,idx-1];
+-          data[138] := tempn;
+-      else
+-          if(who.weapon.desc == &quot;nodraw&quot;)
+-             data[138] := &quot;Wrestling&quot;;
+-          else
+-             data[138] := who.weapon.desc;
+-          endif
+-      endif
+-      var dam := weapfile[who.weapon.objtype].Damage;
+-      if(!dam)
+-          data[140] := &quot;n/a&quot;;
+-      else
+-          data[140] := dam;
+-      endif
+-      data[142] := who.weapon.hp + &quot; / &quot; + who.weapon.maxhp;
+-   else
+-      data[138] := &quot;n/a&quot;;
+-      data[140] := &quot;n/a&quot;;
+-      data[142] := &quot;n/a&quot;;
+-      if(who.isA(POLCLASS_NPC)) //Hi, i'm an NPC
+-           var dam := npcfile[who.npctemplate].AttackDamage;
+-           var weap := npcfile[who.npctemplate].AttackSkillId;
+-           var ar := npcfile[who.npctemplate].AR;
+-           if( weap )
+-              data[138] := weap;
+-           endif
+-           if( dam )
+-              data[140] := dam;
+-           endif
+-           if( ar )
+-              data[142] := &quot;AR: &quot; + ar;
+-           endif
+-      endif
+-   endif
+-endfunction
+-
+-function EditStat(who, character, result)
+-  if(character.cmdlevel&lt;3)
+-    noaccess(character);
+-    return;
+-  endif
+-  SendSysMessage(character, &quot;Caution! Values are changed immediately, Integers only!. Hit ESC to cancel.&quot;);
+-  var val := CInt(RequestInput(character, character.backpack, &quot;Enter a new value.&quot;));
+-  if(!val)
+-    SendSysMessage(character, &quot;Canceled.&quot;);
+-    return;
+-  endif
+-  case(result)
+-    1: SetBaseStrength(who,val);
+-    2: SetBaseIntelligence(who,val);
+-    3: SetBaseDexterity(who,val);
+-    4: MoveCharacterToLocation(who, val, who.y, who.z);
+-    5: MoveCharacterToLocation(who, who.x, val, who.z);
+-    6: MoveCharacterToLocation(who, who.x, who.y, val);
+-    7: SetHp(who, val);
+-    9: SetMana(who, val);
+-   11: SetStamina(who, val);
+-   13: who.ar_mod := 0;
+-       who.ar_mod := val - who.ar;
+-   14: who.graphic := val;
+-   15: who.color := val;
+-  endcase
+-endfunction
+-
+-function EditSkill( who, character, skill );
+-  if (skill&gt;48 &amp;&amp; skill&lt;0)
+-    return;
+-  endif
+-  if (character.cmdlevel&lt;3)
+-    noaccess(character);
+-    return;
+-  endif
+-  SendSysMessage( character, &quot;Caution! Values are changed immediately, Integers only!. Hit ESC to cancel.&quot; );
+-  var val := CInt(RequestInput( character, character.backpack, &quot;Enter a new value.&quot;)) * 10;
+-  if( ((!val) &amp;&amp; (val != 0)) )
+-   SendSysMessage(character, &quot;Canceled.&quot;);
+-   return;
+-  endif
+-  SetBaseSkillBaseValue(who, skill, val);
+-endfunction
+-
+-function showflame(who)
+-  var coolflame;
+-  if ((who.cmdlevel&gt;3) &amp;&amp; (who.concealed!=1))
+-    coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3709, 1, who.realm );
+-    PlaySoundEffect(who, 0x208);
+-    sleep(3);
+-    DestroyItem(coolflame);
+-  endif
+-endfunction
+-
+-function SetNotes(note)
+-  var split:=SplitWords(note);
+-  var width:=0;
+-  var lines:=0;
+-  var index:=1;
+-  while ((index&lt;=len(split)) &amp;&amp; (lines&lt;=12))
+-    if (width==0)
+-      var testword:=split[index];
+-      lines:=lines+1;
+-      testdata[2+lines]:=testword;
+-      width:=GumpTextWidthFast(testword);
+-      index:=index+1;
+-    else
+-      var testword:=&quot; &quot;+split[index];
+-      var testwidth:=GumpTextWidthFast(testword);
+-      if (width+testwidth&lt;CInt(500/1.5))
+-        testdata[2+lines]:=testdata[2+lines]+testword;
+-        width:=width+testwidth;
+-        index:=index+1;
+-      else
+-        width:=0;
+-      endif
+-    endif
+-  endwhile
+-  if (lines&gt;12)
+-    testdata[1+lines]:=testdata[1+lines]+&quot;...&quot;;
+-  else
+-    while(lines&lt;12)
+-      lines:=lines+1;
+-      testdata[2+lines]:=&quot;&quot;;
+-    endwhile
+-  endif
+-endfunction
+-
+-function invokegomenu( who)
+-  var tname := lower(who.name);
+-  FillIngoArrays(tname);
+-  var goresult := SendDialogGump(who, golayout, godata);
+-  if (!(goresult[0] == 0))
+-    var locs    := ReadConfigFile(&quot;::golocs&quot;);
+-    var MaxLocs := GetConfigMaxIntKey(locs)+1;
+-    var dest    := locs[mod(goresult[0], MaxLocs)];
+-    var traveler;
+-    if (goresult[0] &gt; MaxLocs)
+-      SendSysMessage( who, &quot;Select a MOBILE.&quot; );
+-      traveler :=  Target( who, TGTOPT_NOCHECK_LOS );
+-      if(!traveler || !GetStrength(traveler))
+-        SendSysMessage( who, &quot;Invalid selection.&quot; );
+-      endif
+-    else
+-      traveler := who;
+-    endif
+-    MoveCharacterToLocation(traveler, dest.X, dest.Y, GetMapInfo(dest.X, dest.Y, who.realm).z);
+-    showflame(traveler);
+-    UnloadConfigFile(&quot;::golocs&quot;);
+-  endif
+-endfunction
+-
+-function FillIngoArrays( tname )
+-    var telelocations := ReadConfigFile(&quot;::golocs&quot;);
+-    var datalen;
+-    var layoutlen;
+-    var prev_y := CInt(TEXTSTARTLOCY);
+-    var datindx := 2;
+-    var buttonret := 1;
+-    var i, currloc, rowloc:=120, locationscount := 0;
+-    var numlocations := GetConfigMaxIntKey(telelocations);
+-    for( i := 1; i &lt;= numlocations; i := i + 1  )
+-      currloc := telelocations[i];
+-      if ((currloc.TYPE == &quot;all&quot;) || (currloc.TYPE == tname))
+-        locationscount := locationscount + 1;
+-        datalen := GetgoDataLength();
+-        layoutlen := GetgoLayoutLength();
+-        datindx := datalen+1;
+-        godata[datindx] := currloc.Name;
+-        if (mod(locationscount, 19) == 1)
+-          if (locationscount &gt;= 18)
+-            rowloc :=320;
+-          endif
+-          prev_y := TEXTSTARTLOCY;
+-        endif
+-        golayout[GetgoLayoutLength()+1] := (&quot;text &quot; + rowloc +&quot; &quot;+ CStr(prev_y + 20) + &quot; 995 &quot; + datalen);
+-        golayout[GetgoLayoutLength()+1] := (&quot;button &quot; + (rowloc+110) +&quot; &quot;+CStr(prev_y + 25) + &quot; 2103 2104 1 0 &quot; + ((buttonret+1) / 2));
+-       golayout[GetgoLayoutLength()+1] := (&quot;button &quot; + (rowloc+160) +&quot; &quot;+CStr(prev_y + 25) + &quot; 2103 2104 1 0 &quot; + (((buttonret+1) / 2) + numlocations+1)); // Send Button
+-        prev_y := prev_y + 15;
+-      endif
+-      buttonret := buttonret + 2;
+-    endfor
+-endfunction
+-
+-function GetgoLayoutLength();
+-    return (len(golayout));
+-endfunction
+-
+-function GetgoDataLength();
+-    return (len(godata));
+-endfunction
+\ No newline at end of file
+
+Copied: trunk/096/pkg/commands/gm/info.src.temp (from rev 331, trunk/096/pkg/commands/gm/info.src)
+
+Deleted: trunk/096/pkg/commands/gm/iteminfo.src
+===================================================================
+--- trunk/096/pkg/commands/gm/iteminfo.src	2005-09-30 09:54:57 UTC (rev 331)
++++ trunk/096/pkg/commands/gm/iteminfo.src	2005-09-30 12:18:34 UTC (rev 332)
+@@ -1,261 +0,0 @@
+-use uo;
+-use os;
+-use cfgfile;
+-
+-include &quot;:bank:bank&quot;;
+-include &quot;include/attributes&quot;;
+-
+-var layout := array(
+-
+-&quot;page 0&quot;,
+-&quot;resizepic 0 50 2620 500 300&quot;,
+-&quot;resizepic 325 100 5054 150 190&quot;,
+-&quot;text 40 59 5 0&quot;,
+-&quot;text 20 84 40 1&quot;,
+-&quot;text 114 84 40 2&quot;,
+-&quot;text 208 84 40 3&quot;,
+-&quot;button 78 81 2640 2641 0 1&quot;,
+-&quot;button 170 81 2640 2641 0 4&quot;,
+-&quot;button 256 81 2640 2641 0 5&quot;,
+-&quot;button 20 62 2118 2117 1 1 24&quot;,
+-&quot;&quot;,
+-
+-&quot;page 1&quot;,
+-&quot;text 14 120 40 6&quot;,
+-&quot;text 120 120 40 7&quot;,
+-&quot;text 14 145 40 8&quot;,
+-&quot;text 120 145 40 9&quot;,
+-&quot;text 14 170 40 10&quot;,
+-&quot;text 120 170 40 11&quot;,
+-&quot;text 14 195 40 12&quot;,
+-&quot;text 120 195 40 13&quot;,
+-&quot;text 14 220 40 14&quot;,
+-&quot;text 120 220 40 15&quot;,
+-&quot;text 14 245 40 16&quot;,
+-&quot;text 120 245 40 17&quot;,
+-&quot;text 14 270 40 18&quot;,
+-&quot;text 120 270 40 19&quot;,
+-&quot;text 14 295 40 20&quot;,
+-&quot;text 120 295 40 21&quot;,
+-&quot;button 270 120 2644 2645 0 2&quot;, //Page 2 (Amount)
+-&quot;button 270 145 2640 2641 1 1 2&quot;, //x
+-&quot;button 270 170 2640 2641 1 1 3&quot;, //y
+-&quot;button 270 195 2640 2641 1 1 4&quot;, //z
+-&quot;button 270 220 2640 2641 1 1 5&quot;, //hp
+-&quot;button 270 245 2644 2645 0 3&quot;, //Page 3 ar/dam mods
+-&quot;button 270 270 2640 2641 1 1 7&quot;, //graph
+-&quot;button 270 295 2640 2641 1 1 8&quot;, //color
+-
+-&quot;page 2&quot;,
+-&quot;text 14 120 40 6&quot;, //Amount
+-&quot;text 120 120 40 7&quot;,
+-&quot;text 14 155 40 28&quot;, //Create Stack In Backpack
+-&quot;button 270 155 2640 2641 1 1 1&quot;,
+-&quot;text 14 180 40 30&quot;, //Dupe Item In Backpack
+-&quot;button 270 180 2640 2641 1 1 16&quot;,
+-&quot;button 270 120 2645 2644 0 1&quot;, //Page 1 (Amount)
+-
+-&quot;page 3&quot;,
+-&quot;text 14 120 40 6&quot;,
+-&quot;text 120 120 40 7&quot;,
+-&quot;text 14 145 40 8&quot;,
+-&quot;text 120 145 40 9&quot;,
+-&quot;text 14 170 40 10&quot;,
+-&quot;text 120 170 40 11&quot;,
+-&quot;text 14 195 40 12&quot;,
+-&quot;text 120 195 40 13&quot;,
+-&quot;text 14 220 40 14&quot;,
+-&quot;text 120 220 40 15&quot;,
+-&quot;text 14 245 40 16&quot;,
+-&quot;text 120 245 40 17&quot;,
+-&quot;button 270 120 2644 2645 0 2&quot;, //Page 2 (Amount)
+-&quot;button 270 145 2640 2641 1 1 2&quot;, //x
+-&quot;button 270 170 2640 2641 1 1 3&quot;, //y
+-&quot;button 270 195 2640 2641 1 1 4&quot;, //z
+-&quot;button 270 220 2640 2641 1 1 5&quot;, //hp
+-&quot;button 270 245 2645 2644 0 1&quot;, //Page 1
+-&quot;text 14 270 40 31&quot;,            //ar/dmg mod.
+-&quot;text 120 270 40 32&quot;,            //ar/dmg mod. value
+-&quot;button 270 270 2640 2641 1 1 6&quot;,
+-
+-&quot;page 4&quot;,
+-&quot;text 14 120 40 22&quot;,  //Destroy
+-&quot;button 270 120 2640 2641 1 1 20&quot;,
+-&quot;text 14 145 40 26&quot;,  //Bounce
+-&quot;button 270 145 2640 2641 1 1 21&quot;,
+-&quot;text 14 170 40 27&quot;,  //Set Movable
+-&quot;button 270 170 2640 2641 1 1 22&quot;,
+-&quot;text 14 195 40 25&quot;,  //Set Newbie
+-&quot;button 270 195 2640 2641 1 1 23&quot;,
+-
+-&quot;page 5&quot;,
+-&quot;text 14 120 40 35&quot;,
+-&quot;text 14 145 40 36&quot;
+-
+-);
+-
+-var data := array(
+-       &quot;&quot;,                     //0 Mobile name
+-       &quot;General&quot;,              //1
+-       &quot;Options&quot;,              //2
+-       &quot;Other&quot;,                //3
+-       &quot;temp&quot;,                 //4
+-       &quot;/&quot;,                    //5
+-       &quot;Amount&quot;,               //6
+-       &quot;&quot;,                     //7 item amount
+-       &quot;X&quot;,                    //8
+-       &quot;&quot;,                     //9 mob x
+-       &quot;Y&quot;,                    //10
+-       &quot;&quot;,                     //11 mob y
+-       &quot;Z&quot;,                    //12
+-       &quot;&quot;,                     //13 mob z
+-       &quot;Hp/Mhp&quot;,               //14
+-       &quot;&quot;,                     //15 mob stam/maxstam
+-       &quot;Armor&quot;,                //16
+-       &quot;&quot;,                     //17 mob ar
+-       &quot;Graphic&quot;,              //18
+-       &quot;&quot;,                     //19 mob graphic
+-       &quot;Color&quot;,                //20
+-       &quot;&quot;,                     //21 mob color
+-       &quot;Destroy Item&quot;,         //22
+-       &quot;&quot;,                     //23
+-       &quot;Dupe Item&quot;,            //24
+-       &quot;&quot;,                     //25 SetNewbie
+-       &quot;Bounce Item in Backpack&quot;,  //26
+-       &quot;&quot;,                     //27 SetMovable
+-       &quot;Create Stack in Backpack&quot;, //28
+-       &quot;0&quot;,                       //29
+-       &quot;Dupe Item in Backpack&quot;,    //30
+-       &quot;&quot;,                     //31
+-       &quot;&quot;,                     //32 Ar/Dmg Modifier
+-       &quot;&quot;,                     //33 Ar/Dmg Modifier Value
+-       &quot;&quot;,                     //34
+-       &quot;Stats modifiers for wearable&quot;,
+-       &quot;items not implemented yet.&quot;
+-
+-);
+-
+-program textcmd_info(character, text)
+-  SendSysMessage(character, &quot;Select an Item.&quot;);
+-  var item;
+-  if (text != &quot;&quot;)
+-      item := SystemFindObjectBySerial( CInt(text), SYSFIND_SEARCH_OFFLINE_MOBILES|SYSFIND_SEARCH_STORAGE_AREAS );
+-  else
+-      var what :=  TargetCoordinates(character);
+-      item := what.item;
+-  endif
+-  
+-  if(!item || GetIntelligence(item))
+-    SendSysMessage(character, &quot;Invalid selection.&quot;);
+-    return;
+-  endif
+-  layout[12] := &quot;tilepic 380 180 &quot; + item.graphic;
+-  data[1] := &quot;Info On: &quot; + item.desc;
+-  if(item.newbie == 1)
+-    data[26] := &quot;Set Item not Newbie&quot;;
+-  else
+-    data[26] := &quot;Set Item Newbie&quot;;
+-  endif
+-  if(item.movable == 1)
+-    data[28] := &quot;Set Item Unmovable&quot;;
+-  else
+-    data[28] := &quot;Set Item Movable&quot;;
+-  endif
+-  General(item);
+-  var result := SendDialogGump(character, layout, data);
+-  case(result[0])
+-     1:  //fall through intentional
+-     2:
+-     3:
+-     4:
+-     5:
+-     6:
+-     7:
+-     8:
+-     9:
+-    10:
+-    11:
+-    12:
+-    13:
+-    14:
+-    13:
+-    15: EditItem(item, character, result[0]);
+-    16: CreateItemInContainer(character.backpack, item.objtype, 1);
+-    20: DestroyItem(item);
+-        PrintTextAbovePrivate(character,&quot;Object Destroyed&quot;,character);
+-    21: MoveItemToContainer(item, character.backpack, x := -1, y := -1);
+-        PrintTextAbovePrivate(character,&quot;Object Bounced&quot;,character);
+-    22: if(item.movable == 1)
+-          item.movable := 0;
+-        else
+-          item.movable := 1;
+-        endif
+-    23: if(item.newbie == 1)
+-          item.newbie := 0;
+-        else
+-          item.newbie := 1;
+-        endif
+-    24: SetName(item, RequestInput(character, character.backpack, &quot;Enter a new name.&quot;));
+-  endcase
+-endprogram
+-
+-function General(item)
+-   data[8]  := item.amount;
+-   data[10] := item.x;
+-   data[12] := item.y;
+-   data[14] := item.z;
+-   if(item.hp)
+-    data[16] := item.hp + &quot;/&quot; + item.maxhp;
+-   else
+-    data[16] := &quot;n/a&quot;;
+-    layout[34] := 0;
+-   endif
+-   var weapfile := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-   var entry := weapfile[item.objtype].damage;
+-   if(entry)
+-     var dam := weapfile[item.objtype].damage;
+-     data[17] := &quot;Damage&quot;;
+-     data[18] := dam;
+-     data[32] := &quot;Dmg modifier&quot;;
+-    data[33] := item.dmg_mod;
+-   elseif(item.ar)
+-    data[17] := &quot;Armor&quot;;
+-    data[18] := item.ar;
+-    data[32] := &quot;Ar modifier&quot;;
+-    data[33] := item.ar_mod;
+-   else
+-    data[17] := &quot;Ar/Dam&quot;;
+-    data[18] := &quot;n/a&quot;;
+-    layout[35] := 0;
+-   endif
+-   data[20] := item.graphic;
+-   data[22] := item.color;
+-endfunction
+-
+-function EditItem(item, character, result)
+-  SendSysMessage(character, &quot;Changes are made immediately, Integers only. Hit Esc to cancel.&quot;);
+-  var val := CInt(RequestInput(character, character.backpack, &quot;Enter a new value.&quot;));
+-  if(!val)
+-    if (result == 8)
+-      item.color := val;
+-    else
+-      SendSysMessage(character, &quot;Cancelled.&quot;);
+-    return;
+-    endif
+-  endif
+-  case(result)
+-    1: CreateItemInInventory(character.backpack, item.objtype, val); //SetAmount(item):= val;
+-       PrintTextAbovePrivate(character, &quot;You have just created &quot; + val + &quot; &quot; + item.desc + &quot; in your backpack.&quot;, character);
+-    2: MoveItemToLocation(item, val, item.y, item.z, MOVEITEM_FORCELOCATION);
+-    3: MoveItemToLocation(item, item.x, val, item.z, MOVEITEM_FORCELOCATION);
+-    4: MoveItemToLocation(item, item.x, item.y, val, MOVEITEM_FORCELOCATION);
+-    5: SetHp(item, val);
+-    6: if(!item.ar)
+-        item.dmg_mod := val;
+-       else
+-        item.ar_mod := val;
+-       endif
+-    7: item.graphic := val;
+-    8: item.color := val;
+-  endcase
+-endfunction
+\ No newline at end of file
+
+Copied: trunk/096/pkg/commands/gm/iteminfo.src.temp (from rev 331, trunk/096/pkg/commands/gm/iteminfo.src)
+
+Modified: trunk/096/pkg/commands/gm/thaw.src
+===================================================================
+--- trunk/096/pkg/commands/gm/thaw.src	2005-09-30 09:54:57 UTC (rev 331)
++++ trunk/096/pkg/commands/gm/thaw.src	2005-09-30 12:18:34 UTC (rev 332)
+@@ -1,17 +1,46 @@
++/* $Id$
++ *
++ * Purpose
++ * A command to thaw (unfreeze) a mobile or yourself.
++ *
++ * TODO
++ * Remove SendSysMessage()
++ */
+ use uo;
+ 
+-program hideme( gm )
+-    SendSysMessage( gm, &quot;Who do you wish to thaw?&quot; );
+-    var res := TargetCoordinates( gm );
+-    if (res.mobile)
+-        res.mobile.frozen := 0;
+-	if (GetObjProperty(res.mobile, &quot;frozen&quot;))
+-		EraseObjProperty(res.mobile,&quot;frozen&quot;);
++include &quot;include/messages&quot;;
++include &quot;include/localization&quot;;
++
++
++program command_thaw(who, params)
++	var mobile;
++	
++	if (!params)
++		SendSysMessage(who, &quot;Who do you wish to thaw?&quot;);
++		if ((mobile := Target(who, TGTOPT_NOCHECK_LOS)) == 0)
++			SendMessage(who, MSG_CANCELLED, array{}, MSG_COMMAND);
++		else
++			if (!mobile.isA(POLCLASS_MOBILE))
++				SendMessage(who, MSG_NO_MOB, array{}, MSG_COMMAND);
++			else
++				if (mobile.frozen == 0)
++					SendSysMessage(who, &quot;Mobile is not frozen.&quot;);
++				else
++					mobile.frozen := 0;
++					SendMessage(who, MSG_DONE, array{}, MSG_COMMAND);
++				endif
++			endif
++		endif
++	elseif (params == &quot;me&quot;)
++		if (who.frozen == 0)
++			SendSysMessage(who, &quot;You are not frozen.&quot;);
++		else
++			who.frozen := 0;
++			SendMessage(who, MSG_DONE, array{}, MSG_COMMAND);
++		endif
+ 	else
+-		SendSysMessage( gm, &quot;That wasn't frozen.&quot;);
++		SendSysMessage(who, &quot;Use .help &lt;command&gt;&quot;);
+ 	endif
+-        PrintTextAbovePrivate( res.mobile, res.mobile.name + &quot; has been thawed.&quot;, gm );
+-    else
+-        SendSysMessage( gm, &quot;Cancelled.&quot; );
+-    endif
+-endprogram
+\ No newline at end of file
++
++	return;
++endprogram
+
+Deleted: trunk/096/pkg/commands/gm/thawme.src
+===================================================================
+--- trunk/096/pkg/commands/gm/thawme.src	2005-09-30 09:54:57 UTC (rev 331)
++++ trunk/096/pkg/commands/gm/thawme.src	2005-09-30 12:18:34 UTC (rev 332)
+@@ -1,6 +0,0 @@
+-use uo;
+-
+-program thawme( gm )
+-    gm.frozen := 0;
+-    PrintTextAbovePrivate( gm, &quot;Fly!  Be free!&quot;, gm );
+-endprogram
+\ No newline at end of file
+
+Deleted: trunk/096/pkg/commands/gm/wipebank.src
+===================================================================
+--- trunk/096/pkg/commands/gm/wipebank.src	2005-09-30 09:54:57 UTC (rev 331)
++++ trunk/096/pkg/commands/gm/wipebank.src	2005-09-30 12:18:34 UTC (rev 332)
+@@ -1,27 +0,0 @@
+-//////////////////////////////////////////////////////////////////////
+-//
+-//  &quot;.wipebank&quot; text command
+-//
+-//  NOTE: not entirely safe.  If the person whos bankbox you're
+-//        wiping already has their bankbox open, this will cause
+-//        access violations if they access the bankbox.
+-//        A workaround would be to Move() the character after wiping
+-//        the bankbox, which would force them to close it.
+-//
+-//////////////////////////////////////////////////////////////////////
+-use uo;
+-
+-include &quot;:bank:bank&quot;;
+-
+-program textcmd_wipebank(who)
+-    PrintTextAbovePrivate( who, &quot;Whose bank shall I wipe?&quot;, who );
+-    var whom := Target( who );
+-    if (whom)
+-        if (WipeBankBox( who ))
+-            PrintTextAbovePrivate( who, &quot;Oooh, that's cold.  Bankbox wiped!&quot;, who );
+-        else
+-            PrintTextAbovePrivate( who, &quot;Hm, no bankbox to wipe!&quot;, who );
+-        endif
+-   
+-    endif
+-endprogram
+\ No newline at end of file
+
+Copied: trunk/096/pkg/commands/gm/wipebank.src.temp (from rev 331, trunk/096/pkg/commands/gm/wipebank.src)
+
+Modified: trunk/096/pkg/skills/anatomy/anatomy.src
+===================================================================
+--- trunk/096/pkg/skills/anatomy/anatomy.src	2005-09-30 09:54:57 UTC (rev 331)
++++ trunk/096/pkg/skills/anatomy/anatomy.src	2005-09-30 12:18:34 UTC (rev 332)
+@@ -1,11 +1,13 @@
+-// //$Id$
+-
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;:attributes:attributeConstants&quot;;
+ include &quot;:attributes:attributes&quot;;
+ include &quot;:attributes:skillCheck&quot;;
+ 
++
+ program skill_Anatomy(who)
+ 
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+@@ -175,4 +177,4 @@
+ 		return &quot;very low&quot;;
+ 	endif
+ 
+-endfunction
+\ No newline at end of file
++endfunction
+
+Modified: trunk/096/pkg/skills/armslore/armsLore.src
+===================================================================
+--- trunk/096/pkg/skills/armslore/armsLore.src	2005-09-30 09:54:57 UTC (rev 331)
++++ trunk/096/pkg/skills/armslore/armsLore.src	2005-09-30 12:18:34 UTC (rev 332)
+@@ -7,66 +7,66 @@
+ include &quot;include/skillPoints&quot;;
+ 
+ 
+-program do_armslore( who )
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  var quality_descr, damage_descr;
+-  var thepoints := (CInt(GetEffectiveSkill(who, SKILLID_ARMSLORE)) * 2) + 20;
+-  SendSysMessage(who, &quot;Select an object to evaluate.&quot;);
+-  var the_item := Target(who, TGTOPT_CHECK_LOS);
+-  if(!the_item)
+-    SendSysMessage(who, &quot;Targetting cancelled.&quot;);
+-    return;
+-  endif
+-  var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+-  var entry := cfg[the_item.objtype];
+-  if(!entry)
+-    SendSysMessage(who, &quot;You can only use this skill on weapons or armor!&quot;);
+-    return;
+-  endif
+-  if(CheckSkill(who, SKILLID_ARMSLORE, -1, thepoints))
+-    var item_max_hp := the_item.maxhp;
+-    var max_hp := item_max_hp;
+-    var hp := the_item.hp;
+-    if(hp == 0)
+-      hp := 1;
+-    endif
+-    if(max_hp == 0)
+-       max_hp := 1;
+-    endif
+-    if(item_max_hp == 0)
+-      item_max_hp := 1;
+-    endif
+-    var damage_real := (hp  * 100) / max_hp;
+-    var damage_nbr := CInt(damage_real);
+-    var quality_real :=  (the_item.quality  * 100);
+-    var quality_nbr := CInt(quality_real);
+-    if(damage_nbr &gt; 90)
+-      damage_descr := &quot;good&quot;;
+-    elseif (damage_nbr &gt;= 60)
+-      damage_descr := &quot;acceptable&quot;;
+-    elseif (damage_nbr &gt;= 40)
+-      damage_descr := &quot;fair&quot;;
+-    else
+-      damage_descr := &quot;poor&quot;;
+-    endif
+-    if(quality_nbr &gt; 100)
+-      quality_descr := &quot;exceptional&quot;;
+-    elseif (quality_nbr &gt;= 80)
+-      quality_descr := &quot;excellent&quot;;
+-    elseif (quality_nbr &gt;= 60)
+-      quality_descr := &quot;decent&quot;;
+-    elseif (quality_nbr &gt;= 40)
+-      quality_descr := &quot;moderate&quot;;
+-    else
+-      quality_descr := &quot;low&quot;;
+-    endif
+-    SendSysMessage(who, &quot;This item is of &quot; + quality_descr + &quot; quality, and is in &quot; + damage_descr + &quot; condition.&quot;);
+-  else
+-    SendSysMessage(who, &quot;You can't quite tell . . .&quot;);
+-  endif
+-endprogram
++program skill_armslore(who)
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
+ 
++	var quality_descr, damage_descr;
++	var thepoints := (CInt(GetEffectiveSkill(who, SKILLID_ARMSLORE)) * 2) + 20;
++	SendSysMessage(who, &quot;Select an object to evaluate.&quot;);
++	var the_item := Target(who, TGTOPT_CHECK_LOS);
++	if (!the_item)
++		SendSysMessage(who, &quot;Targetting cancelled.&quot;);
++		return;
++	endif
++	var cfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
++	var entry := cfg[the_item.objtype];
++	if (!entry)
++		SendSysMessage(who, &quot;You can only use this skill on weapons or armor!&quot;);
++		return;
++	endif
++	if(CheckSkill(who, SKILLID_ARMSLORE, -1, thepoints))
++		var item_max_hp := the_item.maxhp;
++		var max_hp := item_max_hp;
++		var hp := the_item.hp;
++		if (hp == 0)
++			hp := 1;
++		endif
++		if (max_hp == 0)
++			max_hp := 1;
++		endif
++		if (item_max_hp == 0)
++			item_max_hp := 1;
++		endif
+ 
++		var damage_real := (hp  * 100) / max_hp;
++		var damage_nbr := CInt(damage_real);
++		var quality_real :=  (the_item.quality  * 100);
++		var quality_nbr := CInt(quality_real);
+ 
++		if(damage_nbr &gt; 90)
++			damage_descr := &quot;good&quot;;
++		elseif (damage_nbr &gt;= 60)
++			damage_descr := &quot;acceptable&quot;;
++		elseif (damage_nbr &gt;= 40)
++			damage_descr := &quot;fair&quot;;
++		else
++			damage_descr := &quot;poor&quot;;
++		endif
+ 
++		if (quality_nbr &gt; 100)
++			quality_descr := &quot;exceptional&quot;;
++		elseif (quality_nbr &gt;= 80)
++			quality_descr := &quot;excellent&quot;;
++		elseif (quality_nbr &gt;= 60)
++			quality_descr := &quot;decent&quot;;
++		elseif (quality_nbr &gt;= 40)
++			quality_descr := &quot;moderate&quot;;
++		else
++			quality_descr := &quot;low&quot;;
++		endif
++		SendSysMessage(who, &quot;This item is of &quot; + quality_descr + &quot; quality, and is in &quot; + damage_descr + &quot; condition.&quot;);
++	else
++		SendSysMessage(who, &quot;You can't quite tell . . .&quot;);
++	endif
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000309.html">[Poldistro-svn] r331 - trunk/096/pkg/systems
+</A></li>
+	<LI>Next message: <A HREF="000311.html">[Poldistro-svn] r333 - trunk/096/pkg/items/containers/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#310">[ date ]</a>
+              <a href="thread.html#310">[ thread ]</a>
+              <a href="subject.html#310">[ subject ]</a>
+              <a href="author.html#310">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

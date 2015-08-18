@@ -1,0 +1,382 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r229 - in trunk/096/pkg/systems/attributes: config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r229%20-%20in%20trunk/096/pkg/systems/attributes%3A%20config%20include&In-Reply-To=%3C200509250137.j8P1bRLh017839%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000210.html">
+   <LINK REL="Next"  HREF="000212.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r229 - in trunk/096/pkg/systems/attributes: config include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r229%20-%20in%20trunk/096/pkg/systems/attributes%3A%20config%20include&In-Reply-To=%3C200509250137.j8P1bRLh017839%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r229 - in trunk/096/pkg/systems/attributes: config include">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep 25 03:37:27 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000210.html">[Poldistro-svn] r228 - in trunk/096/pkg/systems/attributes: commands/test config hooks include
+</A></li>
+        <LI>Next message: <A HREF="000212.html">[Poldistro-svn] r230 - in trunk/096/pkg/systems/attributes: hooks include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#211">[ date ]</a>
+              <a href="thread.html#211">[ thread ]</a>
+              <a href="subject.html#211">[ subject ]</a>
+              <a href="author.html#211">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-25 03:37:26 +0200 (Sun, 25 Sep 2005)
+New Revision: 229
+
+Modified:
+   trunk/096/pkg/systems/attributes/config/settings.cfg
+   trunk/096/pkg/systems/attributes/include/attributes.inc
+   trunk/096/pkg/systems/attributes/include/regen.inc
+   trunk/096/pkg/systems/attributes/include/skills.inc
+   trunk/096/pkg/systems/attributes/include/stats.inc
+   trunk/096/pkg/systems/attributes/include/vitals.inc
+Log:
+Added CheckSkillCap() and CheckStatCap()
+
+Modified: trunk/096/pkg/systems/attributes/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/config/settings.cfg	2005-09-24 23:59:50 UTC (rev 228)
++++ trunk/096/pkg/systems/attributes/config/settings.cfg	2005-09-25 01:37:26 UTC (rev 229)
+@@ -1,9 +1,9 @@
+ Elem Regen
+ {
+ 	# Base stat regenerating rates in points per minute.
+-	Hits		20
+-	Mana		10
+-	Stamina		25	
++	Hits			20
++	Mana			10
++	Stamina			25	
+ }
+ 
+ Elem Skills
+@@ -19,7 +19,7 @@
+ Elem Stats
+ {
+ 	// Maximum value of all stats combined.
+-	TotalCap			225.0
++	TotalCap		225.0
+ 	
+ 	// Individual stat caps - highest they are allowed to go.
+ 	Strength		100.0
+
+Modified: trunk/096/pkg/systems/attributes/include/attributes.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-24 23:59:50 UTC (rev 228)
++++ trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-25 01:37:26 UTC (rev 229)
+@@ -13,6 +13,7 @@
+ use cfgfile;
+ 
+ include &quot;:attributes:include/regen&quot;;
++include &quot;:attributes:include/settings&quot;;
+ include &quot;:attributes:include/skills&quot;;
+ include &quot;:attributes:include/stats&quot;;
+ include &quot;:attributes:include/vitals&quot;;
+@@ -57,13 +58,18 @@
+  * Returns an array
+  *
+  */
+-function AP_ListAttributesByType(type)
++function AP_ListAttributesByType(type:=&quot;&quot;)
++	var cfg_file := ReadConfigFile(&quot;:attributes:attributes&quot;);
++	
++	if ( !type )
++		return GetConfigStringKeys(cfg_file);
++	endif
++	
+ 	type := Lower(type);
+-	
+ 	var list := array;
+-	var cfg := ReadConfigFile(&quot;:attributes:attributes&quot;);
+-	foreach elem_name in ( GetConfigStringKeys(cfg) )
+-		var elem_info := cfg[elem_name];
++
++	foreach elem_name in ( GetConfigStringKeys(cfg_file) )
++		var elem_info := cfg_file[elem_name];
+ 		if ( Lower(elem_info.AttributeType) == type )
+ 			list.append(array);
+ 		endif
+
+Modified: trunk/096/pkg/systems/attributes/include/regen.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/regen.inc	2005-09-24 23:59:50 UTC (rev 228)
++++ trunk/096/pkg/systems/attributes/include/regen.inc	2005-09-25 01:37:26 UTC (rev 229)
+@@ -91,6 +91,7 @@
+  *
+  * Purpose
+  * Saves the dictionary of regeneration settings on a mobile.
++ * Updates the regeneration rate on the mobile.
+  *
+  * Parameters
+  * mobile:	Mobile reference to save the regen information on.
+@@ -105,7 +106,10 @@
+ 		return error{&quot;errortext&quot;:=&quot;Regen prop must be a dictionary.&quot;};
+ 	endif
+ 	
+-	RecalcVitals(mobile);
++	var result := SetObjProperty(mobile, &quot;%RegenRates%&quot;, regen_prop);
++	if ( result != error )
++		RecalcVitals(mobile);
++	endif
+ 	
+-	return SetObjProperty(mobile, &quot;%RegenRates%&quot;, regen_prop);
++	return result;
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-24 23:59:50 UTC (rev 228)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-25 01:37:26 UTC (rev 229)
+@@ -147,3 +147,35 @@
+ 	
+ 	return stat_entries;
+ endfunction
++
++/*
++ * AP_CheckSkillCap(mobile, skill_name)
++ *
++ * Purpose
++ * Checks if a skill is greater than or equal to its maximum value in settings.cfg
++ * If no skill_name is passed, it will check the totals.
++ *
++ * Parameters
++ * mobile:		Mobile to check the skills on
++ * stat_name:	Optional parameter - name of the skill to check.
++ *
++ * Return value
++ * Returns 1 if skill(s) &gt;= to the cap
++ *
++ */
++function AP_CheckSkillCap(mobile, skill_name:=&quot;&quot;)
++	var cfg_elem := AP_GetSettingsCfgElem(&quot;Skills&quot;);
++	
++	if ( skill_name )
++		var cap := GetConfigReal(cfg_elem, skill_name);
++		return ( AP_GetTrueSkill(mobile, skill_name) &gt;= cap );
++	else
++		var total := 0.0;
++		foreach attribute_name in ( AP_ListAttributesByType(&quot;Skill&quot;) )
++			total := total + AP_GetTrueSkill(mobile, attribute_name);
++			sleepms(2);
++		endforeach
++		
++		return ( total &gt;= GetConfigReal(cfg_elem, &quot;TotalCap&quot;) );
++	endif
++endfunction
+
+Modified: trunk/096/pkg/systems/attributes/include/stats.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/stats.inc	2005-09-24 23:59:50 UTC (rev 228)
++++ trunk/096/pkg/systems/attributes/include/stats.inc	2005-09-25 01:37:26 UTC (rev 229)
+@@ -17,7 +17,7 @@
+  * Retrieves the base value of the stat plus its mod value.
+  *
+  * Parameters
+- * mobile:	Mobile reference to retrieve the points from.
++ * mobile:		Mobile reference to retrieve the points from.
+  * stat_name:	Name of the stat to retrieve the points for.
+  *
+  * Return value
+@@ -35,7 +35,7 @@
+  * Retrieves the base value of the stat and turns it into a usable number.
+  *
+  * Parameters
+- * mobile:	Mobile reference to retrieve the points from.
++ * mobile:		Mobile reference to retrieve the points from.
+  * stat_name:	Name of the stat to retrieve the points for.
+  *
+  * Return value
+@@ -53,7 +53,7 @@
+  * Retrieves the base value of the stat mod and turns it into a usable number.
+  *
+  * Parameters
+- * mobile:	Mobile reference to retrieve the points from.
++ * mobile:		Mobile reference to retrieve the points from.
+  * stat_name:	Name of the stat to retrieve the modifier points for.
+  *
+  * Return value
+@@ -72,9 +72,9 @@
+  * Example: AP_SetTrueStat(mobile, &quot;strength&quot;, 44.5)
+  *
+  * Parameters
+- * mobile:	Mobile reference to set the points on.
++ * mobile:		Mobile reference to set the points on.
+  * stat_name:	Name of the stat to set the points on.
+- * points:	Number of points to set the stat at.
++ * points:		Number of points to set the stat at.
+  *
+  * Return value
+  * Returns a double.
+@@ -89,12 +89,12 @@
+  *
+  * Purpose
+  * Sets the modifier value for the stat.
+- * Example: AP_SetStatMod(mobile, &quot;strength&quot;, -15.3)
++ * Example: 	AP_SetStatMod(mobile, &quot;strength&quot;, -15.3)
+  *
+  * Parameters
+- * mobile:	Mobile reference to set the modifier points on.
++ * mobile:		Mobile reference to set the modifier points on.
+  * stat_name:	Name of the stat to set the modifier points on.
+- * points:	Number of points to set the modifier stat at.
++ * points:		Number of points to set the modifier stat at.
+  *
+  * Return value
+  * Returns a double.
+@@ -103,3 +103,35 @@
+ function AP_SetStatMod(mobile, stat_name, points)
+ 	SetAttributeTemporaryMod(mobile, stat_name, CInt(CDbl(points) * 10.0));
+ endfunction
++
++/*
++ * AP_CheckStatCap(mobile, stat_name)
++ *
++ * Purpose
++ * Checks if a stat is greater than or equal to its maximum value in settings.cfg
++ * If no stat_name is passed, it will check the totals.
++ *
++ * Parameters
++ * mobile:		Mobile to check the stats on
++ * stat_name:	Optional parameter - name of the stat to check.
++ *
++ * Return value
++ * Returns 1 if the stat is &gt;= to the cap
++ *
++ */
++function AP_CheckStatCap(mobile, stat_name:=&quot;&quot;)
++	var cfg_elem := AP_GetSettingsCfgElem(&quot;Stats&quot;);
++	
++	if ( stat_name )
++		var cap := GetConfigReal(cfg_elem, stat_name);
++		return ( AP_GetTrueStat(mobile, stat_name) &gt;= cap );
++	else
++		var total := 0.0;
++		foreach attribute_name in ( AP_ListAttributesByType(&quot;Stat&quot;) )
++			total := total + AP_GetTrueStat(mobile, attribute_name);
++			sleepms(2);
++		endforeach
++		
++		return ( total &gt;= GetConfigReal(cfg_elem, &quot;TotalCap&quot;) );
++	endif
++endfunction
+
+Modified: trunk/096/pkg/systems/attributes/include/vitals.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/vitals.inc	2005-09-24 23:59:50 UTC (rev 228)
++++ trunk/096/pkg/systems/attributes/include/vitals.inc	2005-09-25 01:37:26 UTC (rev 229)
+@@ -12,6 +12,26 @@
+ use os;
+ use cfgfile;
+ 
++/* AP_GetVitalsCfgFile()
++ * 
++ * Purpose
++ * Loads vitals.cfg
++ *
++ * Parameters
++ *
++ * Return value
++ * Config file
++ *
++ */
++function AP_GetVitalsCfgFile()
++	var cfg := ReadConfigFile(&quot;:attributes:vitals&quot;);
++	if ( cfg.errortext )
++		SysLog(&quot;Error::AP_GetVitalsCfgFile() - Unable to open vitals.cfg -&gt;&quot;+cfg.errortext);
++	endif
++
++	return cfg;
++endfunction
++
+ /*
+  * AP_GetVitalCfgElem(vital)
+  *
+@@ -26,12 +46,8 @@
+  *
+  */
+ function AP_GetVitalCfgElem(vital)
+-	var cfg := ReadConfigFile(&quot;:attributes:vitals&quot;);
+-	if ( cfg.errortext )
+-		SysLog(&quot;Error::AP_GetVitalCfgElem() - Unable to open vitals.cfg -&gt;&quot;+cfg.errortext);
+-	endif
+-	
+-	var cfg_elem := cfg[vital];
++	var cfg_file := AP_GetVitalsCfgFile();
++	var cfg_elem := cfg_file[vital];
+ 	if ( cfg_elem.errortext )
+ 		SysLog(&quot;Error::AP_GetVitalsCfgElem() - unable to find cfg elem [&quot;+vital+&quot;] -&gt;&quot;+cfg_elem.errortext);
+ 	endif
+@@ -40,6 +56,22 @@
+ endfunction
+ 
+ /*
++ * AP_GetVitalNames()
++ *
++ * Purpose
++ * Retrieves a list of all vitals in vitals.cfg
++ *
++ * Parameters
++ *
++ * Return value
++ * Returns an array of strings
++ *
++ */
++function AP_GetVitalNames()
++	return GetConfigStringKeys(AP_GetVitalsCfgFile());
++endfunction
++
++/*
+  * AP_GetVital(mobile, vital_name)
+  *
+  * Purpose
+@@ -79,7 +111,7 @@
+  * AP_GetVitalRegenRate(mobile, vital_name)
+  *
+  * Purpose
+- * Retrieves the regen rate of a vital on a mobile.
++ * Retrieves the (base + mod) regen rate of a vital on a mobile.
+  *
+  * Parameters
+  * mobile:	Mobile reference to check.
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000210.html">[Poldistro-svn] r228 - in trunk/096/pkg/systems/attributes: commands/test config hooks include
+</A></li>
+	<LI>Next message: <A HREF="000212.html">[Poldistro-svn] r230 - in trunk/096/pkg/systems/attributes: hooks include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#211">[ date ]</a>
+              <a href="thread.html#211">[ thread ]</a>
+              <a href="subject.html#211">[ subject ]</a>
+              <a href="author.html#211">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

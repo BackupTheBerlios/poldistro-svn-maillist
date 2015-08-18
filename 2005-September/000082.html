@@ -1,0 +1,759 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r100 - in trunk/096/pkg/mobiles/ai_brain: . commands/test complete/testnpc config include include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r100%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20commands/test%20complete/testnpc%20config%20include%20include/braincore&In-Reply-To=%3C200509111054.j8BAsg0o004373%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000081.html">
+   <LINK REL="Next"  HREF="000083.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r100 - in trunk/096/pkg/mobiles/ai_brain: . commands/test complete/testnpc config include include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r100%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20commands/test%20complete/testnpc%20config%20include%20include/braincore&In-Reply-To=%3C200509111054.j8BAsg0o004373%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r100 - in trunk/096/pkg/mobiles/ai_brain: . commands/test complete/testnpc config include include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep 11 12:54:42 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000081.html">[Poldistro-svn] r99 - trunk/096/config
+</A></li>
+        <LI>Next message: <A HREF="000083.html">[Poldistro-svn] r101 - in trunk/096/pkg/mobiles/ai_brain: . config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#82">[ date ]</a>
+              <a href="thread.html#82">[ thread ]</a>
+              <a href="subject.html#82">[ subject ]</a>
+              <a href="author.html#82">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-11 12:54:33 +0200 (Sun, 11 Sep 2005)
+New Revision: 100
+
+Added:
+   trunk/096/pkg/mobiles/ai_brain/commands/test/unloadNPCDescs.src
+   trunk/096/pkg/mobiles/ai_brain/config/npcdesc.cfg
+Removed:
+   trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/brain.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/sleep.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcError.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc
+Log:
+Nightly updates
+
+Modified: trunk/096/pkg/mobiles/ai_brain/brain.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/brain.src	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/brain.src	2005-09-11 10:54:33 UTC (rev 100)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * BRAIN.SRC - v5.0
+-* Updated 9/1/2005 6:20AM
++* Updated 9/11/2005 2:06AM
+ *
+ * NPC AI-Script to control all non-setup actions. Acts as the &quot;brain&quot;
+ * and fires off external scripts that act as the &quot;nerves&quot; of the NPC.
+@@ -41,7 +41,6 @@
+ //as references rather than copies within the brain and nerves.
+ var g_settings := dictionary; //&quot;setting name&quot;-&gt;value
+ var g_scripts := dictionary; // &quot;script type&quot;-&gt;value{.flags, .script}
+-var g_nerves := dictionary; // &quot;nerve name&quot;-&gt;value{.flags, .pid}
+ 
+ program BrainAI()
+ 	//Run setup steps for the npc.
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/test/unloadNPCDescs.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/test/unloadNPCDescs.src	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/commands/test/unloadNPCDescs.src	2005-09-11 10:54:33 UTC (rev 100)
+@@ -0,0 +1,23 @@
++use uo;
++use os;
++use polsys;
++use cfgfile;
++
++program cmd_unloadNPCDescs(who)
++	SendSysMessage(who, &quot;Begining to unload npcdesc.cfg files...&quot;);
++	
++	UnloadConfigFile(&quot;:*:npcdesc&quot;);
++	UnloadConfigFile(&quot;::npcdesc&quot;);
++	
++	foreach package in (Packages())
++		if ( package.npcdesc )
++			UnloadConfigFile(&quot;:&quot;+(package.name)+&quot;:npcdesc&quot;);
++			SendSysMessage(who, &quot;Unloading :&quot;+(package.name)+&quot;:npcdesc&quot;);
++		endif	
++		sleepms(2);
++	endforeach
++	
++	ReloadConfiguration();
++	
++	SendSysMessage(who, &quot;All npcdesc.cfg files unloaded.&quot;);
++endprogram
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src	2005-09-11 10:54:33 UTC (rev 100)
+@@ -9,14 +9,13 @@
+ 	//var nerve_name	:= params[2];
+ 	//var settings	:= params[3];
+ 	//var scripts	:= params[4];
+-	var nerves	:= params[5];
+ 	params := array{}; // Not needed anymore.
+ 	
+-	foreach nerve_name in (nerves.keys())
++	foreach nerve_name in (LoadNerves(npc).keys())
+ 		if ( nerve_name.flags &amp; NF_CONTINUE_ON_SLEEP )
+ 			continue;
+ 		else
+-			StopNerve(npc, nerve_name, nerves);
++			StopNerve(npc, nerve_name);
+ 		endif
+ 		sleepms(2);
+ 	endforeach
+
+Added: trunk/096/pkg/mobiles/ai_brain/config/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/config/npcdesc.cfg	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/config/npcdesc.cfg	2005-09-11 10:54:33 UTC (rev 100)
+@@ -0,0 +1,38 @@
++NPCTemplate TestNPC
++{
++	Name		&lt;Test NPC&gt;
++	Script		:ai_brain:brain
++	ObjType		0x190
++	Color		0
++	TrueColor	0
++	Gender		0
++
++	STR		1
++	INT		1
++	DEX		1
++	HITS		1
++	MANA		1
++	STAM		1
++	AR		1
++	RunSpeed	255
++	
++	AISetting	CycleWait	i10
++	AISetting	IdleTicks	i5
++	AISetting	SleepWait	i1000
++	AISetting	ListenRange	i10
++	AISetting	AreaSize	i5
++	AISetting	DblClickRange	i10
++	AISetting	HearSpeech	i1
++	AISetting	HearGhosts	i1
++	
++	AIScript	Combat		:ai_brain:complete/testNPC/combat
++	AIScript	DblClick	:ai_brain:complete/testNPC/doubleClick
++	AIScript	Disengaged	:ai_brain:complete/testNPC/disengaged
++	AIScript	EnterArea	:ai_brain:complete/testNPC/enterArea
++	AIScript	GoneCriminal	:ai_brain:complete/testNPC/goneCriminal
++	AIScript	ItemGiven	:ai_brain:complete/testNPC/itemGiven
++	AIScript	LeftArea	:ai_brain:complete/testNPC/leftArea
++	AIScript	Listen		:ai_brain:complete/testNPC/listen
++	AIScript	Restart		:ai_brain:complete/testNPC/restart
++	AIScript	Sleep		:ai_brain:complete/testNPC/sleep
++}
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/cycleScript.inc	2005-09-11 10:54:33 UTC (rev 100)
+@@ -22,10 +22,10 @@
+  */
+ function RunCycleScript()
+ 	if ( g_scripts[&quot;Cycle&quot;] )
+-		var script := Run_Script_To_Completion(g_scripts[&quot;Cycle&quot;], array{npc, g_settings, g_scripts, g_nerves});
++		var script := Run_Script_To_Completion(g_scripts[&quot;Cycle&quot;], array{npc, g_settings, g_scripts});
+ 		
+ 		if ( script.errortext )
+-			NPC_ErrorSysLog(npc, &quot;Error - RunCycleScript() :: &quot;+script.errortext);
++			NPC_ErrorSysLog(npc, &quot;Error::RunCycleScript() - &quot;+script.errortext);
+ 		endif
+ 	endif
+ 	
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-11 10:54:33 UTC (rev 100)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * EVENTPROCESSOR.INC - v1.0
+-* Updated 9/4/2005 9:30AM
++* Updated 9/11/2005 2:06AM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+@@ -48,9 +48,9 @@
+ 		// .source	: What entered the area
+ 		SYSEVENT_ENTEREDAREA:
+ 			if ( g_scripts.Exists(&quot;EnterArea&quot;) )
+-				var process := GetNerveProcess(npc, &quot;EnterArea&quot;, g_nerves);
++				var process := GetNerveProcess(npc, &quot;EnterArea&quot;);
+ 				if ( !process )
+-					StartNerve(npc, &quot;EnterArea&quot;, g_scripts[&quot;EnterArea&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;EnterArea&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;EnterArea&quot;, g_scripts[&quot;EnterArea&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;EnterArea&quot;].flags);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -61,9 +61,9 @@
+ 		// .source	: What left the area
+ 		SYSEVENT_LEFTAREA:
+ 			if ( g_scripts.Exists(&quot;LeftArea&quot;) )
+-				var process := GetNerveProcess(npc, &quot;LeftArea&quot;, g_nerves);
++				var process := GetNerveProcess(npc, &quot;LeftArea&quot;);
+ 				if ( !process )
+-					StartNerve(npc, &quot;LeftArea&quot;, g_scripts[&quot;LeftArea&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;LeftArea&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;LeftArea&quot;, g_scripts[&quot;LeftArea&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;LeftArea&quot;].flags);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -74,9 +74,9 @@
+ 		// .source	: What changed criminal status.
+ 		SYSEVENT_GONE_CRIMINAL:
+ 			if ( g_scripts.Exists(&quot;GoneCriminal&quot;) )
+-				var process := GetNerveProcess(npc, &quot;GoneCriminal&quot;, g_nerves);
++				var process := GetNerveProcess(npc, &quot;GoneCriminal&quot;);
+ 				if ( !process )
+-					StartNerve(npc, &quot;GoneCriminal&quot;, g_scripts[&quot;GoneCriminal&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;GoneCriminal&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;GoneCriminal&quot;, g_scripts[&quot;GoneCriminal&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;GoneCriminal&quot;].flags);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -92,9 +92,9 @@
+ 		SYSEVENT_DAMAGED:
+ 			if ( g_scripts.Exists(&quot;Combat&quot;) )
+ 				if ( (event.source).ISA(POLCLASS_MOBILE) )
+-					var process := GetNerveProcess(npc, &quot;Combat&quot;, g_nerves);
++					var process := GetNerveProcess(npc, &quot;Combat&quot;);
+ 					if ( !process )
+-						StartNerve(npc, &quot;Combat&quot;, g_scripts[&quot;Combat&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Combat&quot;].flags, g_nerves);
++						StartNerve(npc, &quot;Combat&quot;, g_scripts[&quot;Combat&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Combat&quot;].flags);
+ 					else
+ 						process.SendEvent(event);
+ 					endif
+@@ -107,9 +107,9 @@
+ 		// .source	: What was targetting this npc but has now left combat mode.
+ 		SYSEVENT_DISENGAGED:
+ 			if ( g_scripts.Exists(&quot;Disengaged&quot;) )
+-				var process := GetNerveProcess(npc, &quot;Disengaged&quot;, g_nerves);
++				var process := GetNerveProcess(npc, &quot;Disengaged&quot;);
+ 				if ( !process )
+-					StartNerve(npc, &quot;Disengaged&quot;, g_scripts[&quot;Disengaged&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Disengaged&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;Disengaged&quot;, g_scripts[&quot;Disengaged&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Disengaged&quot;].flags);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -125,9 +125,9 @@
+ 		SYSEVENT_SPEECH:
+ 		SYSEVENT_GHOST_SPEECH:
+ 			if( g_scripts.Exists(&quot;Listen&quot;) )
+-				var process := GetNerveProcess(npc, &quot;Listen&quot;, g_nerves);
++				var process := GetNerveProcess(npc, &quot;Listen&quot;);
+ 				if ( !process )
+-					StartNerve(npc, &quot;Listen&quot;, g_scripts[&quot;Listen&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Listen&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;Listen&quot;, g_scripts[&quot;Listen&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Listen&quot;].flags);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -140,9 +140,9 @@
+ 		SYSEVENT_DOUBLECLICKED:
+ 			if ( g_scripts.Exists(&quot;DblClick&quot;) )
+ 				if ( Distance(event.source, npc) &lt;= g_settings[&quot;DblClickRange&quot;] )
+-					var process := GetNerveProcess(npc, &quot;DblClick&quot;, g_nerves);
++					var process := GetNerveProcess(npc, &quot;DblClick&quot;);
+ 					if ( !process )
+-						StartNerve(npc, &quot;DblClick&quot;, g_scripts[&quot;DblClick&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;DblClick&quot;].flags, g_nerves);
++						StartNerve(npc, &quot;DblClick&quot;, g_scripts[&quot;DblClick&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;DblClick&quot;].flags);
+ 					else
+ 						process.SendEvent(event);
+ 					endif
+@@ -162,9 +162,9 @@
+ 		SYSEVENT_MERCHANT_SOLD:
+ 		SYSEVENT_MERCHANT_BOUGHT:
+ 			if ( g_scripts.Exists(&quot;Merchant&quot;) )
+-				var process := GetNerveProcess(npc, &quot;Merchant&quot;, g_nerves);
++				var process := GetNerveProcess(npc, &quot;Merchant&quot;);
+ 				if ( !process )
+-					StartNerve(npc, &quot;Merchant&quot;, g_scripts[&quot;Merchant&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Merchant&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;Merchant&quot;, g_scripts[&quot;Merchant&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Merchant&quot;].flags);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -176,9 +176,9 @@
+ 		// .item	: The item being given to the npc.
+ 		SYSEVENT_ITEM_GIVEN:
+ 			if ( g_scripts.Exists(&quot;ItemGiven&quot;) )
+-				var process := GetNerveProcess(npc, &quot;ItemGiven&quot;, g_nerves);
++				var process := GetNerveProcess(npc, &quot;ItemGiven&quot;);
+ 				if ( !process )
+-					StartNerve(npc, &quot;ItemGiven&quot;, g_scripts[&quot;ItemGiven&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;ItemGiven&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;ItemGiven&quot;, g_scripts[&quot;ItemGiven&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;ItemGiven&quot;].flags);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+@@ -192,7 +192,7 @@
+ 		//A nerve has instructed the brain to kill another nerve or its self.
+ 		// .name	: Nerve name
+ 		NPCEVENT_ENDNERVE:
+-			StopNerve(npc, event.name, g_nerves);
++			StopNerve(npc, event.name);
+ 			break;
+ 
+ 		//A nerve has instructed the brain to start another nerve.
+@@ -200,7 +200,7 @@
+ 		// .script	: Nerve script
+ 		// .data	: array of goodies
+ 		NPCEVENT_STARTNERVE:
+-			StartNerve(npc, event.name, event.script, event.data, event.flags, g_nerves);
++			StartNerve(npc, event.name, event.script, event.data, event.flags);
+ 			break;
+ 
+ 		// Set a new opponent!
+@@ -267,7 +267,7 @@
+ 		// .mask	: Type of event for the nerve to receive.
+ 		// .data	: Data to forward to the nerve.
+ 		NPCEVENT_FWDNERVE:
+-		var process := GetNerveProcess(npc, event.NerveName, g_nerves);
++		var process := GetNerveProcess(npc, event.NerveName);
+ 			if ( process )
+ 				process.SendEvent(event);
+ 			endif
+@@ -277,9 +277,9 @@
+ 		// npc's &quot;virtual&quot; nerve if it has one.
+ 		default:
+ 			if ( g_scripts.Exists(&quot;Virtual&quot;) )
+-				var process := GetNerveProcess(npc, &quot;Virtual&quot;, g_nerves);
++				var process := GetNerveProcess(npc, &quot;Virtual&quot;);
+ 				if ( !process )
+-					StartNerve(npc, &quot;Virtual&quot;, g_scripts[&quot;Virtual&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Virtual&quot;].flags, g_nerves);
++					StartNerve(npc, &quot;Virtual&quot;, g_scripts[&quot;Virtual&quot;].script, array{event, g_settings, g_scripts}, g_scripts[&quot;Virtual&quot;].flags);
+ 				else
+ 					process.SendEvent(event);
+ 				endif
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-11 10:54:33 UTC (rev 100)
+@@ -25,7 +25,6 @@
+ 	g_settings := NPC_LoadTemplateSettings(npc);
+ 	g_settings := NPC_GetDefaultSettings(g_settings);
+ 	g_scripts := NPC_LoadScriptSettings(npc);
+-	g_nerves := LoadNerves(npc);
+ 		
+ 	return 1;
+ endfunction
+@@ -111,9 +110,9 @@
+ 		//StopNerves();
+ 		
+ 		if ( g_scripts.Exists(&quot;Restart&quot;) )
+-			var restart_script := Run_Script_To_Completion(g_scripts[&quot;Restart&quot;], {npc, g_settings});
++			var restart_script := Run_Script_To_Completion(g_scripts[&quot;Restart&quot;], {npc, g_settings, g_scripts});
+ 			if ( restart_script.errortext )
+-				FatalError(&quot;Error - StartupScripts() :: Restart script failed: &quot;+restart_script.errortext);
++				FatalError(&quot;Error::StartupScripts() - Restart script failed: &quot;+restart_script.errortext);
+ 				return 0;
+ 			endif
+ 		endif
+@@ -122,9 +121,9 @@
+ 		SetObjProperty(npc, &quot;npc_info&quot;, npc_info);
+ 		
+ 		if ( g_scripts.Exists(&quot;Init&quot;) )
+-			var init_script := Run_Script_To_Completion(g_scripts[&quot;Init&quot;], {npc, g_settings});
++			var init_script := Run_Script_To_Completion(g_scripts[&quot;Init&quot;], {npc, g_settings, g_scripts});
+ 			if ( init_script.errortext )
+-				FatalError(&quot;Error - StartupScripts() :: Init script failed:&quot;+init_script.errortext);
++				FatalError(&quot;Error::StartupScripts() - Init script failed:&quot;+init_script.errortext);
+ 				return 0;
+ 			endif
+ 		endif
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/sleep.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/sleep.inc	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/sleep.inc	2005-09-11 10:54:33 UTC (rev 100)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * SLEEP.INC - v1.0
+-* Updated 9/6/2005 6:35AM
++* Updated 9/11/2005 2:06AM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+@@ -23,9 +23,9 @@
+ function EnterSleepMode()
+ 	if ( !sleep_mode )
+ 		if ( g_scripts[&quot;Sleep&quot;] )
+-			var process := GetNerveProcess(npc, &quot;Sleep&quot;, g_nerves);
++			var process := GetNerveProcess(npc, &quot;Sleep&quot;);
+ 			if ( !process )
+-				StartNerve(npc, &quot;Sleep&quot;, g_scripts[&quot;Sleep&quot;].script, array{g_settings, g_scripts, g_nerves}, g_scripts[&quot;Sleep&quot;].flags, g_nerves);
++				StartNerve(npc, &quot;Sleep&quot;, g_scripts[&quot;Sleep&quot;].script, array{g_settings, g_scripts}, g_scripts[&quot;Sleep&quot;].flags);
+ 			endif
+ 		endif
+ 					
+@@ -49,7 +49,7 @@
+  *
+  */
+ function LeaveSleepMode()
+-	StopNerve(npc, &quot;Sleep&quot;, g_nerves);
++	StopNerve(npc, &quot;Sleep&quot;);
+ 	idle_ticks := 0;
+ 	sleep_mode := 0;
+ endfunction
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcError.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcError.inc	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcError.inc	2005-09-11 10:54:33 UTC (rev 100)
+@@ -28,7 +28,7 @@
+ 	Set_Critical(1);
+ 	SysLog(&quot;NPC Template: &quot; + mobile.npctemplate);
+ 	SysLog(&quot;NPC Name    : &quot; + mobile.name);
+-	SysLog(errmsg );
++	SysLog(errmsg);
+ 	SysLog(&quot;------------&quot;);
+ 	Set_Critical(0);
+ 	
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc	2005-09-11 10:54:33 UTC (rev 100)
+@@ -78,7 +78,7 @@
+ 			return 1;
+ 		endif
+ 	else
+-		var temp := error{&quot;errortext&quot;:=&quot;Error - NPC_SetupAmmo() :: No 'AmmoType' was specified.&quot;};
++		var temp := error{&quot;errortext&quot;:=&quot;Error::NPC_SetupAmmo() - No 'AmmoType' was specified.&quot;};
+ 		
+ 		NPC_ErrorSysLog(mobile, temp.errortext);
+ 		PrintTextAbove(mobile, temp.errortext);
+@@ -112,7 +112,7 @@
+ 	if ( !elem_name )
+ 		return NPC_GiveBackPack(mobile);
+ 	elseif ( !equip_cfg[elem_name] )
+-		var errmsg := error{&quot;errortext&quot;:=&quot;Error - NPC_SetupEquipment() :: There is no elem [&quot;+elem_name+&quot;] in '::equip.cfg'&quot;};
++		var errmsg := error{&quot;errortext&quot;:=&quot;Error::NPC_SetupEquipment() - There is no elem [&quot;+elem_name+&quot;] in '::equip.cfg'&quot;};
+ 		PrintTextAbove(mobile, errmsg);
+ 		return errmsg;
+ 	else
+@@ -155,7 +155,7 @@
+ 		var temp := error;
+ 		temp.+errortext := &quot;There is no elem [&quot;+name_elem+&quot;] in NAMES.CFG&quot;;
+ 		
+-		NPC_ErrorSysLog(moble, &quot;Error - NPC_SetupName() :: &quot;+temp.errortext);
++		NPC_ErrorSysLog(moble, &quot;Error::NPC_SetupName() - &quot;+temp.errortext);
+ 		PrintTextAbove(mobile, temp.errortext);
+ 		return temp;
+ 	endif
+@@ -164,7 +164,7 @@
+ 	if ( name_list.size() &lt; 1 )
+ 		var temp := error{&quot;errortext&quot;:=&quot;No names were found in the [&quot;+name_elem+&quot;] elem for names.cfg&quot;};
+ 	
+-		SysLog(&quot;Error - NPC_SetupName() :: &quot;+temp.errortext);
++		SysLog(&quot;Error::NPC_SetupName() - &quot;+temp.errortext);
+ 		PrintTextAbove(mobile, temp.errortext);
+ 	
+ 		return temp;
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc	2005-09-11 10:54:33 UTC (rev 100)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * NERVES.INC - v1.0
+-* Updated 9/1/2005 6:15PM
++* Updated 9/11/2005 2:06AM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+@@ -16,13 +16,13 @@
+ /////////////////////////////////////////////////////////////////
+ // * Function List *
+ //
+-// GetNerveFlags(mobile, nerve_name, byref nerve_dict:=0)
+-// GetNerveProcess(mobile, nerve_name, byref nerve_dict:=0)
++// GetNerveFlags(mobile, nerve_name)
++// GetNerveProcess(mobile, nerve_name)
+ // KillNerves(mobile)
+ // LoadNerves(mobile)
+ // SaveNerves(mobile, nerve_dict)
+-// StartNerve(mobile, nerve_name, nerve_script, data:=array, flags:=NF_NO_FLAGS, byref nerve_dict:=0)
+-// StopNerve(mobile, nerve_name, byref nerve_dict:=0)
++// StartNerve(mobile, nerve_name, nerve_script, data:=array, flags:=NF_NO_FLAGS)
++// StopNerve(mobile, nerve_name)
+ //
+ /////////////////////////////////////////////////////////////////
+ // * Global Varibles *
+@@ -69,12 +69,12 @@
+  * Returns 1 on success
+  *
+  */
+-function SaveNerves(mobile, byref nerve_dict)
++function SaveNerves(mobile, nerve_dict)
+ 	return SetObjProperty(mobile, &quot;#NerveInfo&quot;, nerve_dict);
+ endfunction
+ 
+ /*
+- * GetNerveProcess(mobile, nerve_name, byref nerve_dict)
++ * GetNerveProcess(mobile, nerve_name)
+  *
+  * Purpose
+  * Retrieves a reference to a running nerve script.
+@@ -88,21 +88,44 @@
+  * Returns a script reference.
+  *
+  */
+-function GetNerveProcess(mobile, nerve_name, byref nerve_dict:=0)
+-	if ( !nerve_dict )
+-		nerve_dict := LoadNerves(mobile);
+-	endif
+-
++function GetNerveProcess(mobile, nerve_name)
++	var nerve_dict := LoadNerves(mobile);
++	
+ 	if ( nerve_dict.exists(nerve_name) )
+ 		return GetProcess(CInt(nerve_dict[nerve_name].pid));
+ 	else
+-		return error{&quot;errortext&quot; := &quot;Error - GetNerveProcess() :: Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
++		return error{&quot;errortext&quot; := &quot;Error::GetNerveProcess() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+ 	endif
+ endfunction
+ 
+ /*
+- * GetNerveFlags(mobile, nerve_name, byref nerve_dict)
++ * GetNerveNameByPid(mobile, pid)
++ * 
++ * Purpose
++ * Finds the name of a nerve by its pid.
+  *
++ * Parameters
++ * mobile:	NPC to get the nerve information from.
++ * pid:		Process ID to search for.
++ *
++ * Return value
++ * Returns a string
++ *
++ */
++function GetNerveNameByPid(mobile, pid)
++	var nerve_dict := LoadNerves(mobile);
++	
++	foreach nerve in (nerve_dict)
++		if ( nerve.pid == pid )
++			return _nerve_iter;
++		endif
++		sleepms(2);
++	endforeach
++endfunction
++
++/*
++ * GetNerveFlags(mobile, nerve_name)
++ *
+  * Purpose
+  * Retrieves the flag setting set on a nerve.
+  *
+@@ -115,20 +138,18 @@
+  * Returns a script reference.
+  *
+  */
+-function GetNerveFlags(mobile, nerve_name, byref nerve_dict:=0)
+-	if ( !nerve_dict )
+-		nerve_dict := LoadNerves(mobile);
+-	endif
+-
++function GetNerveFlags(mobile, nerve_name)
++	var nerve_dict := LoadNerves(mobile);
++	
+ 	if ( nerve_dict.exists(nerve_name) )
+ 		return GetProcess(CInt(nerve_dict[nerve_name].flags));
+ 	else
+-		return error{&quot;errortext&quot; := &quot;Error - GetNerveFlags() :: Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
++		return error{&quot;errortext&quot; := &quot;Error::GetNerveFlags() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+ 	endif
+ endfunction
+ 
+ /*
+- * StartNerve(mobile, nerve_name, nerve_script, data, flags, byref nerve_dict)
++ * StartNerve(mobile, nerve_name, nerve_script, data, flags)
+  *
+  * Purpose
+  * Starts up a nerve script.
+@@ -150,7 +171,7 @@
+  * Returns a script reference to the nerve script.
+  *
+  */
+-function StartNerve(mobile, nerve_name, nerve_script, data:=array, flags:=NF_NO_FLAGS, byref nerve_dict:=0)
++function StartNerve(mobile, nerve_name, nerve_script, data:=array, flags:=NF_NO_FLAGS)
+ 	if ( Lower(TypeOf(data)) != &quot;array&quot;)
+ 		data := array{data};
+ 	endif
+@@ -162,15 +183,18 @@
+ 	var process := start_script(nerve_script, data);
+ 
+ 	if ( process.errortext )
+-		var errmsg := &quot;Error - StartNerve() :: [&quot;+nerve_name+&quot;] [&quot;+nerve_script+&quot;] failed to start! -&gt;&quot;+process.errortext;
++		var errmsg := &quot;Error::StartNerve() - [&quot;+nerve_name+&quot;] [&quot;+nerve_script+&quot;] failed to start! -&gt;&quot;+process.errortext;
+ 		NPC_ErrorSysLog(mobile, errmsg);
+ 		return error{&quot;errortext&quot;:=errmsg};
+ 	else
++		var nerve_dict := LoadNerves(mobile);
++		
+ 		//Before setting the new nerve, check if one is already running.
+ 		if ( nerve_dict.exists(nerve_name) )
+ 			//Stop the old nerve, before storing the new one.
+-			StopNerve(mobile, nerve_name, nerve_dict);
++			StopNerve(mobile, nerve_name);
+ 		endif
++		
+ 		var nerve_info := struct;
+ 		nerve_info.+pid := process.pid;
+ 		nerve_info.+flags := flags;
+@@ -183,7 +207,7 @@
+ endfunction
+ 
+ /*
+- * StopNerve(mobile, nerve_name, byref nerve_dict)
++ * StopNerve(mobile, nerve_name)
+  *
+  * Purpose
+  * Starts up a nerve script.
+@@ -197,18 +221,16 @@
+  * Returns 1 on success.
+  *
+  */
+-function StopNerve(mobile, nerve_name, byref nerve_dict:=0)
+-	if ( !nerve_dict )
+-		nerve_dict := LoadNerves(mobile);
+-	endif
+-
++function StopNerve(mobile, nerve_name)
++	var nerve_dict := LoadNerves(mobile);
++	
+ 	if ( nerve_dict.Exists(nerve_name) )
+-		GetNerveProcess(mobile, nerve_name, nerve_dict).kill();
++		GetNerveProcess(mobile, nerve_name).kill();
+ 		nerve_dict.Erase(nerve_name);
+ 
+ 		return SaveNerves(mobile, nerve_dict);
+ 	else
+-		return error{&quot;errortext&quot; := &quot;Error - StopNerve() :: Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
++		return error{&quot;errortext&quot; := &quot;Error::StopNerve() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+ 	endif
+ endfunction
+ 
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc	2005-09-11 10:54:33 UTC (rev 100)
+@@ -71,12 +71,12 @@
+ 	
+ 	var npc_cfg := ReadConfigFile(&quot;:&quot;+template.package+&quot;:npcdesc&quot;);
+ 	if ( npc_cfg.errortext )
+-		return error{&quot;errortext&quot;:=&quot;Error - NPC_GetNPCConfig():: Could not open :&quot;+template.package+&quot;:npcdesc -&gt;&quot;+npc_cfg.errortext};
++		return error{&quot;errortext&quot;:=&quot;Error::NPC_GetNPCConfig() - Could not open :&quot;+template.package+&quot;:npcdesc -&gt;&quot;+npc_cfg.errortext};
+ 	endif
+ 	
+ 	var cfg_elem := npc_cfg[template.template];
+ 	if ( cfg_elem.errortext )
+-		return error{&quot;errortext&quot;:=&quot;Error - NPC_GetNPCConfig():: Could not find elem [&quot;+template.template+&quot;] -&gt;&quot;+cfg_elem.errortext};
++		return error{&quot;errortext&quot;:=&quot;Error::NPC_GetNPCConfig() - Could not find elem [&quot;+template.template+&quot;] -&gt;&quot;+cfg_elem.errortext};
+ 	endif
+ 	
+ 	return cfg_elem;
+
+Deleted: trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-10 13:56:44 UTC (rev 99)
++++ trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-11 10:54:33 UTC (rev 100)
+@@ -1,38 +0,0 @@
+-NPCTemplate TestNPC
+-{
+-	Name		Tester NPC
+-	Script		:ai_brain:brain
+-	ObjType		0x190
+-	Color		0
+-	TrueColor	0
+-	Gender		0
+-
+-	STR		1
+-	INT		1
+-	DEX		1
+-	HITS		1
+-	MANA		1
+-	STAM		1
+-	AR		1
+-	RunSpeed	255
+-	
+-	AISetting	CycleWait	i10
+-	AISetting	IdleTicks	i5
+-	AISetting	SleepWait	i1000
+-	AISetting	ListenRange	i10
+-	AISetting	AreaSize	i5
+-	AISetting	DblClickRange	i10
+-	AISetting	HearSpeech	i1
+-	AISetting	HearGhosts	i1
+-	
+-	AIScript	Combat		:ai_brain:complete/testNPC/combat
+-	AIScript	DblClick	:ai_brain:complete/testNPC/doubleClick
+-	AIScript	Disengaged	:ai_brain:complete/testNPC/disengaged
+-	AIScript	EnterArea	:ai_brain:complete/testNPC/enterArea
+-	AIScript	GoneCriminal	:ai_brain:complete/testNPC/goneCriminal
+-	AIScript	ItemGiven	:ai_brain:complete/testNPC/itemGiven
+-	AIScript	LeftArea	:ai_brain:complete/testNPC/leftArea
+-	AIScript	Listen		:ai_brain:complete/testNPC/listen
+-	AIScript	Restart		:ai_brain:complete/testNPC/restart
+-	AIScript	Sleep		:ai_brain:complete/testNPC/sleep
+-}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000081.html">[Poldistro-svn] r99 - trunk/096/config
+</A></li>
+	<LI>Next message: <A HREF="000083.html">[Poldistro-svn] r101 - in trunk/096/pkg/mobiles/ai_brain: . config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#82">[ date ]</a>
+              <a href="thread.html#82">[ thread ]</a>
+              <a href="subject.html#82">[ subject ]</a>
+              <a href="author.html#82">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,744 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r27 - in trunk/096/pkg/mobiles/ai_brain: . commands commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r27%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20commands%20commands/gm&In-Reply-To=%3C200508312220.j7VMKlmo009947%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000003.html">
+   <LINK REL="Next"  HREF="000011.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r27 - in trunk/096/pkg/mobiles/ai_brain: . commands commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r27%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20commands%20commands/gm&In-Reply-To=%3C200508312220.j7VMKlmo009947%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r27 - in trunk/096/pkg/mobiles/ai_brain: . commands commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep  1 00:20:47 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000003.html">[Poldistro-svn] r26 - in trunk/096/pkg/mobiles: . ai_brain ai_brain/config ai_brain/include ai_brain/include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000011.html">[Poldistro-svn] r28 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#4">[ date ]</a>
+              <a href="thread.html#4">[ thread ]</a>
+              <a href="subject.html#4">[ subject ]</a>
+              <a href="author.html#4">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-01 00:20:46 +0200 (Thu, 01 Sep 2005)
+New Revision: 27
+
+Added:
+   trunk/096/pkg/mobiles/ai_brain/commands/
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/attack.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/cmassacre.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/createnpc.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/makeswarm.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/massacre.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/npcsleep.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/npcwipe.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/puttosleep.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/removenpc.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/resetnpcs.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/restartnpc.src
+   trunk/096/pkg/mobiles/ai_brain/commands/gm/sendevent.src
+Log:
+
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/attack.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/attack.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/attack.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,23 @@
++//Example: .attack -&gt; Makes an npc attack another mobile.
++use uo;
++use os;
++
++include &quot;:ai_brain:include/NPC_Commands&quot;;
++
++program MakeAttack(who)
++	SendSysMessage(who, &quot;Select an npc (attacker).&quot;);
++	var targ := target(who);
++	if ( !targ.npctemplate ) 
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++	
++	SendSysMessage(who, &quot;Select a mobile (defender).&quot;);
++	var targ2 := target(who);
++	if ( !targ2.IsA(POLCLASS_MOBILE) )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++	
++	AI_Attack(targ, targ2);
++endprogram
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/cmassacre.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/cmassacre.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/cmassacre.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,19 @@
++//Example: .massacre [radius] - Kills npcs within the radius and leaves the corpses.
++use uo;
++
++include &quot;:gumps:include/requestgump&quot;;
++
++program Massacre(who, range)
++	
++	range := CInt(range);
++	if ( !range )
++		range := CInt(RequestGump(who, &quot;Enter the radius to kill npcs.&quot;, &quot;&quot;, 0));
++	endif
++	
++	foreach mobile in ListMobilesNearLocationEX(who.x, who.y, who.z, CInt(range), LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN, who.realm)
++		if ( mobile.npctemplate )
++			ApplyRawDamage(mobile, 6000);
++		endif
++		sleepms(2);
++	endforeach
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/createnpc.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/createnpc.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/createnpc.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,257 @@
++use uo;
++use os;
++
++include &quot;:datafile:include/datafile&quot;;
++include &quot;:gumps:include/gumps&quot;;
++include &quot;:gumps:include/gumps_ex&quot;;
++
++const UNCACHE_BTN	:= 0xF000000;
++const DEFAULT_CATEGORY	:= &quot;None&quot;;
++
++var data_file := DFOpenDataFile(&quot;:ai_brain:createnpc&quot;, DF_CREATE);
++
++program MakeNPC(who, template)
++	if ( !template )
++		template := SelectTemplateFromGump(who);
++		if ( !template )
++			return 0;
++		endif
++	endif
++	
++	var targ := TargetCoordinates(who);
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++
++	var npc := CreateNPCFromTemplate(template, targ.x, targ.y, targ.z, 0, who.realm);
++	npc.facing := who.facing;
++	if ( npc.errortext )
++		SendSysMessage(who, &quot;Error creating NPC [&quot;+template+&quot;] -&gt; &quot;+npc.errortext);
++		return 0;
++	endif
++endprogram
++
++function SelectTemplateFromGump(who)
++	var input := GFSendGump(who, RetrieveGump(&quot;Index&quot;));
++	if ( !input )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	elseif ( input[UNCACHE_BTN] )
++		foreach elem_name in DFGetElemNames(data_file)
++			data_file.DeleteElement(elem_name);
++			sleepms(2);
++		endforeach
++		
++		SendSysMessage(who, &quot;All createnpc data uncached.&quot;);
++		return 0;
++	endif
++		
++	var category_names := GetCategoryNames();
++	input := GFSendGump(who, BuildNPCGump(category_names[input[0]]));
++	if ( !input )
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
++	
++	var elem_names := GetConfigStringKeys(ReadConfigFile(&quot;::npcdesc&quot;));
++	return elem_names[input[0]];
++endfunction
++
++function RetrieveGump(category_name)
++	if ( category_name == &quot;Index&quot; )
++		var data_elem := DFFindElement(data_file, &quot;Index&quot;);
++		var gump := data_elem.GetProp(&quot;Gump&quot;);
++		if ( !gump )
++			gump := BuildIndexGump();
++		endif
++		
++		return gump;
++	else
++		var data_elem := DFFindElement(data_file, category_name);
++		var gump := data_elem.GetProp(&quot;Gump&quot;);
++		if ( !gump )
++			gump := BuildNPCGump(category_name);
++		endif
++		
++		return gump;
++	endif
++endfunction
++
++function GetCategoryNames()
++	var data_elem := DFFindElement(data_file, &quot;Index&quot;);
++	var category_names := data_elem.GetProp(&quot;CategoryNames&quot;);
++	if ( !category_names )
++		category_names := SetupCategoryNames();
++	endif
++	
++	return category_names;
++endfunction
++
++function SetupCategoryNames()
++	var category_names := (SortNPCs().keys());
++	var data_elem := DFFindElement(data_file, &quot;Index&quot;, DF_CREATE);
++	data_elem.SetProp(&quot;CategoryNames&quot;, category_names);
++	
++	return category_names;
++endfunction
++
++function BuildIndexGump()
++	Set_Priority(100);
++	var category_names := GetCategoryNames();
++	
++	var data_elem := DFFindElement(data_file, &quot;Index&quot;, DF_CREATE);
++	data_elem.SetProp(&quot;CategoryNames&quot;, category_names);
++	
++	var bkgnd_silvertrim := GFCfgConst(&quot;BackGrounds&quot;, &quot;SILVERTRIM&quot;);
++	var bkgnd_dark_stone := GFCfgConst(&quot;BackGrounds&quot;, &quot;DARK_STONE&quot;);
++	
++	var gump := GFCreateGump();
++	GFPage(gump, 0);
++	GFResizePic(gump, 0, 0, bkgnd_silvertrim, 300, 480);
++	GFResizePic(gump, 10, 10, bkgnd_dark_stone, 280, 460);
++	var y_pos := 40;
++	var counter := 1;
++	var page_num := 1;
++	GFTextMid(gump, 10, 15, 280, 2100, &quot;NPC Categories&quot;);
++	
++	/////
++	GFAddButton(gump, 158, 445, 4002, 4003, GF_CLOSE_BTN, UNCACHE_BTN);
++	GFTextLine(gump, 193, 445, 2100, &quot;Uncache data&quot;);
++	/////
++	
++	GFPage(gump, page_num);
++	foreach category_name in (category_names)
++		GFAddButton(gump, 20, y_pos+3, 2117, 2118, GF_CLOSE_BTN, (_category_name_iter));
++		GFTextLine(gump, 40, y_pos, 2100, category_name);
++		y_pos := y_pos+20;
++		counter := counter+1;
++		
++		if ( counter &gt; 20 )
++			counter := 1;
++			y_pos := 40;
++			GFAddButton(gump, 265, 445, 2648, 2649, GF_PAGE_BTN, page_num+1);
++			page_num := page_num+1;
++			GFPage(gump, page_num);
++			GFAddButton(gump, 265, 15, 2650, 2651, GF_PAGE_BTN, page_num-1);
++		endif
++		sleepms(2);
++	endforeach
++	data_elem.SetProp(&quot;Gump&quot;, gump);
++	
++	return gump;
++endfunction
++
++function BuildNPCGump(category_name)
++	Set_Priority(100);
++	
++	var npc_list := SortNPCs();
++	if ( !npc_list.Exists(category_name) )
++		//Nifty new trick below.
++		return error{&quot;errortext&quot;:=&quot;Category name does not exist.&quot;};
++	endif
++	
++	var data_elem := DFFindElement(data_file, Lower(category_name), DF_CREATE);	
++	npc_list := npc_list[category_name];
++
++	var bkgnd_silvertrim := GFCfgConst(&quot;BackGrounds&quot;, &quot;SILVERTRIM&quot;);
++	var bkgnd_dark_stone := GFCfgConst(&quot;BackGrounds&quot;, &quot;DARK_STONE&quot;);
++	
++	var gump := GFCreateGump();
++	GFPage(gump, 0);
++	GFResizePic(gump, 0, 0, bkgnd_silvertrim, 300, 480);
++	GFResizePic(gump, 10, 10, bkgnd_dark_stone, 280, 460);
++	var y_pos := 40;
++	var counter := 1;
++	var page_num := 1;
++	GFTextMid(gump, 10, 15, 280, 2100, &quot;NPC List - &quot;+category_name);
++	GFPage(gump, page_num);
++	foreach template in (npc_list[category_name])
++		GFAddButton(gump, 20, y_pos+3, 2117, 2118, GF_CLOSE_BTN, template.pos);
++		GFTextLine(gump, 40, y_pos, template.color, template.name);
++		y_pos := y_pos+20;
++		counter := counter+1;
++
++		if ( counter &gt; 21 )
++			counter := 1;
++			y_pos := 40;
++			GFAddButton(gump, 265, 445, 2648, 2649, GF_PAGE_BTN, page_num+1);
++			page_num := page_num+1;
++			GFPage(gump, page_num);
++			GFAddButton(gump, 265, 15, 2650, 2651, GF_PAGE_BTN, page_num-1);
++		endif
++		sleepms(2);
++	endforeach
++	data_elem.SetProp(&quot;Gump&quot;, gump);
++	
++	return gump;
++endfunction
++
++function SortNPCs()
++	var data_elem := DFFindElement(data_file, &quot;Index&quot;, DF_CREATE);
++	var categories :=  data_elem.GetProp(&quot;NPCListSorted&quot;);
++	if ( categories )
++		return categories;
++	endif
++		
++	var npc_config := ReadConfigFile(&quot;::npcdesc&quot;);
++	var cfg_keys := GetConfigStringKeys(npc_config);
++
++	categories := dictionary;
++	categories[DEFAULT_CATEGORY] := array{};
++
++	foreach template_name in (cfg_keys)
++		var cfg_elem := npc_config[template_name];
++		var template := struct;
++		template.+name :=template_name;
++		template.+pos :=_template_name_iter;
++		template.+color :=GetNameColor(npc_config[template_name].alignment);
++
++		if ( !cfg_elem.category )
++			categories[DEFAULT_CATEGORY].append(template);
++		else
++			if ( Lower(TypeOf(categories[cfg_elem.category])) != &quot;array&quot; )
++				categories[cfg_elem.category] := array{};
++			endif
++
++			categories[cfg_elem.category].append(template);
++		endif
++		sleepms(2);
++	endforeach
++	
++	// This function is time consuming.. so its results get saved.	
++	data_elem.SetProp(&quot;NPCListSorted&quot;, categories);
++
++	return categories;
++endfunction
++
++function GetNameColor(reputation)
++	var reputation_cfg := ReadConfigFile(&quot;::repsys&quot;);
++	//We know the config is there - core won't start without it.
++	var reputation_elem := reputation_cfg[&quot;NameColoring&quot;];
++	if ( !reputation_elem )
++		/*
++		 * In most shards the config is setup as
++		 * NameColoring
++		 * {
++		 * // Information here
++		 * }
++		 * **---=[! Needs to be changed to !]=---**
++		 * NameColoring NameColoring
++		 * {
++		 * //Information here
++		 * }
++		 */
++		SysLog(&quot;Unable to read in repsys.cfg elem [NameColoring] -&gt;&quot;+reputation_elem.errortext);
++		SysLog(&quot;You probably don't have an elem name set for it. Thats naughty!&quot;);
++		return 0;
++	endif
++	
++	case ( reputation )
++		&quot;good&quot;:		return (GetConfigInt(reputation_elem, &quot;innocent&quot;)-1);
++		&quot;neutral&quot;:	return (GetConfigInt(reputation_elem, &quot;attackable&quot;)-1);
++		&quot;evil&quot;:		return (GetConfigInt(reputation_elem, &quot;murderer&quot;)-1);
++		 // No alignment for an npc is considered neutral
++		default: 	return (GetConfigInt(reputation_elem, &quot;attackable&quot;)-1);
++	endcase
++endfunction
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/makeswarm.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/makeswarm.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/makeswarm.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,60 @@
++//Example: .makeswarm [templateate] [radius] - Makes npcs on every tile in the radius around you.
++
++use uo;
++use util;
++use os;
++use util;
++
++include &quot;:gumps:include/requestgump&quot;;
++
++program MakeSwarm(who, text)
++
++	var template:=0, radius:=0;
++	if ( text ) 
++		text := SplitWords(text);
++		template := text[1];
++		radius := CInt(text[2]);
++	endif
++		
++	if ( !template )
++		template := RequestGump(who, &quot;Enter the npc template name to use.&quot;, &quot;&quot;);
++		if ( !template )
++			SendSysMessage(who, &quot;Cancelled.&quot;);
++			return 0;
++		endif
++	endif
++	if ( !radius )
++		if ( !radius )
++			radius := CInt(RequestGump(who, &quot;Enter the radius to create npcs.&quot;, &quot;&quot;, 1));
++		endif
++		if ( !radius )
++			SendSysMessage(who, &quot;Radius is less than 1. Setting to 1.&quot;);
++			radius := 1;
++		endif
++	endif
++	if ( radius &gt; 10 ) // 100 npcs
++		SendSysMessage(who, &quot;Radius exceeds 10 spaces. Setting to 10.&quot;);
++		radius := 10;
++	endif
++	
++	var start_x := who.x - CInt(radius);
++	var start_y := who.y - CInt(radius);
++	var end_x := who.x + CInt(radius);
++	var end_y := who.y + CInt(radius);
++
++	var x, y;
++	var created := 0;
++	
++	for ( x:=start_x; x&lt;=end_x; x:=x+1 )
++		for ( y:=start_y; y&lt;=end_y; y:=y+1 )
++			var npc := CreateNPCFromTemplate(template, x, y, who.z, who.realm);
++			if ( npc )
++				created := created+1;
++			endif
++			
++			sleepms(3);
++		endfor
++	endfor
++	
++	SendSysMessage(who, &quot;Done making npc swarm. Created [&quot;+created+&quot;] npcs.&quot;);
++endprogram        
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/massacre.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/massacre.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/massacre.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,22 @@
++//Example: .massacre [radius] - Kills npcs within the radius.
++use uo;
++use os;
++
++include &quot;:gumps:include/requestgump&quot;;
++
++program Massacre(who, range)
++	range := CInt(range);
++	if ( !range )
++		range := CInt(RequestGump(who, &quot;Enter the radius to kill npcs.&quot;, &quot;&quot;, 0));
++	endif
++	
++	var mobile_list := ListMobilesNearLocationEX(who.x, who.y, who.z, CInt(range), LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN, who.realm);
++	
++	foreach mobile in (mobile_list)
++		if ( mobile.npctemplate )
++			SetObjProperty(mobile, &quot;GuardKill&quot;, 1);
++			ApplyRawDamage(mobile, 6000);
++		endif
++		sleepms(2);
++	endforeach
++endprogram
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/npcsleep.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/npcsleep.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/npcsleep.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,33 @@
++//Example: .npcsleep -&gt; Forces all npcs to go to sleep.
++use uo;
++use os;
++use polsys;
++
++include &quot;:gumps:include/requestgump&quot;;
++include &quot;:ai_brain:include/NPC_Commands&quot;;
++
++program PutEveryNPCToSleep(who)
++	var realm_name := RequestGump(who, &quot;Enter the realm name to put npcs to sleep on.&quot;, &quot;&quot;, who.realm);
++	var realm_info := Realms()[realm_name];
++	if ( !realm_info )
++		SendSysMessage(who, &quot;Invalid realm name.&quot;);
++		return 0;
++	endif
++	
++	//To do: Set X2 and Y2 to the realm's maximum values
++	var x1 := 1, y1 := 1, x2 := realm_info.width, y2 := realm_info.height;
++	var z1 := -120, z2 := 120;
++	
++	foreach mobile in ListObjectsInBox(x1, y1, z1, x2, y2, z2, realm_name)
++		if ( mobile.npctemplate )
++			AI_Sleep(mobile);
++		endif
++		
++		sleepms(5);
++		
++		//Clear out event responses the brain sends back to this command.
++		clear_event_queue();
++	endforeach
++	
++	SendSysMessage(who, &quot;Done telling all npcs to sleep.&quot;);
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/npcwipe.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/npcwipe.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/npcwipe.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,45 @@
++//Example: .npcwipe (x1) (y1) (x2) (y2) -&gt; Removes all npcs.
++use uo;
++use os;
++use polsys;
++
++include &quot;:gumps:include/requestgump&quot;;
++
++program npcwipe(who, text)
++	Set_Priority(100);
++	
++	var realm_name := RequestGump(who, &quot;Enter the realm name to perform the wipe on.&quot;, &quot;&quot;, who.realm);
++	var realm_info := Realms()[realm_name];
++	if ( !realm_info )
++		SendSysMessage(who, &quot;Invalid realm name.&quot;);
++		return 0;
++	endif
++	
++	var x1 := 1, y1 := 1, x2 := realm_info.width, y2 := realm_info.height;
++	var z1 := -120, z2 := 120;
++			
++	if ( x2 &gt; realm_info.width )
++		SendSysMessage(who, &quot;Error - X coordinate exceeds [&quot;+realm_info.width+&quot;] for realm [&quot;+realm_name+&quot;]&quot;);
++		return 0;
++	elseif ( y2 &gt; realm_info.height )
++		SendSysMessage(who, &quot;Error - Y coordinate exceeds [&quot;+realm_info.height+&quot;] for realm [&quot;+realm_name+&quot;]&quot;);
++		return 0;
++	endif
++					
++	SendSysMessage(who, &quot;Starting npc wiper [&quot; + x1 + &quot; &quot; + y1 + &quot; &quot; + x2 + &quot; &quot; + y2 + &quot;] on realm [&quot;+realm_name+&quot;]&quot;);
++	SysLog(&quot;Starting npc wiper [&quot; + x1 + &quot; &quot; + y1 + &quot; &quot; + x2 + &quot; &quot; + y2 + &quot;] on realm [&quot;+realm_name+&quot;]&quot;);
++	
++	var count := 0;
++	foreach thing in ListObjectsInBox(x1, y1, z1, x2, y2, z2, realm_name)
++		if ( thing.npctemplate )
++			SetObjProperty(thing, &quot;GuardKill&quot;, 1);
++			ApplyRawDamage(thing, 6000);
++			count := count + 1;
++			sleepms(4);
++		endif
++		sleepms(5);
++	endforeach
++	
++	SendSysMessage(who, &quot;Killed &quot; + count + &quot; NPCs&quot;);
++	SysLog(&quot;Killed &quot; + count + &quot; NPCs&quot;);
++endprogram
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/puttosleep.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/puttosleep.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/puttosleep.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,16 @@
++//Example: .puttosleep -&gt; Puts targetted NPC to sleep.
++use uo;
++use os;
++
++include &quot;:ai_brain:include/NPC_Commands&quot;;
++
++program FixAI(who)
++	var targ := target(who);
++	
++	if ( targ.IsA(POLCLASS_NPC) )
++		AI_Sleep(targ);
++	else
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/removenpc.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/removenpc.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/removenpc.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,38 @@
++//Example: .removenpc [npc template] -&gt; Removes every npc of that type.
++use uo;
++use os;
++use polsys;
++
++include &quot;:gumps:include/requestgump&quot;;
++
++program NPCWipe(who, template)
++	if ( !template )
++		template := RequestGump(who, &quot;Enter the npc template name to remove.&quot;);
++		if ( !template )
++			SendSysMessage(who, &quot;Cancelled.&quot;);
++			return 0;
++		endif
++	endif
++	template := Lower(template);
++		
++	var realm_name := RequestGump(who, &quot;Enter the realm name to perform the wipe on.&quot;, &quot;&quot;, who.realm);
++	var realm_info := Realms()[realm_name];
++	if ( !realm_info )
++		SendSysMessage(who, &quot;Invalid realm name.&quot;);
++		return 0;
++	endif
++	
++	var x1 := 1, y1 := 1, x2 := realm_info.width, y2 := realm_info.height;
++	var z1 := -120, z2 := 120;
++	
++	var count := 0;
++	foreach thing in ListObjectsInBox(x1, y1, z1, x2, y2, z2, realm_name)
++		if ( Lower(thing.npctemplate) == template )
++			SetObjProperty(thing, &quot;GuardKill&quot;, 1);
++			ApplyRawDamage(thing, 8000);
++			count := count + 1;
++		endif
++		sleepms(2);
++	endforeach
++	SendSysMessage(who, &quot;Killed &quot; + count + &quot; NPCs&quot;);
++endprogram
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/resetnpcs.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/resetnpcs.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/resetnpcs.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,35 @@
++//Example: .resetnpcs -&gt; Restarts the AI script of every npc on the shard.
++use uo;
++use os;
++use polsys;
++
++include &quot;:ai_brain:include/NPC_Commands&quot;;
++include &quot;:gumps:include/requestgump&quot;;
++
++program ResetAllNPCs(who)
++	var realm_name := RequestGump(who, &quot;Enter the realm name to perform the wipe on.&quot;, &quot;&quot;, who.realm);
++	var realm_info := Realms()[realm_name];
++	if ( !realm_info )
++		SendSysMessage(who, &quot;Invalid realm name.&quot;);
++		return 0;
++	endif
++	
++	SysLog(&quot;Starting NPC AI reset.&quot;);
++	SendSysMessage(who, &quot;Starting NPC AI reset.&quot;);
++	
++	var x1 := 1, y1 := 1, x2 := realm_info.width, y2 := realm_info.height;
++	var z1 := -120, z2 := 120;
++	
++	foreach mobile in ListObjectsInBox( x1, y1, z1, x2, y2, z2)
++		if (mobile.npctemplate)
++			RestartScript(mobile);
++			sleepms(5);
++			
++			//Clear out event responses the brain sends back to this command.
++			clear_event_queue();
++		endif
++	endforeach
++	
++	SendSysMessage(who, &quot;Done restarting all npcs.&quot;);
++	SysLog(&quot;Finished restarting all npcs.&quot;);
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/restartnpc.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/restartnpc.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/restartnpc.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,8 @@
++use uo;
++
++program FixAI(who)
++	var targ := target(who);
++	var result := RestartScript(targ);
++	
++	SendSysMessage(who, &quot;Result of RestartScript(&quot;+targ.name+&quot;) -&gt;&quot;+result);
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/ai_brain/commands/gm/sendevent.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/commands/gm/sendevent.src	2005-08-31 22:00:23 UTC (rev 26)
++++ trunk/096/pkg/mobiles/ai_brain/commands/gm/sendevent.src	2005-08-31 22:20:46 UTC (rev 27)
+@@ -0,0 +1,27 @@
++//Example: .sendevent [event] -&gt; Sends an event to the targetted npc.
++use uo;
++use os;
++
++include &quot;:gumps:include/requestgump&quot;;
++
++program ControlNPC(who, event)
++	if ( !event )
++		event := CInt(RequestGump(who, &quot;Enter event value&quot;, &quot;Place a + or - at the begining if it is a number.&quot;));
++	endif
++	
++	if ( event[1] in {&quot;+&quot;, &quot;-&quot;})
++		event := CInt(event);
++	endif
++
++	var ev := struct;
++	ev.+source := who;
++	ev.+type := event;
++	
++	var targ := target(who);
++	if ( targ )
++		SendEvent(targ, ev);
++		SendSysMessage(who, &quot;Event sent as &quot;+TypeOf(event)+&quot;)&quot;);
++	else
++		SendSysMessage(who, &quot;Cancelled&quot;);
++	endif
++endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000003.html">[Poldistro-svn] r26 - in trunk/096/pkg/mobiles: . ai_brain ai_brain/config ai_brain/include ai_brain/include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000011.html">[Poldistro-svn] r28 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#4">[ date ]</a>
+              <a href="thread.html#4">[ thread ]</a>
+              <a href="subject.html#4">[ subject ]</a>
+              <a href="author.html#4">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

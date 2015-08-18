@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1425 - in trunk/096/pkg: OLD/skills skills skills/anatomy skills/anatomy/config systems/attributes
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1425%20-%20in%20trunk/096/pkg%3A%20OLD/skills%20skills%20skills/anatomy%20skills/anatomy/config%20systems/attributes&In-Reply-To=%3C200605150456.k4F4ubpl011548%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001393.html">
+   <LINK REL="Next"  HREF="001395.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1425 - in trunk/096/pkg: OLD/skills skills skills/anatomy skills/anatomy/config systems/attributes</H1>
+    <B>muaddiblsd at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1425%20-%20in%20trunk/096/pkg%3A%20OLD/skills%20skills%20skills/anatomy%20skills/anatomy/config%20systems/attributes&In-Reply-To=%3C200605150456.k4F4ubpl011548%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1425 - in trunk/096/pkg: OLD/skills skills skills/anatomy skills/anatomy/config systems/attributes">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon May 15 06:56:37 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001393.html">[Poldistro-svn] r1424 - trunk/096/pkg/packetHooks/SkillLock/include
+</A></li>
+        <LI>Next message: <A HREF="001395.html">[Poldistro-svn] r1426 - in trunk/096/pkg: OLD/skills skills skills/armslore skills/armslore/config systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1394">[ date ]</a>
+              <a href="thread.html#1394">[ thread ]</a>
+              <a href="subject.html#1394">[ subject ]</a>
+              <a href="author.html#1394">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2006-05-15 06:56:12 +0200 (Mon, 15 May 2006)
+New Revision: 1425
+
+Added:
+   trunk/096/pkg/skills/anatomy/
+   trunk/096/pkg/skills/anatomy/anatomy.src
+   trunk/096/pkg/skills/anatomy/config/
+   trunk/096/pkg/skills/anatomy/config/icp.cfg
+   trunk/096/pkg/skills/anatomy/pkg.cfg
+Removed:
+   trunk/096/pkg/OLD/skills/anatomy/
+Modified:
+   trunk/096/pkg/systems/attributes/skills.cfg
+Log:
+Reintroduction of base anatomy package.
+Adjustment to Anatomy skill delay and Animal Lore skill delay (to follow OSI a bit better).
+
+Added: trunk/096/pkg/skills/anatomy/anatomy.src
+===================================================================
+--- trunk/096/pkg/skills/anatomy/anatomy.src	2006-05-14 13:46:30 UTC (rev 1424)
++++ trunk/096/pkg/skills/anatomy/anatomy.src	2006-05-15 04:56:12 UTC (rev 1425)
+@@ -0,0 +1,180 @@
++/* $Id: anatomy.src 834 2005-11-02 14:09:50Z austin $
++ *
++ */
++use uo;
++
++include &quot;:attributes:attributeConstants&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:attributes:skillCheck&quot;;
++
++
++program skill_Anatomy(who)
++
++	EraseObjProperty(who, &quot;#IsMeditating&quot;);
++	EraseObjProperty(who, &quot;#HealTimer&quot;);
++
++	SendSysMessage(who, &quot;Whom shall I examine?&quot;);
++	var subject := Target(who);
++	// target checks begin here
++	if(!subject)
++		return 0;
++	elseif(subject.serial == who.serial)
++		PrintTextAbovePrivate(who, &quot;You know yourself quite well enough already.&quot;, who);
++		return 0;
++	elseif(subject.graphic == 0x2006)
++		SendSysMessage(who, &quot;Looks pretty dead to you.&quot;);
++		return 0;
++	elseif(!subject.isA(POLCLASS_MOBILE))
++		SendSysMessage(who, &quot;That cannot be inspected.&quot;);
++		return 0;
++	endif
++
++	// variables for sys messages
++  	var streng := getStreng(AP_GetStat(subject, &quot;Strength&quot;), subject.graphic, subject.gender);
++	var dext := getDext(AP_GetStat(subject, &quot;Dexterity&quot;), subject.graphic, subject.gender);
++	var endur_percentage := CInt(CInt(AP_GetVital(subject, &quot;Stamina&quot;))/CDbl(AP_GetVitalMaximumValue(subject, &quot;Stamina&quot;))*100);
++	var endur := getEnd(endur_percentage);
++
++	// adjust succeed and fail msgs here
++	var strMsg, strFail;
++	if(subject.graphic != 0x190 &amp;&amp; subject.graphic != 0x191)
++		strMsg := &quot;That creature&quot;;
++		strFail := &quot;that creature's physical characteristics.&quot;;
++	else
++		strMsg := subject.name;
++		if(upper(subject.name[len(subject.name)]) != &quot;S&quot; || lower(subject.name[len(subject.name)]) != &quot;s&quot; )
++			strFail := subject.name + &quot;'s physical characteristics.&quot;;
++		else
++			strFail := subject.name + &quot;' physical characteristics.&quot;;
++		endif
++	endif
++
++	if( SkillCheck(who, ANATOMY, -1) &gt; 0 )
++		PrintTextAbovePrivate(subject, strMsg + &quot; looks &quot; + streng + &quot; and &quot; + dext + &quot;.&quot;, who);
++		// player's anatomy skill equal/greater than 65 can get endurance info
++		var skill := AP_GetSkill(who, ANATOMY);
++		if(skill &gt;= 65)
++			PrintTextAbovePrivate(subject, strMsg + &quot; is at &quot; + endur + &quot; endurance.&quot;, who);
++		endif
++		return 1;
++	else
++		PrintTextAbovePrivate(subject, &quot;You can not quite get a sense of &quot; + strFail, who);
++		return 0;
++	endif
++
++endprogram
++
++
++function getStreng(subject, graphic, gender)
++
++	var strSuper, strType, strGender;
++	if(graphic != 0x190 &amp;&amp; graphic != 0x191)
++		strSuper := &quot;supernaturally&quot;;
++		strType := &quot;creatures&quot;;
++		strGender := &quot;it&quot;;
++	else
++		strSuper := &quot;superhumanly&quot;;
++		strType := &quot;people&quot;;
++		if(gender == 0)
++			strGender := &quot;he&quot;;
++		elseif(gender == 1)
++			strGender := &quot;she&quot;;
++		endif
++	endif
++	if(subject &gt;= 100)
++		return strSuper + &quot; strong&quot;;
++	elseif(subject &gt;= 99)
++		return &quot;like one of the strongest &quot; + strType + &quot; you have ever seen&quot;;
++	elseif(subject &gt;= 89)
++		return &quot;strong as an ox&quot;;
++	elseif(subject &gt;= 79)
++		return &quot;extraordinarily strong&quot;;
++	elseif(subject &gt;= 69)
++		return &quot;extremely strong&quot;;
++	elseif(subject &gt;= 59)
++		return &quot;very strong&quot;;
++	elseif(subject &gt;= 49)
++		return &quot;somewhat strong&quot;;
++	elseif(subject &gt;= 39)
++		return &quot;to be of normal strength&quot;;
++	elseif(subject &gt;= 29)
++		return &quot;somewhat weak&quot;;
++	elseif(subject &gt;= 19)
++		return &quot;rather feeble&quot;;
++	else
++		return &quot;like &quot; + strGender + &quot; would have trouble lifting small objects&quot;;
++	endif
++
++endfunction
++
++
++function getDext(subject, graphic, gender)
++
++	var strSuper, strType, strGender;
++	if(graphic != 0x190 &amp;&amp; graphic != 0x191)
++		strSuper := &quot;supernaturally&quot;;
++		strType := &quot;creatures&quot;;
++		strGender := &quot;it&quot;;
++	else
++		strSuper := &quot;superhumanly&quot;;
++		strType := &quot;people&quot;;
++		if(gender == 0)
++			strGender := &quot;he&quot;;
++		elseif(gender == 1)
++			strGender := &quot;she&quot;;
++		endif
++	endif
++	if(subject &gt;= 100)
++		return &quot;also looks &quot; + strSuper + &quot; agile&quot;;
++	elseif(subject &gt;= 99)
++		return &quot;like one of the fastest &quot; + strType + &quot; you have ever seen&quot;;
++	elseif(subject &gt;= 89)
++		return &quot;moves like quicksilver&quot;;
++	elseif(subject &gt;= 79)
++		return &quot;extraordinarily agile&quot;;
++	elseif(subject &gt;= 69)
++		return &quot;extremely agile&quot;;
++	elseif(subject &gt;= 59)
++		return &quot;very agile&quot;;
++	elseif(subject &gt;= 49)
++		return &quot;somewhat agile&quot;;
++	elseif(subject &gt;= 39)
++		return &quot;moderately dextrous&quot;;
++	elseif(subject &gt;= 29)
++		return &quot;somewhat uncoordinated&quot;;
++	elseif(subject &gt;= 19)
++		return &quot;very clumsy&quot;;
++	else
++		return &quot;like &quot; + strGender + &quot; can barely manage to stay standing&quot;;
++	endif
++
++endfunction
++
++
++function getEnd(subject)
++
++	if(subject &gt;= 100)
++		return &quot;one-hundred percent&quot;;
++	elseif(subject &gt;= 90)
++		return &quot;ninety percent&quot;;
++	elseif(subject &gt;= 80)
++		return &quot;eighty percent&quot;;
++	elseif(subject &gt;= 70)
++		return &quot;seventy percent&quot;;
++	elseif(subject &gt;= 60)
++		return &quot;sixty percent&quot;;
++	elseif(subject &gt;= 50)
++		return &quot;fifty percent&quot;;
++	elseif(subject &gt;= 40)
++		return &quot;forty percent&quot;;
++	elseif(subject &gt;= 30)
++		return &quot;thirty percent&quot;;
++	elseif(subject &gt;= 20)
++		return &quot;twenty percent&quot;;
++	elseif(subject &gt;= 10)
++		return &quot;low&quot;;
++	else
++		return &quot;very low&quot;;
++	endif
++
++endfunction
+
+Added: trunk/096/pkg/skills/anatomy/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/skills/anatomy/config/icp.cfg	2006-05-14 13:46:30 UTC (rev 1424)
++++ trunk/096/pkg/skills/anatomy/config/icp.cfg	2006-05-15 04:56:12 UTC (rev 1425)
+@@ -0,0 +1,12 @@
++ICP Register
++{
++        Name            Anatomy
++        Version         1.1
++        Description     Anatomy Skill
++
++        Creator         Distro Team
++        C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+
+Added: trunk/096/pkg/skills/anatomy/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/anatomy/pkg.cfg	2006-05-14 13:46:30 UTC (rev 1424)
++++ trunk/096/pkg/skills/anatomy/pkg.cfg	2006-05-15 04:56:12 UTC (rev 1425)
+@@ -0,0 +1,9 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled         1
++Name		anatomy
++Maintainer      Distro Team
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++Version         1.1
++CoreRequired    95
+
+Modified: trunk/096/pkg/systems/attributes/skills.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/skills.cfg	2006-05-14 13:46:30 UTC (rev 1424)
++++ trunk/096/pkg/systems/attributes/skills.cfg	2006-05-15 04:56:12 UTC (rev 1425)
+@@ -45,8 +45,8 @@
+ {
+ 	Name		Anatomy
+ 	SkillId		1
+-	//Script		:anatomy:anatomy
+-	Delay		10
++	Script		:anatomy:anatomy
++	Delay		5
+ 
+ 	Unhides		0
+ 	DropStat	str dex
+@@ -57,7 +57,7 @@
+ 	Name		AnimalLore
+ 	SkillId		2
+ 	//Script		:animallore:animalLore
+-	Delay		10
++	Delay		2
+ 
+ 	Unhides		0
+ 	DropStat	str dex
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001393.html">[Poldistro-svn] r1424 - trunk/096/pkg/packetHooks/SkillLock/include
+</A></li>
+	<LI>Next message: <A HREF="001395.html">[Poldistro-svn] r1426 - in trunk/096/pkg: OLD/skills skills skills/armslore skills/armslore/config systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1394">[ date ]</a>
+              <a href="thread.html#1394">[ thread ]</a>
+              <a href="subject.html#1394">[ subject ]</a>
+              <a href="author.html#1394">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

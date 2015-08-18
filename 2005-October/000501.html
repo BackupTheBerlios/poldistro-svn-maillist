@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r528 - trunk/096/pkg/mobiles/death/commands/seer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r528%20-%20trunk/096/pkg/mobiles/death/commands/seer&In-Reply-To=%3C200510101557.j9AFvo3b029208%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000500.html">
+   <LINK REL="Next"  HREF="000502.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r528 - trunk/096/pkg/mobiles/death/commands/seer</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r528%20-%20trunk/096/pkg/mobiles/death/commands/seer&In-Reply-To=%3C200510101557.j9AFvo3b029208%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r528 - trunk/096/pkg/mobiles/death/commands/seer">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 17:57:50 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000500.html">[Poldistro-svn] r527 - trunk/096/pkg/systems/attributes/commands/seer
+</A></li>
+        <LI>Next message: <A HREF="000502.html">[Poldistro-svn] r529 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#501">[ date ]</a>
+              <a href="thread.html#501">[ thread ]</a>
+              <a href="subject.html#501">[ subject ]</a>
+              <a href="author.html#501">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 17:57:50 +0200 (Mon, 10 Oct 2005)
+New Revision: 528
+
+Added:
+   trunk/096/pkg/mobiles/death/commands/seer/resurrect.src
+Log:
+
+
+Added: trunk/096/pkg/mobiles/death/commands/seer/resurrect.src
+===================================================================
+--- trunk/096/pkg/mobiles/death/commands/seer/resurrect.src	2005-10-10 15:57:15 UTC (rev 527)
++++ trunk/096/pkg/mobiles/death/commands/seer/resurrect.src	2005-10-10 15:57:50 UTC (rev 528)
+@@ -0,0 +1,40 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++
++include &quot;:attributes:attributes&quot;;
++
++program textcmd_Resurrection(who)
++	if ( who.dead )
++		Resurrect(who);
++		AP_RefreshVitals(who);
++		return 1;
++	endif
++
++	SendSysMessage(who, &quot;Select a player corpse or ghost to resurrect.&quot;);
++	var targ := Target(who);
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++
++	if ( targ.IsA(POLCLASS_CORPSE) )
++		targ := SystemFindObjectBySerial(targ.ownerserial);
++		if ( !targ )
++			SendSysMessage(who, &quot;No owner could be found for that corpse.&quot;);
++			return 0;
++		endif
++	endif
++
++	var result := Resurrect(targ);
++	if ( result.errortext )
++		SendSysMessage(who, &quot;Error - &quot;+result.errortext);
++		return 0;
++	endif
++
++	SendSysMessage(who, &quot;Done.&quot;);
++	return 1;
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000500.html">[Poldistro-svn] r527 - trunk/096/pkg/systems/attributes/commands/seer
+</A></li>
+	<LI>Next message: <A HREF="000502.html">[Poldistro-svn] r529 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#501">[ date ]</a>
+              <a href="thread.html#501">[ thread ]</a>
+              <a href="subject.html#501">[ subject ]</a>
+              <a href="author.html#501">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

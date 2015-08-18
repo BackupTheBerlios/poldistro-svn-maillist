@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r626 - trunk/096/pkg/mobiles/brainAI/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r626%20-%20trunk/096/pkg/mobiles/brainAI/include&In-Reply-To=%3C200510190058.j9J0w1NE025506%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000598.html">
+   <LINK REL="Next"  HREF="000600.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r626 - trunk/096/pkg/mobiles/brainAI/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r626%20-%20trunk/096/pkg/mobiles/brainAI/include&In-Reply-To=%3C200510190058.j9J0w1NE025506%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r626 - trunk/096/pkg/mobiles/brainAI/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct 19 02:58:01 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000598.html">[Poldistro-svn] r625 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="000600.html">[Poldistro-svn] r627 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#599">[ date ]</a>
+              <a href="thread.html#599">[ thread ]</a>
+              <a href="subject.html#599">[ subject ]</a>
+              <a href="author.html#599">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-19 02:57:55 +0200 (Wed, 19 Oct 2005)
+New Revision: 626
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc
+Log:
+Fixes errors from an edit-&gt;replace.
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc	2005-10-19 00:57:13 UTC (rev 625)
++++ trunk/096/pkg/mobiles/brainAI/include/npcNerves.inc	2005-10-19 00:57:55 UTC (rev 626)
+@@ -90,7 +90,7 @@
+ function GetNerveProcess(mobile, nerve_name)
+ 	var nerve_dict := LoadNerves(mobile);
+ 	
+-	if ( nerve_dict.Existsnerve_name) )
++	if ( nerve_dict.Exists(nerve_name) )
+ 		return GetProcess(CInt(nerve_dict[nerve_name].pid));
+ 	else
+ 		return error{&quot;errortext&quot; := &quot;Error::GetNerveProcess() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+@@ -139,7 +139,7 @@
+ function GetNerveFlags(mobile, nerve_name)
+ 	var nerve_dict := LoadNerves(mobile);
+ 	
+-	if ( nerve_dict.Existsnerve_name) )
++	if ( nerve_dict.Exists(nerve_name) )
+ 		return GetProcess(CInt(nerve_dict[nerve_name].flags));
+ 	else
+ 		return error{&quot;errortext&quot; := &quot;Error::GetNerveFlags() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+@@ -187,7 +187,7 @@
+ 		var nerve_dict := LoadNerves(mobile);
+ 		
+ 		//Before setting the new nerve, check if one is already running.
+-		if ( nerve_dict.Existsnerve_name) )
++		if ( nerve_dict.Exists(nerve_name) )
+ 			//Stop the old nerve, before storing the new one.
+ 			StopNerve(mobile, nerve_name);
+ 		endif
+@@ -220,7 +220,7 @@
+ function StopNerve(mobile, nerve_name)
+ 	var nerve_dict := LoadNerves(mobile);
+ 	
+-	if ( nerve_dict.Existsnerve_name) )
++	if ( nerve_dict.Exists(nerve_name) )
+ 		GetNerveProcess(mobile, nerve_name).kill();
+ 		nerve_dict.Erase(nerve_name);
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000598.html">[Poldistro-svn] r625 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="000600.html">[Poldistro-svn] r627 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#599">[ date ]</a>
+              <a href="thread.html#599">[ thread ]</a>
+              <a href="subject.html#599">[ subject ]</a>
+              <a href="author.html#599">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

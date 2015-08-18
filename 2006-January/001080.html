@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1109 - trunk/096/pkg/mobiles/brainAI/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1109%20-%20trunk/096/pkg/mobiles/brainAI/include&In-Reply-To=%3C200601090241.k092fs1g029971%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001079.html">
+   <LINK REL="Next"  HREF="001081.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1109 - trunk/096/pkg/mobiles/brainAI/include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1109%20-%20trunk/096/pkg/mobiles/brainAI/include&In-Reply-To=%3C200601090241.k092fs1g029971%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1109 - trunk/096/pkg/mobiles/brainAI/include">austin at berlios.de
+       </A><BR>
+    <I>Mon Jan  9 03:41:54 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001079.html">[Poldistro-svn] r1108 - trunk/096/pkg/mobiles/brainAI/scripts/combat
+</A></li>
+        <LI>Next message: <A HREF="001081.html">[Poldistro-svn] r1110 - trunk/096/pkg/mobiles/brainAI/scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1080">[ date ]</a>
+              <a href="thread.html#1080">[ thread ]</a>
+              <a href="subject.html#1080">[ subject ]</a>
+              <a href="author.html#1080">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-09 03:41:34 +0100 (Mon, 09 Jan 2006)
+New Revision: 1109
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/include/commonFunctions.inc
+Log:
+Functions to make some nerve scripts less redundant.
+
+Added: trunk/096/pkg/mobiles/brainAI/include/commonFunctions.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/commonFunctions.inc	2006-01-09 02:25:10 UTC (rev 1108)
++++ trunk/096/pkg/mobiles/brainAI/include/commonFunctions.inc	2006-01-09 02:41:34 UTC (rev 1109)
+@@ -0,0 +1,66 @@
++/* $Id$
++ * 
++ * Description
++ * Common code found in just about every nerve script.
++ * This include file exists to reduce redundancy.
++ * 
++ */
++
++use uo;
++
++include &quot;:attributes:attributes&quot;;
++
++ 
++//==========
++// Non nerve specific functions
++//==========
++
++
++
++//==========
++// Combat Nerve Functions
++//==========
++
++/* NPC_GetFleeLevel(npc, flee_percent)
++ * 
++ * Purpose
++ * Calculates the hit point level when an npc should run away.
++ *
++ * Parameters
++ * npc:			NPC that the nerve belongs to. 
++ * flee_percent:	Percentage of hit points that the NPC will flee at.
++ *
++ * Return Value
++ * Returns an integer.
++ *
++ */
++function NPC_GetFleeLevel(npc, flee_percent)
++	return CInt(CDbl(AP_GetVitalMaximumValue(npc, &quot;Hits&quot;)) * (CDbl(flee_percent)/100.0));
++endfunction
++
++/* NPC_SetupRanges(npc, min_range, max_range)
++ *
++ * Purpose
++ * Sets up the minimum and maximum distances the npc will allow its self to be
++ * in relation to its opponent. These are based on its weapon settings.
++ *
++ * Parameters
++ * NPC:		NPC the nerve belongs to.
++ * min_range:	Minimum range variable to set.
++ * max_range:	Maximum range variable to set.
++ *
++ * Return value
++ * No return value.
++ *
++ */
++function NPC_WeaponRanges(npc, byref min_range, byref max_range)
++	// To support having distance for archery weapons or being close up for a melee weapon.
++	min_range := CInt(CS_GetWeaponInfo(npc.weapon, &quot;MinRange&quot;));
++	max_range := CInt(CS_GetWeaponInfo(npc.weapon, &quot;MaxRange&quot;));
++	if ( !max_range )
++		max_range := 1;
++	endif
++	
++	return 1;
++endfunction
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001079.html">[Poldistro-svn] r1108 - trunk/096/pkg/mobiles/brainAI/scripts/combat
+</A></li>
+	<LI>Next message: <A HREF="001081.html">[Poldistro-svn] r1110 - trunk/096/pkg/mobiles/brainAI/scripts/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1080">[ date ]</a>
+              <a href="thread.html#1080">[ thread ]</a>
+              <a href="subject.html#1080">[ subject ]</a>
+              <a href="author.html#1080">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

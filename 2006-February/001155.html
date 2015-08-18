@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1184 - trunk/096/pkg/items/doors/door
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1184%20-%20trunk/096/pkg/items/doors/door&In-Reply-To=%3C200602101804.k1AI450H020460%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001154.html">
+   <LINK REL="Next"  HREF="001156.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1184 - trunk/096/pkg/items/doors/door</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1184%20-%20trunk/096/pkg/items/doors/door&In-Reply-To=%3C200602101804.k1AI450H020460%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1184 - trunk/096/pkg/items/doors/door">austin at berlios.de
+       </A><BR>
+    <I>Fri Feb 10 19:04:05 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001154.html">[Poldistro-svn] r1183 - trunk/096/pkg/items/doors/door
+</A></li>
+        <LI>Next message: <A HREF="001156.html">[Poldistro-svn] r1185 - in trunk/096/pkg/items/keys: include key keyring
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1155">[ date ]</a>
+              <a href="thread.html#1155">[ thread ]</a>
+              <a href="subject.html#1155">[ subject ]</a>
+              <a href="author.html#1155">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-10 19:03:59 +0100 (Fri, 10 Feb 2006)
+New Revision: 1184
+
+Modified:
+   trunk/096/pkg/items/doors/door/method.src
+Log:
+Renamed IsOpened to IsOpen to match the core's built in function (and thus overload it)
+
+Modified: trunk/096/pkg/items/doors/door/method.src
+===================================================================
+--- trunk/096/pkg/items/doors/door/method.src	2006-02-10 17:47:42 UTC (rev 1183)
++++ trunk/096/pkg/items/doors/door/method.src	2006-02-10 18:03:59 UTC (rev 1184)
+@@ -19,7 +19,7 @@
+ endfunction
+ 
+ exported function Toggle(door)
+-	if ( IsOpened(door) )
++	if ( IsOpen(door) )
+ 		Close(door);
+ 	else
+ 		Open(door);
+@@ -29,7 +29,7 @@
+ endfunction
+ 
+ exported function Open(door)
+-	if ( IsOpened(door) )
++	if ( IsOpen(door) )
+ 		return error{&quot;errortext&quot;:=&quot;Door is already open.&quot;};
+ 	endif
+ 	
+@@ -46,7 +46,7 @@
+ endfunction
+ 
+ exported function Close(door)
+-	if ( !IsOpened(door) )
++	if ( !IsOpen(door) )
+ 		return error{&quot;errortext&quot;:=&quot;Door is already closed.&quot;};
+ 	endif
+ 	
+@@ -62,7 +62,7 @@
+ 	return 1;
+ endfunction
+ 
+-exported function IsOpened(door)
++exported function IsOpen(door)
+ 	return CInt(GetObjProperty(door, &quot;Open&quot;));
+ endfunction
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001154.html">[Poldistro-svn] r1183 - trunk/096/pkg/items/doors/door
+</A></li>
+	<LI>Next message: <A HREF="001156.html">[Poldistro-svn] r1185 - in trunk/096/pkg/items/keys: include key keyring
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1155">[ date ]</a>
+              <a href="thread.html#1155">[ thread ]</a>
+              <a href="subject.html#1155">[ subject ]</a>
+              <a href="author.html#1155">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

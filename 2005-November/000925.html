@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r951 - in trunk/096: config pkg/items/keys
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r951%20-%20in%20trunk/096%3A%20config%20pkg/items/keys&In-Reply-To=%3C200511131004.jADA4kMD020933%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000924.html">
+   <LINK REL="Next"  HREF="000926.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r951 - in trunk/096: config pkg/items/keys</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r951%20-%20in%20trunk/096%3A%20config%20pkg/items/keys&In-Reply-To=%3C200511131004.jADA4kMD020933%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r951 - in trunk/096: config pkg/items/keys">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 13 11:04:46 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000924.html">[Poldistro-svn] r950 - in trunk/096/pkg/items: . keys keys/config keys/key keys/keyring
+</A></li>
+        <LI>Next message: <A HREF="000926.html">[Poldistro-svn] r952 - in trunk/096/pkg/items/keys: include key keyring
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#925">[ date ]</a>
+              <a href="thread.html#925">[ thread ]</a>
+              <a href="subject.html#925">[ subject ]</a>
+              <a href="author.html#925">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-13 11:04:43 +0100 (Sun, 13 Nov 2005)
+New Revision: 951
+
+Modified:
+   trunk/096/config/itemdesc.cfg
+   trunk/096/pkg/items/keys/itemdesc.cfg
+Log:
+Moved key and keyring entries to key package.
+
+Modified: trunk/096/config/itemdesc.cfg
+===================================================================
+--- trunk/096/config/itemdesc.cfg	2005-11-13 09:55:23 UTC (rev 950)
++++ trunk/096/config/itemdesc.cfg	2005-11-13 10:04:43 UTC (rev 951)
+@@ -452,58 +452,6 @@
+ 	Movable			0
+ }
+ 
+-Item 0x100e
+-{
+-	Name			copperkey
+-	Desc			copper key
+-	Script			key
+-	VendorSellsFor		9
+-	VendorBuysFor		4
+-}
+-
+-Item 0x100f
+-{
+-	Name			goldkey
+-	Desc			gold key
+-	Script			key
+-	VendorSellsFor		9
+-	VendorBuysFor		4
+-}
+-
+-Item 0x1010
+-{
+-	Name			ironkey
+-	Desc			iron key
+-	Script			key
+-	VendorSellsFor		9
+-	VendorBuysFor		4
+-}
+-
+-Item 0x1012
+-{
+-	Name			magickey
+-	Desc			magic key
+-	Script			key
+-}
+-
+-Item 0x1013
+-{
+-	Name			rustykey
+-	Desc			rusty key
+-	Script			key
+-	VendorSellsFor		9
+-	VendorBuysFor		4
+-}
+-
+-Item 0x1011
+-{
+-	Name			keyring
+-	Desc			key ring
+-	Script			key
+-	VendorSellsFor		12
+-	VendorBuysFor		4
+-}
+-
+ Item 0x14fb
+ {
+ 	Name			lockpick
+
+Modified: trunk/096/pkg/items/keys/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/keys/itemdesc.cfg	2005-11-13 09:55:23 UTC (rev 950)
++++ trunk/096/pkg/items/keys/itemdesc.cfg	2005-11-13 10:04:43 UTC (rev 951)
+@@ -1,40 +1,76 @@
++Container 0x1011
++{
++	Name			KeyRing
++	Desc			key ring
++	
++	Gump			0x40
++	MinX			20
++	MaxX			60
++	MinY			20
++	MaxY			60
++	MaxItems		5
++	MaxWeight		0
++	Lockable		0
++	MaxItems		5
++	
++	VendorSellsFor		12
++	VendorBuysFor		4
++}
++
+ Item 0x100E
+ {
+-	Name		Key1
+-	Desc		key
++	Name			CopperKey
++	Name			Key1
++	Desc			copper key
+ 	
+-	MethodScript	key/methods
+-	Script		key/use
++	VendorSellsFor		9
++	VendorBuysFor		4
++	
++	MethodScript		key/methods
++	Script			key/use
+ }
+ Item 0x100F
+ {
+-	Name		Key2
+-	Desc		key
++	Name			GoldKey
++	Name			Key2
++	Desc			gold key
+ 	
+-	MethodScript	key/methods
+-	Script		key/use
++	VendorSellsFor		9
++	VendorBuysFor		4
++	
++	MethodScript		key/methods
++	Script			key/use
+ }
+ Item 0x1010
+ {
+-	Name		Key3
+-	Desc		key
++	Name			IronKey
++	Name			Key3
++	Desc			iron key
+ 	
+-	MethodScript	key/methods
+-	Script		key/use
++	VendorSellsFor		9
++	VendorBuysFor		4
++	
++	MethodScript		key/methods
++	Script			key/use
+ }
+ Item 0x1012
+ {
+-	Name		Key4
+-	Desc		key
++	Name			MagicKey
++	Name			Key4
++	Desc			magic key
+ 	
+-	MethodScript	key/methods
+-	Script		key/use
++	MethodScript		key/methods
++	Script			key/use
+ }
+ Item 0x1013
+ {
+-	Name		Key5
+-	Desc		key
++	Name			RustyKey
++	Name			Key5
++	Desc			rusty key
+ 	
+-	MethodScript	key/methods
+-	Script		key/use
++	VendorSellsFor		9
++	VendorBuysFor		4
++	
++	MethodScript		key/methods
++	Script			key/use
+ }
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000924.html">[Poldistro-svn] r950 - in trunk/096/pkg/items: . keys keys/config keys/key keys/keyring
+</A></li>
+	<LI>Next message: <A HREF="000926.html">[Poldistro-svn] r952 - in trunk/096/pkg/items/keys: include key keyring
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#925">[ date ]</a>
+              <a href="thread.html#925">[ thread ]</a>
+              <a href="subject.html#925">[ subject ]</a>
+              <a href="author.html#925">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

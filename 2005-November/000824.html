@@ -1,0 +1,377 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r850 - in trunk/096/scripts: include misc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r850%20-%20in%20trunk/096/scripts%3A%20include%20misc&In-Reply-To=%3C200511030220.jA32KkZP023274%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000823.html">
+   <LINK REL="Next"  HREF="000825.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r850 - in trunk/096/scripts: include misc</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r850%20-%20in%20trunk/096/scripts%3A%20include%20misc&In-Reply-To=%3C200511030220.jA32KkZP023274%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r850 - in trunk/096/scripts: include misc">austin at berlios.de
+       </A><BR>
+    <I>Thu Nov  3 03:20:46 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000823.html">[Poldistro-svn] r849 - in trunk/096: pkg/systems/combat/old pkg/systems/housing pkg/systems/spellcasting scripts/items scripts/misc
+</A></li>
+        <LI>Next message: <A HREF="000825.html">[Poldistro-svn] r851 - trunk/096/pkg/systems/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#824">[ date ]</a>
+              <a href="thread.html#824">[ thread ]</a>
+              <a href="subject.html#824">[ subject ]</a>
+              <a href="author.html#824">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-03 03:20:29 +0100 (Thu, 03 Nov 2005)
+New Revision: 850
+
+Added:
+   trunk/096/scripts/include/equipment.inc
+   trunk/096/scripts/misc/equipTest.src
+   trunk/096/scripts/misc/unequipTest.src
+Log:
+Equipment system.
+Used for setting and removing attribute modifier values on a piece of equipment.inc
+
+Used for modifying modifiers when a mobile equips and un-equips an item.
+
+
+
+Added: trunk/096/scripts/include/equipment.inc
+===================================================================
+--- trunk/096/scripts/include/equipment.inc	2005-11-02 21:09:07 UTC (rev 849)
++++ trunk/096/scripts/include/equipment.inc	2005-11-03 02:20:29 UTC (rev 850)
+@@ -0,0 +1,224 @@
++/*
++ * $Id$
++ *
++ * Purpose
++ * Allows modifiers to be easily set and removed.
++ * Supports itemdesc.cfg modifiers and custom modifiers.
++ *
++ * Note:
++ * AP_GetStatMod() and AP_GetSkillMod()
++ * Will work on skills as well. They're more-so formalities.
++ * Mostly we expect objects to edit stats so that is why that function name
++ * was chosen to be used in this script.
++ *
++ */
++
++use uo;
++use cfgfile;
++
++include &quot;:attributes:attributes&quot;;
++
++CONST	EQUIP_ITEMDESC_MODS	:= 0x1;
++CONST	EQUIP_CUSTOM_MODS	:= 0x2;
++CONST	EQUIP_BOTH_MODS		:= 0x3;
++CONST	EQUIP_CSTM_OR_ITEMDESC	:= 0x4;
++
++/* 
++ * GetEquipmentModifiers(item, flags:=EQUIP_CSTM_OR_ITEMDESC)
++ *
++ * Purpose
++ * Retrieves the attribute modifiers for an item.
++ *
++ * Parameters
++ * item:	Item to retrieve modifier information for.
++ * flags:	Where to retrieve the modifiers from.
++ *		EQUIP_ITEMDESC_MODS	- Retrieve modifiers from the item's itemdesc.cfg entry.
++ *		EQUIP_CUSTOM_MODS	- Retrieve custom modifiers set on the item.
++ *		EQUIP_ALL_MODS		- Merge dictionaries and use them all.
++ *		EQUIP_CUSTM_OR_ITEMDESC	- Uses custom modifiers. If none exist, uses itemdesc.cfg entries.
++ *
++ * Return value
++ * Returns a dictionary.
++ *
++ */
++function GetEquipmentModifiers(item, flags:=EQUIP_CSTM_OR_ITEMDESC)
++	var cstm_mods;
++	if ( flags &amp; EQUIP_CUSTOM_MODS || flags &amp; EQUIP_CSTM_OR_ITEMDESC )
++		cstm_mods := GetObjProperty(item, &quot;AttribMods&quot;);
++		if ( Lower(TypeOf(cstm_mods)) != &quot;dictionary&quot; )
++			cstm_mods := dictionary;
++		endif
++		
++		if ( flags &amp; EQUIP_CSTM_OR_ITEMDESC )
++			// Custom mods found, so don't use itemdesc.cfg ones.
++			return cstm_mods;
++		endif
++	endif
++	
++	var itemdesc_mods;
++	if ( flags &amp; EQUIP_ITEMDESC_MODS || flags &amp; EQUIP_CSTM_OR_ITEMDESC )
++		var item_cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
++		item_cfg := item_cfg[item.objtype];
++		itemdesc_mods := GetConfigStringDictionary(item_cfg, &quot;AttribMod&quot;);
++	endif
++	
++	if ( flags &amp; EQUIP_BOTH_MODS )
++		// Note: Custom mods override itemdesc.cfg ones here.
++		foreach modifier in ( cstm_mods )
++			modifier := modifier; // So the compiler does not issue a warning.
++			itemdesc_mods.Insert(_modifier_iter, modifier);
++			sleepms(2);
++		endforeach
++	endif
++	
++	if ( itemdesc_mods.Size() &gt; 0 )
++		return itemdesc_mods;
++	else
++		return cstm_mods;
++	endif
++endfunction
++	
++/*
++ * AddModifierToEquipment(item, attrib_name, modifier)
++ *
++ * Purpose
++ * Adds a custom modifier to a piece of equipment.
++ * Useful for making an item magic and as a result effects
++ * attributes when equipped / unequipped.
++ * 
++ * Parameters
++ * item:	Item to set the attribute modifier on.
++ * attrib_name:	Name of the attribute to modify when equipped / un-equipped.
++ * modifier:	Amount to raise or lower the attribute.
++ * 
++ * Return value
++ * Returns 1 on success
++ * Returns error on failure.
++ */
++function AddModifierToEquipment(item, attrib_name, modifier)
++	if ( !item.IsA(POLCLASS_EQUIPMENT) )
++		return error{&quot;errortext&quot;:=&quot;That is not a member of the equipment class.&quot;};
++	endif
++	
++	var cstm_mods := GetObjProperty(item, &quot;AttribMods&quot;);
++	if ( Lower(TypeOf(cstm_mods)) != &quot;dictionary&quot; )
++		cstm_mods := dictionary;
++	endif
++	
++	modifier := CDbl(modifier);
++	if ( modifier == 0.0 )
++		return error{&quot;errortext&quot;:=&quot;No modifier value was set.&quot;};
++	elseif ( !AP_GetAttributeCfgElem(attrib_name) )
++		return error{&quot;errortext&quot;:=&quot;That is not a valid attribute name.&quot;};
++	endif
++	
++	cstm_mods[attrib_name] := modifier;
++	
++	return SetObjProperty(item, &quot;AttribMods&quot;, cstm_mods);
++endfunction
++
++/*
++ * RemoveModifierFromEquipment(item, attrib_name)
++ *
++ * Purpose
++ * Removes a custom modifier from a piece of equipment.
++ * Useful for removing effects that it places on
++ * attributes when equipped / unequipped.
++ * 
++ * Parameters
++ * item:	Item to remove the attribute modifier from.
++ * attrib_name:	Name of the attribute modifier to remove.
++ * 
++ * Return value
++ * Returns 1 on success
++ * Returns error on failure.
++ */
++function RemoveModifierFromEquipment(item, attrib_name)
++	if ( !item.IsA(POLCLASS_EQUIPMENT) )
++		return error{&quot;errortext&quot;:=&quot;That is not a member of the equipment class.&quot;};
++	endif
++	
++	var cstm_mods := GetObjProperty(item, &quot;AttribMods&quot;);
++	cstm_mods.Erase(attrib_name);
++	
++	if ( cstm_mods &gt; 0 )
++		return SetObjProperty(item, &quot;AttribMods&quot;, cstm_mods);
++	else
++		// No point in keeping an empty dictionary cprop.
++		return EraseObjProperty(item, &quot;AttribMods&quot;);
++	endif
++endfunction
++
++/* 
++ * ApplyEquipmentMods(mobile, item)
++ *
++ * Purpose
++ * Applies skill and stat mods onto a mobile equipping something.
++ *
++ * Parameters
++ * mobile:	Mobile equipping the item.
++ * item:	Item being equipped.
++ * flags:	Where to retrieve the modifiers from.
++ *		EQUIP_ITEMDESC_MODS	- Retrieve modifiers from the item's itemdesc.cfg entry.
++ *		EQUIP_CUSTOM_MODS	- Retrieve custom modifiers set on the item.
++ *		EQUIP_ALL_MODS		- Merge dictionaries and use them all.
++ *		EQUIP_CUSTM_OR_ITEMDESC	- Uses custom modifiers. If none exist, uses itemdesc.cfg entries.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
++function ApplyEquipmentMods(mobile, item, flags := EQUIP_CSTM_OR_ITEMDESC)
++	var attrib_mods := GetEquipmentModifiers(item, flags);
++			
++	foreach modifier in ( attrib_mods )
++		modifier := modifier; // Stops compiler warnings.
++		var attrib_name := _modifier_iter;
++		var amount := CDbl(modifier);
++		
++		var cur_val := AP_GetStatMod(mobile, attrib_name);
++		var new_val := cur_val + amount;
++		
++		//SendSysMessage(mobile, &quot;Attrib[&quot;+attrib+&quot;] Amount[&quot;+new_val+&quot;]&quot;);
++		AP_SetStatMod(mobile, attrib_name, new_val);
++	endforeach
++	
++	return 1;
++endfunction
++
++/* 
++ * RemoveEquipmentMods(mobile, item)
++ *
++ * Purpose
++ * Removes skill and stat mods onto a mobile equipping something.
++ *
++ * Parameters
++ * mobile:	Mobile un-equipping the item.
++ * item:	Item being un-equipped.
++ * flags:	Where to retrieve the modifiers from.
++ *		EQUIP_ITEMDESC_MODS	- Retrieve modifiers from the item's itemdesc.cfg entry.
++ *		EQUIP_CUSTOM_MODS	- Retrieve custom modifiers set on the item.
++ *		EQUIP_ALL_MODS		- Merge dictionaries and use them all.
++ *		EQUIP_CUSTM_OR_ITEMDESC	- Uses custom modifiers. If none exist, uses itemdesc.cfg entries.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
++function RemoveEquipmentMods(mobile, item, flags:=EQUIP_CSTM_OR_ITEMDESC)
++	var attrib_mods := GetEquipmentModifiers(item, flags);
++	
++	foreach modifier in ( attrib_mods )
++		modifier := modifier; // Stops compiler warnings.
++		var attrib_name := _modifier_iter;
++		var amount := CDbl(modifier);
++		
++		var cur_val := AP_GetStatMod(mobile, attrib_name);
++		var new_val := cur_val - amount;
++		
++		//SendSysMessage(mobile, &quot;Attrib[&quot;+attrib+&quot;] Amount[&quot;+amount+&quot;]&quot;);
++		AP_SetStatMod(mobile, attrib_name, new_val);
++	endforeach
++	
++	return 1;
++endfunction
+
+Added: trunk/096/scripts/misc/equipTest.src
+===================================================================
+--- trunk/096/scripts/misc/equipTest.src	2005-11-02 21:09:07 UTC (rev 849)
++++ trunk/096/scripts/misc/equipTest.src	2005-11-03 02:20:29 UTC (rev 850)
+@@ -0,0 +1,38 @@
++use uo;
++use os;
++
++include &quot;include/equipment&quot;;
++
++program EquipTest(mobile, item, start_up)
++	var retval;
++	
++	if ( start_up )
++		// POL is starting up, yes the mobile can equip it
++		retval := 1;
++	elseif ( mobile.npctemplate )
++		// NPCs can wear anything
++		retval := 1;
++	elseif ( mobile.cmdlevel )
++		// CmdLevel &gt; 0 can equip anything.
++		retval := 1;
++	elseif ( item.isa(POLCLASS_CONTAINER) )	
++		// Makes backpacks always equippable.
++		retval := 1;
++	elseif ( (mobile.frozen) || (mobile.paralyzed) )
++		// Frozen players cant equip stuff
++		SendSysMessage(mobile, &quot;You are unable to move in order to equip that.&quot;);
++		retval := 0;
++	else
++		retval := 1;
++	endif
++	
++	if ( retval )
++		SetObjProperty(item, &quot;#EquippedOn&quot;, mobile.serial);
++		ApplyEquipmentMods(mobile, item);
++	else
++		// Unable to equip but no reaso was given above. 
++		SendSysMessage(mobile, &quot;Unable to equip -&gt;&quot;+item.desc);
++	endif
++	
++	return retval;
++endprogram
+
+Added: trunk/096/scripts/misc/unequipTest.src
+===================================================================
+--- trunk/096/scripts/misc/unequipTest.src	2005-11-02 21:09:07 UTC (rev 849)
++++ trunk/096/scripts/misc/unequipTest.src	2005-11-03 02:20:29 UTC (rev 850)
+@@ -0,0 +1,19 @@
++use uo;
++use os;
++
++include &quot;include/equipment&quot;;
++
++program UnequipTest(mobile, item)
++	if ( mobile.cmdlevel ) 
++		return 1;
++	elseif ( (mobile.frozen) || (mobile.paralyzed))
++		SendSysMessage(mobile, &quot;You are unable to move in order to unequip that.&quot;);
++		return 0;
++	elseif ( GetObjProperty(item, &quot;cursed&quot;) )
++		return 0;
++	else
++		RemoveEquipmentMods(mobile, item);
++		EraseObjProperty(item, &quot;#EquippedOn&quot;);
++		return 1;
++	endif
++endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000823.html">[Poldistro-svn] r849 - in trunk/096: pkg/systems/combat/old pkg/systems/housing pkg/systems/spellcasting scripts/items scripts/misc
+</A></li>
+	<LI>Next message: <A HREF="000825.html">[Poldistro-svn] r851 - trunk/096/pkg/systems/combat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#824">[ date ]</a>
+              <a href="thread.html#824">[ thread ]</a>
+              <a href="subject.html#824">[ subject ]</a>
+              <a href="author.html#824">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

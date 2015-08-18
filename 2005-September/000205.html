@@ -1,0 +1,469 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r223 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r223%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509242227.j8OMR1Io010045%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000204.html">
+   <LINK REL="Next"  HREF="000206.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r223 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r223%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509242227.j8OMR1Io010045%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r223 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep 25 00:27:01 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000204.html">[Poldistro-svn] r222 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000206.html">[Poldistro-svn] r224 - in trunk/096/pkg/systems/attributes: commands/test config hooks include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#205">[ date ]</a>
+              <a href="thread.html#205">[ thread ]</a>
+              <a href="subject.html#205">[ subject ]</a>
+              <a href="author.html#205">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-25 00:27:01 +0200 (Sun, 25 Sep 2005)
+New Revision: 223
+
+Modified:
+   trunk/096/pkg/systems/attributes/include/attributes_ex.inc
+   trunk/096/pkg/systems/attributes/include/skills.inc
+   trunk/096/pkg/systems/attributes/include/stats.inc
+   trunk/096/pkg/systems/attributes/include/vitals.inc
+Log:
+
+
+Modified: trunk/096/pkg/systems/attributes/include/attributes_ex.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributes_ex.inc	2005-09-24 22:25:19 UTC (rev 222)
++++ trunk/096/pkg/systems/attributes/include/attributes_ex.inc	2005-09-24 22:27:01 UTC (rev 223)
+@@ -11,7 +11,7 @@
+ include &quot;:attributes:include/attributes&quot;;
+ 
+ /*
+- * AF_SkillIDToAttributeName(skill_number)
++ * attributes_SkillIDToAttributeName(skill_number)
+  *
+  * Purpose
+  * Gets the name of the attribute that is associated with a skill number.
+@@ -24,22 +24,22 @@
+  * Returns a string.
+  *
+  */
+-function AF_IDToAttributeName(skill_number)
++function attributes_IDToAttributeName(skill_number)
+ 	var skills_cfg := ReadConfigFile(&quot;:attributes:uoskills&quot;);
+ 	if ( skills_cfg.errortext )
+-		SysLog(&quot;Error::AF_IDToAttributeName() - Unable to open :attributes:uoskills.cfg -&gt;&quot;+skills_cfg.errortext);
++		SysLog(&quot;Error::attributes_IDToAttributeName() - Unable to open :attributes:uoskills.cfg -&gt;&quot;+skills_cfg.errortext);
+ 	endif
+ 	
+ 	var cfg_elem := skills_cfg[skill_number];
+ 	if ( cfg_elem.errortext )
+-		SysLog(&quot;Error::AF_IDToAttributeName() - unable to find cfg elem [&quot;+skill_number+&quot;] -&gt;&quot;+cfg_elem.errortext);
++		SysLog(&quot;Error::attributes_IDToAttributeName() - unable to find cfg elem [&quot;+skill_number+&quot;] -&gt;&quot;+cfg_elem.errortext);
+ 	endif
+ 	
+ 	return cfg_elem.Attribute;
+ endfunction
+ 
+ /*
+- * AF_AttributeNameToSkillID(attribute_name)
++ * attributes_AttributeNameToSkillID(attribute_name)
+  *
+  * Purpose
+  * Gets the skill number (ID) that an attribute name is associated with.
+@@ -52,8 +52,8 @@
+  * Returns an integer.
+  *
+  */
+-function AF_AttributeNameToSkillID(attribute_name)
+-	var cfg_elem := AF_GetAttributeCfgElem(attribute_name);
++function attributes_AttributeNameToSkillID(attribute_name)
++	var cfg_elem := attributes_GetAttributeCfgElem(attribute_name);
+ 	
+ 	return cfg_elem.SkillId;
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-24 22:25:19 UTC (rev 222)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-24 22:27:01 UTC (rev 223)
+@@ -11,7 +11,7 @@
+ use uo;
+ 
+ /*
+- * AF_GetSkill(mobile, skill_name)
++ * attributes_GetSkill(mobile, skill_name)
+  *
+  * Purpose
+  * Retrieves the base value of the skill plus its mod value.
+@@ -24,12 +24,12 @@
+  * Returns an integer.
+  *
+  */
+-function AF_GetSkill(who, skill_name)
+-	return AF_GetTrueSkill(who, skill_name)+AF_GetSkillMod(who, skill_name);
++function attributes_GetSkill(who, skill_name)
++	return attributes_GetTrueSkill(who, skill_name)+attributes_GetSkillMod(who, skill_name);
+ endfunction
+ 
+ /*
+- * AF_GetTrueSkill(mobile, skill_name)
++ * attributes_GetTrueSkill(mobile, skill_name)
+  *
+  * Purpose
+  * Retrieves the base value of the skill and turns it into a usable number.
+@@ -42,12 +42,12 @@
+  * Returns a double.
+  *
+  */
+-function AF_GetTrueSkill(who, skill_name)
++function attributes_GetTrueSkill(who, skill_name)
+ 	return CDbl(GetAttributeBaseValue(who, skill_name)) / 10.0;
+ endfunction
+ 
+ /*
+- * AF_GetSkillMod(mobile, skill_name)
++ * attributes_GetSkillMod(mobile, skill_name)
+  *
+  * Purpose
+  * Retrieves the base value of the skill mod and turns it into a usable number.
+@@ -60,16 +60,16 @@
+  * Returns a double.
+  *
+  */
+-function AF_GetSkillMod(who, skill_name)
++function attributes_GetSkillMod(who, skill_name)
+ 	return CDbl(GetAttributeTemporaryMod(who, skill_name)) / 10.0;
+ endfunction
+ 
+ /*
+- * AF_SetTrueSkill(mobile, skill_name, points)
++ * attributes_SetTrueSkill(mobile, skill_name, points)
+  *
+  * Purpose
+  * Sets the value of the skill.
+- * Example: AF_SetTrueSkill(mobile, &quot;strength&quot;, 44.5)
++ * Example: attributes_SetTrueSkill(mobile, &quot;strength&quot;, 44.5)
+  *
+  * Parameters
+  * mobile:	Mobile reference to set the points on.
+@@ -80,16 +80,16 @@
+  * Returns a double.
+  *
+  */
+-function AF_SetTrueSkill(mobile, skill_name, points)
++function attributes_SetTrueSkill(mobile, skill_name, points)
+ 	SetAttributeBaseValue(mobile, skill_name, CInt(CDbl(points) * 10.0));
+ endfunction
+ 
+ /*
+- * AF_SetSkillMod(mobile, skill_name, points)
++ * attributes_SetSkillMod(mobile, skill_name, points)
+  *
+  * Purpose
+  * Sets the modifier value for the skill.
+- * Example: AF_SetSkillMod(mobile, &quot;strength&quot;, -15.3)
++ * Example: attributes_SetSkillMod(mobile, &quot;strength&quot;, -15.3)
+  *
+  * Parameters
+  * mobile:	Mobile reference to set the modifier points on.
+@@ -100,12 +100,12 @@
+  * Returns a double.
+  *
+  */
+-function AF_SetSkillMod(mobile, skill_name, points)
++function attributes_SetSkillMod(mobile, skill_name, points)
+ 	SetAttributeTemporaryMod(mobile, skill_name, CInt(CDbl(points) * 10.0));
+ endfunction
+ 
+ /*
+- * AF_SetSkillScript(attribute_name)
++ * attributes_SetSkillScript(attribute_name)
+  *
+  * Purpose
+  * Gets the script that a skill uses.
+@@ -117,7 +117,33 @@
+  * Returns a string.
+  *
+  */
+-function GetSkillScript(attribute_name)
+-	var cfg := AF_GetAttributeCfgElem(attribute_name);
++function attributes_GetSkillScript(attribute_name)
++	var cfg := attributes_GetAttributeCfgElem(attribute_name);
+ 	return cfg.Script;
+ endfunction
++
++/*
++ * attributes_GetSkillStats(attribute_name)
++ *
++ * Purpose
++ * Retrieves a dictionary from the attribute's config elem
++ * Key is the stat name, inside is an array containing the settings for it.
++ * dict[&quot;StatName&quot;] =&gt; array{gain chance, award points dice}
++ *
++ * Parameters
++ * attribute_name:	Name of the skill to retrieve stat settings for.
++ *
++ * Return value
++ * Returns a dictionary.
++ *
++ */
++function attributes_GetSkillStats(attribute_name)
++	var cfg_elem := attributes_GetAttributeCfgElem(attribute_name);
++	var stat_entries := GetConfigStringDictionary(cfg_elem, &quot;StatCheck&quot;);
++	foreach textline in (stat_entries)
++		textline := SplitWords(textline);
++		sleepms(2);
++	endforeach
++	
++	return stat_entries;
++endfunction
+
+Modified: trunk/096/pkg/systems/attributes/include/stats.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/stats.inc	2005-09-24 22:25:19 UTC (rev 222)
++++ trunk/096/pkg/systems/attributes/include/stats.inc	2005-09-24 22:27:01 UTC (rev 223)
+@@ -11,7 +11,7 @@
+ use uo;
+ 
+ /*
+- * AF_GetStat(mobile, stat_name)
++ * attributes_GetStat(mobile, stat_name)
+  *
+  * Purpose
+  * Retrieves the base value of the stat plus its mod value.
+@@ -24,12 +24,12 @@
+  * Returns an integer.
+  *
+  */
+-function AF_GetStat(who, stat_name)
+-	return AF_GetTrueStat(who, stat_name)+AF_GetStatMod(who, stat_name);
++function attributes_GetStat(who, stat_name)
++	return attributes_GetTrueStat(who, stat_name)+attributes_GetStatMod(who, stat_name);
+ endfunction
+ 
+ /*
+- * AF_GetTrueStat(mobile, stat_name)
++ * attributes_GetTrueStat(mobile, stat_name)
+  *
+  * Purpose
+  * Retrieves the base value of the stat and turns it into a usable number.
+@@ -42,12 +42,12 @@
+  * Returns a double.
+  *
+  */
+-function AF_GetTrueStat(who, stat_name)
++function attributes_GetTrueStat(who, stat_name)
+ 	return CDbl(GetAttributeBaseValue(who, stat_name)) / 10.0;
+ endfunction
+ 
+ /*
+- * AF_GetStatMod(mobile, stat_name)
++ * attributes_GetStatMod(mobile, stat_name)
+  *
+  * Purpose
+  * Retrieves the base value of the stat mod and turns it into a usable number.
+@@ -60,16 +60,16 @@
+  * Returns a double.
+  *
+  */
+-function AF_GetStatMod(who, stat_name)
++function attributes_GetStatMod(who, stat_name)
+ 	return CDbl(GetAttributeTemporaryMod(who, stat_name)) / 10.0;
+ endfunction
+ 
+ /*
+- * AF_SetTrueStat(mobile, stat_name, points)
++ * attributes_SetTrueStat(mobile, stat_name, points)
+  *
+  * Purpose
+  * Sets the value of the stat.
+- * Example: AF_SetTrueStat(mobile, &quot;strength&quot;, 44.5)
++ * Example: attributes_SetTrueStat(mobile, &quot;strength&quot;, 44.5)
+  *
+  * Parameters
+  * mobile:	Mobile reference to set the points on.
+@@ -80,16 +80,16 @@
+  * Returns a double.
+  *
+  */
+-function AF_SetTrueStat(mobile, stat_name, points)
++function attributes_SetTrueStat(mobile, stat_name, points)
+ 	SetAttributeBaseValue(mobile, stat_name, CInt(CDbl(points) * 10.0));
+ endfunction
+ 
+ /*
+- * AF_SetStatMod(mobile, stat_name, points)
++ * attributes_SetStatMod(mobile, stat_name, points)
+  *
+  * Purpose
+  * Sets the modifier value for the stat.
+- * Example: AF_SetStatMod(mobile, &quot;strength&quot;, -15.3)
++ * Example: attributes_SetStatMod(mobile, &quot;strength&quot;, -15.3)
+  *
+  * Parameters
+  * mobile:	Mobile reference to set the modifier points on.
+@@ -100,6 +100,6 @@
+  * Returns a double.
+  *
+  */
+-function AF_SetStatMod(mobile, stat_name, points)
++function attributes_SetStatMod(mobile, stat_name, points)
+ 	SetAttributeTemporaryMod(mobile, stat_name, CInt(CDbl(points) * 10.0));
+ endfunction
+
+Modified: trunk/096/pkg/systems/attributes/include/vitals.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/vitals.inc	2005-09-24 22:25:19 UTC (rev 222)
++++ trunk/096/pkg/systems/attributes/include/vitals.inc	2005-09-24 22:27:01 UTC (rev 223)
+@@ -13,7 +13,7 @@
+ use cfgfile;
+ 
+ /*
+- * AF_GetVitalCfgElem(vital)
++ * attributes_GetVitalCfgElem(vital)
+  *
+  * Purpose
+  * Retrieves a config elem for an vital in vitals.cfg
+@@ -25,22 +25,22 @@
+  * Returns a config file elem.
+  *
+  */
+-function AF_GetVitalCfgElem(vital)
++function attributes_GetVitalCfgElem(vital)
+ 	var cfg := ReadConfigFile(&quot;:attributes:vitals&quot;);
+ 	if ( cfg.errortext )
+-		SysLog(&quot;Error::AF_GetVitalCfgElem() - Unable to open vitals.cfg -&gt;&quot;+cfg.errortext);
++		SysLog(&quot;Error::attributes_GetVitalCfgElem() - Unable to open vitals.cfg -&gt;&quot;+cfg.errortext);
+ 	endif
+ 	
+ 	var cfg_elem := cfg[vital];
+ 	if ( cfg_elem.errortext )
+-		SysLog(&quot;Error::AF_GetVitalsCfgElem() - unable to find cfg elem [&quot;+vital+&quot;] -&gt;&quot;+cfg_elem.errortext);
++		SysLog(&quot;Error::attributes_GetVitalsCfgElem() - unable to find cfg elem [&quot;+vital+&quot;] -&gt;&quot;+cfg_elem.errortext);
+ 	endif
+ 	
+ 	return cfg_elem;
+ endfunction
+ 
+ /*
+- * AF_GetVital(mobile, vital_name)
++ * attributes_GetVital(mobile, vital_name)
+  *
+  * Purpose
+  * Retrieves the number of vital points a mobile has.
+@@ -53,12 +53,12 @@
+  * Returns a double.
+  *
+  */
+-function AF_GetVital(mobile, vital_name)
++function attributes_GetVital(mobile, vital_name)
+ 	return (GetVital(mobile, vital_name) / 100);
+ endfunction
+ 
+ /*
+- * AF_GetVital(mobile, vital_name)
++ * attributes_GetVital(mobile, vital_name)
+  *
+  * Purpose
+  * Retrieves the maximum number of vital points a mobile can have.
+@@ -71,12 +71,12 @@
+  * Returns an integer.
+  *
+  */
+-function AF_GetVitalMaximumValue(mobile, vital_name)
++function attributes_GetVitalMaximumValue(mobile, vital_name)
+ 	return GetVitalMaximumValue(mobile, vital_name);
+ endfunction
+ 
+ /*
+- * AF_GetVitalRegenRate(mobile, vital_name)
++ * attributes_GetVitalRegenRate(mobile, vital_name)
+  *
+  * Purpose
+  * Retrieves the regen rate of a vital on a mobile.
+@@ -89,12 +89,12 @@
+  * Returns an integer.
+  *
+  */
+-function AF_GetVitalRegenRate(mobile, vital_name)
++function attributes_GetVitalRegenRate(mobile, vital_name)
+ 	return GetVitalRegenRate(mobile, vital_name);
+ endfunction
+ 
+ /*
+- * AF_SetVital(mobile, vital_name, points)
++ * attributes_SetVital(mobile, vital_name, points)
+  *
+  * Purpose
+  * Sets vital points on a mobile.
+@@ -108,12 +108,12 @@
+  * Returns result of the SetVital() core function.
+  *
+  */
+-function AF_SetVital(mobile, vital_name, amount)
++function attributes_SetVital(mobile, vital_name, amount)
+ 	return SetVital(mobile, vital_name, CInt(CDbl(amount)*100.0));
+ endfunction
+ 
+ /*
+- * AF_RefreshVitals(mobile)
++ * attributes_RefreshVitals(mobile)
+  *
+  * Purpose
+  * Sets all vitals on a mobile to their maximum values.
+@@ -125,10 +125,10 @@
+  * Returns 1
+  *
+  */
+-function AF_RefreshVitals(mobile)
++function attributes_RefreshVitals(mobile)
+ 	var vital_cfg := ReadConfigFile(&quot;:attributes:vitals&quot;);
+ 	foreach elem_name in GetConfigStringKeys(vital_cfg)
+-		AF_SetVital(mobile, elem_name, AF_GetVitalMaximumValue(mobile, elem_name));
++		attributes_SetVital(mobile, elem_name, attributes_GetVitalMaximumValue(mobile, elem_name));
+ 		sleepms(2);
+ 	endforeach
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000204.html">[Poldistro-svn] r222 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000206.html">[Poldistro-svn] r224 - in trunk/096/pkg/systems/attributes: commands/test config hooks include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#205">[ date ]</a>
+              <a href="thread.html#205">[ thread ]</a>
+              <a href="subject.html#205">[ subject ]</a>
+              <a href="author.html#205">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

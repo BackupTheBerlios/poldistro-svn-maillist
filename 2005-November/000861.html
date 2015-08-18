@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r888 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r888%20-%20trunk/096/scripts/include&In-Reply-To=%3C200511040250.jA42o2Jk013504%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000860.html">
+   <LINK REL="Next"  HREF="000862.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r888 - trunk/096/scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r888%20-%20trunk/096/scripts/include&In-Reply-To=%3C200511040250.jA42o2Jk013504%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r888 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Fri Nov  4 03:50:02 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000860.html">[Poldistro-svn] r887 - trunk/096/scripts/include/OLD
+</A></li>
+        <LI>Next message: <A HREF="000862.html">[Poldistro-svn] r889 - in trunk/096: pkg/items/containers/include scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#861">[ date ]</a>
+              <a href="thread.html#861">[ thread ]</a>
+              <a href="subject.html#861">[ subject ]</a>
+              <a href="author.html#861">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-04 03:50:01 +0100 (Fri, 04 Nov 2005)
+New Revision: 888
+
+Added:
+   trunk/096/scripts/include/itemdesc.inc
+Log:
+Has functions for reading in itemdesc.cfg files easily.
+Getting an itemdesc.cfg elem easily.
+
+Has a function to parse an itemdesc.cfg Desc line
+Example: Can parse loa%ves/f% of bread as &quot;loaf of bread&quot; and &quot;loaves of bread&quot;
+
+Has a function to properly get an itemdesc.cfg graphic.
+
+Added: trunk/096/scripts/include/itemdesc.inc
+===================================================================
+--- trunk/096/scripts/include/itemdesc.inc	2005-11-04 02:21:01 UTC (rev 887)
++++ trunk/096/scripts/include/itemdesc.inc	2005-11-04 02:50:01 UTC (rev 888)
+@@ -0,0 +1,182 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use cfgfile;
++use polsys;
++
++/*
++ * LoadItemDescCfgFile(package)
++ *
++ * Purpose
++ * Retrieves an itemdesc.cfg from a package or all of them.
++ *
++ * Parameters
++ * package:	Package name (e.g. &quot;alchemy&quot;)
++ *		Note:
++ *			&quot;*&quot; - Will retrieve all itemdesc.cfg files.
++ *			&quot;&quot; - Will retrieve pol/config/itemdesc.cfg.
++ *
++ * Return value
++ * Returns a config file on success
++ * Returns an error on failure.
++ *
++ */
++function GetItemDescCfgFile(package:=&quot;&quot;)
++	var file_name := &quot;:&quot;+package+&quot;:itemdesc&quot;;
++	var item_cfg := ReadConfigFile(file_name);
++	
++	if ( item_cfg.errortext )
++		return error{&quot;errortext&quot;:=&quot;Unable to open [&quot;+file_name+&quot;] -&gt;&quot;+item_cfg.errortext};
++	endif
++	
++	return item_cfg;
++endfunction
++
++/*
++ * GetItemDescInfo(obj_type)
++ *
++ * Purpose
++ * Retrieves the itemdesc.cfg elem for an object type.
++ *
++ * Parameters
++ * obj_type:	Object type to get the config elem for.
++ *
++ * Return value
++ * Returns a config elem on success.
++ * Returns an error on failure.
++ *
++ */
++function GetItemDescInfo(obj_type)
++	var item_cfg := GetItemDescCfgFile(&quot;*&quot;);
++	return item_cfg[obj_type];
++endfunction
++
++/*
++ * GetObjTypeGraphic(obj_type)
++ *
++ * Purpose
++ * Retrieves the proper graphic for an object type.
++ * For &lt; 0x3FFF it will see if it has a graphic entry
++ * If it does not, it will return the object type (same thing as the graphic).
++ * 
++ * For &gt; 0x3FFF it must contain a 'Graphic' entry to even start POL.
++ * 
++ * Parameters
++ * obj_type:	Object type to get the graphic for.
++ *
++ * Return value
++ * Returns an integer
++ *
++ */
++function GetObjTypeGraphic(obj_type)
++	obj_type := CInt(obj_type);
++	
++	var cfg_info := GetItemDescInfo(obj_type);
++	var graphic := CInt(cfg_info.Graphic);
++	if ( graphic )
++		return graphic;
++	else
++		return obj_type;
++	endif
++endfunction	
++
++/*
++ * GetObjTypeDesc(obj_type, plural)
++ *
++ * Purpose
++ * Retrieves the DESC entry from an itemdesc.cfg and parses it.
++ * e.g. bread loa%ves/f% could be &quot;bread loaf&quot; or &quot;bread loaves&quot;
++ * 
++ * Parameters
++ * objtype:	Object type (elem) to retrieve the description for.
++ * plural:	0 - Will parse the item description in singular form.
++ *		1 - Will parse the item in plural form.
++ *
++ * Return value
++ * Returns a string
++ *
++ */
++function GetObjTypeDesc(obj_type, plural:=0)
++	obj_type := CInt(obj_type);
++	
++	var cfg_info := GetItemDescInfo(obj_type);
++	if ( cfg_info.errortext )
++		return error{&quot;errortext&quot;:=&quot;Object type not defined in any itemdesc.cfg&quot;};
++	endif
++	
++	var name := &quot;&quot;;
++	if ( cfg_info.Desc )
++		name := cfg_info.Desc;
++	elseif ( cfg_info.Name )
++		name := cfg_info.Name;
++	else
++		return error{&quot;errortext&quot;:=&quot;Object type does not have a Name or Desc entry&quot;};
++	endif
++
++	if ( !name[&quot;%&quot;] ) // Plain desc line - easy enough to deal with.
++		if ( plural == 0 )
++			return name;
++		elseif ( name[Len(name)] in {&quot;s&quot;} )
++			return name;
++		elseif ( name[Len(name)] in {&quot;h&quot;,&quot;j&quot;,&quot;x&quot;,&quot;z&quot;} )
++			return name + &quot;es&quot;;
++		else
++			return name + &quot;s&quot;;
++		endif
++	endif
++
++	/* This section will deal with:
++	 	Bread Stick%s
++		Bread Loa%ves/f%
++		Lump%s% of Coal
++		Loa%ves/f% of Bread
++	*/
++	var first := Find(name, &quot;%&quot;, 1);
++	var slash := Find(name, &quot;/&quot;, first);
++	var second := Find(name, &quot;%&quot;, first + 1);
++	
++	if ( slash &amp;&amp; !second )
++		// Force-append a % if a '/' exists!
++		name := name + &quot;%&quot;;
++		second := Len(name);
++	elseif ( !slash )
++		slash := second;
++	endif
++
++	// wwwww%xx[/yy]%[zzzzz]
++	// 12345678     9 01234
++	// 12345678 901 2 34567
++
++	var s_plur := name[first+1, slash-(first+1)];
++	var s_sing := &quot;&quot;;
++	if ( slash != first )
++		s_sing := name[slash+1, second-(slash+1)];
++	endif
++
++	var s_first := name[1, first-1];
++	var s_middle := s_plur;
++	var s_last := &quot;&quot;;
++	if ( len(name) &gt; second )
++		s_last := name[second+1, len(name)-second];
++	endif
++
++	if ( plural == 0 )
++		s_middle := s_sing;
++	endif
++	
++	if ( !s_first )
++		s_first := &quot;&quot;;
++	endif
++	if ( !s_middle )
++		s_middle := &quot;&quot;;
++	endif
++	if ( !s_last )
++		s_last := &quot;&quot;;
++	endif
++	
++	return s_first + s_middle + s_last;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000860.html">[Poldistro-svn] r887 - trunk/096/scripts/include/OLD
+</A></li>
+	<LI>Next message: <A HREF="000862.html">[Poldistro-svn] r889 - in trunk/096: pkg/items/containers/include scripts/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#861">[ date ]</a>
+              <a href="thread.html#861">[ thread ]</a>
+              <a href="subject.html#861">[ subject ]</a>
+              <a href="author.html#861">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

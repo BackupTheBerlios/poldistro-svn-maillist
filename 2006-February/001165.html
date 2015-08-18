@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1194 - in trunk/096/pkg/items/traps: . OLD config floorTraps trapScripts
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1194%20-%20in%20trunk/096/pkg/items/traps%3A%20.%20OLD%20config%20floorTraps%20trapScripts&In-Reply-To=%3C200602111427.k1BER5Nm026857%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001164.html">
+   <LINK REL="Next"  HREF="001166.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1194 - in trunk/096/pkg/items/traps: . OLD config floorTraps trapScripts</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1194%20-%20in%20trunk/096/pkg/items/traps%3A%20.%20OLD%20config%20floorTraps%20trapScripts&In-Reply-To=%3C200602111427.k1BER5Nm026857%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1194 - in trunk/096/pkg/items/traps: . OLD config floorTraps trapScripts">austin at berlios.de
+       </A><BR>
+    <I>Sat Feb 11 15:27:05 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001164.html">[Poldistro-svn] r1193 - in trunk/096/pkg/items: keys/key traps traps/floorTraps
+</A></li>
+        <LI>Next message: <A HREF="001166.html">[Poldistro-svn] r1195 - in trunk/096/pkg/items/traps: config include trapScripts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1165">[ date ]</a>
+              <a href="thread.html#1165">[ thread ]</a>
+              <a href="subject.html#1165">[ subject ]</a>
+              <a href="author.html#1165">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-11 15:27:04 +0100 (Sat, 11 Feb 2006)
+New Revision: 1194
+
+Added:
+   trunk/096/pkg/items/traps/config/icp.cfg
+   trunk/096/pkg/items/traps/config/traps.cfg
+   trunk/096/pkg/items/traps/trapScripts/
+   trunk/096/pkg/items/traps/trapScripts/explosionTrap.src
+   trunk/096/pkg/items/traps/trapScripts/needleTrap.src
+   trunk/096/pkg/items/traps/trapScripts/poisonTrap.src
+Modified:
+   trunk/096/pkg/items/traps/OLD/poisonTrapTriggered.src
+   trunk/096/pkg/items/traps/floorTraps/walkOn.src
+   trunk/096/pkg/items/traps/itemdesc.cfg
+Log:
+Converted old trap system to the new trapScripts format.
+Renamed 'Effect' setting to 'Animation' (less ambiguous)
+
+Modified: trunk/096/pkg/items/traps/OLD/poisonTrapTriggered.src
+===================================================================
+--- trunk/096/pkg/items/traps/OLD/poisonTrapTriggered.src	2006-02-11 14:02:29 UTC (rev 1193)
++++ trunk/096/pkg/items/traps/OLD/poisonTrapTriggered.src	2006-02-11 14:27:04 UTC (rev 1194)
+@@ -15,7 +15,7 @@
+ 
+ 	PlaySoundEffect(who, SFX_232);
+ 	PrintTextAbovePrivate(who, message, who);
+-	PlayStationaryEffect(item.x, item.y, item.z, FX_POISON_GAS, 10,10, 0, who.realm);
++	PlayStationaryEffect(item.x, item.y, item.z, GFX_POISON_GAS, 10,10, 0, who.realm);
+ 	
+ 	TS_StartTimer(who, &quot;defaultPoison&quot;, 15, trapstrength);
+ 	
+
+Added: trunk/096/pkg/items/traps/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/traps/config/icp.cfg	2006-02-11 14:02:29 UTC (rev 1193)
++++ trunk/096/pkg/items/traps/config/icp.cfg	2006-02-11 14:27:04 UTC (rev 1194)
+@@ -0,0 +1,22 @@
++# $Id$
++#
++#
++
++ICP Register
++{
++	Name		Trap Scripts
++	Version         2.0
++	
++	Description     Controls walk on scripts for floor traps.
++	Description	Contains scripts that trigger on use-scripts for traps.
++
++	Creator		Austin Heilman
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++	
++	// Script	cmdlevel	path
++	
++	// TextCmd	cmdlevel	path
++}
+
+Added: trunk/096/pkg/items/traps/config/traps.cfg
+===================================================================
+
+Modified: trunk/096/pkg/items/traps/floorTraps/walkOn.src
+===================================================================
+--- trunk/096/pkg/items/traps/floorTraps/walkOn.src	2006-02-11 14:02:29 UTC (rev 1193)
++++ trunk/096/pkg/items/traps/floorTraps/walkOn.src	2006-02-11 14:27:04 UTC (rev 1194)
+@@ -11,6 +11,8 @@
+ use cfgfile;
+ use util;
+ 
++include &quot;include/damage&quot;;
++
+ program TrapWalkOn(mobile, trap)
+ 	if ( mobile.dead )
+ 		// Ghosts dont trigger traps.
+@@ -26,11 +28,8 @@
+ 	var cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+ 	cfg := cfg[trap.objtype];
+ 	
+-	var dmg := RandomDiceRoll(cfg.Damage);
+-	var effect := cfg.Effect;
+-
+-	PlayStationaryEffect(trap.x, trap.y, trap.z, effect, 10, 11, 0, trap.realm);
+-	ApplyRawDamage(mobile, dmg);
++	PlayStationaryEffect(trap.x, trap.y, trap.z, CInt(cfg.Animation), 10, 11, 0, trap.realm);
++	ApplyRawDamageEX(mobile, CInt(cfg.Damage));
+ 	
+ 	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/items/traps/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/traps/itemdesc.cfg	2006-02-11 14:02:29 UTC (rev 1193)
++++ trunk/096/pkg/items/traps/itemdesc.cfg	2006-02-11 14:27:04 UTC (rev 1194)
+@@ -6,7 +6,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 
+-	Effect		4342
++	Animation	4342
+ 	Damage		3d5
+ }
+ 
+@@ -18,7 +18,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4348
++	Animation	4348
+ 	Damage		3d5
+ }
+ 
+@@ -30,7 +30,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4356
++	Animation	4356
+ 	Damage		3d5
+ }
+ 
+@@ -42,7 +42,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4361
++	Animation	4361
+ 	Damage		3d5
+ }
+ 
+@@ -54,7 +54,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4367
++	Animation	4367
+ 	Damage		3d5
+ }
+ 
+@@ -66,7 +66,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4375
++	Animation	4375
+ 	Damage		3d5
+ }
+ 
+@@ -78,7 +78,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4380
++	Animation	4380
+ 	Damage		3d5
+ }
+ 
+@@ -86,9 +86,11 @@
+ {
+ 	Name		DartTrap
+ 	
++	Movable		0
++	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4396
++	Animation	4396
+ 	Damage		3d5
+ }
+ 
+@@ -96,9 +98,11 @@
+ {
+ 	Name		DartTrap2
+ 	
++	Movable		0
++	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4400
++	Animation	4400
+ 	Damage		3d5
+ }
+ 
+@@ -110,7 +114,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4403
++	Animation	4403
+ 	Damage		3d5
+ }
+ 
+@@ -122,7 +126,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4506
++	Animation	4506
+ 	Damage		3d5
+ }
+ 
+@@ -134,7 +138,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4513
++	Animation	4513
+ 	Damage		3d5
+ }
+ 
+@@ -146,7 +150,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4525
++	Animation	4525
+ 	Damage		3d5
+ }
+ 
+@@ -158,7 +162,7 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		4530
++	Animation	4530
+ 	Damage		3d5
+ }
+ 
+@@ -170,6 +174,6 @@
+ 	
+ 	WalkOnScript	floorTraps/walkOn
+ 	
+-	Effect		14089
++	Animation	14089
+ 	Damage		3d5
+-}
+\ No newline at end of file
++}
+
+Added: trunk/096/pkg/items/traps/trapScripts/explosionTrap.src
+===================================================================
+--- trunk/096/pkg/items/traps/trapScripts/explosionTrap.src	2006-02-11 14:02:29 UTC (rev 1193)
++++ trunk/096/pkg/items/traps/trapScripts/explosionTrap.src	2006-02-11 14:27:04 UTC (rev 1194)
+@@ -0,0 +1,18 @@
++use uo;
++use util;
++
++include &quot;include/client&quot;;
++include &quot;include/damage&quot;;
++
++program needletrap(params)
++	var mobile := params[1];
++	//var object := params[2];
++	//var trap_info := params[3];
++	params := 0; // Not needed anymore.
++	
++	SendSysMessage(mobile, &quot;You set off a trap!&quot;);
++	PlayObjectCenteredEffect(mobile, GFX_EXPLODE_3, 10, 10);
++	ApplyRawDamageEX(mobile, RandomDiceRoll(&quot;5d10&quot;));
++	
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/traps/trapScripts/needleTrap.src
+===================================================================
+--- trunk/096/pkg/items/traps/trapScripts/needleTrap.src	2006-02-11 14:02:29 UTC (rev 1193)
++++ trunk/096/pkg/items/traps/trapScripts/needleTrap.src	2006-02-11 14:27:04 UTC (rev 1194)
+@@ -0,0 +1,18 @@
++use uo;
++use util;
++
++include &quot;include/client&quot;;
++include &quot;include/damage&quot;;
++
++program needletrap(params)
++	var mobile := params[1];
++	//var object := params[2];
++	//var trap_info := params[3];
++	params := 0; // Not needed anymore.
++	
++	SendSysMessage(mobile, &quot;You set off a needle trap!&quot;);
++	PerformAction(mobile, ANIM_HIT);
++	ApplyRawDamageEX(mobile, RandomDiceRoll(&quot;5d10&quot;));
++	
++	return 1;
++endprogram
+\ No newline at end of file
+
+Added: trunk/096/pkg/items/traps/trapScripts/poisonTrap.src
+===================================================================
+--- trunk/096/pkg/items/traps/trapScripts/poisonTrap.src	2006-02-11 14:02:29 UTC (rev 1193)
++++ trunk/096/pkg/items/traps/trapScripts/poisonTrap.src	2006-02-11 14:27:04 UTC (rev 1194)
+@@ -0,0 +1,19 @@
++use uo;
++use util;
++
++include &quot;include/client&quot;;
++include &quot;include/damage&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
++
++program needletrap(params)
++	var mobile := params[1];
++	var object := params[2];
++	var trap_info := params[3];
++	params := 0; // Not needed anymore.
++	
++	SendSysMessage(mobile, &quot;You set off a poison gas trap!&quot;);
++	PlayStationaryEffect(object.x, object.y, object.z, GFX_POISON_GAS, 10,10, 0, object.realm);
++	TS_StartTimer(mobile, &quot;defaultPoison&quot;, 15, trap_info.Strength);
++	
++	return 1;
++endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001164.html">[Poldistro-svn] r1193 - in trunk/096/pkg/items: keys/key traps traps/floorTraps
+</A></li>
+	<LI>Next message: <A HREF="001166.html">[Poldistro-svn] r1195 - in trunk/096/pkg/items/traps: config include trapScripts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1165">[ date ]</a>
+              <a href="thread.html#1165">[ thread ]</a>
+              <a href="subject.html#1165">[ subject ]</a>
+              <a href="author.html#1165">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

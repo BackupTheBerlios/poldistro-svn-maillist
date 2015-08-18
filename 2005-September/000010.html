@@ -1,0 +1,583 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r31 - trunk/096/pkg/mobiles/ai_brain/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r31%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509011333.j81DXuRx024561%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000013.html">
+   <LINK REL="Next"  HREF="000014.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r31 - trunk/096/pkg/mobiles/ai_brain/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r31%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509011333.j81DXuRx024561%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r31 - trunk/096/pkg/mobiles/ai_brain/include">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep  1 15:33:56 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000013.html">[Poldistro-svn] r30 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+        <LI>Next message: <A HREF="000014.html">[Poldistro-svn] r32 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#10">[ date ]</a>
+              <a href="thread.html#10">[ thread ]</a>
+              <a href="subject.html#10">[ subject ]</a>
+              <a href="author.html#10">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-01 15:33:56 +0200 (Thu, 01 Sep 2005)
+New Revision: 31
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc	2005-09-01 13:24:22 UTC (rev 30)
++++ trunk/096/pkg/mobiles/ai_brain/include/npc_commands.inc	2005-09-01 13:33:56 UTC (rev 31)
+@@ -36,7 +36,33 @@
+ //
+ /////////////////////////////////////////////////////////////////
+ 
++/*
++ * AI_Attack(mobile, opponent, no_wake)
++ *
++ * Purpose
++ * Triggers the npc's combat script on opponent.
++ *
++ * Parameters
++ * mobile:	The npc that will receive the command.
++ * opponent:	What the npc's combat nerve will attack.
++ * no_wake:	Optional wakeup flag:
++ *		WAKEUP - Will stop the sleep script if it is running - Default.
++ *		NOWAKE - Will not stop the sleep script if it is running.
++ *
++ * Return value
++ * Result of SendEvent()
++ *
++ */
++function AI_Attack(mobile, opponent, no_wake:=WAKEUP)
++	var ev		:= struct;
++	ev.+type	:= SYSEVENT_ENGAGED;
++	ev.+source	:= opponent;
++	ev.+WakeUp	:= no_wake;
++	ev.+process	:= GetProcess(GetPid());
+ 
++	return SendEvent(mobile, ev);
++endfunction
++
+ /*
+  * AI_ClearThoughts(mobile, flags)
+  *
+@@ -73,14 +99,14 @@
+ endfunction
+ 
+ /*
+- * AI_Attack(mobile, opponent, no_wake)
++ * AI_EndNerve(mobile, nerve_name, no_wake)
+  *
+  * Purpose
+- * Triggers the npc's combat script on opponent.
++ * Used to tell the brain to stop a nerve script.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
+- * opponent:	What the npc's combat nerve will attack.
++ * nerve_name:	String containing the name of the nerve (dictionary key).
+  * no_wake:	Optional wakeup flag:
+  *		WAKEUP - Will stop the sleep script if it is running - Default.
+  *		NOWAKE - Will not stop the sleep script if it is running.
+@@ -89,10 +115,10 @@
+  * Result of SendEvent()
+  *
+  */
+-function AI_Attack(mobile, opponent, no_wake:=WAKEUP)
++function AI_EndNerve(mobile, nerve_name, no_wake:=WAKEUP)
+ 	var ev		:= struct;
+-	ev.+type	:= SYSEVENT_ENGAGED;
+-	ev.+source	:= opponent;
++	ev.+type	:= NPCEVENT_ENDNERVE;
++	ev.+name	:= nerve_name;
+ 	ev.+WakeUp	:= no_wake;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+@@ -100,91 +126,43 @@
+ endfunction
+ 
+ /*
+- * AI_Move(mobile, opponent, to_from, speed, no_wake, loop)
++ * AI_Flee(mobile, opponent, no_wake)
+  *
+  * Purpose
+- * Commands an npc to move toward / away from an item or mobile.
++ * Used to tell the brain to stop a nerve script.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
+- * object:	Item or mobile the npc will move away from/toward.
+- * to_from:	Direction the npc will go:
+- *		NEMOVE_TOWARD - Will make the npc move toward the object - Default
+- *		NEMOVE_AWAY   - Will make the npc move away from the object.
+- * speed:	Speed the npc will move at:
+- *		NEMOVE_RUN  - NPC will run
+- *		NEMOVE_WALK - NPC will walk
+- * no_wake:	Optional wakeup flag::
++ * opponent:	Opponent to flee from.
++ * no_wake:	Optional wakeup flag:
+  *		WAKEUP - Will stop the sleep script if it is running - Default.
+  *		NOWAKE - Will not stop the sleep script if it is running.
+- * loop:	Number of steps for the npc to take toward/away from the object.
+- *		Note: Loop can be interrupted and end prematurely!
+  *
+  * Return value
+  * Result of SendEvent()
+  *
+  */
+-function AI_Move(mobile, object, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
++function AI_Flee(mobile, opponent, no_wake:=WAKEUP)
+ 	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_MOVE;
+-	ev.+source	:= object;
+-	ev.+direction	:= to_from;
+-	ev.+speed	:= speed;
++	ev.+type	:= NPCEVENT_FLEE;
++	ev.+source	:= opponent;
+ 	ev.+WakeUp	:= no_wake;
+-	ev.+loop	:= loop;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+ 	return SendEvent(mobile, ev);
+ endfunction
+ 
+ /*
+- * AI_MoveXY(mobile, x, y, to_from, speed, no_wake, loop)
++ * AI_ForwardEvent(mobile, nerve_name, mask, data, no_wake)
+  *
+  * Purpose
+- * Commands an npc to move toward or away from an XY coordinate.
++ * Used to send an event from one nerve to another.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
+- * x:		X coordinate to move away from/toward
+- * y:		Y coordinate to move away from/toward
+- * to_from:	Direction the npc will go:
+- *		NEMOVE_TOWARD - Will make the npc move toward the object - Default
+- *		NEMOVE_AWAY   - Will make the npc move away from the object.
+- * speed:	Speed the npc will move at:
+- *		NEMOVE_RUN  - NPC will run
+- *		NEMOVE_WALK - NPC will walk
+- * no_wake:	Optional wakeup flag::
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+- * loop:	Number of steps for the npc to take toward/away from the object.
+- *		Note: Loop can be interrupted and end prematurely!
+- *
+- * Return value
+- * Result of SendEvent()
+- *
+- */
+-function AI_MoveXY(mobile, x, y, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
+-	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_MOVE_XY;
+-	ev.+x		:= x;
+-	ev.+y		:= y;
+-	ev.+direction	:= to_from;
+-	ev.+speed	:= speed;
+-	ev.+WakeUp	:= no_wake;
+-	ev.+loop	:= loop;
+-	ev.+process	:= GetProcess(GetPid());
+-
+-	return SendEvent(mobile, ev);
+-endfunction
+-
+-/*
+- * AI_Wander(mobile, opponent, no_wake)
+- *
+- * Purpose
+- * Commands the NPC to wander one step in a random direction.
+- *
+- * Parameters
+- * mobile:	The npc that will receive the command.
++ * nerve_name:	String containing the name of the nerve to forward the event to (dictionary key).
++ * mask:	The type of event the nerve should handle the forward as. (example: SYSEVENT_LEFTAREA)
++ * data:	Data that the nerve will receive.
+  * no_wake:	Optional wakeup flag:
+  *		WAKEUP - Will stop the sleep script if it is running - Default.
+  *		NOWAKE - Will not stop the sleep script if it is running.
+@@ -193,9 +171,12 @@
+  * Result of SendEvent()
+  *
+  */
+-function AI_Wander(mobile, no_wake:=WAKEUP)
++function AI_FowardEvent(mobile, nerve_name, mask, data, no_wake:=WAKEUP)
+ 	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_WANDER;
++	ev.+type	:= NPCEVENT_FWDNERVE;
++	ev.+NerveName	:= nerve_name;
++	ev.+mask	:= mask;
++	ev.+data	:= data;
+ 	ev.+WakeUp	:= no_wake;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+@@ -203,64 +184,78 @@
+ endfunction
+ 
+ /*
+- * AI_Turn(mobile, turn_to, direction, no_wake)
++ * AI_Move(mobile, opponent, to_from, speed, no_wake, loop)
+  *
+  * Purpose
+- * Commands the NPC to face away from / toward an object.
++ * Commands an npc to move toward / away from an item or mobile.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
+- * turn_to:	item or moble reference to turn away from / toward.
+- * direction:	Direction the npc will face:
+- *		NETURN_TOWARD - Will make the npc turn toward the object - Default.
+- 		NETURN_AWAY   - Will make the npc turn away from the object.
+- * no_wake:	Optional wakeup flag:
++ * object:	Item or mobile the npc will move away from/toward.
++ * to_from:	Direction the npc will go:
++ *		NEMOVE_TOWARD - Will make the npc move toward the object - Default
++ *		NEMOVE_AWAY   - Will make the npc move away from the object.
++ * speed:	Speed the npc will move at:
++ *		NEMOVE_RUN  - NPC will run
++ *		NEMOVE_WALK - NPC will walk
++ * no_wake:	Optional wakeup flag::
+  *		WAKEUP - Will stop the sleep script if it is running - Default.
+  *		NOWAKE - Will not stop the sleep script if it is running.
++ * loop:	Number of steps for the npc to take toward/away from the object.
++ *		Note: Loop can be interrupted and end prematurely!
+  *
+  * Return value
+  * Result of SendEvent()
+  *
+  */
+-function AI_Turn(mobile, turn_to, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
++function AI_Move(mobile, object, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
+ 	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_TURN;
+-	ev.+source	:= turn_to;
+-	ev.+direction	:= direction;
++	ev.+type	:= NPCEVENT_MOVE;
++	ev.+source	:= object;
++	ev.+direction	:= to_from;
++	ev.+speed	:= speed;
+ 	ev.+WakeUp	:= no_wake;
++	ev.+loop	:= loop;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+ 	return SendEvent(mobile, ev);
+ endfunction
+ 
+ /*
+- * AI_TurnXY(mobile, x, y, direction, no_wake)
++ * AI_MoveXY(mobile, x, y, to_from, speed, no_wake, loop)
+  *
+  * Purpose
+- * Commands the NPC to face away from / toward a coordinate.
++ * Commands an npc to move toward or away from an XY coordinate.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
+- * x:		X coordinate to turn away from / toward.
+- * y:		Y coordinate to turn away from / toward.
+- * direction:	Direction the npc will face:
+- *		NETURN_TOWARD - Will make the npc turn toward the object - Default.
+- 		NETURN_AWAY   - Will make the npc turn away from the object.
+- * no_wake:	Optional wakeup flag:
++ * x:		X coordinate to move away from/toward
++ * y:		Y coordinate to move away from/toward
++ * to_from:	Direction the npc will go:
++ *		NEMOVE_TOWARD - Will make the npc move toward the object - Default
++ *		NEMOVE_AWAY   - Will make the npc move away from the object.
++ * speed:	Speed the npc will move at:
++ *		NEMOVE_RUN  - NPC will run
++ *		NEMOVE_WALK - NPC will walk
++ * no_wake:	Optional wakeup flag::
+  *		WAKEUP - Will stop the sleep script if it is running - Default.
+  *		NOWAKE - Will not stop the sleep script if it is running.
++ * loop:	Number of steps for the npc to take toward/away from the object.
++ *		Note: Loop can be interrupted and end prematurely!
+  *
+  * Return value
+  * Result of SendEvent()
+  *
+  */
+-function AI_TurnXY(mobile, x, y, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
++function AI_MoveXY(mobile, x, y, to_from:=NEMOVE_TOWARD, speed:=NEMOVE_RUN, no_wake:=WAKEUP, loop:=0)
+ 	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_TURN_XY;
++	ev.+type	:= NPCEVENT_MOVE_XY;
+ 	ev.+x		:= x;
+ 	ev.+y		:= y;
+-	ev.+direction	:= direction;
++	ev.+direction	:= to_from;
++	ev.+speed	:= speed;
+ 	ev.+WakeUp	:= no_wake;
++	ev.+loop	:= loop;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+ 	return SendEvent(mobile, ev);
+@@ -294,28 +289,22 @@
+ endfunction
+ 
+ /*
+- * AI_SetOpponent(mobile, opponent, no_wake)
++ * AI_Sleep(mobile)
+  *
+  * Purpose
+- * Toggles warmode on the npc. Setting to 0 also clears the opponent.
++ * Instructs the npc to go into sleep mode - shuts down all nerves.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
+- * mode:	0 - Takes the NPC out of warmode and clears the opponent - Default.
+- *		1 - Places the npc into warmode.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+  *
+  * Return value
+  * Result of SendEvent()
+  *
+  */
+-function AI_Warmode(mobile, mode:=0, no_wake:=WAKEUP)
++function AI_Sleep(mobile)
+ 	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_WARMODE;
+-	ev.+value	:= mode;
+-	ev.+WakeUp	:= no_wake;
++	ev.+type	:= NPCEVENT_SLEEP;
++	ev.+WakeUp	:= NOWAKE;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+ 	return SendEvent(mobile, ev);
+@@ -345,10 +334,12 @@
+  * Result of SendEvent()
+  *
+  */
+-function AI_Speak(mobile, text:=&quot;!?&quot;, text_type:=SPEAK_TEXTTYPE_DEFAULT, do_event:=SPEAK_DOEVENT_DISABLE, no_wake:=WAKEUP)
++function AI_Speak(mobile, text, text_type:=SPEAK_TEXTTYPE_DEFAULT, do_event:=SPEAK_DOEVENT_DISABLE, no_wake:=WAKEUP)
+ 	var ev		:= struct;
+ 	ev.+type	:= NPCEVENT_SPEAK;
+ 	ev.+text	:= text;
++	ev.+texttype	:= text_type;
++	ev.+doevent	:= do_event;
+ 	ev.+WakeUp	:= no_wake;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+@@ -387,14 +378,17 @@
+ endfunction
+ 
+ /*
+- * AI_EndNerve(mobile, nerve_name, no_wake)
++ * AI_Turn(mobile, turn_to, direction, no_wake)
+  *
+  * Purpose
+- * Used to tell the brain to stop a nerve script.
++ * Commands the NPC to face away from / toward an object.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
+- * nerve_name:	String containing the name of the nerve (dictionary key).
++ * turn_to:	item or moble reference to turn away from / toward.
++ * direction:	Direction the npc will face:
++ *		NETURN_TOWARD - Will make the npc turn toward the object - Default.
++ 		NETURN_AWAY   - Will make the npc turn away from the object.
+  * no_wake:	Optional wakeup flag:
+  *		WAKEUP - Will stop the sleep script if it is running - Default.
+  *		NOWAKE - Will not stop the sleep script if it is running.
+@@ -403,10 +397,11 @@
+  * Result of SendEvent()
+  *
+  */
+-function AI_EndNerve(mobile, nerve_name, no_wake:=WAKEUP)
++function AI_Turn(mobile, turn_to, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
+ 	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_ENDNERVE;
+-	ev.+name	:= nerve_name;
++	ev.+type	:= NPCEVENT_TURN;
++	ev.+source	:= turn_to;
++	ev.+direction	:= direction;
+ 	ev.+WakeUp	:= no_wake;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+@@ -414,14 +409,18 @@
+ endfunction
+ 
+ /*
+- * AI_Flee(mobile, opponent, no_wake)
++ * AI_TurnXY(mobile, x, y, direction, no_wake)
+  *
+  * Purpose
+- * Used to tell the brain to stop a nerve script.
++ * Commands the NPC to face away from / toward a coordinate.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
+- * opponent:	Opponent to flee from.
++ * x:		X coordinate to turn away from / toward.
++ * y:		Y coordinate to turn away from / toward.
++ * direction:	Direction the npc will face:
++ *		NETURN_TOWARD - Will make the npc turn toward the object - Default.
++ 		NETURN_AWAY   - Will make the npc turn away from the object.
+  * no_wake:	Optional wakeup flag:
+  *		WAKEUP - Will stop the sleep script if it is running - Default.
+  *		NOWAKE - Will not stop the sleep script if it is running.
+@@ -430,10 +429,12 @@
+  * Result of SendEvent()
+  *
+  */
+-function AI_Flee(mobile, opponent, no_wake:=WAKEUP)
++function AI_TurnXY(mobile, x, y, direction:=NETURN_TOWARD, no_wake:=WAKEUP)
+ 	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_FLEE;
+-	ev.+source	:= opponent;
++	ev.+type	:= NPCEVENT_TURN_XY;
++	ev.+x		:= x;
++	ev.+y		:= y;
++	ev.+direction	:= direction;
+ 	ev.+WakeUp	:= no_wake;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+@@ -441,75 +442,75 @@
+ endfunction
+ 
+ /*
+- * AI_ForwardEvent(mobile, nerve_name, mask, data, no_wake)
++ * AI_WakeUp(mobile)
+  *
+  * Purpose
+- * Used to send an event from one nerve to another.
++ * Sends an event to the npc causing its sleep script to end.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
+- * nerve_name:	String containing the name of the nerve to forward the event to (dictionary key).
+- * mask:	The type of event the nerve should handle the forward as. (example: SYSEVENT_LEFTAREA)
+- * data:	Data that the nerve will receive.
+- * no_wake:	Optional wakeup flag:
+- *		WAKEUP - Will stop the sleep script if it is running - Default.
+- *		NOWAKE - Will not stop the sleep script if it is running.
+  *
+  * Return value
+  * Result of SendEvent()
+  *
+  */
+-function AI_FowardEvent(mobile, nerve_name, mask, data, no_wake:=WAKEUP)
++function AI_WakeUp(mobile)
+ 	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_FWDNERVE;
+-	ev.+NerveName	:= nerve_name;
+-	ev.+mask	:= mask;
+-	ev.+data	:= data;
+-	ev.+WakeUp	:= no_wake;
++	ev.+type	:= NPCEVENT_WAKEUP;
++	ev.+WakeUp	:= WAKEUP;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+ 	return SendEvent(mobile, ev);
+ endfunction
+ 
+ /*
+- * AI_Sleep(mobile)
++ * AI_Wander(mobile, opponent, no_wake)
+  *
+  * Purpose
+- * Instructs the npc to go into sleep mode - shuts down all nerves.
++ * Commands the NPC to wander one step in a random direction.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
++ * no_wake:	Optional wakeup flag:
++ *		WAKEUP - Will stop the sleep script if it is running - Default.
++ *		NOWAKE - Will not stop the sleep script if it is running.
+  *
+  * Return value
+  * Result of SendEvent()
+  *
+  */
+-function AI_Sleep(mobile)
++function AI_Wander(mobile, no_wake:=WAKEUP)
+ 	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_SLEEP;
+-	ev.+WakeUp	:= NOWAKE;
++	ev.+type	:= NPCEVENT_WANDER;
++	ev.+WakeUp	:= no_wake;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+ 	return SendEvent(mobile, ev);
+ endfunction
+ 
+ /*
+- * AI_WakeUp(mobile)
++ * AI_WarMode(mobile, mode, no_wake)
+  *
+  * Purpose
+- * Sends an event to the npc causing its sleep script to end.
++ * Toggles warmode on the npc. Setting to 0 also clears the opponent.
+  *
+  * Parameters
+  * mobile:	The npc that will receive the command.
++ * mode:	0 - Takes the NPC out of warmode and clears the opponent - Default.
++ *		1 - Places the npc into warmode.
++ * no_wake:	Optional wakeup flag:
++ *		WAKEUP - Will stop the sleep script if it is running - Default.
++ *		NOWAKE - Will not stop the sleep script if it is running.
+  *
+  * Return value
+  * Result of SendEvent()
+  *
+  */
+-function AI_WakeUp(mobile)
++function AI_WarMode(mobile, mode:=0, no_wake:=WAKEUP)
+ 	var ev		:= struct;
+-	ev.+type	:= NPCEVENT_WAKEUP;
+-	ev.+WakeUp	:= WAKEUP;
++	ev.+type	:= NPCEVENT_WARMODE;
++	ev.+value	:= mode;
++	ev.+WakeUp	:= no_wake;
+ 	ev.+process	:= GetProcess(GetPid());
+ 
+ 	return SendEvent(mobile, ev);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000013.html">[Poldistro-svn] r30 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+</A></li>
+	<LI>Next message: <A HREF="000014.html">[Poldistro-svn] r32 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#10">[ date ]</a>
+              <a href="thread.html#10">[ thread ]</a>
+              <a href="subject.html#10">[ subject ]</a>
+              <a href="author.html#10">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

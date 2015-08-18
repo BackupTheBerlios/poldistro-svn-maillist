@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r297 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r297%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509290123.j8T1NTJP030348%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000274.html">
+   <LINK REL="Next"  HREF="000276.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r297 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r297%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509290123.j8T1NTJP030348%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r297 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep 29 03:23:29 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000274.html">[Poldistro-svn] r296 - trunk/096/pkg/systems/attributes/config
+</A></li>
+        <LI>Next message: <A HREF="000276.html">[Poldistro-svn] r298 - trunk/096/pkg/systems/attributes/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#275">[ date ]</a>
+              <a href="thread.html#275">[ thread ]</a>
+              <a href="subject.html#275">[ subject ]</a>
+              <a href="author.html#275">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-29 03:23:26 +0200 (Thu, 29 Sep 2005)
+New Revision: 297
+
+Modified:
+   trunk/096/pkg/systems/attributes/include/advanceCheck.inc
+   trunk/096/pkg/systems/attributes/include/skillCheck.inc
+   trunk/096/pkg/systems/attributes/include/skills.inc
+Log:
+
+
+Modified: trunk/096/pkg/systems/attributes/include/advanceCheck.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/advanceCheck.inc	2005-09-29 01:15:58 UTC (rev 296)
++++ trunk/096/pkg/systems/attributes/include/advanceCheck.inc	2005-09-29 01:23:26 UTC (rev 297)
+@@ -0,0 +1,25 @@
++// $Id$
++
++/*===============================================================
++* Current Version
++* SKILLCHECK.INC - v1.0
++* Updated 9/24/2005 6:52PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++use os;
++
++include &quot;:attributes:attributes&quot;;
++/*
++function CheckStatAdvancement(mobile, stat_name)
++	return 1;
++endfunction
++
++function CheckSkillAdvance(mobile, skill_name, award_difficulty, pass_chance, pass_success)
++	return 1;
++endfunction
++*/
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/attributes/include/skillCheck.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skillCheck.inc	2005-09-29 01:15:58 UTC (rev 296)
++++ trunk/096/pkg/systems/attributes/include/skillCheck.inc	2005-09-29 01:23:26 UTC (rev 297)
+@@ -16,7 +16,7 @@
+ use cfgfile;
+ 
+ include &quot;:attributes:attributes&quot;;
+-include &quot;:attributes:settings&quot;;
++include &quot;:attributes:advanceCheck&quot;;
+ 
+ const ADV_SKILL		:= 0x1;
+ const ADV_STATS		:= 0x2;
+@@ -71,6 +71,7 @@
+ 	var check_roll := RandomInt(100)+1;
+ 	var pass_success := CInt(CDbl(pass_chance) - CDbl(check_roll))+1;
+ 	// Ensure skill- and stat-gain if it's a -1 skillcheck
++	// Do this AFTER the CalcSuccessPercent() call so '-1' isn't messed up
+ 	if ( difficulty == -1 )
+ 		difficulty := effective_skill;
+ 	endif
+@@ -78,7 +79,27 @@
+ 		award_diff := difficulty;
+ 	endif
+ 	
+-	return 1;
++	SkillDbgMsg(mobile, &quot;--&quot;);
++	SkillDbgMsg(mobile, &quot;Difficulty: &quot;+CStr(difficulty)+&quot;% (Award: &quot;+CStr(award_diff)+&quot;)&quot;);
++	SkillDbgMsg(mobile, &quot;Effective Skill: &quot;+CStr(effective_skill)+&quot;%&quot;);
++	SkillDbgMsg(mobile, &quot;Success Chance: &quot;+CStr(pass_chance)+&quot;%&quot;);
++	SkillDbgMsg(mobile, &quot;Check Roll: &quot;+CStr(check_roll));
++	SkillDbgMsg(mobile, &quot;Success: &quot;+CStr(pass_success));
++	SkillDbgMsg(mobile, &quot;---&quot;);
++	
++	if ( !(advance_flags &amp; ADV_SKILL) )
++		SkillDbgMsg(mobile, &quot;Skill advance disabled.&quot;);
++	else
++		//CheckSkillAdvance();
++	endif
++		
++	if ( !(advance_flags &amp; ADV_STATS) )
++		SkillDbgMsg(mobile, &quot;Stat advancement disabled.&quot;);
++	else
++		//AdvanceStatsForSkill();
++	endif
++	
++	return pass_success;
+ endfunction
+ 
+ /*
+@@ -94,15 +115,23 @@
+  *
+  */
+ function CalcSuccessPercent(mobile, attrib_name, difficulty, effective_skill)
+-	return 1;
++	var settings := AP_GetSettingsCfgElem(&quot;Skills&quot;);
++	if ( difficulty == -1 )
++		var max_skill := AP_GetSkillCap(attrib_name);
++		var neg1chance := CDbl(settings.MaxNeg1Chance);
++		
++		return CInt(neg1chance * effective_skill / max_skill);
++	elseif ( (effective_skill + CDbl(settings.TooHard)) &lt; difficulty )
++		SkillDbgMsg(mobile, &quot;Too hard.&quot;);
++		return 0;
++	elseif ( (effective_skill + Cdbl(settings.TooEasy)) &gt; difficulty )
++		SkillDbgMsg(mobile, &quot;Too easy.&quot;);
++		return 100;
++	else
++		return (50 + ((effective_skill - difficulty) * 2.5));
++	endif
+ endfunction
+ 
+-
+-function CheckSkillAdvance(mobile, attrib_name, award_difficulty, pass_chance, pass_success)
+-	return 1;
+-endfunction
+-
+-
+ /*
+  * SkillDbgMsg(mobile, message)
+  *
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-29 01:15:58 UTC (rev 296)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-29 01:23:26 UTC (rev 297)
+@@ -151,6 +151,33 @@
+ endfunction
+ 
+ /*
++ * AP_GetSkillCap(skill_name)
++ *
++ * Purpose
++ * Gets the number a skill caps at.
++ *
++ * Parameters
++ * skill_name: Name of the skill to check
++ *
++ * Return value
++ * Returns a number or error
++ *
++ */
++function AP_GetSkillCap(skill_name)
++	var cfg_elem := AP_GetSettingsCfgElem(&quot;Skills&quot;);
++	
++	// Check if there is a cap for that particular skill.
++	var cap_val := GetConfigReal(cfg_elem, skill_name);
++	
++	if ( !cap_val )
++		// No skill specific cap so get the general one.
++		cap_val := GetConfigReal(cfg_elem, &quot;SkillCap&quot;);
++	endif
++	
++	return cap_val;
++endfunction
++ 
++/*
+  * AP_CheckSkillCap(mobile, skill_name)
+  *
+  * Purpose
+@@ -158,7 +185,7 @@
+  * If no skill_name is passed, it will check the totals.
+  *
+  * Parameters
+- * mobile:		Mobile to check the skills on
++ * mobile:	Mobile to check the skills on
+  * stat_name:	Optional parameter - name of the skill to check.
+  *
+  * Return value
+@@ -169,11 +196,7 @@
+ 	var cfg_elem := AP_GetSettingsCfgElem(&quot;Skills&quot;);
+ 	
+ 	if ( skill_name )
+-		// Check if the specific skill has a cap set for it.
+-		var cap_val := GetConfigReal(cfg_elem, skill_name);
+-		if ( !cap_val )
+-			cap_val := GetConfigReal(cfg_elem, &quot;SkillCap&quot;);
+-		endif
++		var cap_val := AP_GetSkillCap(skill_name);
+ 		
+ 		if ( cap_val != error )
+ 			return ( AP_GetTrueSkill(mobile, skill_name) &gt;= cap_val );
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000274.html">[Poldistro-svn] r296 - trunk/096/pkg/systems/attributes/config
+</A></li>
+	<LI>Next message: <A HREF="000276.html">[Poldistro-svn] r298 - trunk/096/pkg/systems/attributes/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#275">[ date ]</a>
+              <a href="thread.html#275">[ thread ]</a>
+              <a href="subject.html#275">[ subject ]</a>
+              <a href="author.html#275">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,761 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r482 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r482%20-%20trunk/096/scripts/include&In-Reply-To=%3C200510091212.j99CCosp031320%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000454.html">
+   <LINK REL="Next"  HREF="000456.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r482 - trunk/096/scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r482%20-%20trunk/096/scripts/include&In-Reply-To=%3C200510091212.j99CCosp031320%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r482 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct  9 14:12:50 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000454.html">[Poldistro-svn] r481 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000456.html">[Poldistro-svn] r483 - trunk/096/pkg/items/walkon/firefield
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#455">[ date ]</a>
+              <a href="thread.html#455">[ thread ]</a>
+              <a href="subject.html#455">[ subject ]</a>
+              <a href="author.html#455">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-09 14:12:49 +0200 (Sun, 09 Oct 2005)
+New Revision: 482
+
+Added:
+   trunk/096/scripts/include/resurrection.inc
+Removed:
+   trunk/096/scripts/include/gumpUtil.inc
+   trunk/096/scripts/include/res.inc
+   trunk/096/scripts/include/resPenalty.inc
+   trunk/096/scripts/include/yesNo.inc
+Log:
+
+
+Deleted: trunk/096/scripts/include/gumpUtil.inc
+===================================================================
+--- trunk/096/scripts/include/gumpUtil.inc	2005-10-09 12:03:35 UTC (rev 481)
++++ trunk/096/scripts/include/gumpUtil.inc	2005-10-09 12:12:49 UTC (rev 482)
+@@ -1,405 +0,0 @@
+-/////////////////////////////////////////////
+-//
+-//  Shinigami's GumpUtil v1.03 (2000/04/29)
+-//    (some nice Functions for Gumps)
+-//
+-//  Author:    Shinigami
+-//  eMail:     <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Shinigami at gmx.net</A>
+-//  Languages: English/German
+-//
+-//  Updated:  2004/03/14
+-//  Modified: MuadDib
+-///////////////////////////////////////////// 
+-
+-/////////////////
+-// Installation
+-/////////////////
+-//
+-// Move it to /pol/scripts/include and use it in your script:
+-//   Include &quot;include/gumputil&quot;;
+-
+-//////////////
+-// Functions
+-//////////////
+-//
+-// GumpTextWidth(gumptext)           // Returns the Width of GumpText
+-// GumpTextWidthFast(gumptext)       // Returns the Width of GumpText
+-// GumpTextLeft(gumptext, x, width)  // Returns the X-Value (Left-Alignment)
+-// GumpTextRight(gumptext, x, width) // Returns the X-Value (Right-Alignment)
+-// GumpTextMid(gumptext, x, width)   // Returns the X-Value (Mid-Alignment)
+-//
+-//   Parameters:
+-//     gumptext - a String
+-//     x        - X-Value from the Textbox
+-//     width    - Width from the Textbox
+-//
+-// Create_ScrollBar(x, y, height, pages, page, layout) // Shows a Scrollbar
+-//
+-//   Parameters:
+-//     x,y    - X-/Y-Value of the left-top Corner
+-//     height - Height
+-//     pages  - Number of Pages
+-//     page   - Actual Page Number
+-//     layout - Contains the actual Gump Layout
+-//   Returns:
+-//     Updated &quot;layout&quot;
+-//
+-// AlignGump(layoutvar, x, y);
+-// Used on a layout array to modify all the x/y placements for moving
+-// the gump around on the screen. Sent as Byref to modify the array
+-// directly. X and Y are the modifiers for your gump. Suggested method
+-// would be always base your gumps in the code off 0 for x and y, then
+-// use this function to move/center them on the screen.
+-
+-
+-//////////////////////
+-// Original Location
+-//////////////////////
+-//
+-// www.egroups.com
+-//
+-//   www.egroups.com/files/pol-scriptforum/Includes/gumputil.zip
+-
+-///////////////////////////////////////////////////////////////////////////////
+-
+-//////////////
+-// Constants
+-//////////////
+-
+-var c34:=CChr(34);
+-
+-var length:={ };
+-       length.+chars:={
+-         &quot;&quot;,                   // Dummy (for Speed...)
+-         &quot;|&quot;,                  //  2
+-         &quot;`',.;:&quot;,             //  3
+-         c34+&quot;!&quot;,              //  4
+-         &quot;il1[]&quot;,              //  5
+-         &quot;bcejot&#148;&#246;(){}=&quot;,      //  6
+-         &quot;adfpqrszI&#132;&#228;~&quot;,       //  7
+-         &quot;ghnuvy?&lt;&gt;-&quot;,       //  8
+-         &quot;xJ578$?&#223;+&quot;,          //  9
+-         &quot;kCE2369^/*&quot;,         // 10
+-         &quot;mwABDFOP&#142;&#196;&#153;&#214;40%&quot;,    // 11
+-         &quot;GLNQSZ#&quot;,            // 12
+-         &quot;HRT&amp;_&quot;,              // 13
+-         &quot;K&#154;&#220;UY&quot;,              // 14
+-         &quot;X&quot;,                  // 15
+-         &quot;V&quot;,                  // 16
+-         &quot;M&quot;,                  // 18
+-         &quot;W&quot;                   // 21
+-       };
+-       length.+charsf:=        // Space as Filler is not allowed
+-         &quot;|||||||||||||||&quot;+    //  2
+-         &quot;`',.;::::::::::&quot;+    //  3
+-         c34+&quot;!!!!!!!!!!!!!!&quot;+ //  4
+-         &quot;il1[]]]]]]]]]]]&quot;+    //  5
+-         &quot;bcejot&#148;&#246;(){}===&quot;+    //  6
+-         &quot;adfpqrszI&#132;&#228;~~~~&quot;+    //  7
+-         &quot;ghnuvy?&lt;&gt;----&quot;+    //  8
+-         &quot;xJ578$?&#223;+++++++&quot;+    //  9
+-         &quot;kCE2369^/******&quot;+    // 10
+-         &quot;mwABDFOP&#142;&#196;&#153;&#214;40%&quot;+    // 11
+-         &quot;GLNQSZ#########&quot;+    // 12
+-         &quot;HRT&amp;___________&quot;+    // 13
+-         &quot;K&#154;&#220;UYYYYYYYYYYY&quot;+    // 14
+-         &quot;XXXXXXXXXXXXXXX&quot;+    // 15
+-         &quot;VVVVVVVVVVVVVVV&quot;+    // 16
+-         &quot;MMMMMMMMMMMMMMM&quot;+    // 18
+-         &quot;WWWWWWWWWWWWWWW&quot;;    // 21
+-       length.+width:={
+-          2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+-          12, 13, 14, 15, 16, 18, 21
+-       };
+-
+-//////////////
+-// Functions
+-//////////////
+-
+-// Returns the Width of GumpText
+-
+-function GumpTextWidth(gumptext)
+-  var start_i:=len(length.chars);
+-  var points:=0;
+-  var j;
+-
+-  for (j:=len(gumptext); j&gt;0; j:=j-1)
+-    var i:=start_i;
+-    while ((i&gt;0) &amp;&amp; (!length.chars[i][CStr(gumptext[j])]))
+-      i:=i-1;
+-    endwhile;
+-    if (i&gt;0) // siehe Speed-Dummy
+-      points:=points+length.width[i-1];
+-    else
+-      syslog(&quot;GumpTextWidth: Unknown Character = '&quot;+gumptext[j]+&quot;'&quot;);
+-    endif
+-  endfor
+-
+-  return (points);
+-endfunction
+-
+-// Returns the Width of GumpText
+-
+-function GumpTextWidthFast(gumptext)
+-  var points:=0;
+-  var j;
+-
+-  for (j:=len(gumptext); j&gt;0; j:=j-1)
+-    var i:=find(length.charsf, gumptext[j], 1)-1;
+-    if (i&gt;=0)
+-      points:=points+length.width[CInt(i/15)+1];
+-    else
+-      syslog(&quot;GumpTextWidthFast: Unknown Character = '&quot;+gumptext[j]+&quot;'&quot;);
+-    endif
+-  endfor
+-
+-  return (points);
+-endfunction
+-
+-// Returns the X-Value (Left-Alignment)
+-
+-function GumpTextLeft(gumptext, x, width)
+-  return (x);
+-endfunction
+-
+-// Returns the X-Value (Right-Alignment)
+-
+-function GumpTextRight(gumptext, x, width)
+-  return (x+(width-GumpTextWidthFast(gumptext)));
+-endfunction
+-
+-// Returns the X-Value (Mid-Alignment)
+-
+-function GumpTextMid(gumptext, x, width)
+-  return (x+CInt((width-GumpTextWidthFast(gumptext))/2));
+-endfunction
+-
+-//////////////////////////////////////////////////
+-// Create_ScrollBar - Erzeugt einen Scrollbalken
+-//////////////////////////////////////////////////
+-
+-function Create_ScrollBar(x, y, height, pages, page, layout)
+-  if (pages&gt;1)
+-    var x_str:=CStr(x)+&quot; &quot;;
+-    var button_x_str:=&quot;button &quot;+x_str;
+-    var gumppic_x_str:=&quot;gumppic &quot;+x_str;
+-    var page_before:=&quot; 0 &quot;+CStr(page-1);
+-    var page_next:=&quot; 0 &quot;+CStr(page+1);
+-
+-    var y_mark;
+-    if (pages==page)
+-      y_mark:=y+height-46;
+-      layout.append(gumppic_x_str+CStr(y_mark-7)+&quot; 256&quot;);
+-    else
+-      y_mark:=y+CInt((height-67)/(pages-1))*(page-1)+21;
+-      layout.append(gumppic_x_str+CStr(y_mark)+&quot; 256&quot;);
+-    endif
+-    layout.append(&quot;gumppic &quot;+CStr(x+1)+&quot; &quot;+CStr(y_mark)+&quot; 254&quot;);
+-
+-    var y_bkg;
+-    var y_bkg_end;
+-    if (page&gt;1)
+-      y_bkg_end:=y+21;
+-      for (y_bkg:=y_mark-32; y_bkg&gt;y_bkg_end; y_bkg:=y_bkg-32)
+-        layout.append(button_x_str+CStr(y_bkg)+&quot; 256 256&quot;+page_before);
+-      endfor;
+-      layout.append(button_x_str+CStr(y_bkg_end)+&quot; 256 256&quot;+page_before);
+-      layout.append(button_x_str+CStr(y)+&quot; 250 251&quot;+page_before);
+-    else
+-      layout.append(gumppic_x_str+CStr(y)+&quot; 250&quot;);
+-    endif
+-    if (page&lt;pages)
+-      y_bkg_end:=y+height-21-32;
+-      for (y_bkg:=y_mark+25; y_bkg&lt;y_bkg_end; y_bkg:=y_bkg+32)
+-        layout.append(button_x_str+CStr(y_bkg)+&quot; 256 256&quot;+page_next);
+-      endfor;
+-      layout.append(button_x_str+CStr(y_bkg_end)+&quot; 256 256&quot;+page_next);
+-      layout.append(button_x_str+CStr(y+height-21)+&quot; 252 253&quot;+page_next);
+-    else
+-      layout.append(gumppic_x_str+CStr(y+height-21)+&quot; 252&quot;);
+-    endif
+-  endif
+-  return (layout);
+-endfunction
+-
+-function WhichIndex(arr, value)
+-  var index := 1;
+-  if (arr.size() == 0)
+-	return 0;
+-  endif
+-  foreach member in arr
+-	if (member == value)
+-	  return index;
+-	else
+-	  index := index + 1;
+-	endif
+-  endforeach
+-  return 0;
+-endfunction
+-
+-// Call example from function making layout array
+-// AlignGump(layoutvar, x, y);
+-// Used on a layout array to modify all the x/y placements for moving
+-// the gump around on the screen. Sent as Byref to modify the array
+-// directly. X and Y are the modifiers for your gump. Suggested method
+-// would be always base your gumps in the code off 0 for x and y, then
+-// use this function to move/center them on the screen.
+-function AlignGump(byref layoutvar, x, y);
+-
+-  foreach command in layoutvar
+-    var temp1 := SplitWords(command); // Splits the entry into an array to work
+-    var chk := 0;
+-    // Never tried using this method for a case, the array part. 
+-    // But you get the idea here. If needed, can just make a var to equal temp1[1].
+-    case(temp1[1])
+-      &quot;NoDispose&quot;: chk := 1;
+-      &quot;NoMove&quot;: chk := 1;
+-      &quot;NoClose&quot;: chk := 1;
+-      &quot;Group&quot;: chk := 1;
+-      &quot;Page&quot;: chk := 1;
+-    endcase
+-    // The case should contain commands that are used for things other than 
+-    // the x y placing of things.
+-    if(chk != 1)
+-      temp1[2] := temp1[2] + x; // Second position in gump commands not filtered 
+-                                // is ALWAYS the X, third is the Y
+-      temp1[3] := temp1[3] + y;
+-    endif
+-  endforeach
+-
+-endfunction 
+-
+-///////////////////////////////////////////////////////////
+-// gumputil.inc
+-//
+-// Gump utility finctions.
+-//
+-// REQUIRES: Mythmarri's GUMPS package - v2.1
+-//
+-// Creator: Mercy
+-// Contact: <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">mkow at sympatico.ca</A>
+-//
+-// Created: 19-Apr-2000
+-// Updated: 19-Apr-2000
+-//
+-///////////////////////////////////////////////////////////
+-
+-///////////////////////////////////////////////////////////
+-// GUMP CONSTS
+-///////////////////////////////////////////////////////////
+-
+-// Backgrounds
+-const BKGND_MARBLE			:= 0x0a28;
+-
+-// Stretchable Dividers
+-const DIV_BLACK_LINE		:= 0x005d;
+-
+-// Book
+-const G_BIGBOOK				:= 0x01fe;
+-const G_BIGBOOK_L_CORNER	:= 0x01ff;
+-const G_BIGBOOK_R_CORNER	:= 0x0200;
+-
+-// Small circles with spell circle numbers 1-8.
+-const G_CIRCLE1				:= 0x08b1;
+-const G_CIRCLE2				:= 0x08b2;
+-const G_CIRCLE3				:= 0x08b3;
+-const G_CIRCLE4				:= 0x08b4;
+-const G_CIRCLE5				:= 0x08b5;
+-const G_CIRCLE6				:= 0x08b6;
+-const G_CIRCLE7				:= 0x08b7;
+-const G_CIRCLE8				:= 0x08b8;
+-
+-// Diamond Buttons
+-const G_BLUE_DIAMOND_1		:= 0x0868;
+-const G_BLUE_DIAMOND_0		:= 0x086a;
+-const G_RED_DIAMOND_1		:= 0x09a9;
+-const G_RED_DIAMOND_0		:= 0x09aa;
+-
+-// Octagon Skill 1-3 Buttons
+-const G_SKILL1				:= 0x04d8;
+-const G_SKILL2				:= 0x04db;
+-const G_SKILL3				:= 0x04de;
+-
+-// Standard buttons.
+-const G_RED_PREV_1			:= 0x04f1;
+-const G_RED_PREV_0			:= 0x04f2;
+-const G_GREEN_CONT_1		:= 0x04f4;
+-const G_GREEN_CONT_0		:= 0x04f5;
+-const G_GREEN_DONE_1		:= 0x051a;
+-const G_GREEN_DONE_0		:= 0x0519;
+-const G_GREEN_OK_0			:= 0x0992;
+-const G_GREEN_OK_1			:= 0x0993;
+-
+-// Oval buttons with gold border.
+-const G_RED_OVAL_CANCEL_1	:= 0x0818;
+-const G_RED_OVAL_CANCEL_0	:= 0x0817;
+-const G_RED_OVAL_PREV_1		:= 0x0913;
+-const G_RED_OVAL_PREV_0		:= 0x0912;
+-const G_GREEN_OVAL_OK_1		:= 0x081b;
+-const G_GREEN_OVAL_OK_0		:= 0x081a;
+-const G_YELLOW_OVAL_APPLY_1	:= 0x084b;
+-const G_YELLOW_OVAL_APPLY_0	:= 0x084a;
+-
+-// Other Buttons
+-const G_SMALL_GEM_0			:= 0x04b9;
+-const G_SMALL_GEM_1			:= 0x04ba;
+-const G_TINY_GEM_0			:= 0x0837;
+-const G_TINY_GEM_1			:= 0x0838;
+-
+-// Other.
+-const G_SQUARE_PLUS			:= 0x151a;
+-const G_SQUARE_MINUS		:= 0x1519;
+-
+-// Words
+-const G_SKILLS				:= 0x0834;
+-const G_SKILL_USE			:= 0x0836;
+-
+-// Stone Gumps
+-const G_TAB_0				:= 0x138e;
+-const G_TAB_1				:= 0x138f;
+-const G_MINUS_0				:= 0x138c;
+-const G_MINUS_1				:= 0x138d;
+-const G_STONE_SPHERE		:= 0x13a8;
+-const G_STONE_XBOX_0		:= 0x138a;
+-const G_STONE_XBOX_1		:= 0x138b;
+-const G_STONE_CHECK_0		:= 0x13ba;
+-const G_STONE_CHECK_1		:= 0x13bb;
+-const G_STONE_X_0			:= 0x13bc;
+-const G_STONE_X_1			:= 0x13bd;
+-const G_STONE_UP			:= 0x1458;
+-const G_STONE_DOWN			:= 0x1459;
+-const G_STONE_LEFT			:= 0x1467;
+-const G_STONE_RIGHT			:= 0x1468;
+-const G_STONE_SQUARE		:= 0x00d2;
+-const G_STONE_SQUARE_CHECK	:= 0x00d3;
+-const G_STONE_SQUARE_BLANK	:= 0x00d4;
+-const G_GRAY_CIRCLE_0		:= 0x00d0;
+-const G_GRAY_CIRCLE_1		:= 0x00d1;
+-
+-
+-// Arrows
+-const G_TRIANGLE_UP			:= 0x15e0;
+-const G_TRIANGLE_DOWN		:= 0x15e2;
+-
+-// Tombstones
+-const G_TOMBSTONE_ROUND		:= 0x0065;
+-const G_TOMBSTONE_SQUARE	:= 0x0066;
+-
+-// Seperators
+-const G_WAX_SEAL			:= 0x005c;
+-const G_FLAT_LINE			:= 0x005d;
+-const G_LEAF				:= 0x005e;
+-
+-// COLOURS
+-const COL_YELLOW			:= 52;
+-const COL_RED				:= 32;
+-const COL_BLUE				:= 87;
+-const COL_DK_BLUE			:= 96;
+-const COL_LT_BLUE			:= 88;
+-
+-// Text Entry Backgrounds
+-const G_TX_MARBLE_L			:= 0x0988;
+-const G_TX_MARBLE_S_LT		:= 0x098b;
+-const G_TX_MARBLE_S_DK		:= 0x098c;
+-const G_TX_MARBLE_M			:= 0x098d;
+-const G_TX_MARBLE_SQ_L		:= 0x098e;
+
+Deleted: trunk/096/scripts/include/res.inc
+===================================================================
+--- trunk/096/scripts/include/res.inc	2005-10-09 12:03:35 UTC (rev 481)
++++ trunk/096/scripts/include/res.inc	2005-10-09 12:12:49 UTC (rev 482)
+@@ -1,22 +0,0 @@
+-use uo;
+-
+-include &quot;:gumps:gumps&quot;;
+-
+-function ResNow(mobile)
+-	var gump := GFCreateGump();
+-	GFClosable(gump, 0);
+-	GFGumpPic(gump, 300, 230, 2070);
+-	GFAddButton(gump, 330, 305, 2073, 2072, GF_CLOSE_BTN, 10);
+-	GFAddButton(gump, 400, 305, 2076, 2075, GF_CLOSE_BTN, 11);
+-	GFTextLine(gump, 332, 264, 40, &quot;Resurrect Now?&quot;);
+-	
+-	var input := GFSendGump(mobile, gump);
+-	input := input[0];
+-	input := input-10;
+-	
+-	if ( !input )
+-		return 0;
+-	else
+-		return 1;
+-	endif
+-endfunction
+
+Deleted: trunk/096/scripts/include/resPenalty.inc
+===================================================================
+--- trunk/096/scripts/include/resPenalty.inc	2005-10-09 12:03:35 UTC (rev 481)
++++ trunk/096/scripts/include/resPenalty.inc	2005-10-09 12:12:49 UTC (rev 482)
+@@ -1,44 +0,0 @@
+-use uo;
+-include &quot;include/attributes&quot;;
+-
+-var maximumloss := 0.20; //20% loss for 20 shortterm murders or more
+-
+-function ResPenalties(who)
+-  MurdererStatLoss(who);
+-endfunction
+-
+-function MurdererStatLoss(who)
+-  var shortc := GetObjProperty(who,&quot;shortmurders&quot;);
+-  if(!shortc)
+-	return;
+-  endif
+-  if(shortc &gt; 4)
+-	var multiplier := CInt(shortc)/100.0;
+-	if(multiplier &gt; maximumloss)
+-	  multiplier := maximumloss;
+-	endif
+-	multiplier := 1.0 - multiplier;
+-	var str := GetStrength(who);
+-	var dex := GetDexterity(who);
+-	var inte := GetIntelligence(who);
+-	str := CInt(str * multiplier);
+-	dex := CInt(dex * multiplier);
+-	inte := CInt(inte * multiplier);
+-	SetBaseStrength(who,str);
+-	SetBaseDexterity(who,dex);
+-	SetBaseIntelligence(who,inte);
+-	SetHp(who, who.maxhp);
+-	SetStamina(who, who.maxstamina);
+-	SetMana(who, who.maxmana);
+-    var skillarray := GetObjProperty(who, &quot;SkillArray&quot;);
+-    var newval, final;
+-    foreach entry in skillarray
+-      if((GetTrueEffectiveSkill(who, entry)  ) &gt; 0.0)
+-        newval:= (GetTrueEffectiveSkill(who, entry)  );
+-        final:=(newval * multiplier);
+-        SetBaseSkillBaseValue(who, entry, CInt(final * 10));
+-      endif
+-    endforeach
+-	SendSysMessage(who,&quot;Thy body pays the price for thy sins.&quot;);
+-  endif
+-endfunction
+\ No newline at end of file
+
+Copied: trunk/096/scripts/include/resurrection.inc (from rev 481, trunk/096/scripts/include/res.inc)
+===================================================================
+--- trunk/096/scripts/include/res.inc	2005-10-09 12:03:35 UTC (rev 481)
++++ trunk/096/scripts/include/resurrection.inc	2005-10-09 12:12:49 UTC (rev 482)
+@@ -0,0 +1,74 @@
++/* 
++ * $Id$
++ * 
++ * Uhh what the fuck is this anyway?
++ *
++ */
++ 
++use uo;
++use os;
++
++include &quot;:gumps:gumps&quot;;
++
++const MAXIMUM_LOSS := 0.20; //20% loss for 20 shortterm murders or more
++
++function ResNow(mobile)
++	var gump := GFCreateGump();
++	GFClosable(gump, 0);
++	GFGumpPic(gump, 300, 230, 2070);
++	GFAddButton(gump, 330, 305, 2073, 2072, GF_CLOSE_BTN, 10);
++	GFAddButton(gump, 400, 305, 2076, 2075, GF_CLOSE_BTN, 11);
++	GFTextLine(gump, 332, 264, 40, &quot;Resurrect Now?&quot;);
++	
++	var input := GFSendGump(mobile, gump);
++	input := input[0];
++	input := input-10;
++	
++	if ( !input )
++		return 0;
++	else
++		return 1;
++	endif
++endfunction
++
++function MurdererStatLoss(who)
++	var shortc := GetObjProperty(who,&quot;shortmurders&quot;);
++	if( !shortc )
++		return 0;
++	endif
++	
++	if( shortc &gt; 4 )
++		var multiplier := CInt(shortc)/100.0;
++		if(multiplier &gt; MAXIMUM_LOSS)
++			multiplier := MAXIMUM_LOSS;
++		endif
++		
++		multiplier := 1.0 - multiplier;
++		
++		var str := GetStrength(who);
++		var dex := GetDexterity(who);
++		var inte := GetIntelligence(who);
++	
++		str := CInt(str * multiplier);
++		dex := CInt(dex * multiplier);
++		inte := CInt(inte * multiplier);
++	
++		SetBaseStrength(who,str);
++		SetBaseDexterity(who,dex);
++		SetBaseIntelligence(who,inte);
++		SetHp(who, who.maxhp);
++		SetStamina(who, who.maxstamina);
++		SetMana(who, who.maxmana);
++		
++		var skillarray := GetObjProperty(who, &quot;SkillArray&quot;);
++		var newval, final;
++		foreach entry in skillarray
++			if((GetTrueEffectiveSkill(who, entry)	) &gt; 0.0)
++				newval:= (GetTrueEffectiveSkill(who, entry)	);
++				final:=(newval * multiplier);
++				SetBaseSkillBaseValue(who, entry, CInt(final * 10));
++			endif
++		endforeach
++		SendSysMessage(who,&quot;Thy body pays the price for thy sins.&quot;);
++	endif
++endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/include/yesNo.inc
+===================================================================
+--- trunk/096/scripts/include/yesNo.inc	2005-10-09 12:03:35 UTC (rev 481)
++++ trunk/096/scripts/include/yesNo.inc	2005-10-09 12:12:49 UTC (rev 482)
+@@ -1,108 +0,0 @@
+-use uo;
+-
+-const MAX_YESNO_LINES := 7;
+-
+-function YesNo(me, prompt)
+-  if (len(prompt) &lt;= 10)
+-    return SmallYesNo(me, prompt);
+-  else
+-    return BigYesNo(me, prompt);
+-  endif
+-endfunction
+-
+-function SmallYesNo(me, prompt)
+-
+-  var layoutyn := array(
+-                      &quot;page 0&quot;,
+-                      &quot;nodispose&quot;,
+-                      &quot;gumppic 0 0 2070&quot;,
+-                      &quot;button 30 75 2130 2129 1 0 1&quot;,
+-                      &quot;button 90 75 2119 2120 1 0 0&quot;,
+-                       &quot;text 40 30 502 0&quot;
+-	             );
+-
+-  var datayn := array(  prompt  );
+-  var res := SendDialogGump( me, layoutyn, datayn );
+-
+-  if (res)
+-    return 1;
+-  else
+-    return 0;
+-  endif
+-
+-endfunction
+-
+-function BigYesNo(me, prompt)
+-
+-  var layoutyn := array(
+-                        &quot;page 0&quot;,
+-			&quot;nodispose&quot;,
+-                        &quot;gumppic 0 0 1140&quot;,
+-                        &quot;button 115 200 2130 2129 1 0 1&quot;,
+-                        &quot;button 205 200 2119 2120 1 0 0&quot;,
+-                        &quot;text 55 45 502 0&quot;,
+-                        &quot;text 55 65 502 1&quot;,
+-                        &quot;text 55 85 502 2&quot;,
+-                        &quot;text 55 105 502 3&quot;,
+-                        &quot;text 55 125 502 4&quot;,
+-                        &quot;text 55 145 502 5&quot;,
+-                        &quot;text 55 165 502 6&quot;
+-	               );
+-
+-  var datayn := packPromptToArray(prompt);
+-  var res := SendDialogGump( me, layoutyn, datayn );
+-
+-  if (res)
+-    return 1;
+-  else
+-    return 0;
+-  endif
+-
+-endfunction
+-
+-function packPromptToArray(prompt)
+-  var theArray := array;
+-  var theString := prompt;
+-  var i;
+-
+-  for (i:=1; i&lt;=MAX_YESNO_LINES; i:=i+1)
+-    theArray[i] := &quot; &quot;;
+-  endfor
+-  
+-  i := 0;
+-
+-  while ((len(theString) &gt; 0) &amp;&amp; (i &lt;= MAX_YESNO_LINES))
+-    i := i + 1;
+-    theArray[i] := StripSubstring(theString, 40);
+-  endwhile
+-
+-  return theArray;
+-endfunction
+-
+-function StripSubstring(byref theString, theSize)
+-  var subString;
+-  var newString;
+-  var pos := theSize;
+-
+-  if (len(theString) &lt;= theSize)
+-    subString := theString;
+-    theString := &quot;&quot;;
+-    return subString;
+-  endif
+-  
+-  while ((theString[pos] != &quot; &quot;) &amp;&amp; (pos &gt; 1))
+-    pos := pos - 1;
+-  endwhile
+-  
+-  if (pos == 1)
+-    pos := theSize;
+-  endif
+-  
+-  subString := theString[pos+1, len(theString)];
+-  newString := theString[1,pos];
+-  
+-  theString := subString;
+-  
+-  return newString; 
+-
+-endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000454.html">[Poldistro-svn] r481 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000456.html">[Poldistro-svn] r483 - trunk/096/pkg/items/walkon/firefield
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#455">[ date ]</a>
+              <a href="thread.html#455">[ thread ]</a>
+              <a href="subject.html#455">[ subject ]</a>
+              <a href="author.html#455">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

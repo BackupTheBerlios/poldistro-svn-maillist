@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r531 - in trunk/096/pkg/systems/attributes: commands/seer config
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r531%20-%20in%20trunk/096/pkg/systems/attributes%3A%20commands/seer%20config&In-Reply-To=%3C200510101608.j9AG8le0032299%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000503.html">
+   <LINK REL="Next"  HREF="000505.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r531 - in trunk/096/pkg/systems/attributes: commands/seer config</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r531%20-%20in%20trunk/096/pkg/systems/attributes%3A%20commands/seer%20config&In-Reply-To=%3C200510101608.j9AG8le0032299%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r531 - in trunk/096/pkg/systems/attributes: commands/seer config">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 18:08:47 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000503.html">[Poldistro-svn] r530 - trunk/096/pkg/mobiles/death/config
+</A></li>
+        <LI>Next message: <A HREF="000505.html">[Poldistro-svn] r532 - trunk/096/pkg/mobiles/brainAI/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#504">[ date ]</a>
+              <a href="thread.html#504">[ thread ]</a>
+              <a href="subject.html#504">[ subject ]</a>
+              <a href="author.html#504">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 18:08:38 +0200 (Mon, 10 Oct 2005)
+New Revision: 531
+
+Modified:
+   trunk/096/pkg/systems/attributes/commands/seer/powerup.src
+   trunk/096/pkg/systems/attributes/config/icp.cfg
+Log:
+
+
+Modified: trunk/096/pkg/systems/attributes/commands/seer/powerup.src
+===================================================================
+--- trunk/096/pkg/systems/attributes/commands/seer/powerup.src	2005-10-10 16:05:34 UTC (rev 530)
++++ trunk/096/pkg/systems/attributes/commands/seer/powerup.src	2005-10-10 16:08:38 UTC (rev 531)
+@@ -7,12 +7,17 @@
+ use uo;
+ 
+ include &quot;:attributes:attributes&quot;;
++include &quot;:gumps:requestgump&quot;;
+ 
+ program textcmd_PowerUp(who, level)
+-	level := CInt(level);
++	if ( !level )
++		level := CInt(RequestGump(who, &quot;Power up level&quot;, &quot;&quot;, 100));
++	else
++		level := CInt(level);
++	endif
++		
+ 	foreach attrib_name in AP_ListAttributesByType()
+ 		AP_SetTrueSkill(who, attrib_name, level);
+-		SendSysMessage(who, &quot;Setting &quot;+attrib_name+&quot; to &quot;+level);
+ 		sleepms(10);
+ 	endforeach
+ 	
+
+Modified: trunk/096/pkg/systems/attributes/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/config/icp.cfg	2005-10-10 16:05:34 UTC (rev 530)
++++ trunk/096/pkg/systems/attributes/config/icp.cfg	2005-10-10 16:08:38 UTC (rev 531)
+@@ -0,0 +1,18 @@
++ICP Register
++{
++	Name		Attributes
++	Version		1.0
++	Description	Handles all attribute and vital related functions in POL.
++	
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++	
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++	
++	//Script	cmdlevel path
++			
++	//TextCmd	cmdlevel path
++	TextCmd		2	:attributes:commands/seer/powerup
++	TextCmd		2	:attributes:commands/seer/refresh
++}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000503.html">[Poldistro-svn] r530 - trunk/096/pkg/mobiles/death/config
+</A></li>
+	<LI>Next message: <A HREF="000505.html">[Poldistro-svn] r532 - trunk/096/pkg/mobiles/brainAI/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#504">[ date ]</a>
+              <a href="thread.html#504">[ thread ]</a>
+              <a href="subject.html#504">[ subject ]</a>
+              <a href="author.html#504">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

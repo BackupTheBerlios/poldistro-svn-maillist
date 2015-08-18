@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r33 - trunk/096/pkg/mobiles/ai_brain/include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r33%20-%20trunk/096/pkg/mobiles/ai_brain/include/braincore&In-Reply-To=%3C200509011350.j81DoXHp025677%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000014.html">
+   <LINK REL="Next"  HREF="000016.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r33 - trunk/096/pkg/mobiles/ai_brain/include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r33%20-%20trunk/096/pkg/mobiles/ai_brain/include/braincore&In-Reply-To=%3C200509011350.j81DoXHp025677%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r33 - trunk/096/pkg/mobiles/ai_brain/include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep  1 15:50:33 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000014.html">[Poldistro-svn] r32 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+        <LI>Next message: <A HREF="000016.html">[Poldistro-svn] r34 - trunk/096/pkg/mobiles/ai_brain/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#15">[ date ]</a>
+              <a href="thread.html#15">[ thread ]</a>
+              <a href="subject.html#15">[ subject ]</a>
+              <a href="author.html#15">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-01 15:50:33 +0200 (Thu, 01 Sep 2005)
+New Revision: 33
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/eventprocessor.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/eventprocessor.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/eventprocessor.inc	2005-09-01 13:49:47 UTC (rev 32)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/eventprocessor.inc	2005-09-01 13:50:33 UTC (rev 33)
+@@ -12,9 +12,10 @@
+ 	var old_priority := set_priority(25);
+ 	
+ 	case( ev.type )
+-		//Check movement first, since its the event
+-		//that seems to be sent most often.
+-
++		//
++		// *Check movement first, since its the event that seems to be sent most often.
++		//
++		
+ 		// Move NPC
+ 		// .source	: From/To whom/what?
+ 		// .speed	: Walk/Run
+@@ -22,7 +23,8 @@
+ 		// .loop	: Number of times to attempt to loop the movement.
+ 		NPCEVENT_MOVE:
+ 			Movement(ev);
+-		
++			break;
++			
+ 		// Instructs the npc to walk toward an XY coordinate.
+ 		// .x and .y	: From/To  coordinates
+ 		// .speed	: Walk/Run
+@@ -30,8 +32,15 @@
+ 		// .loop	: Number of times to attempt to loop the movement.
+ 		NPCEVENT_MOVE_XY:
+ 			MovementXY(ev);
+-		
+-		// Triggered when a mobile enter's the npcs &quot;reaction_range&quot;.
++			break;
++			
++		// Wander somewhere
++		// .loop	: Number of times to attept to wander.
++		NPCEVENT_WANDER:
++	   		MovementWander();
++	   		break;
++			
++		// Triggered when a mobile enter's the npcs 'area size'.
+ 		// .source	: What entered the area
+ 		SYSEVENT_ENTEREDAREA:
+ 			if ( g_settings.exists(&quot;enter_react_script&quot;) )
+@@ -42,8 +51,13 @@
+ 					process.SendEvent(ev);
+ 				endif
+ 			endif
+-		
+-		// Triggered when a mobile leaves the npc's &quot;leave_react_range&quot;.
++			break;
++			
++		//
++		// * Check System Events that the core sends.
++		//
++			
++		// Triggered when a mobile leaves the npc's 'area size'.
+ 		// .source	: What left the area
+ 		SYSEVENT_LEFTAREA:
+ 			if ( g_settings.exists(&quot;leave_react_script&quot;) )
+@@ -54,7 +68,8 @@
+ 					process.SendEvent(ev);
+ 				endif
+ 			endif
+-		
++			break;
++			
+ 		// Sent when something targets the npc to begin combat or
+ 		// when something has damaged the npc.
+ 		// .source	: What caused the damage or engaged the npc
+@@ -72,7 +87,8 @@
+ 					endif
+ 				endif
+ 			endif
+-		
++			break;
++			
+ 		// Instructs the npc to run its disengage nerve.
+ 		// When something attacking it goes out of warmode, this is run.
+ 		// .source	: What was targetting this npc but has now left combat mode.
+@@ -85,12 +101,12 @@
+ 					process.SendEvent(ev);
+ 				endif
+ 			endif
+-		
++			break;
++			
+ 		// When speech is made by a player, this nerve is used.
+ 		// Note: The NPC function Say() doesnt yet pass around the speech event.
+ 		// .source	: Where the speech originated.
+ 		// .text	: The actual speech
+-		// extra 095 stuff
+ 		// .uc_text	: a &quot;Unicode array&quot; of 2-byte &quot;Big Endian&quot; integers.
+ 		// .langcode	: a 3-character, uppercase language code.
+ 		// .texttype	: &quot;yell&quot;, &quot;whisper&quot;, &quot;emote&quot;, &quot;default&quot;.
+@@ -103,7 +119,8 @@
+ 					process.SendEvent(ev);
+ 				endif
+ 			endif
+-		
++			break;
++			
+ 		// Instructs the npc to run its double click script.
+ 		// Run when the npc is double clicked by a player.
+ 		// .source	: What sent the double click
+@@ -118,6 +135,7 @@
+ 					endif
+ 				endif
+ 			endif
++			break;
+ 			
+ 		// The NPC is a merchant, and has sold or purchased something.
+ 		// Both sold and bought events are sent to this same nerve.
+@@ -138,7 +156,8 @@
+ 					process.SendEvent(ev);
+ 				endif
+ 			endif
+-		
++			break;
++			
+ 		// Someone has dragged an item onto the npc.
+ 		// .source	: What dragged the item over the npc.
+ 		// .item	: The item being given to the npc.
+@@ -151,6 +170,11 @@
+ 					process.SendEvent(ev);
+ 				endif
+ 			endif
++			break;
++			
++		//
++		// * Check custom events
++		//
+ 				
+ 		// Instructs the npc to run its flee script.
+ 		// .source	: What to flee from.
+@@ -163,24 +187,13 @@
+ 					process.SendEvent(ev);
+ 				endif
+ 			endif
++			break;
+ 			
+-		// The npc has killed its opponent and
+-		// the combat script has sent the winfight event
+-		// .source	: Defeated foe!
+-		NPCEVENT_WINFIGHT:
+-			if ( g_settings.exists(&quot;win_script&quot;) )
+-				var process := 0; //GetNerve(&quot;Win&quot;);
+-				if ( !process )
+-					//StartNerve(&quot;Win&quot;, g_settings[&quot;win_script&quot;], {npc, ev, settings});
+-				else
+-					process.SendEvent(ev);
+-				endif
+-			endif
+-			
+ 		//A nerve has instructed the brain to kill another nerve or its self.
+ 		// .name	: Nerve name
+ 		NPCEVENT_ENDNERVE:
+ 			//KillNerve(ev.name);
++			break;
+ 			
+ 		//A nerve has instructed the brain to start another nerve.
+ 		// .name	: Nerve name
+@@ -188,18 +201,23 @@
+ 		// .data	: array of goodies
+ 		NPCEVENT_STARTNERVE:
+ 			//StartNerve(ev.name, ev.script, ev.data);
+-		
++			break;
++			
+ 		// Set a new opponent!
+ 		// NOTE: Auto-sets Warmode=1!
+ 		// .source	: Opponent (mobile)
+ 		NPCEVENT_OPPONENT:
+ 			SetOpponent(ev.source);
+-		
++			break;
++			
+ 		// Say something
+ 		// .text	: Speech content
++		// .texttype	: Speech type (&quot;default&quot;, &quot;whisper&quot;, yell&quot;)
++		// .doevent	: Sends SYSEVENT_SPEECH to surrounding npcs
+ 		NPCEVENT_SPEAK:
+-			say(ev.text);
+-		
++			Say(ev.text, ev.texttype, ev.doevent);
++			break;
++			
+ 		// Turn toward something
+ 		// .source	: Target (anything)
+ 		// .direction	: NETURN_TOWARD or NETURN_AWAY
+@@ -210,7 +228,8 @@
+ 				NETURN_AWAY:
+ 					TurnAwayFrom(ev.source);
+ 			endcase
+-		
++			break;
++			
+ 		// Face towards or away from XY coordinates.
+ 		// .x and .y replace .source for TURN_XY
+ 		// .direction	: NETURN_TOWARD or NETURN_AWAY
+@@ -221,27 +240,27 @@
+ 				NETURN_AWAY:
+ 					TurnAwayFromLocation(ev.x, ev.y);
+ 			endcase
+-		
++			break;
++			
+ 		// Set WarMode state
+ 		// NOTE: Auto-clears Opponent if turned off!
+ 		// .value : 0=Off. 1=On.
+ 		NPCEVENT_WARMODE:
+ 			SetWarmode( ev.value );
+-		
+-		// Wander somewhere
+-		NPCEVENT_WANDER:
+-	   		Wander();
+-	   	
++			break;
++	   		
+ 	   	// Force the npc to go into its sleep mode.
+ 	   	// If the next event in the queue tells it to wake up,
+ 	   	// this command will be useless.
+ 	   	NPCEVENT_SLEEP:
+ 	   		//idle_ticks := g_settings[&quot;idle_ticks&quot;]+1;
+-	   	
++	   		break;
++	   		
+ 	   	// Force the npc out of sleep mode.
+ 	   	NPCEVENT_WAKEUP:
+ 	   		//sleep_mode := 0;
+ 	   		//idle_ticks := 0;
++	   		break;
+ 	   		
+ 	   	// Forward an event from one nerve to another.
+ 	   	// .NerveName	: The name of the nerve to forward the event to.
+@@ -252,6 +271,7 @@
+ 			if ( process )
+ 				process.SendEvent(ev);
+ 			endif
++			break;
+ 			
+ 		// If the event .type is unknown, send it to the
+ 		// npc's &quot;virtual&quot; nerve if it has one.
+@@ -264,6 +284,7 @@
+ 					process.SendEvent(ev);
+ 				endif
+ 			endif
++			break;
+ 	   endcase
+ 
+ 	   // If the event has a .process, reply to it by sending
+@@ -271,10 +292,7 @@
+ 	   // and telling it what event it sent that has finished
+ 	   // being processed.
+ 	   if ( ev.process )
+-	   	var temp := struct;
+-	   	temp.+type := NPCEVENT_DONE;
+-	   	temp.+source := ev.type;
+-	   	(ev.process).SendEvent(temp);
++	   	(ev.process).SendEvent(struct{&quot;type&quot;:=NPCEVENT_DONE, &quot;source&quot;:=ev.type});
+ 	   endif
+ 	   
+ 	   set_priority(old_priority);
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc	2005-09-01 13:49:47 UTC (rev 32)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/movement.inc	2005-09-01 13:50:33 UTC (rev 33)
+@@ -1,7 +1,7 @@
+ /*===============================================================
+ * Current Version
+ * MOVEMENT.INC - v1.0
+-* Updated 8/30/2005 6:52AM
++* Updated 9/1/2005 6:42AM
+ *
+ * -- Revision v1.0 --
+ * Austin:
+@@ -113,6 +113,26 @@
+ endfunction
+ 
+ /*
++ * MovementWander(ev)
++ *
++ * Purpose
++ * Handles NPC wander movement for the brain.
++ *
++ * Parameters
++ * ev:	Strucuture containing event information.
++ *
++ * Return value
++ * Always returns 1
++ *
++ */
++function MovementWander(ev)
++	repeat
++		Wander();
++		sleepms(3);
++	until ( !MoveLoopCheck(ev) );
++endfunction
++
++/*
+  * MoveLoop(ev)
+  *
+  * Purpose
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000014.html">[Poldistro-svn] r32 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+	<LI>Next message: <A HREF="000016.html">[Poldistro-svn] r34 - trunk/096/pkg/mobiles/ai_brain/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#15">[ date ]</a>
+              <a href="thread.html#15">[ thread ]</a>
+              <a href="subject.html#15">[ subject ]</a>
+              <a href="author.html#15">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

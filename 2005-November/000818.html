@@ -1,0 +1,952 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r844 - in trunk/096: pkg/skills/meditation pkg/skills/mining pkg/skills/poisoning pkg/skills/removetrap pkg/skills/tailoring pkg/skills/taming pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking pkg/skills/veterinary pkg/systems/attributes/commands/test scripts/items
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r844%20-%20in%20trunk/096%3A%20pkg/skills/meditation%20pkg/skills/mining%20pkg/skills/poisoning%20pkg/skills/removetrap%20pkg/skills/tailoring%20pkg/skills/taming%20pkg/skills/tasteid%20pkg/skills/tinkering%20pkg/skills/tracking%20pkg/skills/veterinary%20pkg/systems/attributes/commands/test%20scripts/items&In-Reply-To=%3C200511022018.jA2KI9M4023828%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000817.html">
+   <LINK REL="Next"  HREF="000819.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r844 - in trunk/096: pkg/skills/meditation pkg/skills/mining pkg/skills/poisoning pkg/skills/removetrap pkg/skills/tailoring pkg/skills/taming pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking pkg/skills/veterinary pkg/systems/attributes/commands/test scripts/items</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r844%20-%20in%20trunk/096%3A%20pkg/skills/meditation%20pkg/skills/mining%20pkg/skills/poisoning%20pkg/skills/removetrap%20pkg/skills/tailoring%20pkg/skills/taming%20pkg/skills/tasteid%20pkg/skills/tinkering%20pkg/skills/tracking%20pkg/skills/veterinary%20pkg/systems/attributes/commands/test%20scripts/items&In-Reply-To=%3C200511022018.jA2KI9M4023828%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r844 - in trunk/096: pkg/skills/meditation pkg/skills/mining pkg/skills/poisoning pkg/skills/removetrap pkg/skills/tailoring pkg/skills/taming pkg/skills/tasteid pkg/skills/tinkering pkg/skills/tracking pkg/skills/veterinary pkg/systems/attributes/commands/test scripts/items">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 21:18:09 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000817.html">[Poldistro-svn] r843 - in trunk/096/pkg: skills/taming systems/daynight systems/merchantnodes
+</A></li>
+        <LI>Next message: <A HREF="000819.html">[Poldistro-svn] r845 - trunk/096/pkg/skills/fishing
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#818">[ date ]</a>
+              <a href="thread.html#818">[ thread ]</a>
+              <a href="subject.html#818">[ subject ]</a>
+              <a href="author.html#818">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 21:18:08 +0100 (Wed, 02 Nov 2005)
+New Revision: 844
+
+Modified:
+   trunk/096/pkg/skills/meditation/medCheck.src
+   trunk/096/pkg/skills/meditation/meditation.src
+   trunk/096/pkg/skills/mining/mining.src
+   trunk/096/pkg/skills/mining/resmelt.src
+   trunk/096/pkg/skills/mining/smelting.src
+   trunk/096/pkg/skills/poisoning/poisonSkill.src
+   trunk/096/pkg/skills/removetrap/removeTrap.src
+   trunk/096/pkg/skills/tailoring/makeClothItems.src
+   trunk/096/pkg/skills/tailoring/scissors.src
+   trunk/096/pkg/skills/taming/stableCounter.src
+   trunk/096/pkg/skills/taming/taming.src
+   trunk/096/pkg/skills/tasteid/tasteID.src
+   trunk/096/pkg/skills/tinkering/makeComplexItem.src
+   trunk/096/pkg/skills/tinkering/tinkerTraps.src
+   trunk/096/pkg/skills/tinkering/tinkering.src
+   trunk/096/pkg/skills/tracking/tracking.src
+   trunk/096/pkg/skills/veterinary/vet.src
+   trunk/096/pkg/systems/attributes/commands/test/attribconvert.src
+   trunk/096/scripts/items/vendorDeed.src
+Log:
+Attribute updates
+
+Modified: trunk/096/pkg/skills/meditation/medCheck.src
+===================================================================
+--- trunk/096/pkg/skills/meditation/medCheck.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/meditation/medCheck.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -21,7 +21,7 @@
+     waittime := 0;
+     loss := 0;
+     if(GetObjProperty(who, &quot;IsMeditating&quot;))
+-      skill:=CInt((GetEffectiveSkill(who,46)*100)/2);
++      skill:=CInt((AP_GetSkill(who, MEDITATION)*100)/2);
+       loss := manaloss(who);
+       if(loss == &quot;nomed&quot;)
+         loss := 7000;
+@@ -32,7 +32,7 @@
+       endif
+       sleepms(waittime);
+     else
+-      skill:= (CInt((GetEffectiveSkill(who,46)*100)/2) / 2);
++      skill:= (CInt((AP_GetSkill(who, MEDITATION)*100)/2) / 2);
+       loss := manaloss(who);
+       if(loss == &quot;nomed&quot;)
+         loss := 7000;
+@@ -43,13 +43,13 @@
+       endif
+       sleepms(waittime);
+     endif
+-    mana := GetMana(who);
+-    gmm := GetMaxMana(who);
++    mana := AP_GetVital(who, MANA);
++    gmm := AP_GetVitalMaximumValue(who, MANA);
+     if(mana &lt; gmm)
+-      SetMana(who, mana + 1);
++      AP_SetVital(who, MANA, mana + 1);
+     endif
+     if(mana &gt; gmm)
+-      SetMana(who, gmm);
++      AP_SetVital(who, MANA, gmm);
+     endif
+   endwhile
+ endprogram
+
+Modified: trunk/096/pkg/skills/meditation/meditation.src
+===================================================================
+--- trunk/096/pkg/skills/meditation/meditation.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/meditation/meditation.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -13,7 +13,7 @@
+   var XXX:=who.x;
+   var YYY:=who.y;
+   var chp;
+-  if (GetMana(who) &gt;= GetIntelligence(who))
++  if (AP_GetVital(who, MANA) &gt;= AP_GetVitalMaximumValue(who, MANA))
+    SendSysMessage( who, &quot;Your mana is full.&quot; );
+    Detach();
+    return;
+@@ -33,7 +33,7 @@
+     SendSysMessage(who,&quot;Regenerative forces cannot penetrate your armor.&quot;);
+     return;
+   endif
+-  var diff := 100 - ((GetMana(who) * 100) / GetIntelligence(who));
++  var diff := 100 - ((AP_GetVital(who, MANA) * 100) / AP_GetVitalMaximumValue(who, MANA));
+   diff := diff + CInt(loss / 100);
+   if(diff &lt; 0)
+     diff := 0;
+@@ -41,7 +41,7 @@
+     diff := 120;
+   endif
+   var pts := diff * 2;
+-  if(CheckSkill(who, 46, diff, pts))
++  if( SkillCheck(who, MEDITATION, diff) &gt; 0 )
+     SendSysMessage(who, &quot;You start to meditate.&quot;);
+     PlaySoundEffect(who, sfx_meditation);
+     PrintTextAbove(who, &quot;*Meditating*&quot;);;
+@@ -58,16 +58,16 @@
+       elseif(TS_GetTimerNames(who, &quot;P&quot;).size() &gt; 0)
+         EraseObjProperty(who, &quot;IsMeditating&quot;);
+       break;
+-      elseif(GetMana(who) &gt;= GetMaxMana(who))
++      elseif(AP_GetVital(who, MANA) &gt;= AP_GetVitalMaximumValue(who, MANA))
+         EraseObjProperty(who, &quot;IsMeditating&quot;);
+-        SetMana(who, GetMaxMana(who));
++        AP_SetVital(who, MANA,  AP_GetVitalMaximumValue(who, MANA));
+       break;
+-     elseif(GetHp(who) &lt; chp)
++     elseif(AP_GetVital(who, HITS) &lt; chp)
+         EraseObjProperty(who, &quot;IsMeditating&quot;);
+       break;
+      endif
+       sleep(1);
+-      chp := GetHp(who);
++      chp := AP_GetVital(who, HITS);
+     endwhile
+     SendSysMessage(who, &quot;You lose your concentration.&quot;);
+     EraseObjProperty(who, &quot;IsMeditating&quot;);
+
+Modified: trunk/096/pkg/skills/mining/mining.src
+===================================================================
+--- trunk/096/pkg/skills/mining/mining.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/mining/mining.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -286,7 +286,7 @@
+ endprogram
+ 
+ function GetRange( who );
+-  var skill := GetEffectiveSkill( who, SKILLID_MINING );
++  var skill := AP_GetSkill( who, MINING );
+   if( skill &gt;= 100 )
+     return 5;
+   elseif( skill &gt;= 80 )
+@@ -375,8 +375,8 @@
+   var oretype := wait_for_event(10);
+   var diff := 0;
+   var objtype := 0;
+-  var skill := GetEffectiveSkill(who, SKILLID_MINING);
+-  var points := skill + 1;
++  var skill := AP_GetSkill(who, MINING);
++  //var points := skill + 1;
+   var name;
+   case(oretype)
+     1: diff :=  -1;   objtype := 0x6300;   name := &quot;iron&quot;;
+@@ -404,7 +404,7 @@
+       name := &quot;iron&quot;;
+     endif
+   endif
+-  if(CheckSkill(who, SKILLID_MINING, diffi, 10))
++  if( SkillCheck(who, MINING, diffi) &gt; 0 )
+   	var num := HarvestResource( &quot;ore&quot;, location.x, location.y, 1, 1, who.realm);
+     if(num == error)
+       SendSysMessage(who,&quot;There is no more ore here to mine.&quot;);
+@@ -429,7 +429,7 @@
+     else
+ 	  SendSysMessage(who, &quot;You put some &quot; + name + &quot; ore in your backpack.&quot;);
+     endif
+-    AwardRawSkillPoints(who, SKILLID_MINING, points);
++    //AwardRawSkillPoints(who, SKILLID_MINING, points);
+     var swings := GetObjProperty(tool,&quot;swings&quot;);
+     if(!swings)
+       SetObjProperty(tool,&quot;swings&quot;, 0);
+
+Modified: trunk/096/pkg/skills/mining/resmelt.src
+===================================================================
+--- trunk/096/pkg/skills/mining/resmelt.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/mining/resmelt.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -47,7 +47,7 @@
+           SendSysMessage(who, &quot;You cannot resmelt that.&quot;);
+           return;
+         endif
+-        amt := CInt((amt * GetEffectiveSkill(who,SKILLID_BLACKSMITHY) * 75 ) / 10000);
++        amt := CInt((amt * AP_GetSkill(who,BLACKSMITHY) * 75 ) / 10000);
+         if(amt &lt; 1)
+           amt := 1;
+         endif
+@@ -68,7 +68,7 @@
+         sleep(1);
+         PlaySoundEffect(who, 0x22);
+         if(DestroyItem(thing))
+-          if(CheckSkill(who, SKILLID_BLACKSMITHY, skill, 10))
++          if(CheckSkill(who, BLACKSMITHY, skill, 10))
+             SendSysMessage(who, &quot;You manage to get a bit of material out of that.&quot;);
+             CreateItemInBackpack(who, ingot, amt);
+           else
+@@ -85,7 +85,7 @@
+       SendSysMessage(who, &quot;You cannot resmelt that.&quot;);
+       return;
+     endif
+-    amt := CInt((amt * GetEffectiveSkill(who,SKILLID_BLACKSMITHY) * 75 ) / 10000);
++    amt := CInt((amt * AP_GetSkill(who,BLACKSMITHY) * 75 ) / 10000);
+     if(amt &lt; 1)
+       amt := 1;
+     endif
+@@ -112,7 +112,7 @@
+     sleep(1);
+     PlaySoundEffect(who, 0x22);
+     if(DestroyItem(use_on))
+-      if(CheckSkill(who, SKILLID_BLACKSMITHY, skill, 10))
++      if(CheckSkill(who, BLACKSMITHY, skill, 10))
+         SendSysMessage(who, &quot;You manage to get a bit of material out of that.&quot;);
+         CreateItemInBackpack(who, ingot, amt);
+       else
+
+Modified: trunk/096/pkg/skills/mining/smelting.src
+===================================================================
+--- trunk/096/pkg/skills/mining/smelting.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/mining/smelting.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -4,6 +4,7 @@
+ include &quot;include/client&quot;;
+ include &quot;include/objtype&quot;;
+ include &quot;include/canAccess&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ program smelt_that_ore (who, ore)
+   EraseObjProperty(who, &quot;IsMeditating&quot;);
+@@ -51,7 +52,7 @@
+       SendSysMessage(who,&quot;That is too far away.&quot;);
+       return;
+     endif
+-    if(CheckSkill(who, SKILLID_MINING, difficulty, ((difficulty / 2) + 10)))
++    if( SkillCheck(who, MINING, difficulty) &gt; 0 )
+       var ingots := CreateItemInBackpack(who, ingot, (GetAmount(ore) * 2));
+       ReserveItem(ingots);
+       if(ingots)
+
+Modified: trunk/096/pkg/skills/poisoning/poisonSkill.src
+===================================================================
+--- trunk/096/pkg/skills/poisoning/poisonSkill.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/poisoning/poisonSkill.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -43,7 +43,7 @@
+     endcase
+     if(SubtractAmount(the_poison, 1))
+       CreateItemInBackpack(who, 0xf0e, 1);
+-      if(CheckSkill(who, SKILLID_POISONING, skill, point))
++      if( SkillCheck(who, POISONING, skill) &gt; 0 )
+         PlaySoundEffect(who, 0x248);
+         SetObjProperty(the_item, &quot;poison_level&quot;, stren);
+         var skillmod := Cint(GetAttribute(who, &quot;poisoning&quot;) / 20) + RandomInt(4);
+@@ -57,7 +57,7 @@
+           SetObjProperty(the_item, &quot;OnHit&quot;, hitscripts);
+         endif
+         SendSysMessage(who, &quot;You have successfully applied the poison.&quot;);
+-        var myskill := CInt(GetEffectiveSkill(who, SKILLID_POISONING));
++        var myskill := CInt(AP_GetSkill(who, POISONING));
+         var modpts := 0;
+         if(myskill &gt;=  skill)
+           modpts := (myskill - skill);
+
+Modified: trunk/096/pkg/skills/removetrap/removeTrap.src
+===================================================================
+--- trunk/096/pkg/skills/removetrap/removeTrap.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/removetrap/removeTrap.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -8,8 +8,8 @@
+ include &quot;include/sound&quot;;
+ include &quot;include/tileEffects&quot;;
+ include &quot;include/canAccess&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+-
+ program removeTrap(who)
+   EraseObjProperty(who, &quot;IsMeditating&quot;);
+   EraseObjProperty(who, &quot;HealTimer&quot;);
+@@ -24,7 +24,7 @@
+     return;
+   endif
+      if( GetObjProperty(item,&quot;trap_type&quot;) )
+-        if( CheckSkill( who, SKILLID_REMOVETRAP, -1, thepoints ) )
++        if( SkillCheck( who, REMOVE_TRAP, -1) &gt; 0 )
+            EraseObjProperty( item, &quot;trap_type&quot; );
+            EraseObjProperty( item, &quot;trap_strength&quot; );
+            item.usescript := &quot;&quot;;
+@@ -59,7 +59,7 @@
+           endif
+         endif
+       elseif( (GetObjProperty(item,&quot;trapped&quot;) == 1) )
+-        if( CheckSkill( who, SKILLID_REMOVETRAP, -1, 40 ) )
++        if( CheckSkill( who, REMOVE_TRAP, -1, 40 ) )
+            DestroyItem( item );
+ 	       SendSysMessage( who, &quot;You sucessfully removed the trap.&quot; );
+         else
+
+Modified: trunk/096/pkg/skills/tailoring/makeClothItems.src
+===================================================================
+--- trunk/096/pkg/skills/tailoring/makeClothItems.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/tailoring/makeClothItems.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -246,22 +246,22 @@
+     endif
+     totalcloth := mainclothused.amount;
+     if(totalcloth &gt;= material)
+-      dif := (GetEffectiveSkill(who, SKILLID_TAILORING) - skill);
++      dif := (AP_GetSkill(who, TAILORING) - skill);
+       if(dif &lt; 5)
+         dif := 5;
+       elseif(dif &gt; 40)
+         dif := 50;
+       endif
+       makenoise(who);
+-      if(CheckSkill(who, SKILLID_TAILORING, skill, skill*6))
++      if(CheckSkill(who, TAILORING, skill, skill*6))
+         if(SubtractAmount(mainclothused, material))
+           theitem := CreateItemInContainer(cont, objtype, 1);
+-          CheckToolWear (who, kit, SKILLID_TAILORING);
++          CheckToolWear (who, kit, TAILORING);
+           if(!theitem)
+             counter := 100;
+             SendSysMessage(who, &quot;You have no more room in your backpack.&quot;);
+           endif
+-          hisskill := GetEffectiveSkill(who, SKILLID_TAILORING);
++          hisskill := AP_GetSkill(who, TAILORING);
+           var modpts := 0;
+           if(hisskill &gt;=  skill)
+             modpts := (hisskill - (skill - 10));
+@@ -444,22 +444,22 @@
+     endif
+     totalcloth := cloth.amount;
+     if(totalcloth &gt;= material)
+-      dif := (GetEffectiveSkill(who, SKILLID_TAILORING) - skill);
++      dif := (AP_GetSkill(who, TAILORING) - skill);
+       if(dif &lt; 5)
+         dif := 5;
+       elseif(dif &gt; 40)
+         dif := 50;
+       endif
+       makenoise(who);
+-      if(CheckSkill(who, SKILLID_TAILORING, skill, skill*6))
++      if(CheckSkill(who, TAILORING, skill, skill*6))
+         if(SubtractAmount(cloth, material))
+           theitem := CreateItemInContainer(cont, objtype, 1);
+-          CheckToolWear (who, kit, SKILLID_TAILORING);
++          CheckToolWear (who, kit, TAILORING);
+           if(!theitem)
+             counter := 100;
+             SendSysMessage(who, &quot;You have no more room in your backpack.&quot;);
+           endif
+-          hisskill := GetEffectiveSkill(who, SKILLID_TAILORING);
++          hisskill := AP_GetSkill(who, TAILORING);
+           var modpts := 0;
+           if(hisskill &gt;=  skill)
+             modpts := (hisskill - (skill - 10));
+@@ -522,7 +522,7 @@
+ 
+ function ComposeClothSubMenu(who)
+   var num := 2;
+-  var skill := (GetEffectiveSkill(who, SKILLID_TAILORING) + 20);
++  var skill := (AP_GetSkill(who, TAILORING) + 20);
+   var color := 0;
+   var cfg := ReadConfigFile(&quot;:tailoring:tailoring&quot;);
+   while(num &lt; 11)
+@@ -722,7 +722,7 @@
+ 
+ function ComposeLeatherSubMenu(who)
+   var num := 2;
+-  var skill := (GetEffectiveSkill(who, SKILLID_TAILORING) + 20);
++  var skill := (AP_GetSkill(who, TAILORING) + 20);
+   var color := 0;
+   var cfg := ReadConfigFile(&quot;:tailoring:leather&quot;);
+   while(num &lt; 11)
+
+Modified: trunk/096/pkg/skills/tailoring/scissors.src
+===================================================================
+--- trunk/096/pkg/skills/tailoring/scissors.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/tailoring/scissors.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -51,7 +51,7 @@
+       else
+         MoveItemToContainer(newcloth, who.backpack);
+       endif
+-	  CheckToolWear (who, scissors, SKILLID_TAILORING);
++	  CheckToolWear (who, scissors, TAILORING);
+       PlaySoundEffect(who, 0x0249);
+       SendSysMessage(who, &quot;You use the scissors to cut the material.&quot;);
+       return;
+@@ -71,13 +71,13 @@
+       endif   
+     endif
+     PlaySoundEffect(who, 0x0249);
+-    amt := CInt((material * GetEffectiveSkill(who,SKILLID_TAILORING) * 75) / 10000);
++    amt := CInt((material * AP_GetSkill(who,TAILORING) * 75) / 10000);
+     if(amt &lt; 1)
+       amt := 1;
+     endif
+     if(DestroyItem(cloth))
+       newcloth := CreateItemInContainer(who.backpack, leftover, amt);
+-      CheckToolWear (who, scissors, SKILLID_TAILORING);
++      CheckToolWear (who, scissors, TAILORING);
+       if(newcloth)
+         newcloth.color := clr;
+       endif
+
+Modified: trunk/096/pkg/skills/taming/stableCounter.src
+===================================================================
+--- trunk/096/pkg/skills/taming/stableCounter.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/taming/stableCounter.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -57,10 +57,10 @@
+     if (list)
+       foreach critter in list
+         c := GetObjProperty(critter,&quot;amtdue&quot;);
+-        cost := GetHp(critter) /2;
++        cost := AP_GetVital(critter, HITS) /2;
+         days := GetObjProperty(critter,&quot;days&quot;);
+         if(days &gt;4)
+-          ApplyRawDamage(critter, GetHp(critter) + 5);
++          ApplyRawDamage(critter, AP_GetVital(critter, HITS) + 5);
+         else
+           mystorage := mystorage - 1;
+           days := days + 1;
+
+Modified: trunk/096/pkg/skills/taming/taming.src
+===================================================================
+--- trunk/096/pkg/skills/taming/taming.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/taming/taming.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -43,7 +43,7 @@
+     SendSysMessage(who, &quot;That creature looks pretty tame already.&quot;);
+     return;
+   endif
+-  if (GetEffectiveSkill(who, SKILLID_TAMING) &lt; (difficulty - 10))
++  if (AP_GetSkill(who, ANIMAL_TAMING) &lt; (difficulty - 10))
+     SendSysMessage(who, &quot;You have no chance of taming this creature!&quot;);
+     return;
+   endif
+@@ -82,7 +82,7 @@
+     points := points * 10;
+   endif
+   var thename := GetName(thecreature.name);
+-  var critterhp := GetHp(thecreature);
++  var critterhp := AP_GetVital(thecreature, HITS);
+   var count;
+   var counter := 0;
+   sleep(1);
+@@ -90,7 +90,7 @@
+     if(who.dead)
+       break;
+     else
+-      critterhp := GetHp(thecreature);
++      critterhp := AP_GetVital(thecreature, HITS);
+       case(counter)
+         0: PrintTextAbove(who, &quot;What a nice &quot; + thename + &quot;.&quot;);
+         1: PrintTextAbove(who, &quot;I've always wanted a &quot; + thename + &quot; like you.&quot;);
+@@ -99,7 +99,7 @@
+       endcase
+       counter := counter + 1;
+       sleep(4);
+-      if(GetHp(thecreature) &lt; critterhp)
++      if(AP_GetVital(thecreature, HITS) &lt; critterhp)
+         SendSysMessage(who,&quot;That creature is too angry to continue taming.&quot;);
+         return;
+       endif
+@@ -117,7 +117,7 @@
+     SendSysMessage(who, &quot;That creature looks pretty tame already.&quot;);
+     return;
+   endif
+-  if(CheckSkill(who, SKILLID_TAMING, difficulty + 10, points))
++  if( SkillCheck(who, ANIMAL_TAMING, difficulty + 10) &gt; 0 )
+     SendSysMessage(who, &quot;You successfully tame the &quot; + thename + &quot;.&quot;);
+     Run_Script_To_Completion(&quot;:spawnregion:death&quot;, thecreature);
+     thecreature.script := &quot;tamed&quot;;
+@@ -133,7 +133,7 @@
+       orneriness := 0;
+     endif
+     orneriness := orneriness * 5;
+-    if(((RandomInt(99) + 1) + orneriness) &gt; GetEffectiveSkill(who, SKILLID_TAMING))
++    if(((RandomInt(99) + 1) + orneriness) &gt; AP_GetSkill(who, ANIMAL_TAMING))
+       SendSysMessage(who, &quot;You seem to have upset the beast!&quot;);
+       var ev := array;
+       ev.+ type;
+
+Modified: trunk/096/pkg/skills/tasteid/tasteID.src
+===================================================================
+--- trunk/096/pkg/skills/tasteid/tasteID.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/tasteid/tasteID.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -22,7 +22,7 @@
+     return;
+   endif
+   var content_descr := &quot;&quot;;
+-  if(CheckSkill(who, SKILLID_TASTEID, -1, CInt(GetEffectiveSkill(who, SKILLID_TASTEID))))
++  if(CheckSkill(who, TASTE_IDENTIFICATION, -1, CInt(AP_GetSkill(who, TASTE_IDENTIFICATION))))
+     case(the_item.objtype)
+       0xdc04: poison_descr := &quot;a lesser poison.&quot;;
+       0xdc05: poison_descr := &quot;a regular poison.&quot;;
+
+Modified: trunk/096/pkg/skills/tinkering/makeComplexItem.src
+===================================================================
+--- trunk/096/pkg/skills/tinkering/makeComplexItem.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/tinkering/makeComplexItem.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -36,7 +36,7 @@
+ function make_complex_thing(who, desired_item, clicked_part, required_part)
+     var skill     := tinker_cfg[desired_item].skill;
+     var itemname  := tinker_cfg[desired_item].Name;
+-    var thepoints := skill*2;
++    //var thepoints := skill*2;
+     var canexceptional := tinker_cfg[desired_item].exch;
+     SendSysMessage(who, &quot;Select something to use that on.&quot;);
+     var use_on := Target(who, &quot;&quot;);
+@@ -75,14 +75,14 @@
+       endif
+     endif
+     if(use_on.amount  &gt;= 1)
+-      if(CheckSkill(who, SKILLID_TINKERING, skill,  thepoints))
++      if( SkillCheck(who, TINKERING, skill) &gt; 0 )
+         set_critical(1);
+         SubtractAmount(use_on, 1 );
+         SubtractAmount(clicked_part, 1 );
+         set_critical(0);
+         var theitem := CreateItemInBackpack( who, desired_item, 1 );
+         if (theitem)
+-          if (canexceptional and (CheckSkill(who, SKILLID_TINKERING, 90, thepoints)))
++          if (canexceptional and (SkillCheck(who, TINKERING, 90) &gt; 0))
+             theitem.quality := 1.2;
+             theitem.hp := theitem.maxhp;
+             SendSysMessage(who, &quot;You make an exceptional item and put it in your pack.&quot;);
+@@ -105,11 +105,11 @@
+     var skill     := tinker_cfg[0x1057].skill;
+     var itemname  := tinker_cfg[0x1057].Name;
+     var thepoints := skill*2;
+-    if(CheckSkill(who, SKILLID_TINKERING, skill,  thepoints))
++    if( SkillCheck(who, TINKERING, skill) &gt; 0 )
+       SubtractAmount(sextant_parts, 1 );
+       var theitem := CreateItemInBackpack( who, 0x1057, 1 );
+       if (theitem)
+-        if (CheckSkill(who, SKILLID_TINKERING, 90, thepoints))
++        if ( SkillCheck(who, TINKERING, 90) &gt; 0 )
+           theitem.quality := 1.2;
+           theitem.hp := theitem.maxhp;
+           SendSysMessage(who, &quot;You make an exceptional item and put it in your pack.&quot;);
+
+Modified: trunk/096/pkg/skills/tinkering/tinkerTraps.src
+===================================================================
+--- trunk/096/pkg/skills/tinkering/tinkerTraps.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/tinkering/tinkerTraps.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -7,8 +7,8 @@
+ include &quot;include/tileEffects&quot;;
+ include &quot;include/client&quot;;
+ include &quot;include/canAccess&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+-
+ program open_trapped_item(who, item)
+   if(!item)
+     item := who[2];
+@@ -101,7 +101,7 @@
+   if(cast_on.dead)
+     return 0;
+   endif
+-  if(CheckSkill(cast_on, SKILLID_MAGICRESISTANCE, amt, (amt * 2)))
++  if( SkillCheck(cast_on, RESISTING_SPELLS, amt) &gt; 0 )
+     SendSysMessage(cast_on, &quot;You feel yourself resisting magical energy!&quot;);
+     PlaySoundEffect(cast_on, SFX_SPELL_WEAKEN);
+     PlayObjectCenteredEffect(cast_on, FX_CURSE_EFFECT, 5,5);
+
+Modified: trunk/096/pkg/skills/tinkering/tinkering.src
+===================================================================
+--- trunk/096/pkg/skills/tinkering/tinkering.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/tinkering/tinkering.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -118,8 +118,8 @@
+   var close   := OldGFButtonID(410, 380, 242, 241, 1);
+   if((trg.objtype == 0x1bd7) || (trg.objtype == 0x1bdd))
+     OldGFTextLine(110,  80, 900, &quot;WOOD SELECTION MENU&quot;);
+-    var num := 2;
+-    var skill := (GetEffectiveSkill(who, SKILLID_TINKERING) + 20);
++    //var num := 2;
++    var skill := (AP_GetSkill(who, TINKERING) + 20);
+     var color := 0;
+     if(skill &gt;= Cint(tinker_cfg[4144].&quot;skill&quot;))
+       color := 900;
+@@ -218,7 +218,7 @@
+ 
+ function ComposeSubMenu(who)
+   var num := 2;
+-  var skill := (GetEffectiveSkill(who, SKILLID_TINKERING) + 20);
++  var skill := (AP_GetSkill(who, TINKERING) + 20);
+   var color := 0;
+   while(num &lt; 9)
+     case(num)
+@@ -607,7 +607,7 @@
+   var itemname  := tinker_cfg[what].Name;
+   var thepoints := CInt(skill * 2);
+   var exchk     := tinker_cfg[what].exchk;
+-  var myskill := CInt(GetEffectiveSkill(who, SKILLID_TINKERING));
++  var myskill := CInt(AP_GetSkill(who, TINKERING));
+   var counter := 0;
+   var x := who.x;
+   var y := who.y;
+@@ -630,13 +630,13 @@
+     sleep(2);
+     PlaySoundEffect(who, 0x22d);
+     sleep(2);
+-    if(CheckSkill(who, SKILLID_TINKERING, skill, thepoints))
++    if( SkillCheck(who, TINKERING, skill) &gt; 0 )
+       if(!SubtractAmount(use_on, material))
+         sendsysmessage(who, &quot;Cancelled.&quot;);
+         break;
+       endif
+       theitem := CreateItemInContainer(who.backpack, CInt(what), 1);
+-      CheckToolWear (who, item, SKILLID_TINKERING);
++      CheckToolWear (who, item, TINKERING);
+       theitem.movable := 1;
+       var modpts := 0;
+       if(myskill &gt;=  skill)
+@@ -648,7 +648,7 @@
+         if(exchk)
+           theitem.quality := 1.2;
+           theitem.hp := theitem.maxhp;
+-          if(GetEffectiveSkill(who, SKILLID_TINKERING) &gt;= 99)
++          if(AP_GetSkill(who, TINKERING) &gt;= 99)
+             SetName(theitem, &quot;an exceptional &quot; + itemname + &quot; [crafted by &quot; + who.name + &quot;]&quot;);
+           else
+             SetName(theitem, &quot;an exceptional &quot; + itemname);
+@@ -678,14 +678,14 @@
+       endif
+       if((theitem.graphic in array(0x9a8, 0x9a9, 0x9aa, 0x9ab, 0xa2c, 0xa30, 0xa34, 0xa38, 0xa4d, 0xa4f,
+         0xa51, 0xa53, 0xe3c, 0xe3d, 0xe3e, 0xe3f, 0xe40, 0xe41, 0xe42, 0xe43, 0xe7c, 0xe7d, 0xe7e, 0xe80)))
+-        if(RandomInt(GetEffectiveSkill(who, SKILLID_TINKERING)) &gt; 40)
++        if(RandomInt(AP_GetSkill(who, TINKERING)) &gt; 40)
+           SetObjProperty(theitem, &quot;lockable&quot;, &quot;1&quot;);
+           lockid := AllocLockId();
+           theitem.locked := 0;
+           thekey := CreateItemInBackpack(who, UOBJ_COPPER_KEY, 1);
+           SetObjProperty(thekey, &quot;lockid&quot;, lockid);
+           SetObjProperty(theitem,&quot;lockid&quot;, lockid);
+-          SetObjProperty(theitem,&quot;LockPickDiff&quot;, (GetEffectiveSkill(who, SKILLID_TINKERING) + 10));
++          SetObjProperty(theitem,&quot;LockPickDiff&quot;, (AP_GetSkill(who, TINKERING) + 10));
+           SendSysMessage(who, &quot;You will find the key in your backpack.&quot;);
+         endif
+       endif
+@@ -700,7 +700,7 @@
+ function make_jewelry(who, item, stuff, what, ct)
+   ct := Cint(ct);
+   SetObjProperty(who, &quot;LastTinkerItem&quot;, what);
+-  var type      := tinker_cfg[what].type;
++  //var type      := tinker_cfg[what].type;
+   var material  := tinker_cfg[what].material;
+   var skill     := tinker_cfg[what].skill;
+   var itemname  := tinker_cfg[what].Name;
+@@ -731,7 +731,7 @@
+     SendSysMessage(who, &quot;You can't reach that!&quot;);
+     return;
+   endif
+-  var myskill := CInt(GetEffectiveSkill(who, SKILLID_TINKERING));
++  var myskill := CInt(AP_GetSkill(who, TINKERING));
+   while(counter &lt; ct)
+     if((who.x != x) || (who.y != y))
+       SendSysMessage(who, &quot;You stop tinkering.&quot;);
+@@ -751,12 +751,12 @@
+       if(!SubtractAmount(thegem, 1))
+         break;
+       endif
+-      if(CheckSkill(who, SKILLID_TINKERING, skill, thepoints))
++      if( SkillCheck(who, TINKERING, skill) &gt; 0 )
+         if(!SubtractAmount(stuff, material))
+           break;
+         endif
+         theitem := CreateItemInBackpack(who, CInt(what), 1);
+-        CheckToolWear (who, item, SKILLID_TINKERING);
++        CheckToolWear (who, item, TINKERING);
+         var modpts := 0;
+         if(myskill &gt;=  skill)
+           modpts := (myskill - skill);
+@@ -841,9 +841,9 @@
+     if(!SubtractAmount(ingot, 1))
+       break;
+     endif
+-    var myskill := GetEffectiveSkill(who, SKILLID_TINKERING);
++    var myskill := AP_GetSkill(who, TINKERING);
+     sleep(2);
+-    if(CheckSkill(who, SKILLID_TINKERING, -1, Cint(myskill / 2)))
++    if( SkillCheck(who, TINKERING, -1) &gt; 0 )
+       var modpts := 10;
+       var rint := RandomInt(100);
+       if(modpts &gt;= rint)
+@@ -857,7 +857,7 @@
+       SendSysMessage(who, &quot;You carefully place the trap on the container.&quot;);
+       chest.usescript := &quot;:tinkering:tinkerTraps&quot;;
+       SetObjProperty(chest, &quot;trapper&quot;, who.serial);
+-      CheckToolWear (who, item, SKILLID_TINKERING);
++      CheckToolWear (who, item, TINKERING);
+     else
+       var results := RandomInt(9) + 1;
+       if(results == 1)
+@@ -921,7 +921,7 @@
+     if(!SubtractAmount(ingot, 1))
+       break;
+     endif
+-    var myskill := CInt(GetEffectiveSkill(who, SKILLID_TINKERING));
++    var myskill := CInt(AP_GetSkill(who, TINKERING));
+     if(myskill &lt;= 20)
+       strength := 1;
+     elseif(myskill &lt;= 40)
+@@ -933,7 +933,7 @@
+     else
+       strength := 5;
+     endif
+-    if(CheckSkill(who, SKILLID_TINKERING, -1, myskill))
++    if( SkillCheck(who, TINKERING, -1) &gt; 0 )
+       var modpts := 10;
+       var rint := RandomInt(100);
+       if(modpts &gt;= rint)
+@@ -952,7 +952,7 @@
+       SendSysMessage(who, &quot;You carefully place the trap on the container.&quot;);
+       chest.usescript := &quot;:tinkering:tinkerTraps&quot;;
+       SetObjProperty(chest, &quot;trapper&quot;, who.serial);
+-      CheckToolWear (who, item, SKILLID_TINKERING);
++      CheckToolWear (who, item, TINKERING);
+     else
+       results := RandomInt(9) + 1;
+       if (results == 1)
+@@ -1013,8 +1013,8 @@
+       return;
+     endif
+     SubtractAmount(ingot, 1);
+-    var myskill := CInt(GetEffectiveSkill(who, SKILLID_TINKERING));
+-    if (CheckSkill( who, SKILLID_TINKERING, -1, myskill*2 ))
++    var myskill := CInt(AP_GetSkill(who, TINKERING));
++    if (CheckSkill( who, TINKERING, -1, myskill*2 ))
+       var modpts := 10;
+       var rint := RandomInt(100);
+       if(modpts &gt;= rint)
+@@ -1033,7 +1033,7 @@
+       SendSysMessage(who, &quot;You carefully place the trap on the container.&quot;);
+       chest.usescript := &quot;:tinkering:tinkerTraps&quot;;
+       SetObjProperty(chest, &quot;trapper&quot;, who.serial);
+-      CheckToolWear (who, item, SKILLID_TINKERING);
++      CheckToolWear (who, item, TINKERING);
+     else
+       results := RandomInt(9) + 1;
+       if (results == 1)
+
+Modified: trunk/096/pkg/skills/tracking/tracking.src
+===================================================================
+--- trunk/096/pkg/skills/tracking/tracking.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/tracking/tracking.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -13,10 +13,10 @@
+   EraseObjProperty(who, &quot;IsMeditating&quot;);
+   EraseObjProperty(who, &quot;HealTimer&quot;);
+ //  UnloadConfigFile(&quot;:tracking:tracking&quot;);
+-  if(CheckSkill(who, SKILLID_TRACKING, -1, (GetEffectiveSkill(who, SKILLID_TRACKING) + 30)))
++  if(SkillCheck(who, TRACKING, -1) &gt;0)
+     var tracker := ReadGameClock();
+     SetObjProperty(who, &quot;TrackingCounter&quot;, tracker);
+-    var range := CInt((GetEffectiveSkill(who, SKILLID_TRACKING)/3));
++    var range := CInt((AP_GetSkill(who, TRACKING)/3));
+     var nearby := ListMobilesNearLocation(who.x, who.y, who.z, range, who.realm);
+     if(nearby.size() == 1 &amp;&amp; nearby[1].serial == who.serial)
+       SendSysMessage(who, &quot;There don't seem to be any creatures nearby.&quot;);
+
+Modified: trunk/096/pkg/skills/veterinary/vet.src
+===================================================================
+--- trunk/096/pkg/skills/veterinary/vet.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/skills/veterinary/vet.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -18,15 +18,15 @@
+   var patient := parms[1];
+   var who := parms[2];
+   EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  var sleeptime;
+-  var anatomy:= GetEffectiveSkill(who, SKILLID_ANATOMY);
++  //var sleeptime;
++  var anatomy:= AP_GetSkill(who, ANATOMY);
+   if(dist(who, patient) &gt; 2)
+     SendSysMessage(who, &quot;Your patient is too far away.&quot;);
+     return;
+   elseif(!CheckLineOfSight(who,patient))
+ 	SendSysMessage(who,&quot;You can't see your patient.&quot;);
+ 	return;
+-  elseif((GetHp(patient) &gt;= GetStrength(patient)) &amp;&amp; (TS_GetTimerNames(patient, &quot;P&quot;).size() == 0))
++  elseif((AP_GetVital(patient, HITS) &gt;= AP_GetVitalMaximumValue(patient, HITS)) &amp;&amp; (TS_GetTimerNames(patient, &quot;P&quot;).size() == 0))
+ 	SendSysMessage(who,&quot;Your patient is at full health!&quot;);
+ 	return;
+   endif
+@@ -63,8 +63,8 @@
+   var wx:= who.x;
+   var wy:= who.y;
+   var chp;
+-  var healing := (CInt(GetEffectiveSkill(who, SKILLID_VETERINARY)) / 2);
+-  var anatomy := (CInt(GetEffectiveSkill(who, SKILLID_ANATOMY)) / 5);
++  var healing := (CInt(AP_GetSkill(who, VETERINARY)) / 2);
++  var anatomy := (CInt(AP_GetSkill(who, ANATOMY)) / 5);
+   var healamt := healing + anatomy + 10;
+   var counter := 0;
+   var cycles;
+@@ -88,7 +88,7 @@
+       SendSysMessage(who, &quot;You stop healing your patient to work on another.&quot;);
+       break;
+     endif
+-    chp:=GetHp(who);
++    chp:=AP_GetVital(who, HITS);
+     sleep(1);
+     if(dist(who, patient) &gt; 2)
+       SendSysMessage(who,&quot;Your patient isn't close enough.&quot;);
+@@ -98,7 +98,7 @@
+       SendSysMessage(who,&quot;You stop healing your patient.&quot;);
+       break;
+     endif
+-    if(GetHp(who) &lt; chp)
++    if(AP_GetVital(who, HITS) &lt; chp)
+       if((RandomInt(100)+1) &gt; who.dex)
+         SendSysMessage( who, &quot;Your fingers slip.&quot; );
+         healamt := (healamt / 2);
+@@ -109,19 +109,19 @@
+       break;
+     endif
+     if(counter &gt;= cycles)
+-      if(CheckSkill(who, SKILLID_VETERINARY, -1, 0))
++      if(SkillCheck(who, VETERINARY, -1)&gt;0)
+         if(healamt &lt;= 10)
+           SendSysMessage(who,&quot;You finish applying the bandages, but they barely help.&quot;);
+         endif
+-        if((patient.str - GetHp(patient)) &gt; healamt)
++        if((patient.str - AP_GetVital(patient, HITS)) &gt; healamt)
+           HealDamage(patient, healamt);
+-          AwardRawSkillPoints(who, SKILLID_VETERINARY, (healamt * 2));
++          //AwardRawSkillPoints(who, VETERINARY, (healamt * 2));
+         else
+-          healamt := GetStrength(patient) - GetHp(patient);
++          healamt := AP_GetVitalMaximumValue(patient, HITS) - AP_GetVital(patient, HITS);
+           HealDamage(patient, healamt);
+-          AwardRawSkillPoints(who, SKILLID_VETERINARY, (healamt * 2));
++          //AwardRawSkillPoints(who, VETERINARY, (healamt * 2));
+         endif
+-        if(GetHp(patient) == GetMaxHp(patient))
++        if(AP_GetVital(patient, HITS) == AP_GetVital(patient, HITS))
+ 		  SendSysMessage(who, &quot;You have healed your patient completely.&quot;);
+         else
+ 		  SendSysMessage(who, &quot;You successfully heal &quot; + patient.name+&quot;.&quot;);
+@@ -139,8 +139,8 @@
+   var wx:= who.x;
+   var wy:= who.y;
+   var chp;
+-  var healing := (CInt(GetEffectiveSkill(who, SKILLID_VETERINARY)) / 2);
+-  var anatomy := (CInt(GetEffectiveSkill(who, SKILLID_ANATOMY)) / 5);
++  var healing := (CInt(AP_GetSkill(who, VETERINARY)) / 2);
++  var anatomy := (CInt(AP_GetSkill(who, ANATOMY)) / 5);
+   var healamt := healing + anatomy + 10;
+   var counter := 0;
+   var cycles;
+@@ -164,7 +164,7 @@
+       SendSysMessage(who, &quot;You stop healing your patient to work on another.&quot;);
+       break;
+     endif
+-    chp:=GetHp(who);
++    chp:=AP_GetVital(who, HITS);
+     sleep(1);
+     if(dist(who, patient) &gt; 1)
+       SendSysMessage(who,&quot;Your patient isn't close enough.&quot;);
+@@ -174,14 +174,14 @@
+       SendSysMessage(who,&quot;You stop healing your patient.&quot;);
+       break;
+     endif
+-	if(GetHp(who) &lt; chp)
++	if(AP_GetVital(who, HITS) &lt; chp)
+       if((RandomInt(100)+1) &gt; who.dex)
+ 	    SendSysMessage( who, &quot;Your fingers slip.&quot; );
+         healamt := ((healamt * 3) / 4);
+       endif
+ 	endif
+     if(counter &gt;= cycles)
+-      if(CheckSkill(who, SKILLID_VETERINARY, 80, 0) &amp;&amp; (CInt(GetEffectiveSkill(who, SKILLID_ANATOMY)) &gt;= 61))
++      if(SkillCheck(who, VETERINARY, 80) &gt; 0 &amp;&amp; (CInt(AP_GetSkill(who, ANATOMY)) &gt;= 61))
+         if((RandomInt(100) + 1) &lt; healamt);
+          TS_CurePoison(patient,(healamt/40),&quot;P&quot;);
+           if (TS_GetTimerNames(patient, &quot;P&quot;).size() &gt; 0)
+
+Modified: trunk/096/pkg/systems/attributes/commands/test/attribconvert.src
+===================================================================
+--- trunk/096/pkg/systems/attributes/commands/test/attribconvert.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/pkg/systems/attributes/commands/test/attribconvert.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -9,8 +9,8 @@
+ 		SendSysMessage(who, &quot;Error - no skillID or attribute name was sent.&quot;);
+ 		return;
+ 	elseif ( Len(input) &lt;= 2 )
+-		SendSysMessage(who, &quot;SkillID [&quot;+input+&quot;] points to attribute &quot;+AP_IDToAttributeName(input));
++		SendSysMessage(who, &quot;SkillID [&quot;+input+&quot;] points to attribute &quot;+AP_SkillIdToAttributeName(input));
+ 	else
+-		SendSysMessage(who, &quot;Attribute [&quot;+input+&quot;] points to skillID &quot;+AP_AttributeNameToSkillID(input));
++		SendSysMessage(who, &quot;Attribute [&quot;+input+&quot;] points to skillID &quot;+AP_AttributeNameToSkillId(input));
+ 	endif
+ endprogram
+
+Modified: trunk/096/scripts/items/vendorDeed.src
+===================================================================
+--- trunk/096/scripts/items/vendorDeed.src	2005-11-02 19:54:11 UTC (rev 843)
++++ trunk/096/scripts/items/vendorDeed.src	2005-11-02 20:18:08 UTC (rev 844)
+@@ -44,7 +44,7 @@
+       if(!DestroyItem(deed))
+         RevokePrivilege(place, &quot;invul&quot;);
+         SetObjProperty(place, &quot;guardkill&quot;, 1);
+-        ApplyRawDamage(place, (GetHp(place) + 5));
++        ApplyRawDamage(place, (AP_GetVital(place, HITS) + 5));
+       endif
+     endif
+   else
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000817.html">[Poldistro-svn] r843 - in trunk/096/pkg: skills/taming systems/daynight systems/merchantnodes
+</A></li>
+	<LI>Next message: <A HREF="000819.html">[Poldistro-svn] r845 - trunk/096/pkg/skills/fishing
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#818">[ date ]</a>
+              <a href="thread.html#818">[ thread ]</a>
+              <a href="subject.html#818">[ subject ]</a>
+              <a href="author.html#818">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

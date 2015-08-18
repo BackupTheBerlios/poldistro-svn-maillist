@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r889 - in trunk/096: pkg/items/containers/include scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r889%20-%20in%20trunk/096%3A%20pkg/items/containers/include%20scripts/include&In-Reply-To=%3C200511040339.jA43dFWg019237%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000861.html">
+   <LINK REL="Next"  HREF="000863.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r889 - in trunk/096: pkg/items/containers/include scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r889%20-%20in%20trunk/096%3A%20pkg/items/containers/include%20scripts/include&In-Reply-To=%3C200511040339.jA43dFWg019237%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r889 - in trunk/096: pkg/items/containers/include scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Fri Nov  4 04:39:15 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000861.html">[Poldistro-svn] r888 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000863.html">[Poldistro-svn] r890 - in trunk/096/pkg/skills/magery: . config include spellBook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#862">[ date ]</a>
+              <a href="thread.html#862">[ thread ]</a>
+              <a href="subject.html#862">[ subject ]</a>
+              <a href="author.html#862">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-04 04:39:13 +0100 (Fri, 04 Nov 2005)
+New Revision: 889
+
+Added:
+   trunk/096/pkg/items/containers/include/containers.inc
+   trunk/096/scripts/include/facings.inc
+Log:
+containers.inc
+Adds:
+AmountInContainer()
+Lets you find the number of items with specific properties in a container.
+
+facings.inc
+TurnObjectToward()
+IsFacing()
+IsBehind()
+
+
+Added: trunk/096/pkg/items/containers/include/containers.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/containers.inc	2005-11-04 02:50:01 UTC (rev 888)
++++ trunk/096/pkg/items/containers/include/containers.inc	2005-11-04 03:39:13 UTC (rev 889)
+@@ -0,0 +1,46 @@
++/* 
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++/*
++ * AmountInContainer(container, obj_type, params)
++ *
++ * Purpose
++ * Finds the amount of items with a certain objtype and 
++ * optional additional properties that are in a container.
++ *
++ * Parameters
++ * container:	Container to search
++ * obj_type:	Objtype to find
++ * params:	Optional - dictionary ( dict[property] = value )
++ *		Example: dict{&quot;color&quot;-&gt;0} // only count if uncolored
++ *
++ * Return value
++ * Returns an integer
++ *
++ */
++function AmountInContainer(container, obj_type, properties:=0)
++	var amount := 0;
++	foreach item in EnumerateItemsInContainer(container)
++		if( item.objtype == obj_type )
++			if ( !properties )
++				amount := amount + item.amount;
++			else
++				foreach property in ( properties.keys() )
++					if ( item.Get_Member(property) == properties[property] )
++						amount := amount + item.amount;
++					endif
++					sleepms(2);
++				endforeach
++			endif
++		endif
++		sleepms(2);
++	endforeach
++	
++	return amount;
++endfunction
++
+
+Added: trunk/096/scripts/include/facings.inc
+===================================================================
+--- trunk/096/scripts/include/facings.inc	2005-11-04 02:50:01 UTC (rev 888)
++++ trunk/096/scripts/include/facings.inc	2005-11-04 03:39:13 UTC (rev 889)
+@@ -0,0 +1,80 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use math;
++
++/*
++ * TurnObjectToward(object, x_pos, y_pos)
++ *
++ * Purpose
++ * Sets an objects .facing member to face an x, y coordinate.
++ *
++ * Purpose
++ * object:	Object to set the facing on.
++ * x_pos:	X position to check.
++ * y_pos:	Y position to check.
++ *
++ * Return value
++ * Object's original facing
++ *
++ */
++function TurnObjectToward(object, x_pos, y_pos)
++	var orig := mobile.facing;
++
++	mobile.facing := GetFacing(mobile.x,mobile.y, x,y);
++
++	return orig;
++endfunction
++
++/*
++ * IsFacing(mobile, x_pos, y_pos)
++ *
++ * Purpose
++ * Determines if a mobile is facing a set of coordinates.
++ *
++ * Parameters
++ * mobile:	Mobile to check the coordinates with.
++ * x_pos:	X position to check.
++ * y_pos:	Y position to check.
++ *
++ * Return value
++ * Returns 1 if the mobile is facing the coordinates.
++ * Returns 0 if not.
++ *
++ */
++ function IsFacing(mobile, x, y)
++	return ( mobile.facing == GetFacing(mobile.x, mobile.y, x, y) );
++endfunction
++
++/*
++ * IsBehind(mobile, x_pos, y_pos)
++ * Determines if a set of coordinates are behind a character.
++ * Example ( ^ - character * - behind )
++ *         ^
++ *        ***
++ *       *****
++ *      *******
++ *
++ * Parameters
++ * mobile:	Mobile to check the coordinates with.
++ * x_pos:	X position to check.
++ * y_pos:	Y position to check.
++ *
++ * Return value
++ * Returns 1 if the coordinates are behind the mobile.
++ * Returns 0 if not.
++ *
++ */
++function IsBehind( tgt_mob, locx, locy )
++	var frot := Abs(((tgt_mob.facing+4)%8)-GetFacing(tgt_mob.x,tgt_mob.y,locx,locy));
++	if ( frot &gt; 4 )
++		frot := 8-frot;
++	endif
++
++	return ( frot &lt; 2 );
++endfunction
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000861.html">[Poldistro-svn] r888 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000863.html">[Poldistro-svn] r890 - in trunk/096/pkg/skills/magery: . config include spellBook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#862">[ date ]</a>
+              <a href="thread.html#862">[ thread ]</a>
+              <a href="subject.html#862">[ subject ]</a>
+              <a href="author.html#862">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

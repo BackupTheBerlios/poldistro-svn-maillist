@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1317 - trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1317%20-%20trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn&In-Reply-To=%3C200605120113.k4C1D9XG014871%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001281.html">
+   <LINK REL="Next"  HREF="001295.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1317 - trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1317%20-%20trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn&In-Reply-To=%3C200605120113.k4C1D9XG014871%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1317 - trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn">austin at berlios.de
+       </A><BR>
+    <I>Fri May 12 03:13:09 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001281.html">[Poldistro-svn] r1316 - trunk/096/pkg/mobiles/brainAI/bundled/trogdor
+</A></li>
+        <LI>Next message: <A HREF="001295.html">[Poldistro-svn] r1318 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1294">[ date ]</a>
+              <a href="thread.html#1294">[ thread ]</a>
+              <a href="subject.html#1294">[ subject ]</a>
+              <a href="author.html#1294">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-12 03:13:04 +0200 (Fri, 12 May 2006)
+New Revision: 1317
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src
+Log:
+Farts ... fireworks now.
+
+Modified: trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src	2006-05-12 00:16:19 UTC (rev 1316)
++++ trunk/096/pkg/mobiles/brainAI/bundled/gUnicorn/virtual.src	2006-05-12 01:13:04 UTC (rev 1317)
+@@ -6,7 +6,11 @@
+ include &quot;:brainAI:npcNerves&quot;;
+ include &quot;:brainAI:npcCommands&quot;;
+ include &quot;include/client&quot;;
++include &quot;include/facings&quot;;
++include &quot;include/shapes&quot;;
+ 
++const FIREWORK_RANGE	:= 4;
++
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+ 	//var nerve_name:= params[2];
+@@ -94,8 +98,30 @@
+ endfunction
+ 
+ function FartFireworks(npc)
++	npc.frozen := 1;
++	AI_Speak(npc, &quot;Oh .. god.. what did Rowan put in there?!&quot;);
++	sleep(1);
++	AI_Speak(npc, &quot;*lifts its tail*&quot;);
++	sleep(1);
++	AI_Speak(npc, &quot;*nnngggffffffff*&quot;);
++	
+ 	var behind := Abs((npc.facing+4)%8);
+-	// Need to go back a few spaces, do a wiggly fireball animation then mass sparkly effects.
++	var coords := GetPointsByFacing(npc.x, npc.y, behind, FIREWORK_RANGE+2);
++	var coord_a := coords[1]; // First coordinate
++	var coord_z := coords[coords.Size()]; // Last coordinate
++	
++	PlaySoundEffect(npc, 351);
++	sleepms(30);
++	PlayMovingEffectXYZ(coord_a.x, coord_a.y, npc.z, coord_z.x, coord_z.y, npc.z+5, GFX_WAVY_FIREBALL, 10, 10, 0, npc.realm);
++	sleepms(400);
++	PlayStationaryEffect(coord_z.x, coord_z.y, npc.z+5, GFX_EXPLODE_3, 10, 10, 0, npc.realm);
++	foreach coordinate in ( GetCoordsInSquare(coord_z.x, coord_z.y, FIREWORK_RANGE-2) )
++		PlayStationaryEffect(coordinate.x, coordinate.y, npc.z+5, RandomSparkle(), 15, 15, 0, npc.realm);
++		sleepms(2);
++	endforeach
++	
++	npc.frozen := 0;
++	return 1;
+ endfunction
+ 
+ function SparkleEffect(npc)
+@@ -125,4 +151,18 @@
+ 	AI_Speak(npc, text, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_ENABLE, WAKEUP);
+ 	
+ 	return 1;
++endfunction
++
++function RandomSparkle()
++	var sparkles := array{
++	GFX_MAGICAL_SPARKLES_EW,
++	GFX_MAGICAL_SPARKLES_NS,
++	GFX_BLUE_SPARKLES,
++	GFX_RED_SPARKLES,
++	GFX_BLUE_SPARKLE_SWIRL,
++	GFX_BLUE_SPARKLE_BORDER,
++	GFX_BLUE_SPARKLE_GROUND
++	};
++	
++	return sparkles[RandomInt(sparkles.Size())+1];
+ endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001281.html">[Poldistro-svn] r1316 - trunk/096/pkg/mobiles/brainAI/bundled/trogdor
+</A></li>
+	<LI>Next message: <A HREF="001295.html">[Poldistro-svn] r1318 - trunk/096/pkg/systems/accounts/hook
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1294">[ date ]</a>
+              <a href="thread.html#1294">[ thread ]</a>
+              <a href="subject.html#1294">[ subject ]</a>
+              <a href="author.html#1294">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

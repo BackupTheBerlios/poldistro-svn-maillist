@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1290 - in trunk/096: config pkg/mobiles/newCharacter/config pkg/systems/spawnSystem/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1290%20-%20in%20trunk/096%3A%20config%20pkg/mobiles/newCharacter/config%20pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200605090027.k490RnjS016948%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001261.html">
+   <LINK REL="Next"  HREF="001262.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1290 - in trunk/096: config pkg/mobiles/newCharacter/config pkg/systems/spawnSystem/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1290%20-%20in%20trunk/096%3A%20config%20pkg/mobiles/newCharacter/config%20pkg/systems/spawnSystem/commands/gm&In-Reply-To=%3C200605090027.k490RnjS016948%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1290 - in trunk/096: config pkg/mobiles/newCharacter/config pkg/systems/spawnSystem/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Tue May  9 02:27:49 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001261.html">[Poldistro-svn] r1289 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001262.html">[Poldistro-svn] r1291 - trunk/096/regions
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1263">[ date ]</a>
+              <a href="thread.html#1263">[ thread ]</a>
+              <a href="subject.html#1263">[ subject ]</a>
+              <a href="author.html#1263">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-09 02:27:43 +0200 (Tue, 09 May 2006)
+New Revision: 1290
+
+Modified:
+   trunk/096/config/servspecopt.cfg
+   trunk/096/pkg/mobiles/newCharacter/config/startEquip.cfg
+   trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+Log:
+Changed it so gold is given in the newCharacter package rather than the core. 
+
+Modified: trunk/096/config/servspecopt.cfg
+===================================================================
+--- trunk/096/config/servspecopt.cfg	2006-05-07 04:51:13 UTC (rev 1289)
++++ trunk/096/config/servspecopt.cfg	2006-05-09 00:27:43 UTC (rev 1290)
+@@ -8,7 +8,13 @@
+ ##        your changes to servspecopt.local.cfg
+ ##
+ 
++# 
++# StartingGold - Amount of gold the core gives a character on creation.
++#                In the distro it is created in the newCharacter package.
+ #
++StartingGold=0
++
++#
+ # DefaultDoubleclickRange - doubleclick range if DoubleClickRange isn't
+ #                           specified for an objtype in itemdesc.cfg
+ #
+
+Modified: trunk/096/pkg/mobiles/newCharacter/config/startEquip.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/newCharacter/config/startEquip.cfg	2006-05-07 04:51:13 UTC (rev 1289)
++++ trunk/096/pkg/mobiles/newCharacter/config/startEquip.cfg	2006-05-09 00:27:43 UTC (rev 1290)
+@@ -276,6 +276,7 @@
+ {
+ 	Item	candle1		1
+ 	Item	book1		1
++	Item	GoldCoin	100
+ }
+ 
+ Group	Circle1Scrolls
+
+Modified: trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-07 04:51:13 UTC (rev 1289)
++++ trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2006-05-09 00:27:43 UTC (rev 1290)
+@@ -87,7 +87,7 @@
+ 			cur_menu := SHOW_GROUPS_BTN;
+ 		elseif ( input == ADD_GROUP_BTN )
+ 			cur_menu := ADD_GROUP_BTN;
+-		elseif ( input &gt;= GROUP_START ) // Button next to a realm name was clicked.
++		elseif ( input &gt;= GROUP_START ) // Button next to a group name was clicked.
+ 			cur_menu := SHOW_THIS_GROUP;
+ 			var group_list := SS_GetGroupNames();
+ 			cur_group := group_list[input-GROUP_START];
+@@ -283,14 +283,24 @@
+ 		GFTextLine(gump, 540, 200, 2100, &quot;Enabled&quot;);
+ 		var y_pos := 220;
+ 		var group_list := SS_GetGroupsInRegion(region_name);
+-		foreach group in ( group_list )
+-			GFAddButton(gump, 170, y_pos+3, 2117, 2118, GF_CLOSE_BTN, 1);
+-			GFTextLine(gump, 225, y_pos, 2100, _group_iter);
+-			GFTextLine(gump, 450, y_pos, 2100, group.max_amt);
+-			GFCheckBox(gump, 550, y_pos, 0xD2, 0xD3, (group.enabled), 1);
++		var group_names := group_list.Keys();
++		var lines := 1;
++		
++		for ( lines; lines &lt;= 12; lines := lines+1 )
++			GFAddButton(gump, 170, y_pos+3, 2117, 2118, GF_CLOSE_BTN, GROUP_START+lines);
++			var name := group_names[lines];
++			if ( group_names[lines] )
++				var group := group_list[name];
++				GFTextLine(gump, 225, y_pos, 2100, name);
++				GFTextLine(gump, 450, y_pos, 2100, group.max_amt);
++				GFCheckBox(gump, 550, y_pos, 0xD2, 0xD3, (group.enabled), 1);
++			else
++				GFTextLine(gump, 225, y_pos, 2100, &quot;----&quot;);
++			endif
++			
+ 			y_pos := y_pos+20;
+ 			sleepms(2);
+-		endforeach
++		endfor
+ 	endif
+ 
+ 	var input := GFSendGump(who, gump);
+@@ -329,7 +339,7 @@
+ 	var gump := BuildGumpTemplate();
+ 	var new_group := (group_name == &quot;&quot;);
+ 	
+-	GFTextMid(gump, 145, 20, 485, 2100, &quot;Add Group&quot;);
++	GFTextMid(gump, 145, 20, 485, 2100, &quot;Group Information&quot;);
+ 
+ 	GFTextLine(gump, 155, 50, 2100, &quot;Group Name&quot;);
+ 	GFResizePic(gump, 230, 46, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 245, 28);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001261.html">[Poldistro-svn] r1289 - trunk/096/pkg/systems/spawnSystem/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001262.html">[Poldistro-svn] r1291 - trunk/096/regions
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1263">[ date ]</a>
+              <a href="thread.html#1263">[ thread ]</a>
+              <a href="subject.html#1263">[ subject ]</a>
+              <a href="author.html#1263">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

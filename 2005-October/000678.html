@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r704 - trunk/096/pkg/utils/gumps/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r704%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200510300753.j9U7rnnk014032%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000677.html">
+   <LINK REL="Next"  HREF="000679.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r704 - trunk/096/pkg/utils/gumps/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r704%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200510300753.j9U7rnnk014032%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r704 - trunk/096/pkg/utils/gumps/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct 30 08:53:49 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000677.html">[Poldistro-svn] r703 - trunk/096/pkg/utils/gumps/include
+</A></li>
+        <LI>Next message: <A HREF="000679.html">[Poldistro-svn] r705 - trunk/096/pkg/utils/gumps/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#678">[ date ]</a>
+              <a href="thread.html#678">[ thread ]</a>
+              <a href="subject.html#678">[ subject ]</a>
+              <a href="author.html#678">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-30 08:53:36 +0100 (Sun, 30 Oct 2005)
+New Revision: 704
+
+Modified:
+   trunk/096/pkg/utils/gumps/include/gumps.inc
+Log:
+Removed (gump.base.x + ) and (gump.base.y + ) stuff.
+They are now only used in GFSendGump() with the new uo.em arguments.
+Makes it faster!
+
+Modified: trunk/096/pkg/utils/gumps/include/gumps.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/gumps.inc	2005-10-30 07:47:11 UTC (rev 703)
++++ trunk/096/pkg/utils/gumps/include/gumps.inc	2005-10-30 07:53:36 UTC (rev 704)
+@@ -265,7 +265,7 @@
+ 		height := gump.base.width;
+ 	endif
+ 
+-	(gump.layout).append(&quot;ResizePic &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;ResizePic &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(gump_id)) + &quot; &quot; + CStr(width) + &quot; &quot; + CStr(height));
+ 	return 1;
+ endfunction
+@@ -289,7 +289,7 @@
+  *
+  */
+  function GFAddAlphaRegion(byref gump, x, y, width, height)
+-	(gump.layout).append(&quot;CheckerTrans &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;CheckerTrans &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)));
+ 	return 1;
+  endfunction
+@@ -320,7 +320,7 @@
+  *
+  */
+ function GFAddButton(byref gump, x, y, off_id, on_id, btn_type:=GF_PAGE_BTN, btn_value:=0)
+-	var line := &quot;Button &quot; + CStr(gump.base.x + x) + &quot; &quot; + CStr(gump.base.y + y) + &quot; &quot; + CStr(off_id) + &quot; &quot; + CStr(on_id);
++	var line := &quot;Button &quot; + CStr(x) + &quot; &quot; + CStr(y) + &quot; &quot; + CStr(off_id) + &quot; &quot; + CStr(on_id);
+ 
+ 	btn_value := CInt(btn_value);
+ 	if ( btn_value &lt; 1 ) // Catch errors (0) and invalid (negative) values
+@@ -382,7 +382,7 @@
+ 		btn_value := gump.data_id;
+ 	endif
+ 
+-	(gump.layout).append(&quot;CheckBox &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;CheckBox &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(unc_id)) + &quot; &quot; + CStr(CInt(che_id)) + &quot; &quot;
+ 				+ CStr(CInt(status)) + &quot; &quot; + CStr(btn_value));
+ 
+@@ -439,7 +439,7 @@
+ 	gump.data.append(&quot;&quot;+CStr(text));
+ 	var index := gump.data.size()-1;
+ 
+-	(gump.layout).append(&quot;HTMLGump &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;HTMLGump &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot; + CStr(index) + &quot; &quot;
+ 				+ CStr(CInt(background)) + &quot; &quot; + CStr(CInt(scrollbar)));
+ 	return (index);
+@@ -470,11 +470,11 @@
+  */
+ function GFAddHTMLLocalized(byref gump, x, y, width, height, cliloc, background:=0, scrollbar:=0, hue:=0)
+ 	if(hue == 0)
+-		(gump.layout).append(&quot;XMFHTMLGump &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++		(gump.layout).append(&quot;XMFHTMLGump &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot;
+ 					+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot; + CStr(cliloc) + &quot; &quot;
+ 					+ CStr(CInt(background)) + &quot; &quot; + CStr(CInt(scrollbar)));
+ 	else
+-		(gump.layout).append(&quot;XMFHTMLGumpColor &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++		(gump.layout).append(&quot;XMFHTMLGumpColor &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot;
+ 					+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot; + CStr(CInt(cliloc)) + &quot; &quot;
+ 					+ CStr(CInt(background)) + &quot; &quot; + CStr(CInt(scrollbar)) + &quot; &quot; + CStr(CInt(hue)));
+ 	endif
+@@ -503,7 +503,7 @@
+  *
+  */
+ function GFGumpPic(byref gump, x, y, gump_id, hue := 0)
+-	var text := &quot;GumpPic &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot; + CStr(CInt(gump_id));
++	var text := &quot;GumpPic &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot; + CStr(CInt(gump_id));
+ 
+ 	hue := CInt(hue);
+ 	if ( hue )
+@@ -536,7 +536,7 @@
+  *
+  */
+ function GFTilePic(byref gump, x, y, tile_id, hue := 0)
+-	var text := &quot;TilePic &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot; + CStr(CInt(tile_id));
++	var text := &quot;TilePic &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot; + CStr(CInt(tile_id));
+ 
+ 	hue := CInt(hue);
+ 	if ( hue )
+@@ -568,7 +568,7 @@
+ function GFTextLine(byref gump, x, y, hue:=0, text:=&quot;&quot;)
+ 	gump.data.append(&quot;&quot;+CStr(text));
+ 	var index := gump.data.size()-1;
+-	(gump.layout).append(&quot;Text &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;Text &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(hue)) + &quot; &quot; + CStr(index));
+ 
+ 	return (index);
+@@ -599,7 +599,7 @@
+ 	gump.data.append(&quot;&quot;+CStr(text));
+ 	var index := gump.data.size()-1;
+ 
+-	(gump.layout).append(&quot;CroppedText &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;CroppedText &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot; + CStr(CInt(hue)) + &quot; &quot; + CStr(index));
+ 
+ 	return (index);
+@@ -645,7 +645,7 @@
+ 		btn_value := gump.data_id;
+ 	endif
+ 
+-	(gump.layout).append(&quot;Radio &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;Radio &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(unp_id)) + &quot; &quot; + CStr(CInt(pres_id)) + &quot; &quot;
+ 				+ CStr(CInt(status)) + &quot; &quot; + CStr(btn_value));
+ 	return (btn_value);
+@@ -686,7 +686,7 @@
+ 		txt_id := gump.data_id;
+ 	endif
+ 
+-	(gump.layout).append(&quot;TextEntry &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;TextEntry &quot; + CStr(CInt(x)) + &quot; &quot; + CStr(CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot;
+ 				+ Cstr(CInt(txt_color)) + &quot; &quot; + CStr(txt_id) + &quot; &quot; + CStr(index));
+ 
+@@ -709,7 +709,7 @@
+  *
+  */
+ function GFSendGump(who, byref gump)
+-	var ret_val := SendDialogGump(who, gump.layout, gump.data);
++	var ret_val := SendDialogGump(who, gump.layout, gump.data, gump.base.x, gump.base.y);
+ 	if ( ret_val.errortext )
+ 		//Sometimes comes up when the gump has too much information.
+ 		SendSysMessage(who, &quot;Error - Unable to display gump.&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000677.html">[Poldistro-svn] r703 - trunk/096/pkg/utils/gumps/include
+</A></li>
+	<LI>Next message: <A HREF="000679.html">[Poldistro-svn] r705 - trunk/096/pkg/utils/gumps/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#678">[ date ]</a>
+              <a href="thread.html#678">[ thread ]</a>
+              <a href="subject.html#678">[ subject ]</a>
+              <a href="author.html#678">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

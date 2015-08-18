@@ -1,0 +1,525 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r116 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r116%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20complete/testnpc&In-Reply-To=%3C200509131405.j8DE5FFo017625%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000097.html">
+   <LINK REL="Next"  HREF="000099.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r116 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r116%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20complete/testnpc&In-Reply-To=%3C200509131405.j8DE5FFo017625%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r116 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep 13 16:05:15 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000097.html">[Poldistro-svn] r115 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000099.html">[Poldistro-svn] r117 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#98">[ date ]</a>
+              <a href="thread.html#98">[ thread ]</a>
+              <a href="subject.html#98">[ subject ]</a>
+              <a href="author.html#98">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-13 16:05:03 +0200 (Tue, 13 Sep 2005)
+New Revision: 116
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/combat.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/enteredArea.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/goneCriminal.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/leftArea.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/listen.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/virtual.src
+   trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/combat.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/combat.src	2005-09-13 12:50:05 UTC (rev 115)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/combat.src	2005-09-13 14:05:03 UTC (rev 116)
+@@ -3,6 +3,7 @@
+ 
+ include &quot;:ai_brain:include/npcNerves&quot;;
+ include &quot;:ai_brain:include/npcCommands&quot;;
++include &quot;include/attributes&quot;;
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+@@ -11,41 +12,75 @@
+ 	var settings	:= params[4];
+ 	//var scripts	:= params[5];
+ 	params := 0; // Not needed anymore.
+-	
++
+ 	//Store it here so it does not have to do the math over and over.
+ 	var flee_level := GetVitalMaximumValue(npc, &quot;Life&quot;) * (CInt(settings[&quot;FleeLevel&quot;])/100);
+-	
++
+ 	var opponent := event.source;
+ 	AI_SetOpponent(npc, opponent);
+-	
++
+ 	while ( npc )
+ 		var dist := Distance(npc, opponent);
+-		if ( GetHitPoints(npc) &lt; flee_level )
+-			AI_Disengage(npc);
+-			AI_Flee(npc, opponent);
++		if ( ShouldFlee(npc, flee_level) )
++			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, 100);
++		elseif ( DoneFighting(npc, opponent, dist) )
++			AI_WarMode(npc, 0);
+ 			AI_EndNerve(npc, nerve_name);
+-		// Is the opponent dead, yet?
+-		elseif ( opponent.dead || !opponent )
+-			AI_SetWarMode(npc, 0);
+-			AI_EndNerve(npc, nerve_name);
+-		// Did they hide??
+-		elseif ( opponent.hidden || opponent.concealed )
+-			AI_SetWarMode(npc, 0);
+-			AI_EndNerve(npc, nerve_name);
+-		elseif ( dist &gt; 20 )
+-			AI_SetWarMode(npc, 0);
+-			AI_EndNerve(npc, nerve_name);
+-		elseif ( (dist &gt; 10) &amp;&amp; ( !CheckLineOfSight(npc, opponent)) )
+-			AI_Disengage(npc);
+-			AI_EndNerve(npc, nerve_name);
+ 		elseif( dist &gt; 1 )
+-			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, 100);
++			AI_Move(npc, opponent, NEMOVE_TOWARD, NEMOVE_RUN, WAKEUP, dist+1);
+ 		endif
+ 
+ 		sleepms(600);
+-		AI_ClearThoughts(npc, CLR_NERVE);
++		While ( Events_Waiting() )
++			CheckForEvent(npc, event);
++		endwhile
+ 	endwhile
+ endprogram
+ 
+-function FleeOpponent(npc, opponent)
+-	
+\ No newline at end of file
++function DoneFighting(npc, opponent, byref dist)
++	if ( opponent.dead )
++		return 1;
++	elseif ( !opponent )
++		return 1;
++	elseif ( opponent.hidden )
++		return 1;
++	elseif ( opponent.concealed &gt; npc.cmdlevel )
++		return 1;
++	elseif ( dist &gt; 20 )
++		return 1;
++	elseif ( dist &gt; 10 &amp;&amp; !CheckLineOfSight(npc, opponent) )
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++function ShouldFlee(npc, byref flee_level)
++	if ( GetHP(npc) &lt; flee_level )
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++function CheckForEvent(npc, byref event)
++	event := wait_for_event(0);
++	if ( event )
++		var source := event.source;
++		case ( event.type )
++			SYSEVENT_ENGAGED:
++				if ( source != npc.opponent )
++					AI_Speak(npc, &quot;Hey &quot;+source.name+&quot;! No fair ganging up on me! *pouts*&quot;);
++				endif
++				break;
++			SYSEVENT_DAMAGED:
++				AI_Speak(npc, &quot;OWCH &quot;+source.name+&quot; that hurts.&quot;);
++				break;
++			default:
++				break;
++		endcase
++		event := 0;
++	endif
++
++	return 1;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src	2005-09-13 12:50:05 UTC (rev 115)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/disengaged.src	2005-09-13 14:05:03 UTC (rev 116)
+@@ -6,13 +6,37 @@
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+-	var nerve_name	:= params[2];
++	//var nerve_name	:= params[2];
+ 	var event	:= params[3];
+-	var settings	:= params[4];
+-	var scripts	:= params[5];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
+ 	params := 0; // Not needed anymore.
+ 	
+ 	while ( npc )
+-		// Do stuff here
++		if ( event )
++			var source := event.source;
++			case ( event.type )
++				SYSEVENT_DISENGAGED:
++					Disengaged(npc, source);
++					break;
++				default:
++					break;
++			endcase
++			
++			event := 0;
++		endif
++		
++		sleepms(5);
++		event := wait_for_event(600);
+ 	endwhile
+ endprogram
++
++function Disengaged(npc, source)
++	if ( npc.opponent == source )
++		if ( source.dead )
++			AI_Speak(npc, &quot;Killed ya! Neener!&quot;);
++		else
++			AI_Speak(npc, &quot;Wuss! Get back here and finish fighting me!&quot;);
++		endif
++	endif
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/enteredArea.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/enteredArea.src	2005-09-13 12:50:05 UTC (rev 115)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/enteredArea.src	2005-09-13 14:05:03 UTC (rev 116)
+@@ -15,25 +15,36 @@
+ 	
+ 	while ( npc )
+ 		if ( event )
++			var source := event.source;
+ 			case ( event.type )
+ 				SYSEVENT_ENTEREDAREA:
+-					var source := event.source;
+-					if ( source.npctemplate )
+-						continue;
+-						//Run_Script_To_Completion(settings[&quot;cycle_script&quot;], {npc, settings});
+-					elseif ( source.concealed )
+-						continue;
+-						//Do nothing
+-					elseif ( source.acctname )
+-						if ( NPC_AddToWatchList(npc, source) )
+-							AI_WakeUp(npc);
+-							AI_Speak(npc, &quot;Ive added you to my watch list &quot;+source.name);
+-						endif
+-					endif
++					EnteredArea(npc, source);
++					break;
++				default:
++					break;
+ 			endcase
++			
++			event := 0;
+ 		endif
+ 		
+ 		sleepms(5);
+ 		event := wait_for_event(600);
+ 	endwhile
+ endprogram
++
++function EnteredArea(npc, source)
++	if ( source.npctemplate )
++		return 0;
++	elseif ( source.concealed )
++		return 0;
++	elseif ( source.acctname )
++		if ( NPC_AddToWatchList(npc, source) )
++			AI_WakeUp(npc);
++			AI_Speak(npc, &quot;Ive added you to my watch list &quot;+source.name);
++		endif
++		
++		return 1;
++	endif
++	
++	return 0;
++endfunction
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/goneCriminal.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/goneCriminal.src	2005-09-13 12:50:05 UTC (rev 115)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/goneCriminal.src	2005-09-13 14:05:03 UTC (rev 116)
+@@ -6,13 +6,43 @@
+ 
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+-	var nerve_name	:= params[2];
++	//var nerve_name	:= params[2];
+ 	var event	:= params[3];
+-	var settings	:= params[4];
+-	var scripts	:= params[5];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
+ 	params := 0; // Not needed anymore.
+ 	
+ 	while ( npc )
+-		// Do stuff here
++		if ( event )
++			var source := event.source;
++			case ( event.type )
++				SYSEVENT_GONE_CRIMINAL:
++					GoneCriminal(npc, source);
++					break;
++				default:
++					break;
++			endcase
++			
++			event := 0;
++		endif
++		
++		sleepms(5);
++		event := wait_for_event(600);
+ 	endwhile
+ endprogram
++
++function GoneCriminal(npc, source)
++	if ( source.npctemplate )
++		return 0;
++	elseif ( source.concealed )
++		return 0;
++	elseif ( source.acctname )
++		AI_WakeUp(npc);
++		AI_Speak(npc, &quot;Oh no! &quot;+source.name+&quot; has become a criminal!&quot;);
++		
++		return 1;
++	endif
++	
++	return 0;
++endfunction
++
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/leftArea.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/leftArea.src	2005-09-13 12:50:05 UTC (rev 115)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/leftArea.src	2005-09-13 14:05:03 UTC (rev 116)
+@@ -15,19 +15,32 @@
+ 	
+ 	while ( npc )
+ 		if ( event )
++			var source := event.source;
+ 			case ( event.type )
+ 				SYSEVENT_LEFTAREA:
+-					var source := event.source;
+-					if ( source.npctemplate )
+-						continue;
+-					else
+-						NPC_RemoveFromWatchList(npc, source);
+-						AI_Speak(npc, &quot;I am no longer watching &quot;+source.name);
+-					endif
++					LeftArea(npc, source);
++					break;
++				default:
++					break;
+ 			endcase
++			
++			event := 0;
+ 		endif
+ 		
+ 		sleepms(5);
+ 		event := wait_for_event(600);
+ 	endwhile
+ endprogram
++
++function LeftArea(npc, source)
++	if ( source.npctemplate )
++		return 0;
++	else
++		NPC_RemoveFromWatchList(npc, source);
++		AI_Speak(npc, &quot;I am no longer watching &quot;+source.name);
++		
++		return 1;
++	endif
++	
++	return 0;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/listen.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/listen.src	2005-09-13 12:50:05 UTC (rev 115)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/listen.src	2005-09-13 14:05:03 UTC (rev 116)
+@@ -14,21 +14,36 @@
+ 	params := 0; // Not needed anymore.
+ 	
+ 	while ( npc )
+-		if ( event.source )
+-			AI_Speak(npc, &quot;I just heard &quot;+(event.source).name+&quot; say \&quot;&quot;+event.text+&quot;\&quot;&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, WAKEUP);
+-			case ( event.texttype )
+-				SPEAK_TEXTTYPE_YELL:
+-					AI_Speak(npc, &quot;*yells* No need to yell!&quot;, event.texttype, SPEAK_DOEVENT_DISABLE, WAKEUP);
++		if ( event )
++			case ( event.type )
++				SYSEVENT_SPEECH:
++					SpeechEvent(npc, event);
+ 					break;
+-				SPEAK_TEXTTYPE_WHISPER:
+-					AI_Speak(npc, &quot;*whispers* Speak up next time. I could barely hear you.&quot;, event.texttype, SPEAK_DOEVENT_DISABLE, WAKEUP);
+-					break;
+ 				default:
+-					AI_Speak(npc, &quot;You're fun to talk to, you know that?&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, WAKEUP);
+ 					break;
+ 			endcase
++			
++			event := 0;
+ 		endif
+ 		
++		sleepms(5);
+ 		event := wait_for_event(900000);
+ 	endwhile
+-endprogram
+\ No newline at end of file
++endprogram
++
++function SpeechEvent(npc, event)
++	AI_Speak(npc, &quot;I just heard &quot;+(event.source).name+&quot; say \&quot;&quot;+event.text+&quot;\&quot;&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, WAKEUP);
++	case ( event.texttype )
++		SPEAK_TEXTTYPE_YELL:
++			AI_Speak(npc, &quot;*yells* No need to yell!&quot;, event.texttype, SPEAK_DOEVENT_DISABLE, WAKEUP);
++			break;
++		SPEAK_TEXTTYPE_WHISPER:
++			AI_Speak(npc, &quot;*whispers* Speak up next time. I could barely hear you.&quot;, event.texttype, SPEAK_DOEVENT_DISABLE, WAKEUP);
++			break;
++		default:
++			AI_Speak(npc, &quot;You're fun to talk to, you know that?&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, WAKEUP);
++			break;
++	endcase
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src	2005-09-13 12:50:05 UTC (rev 115)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/sleep.src	2005-09-13 14:05:03 UTC (rev 116)
+@@ -24,6 +24,6 @@
+ 	while ( npc )
+ 		AI_Speak(npc, &quot;ZzzzzZzz&quot;, SPEAK_TEXTTYPE_DEFAULT, SPEAK_DOEVENT_DISABLE, NOWAKE);
+ 		AI_ClearThoughts(npc, CLR_NERVE);
+-		sleep(40);
++		sleep(90);
+ 	endwhile
+ endprogram
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/virtual.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/virtual.src	2005-09-13 12:50:05 UTC (rev 115)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/virtual.src	2005-09-13 14:05:03 UTC (rev 116)
+@@ -14,10 +14,24 @@
+ 	
+ 	while ( npc )
+ 		if ( event )
+-			AI_Speak(npc, &quot;So yeah.. I just got this event and I don't know what to do with it... its virtual time, baby.&quot;, SPEAK_TEXTTYPE_YELL, SPEAK_DOEVENT_ENABLE, WAKEUP);
+-			AI_Speak(npc, &quot;The event structure is... &quot;+event, SPEAK_TEXTTYPE_YELL, SPEAK_DOEVENT_ENABLE, WAKEUP);
++			case ( event.type )
++				NPCEVENT_DONE:
++					break;
++				default:
++					VirtualEvent(npc, event);
++					break;
++			endcase
++						
++			event := 0;
+ 		endif
+ 		
+ 		event := wait_for_event(900000);
+ 	endwhile
+ endprogram
++
++function VirtualEvent(npc, event)
++	AI_Speak(npc, &quot;So yeah.. I just got this event and I don't know what to do with it... its virtual time, baby.&quot;, SPEAK_TEXTTYPE_YELL, SPEAK_DOEVENT_ENABLE, WAKEUP);
++	AI_Speak(npc, &quot;The event structure is... &quot;+event, SPEAK_TEXTTYPE_YELL, SPEAK_DOEVENT_ENABLE, WAKEUP);
++	
++	return 1;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-13 12:50:05 UTC (rev 115)
++++ trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-13 14:05:03 UTC (rev 116)
+@@ -8,14 +8,14 @@
+ 	Gender		0
+ 	Category	Testing
+ 
+-	STR		1
++	STR		100
+ 	INT		1
+-	DEX		1
+-	HITS		1
++	DEX		20
++	HITS		100
+ 	MANA		1
+ 	STAM		1
+ 	AR		1
+-	RunSpeed	255
++	RunSpeed	200
+ 	
+ 	AISetting	CycleWait	i10
+ 	AISetting	IdleTicks	i5
+@@ -36,4 +36,5 @@
+ 	AIScript	Listen		:ai_brain:complete/testNPC/listen
+ 	AIScript	Restart		:ai_brain:complete/testNPC/restart
+ 	AIScript	Sleep		:ai_brain:complete/testNPC/sleep
++	AIScript	Virtual		:ai_brain:complete/testNPC/virtual
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000097.html">[Poldistro-svn] r115 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000099.html">[Poldistro-svn] r117 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#98">[ date ]</a>
+              <a href="thread.html#98">[ thread ]</a>
+              <a href="subject.html#98">[ subject ]</a>
+              <a href="author.html#98">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

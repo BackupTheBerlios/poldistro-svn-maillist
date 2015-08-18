@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r657 - in trunk/096/pkg/other/packetHooks: . RequestAttack RequestAttack/config WarAndPeace
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r657%20-%20in%20trunk/096/pkg/other/packetHooks%3A%20.%20RequestAttack%20RequestAttack/config%20WarAndPeace&In-Reply-To=%3C200510251935.j9PJZmZk015008%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000629.html">
+   <LINK REL="Next"  HREF="000631.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r657 - in trunk/096/pkg/other/packetHooks: . RequestAttack RequestAttack/config WarAndPeace</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r657%20-%20in%20trunk/096/pkg/other/packetHooks%3A%20.%20RequestAttack%20RequestAttack/config%20WarAndPeace&In-Reply-To=%3C200510251935.j9PJZmZk015008%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r657 - in trunk/096/pkg/other/packetHooks: . RequestAttack RequestAttack/config WarAndPeace">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Oct 25 21:35:48 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000629.html">[Poldistro-svn] r656 - in trunk/096/pkg: other other/packetHooks other/packetHooks/WarAndPeace other/packetHooks/WarAndPeace/config skills/musicianship
+</A></li>
+        <LI>Next message: <A HREF="000631.html">[Poldistro-svn] r658 - trunk/096/pkg/other/packetHooks/WarAndPeace
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#630">[ date ]</a>
+              <a href="thread.html#630">[ thread ]</a>
+              <a href="subject.html#630">[ subject ]</a>
+              <a href="author.html#630">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-25 21:35:38 +0200 (Tue, 25 Oct 2005)
+New Revision: 657
+
+Added:
+   trunk/096/pkg/other/packetHooks/RequestAttack/
+   trunk/096/pkg/other/packetHooks/RequestAttack/config/
+   trunk/096/pkg/other/packetHooks/RequestAttack/config/icp.cfg
+   trunk/096/pkg/other/packetHooks/RequestAttack/pkg.cfg
+   trunk/096/pkg/other/packetHooks/RequestAttack/requestAttack.src
+   trunk/096/pkg/other/packetHooks/RequestAttack/uopacket.cfg
+Modified:
+   trunk/096/pkg/other/packetHooks/WarAndPeace/requestWar.src
+Log:
+Request Attack hook added for checking Distance and LOS for mobs.
+
+Added: trunk/096/pkg/other/packetHooks/RequestAttack/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/other/packetHooks/RequestAttack/config/icp.cfg	2005-10-25 19:09:42 UTC (rev 656)
++++ trunk/096/pkg/other/packetHooks/RequestAttack/config/icp.cfg	2005-10-25 19:35:38 UTC (rev 657)
+@@ -0,0 +1,16 @@
++ICP Register
++{
++	Name		Request Attack
++	Version		1.0
++	Description	PacketHook for handling Request Attack (dbl click in war mode).
++
++	Creator		MuadDib
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	//Script	cmdlevel path
++
++	//TextCmd	cmdlevel path
++}
+
+Added: trunk/096/pkg/other/packetHooks/RequestAttack/pkg.cfg
+===================================================================
+--- trunk/096/pkg/other/packetHooks/RequestAttack/pkg.cfg	2005-10-25 19:09:42 UTC (rev 656)
++++ trunk/096/pkg/other/packetHooks/RequestAttack/pkg.cfg	2005-10-25 19:35:38 UTC (rev 657)
+@@ -0,0 +1,6 @@
++Enabled         1
++Name            requestattack
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++CoreRequired	96
++Version		1.0
+
+Added: trunk/096/pkg/other/packetHooks/RequestAttack/requestAttack.src
+===================================================================
+--- trunk/096/pkg/other/packetHooks/RequestAttack/requestAttack.src	2005-10-25 19:09:42 UTC (rev 656)
++++ trunk/096/pkg/other/packetHooks/RequestAttack/requestAttack.src	2005-10-25 19:35:38 UTC (rev 657)
+@@ -0,0 +1,40 @@
++/* $Id$
++ *
++ */
++////////////////////////////////////////////////////////////////////////////////////////////////////
++//
++//  name:    Request Attack Packet Hook
++//  version: 1.0
++//  author:  MuadDib
++//
++//  Purpose: This hook will allow you to check LOS, Distance, or whatever you wish, when someone
++//		DoubleClicks another mob while in war mode.
++//
++// Const settings:
++// BYTE_DEFENDER = 1  Position in the packet for the Defender's Serial.
++//
++////////////////////////////////////////////////////////////////////////////////////////////////////
++use uo;
++use polsys;
++
++CONST BYTE_DEFENDER := 1;
++
++program requestAttack()
++	Print( &quot;LSD: Hooking Request Attack...&quot; );
++	return 1;
++endprogram
++
++
++exported function HandleAttackRequest( who, byref packet )
++
++	var defender := SystemFindObjectBySerial(packet.GetInt32(BYTE_DEFENDER));
++
++	if( distance(who, defender) &gt;= 20 )
++		return 1;
++	elseif( !CheckLineOfSight(who, defender) )
++		return 1;
++	endif
++
++	return 0;
++
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/other/packetHooks/RequestAttack/uopacket.cfg
+===================================================================
+--- trunk/096/pkg/other/packetHooks/RequestAttack/uopacket.cfg	2005-10-25 19:09:42 UTC (rev 656)
++++ trunk/096/pkg/other/packetHooks/RequestAttack/uopacket.cfg	2005-10-25 19:35:38 UTC (rev 657)
+@@ -0,0 +1,5 @@
++Packet 0x05
++{
++  Length 0x5
++  ReceiveFunction requestAttack:HandleAttackRequest
++}
+
+Modified: trunk/096/pkg/other/packetHooks/WarAndPeace/requestWar.src
+===================================================================
+--- trunk/096/pkg/other/packetHooks/WarAndPeace/requestWar.src	2005-10-25 19:09:42 UTC (rev 656)
++++ trunk/096/pkg/other/packetHooks/WarAndPeace/requestWar.src	2005-10-25 19:35:38 UTC (rev 657)
+@@ -57,6 +57,8 @@
+ 		return 1;
+ 	endif
+ 
++	return 0;
++
+ endfunction
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000629.html">[Poldistro-svn] r656 - in trunk/096/pkg: other other/packetHooks other/packetHooks/WarAndPeace other/packetHooks/WarAndPeace/config skills/musicianship
+</A></li>
+	<LI>Next message: <A HREF="000631.html">[Poldistro-svn] r658 - trunk/096/pkg/other/packetHooks/WarAndPeace
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#630">[ date ]</a>
+              <a href="thread.html#630">[ thread ]</a>
+              <a href="subject.html#630">[ subject ]</a>
+              <a href="author.html#630">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

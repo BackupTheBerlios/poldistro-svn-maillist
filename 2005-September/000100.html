@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r118 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r118%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200509140020.j8E0KalM020586%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000099.html">
+   <LINK REL="Next"  HREF="000101.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r118 - trunk/096/pkg/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r118%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200509140020.j8E0KalM020586%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r118 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 14 02:20:36 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000099.html">[Poldistro-svn] r117 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="000101.html">[Poldistro-svn] r119 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#100">[ date ]</a>
+              <a href="thread.html#100">[ thread ]</a>
+              <a href="subject.html#100">[ subject ]</a>
+              <a href="author.html#100">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-14 02:20:33 +0200 (Wed, 14 Sep 2005)
+New Revision: 118
+
+Modified:
+   trunk/096/pkg/commands/gm/setprop.src
+Log:
+Making it easy to expand into methods/functions.
+
+Modified: trunk/096/pkg/commands/gm/setprop.src
+===================================================================
+--- trunk/096/pkg/commands/gm/setprop.src	2005-09-13 14:26:42 UTC (rev 117)
++++ trunk/096/pkg/commands/gm/setprop.src	2005-09-14 00:20:33 UTC (rev 118)
+@@ -1,6 +1,6 @@
+ /*===============================================================
+ * Current Version
+-* SETPROP.SRC - v5.0
++* SETPROP.SRC - v1.0
+ * Updated 9/13/2005 7:15AM
+ *
+ * -- Revision v1.0 --
+@@ -32,10 +32,6 @@
+ 		value := &quot;&quot;;
+ 	endif
+ 
+-	ProcessInput(who, targ, property, value);
+-endprogram
+-
+-function ProcessInput(who, targ, property, value)
+ 	var old_val := targ.get_member(property);
+ 	var old_type := Lower(TypeOf(old_val));
+ 	case ( old_type )
+@@ -43,14 +39,24 @@
+ 		&quot;string&quot;	: value := CStr(value);
+ 		&quot;double&quot;	: value := CDbl(value);
+ 	endcase
+-
+ 	SendSysMessage(who, &quot;Old Value-&gt;&quot;+old_val);
++	
++	ProcessInput(who, targ, property, value);
++	
++	SendSysMessage(who, &quot;New Value-&gt;&quot;+targ.get_member(property));
++endprogram
+ 
+-	// Handles situations where methods or functions must be used.
+-	case ( property )
+-		&quot;x&quot;: &quot;y&quot;: &quot;z&quot;: &quot;realm&quot;: 
+-			DoMovement(targ, property, value);
+-			break;
++function ProcessInput(who, targ, property, value)
++	
++	//Works on items and mobiles, so do this first.
++	if ( property in array{&quot;x&quot;, &quot;y&quot;, &quot;z&quot;, &quot;realm&quot;} ) 
++		DoMovement(targ, property, value);
++		return 1;
++	elseif ( targ.IsA(POLCLASS_MOBILE) )
++		return MobileStuff(who, targ, property, value);
++	elseif ( targ.IsA(POLCLASS_ITEM) )
++		return ItemStuff(who, targ, property, value);
++	if ( 
+ 		&quot;concealed&quot;:
+ 			DoConceal(who, targ, value);
+ 			break;
+@@ -66,9 +72,7 @@
+ 		default:
+ 			targ.set_member(property, value);
+ 			break;
+-	endcase
+-	
+-	SendSysMessage(who, &quot;New Value-&gt;&quot;+targ.get_member(property));
++	endcase	
+ endfunction
+ 
+ function DoMovement(targ, property, value)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000099.html">[Poldistro-svn] r117 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="000101.html">[Poldistro-svn] r119 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#100">[ date ]</a>
+              <a href="thread.html#100">[ thread ]</a>
+              <a href="subject.html#100">[ subject ]</a>
+              <a href="author.html#100">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

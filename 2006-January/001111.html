@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1140 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1140%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200601150257.k0F2veGo007032%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001110.html">
+   <LINK REL="Next"  HREF="001112.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1140 - trunk/096/pkg/commands/gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1140%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200601150257.k0F2veGo007032%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1140 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Sun Jan 15 03:57:40 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001110.html">[Poldistro-svn] r1139 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="001112.html">[Poldistro-svn] r1141 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1111">[ date ]</a>
+              <a href="thread.html#1111">[ thread ]</a>
+              <a href="subject.html#1111">[ subject ]</a>
+              <a href="author.html#1111">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-15 03:57:03 +0100 (Sun, 15 Jan 2006)
+New Revision: 1140
+
+Modified:
+   trunk/096/pkg/commands/gm/info.src
+Log:
+Can edit stats, skills and vitals as well as their modifier values.
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2006-01-15 02:47:11 UTC (rev 1139)
++++ trunk/096/pkg/commands/gm/info.src	2006-01-15 02:57:03 UTC (rev 1140)
+@@ -473,6 +473,10 @@
+ 		&quot;openstorage&quot;:
+ 			OpenStorage(who, targ, input_info);
+ 			break;
++		&quot;vitaledit&quot;:
++			VitalEdit(who, targ, input_info);
++		&quot;attribedit&quot;:
++			AttributeEdit(who, targ, input_info);
+ 		default:
+ 			GumpPrompt(who, &quot;Dont know what to do with edit function type '&quot;+input_info.editFunc+&quot;'&quot;);
+ 			break;
+@@ -556,6 +560,36 @@
+ 	return 1;
+ endfunction
+ 
++function VitalEdit(who, targ, input_info)
++	
++	var value := AP_GetVital(targ, input_info.name);
++	var change := RequestGump(who, &quot;New value to assign &quot;+input_info.name+&quot; to.&quot;, &quot;&quot;, CStr(value), CANCEL_BTN_ON);
++	if ( change == error )
++		return 0;
++	endif
++	
++	AP_SetVital(targ, input_info.name, change);
++
++	return 1;
++endfunction
++
++function AttributeEdit(who, targ, input_info)
++	
++	var real_value := AP_GetTrueSkill(targ, input_info.name);
++	var mod_value := AP_GetSkillMod(targ, input_info.name);
++	var value := real_value+&quot; &quot;+mod_value;
++	var change := RequestGump(who, &quot;New value to assign &quot;+input_info.name+&quot; to.&quot;, &quot;real_value(&quot;+real_value+&quot;) modifier(&quot;+mod_value+&quot;)&quot;, CStr(value), CANCEL_BTN_ON);
++	if ( change == error )
++		return 0;
++	endif
++	
++	change := SplitWords(change, &quot; &quot;);
++	AP_SetTrueSkill(targ, input_info.name, change[1]);
++	AP_SetSkillMod(targ, input_info.name, change[2]);
++
++	return 1;
++endfunction
++
+ function PrivEdit(who, targ, input_info)
+ 	var priv_name := input_info.name;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001110.html">[Poldistro-svn] r1139 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="001112.html">[Poldistro-svn] r1141 - trunk/096/pkg/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1111">[ date ]</a>
+              <a href="thread.html#1111">[ thread ]</a>
+              <a href="subject.html#1111">[ subject ]</a>
+              <a href="author.html#1111">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

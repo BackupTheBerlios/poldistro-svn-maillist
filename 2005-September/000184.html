@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r202 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r202%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509202338.j8KNcgvq009085%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000183.html">
+   <LINK REL="Next"  HREF="000185.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r202 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r202%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509202338.j8KNcgvq009085%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r202 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 21 01:38:42 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000183.html">[Poldistro-svn] r201 - trunk/096/pkg/systems/attributes/include
+</A></li>
+        <LI>Next message: <A HREF="000185.html">[Poldistro-svn] r203 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#184">[ date ]</a>
+              <a href="thread.html#184">[ thread ]</a>
+              <a href="subject.html#184">[ subject ]</a>
+              <a href="author.html#184">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-21 01:38:41 +0200 (Wed, 21 Sep 2005)
+New Revision: 202
+
+Modified:
+   trunk/096/pkg/systems/attributes/include/attributes.inc
+   trunk/096/pkg/systems/attributes/include/regen.inc
+   trunk/096/pkg/systems/attributes/include/skills.inc
+   trunk/096/pkg/systems/attributes/include/vitals.inc
+Log:
+
+
+Modified: trunk/096/pkg/systems/attributes/include/attributes.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-20 23:16:35 UTC (rev 201)
++++ trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-20 23:38:41 UTC (rev 202)
+@@ -43,3 +43,32 @@
+ 	
+ 	return cfg_elem;
+ endfunction
++
++/*
++ * AF_ListAttributesByType(type)
++ *
++ * Purpose
++ * Gets the name of all attributes of a certain type.
++ *
++ * Parameters
++ * Type:	String containing the type of attributes to list.
++ *
++ * Return value
++ * Returns an array
++ *
++ */
++function AF_ListAttributesByType(type)
++	type := Lower(type);
++	
++	var list := array;
++	var cfg := ReadConfigFile(&quot;:attributes:attributes&quot;);
++	foreach elem_name in ( GetConfigStringKeys(cfg) )
++		var elem_info := cfg[elem_name];
++		if ( Lower(elem_info.AttributeType) == type )
++			list.append(array);
++		endif
++		sleepms(2);
++	endforeach
++	
++	return list;
++endfunction
+
+Modified: trunk/096/pkg/systems/attributes/include/regen.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/regen.inc	2005-09-20 23:16:35 UTC (rev 201)
++++ trunk/096/pkg/systems/attributes/include/regen.inc	2005-09-20 23:38:41 UTC (rev 202)
+@@ -27,7 +27,7 @@
+  *
+  */
+ function AF_SetVitalRegenRate(mobile, vital_name, rate)
+-	if ( !vital_name[&quot;Regeneration&quot;] )
++	if ( !Lower(vital_name[&quot;regeneration&quot;]) )
+ 		vital_name := vital_name+&quot;Regeneration&quot;;
+ 	endif
+ 	
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-20 23:16:35 UTC (rev 201)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-20 23:38:41 UTC (rev 202)
+@@ -103,3 +103,21 @@
+ function AF_SetSkillMod(mobile, skill_name, points)
+ 	SetAttributeTemporaryMod(mobile, skill_name, CInt(CDbl(points) * 10.0));
+ endfunction
++
++/*
++ * AF_SetSkillScript(attribute_name)
++ *
++ * Purpose
++ * Gets the script that a skill uses.
++ *
++ * Parameters
++ * attribute_name:	Name of the attribute to get the script for.
++ *
++ * Return value
++ * Returns a string.
++ *
++ */
++function GetSkillScript(attribute_name)
++	var cfg := AF_GetAttributeCfgElem(attribute_name);
++	return cfg.Script;
++endfunction
+
+Modified: trunk/096/pkg/systems/attributes/include/vitals.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/vitals.inc	2005-09-20 23:16:35 UTC (rev 201)
++++ trunk/096/pkg/systems/attributes/include/vitals.inc	2005-09-20 23:38:41 UTC (rev 202)
+@@ -9,8 +9,38 @@
+ ===============================================================*/
+ 
+ use uo;
++use os;
++use cfgfile;
+ 
++
+ /*
++ * AF_GetVitalCfgElem(vital)
++ *
++ * Purpose
++ * Retrieves a config elem for an vital in vitals.cfg
++ *
++ * Parameters
++ * attribute:	Name of the vital to get the elem of.
++ *
++ * Return value
++ * Returns a config file elem.
++ *
++ */
++function AF_GetVitalCfgElem(vital)
++	var cfg := ReadConfigFile(&quot;:attributes:vitals&quot;);
++	if ( cfg.errortext )
++		SysLog(&quot;Error::AF_GetVitalCfgElem() - Unable to open vitals.cfg -&gt;&quot;+cfg.errortext);
++	endif
++	
++	var cfg_elem := cfg[vital];
++	if ( cfg_elem.errortext )
++		SysLog(&quot;Error::AF_GetVitalsCfgElem() - unable to find cfg elem [&quot;+vital+&quot;] -&gt;&quot;+cfg_elem.errortext);
++	endif
++	
++	return cfg_elem;
++endfunction
++
++/*
+  * AF_GetVital(mobile, vital_name)
+  *
+  * Purpose
+@@ -82,3 +112,26 @@
+ function AF_SetVital(mobile, vital_name, amount)
+ 	return SetVital(mobile, vital_name, CInt(CDbl(amount)*100.0));
+ endfunction
++
++/*
++ * AF_RefreshVitals(mobile)
++ *
++ * Purpose
++ * Sets all vitals on a mobile to their maximum values.
++ *
++ * Parameters
++ * mobile:	Mobile to refresh.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
++function AF_RefreshVitals(mobile)
++	var vital_cfg := ReadConfigFile(&quot;:attributes:vitals&quot;);
++	foreach elem_name in (vital_cfg)
++		AF_SetVital(mobile, elem_name, AF_GetVitalMaximumValue(mobile, elem_name));
++		sleepms(2);
++	endforeach
++
++	return 1;
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000183.html">[Poldistro-svn] r201 - trunk/096/pkg/systems/attributes/include
+</A></li>
+	<LI>Next message: <A HREF="000185.html">[Poldistro-svn] r203 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#184">[ date ]</a>
+              <a href="thread.html#184">[ thread ]</a>
+              <a href="subject.html#184">[ subject ]</a>
+              <a href="author.html#184">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

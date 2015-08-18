@@ -1,0 +1,1764 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r588 - in trunk/096/pkg/systems: . spawnSystem spawnSystem/commands spawnSystem/commands/gm spawnSystem/config spawnSystem/engines spawnSystem/engines/item spawnSystem/engines/npc spawnSystem/engines/prox spawnSystem/include spawnSystem/initializer spawnSystem/www
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r588%20-%20in%20trunk/096/pkg/systems%3A%20.%20spawnSystem%20spawnSystem/commands%20spawnSystem/commands/gm%20spawnSystem/config%20spawnSystem/engines%20spawnSystem/engines/item%20spawnSystem/engines/npc%20spawnSystem/engines/prox%20spawnSystem/include%20spawnSystem/initializer%20spawnSystem/www&In-Reply-To=%3C200510120736.j9C7aIRH001356%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000557.html">
+   <LINK REL="Next"  HREF="000559.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r588 - in trunk/096/pkg/systems: . spawnSystem spawnSystem/commands spawnSystem/commands/gm spawnSystem/config spawnSystem/engines spawnSystem/engines/item spawnSystem/engines/npc spawnSystem/engines/prox spawnSystem/include spawnSystem/initializer spawnSystem/www</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r588%20-%20in%20trunk/096/pkg/systems%3A%20.%20spawnSystem%20spawnSystem/commands%20spawnSystem/commands/gm%20spawnSystem/config%20spawnSystem/engines%20spawnSystem/engines/item%20spawnSystem/engines/npc%20spawnSystem/engines/prox%20spawnSystem/include%20spawnSystem/initializer%20spawnSystem/www&In-Reply-To=%3C200510120736.j9C7aIRH001356%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r588 - in trunk/096/pkg/systems: . spawnSystem spawnSystem/commands spawnSystem/commands/gm spawnSystem/config spawnSystem/engines spawnSystem/engines/item spawnSystem/engines/npc spawnSystem/engines/prox spawnSystem/include spawnSystem/initializer spawnSystem/www">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct 12 09:36:18 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000557.html">[Poldistro-svn] r587 - trunk/096/pkg/systems
+</A></li>
+        <LI>Next message: <A HREF="000559.html">[Poldistro-svn] r589 - in trunk/096/pkg/systems/spawnSystem: . include initializer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#558">[ date ]</a>
+              <a href="thread.html#558">[ thread ]</a>
+              <a href="subject.html#558">[ subject ]</a>
+              <a href="author.html#558">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-12 09:36:17 +0200 (Wed, 12 Oct 2005)
+New Revision: 588
+
+Added:
+   trunk/096/pkg/systems/spawnSystem/
+   trunk/096/pkg/systems/spawnSystem/commands/
+   trunk/096/pkg/systems/spawnSystem/commands/gm/
+   trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+   trunk/096/pkg/systems/spawnSystem/commands/test/
+   trunk/096/pkg/systems/spawnSystem/config/
+   trunk/096/pkg/systems/spawnSystem/config/firstRun.cfg
+   trunk/096/pkg/systems/spawnSystem/config/icp.cfg
+   trunk/096/pkg/systems/spawnSystem/config/settings.cfg
+   trunk/096/pkg/systems/spawnSystem/engines/
+   trunk/096/pkg/systems/spawnSystem/engines/item/
+   trunk/096/pkg/systems/spawnSystem/engines/item/settings.cfg
+   trunk/096/pkg/systems/spawnSystem/engines/item/spawnCycle.src
+   trunk/096/pkg/systems/spawnSystem/engines/npc/
+   trunk/096/pkg/systems/spawnSystem/engines/npc/settings.cfg
+   trunk/096/pkg/systems/spawnSystem/engines/npc/spawnCycle.src
+   trunk/096/pkg/systems/spawnSystem/engines/prox/
+   trunk/096/pkg/systems/spawnSystem/engines/prox/settings.cfg
+   trunk/096/pkg/systems/spawnSystem/engines/prox/spawnCycle.src
+   trunk/096/pkg/systems/spawnSystem/include/
+   trunk/096/pkg/systems/spawnSystem/include/commonTasks.inc
+   trunk/096/pkg/systems/spawnSystem/include/engines.inc
+   trunk/096/pkg/systems/spawnSystem/include/errors.inc
+   trunk/096/pkg/systems/spawnSystem/include/events.inc
+   trunk/096/pkg/systems/spawnSystem/include/groups.inc
+   trunk/096/pkg/systems/spawnSystem/include/realms.inc
+   trunk/096/pkg/systems/spawnSystem/include/regions.inc
+   trunk/096/pkg/systems/spawnSystem/include/settings.inc
+   trunk/096/pkg/systems/spawnSystem/include/spawnerUtil.inc
+   trunk/096/pkg/systems/spawnSystem/initializer/
+   trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src
+   trunk/096/pkg/systems/spawnSystem/pkg.cfg
+   trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+   trunk/096/pkg/systems/spawnSystem/start.src
+   trunk/096/pkg/systems/spawnSystem/www/
+   trunk/096/pkg/systems/spawnSystem/www/spawnControl.src
+Log:
+File names now use camelCasing
+Renamed 'textcmd' to 'commands'
+
+Added: trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/commands/gm/spawner.src	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,122 @@
++use uo;
++use os;
++
++include &quot;:gumps:include/gumps&quot;;
++include &quot;:gumps:include/gumps_ex&quot;;
++include &quot;:spawnsystem:include/realms&quot;;
++include &quot;:spawnsystem:include/regions&quot;;
++
++unload_scripts(&quot;&quot;);
++
++const START_ID		:= 0x1;
++const ADD_REALM_BTN	:= 0x5;
++const ADD_REGION_BTN	:= 0x6;
++const ADD_GROUP_BTN	:= 0x7;
++const REMOVE_REALM_BTN	:= 0x8;
++const REMOVE_REGION_BTN	:= 0x9;
++const REMOVE_GROUP_BTN	:= 0xA;
++const SHOW_REALMS_BTN	:= 0x20;
++const SHOW_REGIONS_BTN	:= 0x21;
++const SHOW_GROUPS_BTN	:= 0x22;
++const SEARCH_BTN	:= 0x30;
++
++program SpawnerCMD(who)
++	var input := SHOW_REALMS_BTN;
++	var cur_menu := SHOW_REALMS_BTN;
++	var cur_realm, cur_region, cur_group;
++	var gump;
++	
++	while ( 1 )
++		if ( input )
++			if ( cur_menu == SHOW_REALMS_BTN )
++				input := BuildRealmListGump(who);
++			endif
++		endif
++		
++		sleepms(2);
++		
++		if ( !input )
++			break;
++		elseif ( input == SHOW_REALMS_BTN )
++			cur_menu := SHOW_REALMS_BTN;
++		endif
++	endwhile
++	
++	SendSysMessage(who, &quot;Done.&quot;);
++endprogram
++
++function BuildGumpTemplate(realm_name:=&quot;&quot;)
++	var bkgnd_silvertrim := GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;);
++	var bkgnd_dark_stone := GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;);
++	
++	var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, bkgnd_silvertrim, 640, 480);
++	GFResizePic(gump, 10, 10, bkgnd_dark_stone, 130, 460);
++	GFResizePic(gump, 145, 10, bkgnd_dark_stone, 485, 460);
++	
++	GFAddButton(gump, 15, 23, 2117, 2118, GF_CLOSE_BTN, SHOW_REALMS_BTN);
++	GFTextLine(gump, 35, 20, 2100, &quot;Realm List&quot;);
++	GFAddButton(gump, 15, 43, 2117, 2118, GF_CLOSE_BTN, ADD_REALM_BTN);
++	GFTextLine(gump, 35, 40, 2100, &quot;Add Realm&quot;);
++	
++	GFAddButton(gump, 15, 83, 2117, 2118, GF_CLOSE_BTN, SHOW_GROUPS_BTN);
++	GFTextLine(gump, 35, 80, 2100, &quot;Group List&quot;);
++	GFAddButton(gump, 15, 103, 2117, 2118, GF_CLOSE_BTN, ADD_GROUP_BTN);
++	GFTextLine(gump, 35, 100, 2100, &quot;Add Group&quot;);
++	
++	if ( realm_name )
++		GFAddButton(gump, 15, 143, 2117, 2118, GF_CLOSE_BTN, SHOW_REGIONS_BTN);
++		GFTextLine(gump, 35, 140, 2100, &quot;Regions List&quot;);
++		GFAddButton(gump, 15, 163, 2117, 2118, GF_CLOSE_BTN, ADD_REGION_BTN);
++		GFTextLine(gump, 35, 160, 2100, &quot;Add Region&quot;);
++	endif
++	
++	return gump;
++endfunction
++	
++function BuildRealmListGump(who)
++	var realm_list := SS_GetRealmNames();
++	var gump := BuildGumpTemplate();
++	
++	GFTextMid(gump, 145, 20, 485, 2100, &quot;Realm List&quot;);
++	var y_pos := 50;
++	foreach realm_name in realm_list
++		GFAddButton(gump, 155, y_pos+3, 2117, 2118, GF_CLOSE_BTN, _realm_name_iter);
++		GFTextLine(gump, 175, y_pos, 2100, realm_name);
++		
++		y_pos := y_pos+20;
++		sleepms(2);
++	endforeach
++	
++	var input := GFSendGump(who, gump);
++	return input[0];
++endfunction
++
++function BuildRegionListGump(who, realm_name)
++	var region_list := SS_GetRegionsInRealm(realm_name).keys();
++	var gump := BuildGumpTemplate(realm_name);
++	
++	GFTextMid(gump, 145, 20, 485, 2100, &quot;Region List [&quot;+realm_name+&quot;]&quot;);
++	var y_pos := 50;
++	foreach region_name in (region_list)
++		GFAddButton(gump, 155, y_pos+3, 2117, 2118, GF_CLOSE_BTN, _region_name_iter);
++		GFTextLine(gump, 175, y_pos, 2100, region_name);
++		
++		y_pos := y_pos+20;
++		sleepms(2);
++	endforeach
++	
++	var input := GFSendGump(who, gump);
++	return input[0];
++	
++endfunction
++
++function BuildRegionInfoGump(who, realm_name, region_name)
++	var region_info := SS_GetRegionDataElem(region_name);
++	var gump := BuildGumpTemplate(realm_name);
++	
++	GFTextMid(gump, 145, 20, 485, 2100, &quot;Region Information [&quot;+region_name+&quot;]&quot;);
++	
++	var input := GFSendGump(who, gump);
++	return input[0];
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/spawnSystem/config/firstRun.cfg
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/config/firstRun.cfg	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/config/firstRun.cfg	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,98 @@
++#######################################################
++#
++# startup.cfg
++#
++# Used to initialize a shard's spawner the first time it starts up.
++#
++#######################################################
++#
++# 1 Elem for Realms that lists them:
++# Index Realms
++# {
++# 	Realm &lt;Realm Name&gt;
++# }
++#
++# Each &lt;Realm Name&gt; gets 1 elem and Region entries:
++# Realm &lt;Realm Name&gt;
++# {
++#	Region	&lt;Region Name&gt;
++# }
++#
++# Each Region gets 1 elem and lists its coords, and Groups
++# Region &lt;Region Name&gt;
++# {
++#	Coords X1 Y1 X2 Y2
++#	Group	&lt;Group Name&gt; &lt;Max Amount&gt; &lt;Spawn Wait&gt;
++# }
++# 
++# Each spawn group gets 1 elem and lists npcs or item numbers/names and the engine to use
++# Group &lt;Group Name&gt;
++# {
++# 	Engine	NPC
++#	Entry	Skeleton
++# }
++# Group &lt;Group Name&gt;
++# {
++#	Engine	Item
++#	Entry	MandrakeRoot
++#	Entry	0xF8D	// Spider Silk
++# }
++#
++########################################################
++#
++# Update History:
++#
++#   ---=[ 7/9/2005 12:09AM ( Austin ) ]=---
++#	* Created demonstration config file
++#   
++####################################
++
++Index Realms
++{
++	Realm	Britannia
++}
++
++Realm Britannia
++{
++	Region	Britannia-Trinsic-Swamp
++	Region	Britannia-Yew-Forest-NorthEast
++}
++
++Region Britannia-Trinsic-Swamp
++{
++	Coordinates	1802 2256 2122 2461
++	Group		Simple_Swamp	15	25
++}
++
++Region Britannia-Yew-Forest-NorthEast
++{
++	Coordinates	748 644 1107 983
++	Group		ForestAnimals_1	150	60
++	Group		ForestAnimals_2	45	70
++}
++
++Group Simple_Swamp
++{
++	Engine	NPC
++	Entry	Slime
++	Entry	Mongbat
++	Entry	Aligator
++}
++
++Group ForestAnimals_1
++{
++	Engine	NPC
++	Entry	Bird
++	Entry	Cat
++	Entry	Pig
++	Entry	Cow
++}
++
++Group ForestAnimals_2
++{
++	Engine	NPC
++	Entry	GreatHart
++	Entry	Deer
++	Entry	Bull
++	Entry	Horse
++}
+
+Added: trunk/096/pkg/systems/spawnSystem/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/config/icp.cfg	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/config/icp.cfg	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,17 @@
++ICP Register
++{
++	Name		Spawn System
++	Version		1.0
++	Description	Extremely modular spawner system. Spawning is engine based.
++	
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++	
++	Maintainer	Austin
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++	
++	//Script	cmdlevel path
++			
++	//TextCmd	cmdlevel path
++	TextCmd		3 :spawnsystem:textcmd/GM/spawner
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/spawnSystem/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/config/settings.cfg	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/config/settings.cfg	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,14 @@
++Elem Globals
++{
++	//Default Settings
++	Setting	SpawnRetries	i20
++	Setting	GroupFrequency	i45
++	Setting ErrorLevel	i2
++}
++
++Elem EngineList
++{
++	Engine	Item
++	Engine	NPC
++	Engine	NPCProx
++}
+
+Added: trunk/096/pkg/systems/spawnSystem/engines/item/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/engines/item/settings.cfg	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/engines/item/settings.cfg	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,4 @@
++Elem Settings
++{
++	Enabled	1
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/spawnSystem/engines/item/spawnCycle.src
+===================================================================
+
+Added: trunk/096/pkg/systems/spawnSystem/engines/npc/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/engines/npc/settings.cfg	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/engines/npc/settings.cfg	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,4 @@
++Elem Settings
++{
++
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/spawnSystem/engines/npc/spawnCycle.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/engines/npc/spawnCycle.src	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/engines/npc/spawnCycle.src	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,34 @@
++use uo;
++use os;
++
++include &quot;:spawnsystem:groups&quot;;
++include &quot;:spawnsystem:regions&quot;;
++include &quot;:spawnsystem:spawnerUtil&quot;;
++
++program SpawnCycle(params)
++	var engine_name	:= params[1];
++	var realm_name	:= params[2];
++	var region_name	:= params[3];
++	var group_name	:= params[4];
++
++	var coords := SS_GetRegionCoordinates(region_name);
++	var group_entries := SS_GetEntriesInGroup(group_name).keys();
++	var num_entries := group_entries.size();
++	var group_settings := SS_GetGroupInRegion(region_name, group_name);
++
++	var max_amt := group_settings.max_amt;
++	var cur_amount := SS_GetSpawnsInRegionGroup(region_name, group_name).size();
++
++	for ( cur_amount; cur_amount &lt;= max_amt; cur_amount := cur_amount+1 )
++		var spawn_coords := SS_SelectCoordsInArea(coords.x1, coords.y1, coords.x2, coords.y2);
++		var spawn_object := group_entries[RandomInt(num_entries)];
++
++		var created := CreateNPCFromTemplate(spawn_object, spawn_coords.x, spawn_coords.y, spawn_coords.z, 0, realm_name);
++		if ( created )
++			SS_AddSpawnToRegion(region_name, group_name, created);
++		endif
++		sleepms(2);
++	endfor
++
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/systems/spawnSystem/engines/prox/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/engines/prox/settings.cfg	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/engines/prox/settings.cfg	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,4 @@
++Elem Settings
++{
++
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/spawnSystem/engines/prox/spawnCycle.src
+===================================================================
+
+Added: trunk/096/pkg/systems/spawnSystem/include/commonTasks.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/commonTasks.inc	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/include/commonTasks.inc	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,53 @@
++use uo;
++use os;
++
++include &quot;:spawnsystem:include/groups&quot;;
++include &quot;:spawnsystem:include/realms&quot;;
++include &quot;:spawnsystem:include/regions&quot;;
++
++/*
++ * SS_MoveRegionToNewRealm(region_name, realm_name)
++ *
++ * Purpose
++ * Makes calls to regions.inc and realms.inc to move a spawn region from one realm to another.
++ * No error checking is present!
++ *
++ * Parameters
++ * region_name:	Name of the region to move
++ * realm_name:	Name of the realm to move the region to
++ *
++ * Returns
++ * 1 (No useful return value)
++ *
++ */
++function SS_MoveRegionToNewRealm(region_name, realm_name)
++	Set_Critical(1);
++	var cur_realm := SS_GetRegionRealm(region_name);
++	SS_RemoveRegionFromRealm(cur_realm, region_name);
++	SS_AddRegionToRealm(realm_name, region_name);
++	SS_SetRegionRealm(region_name, realm_name);
++	Set_Critical(0);
++	
++	return 1;
++endfunction
++
++/* 
++ * SS_FullRemoveRegion(region_name)
++ *
++ * Purpose
++ * Calls SS_RemoveRegionFromRealm() and SS_RemoveRegion() to cleanly remove a region.
++ * 
++ * Parameters
++ * region_name:	Name of the region to erase.
++ *
++ * Return Value
++ * Returns 1
++ *
++ */
++function SS_FullRemoveRegion(region_name)
++	var realm_name := SS_GetRegionRealm(region_name);
++	SS_RemoveRegionFromRealm(realm_name, region_name);
++	SS_RemoveRegion(region_name);
++	
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/systems/spawnSystem/include/engines.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/engines.inc	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/include/engines.inc	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,84 @@
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:datafile:include/datafile&quot;;
++include &quot;:spawnsystem:include/settings&quot;;
++
++/*
++ * SS_GetEnginesList()
++ *
++ * Purpose
++ * Retrieves the list of engines in :spawnsystem:configs/settings.cfg
++ *
++ * Parameters
++ *
++ * Return Value
++ * Array of strings
++ *
++ */
++function SS_GetEnginesList()
++	var cfg_file := SS_GetSettingsCfgFile();
++	var cfg_elem := SS_GetSettingsCfgElem(cfg_file, &quot;EngineList&quot;);
++	
++	return GetConfigStringArray(cfg_elem, &quot;Engine&quot;);
++endfunction
++
++/*
++ * SS_EngineEnabled(engine_name)
++ *
++ * Purpose
++ * Tells if an engine is set to be enabled or disabled
++ *
++ * Parameters
++ * engine_name:	Name of the engine to check.
++ *
++ * Return Value
++ * 1 if the engine is enabled
++ *
++ */
++function SS_EngineEnabled(engine_name)
++	var settings := SS_GetSettingsCfgFile(engine_name);
++	settings := settings[&quot;Settings&quot;];
++
++	return CInt(settings.Enabled);
++endfunction
++
++/*
++ * SS_StartSpawnEngine(engine_name, realm_name, region_name, group_name)
++ *
++ * Purpose
++ * Instructs an engine to do a spawn cycle
++ *
++ * Parameters
++ * engine_name:	Name of the engine to start
++ * realm_name:	Name of the realm the engine will run in
++ * region_name:	Name of the regin that will be spawning
++ * group_name:	Name of the spawn group that will be used
++ *
++ * Return Value
++ * 1 on engine start
++ *
++ */
++function SS_StartSpawnEngine(engine_name, realm_name, region_name, group_name)
++	var script := Start_Script(SS_GetEnginePath(engine_name), {engine_name, realm_name, region_name, group_name});
++
++	return script;
++endfunction
++
++/*
++ * SS_GetEnginePath(engine_name)
++ *
++ * Purpose
++ * Takes in the name of the engine and gives the path to call configs/scripts in it.
++ *
++ * Parameters
++ * engine_name:	Name of the engine to setup the path for.
++ *
++ * Return Value
++ * String
++ *
++ */
++function SS_GetEnginePath(engine_name)
++	return &quot;:spawnsystem:engines/&quot;+engine_name+&quot;/spawncycle&quot;;
++endfunction
+
+Added: trunk/096/pkg/systems/spawnSystem/include/errors.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/errors.inc	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/include/errors.inc	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,28 @@
++use uo;
++use os;
++
++CONST SPAWN_ERROR_DISABLE	:= 0;
++CONST SPAWN_ERROR_PRINT		:= 1;
++CONST SPAWN_ERROR_SYSLOG	:= 2;
++CONST SPAWN_ERROR_BROADCAST	:= 4;
++
++function SS_ErrorReport(error_text, err_report:=SPAWN_ERROR_DISABLE)
++		if ( err_report &amp; SPAWN_ERROR_PRINT )
++		Print(&quot;&quot;+error_text);
++	endif
++	
++	if ( err_report &amp; SPAWN_ERROR_SYSLOG )
++		SysLog(&quot;&quot;+error_text);
++	endif
++	
++	if ( err_report &amp; SPAWN_ERROR_BROADCAST )
++		foreach mobile in EnumerateOnlineCharacters()
++			if ( mobile.cmdlevel )
++				SendSysMessage(mobile, &quot;&quot;+error_text);
++			endif
++			sleepms(5);
++		endforeach
++	endif
++	
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/systems/spawnSystem/include/events.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/events.inc	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/include/events.inc	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,2 @@
++const SPAWN_UPDATE_REGION	:= 0xB00003;
++const SPAWN_UPDATE_GROUP	:= 0xB00004;
+
+Added: trunk/096/pkg/systems/spawnSystem/include/groups.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/groups.inc	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/include/groups.inc	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,219 @@
++use uo;
++use os;
++
++include &quot;:datafile:include/datafile&quot;;
++
++/*
++ * SS_GetGroupDataFile()
++ *
++ * Purpose
++ * Quickly pull up the datafile that stores group information.
++ *
++ * Parameters
++ *
++ * Return Value
++ * Data file reference
++ *
++ */
++function SS_GetGroupDataFile()
++	var data_file := DFOpenDataFile(&quot;:spawnsystem:Groups&quot;, DF_CREATE);
++		
++	return data_file;
++endfunction
++
++/*
++ * SS_GetGroupDataElem(elem_name)
++ *
++ * Purpose
++ * Quickly retrieve a group elem for the spawner.
++ *
++ * Parameters
++ * elem_name:	Name of the elem to retrieve
++ *
++ * Return Value
++ * A datafile elem reference.
++ *
++ */
++function SS_GetGroupDataElem(elem_name)
++	var data_file := SS_GetGroupDataFile();
++	var group_elem := DFFindElement(data_file, elem_name, DF_NO_CREATE);
++	
++	return group_elem;
++endfunction
++
++/* 
++ * SS_AddGroup(group_name, engine_type)
++ * 
++ * Purpose
++ * Created a new group elem in the data file.
++ *
++ * Parameters
++ * group_name:	String containing the name of the group.
++ * engine_type:	Optional parameter to set the engine the group uses.
++ *
++ * Return Value
++ * Returns the result of the elem creation
++ *
++ */
++function SS_AddGroup(group_name, engine_type:=&quot;&quot;)
++	var data_file := SS_GetGroupDataFile();
++	var result := data_file.CreateElement(group_name);
++	
++	if ( engine_type &amp;&amp; result )
++		SS_SetGroupEngine(group_name, engine_type);
++	endif
++	
++	return result;
++endfunction
++
++/*
++ * SS_RemoveGroup(group_name)
++ *
++ * Purpose
++ * Removes a group elem from the groups list
++ *
++ * Parameters
++ * group_name:	A string containing the name of the group to remove.
++ *
++ * Return Value
++ * Result of the elem deletion.
++ *
++ */
++function SS_RemoveGroup(group_name)
++	var data_file := SS_GetGroupDataFile();
++	return data_file.DeleteElement(group_name);
++endfunction
++
++/*
++ * SS_GetGroupNames()
++ *
++ * Purpose
++ * Retrieves a list of group names listed in the spawner.
++ *
++ * Parameters
++ * 
++ * Return Value
++ * An array of strings
++ *
++ */
++function SS_GetGroupNames()
++	var data_file := SS_GetGroupDataFile();
++	var group_names := DFGetElemNames(data_file);
++	
++	return group_names;
++endfunction
++
++/*
++ * SS_GetGroupEngine(group_name)
++ * 
++ * Purpose
++ * Retrieves the engine that the group will use.
++ * 
++ * Parameters
++ * group_name:	Name of the group to get the engine type from.
++ * 
++ * Return Value
++ * String
++ *
++ */
++function SS_GetGroupEngine(group_name)
++	var group_elem := SS_GetGroupDataElem(group_name);
++	return group_elem.GetProp(&quot;Engine&quot;);
++endfunction
++
++/*
++ * SS_SetGroupEngine(group_name)
++ * 
++ * Purpose
++ * Sets the engine that the group will use.
++ * 
++ * Parameters
++ * group_name:	Name of the group to set the engine type for.
++ * engine_name:	Name of the engine the group will use.
++ *
++ * Return Value
++ * 1 on succcess
++ *
++ */
++function SS_SetGroupEngine(group_name, engine_name)
++	var group_elem := SS_GetGroupDataElem(group_name);
++	return group_elem.SetProp(&quot;Engine&quot;, engine_name);
++endfunction
++
++/*
++ * SS_AddEntryToGroup(group_name, entry_name)
++ * 
++ * Purpose
++ * Adds an entry name to the groups's elem.
++ * 
++ * Parameters
++ * group_name:	The group the entry will be added to.
++ * entry_name:	The name of the entry to add.
++ *
++ * Return Value
++ * 1 on success
++ *
++ */
++function SS_AddEntryToGroup(group_name, entry_name)
++	var entry_list := SS_GetEntriesInGroup(group_name);
++	
++	if ( entry_list.Exists(entry_name) )
++		return 0;
++	else
++		entry_list.Insert(entry_name, 1);
++		var group_elem := SS_GetGroupDataElem(group_name);
++		return group_elem.SetProp(&quot;EntryList&quot;, entry_list);
++	endif
++endfunction
++
++/*
++ * SS_RemoveEntryFromGroup(group_name, entry_name)
++ * 
++ * Purpose
++ * Removes an entry name from the groups's elem.
++ * 
++ * Parameters
++ * group_name:	The group the entry will be removed from.
++ * entry_name:	The name of the entry to remove.
++ *
++ * Return Value
++ * 1 on success
++ *
++ */
++function SS_RemoveEntryFromGroup(group_name, entry_name)
++	var entry_list := SS_GetEntriesInGroup(group_name);
++			
++	if ( !entry_list.Exists(entry_name) )
++		return 0;
++	else
++		entry_list.Erase(entry_name);
++		var group_elem := SS_GetGroupDataElem(group_name);
++		return group_elem.SetProp(&quot;EntryList&quot;, entry_list);
++	endif
++endfunction
++
++/*
++ * SS_GetEntriesInGroup(group_name)
++ *
++ * Purpose
++ * Retrieves the entries in a spawn group
++ *
++ * Parameters
++ * group_name:	Name of the group to retrieve the entries from.
++ * 
++ * Return Value
++ * Dictionary 
++ * Keys are the entries - nothing else is used.
++ * 
++ */
++function SS_GetEntriesInGroup(group_name)
++	var group_elem := SS_GetGroupDataElem(group_name);
++	var group_list := group_elem.GetProp(&quot;EntryList&quot;);
++	
++	if ( !group_list )
++		group_list := dictionary;
++	endif
++	
++	return group_list;
++endfunction
++
+
+Added: trunk/096/pkg/systems/spawnSystem/include/realms.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/realms.inc	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/include/realms.inc	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,174 @@
++use uo;
++use os;
++
++include &quot;:datafile:include/datafile&quot;;
++
++/*
++ * SS_GetRealmDataFile()
++ * 
++ * Purpose
++ * Quickly pull up the datafile that stores realm information.
++ *
++ * Parameters
++ *
++ * Return Value
++ * Data file reference
++ *
++ */
++function SS_GetRealmDataFile()
++	var data_file := DFOpenDataFile(&quot;:spawnsystem:Realms&quot;, DF_CREATE);
++	return data_file;
++endfunction
++
++/*
++ * SS_GetRealmDataElem(elem_name)
++ * 
++ * Purpose
++ * Quickly retrieve a realm elem for the spawner.
++ *
++ * Parameters
++ * elem_name:	Name of the elem to retrieve
++ *
++ * Return Value
++ * A datafile elem reference.
++ *
++ */
++function SS_GetRealmDataElem(elem_name)
++	var data_file := SS_GetRealmDataFile();
++	var realm_elem := DFFindElement(data_file, elem_name, DF_NO_CREATE);
++
++	return realm_elem;
++endfunction
++
++/*
++ * SS_AddRealm(realm_name)
++ * 
++ * Purpose
++ * Adds a realm name to the spawner's realm list
++ *
++ * Parameters
++ * realm_name:	A string containing the name of the new realm.
++ *
++ * Return Value
++ * Returns 1 on success.
++ *
++ */
++function SS_AddRealm(realm_name)
++	var data_file := SS_GetRealmDataFile();
++	return data_file.CreateElement(realm_name);
++endfunction
++
++/*
++ * SS_RemoveRealm(realm_name)
++ *
++ * Purpose
++ * Removes a realm elem from the spawner's list
++ *
++ * Parameters
++ * realm_name:	A string containing the name of the realm to remove.
++ *
++ * Return Value
++ * Result of the elem deletion.
++ *
++ */
++function SS_RemoveRealm(realm_name)
++	var data_file := SS_GetRealmDataFile();
++	return data_file.DeleteElement(realm_name);
++endfunction
++
++/*
++ * SS_GetRealmNames()
++ *
++ * Purpose
++ * Retrieves a list of realm names listed in the spawner.
++ *
++ * Parameters
++ * 
++ * Return Value
++ * An array of strings
++ *
++ */
++function SS_GetRealmNames()
++	var data_file := SS_GetRealmDataFile();
++	var realm_names := DFGetElemNames(data_file);
++	
++	return realm_names;
++endfunction
++
++/*
++ * SS_AddRegionToRealm(realm_name, region_name)
++ * 
++ * Purpose
++ * Adds a region name to the realm's elem.
++ * 
++ * Parameters
++ * realm_name:	The realm the region will be added to.
++ * region_name:	The name of the region to add.
++ *
++ * Return Value
++ * 1 on success
++ *
++ */
++function SS_AddRegionToRealm(realm_name, region_name)
++	var realm_elem := SS_GetRealmDataElem(realm_name);
++	var region_list := SS_GetRegionsInRealm(realm_name);
++	
++	if ( region_list.Exists(region_name) )
++		return 0;
++	else
++		region_list.Insert(region_name, 1);
++		return realm_elem.SetProp(&quot;Regions&quot;, region_list);
++	endif
++endfunction
++
++/*
++ * SS_RemoveRegionFromRealm(realm_name, region_name)
++ * 
++ * Purpose
++ * Removes a region name from the realm's elem.
++ * 
++ * Parameters
++ * realm_name:	The realm the region will be removed from.
++ * region_name:	The name of the region to remove.
++ *
++ * Return Value
++ * Returns the modified region list.
++ *
++ * Notes:
++ *    See SS_FullRemoveRegion() in commontasks.inc
++ *
++ */
++function SS_RemoveRegionFromRealm(realm_name, region_name)
++	var realm_elem := SS_GetRealmDataElem(realm_name);
++	var region_list := SS_GetRegionsInRealm(realm_name);
++	
++	if ( !region_list.Exists(region_name) )
++		return 0;
++	else
++		region_list.Erase(region_name);
++		return realm_elem.SetProp(&quot;Regions&quot;, region_list);
++	endif
++endfunction
++
++/*
++ * SS_GetRegionsInRealm(realm_name)
++ * 
++ * Purpose
++ * Lists the spawn regions that exist within a realm.
++ *
++ * Parameters
++ * realm_name:	Name of the realm to retrieve the list from.
++ *
++ * Return Value
++ * Returns an array of spawn region names in the realm.
++ *
++ */
++function SS_GetRegionsInRealm(realm_name)
++	var realm_elem := SS_GetRealmDataElem(realm_name);
++	var region_list := realm_elem.GetProp(&quot;Regions&quot;);
++	if ( !region_list )
++		region_list := dictionary;
++	endif
++	
++	return region_list;
++endfunction
+
+Added: trunk/096/pkg/systems/spawnSystem/include/regions.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/regions.inc	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/include/regions.inc	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,348 @@
++use uo;
++use os;
++
++include &quot;:datafile:include/datafile&quot;;
++
++/*
++ * SS_GetRegionDataFile()
++ *
++ * Purpose
++ * Quickly pull up the datafile that stores region information.
++ *
++ * Parameters
++ *
++ * Return Value
++ * Data file reference
++ *
++ */
++function SS_GetRegionDataFile()
++	var data_file := DFOpenDataFile(&quot;:spawnsystem:Regions&quot;, DF_CREATE);
++	return data_file;
++endfunction
++
++/*
++ * SS_GetRegionDataElem(elem_name)
++ *
++ * Purpose
++ * Quickly retrieve a region elem for the spawner.
++ *
++ * Parameters
++ * elem_name:	Name of the elem to retrieve
++ *
++ * Return Value
++ * A datafile elem reference.
++ *
++ */
++function SS_GetRegionDataElem(elem_name)
++	var data_file := SS_GetRegionDataFile();
++	var region_elem := DFFindElement(data_file, elem_name, DF_NO_CREATE);
++
++	return region_elem;
++endfunction
++
++/*
++ * SS_AddRegion(region_name)
++ *
++ * Purpose
++ * Adds a region name to the spawner's region list
++ *
++ * Parameters
++ * region_name:	A string containing the name of the new region.
++ * realm_name:	Optional parameter to set the region's realm on creation.
++ *
++ * Return Value
++ * Returns 1 on success.
++ *
++ */
++function SS_AddRegion(region_name, realm_name:=&quot;&quot;)
++	var data_file := SS_GetRegionDataFile();
++	var result := data_file.CreateElement(region_name);
++	
++	if ( realm_name &amp;&amp; result )
++		SS_SetRegionRealm(region_name, realm_name);
++	endif
++	
++	return result;
++endfunction
++
++/*
++ * SS_RemoveRegion(region_name)
++ *
++ * Purpose
++ * Removes a region elem from the spawner's list
++ *
++ * Parameters
++ * region_name:	A string containing the name of the region to remove.
++ *
++ * Return Value
++ * Result of the elem deletion.
++ *
++ * Notes:
++ *    See SS_FullRemoveRegion() in commontasks.inc
++ * 
++ */
++function SS_RemoveRegion(region_name)
++	var data_file := SS_GetRegionDataFile();
++	return data_file.DeleteElement(region_name);
++endfunction
++
++/*
++ * SS_GetRegionNames(region_name:=&quot;&quot;)
++ *
++ * Purpose
++ * Retrieves a list of region names listed in the spawner.
++ *
++ * Parameters
++ * realm_name:	Optional parameter to list regions that belong to a specific realm.
++ *		- Note its better to get them from SS_GetRegionsInRealm(realm_name) in realms.inc
++ *
++ * Return Value
++ * An array of strings
++ *
++ */
++function SS_GetRegionNames(realm_name:=&quot;&quot;)
++	var data_file := SS_GetRegionDataFile();
++
++	var region_names := array{};
++	if ( !realm_name )
++		region_names := DFGetElemNames(data_file);
++	else
++		foreach region_name in DFGetElemNames(data_file)
++			if ( Lower(SS_GetRegionRealm(region_name)) == Lower(realm_name) )
++				region_names.append(region_name);
++			endif
++			sleepms(2);
++		endforeach
++	endif
++
++	return region_names;
++endfunction
++
++/*
++ * SS_GetRegionRealm(region_name)
++ *
++ * Purpose
++ * Get the name of the realm the region is set to.
++ *
++ * Parameters
++ * region_name:	Name of the region to lookup.
++ *
++ * Return Value
++ * A string containing the name of a realm
++ *
++ */
++function SS_GetRegionRealm(region_name)
++	var region_elem := SS_GetRegionDataElem(region_name);
++	return region_elem.GetProp(&quot;Realm&quot;);
++endfunction
++
++/*
++ * SS_SetRegionRealm(region_name, realm_name)
++ *
++ * Purpose
++ * Sets the realm the region belongs to. 
++ * 
++ * Parameters
++ * region_name:	The name of the region to set.
++ * realm_name:	The name of the realm the region belongs to.
++ *
++ * Return Value
++ * 1 on success
++ *
++ */
++function SS_SetRegionRealm(region_name, realm_name)
++	var region_elem := SS_GetRegionDataElem(region_name);
++	return region_elem.SetProp(&quot;Realm&quot;, realm_name);
++endfunction
++
++/*
++ * SS_GetRegionCoordinates(region_name)
++ *
++ * Purpose
++ * Retrieves the coordinates for the region
++ * 
++ * Parameters
++ * region_name:	Name of the region to retrieve the coordinates of.
++ *
++ * Return Value
++ * Returns a structure containing .x1, .y1, .x2, .y2
++ *
++ */
++function SS_GetRegionCoordinates(region_name)
++	var region_elem := SS_GetRegionDataElem(region_name);
++	return region_elem.GetProp(&quot;Coordinates&quot;);
++endfunction
++
++/*
++ * SS_GetRegionCoordinates(region_name, x1, y1, x2, y2)
++ *
++ * Purpose
++ * Sets the coordinates for a region
++ * 
++ * Parameters
++ * region_name:	Name of the region to set the coordinates on.
++ * x1:		Top left X coordinate
++ * y1:		Top left Y coordinate
++ * x2:		Bottom right X coordinate
++ * y2:		Bottom right Y coordinate
++ *
++ * Return Value
++ * 1 on success
++ *
++ */
++function SS_SetRegionCoordinates(region_name, x1, y1, x2, y2)
++	var region_elem := SS_GetRegionDataElem(region_name);
++	
++	var coords := struct{&quot;x1&quot;:=x1, &quot;y1&quot;:=y1, &quot;x2&quot;:=x2, &quot;y2&quot;:=y2};
++		
++	return region_elem.SetProp(&quot;Coordinates&quot;, coords);
++endfunction
++
++/*
++ * SS_GetGroupsInRegion(region_name)
++ *
++ * Purpose
++ * Retrieves the groups and their settings in a spawn region
++ *
++ * Parameters
++ * region_name:	Name of the region to retrieve the groups from.
++ * 
++ * Return Value
++ * Dictionary 
++ * -keys are the group name, with a struct inside for settings.
++ * 
++ */
++function SS_GetGroupsInRegion(region_name)
++	var region_elem := SS_GetRegionDataElem(region_name);
++	var group_list := region_elem.GetProp(&quot;Groups&quot;);
++	if ( !group_list )
++		group_list := dictionary;
++	endif
++	
++	return group_list;
++endfunction
++
++/* 
++ * SS_GetGroupInRegion(region_name, group_name)
++ * Retrieves a specific spawn group and its settings from a region
++ *
++ * Parameters
++ * region_name:	Name of the region the spawn group is in.
++ * group_name:	Name of the region to retrieve.
++ *
++ * Return Value
++ * Struct 
++ *
++ */
++ function SS_GetGroupInRegion(region_name, group_name)
++ 	var group_list := SS_GetGroupsInRegion(region_name);
++ 	return group_list[group_name];
++ endfunction
++
++/*
++ * SS_AddGroupToRegion(region_name, group_name, max_amt, spawn_wait, enabled)
++ *
++ * Purpose
++ * Adds a spawn group to a spawn region
++ * 
++ * Parameters
++ * region_name:	Name of the region to add the group to.
++ * group_name:	Name of the group to add to the region.
++ * max_amt:	Max amount of objects (mobiles/items) the group should make.
++ * spawn_wait:	Amount of time between each spawn cycle for this group.
++ * enabled:	0 | 1
++ * 
++ * Return Value
++ * 1 on success
++ *
++ * Notes:
++ * 	This function can also be used to update a spawn group's settings in a region.
++ *
++ */
++function SS_AddGroupToRegion(region_name, group_name, max_amt, spawn_wait, enabled)
++	var settings := struct;
++	settings.+max_amt := max_amt;
++	settings.+spawn_wait := spawn_wait;
++	settings.+enabled := enabled;
++	
++	var group_list := SS_GetGroupsInRegion(region_name);
++	group_list.Insert(group_name, settings);
++	
++	var region_elem := SS_GetRegionDataElem(region_name);
++	return region_elem.SetProp(&quot;Groups&quot;, group_list);
++endfunction
++
++/*
++ * SS_RemoveGroupFromRegion(region_name, group_name)
++ *
++ * Purpose
++ * Removes a spawn group from a spawn region
++ * 
++ * Parameters
++ * region_name:	Name of the region to remove from the group.
++ * group_name:	Name of the group to remove from the region.
++ * 
++ * Return Value
++ * 1 on success
++ *
++ */
++function SS_RemoveGroupFromRegion(region_name, group_name)
++	var group_list := SS_GetGroupsInRegion(region_name);
++	group_list.Erase(group_name);
++	
++	var region_elem := SS_GetRegionDataElem(region_name);
++	region_elem.EraseProp(&quot;Spawns-&quot;+group_name); //Clears the spawns list too
++	return region_elem.SetProp(&quot;Groups&quot;, group_list);
++endfunction
++
++/*
++ * SS_AddSpawnToRegion(region_name, group_name, serial)
++ *
++ * Purpose
++ * Used to track what has been spawned in a region's group list. 
++ *
++ * Parameters
++ * region_name:	Name of the region the object was created in.
++ * group_name:	Name of the group the object is listed in.
++ * object:	A reference to the object that was created.
++ *
++ * Return Value
++ * 1 on success
++ *
++ */
++function SS_AddSpawnToRegion(region_name, group_name, object)
++	var spawn_list := SS_GetSpawnsInRegionGroup(region_name, group_name);
++	
++	var spawn_info := struct;
++	spawn_info.+time := polcore().systime;
++	spawn_info.+orig_coords := struct{&quot;x&quot;:=object.x, &quot;y&quot;:=object.y};
++	
++	spawn_list[object.serial] := spawn_info;
++	
++	var region_elem := SS_GetRegionDataElem(region_name);
++	region_elem.SetProp(&quot;Spawns-&quot;+group_name, spawn_list);
++endfunction
++
++/*
++ * SS_GetSpawnsInRegionGroup(region_name, group_name)
++ *
++ * Purpose
++ * Returns a list of objects that have been spawned in a region's group.
++ *
++ * Parameters
++ * region_name:	Name of the region the group is in.
++ * group_name:	Name of the group to get the spawn list of.
++ *
++ * Return Value
++ * Dictionary
++ *
++ */
++function SS_GetSpawnsInRegionGroup(region_name, group_name)
++	var region_elem := SS_GetRegionDataElem(region_name);
++	var spawns := region_elem.GetProp(&quot;Spawns-&quot;+group_name);
++	if ( !spawns )
++		spawns := dictionary;
++	endif
++	
++	return spawns;
++endfunction
+
+Added: trunk/096/pkg/systems/spawnSystem/include/settings.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/settings.inc	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/include/settings.inc	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,84 @@
++use uo;
++use os;
++use cfgfile;
++
++/*
++ * SS_GetSettingsCfgFile(engine_name)
++ *
++ * Purpose
++ * Reads in an engine's settings.cfg or if no engine name is passed, the main settings.cfg.
++ *
++ * Parameters
++ * engine_name:	A string containing the name of an engine.
++ *
++ * Return value
++ * A config file reference.
++ *
++ */
++function SS_GetSettingsCfgFile(engine_name:=&quot;&quot;)
++	var cfg_path := &quot;:spawnsystem:config/settings&quot;;
++	if ( engine_name )
++		cfg_path := &quot;:spawnsystem:engines/&quot;+engine_name+&quot;/settings&quot;;
++	endif
++
++	var cfg := ReadConfigFile(&quot;:spawnsystem:config/settings&quot;);
++
++	if ( cfg.errortext )
++		SysLog(&quot;Error::SS_GetSettingsCfgFile() - Unable to open &quot;+cfg_path+&quot;.cfg -&gt;&quot;+cfg.errortext);
++	endif
++
++	return cfg;
++endfunction
++
++/*
++ * SS_GetSettingsCfgElem(cfg_file, elem_name)
++ *
++ * Purpose
++ * Retrieves an elem from a config file. 
++ *
++ * Parameters
++ * cfg_file:	A config file reference.
++ * elem_name:	A string matching the elem name to be retrieved.
++ *
++ * Return value
++ * A config file elem reference.
++ *
++ */
++function SS_GetSettingsCfgElem(cfg_file, elem_name)
++	var cfg := SS_GetSettingsCfgFile();
++	var elem := cfg[elem_name];
++
++	if ( elem.errortext )
++		SysLog(&quot;Error::SS_GetSettingsCfgElem() - Unable to find elem [&quot;+elem_name+&quot;] in &quot;+cfg_file.name+&quot; -&gt;&quot;+elem.errortext);
++	endif
++
++	return elem;
++endfunction
++
++/*
++ * SS_LoadSettings(cfg_elem)
++ *
++ * Purpose
++ * Parses settings in an engine's or the main spawner's settings.cfg
++ *
++ * Parameters
++ * cfg_elem:	An elem containing the &quot;Settings&quot; lines to be used.
++ *
++ * Return value
++ * A dictionary containing mixed variable types.
++ *
++ */
++function SS_LoadSettings(cfg_elem)
++	var settings := dictionary;
++
++	foreach line in GetConfigStringArray(cfg_elem, &quot;Setting&quot;)
++		line := SplitWords(line);
++		var key := line[1];
++		var value := UnPack(line[2]);
++
++		settings[key] := value;
++		sleepms(2);
++	endforeach
++
++	return settings;
++endfunction
+
+Added: trunk/096/pkg/systems/spawnSystem/include/spawnerUtil.inc
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/include/spawnerUtil.inc	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/include/spawnerUtil.inc	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,33 @@
++use uo;
++use os;
++use util;
++
++include &quot;:datafile:include/datafile&quot;;
++
++/*
++ * SS_SelectCoordsInArea(x1, y1, x2, y2)
++ *
++ * Purpose
++ * Takes in four numbers (two coordinates) and
++ * picks a random coordinate within the area they create.
++ *
++ * Parameters
++ * x1:	The top-left spot of the X axis.
++ * y1:	The top-left spot of the Y axis.
++ * x2:	The bottom-right spot of the X axis.
++ * y2:	The bottom-right spot of the Y axis.
++ *
++ * Return value
++ * A structure containing an X and Y property.
++ *
++ */
++function SS_SelectCoordsInArea(x1, y1, x2, y2)
++	var coord := struct;
++	coord.+x := RandomInt(x2-x1)+x1;
++	coord.+y := RandomInt(y2-y1)+y1;
++
++	return coord;
++endfunction
++
++/*
++ * SS_
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/initializer/firstRun.src	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,152 @@
++use uo;
++use os;
++
++include &quot;:spawnsystem:include/groups&quot;;
++include &quot;:spawnsystem:include/realms&quot;;
++include &quot;:spawnsystem:include/regions&quot;;
++include &quot;:spawnsystem:include/errors&quot;;
++
++program FirstRun()
++	var start_cfg := ReadConfigFile(&quot;:spawnsystem:config/firstrun&quot;);
++	if ( start_cfg.errortext )
++		SS_ErrorReport(start_cfg.errortext, SPAWN_ERROR_SYSLOG);
++		return 0;
++	endif
++
++	var realm_list := start_cfg[&quot;Realms&quot;];
++	if ( realm_list.errortext)
++		SS_ErrorReport(start_cfg.errortext, SPAWN_ERROR_SYSLOG);
++		return 0;
++	endif
++
++	foreach realm_name in (GetConfigStringArray(realm_list, &quot;Realm&quot;))
++		SysLog(&quot;Setting up spawner realm (&quot;+realm_name+&quot;)&quot;);
++		var success := SetupRealm(realm_name, start_cfg);
++		
++		if ( success )
++			SysLog(&quot;Spawn realm (&quot;+realm_name+&quot;) setup... okay.&quot;);
++		else
++			SysLog(&quot;Spawn realm (&quot;+realm_name+&quot;) setup... failed!&quot;);
++		endif
++		
++		sleepms(2);
++	endforeach
++	
++	UnloadConfigFile(&quot;:spawnsystem:config/firstrun&quot;);
++
++	return 1;
++endprogram
++
++function SetupRealm(realm_name, start_cfg)
++	var realm_info := start_cfg[realm_name];
++	if ( realm_info.errortext )
++		SS_ErrorReport(&quot;No cfg elem for realm (&quot;+realm_name+&quot;) -&gt; &quot;+realm_info.errortext, SPAWN_ERROR_SYSLOG);
++		return 0;
++	endif
++	
++	SS_AddRealm(realm_name);
++
++	foreach region_name in (GetConfigStringArray(realm_info, &quot;Region&quot;))
++		SysLog(&quot;Setting up spawn region (&quot;+region_name+&quot;)&quot;);
++		var success := SetupRegion(region_name, realm_name, start_cfg);
++		
++		if ( success )
++			SS_AddRegionToRealm(realm_name, region_name);
++		endif
++		
++		if ( success )
++			SysLog(&quot;Spawn region (&quot;+region_name+&quot;) setup... okay.&quot;);
++		else
++			SysLog(&quot;Spawn region (&quot;+region_name+&quot;) setup... failed!&quot;);
++		endif
++		
++		sleepms(2);
++	endforeach
++
++	return 1;
++endfunction
++
++function SetupRegion(region_name, realm_name, start_cfg)
++	var region_info := start_cfg[region_name];
++	if ( region_info.errortext )
++		SS_ErrorReport(&quot;No cfg elem for region (&quot;+region_name+&quot;) -&gt; &quot;+region_info.errortext, SPAWN_ERROR_SYSLOG);
++		return 0;
++	endif
++
++	
++	SS_AddRegion(region_name, realm_name);
++	var coords := SplitWords(region_info.Coordinates);
++	SS_SetRegionCoordinates(region_name, coords[1], coords[2], coords[3], coords[4]);
++
++	foreach group_name in (GetConfigStringArray(region_info, &quot;Group&quot;))
++		group_name := SplitWords(group_name);
++		var max_amt := CInt(group_name[2]);
++		var spawn_wait := CInt(group_name[3]);
++		group_name := group_name[1];
++		
++		var success := SetupGroup(group_name, start_cfg);
++		
++		if ( success )
++			success := SS_AddGroupToRegion(region_name, group_name, max_amt, spawn_wait, 1);
++		endif
++		if ( success )
++			SysLog(&quot;Adding group (&quot;+group_name+&quot;) to region (&quot;+region_name+&quot;)... okay.&quot;);
++		else
++			SysLog(&quot;Adding group (&quot;+group_name+&quot;) to region (&quot;+region_name+&quot;)... failed!&quot;);
++		endif
++		
++		sleepms(2);
++	endforeach
++
++	return 1;
++endfunction
++
++function SetupGroup(group_name, start_cfg)
++	if ( SS_GetGroupDataElem(group_name) )
++		//Group has already been set up.
++		return 1;
++	endif
++	
++	SysLog(&quot;Setting up spawner group (&quot;+group_name+&quot;)&quot;);
++	
++	var group_info := start_cfg[group_name];
++	if ( group_info.errortext )
++		SS_ErrorReport(&quot;No cfg elem for group (&quot;+group_name+&quot;) -&gt; &quot;+group_info.errortext, SPAWN_ERROR_SYSLOG);
++		return 0;
++	elseif ( !group_info.Engine )
++		SS_ErrorReport(&quot;No valid engine name was set for group (&quot;+group_name+&quot;)&quot;, SPAWN_ERROR_SYSLOG);
++		return 0;
++	endif
++	
++	SS_AddGroup(group_name, group_info.Engine);
++	
++	foreach entry in (GetConfigStringArray(group_info, &quot;Entry&quot;))
++		SS_AddEntryToGroup(group_name, entry);
++		sleepms(2);
++	endforeach
++	
++	return 1;
++endfunction
++
++/*
++function Test_WipeSpawner()
++	foreach realm_name in SS_GetRealmNames()
++		Print(&quot;* Erasing Realm (&quot;+realm_name+&quot;) [&quot;+SS_RemoveRealm(realm_name)+&quot;]&quot;);
++		sleepms(2);
++	endforeach
++	
++	foreach region_name in SS_GetRegionNames()
++		Print(&quot;* Erasing Region (&quot;+region_name+&quot;) [&quot;+SS_RemoveRegion(region_name)+&quot;]&quot;);
++		sleepms(2);
++	endforeach
++	
++	foreach group_name in SS_GetGroupNames()
++		Print(&quot;* Erasing Group (&quot;+group_name+&quot;) [&quot;+SS_RemoveGroup(group_name)+&quot;]&quot;);
++		sleepms(2);
++	endforeach
++	
++	sleep(1);
++	
++	return 1;
++endfunction
++*/
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/spawnSystem/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/pkg.cfg	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/pkg.cfg	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,15 @@
++Enabled		1
++Name		spawnsystem
++
++Version		1.0
++
++CoreRequired	95
++Requires	gumps 1.5
++Requires	datafile 2.0
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++Maintainer	Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++#Conflicts none
+
+Added: trunk/096/pkg/systems/spawnSystem/spawnSystem.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/spawnSystem.src	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/spawnSystem.src	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,19 @@
++use uo;
++use os;
++
++include &quot;:spawnsystem:include/groups&quot;;
++include &quot;:spawnsystem:include/realms&quot;;
++include &quot;:spawnsystem:include/regions&quot;;
++include &quot;:spawnsystem:include/errors&quot;;
++
++program SpawnSystem()
++	if ( !GetGlobalProperty(&quot;SpawnSystem&quot;) )
++		var script := Start_Script(&quot;:spawnsystem:initializer/firstrun&quot;);
++		if ( script.errortext )
++			SS_ErrorReport(script.errortext, SPAWN_ERROR_SYSLOG);
++			return 0;
++		endif
++	endif
++	
++	return 1;
++endprogram
+
+Added: trunk/096/pkg/systems/spawnSystem/start.src
+===================================================================
+--- trunk/096/pkg/systems/spawnSystem/start.src	2005-10-12 07:32:52 UTC (rev 587)
++++ trunk/096/pkg/systems/spawnSystem/start.src	2005-10-12 07:36:17 UTC (rev 588)
+@@ -0,0 +1,8 @@
++use os;
++
++var script := start_script(&quot;spawnsystem&quot;);
++if ( script.errortext )
++	SysLog(&quot;Error starting spawn system -&gt;&quot;+script.errortext);
++else
++	Print(&quot;Starting spawn system... ok.&quot;);
++endif
+
+Added: trunk/096/pkg/systems/spawnSystem/www/spawnControl.src
+===================================================================
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000557.html">[Poldistro-svn] r587 - trunk/096/pkg/systems
+</A></li>
+	<LI>Next message: <A HREF="000559.html">[Poldistro-svn] r589 - in trunk/096/pkg/systems/spawnSystem: . include initializer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#558">[ date ]</a>
+              <a href="thread.html#558">[ thread ]</a>
+              <a href="subject.html#558">[ subject ]</a>
+              <a href="author.html#558">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

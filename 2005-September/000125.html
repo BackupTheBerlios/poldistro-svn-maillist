@@ -1,0 +1,372 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r145 - trunk/096/pkg/utils/gumps/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r145%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200509170605.j8H65icf016539%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000124.html">
+   <LINK REL="Next"  HREF="000126.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r145 - trunk/096/pkg/utils/gumps/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r145%20-%20trunk/096/pkg/utils/gumps/include&In-Reply-To=%3C200509170605.j8H65icf016539%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r145 - trunk/096/pkg/utils/gumps/include">austin at berlios.de
+       </A><BR>
+    <I>Sat Sep 17 08:05:44 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000124.html">[Poldistro-svn] r144 - trunk/096
+</A></li>
+        <LI>Next message: <A HREF="000126.html">[Poldistro-svn] r146 - trunk/096/pkg/utils/gumps/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#125">[ date ]</a>
+              <a href="thread.html#125">[ thread ]</a>
+              <a href="subject.html#125">[ subject ]</a>
+              <a href="author.html#125">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-17 08:05:39 +0200 (Sat, 17 Sep 2005)
+New Revision: 145
+
+Modified:
+   trunk/096/pkg/utils/gumps/include/gumps.inc
+Log:
+working a little bit on the optimizer
+
+Modified: trunk/096/pkg/utils/gumps/include/gumps.inc
+===================================================================
+--- trunk/096/pkg/utils/gumps/include/gumps.inc	2005-09-16 09:48:01 UTC (rev 144)
++++ trunk/096/pkg/utils/gumps/include/gumps.inc	2005-09-17 06:05:39 UTC (rev 145)
+@@ -61,7 +61,7 @@
+ // GFGumpPic(byref gump, x, y, gump_id, hue := 0)
+ // GFHTMLArea(byref gump, x, y, width, height, text, background:=0, scrollbar:=0)
+ // GFMovable(byref gump, bool)
+-// GFPage(byref gump, page)
++// GFPage(byref gump, page_num)
+ // GFRadioButton(byref gump, x, y, unp_id, pres_id, status:=0, btn_value:=0)
+ // GFResizePic(byref gump, x, y, gump_id, width:=0, height:=0)
+ // GFSendGump(who, byref gump)
+@@ -75,6 +75,8 @@
+ // * Internal/Private Function List *
+ //
+ // XGFError(text)
++// XGFAddToLayout(byref gump, string)
++//
+ /////////////////////////////////////////////////////////////////
+ // * Global Variables *
+ //
+@@ -102,7 +104,7 @@
+  * The gump object.
+  *
+  */
+-function GFCreateGump(x:=0, y:=0, width:=0, height:=0)
++function GFCreateGump(x:=0, y:=0, width:=0, height:=0, optimize:=0)
+ 	var gump := struct;
+ 
+ 	gump.+base := struct;
+@@ -119,11 +121,17 @@
+ 	gump.base.+CloseLoc := 0;	// NoClose flag location
+ 	gump.base.+DisposeLoc := 0;	// NoDispose flag location
+ 
++	// Used to store the positions of where data will go for GFPage() entries.
++	// Ensures each page # only appears once.
++	gump.+optimize := CInt(optimize);
++	gump.+pagelocs := array;
++	gump.+cur_page := 0;
++
+ 	gump.+layout	:= array;	// Main layout array for entire gump
+ 	gump.+data	:= array;	// Storage array for static-text and
+ 					// text-entry initialisation strings
+ 					// Indexes/KeyIDs for...
+-
++	
+ 	// Starting points for data values
+ 	gump.+data_id	:= 1;
+ 
+@@ -152,15 +160,15 @@
+ 				return XGFError(&quot;Gump already contains the 'NoClose' flag.&quot;);
+ 			endif
+ 
+-			gump.layout.append(&quot;NoClose&quot;);
+-			gump.base.CloseLoc := gump.layout.size();
++			(gump.layout).append(&quot;NoClose&quot;);
++			gump.base.CloseLoc := (gump.layout).size();
+ 			break;
+ 		1:
+ 			if ( !gump.base.CloseLoc )
+ 				return XGFError(&quot;Gump is already closable.&quot;);
+ 			endif
+ 
+-			gump.layout.erase(gump.base.CloseLoc);
++			(gump.layout).erase(gump.base.CloseLoc);
+ 			gump.base.CloseLoc := 0;
+ 			break;
+ 		default:
+@@ -195,15 +203,15 @@
+ 				return XGFError(&quot;Gump already contains the 'NoDispose' flag.&quot;);
+ 			endif
+ 
+-			gump.layout.append(&quot;NoDispose&quot;);
+-			gump.base.DisposeLoc := gump.layout.size();
++			(gump.layout).append(&quot;NoDispose&quot;);
++			gump.base.DisposeLoc := (gump.layout).size();
+ 			break;
+ 		1:
+ 			if ( !gump.base.CloseLoc )
+ 				return XGFError(&quot;Gump is already disposable.&quot;);
+ 			endif
+ 
+-			gump.layout.erase(gump.base.DisposeLoc);
++			(gump.layout).erase(gump.base.DisposeLoc);
+ 			gump.base.DisposeLoc := 0;
+ 			break;
+ 		default:
+@@ -234,15 +242,15 @@
+ 				return XGFError(&quot;Gump already contains the 'NoMove' flag.&quot;);
+ 			endif
+ 
+-			gump.layout.append(&quot;NoMove&quot;);
+-			gump.base.MoveLoc := gump.layout.size();
++			(gump.layout).append(&quot;NoMove&quot;);
++			gump.base.MoveLoc := (gump.layout).size();
+ 			break;
+ 		1:
+ 			if ( !gump.base.MoveLoc )
+ 				return XGFError(&quot;Gump is already movable.&quot;);
+ 			endif
+ 
+-			gump.layout.erase(gump.base.MoveLoc);
++			(gump.layout).erase(gump.base.MoveLoc);
+ 			gump.base.MoveLoc := 0;
+ 			break;
+ 		default:
+@@ -252,23 +260,30 @@
+  endfunction
+ 
+ /*
+- * GFPage(byref gump, page)
++ * GFPage(byref gump, page_num)
+  *
+  * Purpose
+  * Adds a page to the gump.
+  *
+  * Parameters
+  * gump:	Reference to the gump
+- * page:	The integer representing the page's number
++ * page_num:	The integer representing the page's number
+  *		  (0 is the background, always visible)
+  *
+  * Return value
+  * No return value.
+  *
+  */
+-function GFPage(byref gump, page)
+-	gump.layout.append(&quot;Page &quot; + CStr(CInt(page)));
+-
++function GFPage(byref gump, page_num)
++	(gump.layout).append(&quot;Page &quot; + CStr(CInt(page_num)));
++	
++	if ( gump.optimize )
++		gump.cur_page := page_num;
++		if ( !gump.pagelocs[page_num] )
++			gump.pagelocs[page_num] := (gump.layout).size();
++		endif
++	endif
++	
+ 	return 1;
+ endfunction
+ 
+@@ -300,7 +315,7 @@
+ 		height := gump.base.width;
+ 	endif
+ 
+-	gump.layout.append(&quot;ResizePic &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;ResizePic &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(gump_id)) + &quot; &quot; + CStr(width) + &quot; &quot; + CStr(height));
+ 	return 1;
+ endfunction
+@@ -323,7 +338,7 @@
+  *
+  */
+  function GFAddAlphaRegion(byref gump, x, y, width, height)
+-	gump.layout.append(&quot;CheckerTrans &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;CheckerTrans &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)));
+ 	return 1;
+  endfunction
+@@ -370,7 +385,7 @@
+ 		line := line + &quot; 0 &quot; + CStr(btn_value);
+ 	endif
+ 
+-	gump.layout.append(line);
++	(gump.layout).append(line);
+ 
+ 	return (btn_value);
+ endfunction
+@@ -415,7 +430,7 @@
+ 		btn_value := gump.data_id;
+ 	endif
+ 
+-	gump.layout.append(&quot;CheckBox &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;CheckBox &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(unc_id)) + &quot; &quot; + CStr(CInt(che_id)) + &quot; &quot;
+ 				+ CStr(CInt(status)) + &quot; &quot; + CStr(btn_value));
+ 
+@@ -440,7 +455,7 @@
+  *
+  */
+ function GFSetRadioGroup(byref gump, group_id)
+-	gump.layout.append(&quot;Group &quot; + CStr(CInt(group_id)));
++	(gump.layout).append(&quot;Group &quot; + CStr(CInt(group_id)));
+ 	return 1;
+ endfunction
+ 
+@@ -470,7 +485,7 @@
+ 	gump.data.append(&quot;&quot;+CStr(text));
+ 	var index := gump.data.size()-1;
+ 
+-	gump.layout.append(&quot;HTMLGump &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;HTMLGump &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot; + CStr(index) + &quot; &quot;
+ 				+ CStr(CInt(background)) + &quot; &quot; + CStr(CInt(scrollbar)));
+ 	return (index);
+@@ -500,11 +515,11 @@
+  */
+ function GFAddHTMLLocalized(byref gump, x, y, width, height, cliloc, background, scrollbar, hue:=0)
+ 	if(hue == 0)
+-		gump.layout.append(&quot;XMFHTMLGump &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++		(gump.layout).append(&quot;XMFHTMLGump &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 					+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot; + CStr(cliloc) + &quot; &quot;
+ 					+ CStr(CInt(background)) + &quot; &quot; + CStr(CInt(scrollbar)));
+ 	else
+-		gump.layout.append(&quot;XMFHTMLGumpColor &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++		(gump.layout).append(&quot;XMFHTMLGumpColor &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 					+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot; + CStr(CInt(cliloc)) + &quot; &quot;
+ 					+ CStr(CInt(background)) + &quot; &quot; + CStr(CInt(scrollbar)) + &quot; &quot; + CStr(CInt(hue)));
+ 	endif
+@@ -538,7 +553,7 @@
+ 	if ( hue )
+ 		text := &quot; hue=&quot;+CStr(hue);
+ 	endif
+-	gump.layout.append(text);
++	(gump.layout).append(text);
+ 
+ 	return 1;
+ endfunction
+@@ -571,7 +586,7 @@
+ 		text := text+&quot; hue=&quot;+CStr(hue);
+ 	endif
+ 
+-	gump.layout.append(text);
++	(gump.layout).append(text);
+ 	return 1;
+ endfunction
+ 
+@@ -595,7 +610,7 @@
+ function GFTextLine(byref gump, x, y, hue:=0, text:=&quot;&quot;)
+ 	gump.data.append(&quot;&quot;+CStr(text));
+ 	var index := gump.data.size()-1;
+-	gump.layout.append(&quot;Text &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;Text &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(hue)) + &quot; &quot; + CStr(index));
+ 
+ 	return (index);
+@@ -625,7 +640,7 @@
+ 	gump.data.append(&quot;&quot;+CStr(text));
+ 	var index := gump.data.size()-1;
+ 
+-	gump.layout.append(&quot;CroppedText &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;CroppedText &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot; + CStr(CInt(hue)) + &quot; &quot; + CStr(index));
+ 
+ 	return (index);
+@@ -670,7 +685,7 @@
+ 		btn_value := gump.data_id;
+ 	endif
+ 
+-	gump.layout.append(&quot;Radio &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;Radio &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(unp_id)) + &quot; &quot; + CStr(CInt(pres_id)) + &quot; &quot;
+ 				+ CStr(CInt(status)) + &quot; &quot; + CStr(btn_value));
+ 	return (btn_value);
+@@ -710,7 +725,7 @@
+ 		txt_id := gump.data_id;
+ 	endif
+ 
+-	gump.layout.append(&quot;TextEntry &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
++	(gump.layout).append(&quot;TextEntry &quot; + CStr(gump.base.x + CInt(x)) + &quot; &quot; + CStr(gump.base.y + CInt(y)) + &quot; &quot;
+ 				+ CStr(CInt(width)) + &quot; &quot; + CStr(CInt(height)) + &quot; &quot;
+ 				+ Cstr(CInt(txt_color)) + &quot; &quot; + CStr(txt_id) + &quot; &quot; + CStr(index));
+ 
+@@ -756,10 +771,32 @@
+  *
+  */
+ function XGFError(text)
+-	var temp := error;
+-	temp.+errortext := text;
+-
++	var temp := error{&quot;errortext&quot;:=text};
++	
+ 	SysLog(&quot;Gump Error:: &quot;+text);
+ 
+ 	return temp;
+ endfunction
++
++/*
++ * XGAddToLayout(gump, text)
++ *
++ * Purpose
++ * Internal function for adding to the layout array
++ * and checking for optimizations.
++ *
++ * Parameters
++ * gump:	Gump to add content to
++ * text:	String to place in the layout array.
++ *
++ * Return value
++ * Returns 1
++ *
++ */
++function XGFAddToLayout(byref gump, text)
++	if ( !gump.optimize )
++		(gump.layout).Append(text);
++	else
++		(gump.layout).Insert(gump.pagelocs[gump.curpage]+1, text);
++	endif
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000124.html">[Poldistro-svn] r144 - trunk/096
+</A></li>
+	<LI>Next message: <A HREF="000126.html">[Poldistro-svn] r146 - trunk/096/pkg/utils/gumps/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#125">[ date ]</a>
+              <a href="thread.html#125">[ thread ]</a>
+              <a href="subject.html#125">[ subject ]</a>
+              <a href="author.html#125">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

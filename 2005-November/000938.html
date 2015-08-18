@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r964 - in trunk/096/pkg/mobiles/brainAI: . bundled/banker config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r964%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20bundled/banker%20config%20include&In-Reply-To=%3C200511131352.jADDq1dp001663%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000937.html">
+   <LINK REL="Next"  HREF="000939.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r964 - in trunk/096/pkg/mobiles/brainAI: . bundled/banker config include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r964%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20bundled/banker%20config%20include&In-Reply-To=%3C200511131352.jADDq1dp001663%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r964 - in trunk/096/pkg/mobiles/brainAI: . bundled/banker config include">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 13 14:52:01 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000937.html">[Poldistro-svn] r963 - trunk/096/pkg/commands/gm
+</A></li>
+        <LI>Next message: <A HREF="000939.html">[Poldistro-svn] r965 - in trunk/096/pkg/items: . hair hair/config hair/cuthair
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#938">[ date ]</a>
+              <a href="thread.html#938">[ thread ]</a>
+              <a href="subject.html#938">[ subject ]</a>
+              <a href="author.html#938">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-13 14:51:51 +0100 (Sun, 13 Nov 2005)
+New Revision: 964
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/bundled/banker/init.src
+Modified:
+   trunk/096/pkg/mobiles/brainAI/bundled/banker/listen.src
+   trunk/096/pkg/mobiles/brainAI/config/equipGroups.cfg
+   trunk/096/pkg/mobiles/brainAI/config/equipIndex.cfg
+   trunk/096/pkg/mobiles/brainAI/include/npcInit.inc
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/banker/init.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/banker/init.src	2005-11-13 13:44:17 UTC (rev 963)
++++ trunk/096/pkg/mobiles/brainAI/bundled/banker/init.src	2005-11-13 13:51:51 UTC (rev 964)
+@@ -0,0 +1,23 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcInit&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++
++program BrainCriticalScript(params)
++	var npc		:= params[1];
++	//var settings	:= params[2];
++	//var scripts	:= params[3];
++	params := 0; // Not needed anymore.
++	
++	NPC_SetupName(npc);
++	NPC_SetupRandomEquipment(npc);
++	
++	return 1;
++endprogram
+
+Modified: trunk/096/pkg/mobiles/brainAI/bundled/banker/listen.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/banker/listen.src	2005-11-13 13:44:17 UTC (rev 963)
++++ trunk/096/pkg/mobiles/brainAI/bundled/banker/listen.src	2005-11-13 13:51:51 UTC (rev 964)
+@@ -51,6 +51,7 @@
+ 	
+ 	var bank_box := CP_GetStorageContainerForMobile(source, bank_region, CP_CREATE);
+ 	if ( text[&quot;bank&quot;] || text[&quot;box&quot;] )
++		AI_Turn(npc, source, NETURN_TOWARD);		
+ 		SendOpenSpecialContainer(source, bank_box);
+ 	endif
+ 	// To-do:
+
+Modified: trunk/096/pkg/mobiles/brainAI/config/equipGroups.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/config/equipGroups.cfg	2005-11-13 13:44:17 UTC (rev 963)
++++ trunk/096/pkg/mobiles/brainAI/config/equipGroups.cfg	2005-11-13 13:51:51 UTC (rev 964)
+@@ -10,6 +10,20 @@
+ #
+ #
+ 
++Elem	Hair
++{
++	Item	ShortHair
++	Item	LongHair
++	Item	PonyTailHair
++	Item	MohawkHair
++	Item	PageboyHair
++	Item	BunsHair
++	Item	AfroHair
++	Item	ReceedingHair
++	Item	PigTailHair
++	Item	KrisnaHair
++}
++
+ Elem	Feet
+ {
+ 	Item	sandals
+
+Modified: trunk/096/pkg/mobiles/brainAI/config/equipIndex.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/config/equipIndex.cfg	2005-11-13 13:44:17 UTC (rev 963)
++++ trunk/096/pkg/mobiles/brainAI/config/equipIndex.cfg	2005-11-13 13:51:51 UTC (rev 964)
+@@ -9,6 +9,7 @@
+ 
+ Elem	Villager_1
+ {
++	Equip	Hair	85
+ 	Equip	Head	10
+ 	Equip	Shirt	100
+ 	Equip	Pants	100
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcInit.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcInit.inc	2005-11-13 13:44:17 UTC (rev 963)
++++ trunk/096/pkg/mobiles/brainAI/include/npcInit.inc	2005-11-13 13:51:51 UTC (rev 964)
+@@ -190,16 +190,20 @@
+ 				continue;
+ 			endif
+ 
+-			var item_list := GetConfigStringArray(group_elem, &quot;Item&quot;);
++			var item_list := array{};
++			if ( !flags )
++				item_list := item_list+GetConfigStringArray(group_elem, &quot;Item&quot;);
++			endif
+ 			if ( flags &amp; EQUIP_MALE )
+-				item_list := GetConfigStringArray(group_elem, &quot;Male&quot;);
++				item_list := item_list + GetConfigStringArray(group_elem, &quot;Male&quot;);
+ 			endif
+ 			if ( flags &amp; EQUIP_FEMALE )
+-				item_list := GetConfigStringArray(group_elem, &quot;Female&quot;);
++				item_list := item_list + GetConfigStringArray(group_elem, &quot;Female&quot;);
+ 			endif
+ 
+ 			var item := item_list[RandomDiceRoll(item_list.Size())+1];
+ 			item := CreateItemAtLocation(mobile.x, mobile.y, mobile.z, item, 1);
++			item.movable := 1;
+ 			if ( item.errortext )
+ 				PrintTextAbove(mobile, &quot;Unable to create [&quot;+item+&quot;] -&gt;&quot;+item.errortext);
+ 			elseif ( !EquipItem(mobile, item) )
+@@ -267,5 +271,5 @@
+ 
+ 	SetName(mobile, my_name);
+ 
+-	return 1;
++	return my_name;
+ endfunction
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-13 13:44:17 UTC (rev 963)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2005-11-13 13:51:51 UTC (rev 964)
+@@ -306,12 +306,15 @@
+ 	
+ 	// Brain AI Nerves
+ 	AIScript	Combat		:brainAI:bundled/banker/combat
++	AIScript	Init		:brainAI:bundled/banker/init
+ 	AIScript	Listen		:brainAI:bundled/banker/listen
+ 	
+ 	// Skinning Info
+ 
+ 	// Settings other scripts use...
+-
++	NameTemplate		Human_Male
++	EquipTemplate		Villager_1
++	
+ 	// CProps (eww!)
+ 	CProp	GuardKill	i1
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000937.html">[Poldistro-svn] r963 - trunk/096/pkg/commands/gm
+</A></li>
+	<LI>Next message: <A HREF="000939.html">[Poldistro-svn] r965 - in trunk/096/pkg/items: . hair hair/config hair/cuthair
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#938">[ date ]</a>
+              <a href="thread.html#938">[ thread ]</a>
+              <a href="subject.html#938">[ subject ]</a>
+              <a href="author.html#938">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

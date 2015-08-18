@@ -1,0 +1,438 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r740 - in trunk/096/pkg: skills/cartography systems/crafting/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r740%20-%20in%20trunk/096/pkg%3A%20skills/cartography%20systems/crafting/include&In-Reply-To=%3C200510310628.j9V6Smg7025211%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000713.html">
+   <LINK REL="Next"  HREF="000715.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r740 - in trunk/096/pkg: skills/cartography systems/crafting/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r740%20-%20in%20trunk/096/pkg%3A%20skills/cartography%20systems/crafting/include&In-Reply-To=%3C200510310628.j9V6Smg7025211%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r740 - in trunk/096/pkg: skills/cartography systems/crafting/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon Oct 31 07:28:48 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000713.html">[Poldistro-svn] r739 - in trunk/096/pkg: commands/coun items/containers/corpse items/doors/config items/food/config skills/blacksmithy skills/bowcraft skills/carpentry skills/cartography skills/cartography/config skills/fishing systems/crafting/config systems/crafting/include
+</A></li>
+        <LI>Next message: <A HREF="000715.html">[Poldistro-svn] r741 - trunk/096/pkg/items/blood/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#714">[ date ]</a>
+              <a href="thread.html#714">[ thread ]</a>
+              <a href="subject.html#714">[ subject ]</a>
+              <a href="author.html#714">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-31 07:28:43 +0100 (Mon, 31 Oct 2005)
+New Revision: 740
+
+Modified:
+   trunk/096/pkg/skills/cartography/cartography.cfg
+   trunk/096/pkg/skills/cartography/encodeMap.src
+   trunk/096/pkg/skills/cartography/itemdesc.cfg
+   trunk/096/pkg/systems/crafting/include/craftGumps.inc
+Log:
+
+
+Modified: trunk/096/pkg/skills/cartography/cartography.cfg
+===================================================================
+--- trunk/096/pkg/skills/cartography/cartography.cfg	2005-10-31 04:45:12 UTC (rev 739)
++++ trunk/096/pkg/skills/cartography/cartography.cfg	2005-10-31 06:28:43 UTC (rev 740)
+@@ -22,7 +22,7 @@
+ 	name		local map
+ 	material	1
+ 	skill		10.0
+-	difficulty	20.0
++	difficulty	5.0
+ 	points		30.0
+ 	exceptional	0
+ 	mark		0
+@@ -33,7 +33,7 @@
+ 	name		regional map
+ 	material	1
+ 	skill		35.0
+-	difficulty	50.0
++	difficulty	40.0
+ 	points		70.0
+ 	exceptional	0
+ 	mark		0
+@@ -44,7 +44,7 @@
+ 	name		world map
+ 	material	1
+ 	skill		50.0
+-	difficulty	80.0
++	difficulty	60.0
+ 	points		100.0
+ 	exceptional	0
+ 	mark		0
+
+Modified: trunk/096/pkg/skills/cartography/encodeMap.src
+===================================================================
+--- trunk/096/pkg/skills/cartography/encodeMap.src	2005-10-31 04:45:12 UTC (rev 739)
++++ trunk/096/pkg/skills/cartography/encodeMap.src	2005-10-31 06:28:43 UTC (rev 740)
+@@ -43,19 +43,20 @@
+ 			return 1;
+ 		endif
+ 	endforeach
++	return 1;
+ 
+ endprogram
+ 
+ 
+ function makethemap( map, mapdef )
+ 
+-	map.name := &quot;map of &quot; + mapdef[2];
+-	map.xwest := hex(mapdef[3]);
+-	map.ynorth := hex(mapdef[4]);
+-	map.xeast := hex(mapdef[5]);
+-	map.ysouth := hex(mapdef[6]);
+-	map.gumpwidth := hex(mapdef[7]);
+-	map.gumpheight := hex(mapdef[8]);
++	map.name := &quot;Nice Map of &quot; + mapdef[2];
++	map.xwest := CInt(mapdef[3]);
++	map.ynorth := CInt(mapdef[4]);
++	map.xeast := CInt(mapdef[5]);
++	map.ysouth := CInt(mapdef[6]);
++	map.gumpwidth := CInt(mapdef[7]);
++	map.gumpheight := CInt(mapdef[8]);
+ 
+ 	return 1;
+ 
+
+Modified: trunk/096/pkg/skills/cartography/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/cartography/itemdesc.cfg	2005-10-31 04:45:12 UTC (rev 739)
++++ trunk/096/pkg/skills/cartography/itemdesc.cfg	2005-10-31 06:28:43 UTC (rev 740)
+@@ -1,7 +1,7 @@
+ # $Id$
+ #
+ #
+-Item 0x4FBF
++Item 0x6400
+ {
+ 	Name		mapmakerspen1
+ 	Graphic		0xFBF
+@@ -11,7 +11,7 @@
+ 	VendorBuysFor	4
+ }
+ 
+-Item 0x4FC0
++Item 0x6401
+ {
+ 	Name		mapmakerspen2
+ 	Graphic		0xFBF
+@@ -71,7 +71,7 @@
+ Map 0x6402
+ {
+ 	Desc		Map of Vesper
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -83,7 +83,7 @@
+ Map 0x6403
+ {
+ 	Desc		Map of Yew
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -95,7 +95,7 @@
+ Map 0x6404
+ {
+ 	Desc		Map of Skara Brae
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -107,7 +107,7 @@
+ Map 0x6405
+ {
+ 	Desc		Map of Jhelom
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -119,7 +119,7 @@
+ Map 0x6406
+ {
+ 	Desc		Map of Trinsic
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -131,7 +131,7 @@
+ Map 0x6407
+ {
+ 	Desc		Map of Minoc
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -143,7 +143,7 @@
+ Map 0x6408
+ {
+ 	Desc		Map of Bucaneer's Den
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -155,7 +155,7 @@
+ Map 0x6409
+ {
+ 	Desc		Map of Serpent's Hold
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -167,7 +167,7 @@
+ Map 0x640A
+ {
+ 	Desc		Map of Nujelm
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -179,7 +179,7 @@
+ Map 0x640B
+ {
+ 	Desc		Map of Magincia
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -191,7 +191,7 @@
+ Map 0x640C
+ {
+ 	Desc		Map of Ocllo
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -203,7 +203,7 @@
+ Map 0x640D
+ {
+ 	Desc		Map of Moonglow
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -215,7 +215,7 @@
+ Map 0x640E
+ {
+ 	Desc		Map of Britain
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	9
+ 	VendorBuysFor	4
+ 	Weight		1
+@@ -227,7 +227,7 @@
+ Map 0x640F
+ {
+ 	Desc		Map of Minoc to Yew
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -239,7 +239,7 @@
+ Map 0x6410
+ {
+ 	Desc		Map of Minoc to Vesper
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -251,7 +251,7 @@
+ Map 0x6411
+ {
+ 	Desc		Map of Britain to Trinsic
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -263,7 +263,7 @@
+ Map 0x6412
+ {
+ 	Desc		Map of Trinsic to Bucaneer's Den
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -275,7 +275,7 @@
+ Map 0x6413
+ {
+ 	Desc		Map of Bucaneer's Den to Ocllo
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -287,7 +287,7 @@
+ Map 0x6414
+ {
+ 	Desc		Map of Trinsic to Jhelom
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -299,7 +299,7 @@
+ Map 0x6415
+ {
+ 	Desc		Map of Vesper to Nujelm
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -311,7 +311,7 @@
+ Map 0x6416
+ {
+ 	Desc		Map of Nujelm to Magincia
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -323,7 +323,7 @@
+ Map 0x6417
+ {
+ 	Desc		Map of Bucaneer's Den to Magincia
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -335,7 +335,7 @@
+ Map 0x6418
+ {
+ 	Desc		Map of Magincia to Ocllo
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -347,7 +347,7 @@
+ Map 0x6419
+ {
+ 	Desc		Map of Serpent's Hold to Ocllo
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -359,7 +359,7 @@
+ Map 0x641A
+ {
+ 	Desc		Map of Moonglow to Nujelm
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -371,7 +371,7 @@
+ Map 0x641B
+ {
+ 	Desc		Map of Yew to Britain
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -383,7 +383,7 @@
+ Map 0x641C
+ {
+ 	Desc		Map of Britain to Skara Brae
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	15
+ 	VendorBuysFor	7
+ 	Weight		1
+@@ -395,7 +395,7 @@
+ Map 0x641D
+ {
+ 	Desc		Map of the World
+-	Graphic		0x14ed
++	Graphic		0x14ec
+ 	VendorSellsFor	75
+ 	VendorBuysFor	37
+ 	Weight		1
+@@ -430,7 +430,7 @@
+ {
+ 	Name		worldmap
+ 	Desc		a world map
+-	Graphic		0x14ED
++	Graphic		0x14EC
+ 	VendorSellsFor	75
+ 	VendorBuysFor	37
+ 	Weight		1
+
+Modified: trunk/096/pkg/systems/crafting/include/craftGumps.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/craftGumps.inc	2005-10-31 04:45:12 UTC (rev 739)
++++ trunk/096/pkg/systems/crafting/include/craftGumps.inc	2005-10-31 06:28:43 UTC (rev 740)
+@@ -365,6 +365,10 @@
+ 	// Get the material type required to craft the item.
+ 	var matname   := lower(elem.type);
+ 
++	if( TypeOf(elem.mtype) == &quot;String&quot; )
++		matname := elem.mtype;
++	endif
++
+ 	// Get the materials amount required to craft the item
+ 	var material  := elem.material;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000713.html">[Poldistro-svn] r739 - in trunk/096/pkg: commands/coun items/containers/corpse items/doors/config items/food/config skills/blacksmithy skills/bowcraft skills/carpentry skills/cartography skills/cartography/config skills/fishing systems/crafting/config systems/crafting/include
+</A></li>
+	<LI>Next message: <A HREF="000715.html">[Poldistro-svn] r741 - trunk/096/pkg/items/blood/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#714">[ date ]</a>
+              <a href="thread.html#714">[ thread ]</a>
+              <a href="subject.html#714">[ subject ]</a>
+              <a href="author.html#714">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

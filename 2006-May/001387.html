@@ -1,0 +1,441 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1418 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/skunk
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1418%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20bundled%20bundled/skunk&In-Reply-To=%3C200605141157.k4EBvgeX016803%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001386.html">
+   <LINK REL="Next"  HREF="001388.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1418 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/skunk</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1418%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20.%20bundled%20bundled/skunk&In-Reply-To=%3C200605141157.k4EBvgeX016803%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1418 - in trunk/096/pkg/mobiles/brainAI: . bundled bundled/skunk">austin at berlios.de
+       </A><BR>
+    <I>Sun May 14 13:57:42 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001386.html">[Poldistro-svn] r1417 - trunk/096/config/noncore
+</A></li>
+        <LI>Next message: <A HREF="001388.html">[Poldistro-svn] r1419 - in trunk/096/pkg/mobiles/brainAI: . include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1387">[ date ]</a>
+              <a href="thread.html#1387">[ thread ]</a>
+              <a href="subject.html#1387">[ subject ]</a>
+              <a href="author.html#1387">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-14 13:57:39 +0200 (Sun, 14 May 2006)
+New Revision: 1418
+
+Added:
+   trunk/096/pkg/mobiles/brainAI/bundled/skunk/
+   trunk/096/pkg/mobiles/brainAI/bundled/skunk/combat.src
+   trunk/096/pkg/mobiles/brainAI/bundled/skunk/enterArea.src
+   trunk/096/pkg/mobiles/brainAI/bundled/skunk/leftArea.src
+   trunk/096/pkg/mobiles/brainAI/bundled/skunk/lookAround.src
+   trunk/096/pkg/mobiles/brainAI/bundled/skunk/shouldWatch.src
+Modified:
+   trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+Log:
+Start of a skunk npc.
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/skunk/combat.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/skunk/combat.src	2006-05-14 10:18:59 UTC (rev 1417)
++++ trunk/096/pkg/mobiles/brainAI/bundled/skunk/combat.src	2006-05-14 11:57:39 UTC (rev 1418)
+@@ -0,0 +1,79 @@
++// $Id: combat.src 714 2005-10-30 09:37:07Z austin $
++
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:attributes:attributes&quot;;
++include &quot;:timedscripts:timedScripts&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	var nerve_name	:= params[2];
++	var event	:= params[3];
++	var settings	:= params[4];
++	var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++
++	//Store it here so it does not have to do the math over and over.
++	var flee_level := AP_GetVitalMaximumValue(npc, &quot;Hits&quot;) * (CDbl(settings[&quot;FleeLevel&quot;])/100.0);
++
++	var opponent := event.source;
++	var flee_mode := 0;
++
++	AI_SetOpponent(npc, opponent);
++
++	var has_sprayed := 0;
++	while ( npc )
++		var dist := Distance(npc, opponent);
++		if ( has_sprayed || ShouldFlee(npc, flee_level, flee_mode) )
++			flee_mode := 1;
++			AI_WarMode(npc, 0);
++			AI_Move(npc, opponent, NEMOVE_AWAY, NEMOVE_RUN, WAKEUP, 100);
++		elseif ( DoneFighting(npc, opponent, dist) )
++			if ( scripts.Exists(&quot;EndFight&quot;) )
++				params := array{opponent, settings, scripts};
++				AI_StartNerve(npc, &quot;EndFight&quot;, scripts[&quot;EndFight&quot;].script, params);
++			else
++				AI_WarMode(npc, 0);
++			endif
++			AI_EndNerve(npc, nerve_name);
++		elseif ( dist &lt;= 4 &amp;&amp; CheckLineOfSight(npc, opponent) )
++			AI_Speak(npc, &quot;*sprays at &quot;+opponent.name+&quot;*&quot;);
++			TS_StartTimer(opponent, &quot;skunk&quot;, 180); // 3 minutes
++			has_sprayed := 1;
++		endif
++
++		sleepms(400);
++		AI_ClearThoughts(npc, CLR_NERVE);
++	endwhile
++endprogram
++
++function DoneFighting(npc, opponent, byref dist)
++	if ( opponent.dead )
++		return 1;
++	elseif ( !opponent )
++		return 1;
++	elseif ( opponent.hidden )
++		return 1;
++	elseif ( opponent.concealed &gt; npc.cmdlevel )
++		return 1;
++	elseif ( dist &gt; 20 )
++		return 1;
++	elseif ( dist &gt; 10 &amp;&amp; !CheckLineOfSight(npc, opponent) )
++		return 1;
++	endif
++
++	return 0;
++endfunction
++
++function ShouldFlee(npc, byref flee_level, byref flee_mode)
++	if ( flee_mode )
++		return 1;
++	elseif ( AP_GetVital(npc, &quot;Hits&quot;) &lt; flee_level )
++		return 1;
++	endif
++
++	return 0;
++endfunction
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/skunk/enterArea.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/skunk/enterArea.src	2006-05-14 10:18:59 UTC (rev 1417)
++++ trunk/096/pkg/mobiles/brainAI/bundled/skunk/enterArea.src	2006-05-14 11:57:39 UTC (rev 1418)
+@@ -0,0 +1,58 @@
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	var event	:= params[3];
++	var settings	:= params[4];
++	var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( event )
++			case ( event.type )
++				SYSEVENT_ENTEREDAREA:
++					EnteredArea(npc, event, settings, scripts);
++					break;
++				default:
++					break;
++			endcase
++			
++			event := 0;
++		endif
++		
++		sleepms(5);
++		event := wait_for_event(600);
++	endwhile
++	
++	return 1;
++endprogram
++
++function EnteredArea(npc, byref event, byref settings, byref scripts)
++	var source := event.source;
++	
++	if ( NPC_ShouldWatch(npc, source, settings, scripts) )
++		if ( NPC_AddToWatchList(npc, source) )
++			if ( NPC_LoadWatchList(npc).Size() == 1 ) 
++				// First time someone approached
++				AI_Turn(npc, source, NETURN_AWAY);
++				AI_Speak(npc, &quot;*stands up on its front legs in a defensive manner*&quot;);
++			endif
++			
++			AI_WakeUp(npc);
++			
++			if ( scripts[&quot;LookAround&quot;] )
++				if ( !GetNerveProcess(npc, &quot;LookAround&quot;) )
++					AI_WakeUp(npc);
++				endif
++			endif
++		endif
++	endif
++		
++	return 1;
++endfunction
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/skunk/leftArea.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/skunk/leftArea.src	2006-05-14 10:18:59 UTC (rev 1417)
++++ trunk/096/pkg/mobiles/brainAI/bundled/skunk/leftArea.src	2006-05-14 11:57:39 UTC (rev 1418)
+@@ -0,0 +1,48 @@
++use uo;
++use os;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	var event	:= params[3];
++	//var settings	:= params[4];
++	//var scripts	:= params[5];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( event )
++			case ( event.type )
++				SYSEVENT_LEFTAREA:
++					LeftArea(npc, event);
++					break;
++				default:
++					break;
++			endcase
++			
++			event := 0;
++		endif
++		
++		sleepms(5);
++		event := wait_for_event(600);
++	endwhile
++endprogram
++
++function LeftArea(npc, byref event)
++	var source := event.source;
++
++	if ( source.npctemplate )
++		return 0;
++	elseif ( NPC_RemoveFromWatchList(npc, source) )
++		if ( NPC_LoadWatchList(npc).Size() == 0 ) 
++			// No one left in its area.
++			AI_Speak(npc, &quot;*returns to standing on all fours*&quot;);
++		endif
++		return 1;
++	endif
++	
++	return 0;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/skunk/lookAround.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/skunk/lookAround.src	2006-05-14 10:18:59 UTC (rev 1417)
++++ trunk/096/pkg/mobiles/brainAI/bundled/skunk/lookAround.src	2006-05-14 11:57:39 UTC (rev 1418)
+@@ -0,0 +1,48 @@
++use uo;
++use os;
++use util;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainNerve(params)
++	var npc		:= params[1];
++	//var nerve_name	:= params[2];
++	var settings	:= params[3];
++	var scripts	:= params[4];
++	params := 0; // Not needed anymore.
++	
++	while ( npc )
++		if ( !npc.opponent )
++			if ( NPC_LoadWatchList(npc).size() &lt; 1 )
++				// No need to look around any longer. We're all alone :(
++				return;
++			else
++				FindOpponent(npc, settings, scripts);
++			endif
++		endif
++		
++		AI_ClearThoughts(npc, CLR_NERVE);
++		Sleep(5);
++	endwhile
++endprogram
++
++function FindOpponent(npc, byref settings, byref scripts)
++	var closest := 0;
++	foreach mobile in ListMobilesInLineOfSight(npc, CInt(settings[&quot;AreaSize&quot;]))
++		if ( NPC_ShouldWatch(npc, mobile, settings, scripts) )
++			if ( Distance(npc, mobile) &lt; Distance(npc, closest) )
++				closest := mobile;
++			endif
++		endif
++		sleepms(2);
++	endforeach
++	
++	if ( closest )
++		AI_Attack(npc, closest);
++		return closest;
++	endif
++	
++	return 0;
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/mobiles/brainAI/bundled/skunk/shouldWatch.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/bundled/skunk/shouldWatch.src	2006-05-14 10:18:59 UTC (rev 1417)
++++ trunk/096/pkg/mobiles/brainAI/bundled/skunk/shouldWatch.src	2006-05-14 11:57:39 UTC (rev 1418)
+@@ -0,0 +1,22 @@
++use uo;
++use os;
++use util;
++
++include &quot;:brainAI:npcNerves&quot;;
++include &quot;:brainAI:npcCommands&quot;;
++include &quot;:brainAI:npcWatchList&quot;;
++
++program BrainCriticalScript(params)
++	//var npc := params[1];
++	var mobile := params[2];
++	//var settings := params[3];
++	params := 0; // Not needed anymore
++	
++	if ( mobile.cmdlevel &amp;&amp; mobile.concealed )
++		return 0;
++	elseif ( mobile.npctemplate )
++		return 0;
++	endif
++	
++	return 1;
++endprogram
+
+Modified: trunk/096/pkg/mobiles/brainAI/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-05-14 10:18:59 UTC (rev 1417)
++++ trunk/096/pkg/mobiles/brainAI/npcdesc.cfg	2006-05-14 11:57:39 UTC (rev 1418)
+@@ -468,6 +468,71 @@
+ 	// CProps (eww!)
+ }
+ 
++NPCTemplate Skunk
++{
++	// Primary NPC information
++	Name			&lt;Example NPC&gt;
++	Script			:brainAI:brain
++	ObjType			0xCD
++	Color			1882
++	TrueColor		1882
++	Gender			0
++	AR			0
++	RunSpeed		65
++	Alignment		neutral
++	Category		Austin
++
++	// Attributes
++	Strength		5
++	Intelligence		5
++	Dexterity		5
++	
++	Wrestling		5
++
++	// Vitals
++	HITS			5
++	MANA			5
++	STAM			5
++
++	// Intrinsic Weapon
++	AttackSpeed		1
++	AttackDamage		1d2
++	AttackAttribute		Wrestling
++	AttackHitScript		:combat:mainHitScript
++	
++	// Sounds
++	AttackHitSound		203
++	AttackMissSound		569
++	DeathSound		204
++	DamagedSound		202
++	
++	// Brain AI Settings
++	AISetting	AreaSize	i6
++	AISetting	CycleWait	i10
++	AISetting	DblClickRange	i10
++	AISetting	FleeLevel	i50 // 50%
++	AISetting	HearGhosts	i1
++	AISetting	HearSpeech	i1
++	AISetting	IdleTicks	i5
++	AISetting	ListenRange	i10
++	AISetting	SleepWait	i90
++
++	// Brain AI Nerves
++	AIScript	Combat		:brainAI:bundled/skunk/combat
++	AIScript	EnterArea	:brainAI:bundled/skunk/enterArea
++	AIScript	LeftArea	:brainAI:bundled/skunk/leftArea
++	AIScript	LookAround	:brainAI:bundled/skunk/lookAround
++	AIScript	Sleep		:brainAI:scripts/sleep/justWander
++	AIScript	ShouldWatch	:brainAI:bundled/skunk/shouldWatch
++	
++	// Skinning Info
++	// Skinning	ItemName	Amount
++
++	// Settings other scripts use...
++
++	// CProps (eww!)
++}
++
+ ##########################################
+ # Merchants
+ ##########################################
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001386.html">[Poldistro-svn] r1417 - trunk/096/config/noncore
+</A></li>
+	<LI>Next message: <A HREF="001388.html">[Poldistro-svn] r1419 - in trunk/096/pkg/mobiles/brainAI: . include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1387">[ date ]</a>
+              <a href="thread.html#1387">[ thread ]</a>
+              <a href="subject.html#1387">[ subject ]</a>
+              <a href="author.html#1387">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

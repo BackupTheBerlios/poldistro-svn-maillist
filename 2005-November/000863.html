@@ -1,0 +1,1097 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r890 - in trunk/096/pkg/skills/magery: . config include spellBook
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r890%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20config%20include%20spellBook&In-Reply-To=%3C200511040614.jA46Em4L000689%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000862.html">
+   <LINK REL="Next"  HREF="000864.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r890 - in trunk/096/pkg/skills/magery: . config include spellBook</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r890%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20config%20include%20spellBook&In-Reply-To=%3C200511040614.jA46Em4L000689%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r890 - in trunk/096/pkg/skills/magery: . config include spellBook">austin at berlios.de
+       </A><BR>
+    <I>Fri Nov  4 07:14:48 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000862.html">[Poldistro-svn] r889 - in trunk/096: pkg/items/containers/include scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000864.html">[Poldistro-svn] r891 - in trunk/096: pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/commands/props pkg/commands/seer pkg/config/include pkg/items/blood pkg/items/blood/blood pkg/items/blood/config pkg/items/blood/include pkg/items/containers/include pkg/items/dyes/dyeTub pkg/items/dyes/dyes pkg/items/dyes/furnitureTub pkg/items/dyes/include pkg/items/feces pkg/items/feces/config pkg/items/feces/poop pkg/items/training pkg/items/training/archeryButte pkg/items/training/config pkg/items/training/include pkg/items/training/pocketDip pkg/items/training/trainingDummy pkg/items/vomit pkg/items/vomit/config pkg/items/vomit/vomit pkg/items/walkOn/spiderWeb pkg/mobiles/brainAI/docs pkg/mobiles/brainAI/include pkg/mobiles/brainAI/scripts/combat pkg/mobiles/brainAI/scripts/doubleClick pkg/mobiles/brainAI/scripts/endFight pkg/mobiles/brainAI/scripts/enterArea pkg/mobiles/brainAI/scripts/leftArea pkg/mobiles/brainAI/scripts/lookAround pkg/mobiles/brainAI/scripts/sh! ouldWatch pkg/mobiles/brainAI/scripts/sleep pkg/mobiles/timedScripts pkg/mobiles/timedScripts/commands/gm pkg/mobiles/timedScripts/config pkg/mobiles/timedScripts/include pkg/mobiles/timedScripts/subScripts/food pkg/mobiles/timedScripts/subScripts/odors pkg/mobiles/timedScripts/subScripts/paralysis pkg/mobiles/timedScripts/subScripts/poison pkg/packetHooks pkg/packetHooks/CharProfile pkg/packetHooks/CharProfile/config pkg/packetHooks/OpenDoor pkg/packetHooks/OpenDoor/config pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/config pkg/packetHooks/RequestAttack pkg/packetHooks/RequestAttack/config pkg/packetHooks/StatHook pkg/packetHooks/Target pkg/packetHooks/Target/config pkg/packetHooks/WarAndPeace pkg/packetHooks/WarAndPeace/config pkg/skills/lumberjacking pkg/skills/lumberjacking/config pkg/skills/lumberjacking/include pkg/skills/lumberjacking/treeRegen pkg/skills/magery pkg/skills/magery/OLD pkg/skills/magery/OLD/config pkg/skills/magery/config pkg/skills/magery! /include pkg/skills/magery/spellScroll pkg/systems/attributes/! config p
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#863">[ date ]</a>
+              <a href="thread.html#863">[ thread ]</a>
+              <a href="subject.html#863">[ subject ]</a>
+              <a href="author.html#863">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-04 07:14:45 +0100 (Fri, 04 Nov 2005)
+New Revision: 890
+
+Added:
+   trunk/096/pkg/skills/magery/spellBook/
+   trunk/096/pkg/skills/magery/spellBook/castSpell.src
+   trunk/096/pkg/skills/magery/spells.cfg
+Removed:
+   trunk/096/pkg/skills/magery/config/spells.cfg
+Modified:
+   trunk/096/pkg/skills/magery/include/spells.inc
+   trunk/096/pkg/skills/magery/spellStarter.src
+Log:
+
+
+Deleted: trunk/096/pkg/skills/magery/config/spells.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/config/spells.cfg	2005-11-04 03:39:13 UTC (rev 889)
++++ trunk/096/pkg/skills/magery/config/spells.cfg	2005-11-04 06:14:45 UTC (rev 890)
+@@ -1,17 +0,0 @@
+-#
+-# Spell	Example
+-# {
+-#	Script		:magery:spellScripts/Circle#/fileName
+-#	
+-#	ManaCost	25
+-#	
+-#	BaseDelay	100
+-#	Difficulty	35
+-#	
+-#	Attribute	Magery
+-#	
+-#	Reagent	BloodMoss	5
+-#	Reagent	BlackPearl	10
+-#	Reagent	Ginseng		250000
+-#}
+-#
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/magery/include/spells.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/include/spells.inc	2005-11-04 03:39:13 UTC (rev 889)
++++ trunk/096/pkg/skills/magery/include/spells.inc	2005-11-04 06:14:45 UTC (rev 890)
+@@ -5,7 +5,6 @@
+ 
+ include &quot;:attributes:attributes&quot;;
+ include &quot;include/client&quot;;
+-include &quot;include/dist&quot;;
+ 
+ const MAX_RANGE	:= 16;
+ 
+@@ -22,10 +21,10 @@
+  *
+  */
+ function MS_GetSpellsCfgFile()
+-	var cfg := ReadConfigFile(&quot;:magery:config/spells&quot;);
++	var cfg := ReadConfigFile(&quot;:magery:spells&quot;);
+ 
+ 	if ( cfg.errortext )
+-		SysLog(&quot;Error::MS_GetSpellsCfgFile() - Unable to open [:magery:config/spells.cfg] -&gt;&quot;+cfg.errortext);
++		SysLog(&quot;Error::MS_GetSpellsCfgFile() - Unable to open [:magery:spells.cfg] -&gt;&quot;+cfg.errortext);
+ 	endif
+ 
+ 	return cfg;
+
+Added: trunk/096/pkg/skills/magery/spellBook/castSpell.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellBook/castSpell.src	2005-11-04 03:39:13 UTC (rev 889)
++++ trunk/096/pkg/skills/magery/spellBook/castSpell.src	2005-11-04 06:14:45 UTC (rev 890)
+@@ -0,0 +1,18 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use cfgfile;
++
++program castSpell(who, spell_id)
++	var script := Start_Script(&quot;spellStarter&quot;, {who, spell_id});
++	if ( script.errortext )
++		SendSysMessage(who, &quot;Error - Could not start spell starter -&gt;&quot;+script.errortext);
++		return 0;
++	endif
++	
++	return 1;
++endprogram
+
+Modified: trunk/096/pkg/skills/magery/spellStarter.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellStarter.src	2005-11-04 03:39:13 UTC (rev 889)
++++ trunk/096/pkg/skills/magery/spellStarter.src	2005-11-04 06:14:45 UTC (rev 890)
+@@ -9,10 +9,10 @@
+ 
+ include &quot;:attributes:attributes&quot;;
+ include &quot;:magery:spells&quot;;
++include &quot;:containers:containers&quot;;
++include &quot;include/itemdesc&quot;;
+ include &quot;include/client&quot;;
+-include &quot;include/string&quot;;
+ 
+-
+ set_script_option(SCRIPTOPT_CAN_ACCESS_OFFLINE_MOBILES, 1);
+ 
+ program SpellStarter(params)
+@@ -60,7 +60,7 @@
+ 	elseif ( !ConsumeVital(who, MANA, mana_cost) )
+ 		SendSysMessage(who, &quot;You are too tired to cast.&quot;);
+ 		FailSpell(who);
+-	elseif ( !CheckRegs(who, spell_elem, scroll) )
++	elseif ( !CheckReagents(who, spell_elem, scroll) )
+ 		FailSpell(who);
+ 	elseif ( !EquipmentCheck(who) )
+ 		FailSpell(who);
+@@ -166,7 +166,7 @@
+ 	return 1;
+ endfunction
+ 
+-function CheckRegs(who, byref spell_elem, scroll)
++function CheckReagents(who, byref spell_elem, scroll)
+ 	if ( who.npctemplate )
+ 		// NPCs don't need reagents to cast.
+ 		return 1;
+
+Added: trunk/096/pkg/skills/magery/spells.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/spells.cfg	2005-11-04 03:39:13 UTC (rev 889)
++++ trunk/096/pkg/skills/magery/spells.cfg	2005-11-04 06:14:45 UTC (rev 890)
+@@ -0,0 +1,904 @@
++Spell 1
++{
++	SpellId		1
++	Name		Clumsy
++	Script		spellBook/castSpell
++
++	ManaCost	0
++	Delay		0
++
++	PowerWords	Uus Jux
++	Circle		1
++
++	RegCost		BloodMoss	1
++	RegCost		NightShade	1
++}
++
++Spell 2
++{
++	SpellId		2
++	Name		Create Food
++	Script		spellBook/castSpell
++
++	ManaCost	0
++	Delay		0
++
++	Circle		1
++	PowerWords	In Mani Ylem
++
++	RegCost		Garlic		1
++	RegCost		Ginseng		1
++	RegCost		MandrakeRoot	1
++}
++
++Spell 3
++{
++	SpellId		3
++	Name		Feeblemind
++	Script		spellBook/castSpell
++
++	ManaCost	0
++	Delay		0
++
++	PowerWords	Rel Wis
++	Circle		1
++
++	RegCost		NightShade	1
++	RegCost		Ginseng		1
++}
++
++Spell 4
++{
++	SpellId		4
++	Name		Heal
++	Script		spellBook/castSpell
++
++	ManaCost	0
++	Delay		0
++
++	PowerWords	In Mani
++	Circle		1
++
++	RegCost		Garlic		1
++	RegCost		Ginseng		1
++	RegCost		SpiderSilk	1
++}
++
++Spell  5
++{
++	SpellId		5
++	Name		Magic Arrow
++	Script		spellBook/castSpell
++
++	PowerWords	In Por Ylem
++	Circle		1
++
++	RegCost		BlackPearl	1
++	RegCost		NightShade	1
++}
++
++Spell 6
++{
++	SpellId		6
++	Name		Night Sight
++	Script		spellBook/castSpell
++
++	PowerWords	In Lor
++	Circle		1
++
++	RegCost		SpiderSilk	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 7
++{
++	SpellId		7
++	Name		Reactive Armor
++	Script		spellBook/castSpell
++	
++	PowerWords	Flam Sanct
++	Circle		1
++	
++	RegCost		Garlic		1
++	RegCost		SpiderSilk	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 8
++{
++	SpellId		8
++	Name		Weaken
++	Script		spellBook/castSpell
++	
++	PowerWords	Des Mani
++	Circle		1
++	
++	RegCost		Garlic		1
++	RegCost		NightShade	1
++}
++
++Spell 9
++{
++	SpellId		9
++	Name		Agility
++	Script		spellBook/castSpell
++	
++	PowerWords	Ex Uus
++	Circle		2
++	
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++}
++
++Spell 10
++{
++	SpellId		10
++	Name		Cunning
++	Script		spellBook/castSpell
++	
++	PowerWords	Uus Wis
++	Circle		2
++	
++	RegCost		NightShade	1
++	RegCost		MandrakeRoot	1
++}
++
++Spell 11
++{
++	SpellId		11
++	Name		Cure
++	Script		spellBook/castSpell
++	
++	PowerWords	An Nox
++	Circle		2
++	
++	RegCost		Garlic		1
++	RegCost		Ginseng		1
++}
++
++Spell 12
++{
++	SpellId		12
++	Name		Harm
++	Script		spellBook/castSpell
++	
++	PowerWords	An Mani
++	Circle		2
++	
++	RegCost		NightShade	1
++	RegCost		SpiderSilk	1
++}
++
++Spell 13
++{
++	SpellId		13
++	Name		Magic Trap
++	Script		spellBook/castSpell
++	
++	PowerWords	In Jux
++	Circle		2
++	
++	RegCost		Garlic		1
++	RegCost		SpiderSilk	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 14
++{
++	SpellId		14
++	Name		Magic Untrap
++	Script		spellBook/castSpell
++	
++	PowerWords	An Jux
++	Circle		2
++	
++	RegCost		Garlic		1
++	RegCost		Ginseng		1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 15
++{
++	SpellId		15
++	Name		Protection
++	Script		spellBook/castSpell
++	
++	PowerWords	Uus Sanct
++	Circle		2
++	
++	RegCost		Garlic		1
++	RegCost		Ginseng		1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 16
++{
++	SpellId		16
++	Name		Strength
++	Script		spellBook/castSpell
++	
++	PowerWords	Uus Mani
++	Circle		2
++	
++	RegCost		MandrakeRoot	1
++	RegCost		NightShade	1
++}
++
++Spell 17
++{
++	SpellId		17
++	Name		Bless
++	Script		spellBook/castSpell
++	
++	PowerWords	Rel Sanct
++	Circle		3
++	
++	RegCost		Garlic		1
++	RegCost		MandrakeRoot	1
++}
++
++Spell 18
++{
++	SpellId		18
++	Name		Fireball
++	Script		spellBook/castSpell
++	
++	PowerWords	Vas Flam
++	Circle		3
++	
++	RegCost		BlackPearl	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 19
++{
++	SpellId		19
++	Name		Magic Lock
++	Script		spellBook/castSpell
++	
++	PowerWords	An Por
++	Circle		3
++	
++	RegCost		BloodMoss	1
++	RegCost		Garlic		1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 20
++{
++	SpellId		20
++	Name		Poison
++	Script		spellBook/castSpell
++	
++	PowerWords	In Nox
++	Circle		3
++	
++	RegCost		NightShade	1
++}
++
++Spell 21
++{
++	SpellId		21
++	Name		Telekinesis
++	Script		spellBook/castSpell
++	
++	PowerWords	Ort Por Ylem
++	Circle		3
++	
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++}
++
++Spell 22
++{
++	SpellId		22
++	Name		Teleport
++	Script		spellBook/castSpell
++	
++	PowerWords	Rel Por
++	Circle		3
++	
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++}
++
++Spell 23
++{
++	SpellId		23
++	Name		Unlock
++	Script		spellBook/castSpell
++	
++	PowerWords	Ex Por
++	Circle		3
++	
++	RegCost		BloodMoss	1
++	RegCost		Garlic		1
++}
++
++Spell 24
++{
++	SpellId		24
++	Name		Wall of Stone
++	Script		spellBook/castSpell
++	
++	PowerWords	In Sanct Ylem
++	Circle		3
++	
++	RegCost		BloodMoss	1
++	RegCost		Garlic		1
++}
++
++Spell 25
++{
++	SpellId		25
++	Name		Arch Cure
++	Script		spellBook/castSpell
++	
++	PowerWords	Vas An Nox
++	Circle		4
++	
++	RegCost		Garlic		1
++	RegCost		Ginseng		1
++	RegCost		MandrakeRoot	1
++}
++
++Spell 26
++{
++	SpellId		26
++	Name		Arch Protection
++	Script		spellBook/castSpell
++	
++	PowerWords	Vas Uus Sanct
++	Circle		4
++	
++	RegCost		Garlic		1
++	RegCost		Ginseng		1
++	RegCost		MandrakeRoot	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 27
++{
++	SpellId		27
++	Name		Curse
++	Script		spellBook/castSpell
++	
++	PowerWords	Des Sanct
++	Circle		4
++	
++	RegCost		Garlic		1
++	RegCost		NightShade	1
++	RegCost		SulphurousAsh	1
++}	
++
++Spell 28
++{
++	SpellId		28
++	Name		Fire Field
++	Script		spellBook/castSpell
++	
++	PowerWords	In Flam Grav
++	Circle		4
++	
++	RegCost		SpiderSilk	1
++	RegCost		SulphurousAsh	1
++	RegCost		BlackPearl	1
++}
++
++Spell 29
++{
++	SpellId		29
++	Name		Greater Heal
++	Script		spellBook/castSpell
++	
++	PowerWords	In Vas Mani
++	Circle		4
++	
++	RegCost		Garlic		1
++	RegCost		Ginseng		1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++}
++
++Spell 30
++{
++	SpellId		30
++	Name		Lightning
++	Script		spellBook/castSpell
++	
++	PowerWords	Por Ort Grav
++	Circle		4
++		
++	RegCost		BlackPearl	1
++	RegCost		SulphurousAsh	1
++	RegCost 	MandrakeRoot	1
++}
++
++Spell 31
++{
++	SpellId		31
++	Name		Mana Drain
++	Script		spellBook/castSpell
++	
++	PowerWords	Ort Rel
++	Circle		4
++	
++	RegCost		BlackPearl	1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1	
++}
++
++Spell 32
++{
++	SpellId		32
++	Name		Recall
++	Script		spellBook/castSpell
++	
++	PowerWords	Kal Ort Por
++	Circle		4
++	
++	RegCost		BlackPearl	1
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1	
++}
++
++Spell 33
++{
++	SpellId		33
++	Name		Blade Spirit
++	Script		spellBook/castSpell
++	
++	PowerWords	In Jux Hur Ylem
++	Circle		5
++	
++	RegCost		BlackPearl	1
++	RegCost		MandrakeRoot	1
++	RegCost		NightShade	1
++}
++
++Spell 34
++{
++	SpellId		34
++	Name		Dispel Field
++	Script		spellBook/castSpell
++	
++	PowerWords	An Grav
++	Circle		5
++	
++	RegCost		BlackPearl	1
++	RegCost		Garlic		1
++	RegCost		SpiderSilk	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 35
++{
++	SpellId		35
++	Name		Incognito
++	Script		spellBook/castSpell
++	
++	PowerWords	Kal In Ex
++	Circle		5
++	
++	RegCost		BloodMoss	1
++	RegCost		Garlic		1
++	RegCost		NightShade	1
++}
++
++Spell 36
++{
++	SpellId		36
++	Name		Spell Reflection
++	Script		spellBook/castSpell
++	
++	PowerWords	In Jux Sanct
++	Circle		5
++	
++	RegCost		Garlic		1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++}
++
++Spell 37
++{
++	SpellId		37
++	Name		Mind Blast
++	Script		spellBook/castSpell
++	
++	PowerWords	Por Corp Wis
++	Circle		5
++	
++	RegCost		BlackPearl	1
++	RegCost		MandrakeRoot	1
++	RegCost		NightShade	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 38
++{
++	SpellId		38
++	Name		Paralyze
++	Script		spellBook/castSpell
++	
++	PowerWords	An Ex Por
++	Circle		5
++	
++	RegCost		Garlic		1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++}
++
++Spell 39
++{
++	SpellId		39
++	Name		Poison Field
++	Script		spellBook/castSpell
++	
++	PowerWords	In Nox Grav
++	Circle		5
++	
++	RegCost		BlackPearl	1
++	RegCost		NightShade	1
++	RegCost		SpiderSilk	1
++}
++
++Spell 40
++{
++	SpellId		40
++	Name		SummonCreature
++	Script		spellBook/castSpell
++	
++	PowerWords	Kal Xen
++	Circle		5
++	
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++}
++
++Spell 41
++{
++	SpellId		41
++	Name		Dispel
++	Script		spellBook/castSpell
++	
++	PowerWords	An Ort
++	Circle		6
++	
++	RegCost		Garlic		1
++	RegCost		MandrakeRoot	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 42
++{
++	SpellId		42
++	Name		Energy Bolt
++	Script		spellBook/castSpell
++	
++	PowerWords	Corp Por
++	Circle		6
++	
++	RegCost		BlackPearl	1
++	RegCost		NightShade	1
++}
++
++Spell 43
++{
++	SpellId		43
++	Name		Explosion
++	Script		spellBook/castSpell
++	
++	PowerWords	Vas Ort Flam
++	Circle		6
++	
++	RegCost		BlackPearl	1
++	RegCost		MandrakeRoot	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 44
++{
++	SpellId		44
++	Name		Invisibility
++	Script		spellBook/castSpell
++	
++	PowerWords	An Lor Xen
++	Circle		6
++	
++	RegCost		BloodMoss	1
++	RegCost		NightShade	1
++}
++
++Spell 45
++{
++	SpellId		45
++	Name		Mark
++	Script		spellBook/castSpell
++	
++	PowerWords	Kal Por Ylem
++	Circle		6
++	
++	RegCost		BlackPearl	1
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++}
++
++Spell 46
++{
++	SpellId		46
++	Name		Mass Curse
++	Script		spellBook/castSpell
++	
++	PowerWords	Vas Des Sanct
++	Circle		6
++	
++	RegCost		Garlic		1
++	RegCost		MandrakeRoot	1
++	RegCost		NightShade	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 47
++{
++	SpellId		47
++	Name		Paralyze Field
++	Script		spellBook/castSpell
++	
++	PowerWords	In Ex Grav
++	Circle		6
++	
++	RegCost		BlackPearl	1
++	RegCost		Ginseng		1
++	RegCost		SpiderSilk	1
++}
++
++Spell 48
++{
++	SpellId		48
++	Name		Reveal
++	Script		spellBook/castSpell
++	
++	PowerWords	Wis  Quas
++	Circle		6
++	
++	RegCost		BloodMoss	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 49
++{
++	SpellId		49
++	Name		Chain Lightning
++	Script		spellBook/castSpell
++	
++	PowerWords	Vas Ort Grav
++	Circle		7
++	
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++	RegCost		BlackPearl	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 50
++{
++	SpellId		50
++	Name		Energy Field
++	Script		spellBook/castSpell
++	
++	PowerWords	In Sanct Grav
++	Circle		7
++	
++	RegCost		BlackPearl	1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 51
++{
++	SpellId		51
++	Name		FlameStrike
++	Script		spellBook/castSpell
++	
++	PowerWords	Kal Vas Flam
++	Circle		7
++	
++	RegCost		SpiderSilk	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 52
++{
++	SpellId		52
++	Name		Gate
++	Script		spellBook/castSpell
++	
++	PowerWords	Vas Rel Por
++	Circle		7
++	
++	RegCost		BlackPearl	1
++	RegCost		MandrakeRoot	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 53
++{
++	SpellId		53
++	Name		Mana Vampire
++	Script		spellBook/castSpell
++	
++	PowerWords	Ort Sanct
++	Circle		7
++	
++	RegCost		BlackPearl	1
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++}
++
++Spell 54
++{
++	SpellId		54
++	Name		Mass Dispel
++	Script		spellBook/castSpell
++	
++	PowerWords	Vas An Ort
++	Circle		7
++	
++	RegCost		BlackPearl	1
++	RegCost		Garlic		1
++	RegCost		MandrakeRoot	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 55
++{
++	SpellId		55
++	Name		Meteor Swarm
++	Script		spellBook/castSpell
++	
++	PowerWords	Kal Des Flam Ylem
++	Circle		7
++	
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 56
++{
++	SpellId		56
++	Name		Polymorph
++	Script		spellBook/castSpell
++	
++	PowerWords	Vas Ylem Rel
++	Circle		7
++	
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++}
++
++Spell 57
++{
++	SpellId		57
++	Name		Earthquake
++	Script		spellBook/castSpell
++	
++	PowerWords	In Vas Por
++	Circle		8
++
++	RegCost		BloodMoss	1
++	RegCost		Ginseng		1
++	RegCost		MandrakeRoot	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 58
++{
++	SpellId		58
++	Name		EnergyVortex
++	Script		spellBook/castSpell
++	
++	PowerWords	Vas Corp Por
++	Animation	0x11
++	Circle		8
++	
++	RegCost		BlackPearl	1
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++	RegCost		NightShade	1
++}
++
++Spell 59
++{
++	SpellId		59
++	Name		Resurrection
++	Script		spellBook/castSpell
++	
++	PowerWords	An Corp
++	Circle		8
++	
++	RegCost		BloodMoss	1
++	RegCost		Garlic		1
++	RegCost		Ginseng		1
++}
++
++Spell 60
++{
++	SpellId		60
++	Name		Summon Air Elemental
++	Script		spellBook/castSpell
++	
++	Animation	0x11
++	PowerWords	Kal Vas Xen Hur
++	Circle		8
++	
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++}
++
++Spell 61
++{
++	SpellId		61
++	Name		Summon Daemon
++	Script		spellBook/castSpell
++	
++	Animation	0x11
++	PowerWords	Kal Vas Xen Corp
++	Circle		8
++	
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 62
++{
++	SpellId		62
++	Name		Summon Earth Elemental
++	Script		spellBook/castSpell
++	
++	Animation	0x11
++	PowerWords	Kal Vas Xen Ylem
++	Circle		8
++		
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++}
++
++Spell 63
++{
++	SpellId		63
++	Name		Summon Fire Elemental
++	Script		spellBook/castSpell
++	
++	Animation	0x11
++	PowerWords	Kal Vas Xen Flam
++	Circle		8
++		
++	RegCost		BloodMoss	1
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++	RegCost		SulphurousAsh	1
++}
++
++Spell 64
++{
++	SpellId		64
++	Name		Summon Water Elemental
++	Script		spellBook/castSpell
++	
++	Animation	0x11
++	PowerWords	Kal Vas Xen An Flam
++	Circle		8
++	
++	RegCost		MandrakeRoot	1
++	RegCost		SpiderSilk	1
++}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000862.html">[Poldistro-svn] r889 - in trunk/096: pkg/items/containers/include scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000864.html">[Poldistro-svn] r891 - in trunk/096: pkg/commands/admin pkg/commands/coun pkg/commands/gm pkg/commands/player pkg/commands/props pkg/commands/seer pkg/config/include pkg/items/blood pkg/items/blood/blood pkg/items/blood/config pkg/items/blood/include pkg/items/containers/include pkg/items/dyes/dyeTub pkg/items/dyes/dyes pkg/items/dyes/furnitureTub pkg/items/dyes/include pkg/items/feces pkg/items/feces/config pkg/items/feces/poop pkg/items/training pkg/items/training/archeryButte pkg/items/training/config pkg/items/training/include pkg/items/training/pocketDip pkg/items/training/trainingDummy pkg/items/vomit pkg/items/vomit/config pkg/items/vomit/vomit pkg/items/walkOn/spiderWeb pkg/mobiles/brainAI/docs pkg/mobiles/brainAI/include pkg/mobiles/brainAI/scripts/combat pkg/mobiles/brainAI/scripts/doubleClick pkg/mobiles/brainAI/scripts/endFight pkg/mobiles/brainAI/scripts/enterArea pkg/mobiles/brainAI/scripts/leftArea pkg/mobiles/brainAI/scripts/lookAround pkg/mobiles/brainAI/scripts/sh! ouldWatch pkg/mobiles/brainAI/scripts/sleep pkg/mobiles/timedScripts pkg/mobiles/timedScripts/commands/gm pkg/mobiles/timedScripts/config pkg/mobiles/timedScripts/include pkg/mobiles/timedScripts/subScripts/food pkg/mobiles/timedScripts/subScripts/odors pkg/mobiles/timedScripts/subScripts/paralysis pkg/mobiles/timedScripts/subScripts/poison pkg/packetHooks pkg/packetHooks/CharProfile pkg/packetHooks/CharProfile/config pkg/packetHooks/OpenDoor pkg/packetHooks/OpenDoor/config pkg/packetHooks/PacketConfig pkg/packetHooks/PacketConfig/config pkg/packetHooks/RequestAttack pkg/packetHooks/RequestAttack/config pkg/packetHooks/StatHook pkg/packetHooks/Target pkg/packetHooks/Target/config pkg/packetHooks/WarAndPeace pkg/packetHooks/WarAndPeace/config pkg/skills/lumberjacking pkg/skills/lumberjacking/config pkg/skills/lumberjacking/include pkg/skills/lumberjacking/treeRegen pkg/skills/magery pkg/skills/magery/OLD pkg/skills/magery/OLD/config pkg/skills/magery/config pkg/skills/magery! /include pkg/skills/magery/spellScroll pkg/systems/attributes/! config p
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#863">[ date ]</a>
+              <a href="thread.html#863">[ thread ]</a>
+              <a href="subject.html#863">[ subject ]</a>
+              <a href="author.html#863">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

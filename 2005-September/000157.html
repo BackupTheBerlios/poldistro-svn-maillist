@@ -1,0 +1,1321 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r175 - in trunk/096: config pkg/skills/blacksmithy pkg/skills/carpentry pkg/skills/tailoring scripts/include scripts/util
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r175%20-%20in%20trunk/096%3A%20config%20pkg/skills/blacksmithy%20pkg/skills/carpentry%20pkg/skills/tailoring%20scripts/include%20scripts/util&In-Reply-To=%3C200509201812.j8KICPaN016848%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000156.html">
+   <LINK REL="Next"  HREF="000158.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r175 - in trunk/096: config pkg/skills/blacksmithy pkg/skills/carpentry pkg/skills/tailoring scripts/include scripts/util</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r175%20-%20in%20trunk/096%3A%20config%20pkg/skills/blacksmithy%20pkg/skills/carpentry%20pkg/skills/tailoring%20scripts/include%20scripts/util&In-Reply-To=%3C200509201812.j8KICPaN016848%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r175 - in trunk/096: config pkg/skills/blacksmithy pkg/skills/carpentry pkg/skills/tailoring scripts/include scripts/util">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Tue Sep 20 20:12:25 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000156.html">[Poldistro-svn] r174 - in trunk/096/pkg/commands: . config include seer
+</A></li>
+        <LI>Next message: <A HREF="000158.html">[Poldistro-svn] r176 - in trunk/096/pkg/items: . repaircontract
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#157">[ date ]</a>
+              <a href="thread.html#157">[ thread ]</a>
+              <a href="subject.html#157">[ subject ]</a>
+              <a href="author.html#157">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-20 20:12:19 +0200 (Tue, 20 Sep 2005)
+New Revision: 175
+
+Added:
+   trunk/096/config/resourceList.cfg
+Modified:
+   trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src
+   trunk/096/pkg/skills/carpentry/carpentry.src
+   trunk/096/pkg/skills/tailoring/makeClothItems.src
+   trunk/096/scripts/include/objtype.inc
+   trunk/096/scripts/util/repair.inc
+Log:
+Updated for specific changes to util/repair.inc and objtype.inc.
+
+Added: trunk/096/config/resourceList.cfg
+===================================================================
+--- trunk/096/config/resourceList.cfg	2005-09-20 17:27:16 UTC (rev 174)
++++ trunk/096/config/resourceList.cfg	2005-09-20 18:12:19 UTC (rev 175)
+@@ -0,0 +1,316 @@
++// Metals/Ingots
++
++Resource 0x6309
++{
++    Name        iron
++    Color       0
++    Power       0
++    WPower      0
++    Skill       0
++    Type        Metal
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x630a
++{
++    Name        dull copper
++    Color       0x8415
++    Power       0
++    WPower      0
++    Skill       65
++    Type        Metal
++    Quality     0 6 10
++    Ptmod       5
++}
++
++Resource 0x630b
++{
++    Name        shadow
++    Color       0x8455
++    Power       0
++    WPower      0
++    Skill       70
++    Type        Metal
++    Quality     1 2 10
++    Ptmod       5
++}
++
++Resource 0x630c
++{
++    Name        copper
++    Color       0x845e
++    Power       COPPER
++    WPower      0
++    Skill       75
++    Type        Metal
++    Quality     1 1 40
++    Ptmod       10
++}
++
++Resource 0x630d
++{
++    Name        bronze
++    Color       0x86b2
++    Power       0
++    WPower      0
++    Skill       80
++    Type        Metal
++    Quality     3 3 40
++    Ptmod       10
++}
++
++Resource 0x630e
++{
++    Name        golden
++    Color       0x88a6
++    Power       0
++    WPower      0
++    Skill       85
++    Type        Metal
++    Quality     5 1 50
++    Ptmod       15
++}
++
++Resource 0x630f
++{
++    Name        agapite
++    Color       0x83ea
++    Power       0
++    WPower      0
++    Skill       90
++    Type        Metal
++    Quality     7 2 50
++    Ptmod       15
++}
++
++Resource 0x6310
++{
++    Name        verite
++    Color       0x889f
++    Power       0
++    WPower      0
++    Skill       97
++    Type        Metal
++    Quality     7 3 50
++    Ptmod       20
++}
++
++Resource 0x6311
++{
++    Name        valorite
++    Color       0x8539
++    Power       0
++    WPower      0
++    Skill       100
++    Type        Metal
++    Quality     9 4 50
++    Ptmod       25
++}
++
++// Wood/Logs/Boards
++
++Resource 0x1bdd
++{
++    Name        plain
++    Color       0
++    Power       0
++    WPower      0
++    Skill       0
++    Type        Wood
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x1bd7
++{
++    Name        plain
++    Color       0
++    Power       0
++    WPower      0
++    Skill       0
++    Type        Wood
++    Quality     0 0 0
++    Ptmod       0
++}
++
++// Cloth
++
++Resource 0x1766
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x1767
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x1768
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf95
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf96
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf97
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf98
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf99
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf9a
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf9b
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0xf9c
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Cloth
++    Quality     0 0 0
++    Ptmod       0
++}
++
++
++// Leather
++
++Resource 0x1078
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Leather
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x1079
++{
++    Name        plain
++    Color       0
++    Power       0
++    Skill       0
++    Type        Leather
++    Quality     0 0 0
++    Ptmod       0
++}
++
++Resource 0x702e
++{
++    Name	spined
++    Color	1337
++    Skill       65
++    Power       0
++    Type        Leather
++    Quality     0 5 0
++    Ptmod       17
++}
++
++Resource 0x7030
++{
++    Name	horned
++    Color       1653
++    Power       0
++    Skill       90
++    Type        Leather
++    Quality     0 2 0
++    Ptmod       25
++}
++
++Resource 0x702f
++{
++    Name	barbed
++    Color       1425
++    Power       0
++    Skill       70
++    Type        Leather
++    Quality     0 2 0
++    Ptmod       20
++}
+
+Modified: trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src	2005-09-20 17:27:16 UTC (rev 174)
++++ trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src	2005-09-20 18:12:19 UTC (rev 175)
+@@ -1,3 +1,4 @@
++use polsys;
+ use cfgfile;
+ use util;
+ 
+@@ -521,56 +522,13 @@
+ endfunction
+ 
+ function GFButtonIDC(x, y, release, press, close, retval)
+-	var line := &quot;button &quot; + CStr(gfref.x + CInt(x)) + &quot; &quot; + CStr(gfref.y + CInt(y));
+-	line := line + &quot; &quot; + CStr(CInt(release)) + &quot; &quot; + CStr(CInt(press)) + &quot; &quot;;
+-	line := line + CStr(CInt(close)) + &quot; 0 &quot;;
+-	line := line + CStr(CInt(retval));
+-	gflayout.append( line );
++        var line := &quot;button &quot; + CStr(gfref.x + CInt(x)) + &quot; &quot; + CStr(gfref.y + CInt(y));
++        line := line + &quot; &quot; + CStr(CInt(release)) + &quot; &quot; + CStr(CInt(press)) + &quot; &quot;;
++        line := line + CStr(CInt(close)) + &quot; 0 &quot;;
++        line := line + CStr(CInt(retval));
++        gflayout.append( line );
+ endfunction
+ 
+-function repair_this(who)
+-  SendSysMessage(who, &quot;Select an item to repair.&quot;);
+-  var use_on := Target(who);
+-  if(!can_access(who, use_on))
+-    return;
+-  endif
+-  if(use_on.movable == 0)
+-    SendSysMessage(who, &quot;You cannot repair that.&quot;);
+-    return;
+-  endif
+-  if(!Accessible(who, use_on))
+-    SendSysMessage(who, &quot;You cannot reach that.&quot;);
+-    return;
+-  elseif(dist(who, use_on) &gt; 2)
+-    SendSysMessage(who, &quot;That is too far away.&quot;);
+-    return;
+-  endif
+-  if(is_weapon_armor(use_on.objtype))
+-    var near_items := ListItemsNearLocation(who.x, who.y, who.z,3, who.realm);
+-    foreach item in near_items
+-      if ((item.objtype == UOBJ_ANVIL1) || (item.objtype == UOBJ_ANVIL2))
+-        repair_item( who, use_on, SKILLID_BLACKSMITHY );
+-        return;
+-      endif
+-    endforeach
+-    SendSysMessage( who, &quot;You must be near an anvil to repair items!&quot; );
+-    return;
+-  else
+-    SendSysMessage(who, &quot;You cannot repair that.&quot;);
+-  endif
+-  return;
+-endfunction
+-
+-function is_weapon_armor(what)
+-  var elem := FindConfigElem(itemcfg, what);
+-  var repairable := GetConfigInt(elem,&quot;repairable&quot;);
+-  if (repairable == 1)
+-    return 1;
+-  else
+-    return 0;
+-  endif
+-endfunction
+-
+ function makeBlacksmithItems(who, what, amt, cont, hammer)
+   var anvil_near := 0;
+   foreach item in ListItemsNearLocation(who.x, who.y, who.z, 3, who.realm)
+@@ -598,7 +556,7 @@
+   var ptmod := 0;
+   case(use_on.objtype)
+     0x6309: is_ingot := 1; ptmod := 0;
+-	0x630a: is_ingot := 1; ptmod := 5;
++        0x630a: is_ingot := 1; ptmod := 5;
+     0x630b: is_ingot := 1; ptmod := 5;
+     0x630c: is_ingot := 1; ptmod := 10;
+     0x630d: is_ingot := 1; ptmod := 10;
+@@ -670,7 +628,7 @@
+           if(!theitem.isa(POLCLASS_WEAPON))
+             case(use_on.objtype)
+               0x6309:   nme := &quot;&quot;             + itemname; theitem.color := 0x0;
+-	          0x630a:   nme := &quot;dull copper &quot; + itemname; theitem.color := 0x8415;
++                  0x630a:   nme := &quot;dull copper &quot; + itemname; theitem.color := 0x8415;
+               0x630b:   nme := &quot;shadow &quot;      + itemname; theitem.color := 0x8455;
+               0x630c:   nme := &quot;copper &quot;      + itemname; theitem.color := 0x845e;
+               0x630d:   nme := &quot;bronze &quot;      + itemname; theitem.color := 0x86b2;
+@@ -785,7 +743,7 @@
+ function checkSkillForDifferentMetals(who, ingot)
+   case( ingot.objtype )
+     0x6309:   return(checkHisSkill(who,  0));
+-	0x630a:   return(checkHisSkill(who, 65));
++        0x630a:   return(checkHisSkill(who, 65));
+     0x630b:   return(checkHisSkill(who, 70));
+     0x630c:   return(checkHisSkill(who, 75));
+     0x630d:   return(checkHisSkill(who, 80));
+@@ -805,76 +763,3 @@
+     return 0;
+   endif
+ endfunction
+-
+-function resmelt(who, tongs)
+-  var near_items := ListItemsNearLocation(who.x, who.y, who.z, 3, who.realm);
+-  var forge_near := 0;
+-  foreach forge in near_items
+-    if((forge.objtype == 0xfb1) || ((forge.objtype &gt;= 0x197a) &amp;&amp; (forge.objtype &lt;= 0x19a9)))
+-      forge_near := 1;
+-      break;
+-    endif
+-  endforeach
+-  if(forge_near == 0)
+-    SendSysMessage(who, &quot;You must be near a forge to re-smelt items.&quot;);
+-    return;
+-  endif
+-  SendSysMessage(who, &quot;Select the item you wish to melt down.&quot;);
+-  var use_on := Target(who, TGTOPT_CHECK_LOS);
+-  if(!use_on)
+-	SendSysMessage(who, &quot;Targetting cancelled.&quot;);
+-	return;
+-  endif
+-  if(!can_access(who, use_on))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  if(!Accessible(who, use_on) || !ReserveItem( use_on ))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  if(use_on.container != who.backpack)
+-	SendSysMessage(who, &quot;You can only melt items stored in the top level of your backpack.&quot;);
+-	return;
+-  endif
+-  var skill := smith_cfg[use_on.objtype].&quot;skill&quot;;
+-  var amt := CInt(smith_cfg[use_on.objtype].&quot;material&quot;);
+-  if((!skill) || (!amt))
+-    SendSysMessage(who, &quot;You cannot resmelt that.&quot;);
+-    return;
+-  endif
+-  amt := CInt((amt * GetEffectiveSkill(who,SKILLID_BLACKSMITHY) * 75 ) / 10000);
+-  if(amt &lt; 1)
+-	amt := 1;
+-  endif
+-  var itemcfg := ReadConfigFile(&quot;:mining:itemdesc&quot;);
+-  if(!itemcfg)
+-	return;
+-  endif
+-  var elemcol;
+-  var ingot := -1;
+-  var color := use_on.color;
+-  var valid_ingot := { 0x6309, 0x630a, 0x630b, 0x630c, 0x630d, 0x630e, 0x630f, 0x6310, 0x6311 };
+-  foreach entry in valid_ingot
+-    elemcol := itemcfg[entry].&quot;Color&quot;;
+-	if(color == elemcol)
+-	  ingot := entry;
+-	  break;
+-	endif
+-  endforeach
+-  if(ingot == -1)
+-	PrintTextAbovePrivate(use_on, &quot;You can't melt this metal down!&quot;, who);
+-	return;
+-  endif
+-  PlaySoundEffect(who, 0x2c);
+-  sleep(1);
+-  if(DestroyItem(use_on))
+-	if(CheckSkill(who, SKILLID_BLACKSMITHY, skill, 10))
+-	  SendSysMessage(who, &quot;You manage to get a bit of material out of that.&quot;);
+-	  CreateItemInBackpack(who, ingot, amt);
+-	else
+-	  SendSysMessage(who, &quot;You fail, and destroy the item.&quot;);
+-	endif
+-    return;
+-  endif
+-endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/carpentry/carpentry.src
+===================================================================
+--- trunk/096/pkg/skills/carpentry/carpentry.src	2005-09-20 17:27:16 UTC (rev 174)
++++ trunk/096/pkg/skills/carpentry/carpentry.src	2005-09-20 18:12:19 UTC (rev 175)
+@@ -18,8 +18,6 @@
+ // These entries are unnecessary?  - HellRazor 19 Nov 02
+ // var itemcfg   := ReadConfigFile(&quot;:combat:itemdesc&quot;);
+ // var smith_cfg := ReadConfigFile(&quot;blacksmithy&quot;);
+-var UOBJ_BOLT_START   := 0x0f95;
+-var UOBJ_BOLT_END     := 0x0f9c;
+ gfref.x := 50;
+ gfref.y := 50;
+ var O := 501;
+@@ -993,4 +991,4 @@
+     endif
+   endif
+   return pts;
+-endfunction
+\ No newline at end of file
++endfunction
+
+Modified: trunk/096/pkg/skills/tailoring/makeClothItems.src
+===================================================================
+--- trunk/096/pkg/skills/tailoring/makeClothItems.src	2005-09-20 17:27:16 UTC (rev 174)
++++ trunk/096/pkg/skills/tailoring/makeClothItems.src	2005-09-20 18:12:19 UTC (rev 175)
+@@ -13,12 +13,6 @@
+ include &quot;include/toolWear&quot;;
+ include &quot;include/noto&quot;;
+ 
+-const UOBJ_SEWING_KIT   := 0x0f9d;
+-const UOBJ_BOLT_START   := 0x0f95;
+-const UOBJ_BOLT_END     := 0x0f9c;
+-const UOBJ_CLOTH_STARTS := 0x175d;
+-const UOBJ_CLOTH_END    := 0x1768;
+-const UOBJ_MUTLI_CLOTH  := 0x1766;
+ const SCISSORS_SOUND    := 0x0249;
+ 
+ var itemcfg          := ReadConfigFile( &quot;itemdesc&quot; );
+@@ -920,4 +914,4 @@
+         line := line + CStr(retval);
+         gflayout.append( line );
+         return XGFRetVal( gflayout.size(), -1, gfbutid - 1 );
+-endfunction
+\ No newline at end of file
++endfunction
+
+Modified: trunk/096/scripts/include/objtype.inc
+===================================================================
+--- trunk/096/scripts/include/objtype.inc	2005-09-20 17:27:16 UTC (rev 174)
++++ trunk/096/scripts/include/objtype.inc	2005-09-20 18:12:19 UTC (rev 175)
+@@ -3,7 +3,7 @@
+ // include/objtype.inc - Object Type definitions
+ //
+ // TODO: consider moving these into include/client.inc
+-//       or, moving CID_XX constants in here
++//       or, moving CID_XX CONSTants in here
+ //
+ /////////////////////////////////////////////////////////////////////////////
+ 
+@@ -13,183 +13,184 @@
+ //
+ /////////////////////////////////////////////////////////////////////////////
+ 
+-const UOBJ_STONEWALL_NS := 0x005f;
+-const UOBJ_STONEWALL_EW := 0x0060;
+-const UOBJ_GUARDS       := 0xa340;
+-const UOBJ_FISHSTEAK    := 0x097a;
++CONST UOBJ_STONEWALL_NS := 0x005f;
++CONST UOBJ_STONEWALL_EW := 0x0060;
++CONST UOBJ_GUARDS       := 0xa340;
++CONST UOBJ_FISHSTEAK    := 0x097a;
+ 
+-const UOBJ_BOX          := 0x09aa;
++CONST UOBJ_BOX          := 0x09aa;
+ 
+-const UOBJ_FISH_START   := 0x09cc;
+-const UOBJ_FISH_END     := 0x09cf;
++CONST UOBJ_FISH_START   := 0x09cc;
++CONST UOBJ_FISH_END     := 0x09cf;
+ 
+-const UOBJ_SFISH_START  := 0x0dd6;
+-const UOBJ_SFISH_END    := 0x0dd9;
++CONST UOBJ_SFISH_START  := 0x0dd6;
++CONST UOBJ_SFISH_END    := 0x0dd9;
+ 
+-const UOBJ_KINDLING     := 0x0de1;
+-const UOBJ_CAMPFIRE     := 0x0de3;
+-const UOBJ_EMBERS       := 0x0de9;
+-const UOBJ_ASHES        := 0x0dea;
++CONST UOBJ_KINDLING     := 0x0de1;
++CONST UOBJ_CAMPFIRE     := 0x0de3;
++CONST UOBJ_EMBERS       := 0x0de9;
++CONST UOBJ_ASHES        := 0x0dea;
+ 
+-const UOBJ_BANDAGE      := 0x0e21;
+-const UOBJ_BLANK_SCROLL := 0x0e34;
++CONST UOBJ_BANDAGE      := 0x0e21;
++CONST UOBJ_BLANK_SCROLL := 0x0e34;
+ 
+-const UOBJ_BANKBOX      := 0x0e40;
++CONST UOBJ_BANKBOX      := 0x0e40;
+ 
+-const UOBJ_DRUM         := 0x0e9c;
+-const UOBJ_TAMB         := 0x0e9d;
+-const UOBJ_HARP         := 0x0eb2;
+-const UOBJ_LUTE         := 0x0eb3;
++CONST UOBJ_DRUM         := 0x0e9c;
++CONST UOBJ_TAMB         := 0x0e9d;
++CONST UOBJ_HARP         := 0x0eb2;
++CONST UOBJ_LUTE         := 0x0eb3;
+ 
+-const UOBJ_SPELLBOOK        := 0x0efa;
++CONST UOBJ_SPELLBOOK        := 0x0efa;
+ 
+-const UOBJ_POISON_POTION    := 0x0f0a;
+-const UOBJ_EMPTY_BOTTLE     := 0x0f0e;
++CONST UOBJ_POISON_POTION    := 0x0f0a;
++CONST UOBJ_EMPTY_BOTTLE     := 0x0f0e;
+ 
+-const UOBJ_GEM_START        := 0x0f0f;
+-const UOBJ_GEM_END          := 0x0f30;
++CONST UOBJ_GEM_START        := 0x0f0f;
++CONST UOBJ_GEM_END          := 0x0f30;
+ 
+-const UOBJ_SHOVEL           := 0x0f39;
++CONST UOBJ_SHOVEL           := 0x0f39;
+ 
+-const UOBJ_XBOW             := 0x0f4f;
++CONST UOBJ_XBOW             := 0x0f4f;
+ 
+-const UOBJ_BLUE_MOONGATE    := 0x0f6c;
++CONST UOBJ_BLUE_MOONGATE    := 0x0f6c;
+ 
+ 
+ 
+-const UOBJ_CLAY             := 0xee19;
+-const UOBJ_SAND             := 0xee18;
++CONST UOBJ_CLAY             := 0xee19;
++CONST UOBJ_SAND             := 0xee18;
+ 
+ 
+ 
+ 
+-const UOBJ_BLACK_PEARL      := 0x0f7a;
+-const UOBJ_BLOOD_MOSS       := 0x0f7b;
+-const UOBJ_BRIMSTONE        := 0x0f7f;
+-const UOBJ_FERTILE_DIRT     := 0x0f81;
+-const UOBJ_EXECUTIONERS_CAP := 0x0f83;
+-const UOBJ_GARLIC           := 0x0f84;
+-const UOBJ_GINSENG          := 0x0f85;
+-const UOBJ_MANDRAKE_ROOT    := 0x0f86;
+-const UOBJ_NIGHTSHADE       := 0x0f88;
+-const UOBJ_OBSIDIAN         := 0x0f89;
+-const UOBJ_PIG_IRON         := 0x0f8a;
+-const UOBJ_SULFUROUS_ASH    := 0x0f8c; // CHECKME spelling
+-const UOBJ_SPIDER_SILK      := 0x0f8d;
+-const UOBJ_VOLCANIC_ASH     := 0x0f8f;
++CONST UOBJ_BLACK_PEARL      := 0x0f7a;
++CONST UOBJ_BLOOD_MOSS       := 0x0f7b;
++CONST UOBJ_BRIMSTONE        := 0x0f7f;
++CONST UOBJ_FERTILE_DIRT     := 0x0f81;
++CONST UOBJ_EXECUTIONERS_CAP := 0x0f83;
++CONST UOBJ_GARLIC           := 0x0f84;
++CONST UOBJ_GINSENG          := 0x0f85;
++CONST UOBJ_MANDRAKE_ROOT    := 0x0f86;
++CONST UOBJ_NIGHTSHADE       := 0x0f88;
++CONST UOBJ_OBSIDIAN         := 0x0f89;
++CONST UOBJ_PIG_IRON         := 0x0f8a;
++CONST UOBJ_SULFUROUS_ASH    := 0x0f8c; // CHECKME spelling
++CONST UOBJ_SPIDER_SILK      := 0x0f8d;
++CONST UOBJ_VOLCANIC_ASH     := 0x0f8f;
+ 
++CONST UOBJ_DEAD_WOOD    := 0x0f90;
+ 
+-const UOBJ_DEAD_WOOD    := 0x0f90;
++CONST UOBJ_CLOTH        := 0x0f95;
++CONST UOBJ_CLOTH_STARTS := 0x175d;
++CONST UOBJ_CLOTH_END    := 0x1768;
++CONST UOBJ_LOOM_START   := 0x105f;
++CONST UOBJ_LOOM_END     := 0x1066;
++CONST UOBJ_BOLT_START   := 0x0f95;
++CONST UOBJ_BOLT_END     := 0x0f9c;
++CONST UOBJ_THREAD_START := 0x0fa0;
++CONST UOBJ_THREAD_END   := 0x0fa1;
++CONST UOBJ_MUTLI_CLOTH  := 0x1766;
++CONST UOBJ_SEWING_KIT   := 0x0f9d;
+ 
+-const UOBJ_CLOTH        := 0x0f95;
++CONST UOBJ_ANVIL1       := 0x0faf;
++CONST UOBJ_ANVIL2       := 0x0fb0;
++CONST UOBJ_SMALL_FORGE  := 0xfb1;  // see also UOBJ_FORGE_START..UOBJ_FORGE_END
++CONST UOBJ_FORGE1       := 0x19a2;
++CONST UOBJ_FORGE2       := 0x19a6;
++CONST UOBJ_FORGE3       := 0x1982;
++CONST UOBJ_FORGE4       := 0x1996;
++CONST UOBJ_FORGE5       := 0x199a;
++CONST UOBJ_FORGE6       := 0x198e;
++CONST UOBJ_FORGE7       := 0x1992;
++CONST UOBJ_FORGE8       := 0x1986;
++CONST UOBJ_FORGE9       := 0x198a;
+ 
+-const UOBJ_THREAD_START := 0x0fa0;
+-const UOBJ_THREAD_END   := 0x0fa1;
++CONST UOBJ_COPPER_KEY   := 0x100e;
++CONST UOBJ_GOLD_KEY     := 0x100f;
++CONST UOBJ_IRON_KEY     := 0x1010;
++CONST UOBJ_KEY_RING     := 0x1011;
++CONST UOBJ_MAGIC_KEY    := 0x1012;
++CONST UOBJ_RUSTY_IRON_KEY := 0x1013;
+ 
+-const UOBJ_ANVIL1       := 0x0faf;
+-const UOBJ_ANVIL2       := 0x0fb0;
+-const UOBJ_SMALL_FORGE  := 0xfb1;  // see also UOBJ_FORGE_START..UOBJ_FORGE_END
+-const UOBJ_FORGE1       := 0x19a2;
+-const UOBJ_FORGE2       := 0x19a6;
+-const UOBJ_FORGE3       := 0x1982;
+-const UOBJ_FORGE4       := 0x1996;
+-const UOBJ_FORGE5       := 0x199a;
+-const UOBJ_FORGE6       := 0x198e;
+-const UOBJ_FORGE7       := 0x1992;
+-const UOBJ_FORGE8       := 0x1986;
+-const UOBJ_FORGE9       := 0x198a;
++CONST UOBJ_CLOCK   := 0x104c;
++CONST UOBJ_CLOCK_FRAME   := 0x104e;
++CONST UOBJ_CLOCK_PARTS   := 0x104f;
++CONST UOBJ_AXLE_AND_GEARS   := 0x1051;
++CONST UOBJ_GEARS   := 0x1053;
++CONST UOBJ_HINGE   := 0x1055;
++CONST UOBJ_SEXTANT   := 0x1057;
++CONST UOBJ_SEXTANT_PARTS   := 0x1059;
++CONST UOBJ_AXLE   := 0x105b;
++CONST UOBJ_SPRINGS   := 0x105d;
+ 
+-const UOBJ_COPPER_KEY   := 0x100e;
+-const UOBJ_GOLD_KEY     := 0x100f;
+-const UOBJ_IRON_KEY     := 0x1010;
+-const UOBJ_KEY_RING     := 0x1011;
+-const UOBJ_MAGIC_KEY    := 0x1012;
+-const UOBJ_RUSTY_IRON_KEY := 0x1013;
++CONST UOBJ_TDUMMYSWING_NS     := 0x1071;
++CONST UOBJ_TDUMMYFREEZE_NS    := 0x1070;
++CONST UOBJ_TDUMMYSWING_EW     := 0x1075;
++CONST UOBJ_TDUMMYFREEZE_EW    := 0x1074;
+ 
+-const UOBJ_CLOCK   := 0x104c;
+-const UOBJ_CLOCK_FRAME   := 0x104e;
+-const UOBJ_CLOCK_PARTS   := 0x104f;
+-const UOBJ_AXLE_AND_GEARS   := 0x1051;
+-const UOBJ_GEARS   := 0x1053;
+-const UOBJ_HINGE   := 0x1055;
+-const UOBJ_SEXTANT   := 0x1057;
+-const UOBJ_SEXTANT_PARTS   := 0x1059;
+-const UOBJ_AXLE   := 0x105b;
+-const UOBJ_SPRINGS   := 0x105d;
++CONST UOBJ_PDUMMYSWING_EW       := 0x1EC1;
++CONST UOBJ_PDUMMYFREEZE_EW      := 0x1EC0;
++CONST UOBJ_PDUMMYSWING_NS       := 0x1EC4;
++CONST UOBJ_PDUMMYFREEZE_NS      := 0x1EC3;
+ 
++CONST UOBJ_BLOOD        := 0x122d;
+ 
++CONST UOBJ_BOW          := 0x13b2;
++CONST UOBJ_HEAVY_XBOW   := 0x13fd;
+ 
+-const UOBJ_LOOM_START   := 0x105f;
+-const UOBJ_LOOM_END     := 0x1066;
++CONST UOBJ_MAP1         := 0x14eb;
++CONST UOBJ_MAP2         := 0x14ec;
++CONST UOBJ_ROLLED_MAP1  := 0x14ed;
++CONST UOBJ_ROLLED_MAP2  := 0x14ee;
+ 
+-const UOBJ_TDUMMYSWING_NS     := 0x1071;
+-const UOBJ_TDUMMYFREEZE_NS    := 0x1070;
+-const UOBJ_TDUMMYSWING_EW     := 0x1075;
+-const UOBJ_TDUMMYFREEZE_EW    := 0x1074;
++CONST UOBJ_HOUSE_DEED1  := 0x14ef;
++CONST UOBJ_SHIP_DEED1   := 0x14f1;
++CONST UOBJ_SHIP_DEED2   := 0x14f2;
+ 
+-const UOBJ_PDUMMYSWING_EW	:= 0x1EC1;
+-const UOBJ_PDUMMYFREEZE_EW	:= 0x1EC0;
+-const UOBJ_PDUMMYSWING_NS	:= 0x1EC4;
+-const UOBJ_PDUMMYFREEZE_NS	:= 0x1EC3;
++CONST UOBJ_CHEST        := 0x1940;
+ 
+-const UOBJ_BLOOD        := 0x122d;
++CONST UOBJ_FORGE_START  := 0x197a;  // see also UOBJ_SMALL_FORGE
++CONST UOBJ_FORGE_END    := 0x19a9;
+ 
+-const UOBJ_BOW          := 0x13b2;
+-const UOBJ_HEAVY_XBOW   := 0x13fd;
++CONST UOBJ_FEATHER      := 0x1bd1;
++CONST UOBJ_SHAFTS       := 0x1bd4;
++CONST UOBJ_LOGS         := 0x1bdd;
+ 
+-const UOBJ_MAP1         := 0x14eb;
+-const UOBJ_MAP2         := 0x14ec;
+-const UOBJ_ROLLED_MAP1  := 0x14ed;
+-const UOBJ_ROLLED_MAP2  := 0x14ee;
++CONST UOBJ_GLASS        := 0xee20;
+ 
+-const UOBJ_HOUSE_DEED1  := 0x14ef;
+-const UOBJ_SHIP_DEED1   := 0x14f1;
+-const UOBJ_SHIP_DEED2   := 0x14f2;
++CONST UOBJ_ARM          := 0x1cec;
++CONST UOBJ_LEG          := 0x1ce2;
++CONST UOBJ_TRUNK        := 0x1cee;
++CONST UOBJ_HEART        := 0x1cef;
++CONST UOBJ_HEAD         := 0x1dae;
+ 
+-const UOBJ_CHEST        := 0x1940;
++CONST UOBJ_TINKER_TOOLS := 0x1ebc;
+ 
+-const UOBJ_FORGE_START  := 0x197a;  // see also UOBJ_SMALL_FORGE
+-const UOBJ_FORGE_END    := 0x19a9;
+ 
+-const UOBJ_FEATHER      := 0x1bd1;
+-const UOBJ_SHAFTS       := 0x1bd4;
+-const UOBJ_LOGS         := 0x1bdd;
++CONST UOBJ_RUNE         := 0x1f14;
+ 
+-const UOBJ_GLASS        := 0xee20;
++CONST UOBJ_CORPSE       := 0x2006;
+ 
+-const UOBJ_ARM          := 0x1cec;
+-const UOBJ_LEG          := 0x1ce2;
+-const UOBJ_TRUNK        := 0x1cee;
+-const UOBJ_HEART        := 0x1cef;
+-const UOBJ_HEAD         := 0x1dae;
++CONST UOBJ_PARAFIELD_NS := 0x3967;
++CONST UOBJ_PARAFIELD_EW := 0x3979;
++CONST UOBJ_POISONFIELD_NS   := 0x3914;
++CONST UOBJ_POISONFIELD_EW   := 0x3920;
++CONST UOBJ_EFIELD_NS        := 0x3947;
++CONST UOBJ_EFIELD_EW        := 0x3956;
+ 
+-const UOBJ_TINKER_TOOLS := 0x1ebc;
++CONST GID_PLANK_EXTENDED_FACING_WEST   := 0x3ed5;
++CONST GID_PLANK_RETRACTED_FACING_WEST  := 0x3eb1;
++CONST GID_PLANK_EXTENDED_FACING_EAST   := 0x3ed4;
++CONST GID_PLANK_RETRACTED_FACING_EAST  := 0x3eb2;
++CONST GID_PLANK_EXTENDED_FACING_SOUTH  := 0x3e84;
++CONST GID_PLANK_RETRACTED_FACING_SOUTH := 0x3e85;
++CONST GID_PLANK_EXTENDED_FACING_NORTH  := 0x3e89;
++CONST GID_PLANK_RETRACTED_FACING_NORTH := 0x3e8a;
+ 
+-
+-const UOBJ_RUNE         := 0x1f14;
+-
+-const UOBJ_CORPSE       := 0x2006;
+-
+-const UOBJ_PARAFIELD_NS	:= 0x3967;
+-const UOBJ_PARAFIELD_EW := 0x3979;
+-const UOBJ_POISONFIELD_NS   := 0x3914;
+-const UOBJ_POISONFIELD_EW   := 0x3920;
+-const UOBJ_EFIELD_NS        := 0x3947;
+-const UOBJ_EFIELD_EW        := 0x3956;
+-
+-const GID_PLANK_EXTENDED_FACING_WEST   := 0x3ed5;
+-const GID_PLANK_RETRACTED_FACING_WEST  := 0x3eb1;
+-const GID_PLANK_EXTENDED_FACING_EAST   := 0x3ed4;
+-const GID_PLANK_RETRACTED_FACING_EAST  := 0x3eb2;
+-const GID_PLANK_EXTENDED_FACING_SOUTH  := 0x3e84;
+-const GID_PLANK_RETRACTED_FACING_SOUTH := 0x3e85;
+-const GID_PLANK_EXTENDED_FACING_NORTH  := 0x3e89;
+-const GID_PLANK_RETRACTED_FACING_NORTH := 0x3e8a;
+-
+ // ick! these are fine for humans, but not true for items..
+ // these are more of a CID.
+-const UOBJ_HUMAN_MALE   := 0x190;
+-const UOBJ_HUMAN_FEMALE := 0x191;
++CONST UOBJ_HUMAN_MALE   := 0x190;
++CONST UOBJ_HUMAN_FEMALE := 0x191;
+ 
+ /////////////////////////////////////////////////////////////////////////////
+ //
+@@ -210,10 +211,10 @@
+ //
+ /////////////////////////////////////////////////////////////////////////////
+ 
+-	//
+-	// Ship Components
+-	//
+-const EXTOBJ_TILLERMAN       := 0xf010;
+-const EXTOBJ_PORT_PLANK      := 0xf011;
+-const EXTOBJ_STARBOARD_PLANK := 0xf012;
+-const EXTOBJ_HOLD            := 0xf013;
++        //
++        // Ship Components
++        //
++CONST EXTOBJ_TILLERMAN       := 0xf010;
++CONST EXTOBJ_PORT_PLANK      := 0xf011;
++CONST EXTOBJ_STARBOARD_PLANK := 0xf012;
++CONST EXTOBJ_HOLD            := 0xf013;
+
+Modified: trunk/096/scripts/util/repair.inc
+===================================================================
+--- trunk/096/scripts/util/repair.inc	2005-09-20 17:27:16 UTC (rev 174)
++++ trunk/096/scripts/util/repair.inc	2005-09-20 18:12:19 UTC (rev 175)
+@@ -1,6 +1,23 @@
++////////////////////////////////////////////////////////////////////////////////////////////////////
++//
++//  name:    repair.inc
++//  version: 2.0
++//  author:  MuadDib
++//
++//  Purpose: Contains all the central Repair functions involving repairing items, using repair
++//           deeds, etc.
++//
++//  Changes: Sept 14, 2005 - Updated repair_item() for swing counter (new crafting ready)
++//                         - Added CreateRepairDeed() Function with support for the following skills:
++//                           Smithy, Bowcraft, Carpenter, Tailor (new crafting ready)
++//                         - Moved repair_this() function to the include (new crafting ready)
++//                         - Moved s_weapon_armor() to the include (new crafting ready)
++//                         - Moved resmelt() to include (New crafting ready)
++//
++////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
++include &quot;include/attributes&quot;;
+ 
+-include &quot;include/attributes&quot;;
+ function repair_item(character, what, skillid )
+   var maxhp;
+   maxhp := what.maxhp;
+@@ -12,21 +29,21 @@
+   damageamount := (125 -  hisskill)/3000.0;
+   if(what.hp == what.maxhp)
+     SendSysMessage(character, &quot;That item is not damaged.&quot;);
+-    return; 
++    return;
+   endif
+   if((what.hp &lt;= 0) || (what.quality &lt;= 0.1) || (!what.quality))
+-    SendSysMessage(character, &quot;The brittle material breaks when you handle it.&quot;);
++    SendSysMessage(character, &quot;The brittle material breaks when you handle it&quot;);
+     DestroyItem(what);
+     return;
+   endif
+   if(what.quality &lt;= damageamount)
+-    SendSysMessage(character, &quot;The brittle material breaks when you handle it.&quot;);
++    SendSysMessage(character, &quot;The brittle material breaks when you handle it&quot;);
+     DestroyItem(what);
+     return;
+   endif
+   what.quality := what.quality - damageamount;
+   if((what.hp &lt;= 0) || (what.quality &lt;= 0.1) || (!what.quality))
+-    SendSysMessage(character, &quot;The brittle material breaks when you handle it.&quot;);
++    SendSysMessage(character, &quot;The brittle material breaks when you handle it&quot;);
+     DestroyItem(what);
+     return;
+   endif
+@@ -37,22 +54,22 @@
+     endif
+     if (thehp + repaired_amount &gt; what.maxhp)
+       what.hp := what.maxhp;
+-      SendSysMessage(character, &quot;You repair the item completely.&quot;);       
++      EraseObjProperty(what, &quot;swings&quot;);
++      SendSysMessage(character, &quot;You  repair the item completely&quot;);
+     else
+       what.hp := thehp + repaired_amount;
+-      SendSysMessage(character, &quot;You successfully repair some of the damage.&quot;);
++      SendSysMessage(character, &quot;You successfully repair some of the damage&quot;);
+     endif
+     if ((what.hp &lt;= 0) || (what.quality &lt;= 0.1) || (!what.quality))
+-      SendSysMessage(character, &quot;The brittle material breaks when you handle it.&quot;);
++      SendSysMessage(character, &quot;The brittle material breaks when you handle it&quot;);
+       DestroyItem(what);
+-      print(&quot;Destroyed item when &quot; + character.name + &quot; repaired it&quot;);
+       return;
+-    endif     
++    endif
+   else
+     var damage_amount := randomint(10);
+     if (thehp &lt;= damage_amount)
+       DestroyItem(what);
+-      SendSysMessage(character, &quot;You fail and destroy the item.&quot;);
++      SendSysMessage(character, &quot;You fail and destroy the item&quot;);
+     endif
+     thehp := thehp - damage_amount;
+     what.hp := thehp;
+@@ -61,14 +78,260 @@
+     endif
+     if(thehp &lt;= 0)
+       DestroyItem(what);
+-      SendSysMessage(character, &quot;You fail and destroy the item.&quot;);
++      SendSysMessage(character, &quot;You fail and destroy the item&quot;);
+     else
+-      SendSysMessage(character, &quot;You fail and damage the item.&quot;);
++      SendSysMessage(character, &quot;You fail and damage the item&quot;);
+     endif
+     if ((what.hp &lt;= 0) || (what.quality &lt;= 0.1) || (!what.quality))
+-      SendSysMessage(character, &quot;The brittle material breaks when you handle it.&quot;);
++      SendSysMessage(character, &quot;The brittle material breaks when you handle it&quot;);
+       DestroyItem(what);
+       return;
+-    endif     
++    endif
+   endif
++endfunction
++
++function CreateRepairDeed(who, scroll, skillid)
++
++  var type, title, color;
++  case(CInt(skillid))
++     7: type := &quot;Blacksmith&quot;; color := CInt(2107);
++     8: type := &quot;Bowyer&quot;; color := CInt(2116);
++    11: type := &quot;Carpenter&quot;; color := CInt(2113);
++    34: type := &quot;Tailor&quot;; color := CInt(2128);
++  endcase
++  var ramt := GetEffectiveSkill(who, skillid);
++  if(ramt &lt; 50)
++    SendSysMessage(who, &quot;You must be at least apprentice level to create a repair service contract.&quot;);
++    return;
++  endif
++  if(ramt &lt; 60 )
++    title := &quot;A repair service contract from an Apprentice &quot; + type;
++  elseif(ramt &lt; 70 )
++    title := &quot;A repair service contract from a Journeyman &quot; + type;
++  elseif(ramt &lt; 80 )
++    title := &quot;A repair service contract from an Expert &quot; + type;
++  elseif(ramt &lt; 90 )
++    title := &quot;A repair service contract from an Adept &quot; + type;
++  elseif(ramt &lt; 100 )
++    title := &quot;A repair service contract from a Master &quot; + type;
++  elseif(ramt &lt; 110 )
++    title := &quot;A repair service contract from a Grandmaster &quot; + type;
++  elseif(ramt &lt; 120 )
++    title := &quot;A repair service contract from an Elder &quot; + type;
++  elseif(ramt &lt; 130 )
++    title := &quot;A repair service contract from a Legendary &quot; + type;
++  endif
++  type := lower(type);
++  var ret := GetItemDescriptor(0xee09);
++  ret.Color := color;
++  ret.CProps.insert(&quot;type&quot;, type);
++  ret.CProps.insert(&quot;skillid&quot;, skillid);
++  ret.CProps.insert(&quot;ramt&quot;, ramt);
++  var theitem := CreateItemInBackpack(who, ret, 1);
++  if(theitem)
++    SubtractAmount(scroll, 1);
++  endif
++  SetName(theitem, title);
++  return;
++
++endfunction
++
++function repair_this(who, skillid := 7)
++  SendSysMessage(who, &quot;Select item to repair.&quot;);
++  var use_on := Target(who);
++  if(!can_access(who, use_on))
++    return;
++  endif
++  if(use_on.movable == 0)
++    SendSysMessage(who, &quot;You cannot repair that.&quot;);
++    return;
++  endif
++  if((!Accessible(who, use_on)) or (dist(who, use_on) &gt; 2))
++    SendSysMessage(who, &quot;You cannot reach that.&quot;);
++    return;
++  endif
++  if(CInt(use_on.objtype) == CInt(0xe34))
++    case(CInt(skillid))
++       7: CreateRepairDeed(who, use_on, skillid);
++       8: CreateRepairDeed(who, use_on, skillid);
++      11: CreateRepairDeed(who, use_on, skillid);
++      34: CreateRepairDeed(who, use_on, skillid);
++    endcase
++    return;
++  endif
++  var forge := 0;
++  case(CInt(skillid))
++     7: forge := 1;
++  endcase
++  if(!forge)
++    if(is_weapon_armor(use_on.objtype))
++      repair_item( who, use_on, skillid);
++    else
++      SendSysMessage(who, &quot;You cannot repair that.&quot;);
++    endif
++  else
++    if(is_weapon_armor(use_on.objtype))
++      var near_items := ListItemsNearLocation(who.x, who.y, who.z,3);
++      foreach item in near_items
++        if ((item.objtype == UOBJ_ANVIL1) || (item.objtype == UOBJ_ANVIL2))
++          repair_item( who, use_on, skillid);
++          return;
++        endif
++      endforeach
++      SendSysMessage( who, &quot;You must be near an anvil to repair items!&quot; );
++      return;
++    else
++      SendSysMessage(who, &quot;You cannot repair that&quot;);
++    endif
++  endif
++  return;
++endfunction
++
++function is_weapon_armor(what)
++  var combatcfg := ReadConfigFile(&quot;:combat:itemdesc&quot;);
++  var elem := FindConfigElem(combatcfg, what);
++  var repairable := GetConfigInt(elem, &quot;repairable&quot;);
++  if (repairable == 1)
++    return 1;
++  else
++    return 0;
++  endif
++endfunction
++
++function resmelt(who)
++
++  var near_items := ListItemsNearLocation(who.x, who.y, who.z, 3);
++  var forge_near := 0;
++  foreach forge in near_items
++    if((forge.objtype == 0xfb1) || ((forge.objtype &gt;= 0x197a) &amp;&amp; (forge.objtype &lt;= 0x19a9)))
++      forge_near := 1;
++      break;
++    endif
++  endforeach
++  if(forge_near == 0)
++    SendSysMessage(who, &quot;You must be near a forge.&quot;);
++    return;
++  endif
++  SendSysMessage(who, &quot;Select the item you wish to melt.&quot;);
++  var use_on := Target(who, TGTOPT_CHECK_LOS);
++  if(!use_on or !can_access(who, use_on))
++    return;
++  endif
++  if(use_on.container.serial != who.backpack.serial)
++    SendSysMessage(who, &quot;That is not in your backpack.&quot;);
++    return;
++  endif
++  if(!Accessible(who, use_on) || !ReserveItem( use_on ))
++    SendSysMessage(who, &quot;You cannot use that.&quot;);
++    return;
++  endif
++  if(use_on.movable == 0)
++    SendSysMessage(who, &quot;You cannot use that while it is locked down.&quot;);
++    return;
++  endif
++  if(use_on in ListEquippedItems(who))
++    SendSysMessage(who, &quot;You cannot use that.&quot;);
++    return;
++  endif
++  var cfgarray := GetConfigStringKeys(rlist_cfg);
++  if(use_on.isA(POLCLASS_CONTAINER))
++    var contitems := EnumerateItemsInContainer(use_on);
++    var skill, amt, ingot;
++    foreach thing in contitems
++      if(craftcfg[thing.objtype])
++        skill := craftcfg[thing.objtype].skill;
++        amt := CInt(craftcfg[thing.objtype].material);
++        if((!skill) || (!amt))
++          return;
++        endif
++        skill := CInt(skill/2);
++        if(skill &lt; 5)
++          skill := 5;
++        endif
++        amt := CInt((amt * GetEffectiveSkill(who,SKILLID_BLACKSMITHY) * 75 ) / 10000);
++        if(amt &lt; 1)
++          amt := 1;
++        endif
++        ingot := -1;
++        var mattype := CInt(GetObjProperty(use_on, &quot;material&quot;));
++        if(mattype &gt;= 0)
++          if(mattype != error)
++            ingot := mattype;
++          endif
++        endif
++        if(ingot == -1)
++          foreach entry in cfgarray
++            if(lower(rlist_cfg[entry].Type) == &quot;metal&quot;)
++              if(CInt(rlist_cfg[entry].Color) == CInt(thing.color))
++                ingot := entry;
++              endif
++            endif
++          endforeach
++        endif
++        if(ingot == -1)
++          SendSysMessage(who, &quot;You have no idea how to smelt this strange ore!&quot;);
++          return;
++        endif
++        PlaySoundEffect(who, 0x2c);
++        sleep(1);
++        PlaySoundEffect(who, 0x22);
++        if(DestroyItem(thing))
++          if(CheckSkill(who, SKILLID_BLACKSMITHY, skill, 10))
++            CreateItemInContainer(who.backpack, ingot, amt);
++          else
++            SendSysMessage(who, &quot;You destroy the item.&quot;);
++          endif
++        endif
++      endif
++      sleep(1);
++   endforeach
++  else
++    if(!craftcfg[use_on.objtype])
++      return;
++    endif
++    var ingot := -1;
++    var skill := craftcfg[use_on.objtype].skill;
++    var amt := CInt(craftcfg[use_on.objtype].material);
++    if((!skill) || (!amt))
++      return;
++    endif
++    skill := CInt(skill/2);
++    if(skill &lt; 5)
++      skill := 5;
++    endif
++    amt := CInt((amt * GetEffectiveSkill(who,SKILLID_BLACKSMITHY) * 75 ) / 10000);
++    if(amt &lt; 1)
++      amt := 1;
++    endif
++    var mattype := CInt(GetObjProperty(use_on, &quot;material&quot;));
++    if(mattype &gt;= 0)
++      if(mattype != error)
++        ingot := mattype;
++      endif
++    endif
++    if(ingot == -1)
++      foreach entry in cfgarray
++        if(lower(rlist_cfg[entry].Type) == &quot;metal&quot;)
++          if(CInt(rlist_cfg[entry].Color) == CInt(use_on.color))
++            ingot := entry;
++          endif
++        endif
++      endforeach
++    endif
++    if(ingot == -1)
++      SendSysMessage(who, &quot;You have no idea how to smelt this strange ore!&quot;);
++      return;
++    endif
++    PlaySoundEffect(who, 0x2c);
++    sleep(1);
++    PlaySoundEffect(who, 0x22);
++    if(DestroyItem(use_on))
++      if(CheckSkill(who, SKILLID_BLACKSMITHY, skill, 10))
++        CreateItemInContainer(who.backpack, ingot, amt);
++      else
++        SendSysMessage(who, &quot;You destroy the item.&quot;);
++      endif
++    endif
++  endif
++
+ endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000156.html">[Poldistro-svn] r174 - in trunk/096/pkg/commands: . config include seer
+</A></li>
+	<LI>Next message: <A HREF="000158.html">[Poldistro-svn] r176 - in trunk/096/pkg/items: . repaircontract
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#157">[ date ]</a>
+              <a href="thread.html#157">[ thread ]</a>
+              <a href="subject.html#157">[ subject ]</a>
+              <a href="author.html#157">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1354 - in trunk/096/pkg/systems/worldSaver: . commands/gm include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1354%20-%20in%20trunk/096/pkg/systems/worldSaver%3A%20.%20commands/gm%20include&In-Reply-To=%3C200605122002.k4CK2suq026321%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001322.html">
+   <LINK REL="Next"  HREF="001324.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1354 - in trunk/096/pkg/systems/worldSaver: . commands/gm include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1354%20-%20in%20trunk/096/pkg/systems/worldSaver%3A%20.%20commands/gm%20include&In-Reply-To=%3C200605122002.k4CK2suq026321%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1354 - in trunk/096/pkg/systems/worldSaver: . commands/gm include">austin at berlios.de
+       </A><BR>
+    <I>Fri May 12 22:02:54 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001322.html">[Poldistro-svn] r1353 - in trunk/096/pkg: OLD/systems OLD/systems/saver OLD/systems/saver/commands OLD/systems/saver/commands/coun OLD/systems/saver/config OLD/systems/saver/include systems systems/worldSaver systems/worldSaver/commands systems/worldSaver/config systems/worldSaver/include
+</A></li>
+        <LI>Next message: <A HREF="001324.html">[Poldistro-svn] r1355 - in trunk/096/pkg/systems/worldSaver: . include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1323">[ date ]</a>
+              <a href="thread.html#1323">[ thread ]</a>
+              <a href="subject.html#1323">[ subject ]</a>
+              <a href="author.html#1323">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-12 22:02:53 +0200 (Fri, 12 May 2006)
+New Revision: 1354
+
+Added:
+   trunk/096/pkg/systems/worldSaver/commands/gm/savenow.src
+Modified:
+   trunk/096/pkg/systems/worldSaver/include/saver.inc
+   trunk/096/pkg/systems/worldSaver/worldSaver.src
+Log:
+.savenow works when it sends the command.
+
+
+Added: trunk/096/pkg/systems/worldSaver/commands/gm/savenow.src
+===================================================================
+--- trunk/096/pkg/systems/worldSaver/commands/gm/savenow.src	2006-05-12 19:07:55 UTC (rev 1353)
++++ trunk/096/pkg/systems/worldSaver/commands/gm/savenow.src	2006-05-12 20:02:53 UTC (rev 1354)
+@@ -0,0 +1,14 @@
++/* $Id$
++ *
++ */
++
++use uo;
++
++include &quot;:worldsaver:saver&quot;;
++
++program textcmd_SaveNow(who)
++	SendSysMessage(who, &quot;Sending command to world saver.&quot;);
++	SVR_SendCommand(EVENT_SAVE_NOW);
++	
++	return 1;
++endprogram
+
+Modified: trunk/096/pkg/systems/worldSaver/include/saver.inc
+===================================================================
+--- trunk/096/pkg/systems/worldSaver/include/saver.inc	2006-05-12 19:07:55 UTC (rev 1353)
++++ trunk/096/pkg/systems/worldSaver/include/saver.inc	2006-05-12 20:02:53 UTC (rev 1354)
+@@ -23,8 +23,8 @@
+  * Returns 1
+  *
+  */
+-function SVR_SendCommand(event_id, data)
+-	var event := struct{&quot;id&quot;:=event_id, &quot;data&quot;:=data};
++function SVR_SendCommand(event_id, data:=0)
++	var event := struct{&quot;type&quot;:=event_id, &quot;data&quot;:=data};
+ 	
+ 	return SVR_GetProcess().SendEvent(event);
+ endfunction
+
+Modified: trunk/096/pkg/systems/worldSaver/worldSaver.src
+===================================================================
+--- trunk/096/pkg/systems/worldSaver/worldSaver.src	2006-05-12 19:07:55 UTC (rev 1353)
++++ trunk/096/pkg/systems/worldSaver/worldSaver.src	2006-05-12 20:02:53 UTC (rev 1354)
+@@ -1,7 +1,7 @@
+ /* $Id$
+  *
+  */
+- 
++
+ use uo;
+ use os;
+ use math;
+@@ -10,21 +10,36 @@
+ include &quot;:worldsaver:settings&quot;;
+ include &quot;:worldsaver:report&quot;;
+ 
++
+ program WorldSaver()
+-	
+ 	SetGlobalProperty(&quot;#WorldSaverPid&quot;, GetPid());
+-	
++
++	var savetimes;
++	UpdateTimes(savetimes);
++
+ 	while ( 1 )
+-		DoTheSave();
++		var event := Wait_For_Event(10);
++		if ( event )
++			case ( event.type )
++				EVENT_SAVE_NOW:
++					DoTheSave();
++					break;
++			endcase
++		else
++			if ( ShouldSave(savetimes ) )
++				DoTheSave();
++				UpdateTimes(savetimes);
++			endif
++		endif
+ 	endwhile
+-	
++
+ 	return 1;
+ endprogram
+ 
+ function DoTheSave()
+-	
++
+ 	var save_result := SaveWorldState();
+-	
++
+ 	if ( save_result == error )
+ 		SVR_ReportText(&quot;!!! Error saving world state. Restarting POL in 20 seconds !!!&quot;, SAVER_REPORT_SYSLOG+SAVER_REPORT_BROADCAST);
+ 		sleep(20);
+@@ -35,10 +50,37 @@
+ 		save_time := Cdbl(CDbl(save_time)/CDbl(1000));
+ 		save_time := FormatRealToString(save_time, 2);
+ 		set_critical(0);
+-		
++
+ 		SVR_ReportText(&quot;Finished world save. (&quot;+save_time+&quot;)&quot;, SAVER_REPORT_SYSLOG+SAVER_REPORT_BROADCAST);
+ 		SVR_ReportText(&quot;Saver - CleanObjects[&quot;+save_result.CleanObjects+&quot;] DirtyObjects[&quot;+save_result.DirtyObjects+&quot;]&quot;, SAVER_REPORT_SYSLOG);
+ 	endif
++
++	return 1;
++endfunction
++
++function ShouldSave(byref savetimes)
++	if ( savetimes.save &lt; polcore().systime )
++		return 1;
++	endif
+ 	
++	return 0;
++endfunction
++
++function UpdateTimes(byref savetimes)
++	var cfg_settings := SVR_GetSettingsCfgElem(&quot;Settings&quot;);
++
++	var wait := CInt(cfg_settings.SaveTime) * 60;
++	if ( !wait )
++		wait := 3600; // 1 hour if not set.
++	endif
++	var warn := CInt(cfg_settings.SaveAnnounce) * 60;
++
++	savetimes := struct;
++	savetimes.+last := polcore().systime; 		// Time the last save took place.
++	savetimes.+save := polcore().systime + wait;	// Time the next save will happen.
++	if ( warn )
++		savetimes.+warn := savetimes.save-warn; // Time the next save warning will come up.
++	endif
++
+ 	return 1;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001322.html">[Poldistro-svn] r1353 - in trunk/096/pkg: OLD/systems OLD/systems/saver OLD/systems/saver/commands OLD/systems/saver/commands/coun OLD/systems/saver/config OLD/systems/saver/include systems systems/worldSaver systems/worldSaver/commands systems/worldSaver/config systems/worldSaver/include
+</A></li>
+	<LI>Next message: <A HREF="001324.html">[Poldistro-svn] r1355 - in trunk/096/pkg/systems/worldSaver: . include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1323">[ date ]</a>
+              <a href="thread.html#1323">[ thread ]</a>
+              <a href="subject.html#1323">[ subject ]</a>
+              <a href="author.html#1323">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r350 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r350%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200510011420.j91EKpD6006899%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000327.html">
+   <LINK REL="Next"  HREF="000329.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r350 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r350%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200510011420.j91EKpD6006899%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r350 - trunk/096/pkg/systems/attributes/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sat Oct  1 16:20:51 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000327.html">[Poldistro-svn] r349 - in trunk/096/pkg/items/containers/commands: . admin
+</A></li>
+        <LI>Next message: <A HREF="000329.html">[Poldistro-svn] r351 - trunk/096/pkg/items/bountyboard
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#328">[ date ]</a>
+              <a href="thread.html#328">[ thread ]</a>
+              <a href="subject.html#328">[ subject ]</a>
+              <a href="author.html#328">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-01 16:20:51 +0200 (Sat, 01 Oct 2005)
+New Revision: 350
+
+Modified:
+   trunk/096/pkg/systems/attributes/include/skills.inc
+Log:
+AP_CheckSkillsTotal(mobile) added to attributes/include/skills.inc
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-10-01 14:11:23 UTC (rev 349)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-10-01 14:20:51 UTC (rev 350)
+@@ -146,7 +146,7 @@
+ 		textline := SplitWords(textline);
+ 		sleepms(2);
+ 	endforeach
+-	
++
+ 	return stat_entries;
+ endfunction
+ 
+@@ -165,18 +165,18 @@
+  */
+ function AP_GetSkillCap(skill_name)
+ 	var cfg_elem := AP_GetSettingsCfgElem(&quot;Skills&quot;);
+-	
++
+ 	// Check if there is a cap for that particular skill.
+ 	var cap_val := GetConfigReal(cfg_elem, skill_name);
+-	
++
+ 	if ( !cap_val )
+ 		// No skill specific cap so get the general one.
+ 		cap_val := GetConfigReal(cfg_elem, &quot;SkillCap&quot;);
+ 	endif
+-	
++
+ 	return cap_val;
+ endfunction
+- 
++
+ /*
+  * AP_CheckSkillCap(mobile, skill_name)
+  *
+@@ -194,10 +194,10 @@
+  */
+ function AP_CheckSkillCap(mobile, skill_name:=&quot;&quot;)
+ 	var cfg_elem := AP_GetSettingsCfgElem(&quot;Skills&quot;);
+-	
++
+ 	if ( skill_name )
+ 		var cap_val := AP_GetSkillCap(skill_name);
+-		
++
+ 		if ( cap_val != error )
+ 			return ( AP_GetTrueSkill(mobile, skill_name) &gt;= cap_val );
+ 		endif
+@@ -207,12 +207,40 @@
+ 			total := total + AP_GetTrueSkill(mobile, attribute_name);
+ 			sleepms(2);
+ 		endforeach
+-		
++
+ 		var cap_val := GetConfigReal(cfg_elem, &quot;TotalCap&quot;);
+ 		if ( cap_val != error )
+ 			return ( total &gt;= cap_val );
+ 		endif
+ 	endif
+-	
++
+ 	return 0;
+ endfunction
++
++
++/*
++ * AP_CheckSkillTotal(mobile, skill_name)
++ *
++ * Purpose
++ * Checks the total sum of all skills a mobile has.
++ *
++ * Parameters
++ * mobile:	Mobile to check the skills on
++ *
++ * Return value
++ * Returns Integer of the sum total of skill points
++ *
++ */
++function AP_CheckSkillsTotal(mobile)
++
++	var cfg_elem := AP_GetSettingsCfgElem(&quot;Skills&quot;);
++
++	var total := 0.0;
++	foreach attribute_name in ( AP_ListAttributesByType(&quot;Skill&quot;) )
++		total := total + AP_GetTrueSkill(mobile, attribute_name);
++		sleepms(2);
++	endforeach
++
++	return total;
++
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000327.html">[Poldistro-svn] r349 - in trunk/096/pkg/items/containers/commands: . admin
+</A></li>
+	<LI>Next message: <A HREF="000329.html">[Poldistro-svn] r351 - trunk/096/pkg/items/bountyboard
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#328">[ date ]</a>
+              <a href="thread.html#328">[ thread ]</a>
+              <a href="subject.html#328">[ subject ]</a>
+              <a href="author.html#328">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

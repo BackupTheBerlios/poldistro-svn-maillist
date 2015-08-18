@@ -1,0 +1,665 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r674 - in trunk/096/pkg: items/training skills/lumberjacking
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r674%20-%20in%20trunk/096/pkg%3A%20items/training%20skills/lumberjacking&In-Reply-To=%3C200510270432.j9R4W1WY022004%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000647.html">
+   <LINK REL="Next"  HREF="000649.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r674 - in trunk/096/pkg: items/training skills/lumberjacking</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r674%20-%20in%20trunk/096/pkg%3A%20items/training%20skills/lumberjacking&In-Reply-To=%3C200510270432.j9R4W1WY022004%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r674 - in trunk/096/pkg: items/training skills/lumberjacking">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Thu Oct 27 06:32:01 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000647.html">[Poldistro-svn] r673 - trunk/096/pkg/skills/fishing/config
+</A></li>
+        <LI>Next message: <A HREF="000649.html">[Poldistro-svn] r675 - trunk/096/pkg/skills/poisoning
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#648">[ date ]</a>
+              <a href="thread.html#648">[ thread ]</a>
+              <a href="subject.html#648">[ subject ]</a>
+              <a href="author.html#648">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-27 06:31:58 +0200 (Thu, 27 Oct 2005)
+New Revision: 674
+
+Added:
+   trunk/096/pkg/skills/lumberjacking/lumberjack.src
+Removed:
+   trunk/096/pkg/skills/lumberjacking/lumberjacking.src
+Modified:
+   trunk/096/pkg/items/training/itemdesc.cfg
+Log:
+Couple more fixes for start.log errors.
+
+Modified: trunk/096/pkg/items/training/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/training/itemdesc.cfg	2005-10-27 04:23:57 UTC (rev 673)
++++ trunk/096/pkg/items/training/itemdesc.cfg	2005-10-27 04:31:58 UTC (rev 674)
+@@ -15,18 +15,18 @@
+ Item 0x1070
+ {
+     Name 	trainingdummy
+-    Script	dummy
++    Script	dummyTraining
+ }
+ 
+ Item 0x1074
+ {
+     Name 	trainingdummy2
+-    Script	dummy
++    Script	dummyTraining
+ }
+ 
+ # pickpocket dummy w/e
+ Item 0x1ec0
+-{ 
++{
+     Name	pickpocket1
+     Script	dummyPickpocket
+ }
+
+Copied: trunk/096/pkg/skills/lumberjacking/lumberjack.src (from rev 656, trunk/096/pkg/skills/lumberjacking/lumberjacking.src)
+
+Deleted: trunk/096/pkg/skills/lumberjacking/lumberjacking.src
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/lumberjacking.src	2005-10-27 04:23:57 UTC (rev 673)
++++ trunk/096/pkg/skills/lumberjacking/lumberjacking.src	2005-10-27 04:31:58 UTC (rev 674)
+@@ -1,555 +0,0 @@
+-use cfgfile;
+-use uo;
+-use os;
+-use util;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/tileEffects&quot;;
+-include &quot;include/sound&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/string&quot;;
+-include &quot;include/objtype&quot;;
+-include &quot;include/canAccess&quot;;
+-include &quot;include/utility&quot;;
+-include &quot;include/dist&quot;;
+-include &quot;include/toolWear&quot;;
+-include &quot;include/noto&quot;;
+-
+-const UACTION_CHOP := 0x0d;
+-var bowcraftconfigfile := ReadConfigFile(&quot;:bowcraft:bowcraft&quot;);
+-var mex;
+-var mey;
+-
+-
+-program use_axe(me, axe)
+-  EraseObjProperty(me, &quot;IsMeditating&quot;);
+-  EraseObjProperty(me, &quot;HealTimer&quot;);
+-  if(!can_access(me, axe))
+-    return;
+-  endif
+-  if(!ReserveItem(axe))
+-    return;
+-  endif
+-  if(!IsAxEquipped(me, axe))
+-    SendSysMessage(me,&quot;You have to equip that to lumberjack!&quot;);
+-    return;
+-  endif
+-  var tree := TreeNearby(me, axe);
+-  if(!tree)
+-    return;
+-  endif
+-  SendSysMessage(me, &quot;You begin chopping...&quot;);
+-  var checker := 0;
+-  mex := me.x;
+-  mey := me.y;
+-  var mount;
+-  repeat
+-    mount := GetEquipmentByLayer(me, 25);
+-    if(mount)
+-      SendSysMessage(me,&quot;You cannot chop wood while on horseback.&quot;);
+-      return;
+-    endif
+-    if(!axe)
+-      return;
+-    endif
+-    PerformAction(me, UACTION_CHOP);
+-    PlaySoundEffect(me, SFX_SKILL_LUMBERJACK);
+-    sleepms(2500);
+-    checker := Do_Chops(me, axe, tree);
+-  until(checker == 1);
+-endprogram
+-
+-function Do_Chops(me, axe, tree)
+-  var difficulty := GetHarvestDifficulty(&quot;wood&quot;, tree.x, tree.y, tree.objtype, me.realm);
+-  if(difficulty == error)
+-    SendSysMessage(me, &quot;There's not enough wood here to chop.&quot;);
+-    return 1;
+-  endif
+-  if((me.x != mex) || (me.y != mey))
+-    SendSysMessage(me,&quot;You stop chopping.&quot;);
+-    return 1;
+-  endif
+-  var points := CInt((GetEffectiveSkill(me, SKILLID_LUMBERJACKING) * 2) + 10);
+-  if(CheckSkill(me, SKILLID_LUMBERJACKING, difficulty, points))
+-    var wood_amount := HarvestResource( &quot;wood&quot;, tree.x, tree.y, 1, 10, me.realm );
+-    if(wood_amount == 0)
+-      SendSysMessage(me, &quot;There's not enough wood here to chop.&quot;);
+-      return 1;
+-    endif
+-    if(!CreateItemInBackpack(me, 0x1bdd, wood_amount))
+-      SendSysMessage(me, &quot;Your backpack is too full.&quot;);
+-      return 1;
+-    else
+-      SendSysMessage(me, &quot;You put some logs in your backpack&quot;);
+-      CheckToolWear (me, axe, SKILLID_LUMBERJACKING);
+-      return 0;
+-    endif
+-  else
+-    SendSysMessage(me, &quot;You fail to get any usable wood.&quot;);
+-    return 0;
+-  endif
+-endfunction
+-
+-function TreeNearby(me, axe)
+-  SendSysMessage( me, &quot;Select something to chop.&quot; );
+-  var tree := TargetCoordinates( me );
+-  if(!tree)
+-    SendSysMessage(me, &quot;Cancelled&quot;);
+-    return 0;
+-  endif
+-  var distt := coordist( me.x, me.y, tree.x, tree.y );
+-  if(distt &gt; 1 )
+-    if(!tree.item.container)
+-      SendSysMessage(me,&quot;That is too far away.&quot;);
+-      return 0;
+-    endif
+-  endif
+-  if(is_furniture(tree.item.objtype, tree.item))
+-    chopfurniture(me, tree.item);
+-    return 0;
+-  elseif(is_tree(tree.objtype))
+-    var difficulty := GetHarvestDifficulty( &quot;wood&quot;, tree.x, tree.y, tree.objtype, me.realm );
+-    if(difficulty == error)
+-      SendSysMessage(me, &quot;There's not enough wood here to chop: &quot; + difficulty.errortext + &quot;.&quot;);
+-      return 0;
+-    endif
+-    return tree;
+-  else
+-    use_blade(me, axe, tree.item);
+-    return 0;
+-  endif
+-endfunction
+-
+-function is_furniture(theobj, thing)
+-  var miscobjtypes := { 0x7007, 0xa30, 0xa34, 0xa38, 0xfae, 0x9e40};
+-  if((theobj &gt;= 0x9a8) &amp;&amp; (theobj &lt;= 0x9ab))
+-    return 1;
+-  elseif((theobj &gt;= 0xa2a) &amp;&amp; (theobj &lt;= 0xa2c))
+-    return 1;
+-  elseif((theobj &gt;= 0xa4c) &amp;&amp; (theobj &lt;= 0xa53))
+-    return 1;
+-  elseif((theobj &gt;= 0xa97) &amp;&amp; (theobj &lt;= 0xa9e))
+-    return 1;
+-  elseif((theobj &gt;= 0xb2c) &amp;&amp; (theobj &lt;= 0xb40))
+-    return 1;
+-  elseif((theobj &gt;= 0xb49) &amp;&amp; (theobj &lt;= 0xb90))
+-    return 1;
+-  elseif((theobj &gt;= 0xe3c) &amp;&amp; (theobj &lt;= 0xe43))
+-    return 1;
+-  elseif((theobj &gt;= 0xe7c) &amp;&amp; (theobj &lt;= 0xe80))
+-    return 1;
+-  elseif((theobj &gt;= 0xf65) &amp;&amp; (theobj &lt;= 0xf77))
+-    return 1;
+-  elseif(theobj in miscobjtypes)
+-    return 1;
+-  elseif(GetObjProperty(thing, &quot;ItemsCreatedSerials&quot;))
+-    return 1;
+-  else
+-    return 0;
+-  endif
+-endfunction
+-
+-function is_tree(theobj)
+-  if((theobj &gt;= 0x0c99) &amp;&amp; (theobj &lt;= 0x0cea))
+-    return 1;
+-  elseif((theobj &gt;= 0x0cf3) &amp;&amp; (theobj &lt;= 0x0d03))
+-    return 1;
+-  elseif((theobj &gt;= 0x0d41) &amp;&amp; (theobj &lt;= 0x0dab))
+-    return 1;
+-  elseif((theobj &gt;= 0x12b6) &amp;&amp; (theobj &lt;= 0x12c7))
+-    return 1;
+-  elseif((theobj &gt;= 0x0d37) &amp;&amp; (theobj &lt;= 0x0d38))
+-    return 1;
+-  elseif((theobj == 0x0c9e) || (theobj == 0x0ca8) || (theobj == 0x0caa) || (theobj == 0x0cab))
+-    return 1;
+-  else
+-    return 0;
+-  endif
+-endfunction
+-
+-
+-function IsAxEquipped(me,axe)
+-  if((!Accessible(me,axe)) || (Distance(me, axe) &gt; 1))
+-    return 0;
+-  endif
+-  foreach item in ListEquippedItems(me)
+-    if (axe.serial == item.serial )
+-      return 1;
+-    endif
+-  endforeach
+-  return EquipItem(me, axe );
+-endfunction
+-
+-function chopfurniture(me, theobj)
+-  if(!can_access(me, theobj))
+-    return;
+-  endif
+-  var sign;
+-  if(GetObjProperty(theobj, &quot;lockeddown&quot;) || GetObjProperty(theobj, &quot;secure&quot;))
+-    SendSysMessage(me, &quot;You cannot destroy secure or locked down items.&quot;);
+-    return;
+-  endif
+-  if(theobj.objtype == 0x7007)
+-    var houseserial := GetObjProperty(theobj, &quot;houseserial&quot;);
+-    sign := SystemFindObjectBySerial(houseserial);
+-    if(GetObjProperty(sign, &quot;barrelserial&quot;) == theobj.serial)
+-      EraseObjProperty(sign, &quot;barrelserial&quot;);
+-      SendSysMessage(me, &quot;You cannot destroy that while it is locked down.&quot;);
+-      return;
+-    endif
+-  endif
+-  if(!Accessible(me, theobj))
+-    SendSysMessage(me, &quot;You can't reach that.&quot;);
+-    return;
+-  endif
+-  if(me.multi)
+-    if(GetObjProperty((me.multi), &quot;ownerserial&quot;) != me.serial)
+-      var house := me.multi;
+-      foreach thing in (house.components)
+-        if((thing.objtype == 0x0bd0) || (thing.objtype == 0x0bd2))
+-          sign := thing;
+-          break;
+-        endif
+-      endforeach
+-      var coowner := 0;
+-      var coownerlist := GetObjProperty(sign, &quot;coownerlist&quot;);
+-      foreach thing in coownerlist
+-        if(thing == me.serial)
+-          coowner := 1;
+-          break;
+-        endif
+-      endforeach
+-      if(!coowner)
+-        SendSysMessage(me, &quot;This does not belong to you!&quot;);
+-        return;
+-      endif
+-    endif
+-  endif
+-  foreach thing in EnumerateItemsInContainer(theobj)
+-    if(theobj.container)
+-      MoveItemToContainer(thing, theobj.container);
+-    else
+-      MoveItemToLocation(thing, theobj.x, theobj.y, theobj.z, MOVEITEM_FORCELOCATION);
+-    endif
+-  endforeach
+-  if(theobj.usescript == &quot;:tinkering:tinkerTraps&quot;)
+-    var traptype := GetObjProperty(theobj,&quot;trap_type&quot;);
+-    var trapstrength := GetObjProperty(theobj,&quot;trap_strength&quot;);
+-    var trapperserial := CInt(GetObjProperty(theobj, &quot;trapper&quot;));
+-    var trapper := SystemFindObjectBySerial(trapperserial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+-    if(trapper)
+-      SetObjProperty(me, &quot;LastHit&quot;, {trapper.name, trapper.serial, &quot;trapped chest&quot; });
+-      SetScriptController(trapper);
+-    endif
+-    case (traptype)
+-      &quot;1&quot; :   PlaySoundEffect(me, SFX_224);
+-              var dmg := (RandomInt(20) + CInt(trapstrength));
+-              SendSysMessage(me, &quot;You set off a needle trap!&quot;);
+-              ApplyDamage(me, dmg);
+-              theobj.usescript := &quot;&quot;;
+-              EraseObjProperty( theobj, &quot;trap_type&quot; );
+-              EraseObjProperty( theobj, &quot;trap_strength&quot; );
+-
+-      &quot;2&quot; :   start_script(&quot;:traps:poisonTrapTriggered&quot;, {me, theobj, &quot;You set off a poison trap!&quot;, trapstrength});
+-
+-      &quot;3&quot; :   PlaySoundEffect(me, SFX_208);
+-              SendSysMessage(me, &quot;You set off an explosion trap!&quot;);
+-              PlayObjectCenteredEffect( me, FX_EXPLODE_3, 10,10);
+-              var dmg := (RandomInt(20) + CInt(trapstrength));
+-              ApplyRawDamage(me, dmg);
+-              theobj.usescript := &quot;&quot;;
+-              EraseObjProperty( theobj, &quot;trap_type&quot; );
+-              EraseObjProperty( theobj, &quot;trap_strength&quot; );
+-    endcase
+-  endif
+-  var created := GetObjProperty(theobj, &quot;ItemsCreatedSerials&quot;);
+-  if(created)
+-    var holder;
+-    foreach thing in created
+-      holder := SystemFindObjectBySerial(thing);
+-      if(holder)
+-        DestroyItem(holder);
+-      endif
+-    endforeach
+-  else
+-    DestroyItem(theobj);
+-  endif
+-  PlaySoundEffect(me, 0x13a);
+-  return;
+-endfunction
+-
+-function use_blade(who, blade, use_on)
+-  if(!can_access(who,use_on))
+-    return;
+-  endif
+-  if(!ReserveItem(use_on))
+-    return;
+-  endif
+-  var checkme := use_on.objtype;
+-  if((checkme == UOBJ_LOGS) || (checkme == 0x1bd7))
+-    CarveLogs(who, blade, use_on);
+-  elseif(use_on.npctemplate == &quot;sheep&quot;)
+-    process_wool(who, blade, use_on);
+-  elseif(use_on.objtype == UOBJ_CORPSE)
+-    ReleaseItem(blade);
+-    Carve_Corpse(who, use_on);
+-  elseif(is_fish(checkme))
+-    CarveFish(who, blade, use_on);
+-  else
+-    SendSysMessage(who, &quot;You don't know how to use those items together.&quot;);
+-  endif
+-endfunction
+-
+-function process_wool(who, blade, sheep)
+-  if(sheep.graphic == 207)
+-    sheep.graphic := 223;
+-    CreateItemInContainer(who.backpack, 0xf125, 3);
+-    CheckToolWear (who, blade, SKILLID_TAILORING);
+-  else
+-    SendSysMessage(who,&quot;That sheep is not yet ready to be shorn.&quot;);
+-  endif
+-endfunction
+-
+-function is_fish(theobj)
+-  if((theobj &gt;= UOBJ_FISH_START) &amp;&amp; (theobj &lt;= UOBJ_FISH_END) )
+-    return 1;
+-  elseif ((theobj &gt;= UOBJ_SFISH_START) &amp;&amp; (theobj &lt;= UOBJ_SFISH_END))
+-    return 1;
+-  else
+-    return 0;
+-  endif
+-endfunction
+-
+-function CarveFish(who, blade, use_on)
+-  if((!ReserveItem(use_on)) || (use_on.movable == 0))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  var num_steaks := (4 * use_on.amount);
+-  PlaySoundEffect(who, SFX_57);
+-  if(DestroyItem(use_on))
+-    CreateItemInBackpack(who, UOBJ_FISHSTEAK, num_steaks);
+-    CheckToolWear (who, blade, SKILLID_FISHING);
+-    SendSysMessage(who, &quot;You carve the fish steaks and put them in your backpack.&quot;);
+-  endif
+-  sleep(1);
+-endfunction
+-
+-function Carve_Corpse(who, cadaver)
+-  Detach();
+-  if((!Accessible(who, cadaver)) or (!CheckLineOfSight(who, cadaver)))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  if(Distance(who, cadaver) &gt; 2)
+-    SendSysMessage(who, &quot;You are not close enough.&quot;);
+-    return;
+-  endif
+-  var c_type := cadaver.corpsetype;
+-  if(GetObjProperty(cadaver, &quot;cut&quot;) == &quot;1&quot;)
+-    SendSysMessage( who, &quot;You cannot get any more from this corpse.&quot; );
+-    foreach thing in EnumerateItemsInContainer(cadaver)
+-      MoveItemToLocation(thing, cadaver.x, cadaver.y, cadaver.z, MOVEITEM_FORCELOCATION);
+-    endforeach
+-    DestroyItem(cadaver);
+-  elseif((c_type == 400) || (c_type == 401))
+-    var beardlist := {0x203e, 0x203f, 0x2040, 0x2041, 0x204b, 0x204c, 0x204d };
+-    var hairlist  := {0x2044, 0x2045, 0x2046, 0x2047, 0x2048, 0x2049, 0x204a, 0x203b, 0x203c, 0x203d };
+-    foreach thing in EnumerateItemsInContainer(cadaver)
+-      if((thing.objtype in hairlist) or (thing.objtype in beardlist))
+-        DestroyItem(thing);
+-      else
+-        MoveItemToLocation(thing, cadaver.x, cadaver.y, cadaver.z, MOVEITEM_FORCELOCATION);
+-      endif
+-    endforeach
+-    var partsarray := {};
+-    var part;
+-    part := CreateItemAtLocation(cadaver.x-1, cadaver.y, cadaver.z, 0x1da0, 1, who.realm);
+-    partsarray.append(part);
+-    SetObjProperty(part, &quot;serial&quot;, GetObjProperty(cadaver, &quot;serial&quot;));
+-    var aname := cadaver.name;
+-    aname[&quot;A corpse of&quot;] := &quot;&quot;;
+-    part.name := &quot;The head of &quot; + aname;
+-    part := CreateItemAtLocation(cadaver.x-1, cadaver.y, cadaver.z, 0x1da1, 1, who.realm);
+-    partsarray.append(part);
+-    part := CreateItemAtLocation(cadaver.x-1, cadaver.y+1, cadaver.z, 0x1da2, 1, who.realm);
+-    partsarray.append(part);
+-    part := CreateItemAtLocation(cadaver.x+1, cadaver.y, cadaver.z, 0x1da3, 1, who.realm);
+-    partsarray.append(part);
+-    part := CreateItemAtLocation(cadaver.x+1, cadaver.y+1, cadaver.z, 0x1da4, 1, who.realm);
+-    partsarray.append(part);
+-    part := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, 0x1d9f, 1, who.realm);
+-    partsarray.append(part);
+-    var blood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, 0x122a, 1, who.realm);
+-    blood.movable := 0;
+-    DestroyItem(cadaver);
+-    sleep(40);
+-    foreach thing in partsarray
+-      if(!thing.container)
+-        DestroyItem(thing);
+-      endif
+-    endforeach
+-    sleep(20);
+-    DestroyItem(blood);
+-  else
+-    if(c_type == 223)
+-      CreateItemInContainer(cadaver, 0x9f1, 2);
+-      SendSysMessage(who, &quot;You place the items on the corpse.&quot;);
+-      var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, who.realm);
+-      sleep(30);
+-      DestroyItem(cadaver);
+-      sleep(30);
+-      DestroyItem(theblood);
+-      return;
+-    endif
+-    var conf := ReadConfigFile(&quot;:*:npcdesc&quot;);
+-    var tmplate := GetObjProperty(cadaver, &quot;npctemplate&quot;);
+-    if(!tmplate)
+-      SendSysMessage(who, &quot;You cut the corpse, but fail to find anything useful.&quot;, 3, 40);
+-      var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, who.realm);
+-      sleep(30);
+-      DestroyItem(cadaver);
+-      sleep(30);
+-      DestroyItem(theblood);
+-      return;
+-    else
+-      SetObjProperty(cadaver, &quot;cut&quot;,&quot;1&quot;);
+-      var corpseitm := conf[tmplate].&quot;corpseitm&quot;;
+-      var corpseamt := conf[tmplate].&quot;corpseamt&quot;;
+-      print(&quot;I: &quot; + corpseitm);
+-      print(&quot;A: &quot; + corpseamt);
+-      if(!corpseitm)
+-        print(&quot;error&quot;);
+-        var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, who.realm);
+-        sleep(30);
+-        DestroyItem(cadaver);
+-        sleep(30);
+-        DestroyItem(theblood);
+-        return;
+-      endif
+-      var i := 1;
+-      corpseitm := SplitWords(corpseitm);
+-      corpseamt := SplitWords(corpseamt);
+-      foreach thing in corpseitm
+-        CreateItemInContainer(cadaver, thing, Cint(corpseamt[i]));
+-        i := i + 1;
+-      endforeach
+-      SendSysMessage(who, &quot;You place the items on the corpse.&quot;);
+-      var theblood := CreateItemAtLocation(cadaver.x, cadaver.y, cadaver.z, UOBJ_BLOOD, 1, who.realm);
+-      sleep(30);
+-      DestroyItem(cadaver);
+-      sleep(30);
+-      DestroyItem(theblood);
+-    endif
+-  endif
+-endfunction
+-
+-function CarveLogs(who, blade, logs)
+-  if(logs.movable == 0)
+-    SendSysMessage(who, &quot;You cannot use those logs.&quot;);
+-    return;
+-  endif
+-  if(!Accessible(who, logs))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  if(!logs.container)
+-    if(Distance(who, logs) &gt; 2)
+-      SendSysMessage(who, &quot;That is too far away.&quot;);
+-      return;
+-    endif
+-  endif
+-  var selection := SelectMenuItem2(who, &quot;BowcraftCarving&quot;);
+-  if(!selection)
+-    return;
+-  endif
+-  var what := selection.objtype;
+-  if(!Accessible(who, logs))
+-    SendSysMessage(who, &quot;I can't access the logs to make that.&quot;);
+-    return;
+-  endif
+-  var objectconfig := FindConfigElem(bowcraftconfigfile, what);
+-  if(!objectconfig)
+-    return;
+-  endif
+-  var material := CInt(GetConfigString(objectconfig, &quot;Material&quot;));
+-  if(material &gt; logs.amount)
+-    SendSysMessage(who, &quot;You don't have enough logs to make that.&quot;);
+-    return;
+-  endif
+-  var difficulty := GetConfigInt(objectconfig, &quot;Difficulty&quot;);
+-  var pointvalue := GetConfigInt(objectconfig, &quot;PointValue&quot;);
+-  var bow := 0;
+-  Detach();
+-  PlaySoundEffect(who, 0x5a);
+-  PerformAction(who, 0x021);
+-  sleep(2);
+-  PlaySoundEffect(who, 0x5a);
+-  PerformAction(who, 0x021);
+-  sleep(2);
+-  PlaySoundEffect(who, 0x5a);
+-  PerformAction(who, 0x021);
+-  sleep(2);
+-  PlaySoundEffect(who, 0x5a);
+-  PerformAction(who, 0x021);
+-  sleep(2);
+-  if(CheckSkill(who, SKILLID_BOWCRAFT, difficulty, pointvalue))
+-    if(what == UOBJ_SHAFTS)
+-      var amt := logs.amount;
+-      if(DestroyItem(logs))
+-        CreateItemInBackpack(who, what, amt);
+-        CheckToolWear (who, blade, SKILLID_BOWCRAFT);
+-        SendSysMessage(who, &quot;You create some shafts and place them in your pack.&quot; );
+-      endif
+-    elseif (what == UOBJ_BOW)
+-      if(SubtractAmount(logs, material))
+-        bow := CreateItemInBackpack(who, what);
+-        CheckToolWear (who, blade, SKILLID_BOWCRAFT);
+-        SendSysMessage(who, &quot;You create a bow and place it in your pack.&quot;);
+-        SetName(bow, &quot;a bow&quot;);
+-      endif
+-    elseif (what == UOBJ_XBOW)
+-      if(SubtractAmount(logs, material))
+-        bow := CreateItemInBackpack(who, what);
+-        CheckToolWear (who, blade, SKILLID_BOWCRAFT);
+-        SendSysMessage(who, &quot;You create a crossbow and place it in your pack.&quot;);
+-        SetName(bow, &quot;a crossbow&quot;);
+-      endif
+-    elseif (what == UOBJ_HEAVY_XBOW)
+-      if(SubtractAmount(logs, material))
+-        bow := CreateItemInBackpack(who, what);
+-        CheckToolWear (who, blade, SKILLID_BOWCRAFT);
+-        SendSysMessage(who, &quot;You create a heavy crossbow and place it in your pack.&quot;);
+-        SetName(bow, &quot;a heavy crossbow&quot;);
+-      endif
+-    else
+-      SendSysMessage(who, &quot;I don't know how to make that.&quot;);
+-      return;
+-    endif
+-    var myskill := CInt(GetEffectiveSkill(who, SKILLID_BOWCRAFT));
+-    var modpts := 0;
+-    if(myskill &gt;=  difficulty)
+-      modpts := (myskill - difficulty);
+-    endif
+-    var rint := RandomInt(100);
+-    if(modpts &gt;= rint)
+-      ExceptionalFameMod(who, myskill, difficulty, Cint(pointvalue / 2));
+-      setquality(who, bow);
+-    endif
+-  else
+-    SubtractAmount(logs, (RandomInt(5) + 1));
+-    SendSysMessage(who, &quot;You destroy some logs.&quot;);
+-  endif
+-endfunction
+-
+-function setquality(who, bow)
+-  var tname := TruncateArticle(bow.name);
+-  if(CInt(GetEffectiveSkill(who, SKILLID_BOWCRAFT)) &gt;= 99)
+-    bow.name := &quot;an exceptional &quot; + tname + &quot; [crafted by &quot; + who.name + &quot;]&quot;;
+-  else
+-    bow.name := &quot;an exceptional &quot; + tname;
+-  endif
+-  bow.quality := bow.quality + 0.2;
+-  bow.hp := bow.maxhp;
+-  SendSysMessage(who, &quot;You created an exceptional item.&quot;);
+-endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000647.html">[Poldistro-svn] r673 - trunk/096/pkg/skills/fishing/config
+</A></li>
+	<LI>Next message: <A HREF="000649.html">[Poldistro-svn] r675 - trunk/096/pkg/skills/poisoning
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#648">[ date ]</a>
+              <a href="thread.html#648">[ thread ]</a>
+              <a href="subject.html#648">[ subject ]</a>
+              <a href="author.html#648">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

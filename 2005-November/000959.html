@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r986 - in trunk/096/pkg/skills/magery: . config recallRune
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r986%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20config%20recallRune&In-Reply-To=%3C200511140922.jAE9MgAd020896%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000958.html">
+   <LINK REL="Next"  HREF="000960.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r986 - in trunk/096/pkg/skills/magery: . config recallRune</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r986%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20config%20recallRune&In-Reply-To=%3C200511140922.jAE9MgAd020896%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r986 - in trunk/096/pkg/skills/magery: . config recallRune">austin at berlios.de
+       </A><BR>
+    <I>Mon Nov 14 10:22:42 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000958.html">[Poldistro-svn] r985 - trunk/096/pkg/items/walkOn/teleport
+</A></li>
+        <LI>Next message: <A HREF="000960.html">[Poldistro-svn] r987 - in trunk/096/pkg: items/keys/key skills/magery skills/magery/recallRune
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#959">[ date ]</a>
+              <a href="thread.html#959">[ thread ]</a>
+              <a href="subject.html#959">[ subject ]</a>
+              <a href="author.html#959">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-14 10:22:35 +0100 (Mon, 14 Nov 2005)
+New Revision: 986
+
+Added:
+   trunk/096/pkg/skills/magery/config/runeColor.cfg
+   trunk/096/pkg/skills/magery/recallRune/
+   trunk/096/pkg/skills/magery/recallRune/methods.src
+   trunk/096/pkg/skills/magery/recallRune/use.src
+Modified:
+   trunk/096/pkg/skills/magery/itemdesc.cfg
+Log:
+Added recall rune support.
+
+Added: trunk/096/pkg/skills/magery/config/runeColor.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/config/runeColor.cfg	2005-11-14 09:05:16 UTC (rev 985)
++++ trunk/096/pkg/skills/magery/config/runeColor.cfg	2005-11-14 09:22:35 UTC (rev 986)
+@@ -0,0 +1,5 @@
++
++Realm Britannia
++{
++	RuneColor	24
++}
+
+Modified: trunk/096/pkg/skills/magery/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/itemdesc.cfg	2005-11-14 09:05:16 UTC (rev 985)
++++ trunk/096/pkg/skills/magery/itemdesc.cfg	2005-11-14 09:22:35 UTC (rev 986)
+@@ -924,4 +924,34 @@
+ 	VendorSellsFor		82
+ 
+ 	Script			spellScroll/use
++}
++
++//--=[ Recall Runes ]=----------------------
++
++Item 0x1F14
++{
++	Name			RecallRune
++	Desc			recall rune
++	
++	RequiresAttention	0
++		
++	VendorSellsFor		10
++	VendorBuysFor		5
++	
++	MethodScript		recallRune/methods
++	Script			recallRune/use
++}
++
++Item 0x1F15
++{
++	Name			RecallRune2
++	Desc			recall rune
++	
++	RequiresAttention	0
++		
++	VendorSellsFor		10
++	VendorBuysFor		5
++	
++	MethodScript		recallRune/methods
++	Script			recallRune/use
+ }
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/magery/recallRune/methods.src
+===================================================================
+--- trunk/096/pkg/skills/magery/recallRune/methods.src	2005-11-14 09:05:16 UTC (rev 985)
++++ trunk/096/pkg/skills/magery/recallRune/methods.src	2005-11-14 09:22:35 UTC (rev 986)
+@@ -0,0 +1,39 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use cfgfile;
++
++program Install()
++	return 1;
++endprogram
++
++exported function SetDestination(rune, x, y, z, realm)
++	var coords := struct;
++	struct.+x := CInt(x);
++	struct.+y := CInt(y);
++	struct.+z := CInt(z);
++	struct.+realm := CStr(realm);
++	
++	var color_cfg := ReadConfigFile(&quot;:magery:config/runeColor&quot;);
++	var realm_elem := color_cfg[realm];
++	rune.color := CInt(realm_elem.RuneColor);
++		
++	return SetObjProperty(rune, &quot;Destination&quot;, coords);
++endfunction
++
++exported function GetDestination(rune)
++	return GetObjProperty(rune, &quot;Destination&quot;);
++endfunction
++
++exported function SendToDestination(rune, object)
++	var dest := GetDestination(rune);
++	if ( !dest )
++		return error{&quot;errortext&quot;:=&quot;Rune has no destination set.&quot;};
++	endif
++	
++	return MoveObjectToLocation(object, dest.x, dest.y, dest.z, dest.realm, MOVEOBJECT_FORCELOCATION);
++endfunction
++	
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/magery/recallRune/use.src
+===================================================================
+--- trunk/096/pkg/skills/magery/recallRune/use.src	2005-11-14 09:05:16 UTC (rev 985)
++++ trunk/096/pkg/skills/magery/recallRune/use.src	2005-11-14 09:22:35 UTC (rev 986)
+@@ -0,0 +1,26 @@
++/*
++ * $Id$
++ *
++ */
++ 
++use uo;
++
++include &quot;:gumps:requestgump&quot;;
++
++program UseRune(who, rune)
++	if ( !rune.GetDestination() )
++		SendSysMessage(who, &quot;This rune is not marked.&quot;);
++		return 0;
++	endif
++	
++	var desc := RequestGump(who, &quot;Enter a new name for this rune.&quot;, &quot;&quot;, rune.desc, CANCEL_BTN_ON);
++	if ( !desc )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	endif
++	
++	SetName(rune, desc);
++	SendSysMessage(who, &quot;Rune has been renamed.&quot;);
++	
++	return 1;
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000958.html">[Poldistro-svn] r985 - trunk/096/pkg/items/walkOn/teleport
+</A></li>
+	<LI>Next message: <A HREF="000960.html">[Poldistro-svn] r987 - in trunk/096/pkg: items/keys/key skills/magery skills/magery/recallRune
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#959">[ date ]</a>
+              <a href="thread.html#959">[ thread ]</a>
+              <a href="subject.html#959">[ subject ]</a>
+              <a href="author.html#959">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

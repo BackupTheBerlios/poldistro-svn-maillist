@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r78 - in trunk/096/pkg/mobiles/ai_brain/include: . braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r78%20-%20in%20trunk/096/pkg/mobiles/ai_brain/include%3A%20.%20braincore&In-Reply-To=%3C200509060523.j865NIDv026510%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000059.html">
+   <LINK REL="Next"  HREF="000061.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r78 - in trunk/096/pkg/mobiles/ai_brain/include: . braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r78%20-%20in%20trunk/096/pkg/mobiles/ai_brain/include%3A%20.%20braincore&In-Reply-To=%3C200509060523.j865NIDv026510%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r78 - in trunk/096/pkg/mobiles/ai_brain/include: . braincore">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep  6 07:23:18 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000059.html">[Poldistro-svn] r77 - in trunk/096/pkg/utils/gumps: docs include
+</A></li>
+        <LI>Next message: <A HREF="000061.html">[Poldistro-svn] r79 - trunk/096/batchfiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#60">[ date ]</a>
+              <a href="thread.html#60">[ thread ]</a>
+              <a href="subject.html#60">[ subject ]</a>
+              <a href="author.html#60">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-06 07:22:46 +0200 (Tue, 06 Sep 2005)
+New Revision: 78
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-06 05:15:24 UTC (rev 77)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/setup.inc	2005-09-06 05:22:46 UTC (rev 78)
+@@ -112,7 +112,7 @@
+ 		if ( g_scripts.Exists(&quot;restart_script&quot;) )
+ 			var restart_script := Run_Script_To_Completion(g_scripts[&quot;restart_script&quot;], {npc, g_settings});
+ 			if ( restart_script.errortext )
+-				FatalError(&quot;Restart script failed:&quot;+restart_script.errortext);
++				FatalError(&quot;Error - StartupScripts() :: Restart script failed: &quot;+restart_script.errortext);
+ 				return 0;
+ 			endif
+ 		endif
+@@ -123,7 +123,7 @@
+ 		if ( g_scripts.Exists(&quot;init_script&quot;) )
+ 			var init_script := Run_Script_To_Completion(g_scripts[&quot;init_script&quot;], {npc, g_settings});
+ 			if ( init_script.errortext )
+-				FatalError(&quot;Init script failed:&quot;+init_script.errortext);
++				FatalError(&quot;Error - StartupScripts() :: Init script failed:&quot;+init_script.errortext);
+ 				return 0;
+ 			endif
+ 		endif
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc	2005-09-06 05:15:24 UTC (rev 77)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcInit.inc	2005-09-06 05:22:46 UTC (rev 78)
+@@ -69,7 +69,7 @@
+ 		
+ 	if ( npc_elem.AmmoType )
+ 		if ( CInt(npc_elem.AmmoAmount) &gt; 0 )
+-			var ammo := CreateItemInBackpack(mobile, npc_elem.AmmoType, npc_elem.AmmoAmount);
++			var ammo := CreateItemInBackpack(mobile, npc_elem.AmmoType, CInt(npc_elem.AmmoAmount));
+ 			if ( !ammo )
+ 				return ammo; // Will return an error with .errortext
+ 			endif
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc	2005-09-06 05:15:24 UTC (rev 77)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc	2005-09-06 05:22:46 UTC (rev 78)
+@@ -95,7 +95,7 @@
+ 	if ( nerve_dict.exists(nerve_name) )
+ 		return GetProcess(CInt(nerve_dict[nerve_name].pid));
+ 	else
+-		return error{&quot;errortext&quot; := &quot;GetNerveProcess() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
++		return error{&quot;errortext&quot; := &quot;Error - GetNerveProcess() :: Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+ 	endif
+ endfunction
+ 
+@@ -122,7 +122,7 @@
+ 	if ( nerve_dict.exists(nerve_name) )
+ 		return GetProcess(CInt(nerve_dict[nerve_name].flags));
+ 	else
+-		return error{&quot;errortext&quot; := &quot;GetNerveProcess() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
++		return error{&quot;errortext&quot; := &quot;Error - GetNerveFlags() :: Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+ 	endif
+ endfunction
+ 
+@@ -161,7 +161,7 @@
+ 	var process := start_script(nerve_script, data);
+ 
+ 	if ( process.errortext )
+-		var errmsg := &quot;StartNerve() [&quot;+nerve_name+&quot;] [&quot;+nerve_script+&quot;] failed to start! -&gt;&quot;+process.errortext;
++		var errmsg := &quot;Error - StartNerve() :: [&quot;+nerve_name+&quot;] [&quot;+nerve_script+&quot;] failed to start! -&gt;&quot;+process.errortext;
+ 		NPC_ErrorSysLog(mobile, errmsg);
+ 		return error{&quot;errortext&quot;:=errmsg};
+ 	else
+@@ -207,7 +207,7 @@
+ 
+ 		return SaveNerves(mobile, nerve_dict);
+ 	else
+-		return error{&quot;errortext&quot; := &quot;StopNerve() - Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
++		return error{&quot;errortext&quot; := &quot;Error - StopNerve() :: Invalid nerve name  [&quot;+nerve_name+&quot;]&quot;};
+ 	endif
+ endfunction
+ 
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc	2005-09-06 05:15:24 UTC (rev 77)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcUtil.inc	2005-09-06 05:22:46 UTC (rev 78)
+@@ -44,7 +44,7 @@
+ 		parsed.package := &quot;&quot;;
+ 		parsed.template := template_name;
+ 	else
+-		parsed.package := template_name[colon_a, colon_b];
++		parsed.package := template_name[colon_a+1, colon_b-1];
+ 		parsed.template := template_name[colon_b+1, Len(template_name)];
+ 	endif
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000059.html">[Poldistro-svn] r77 - in trunk/096/pkg/utils/gumps: docs include
+</A></li>
+	<LI>Next message: <A HREF="000061.html">[Poldistro-svn] r79 - trunk/096/batchfiles
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#60">[ date ]</a>
+              <a href="thread.html#60">[ thread ]</a>
+              <a href="subject.html#60">[ subject ]</a>
+              <a href="author.html#60">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

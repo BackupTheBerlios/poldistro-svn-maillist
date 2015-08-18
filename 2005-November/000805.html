@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r831 - trunk/096/pkg/skills/lumberjacking
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r831%20-%20trunk/096/pkg/skills/lumberjacking&In-Reply-To=%3C200511020938.jA29cGHO019445%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000804.html">
+   <LINK REL="Next"  HREF="000806.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r831 - trunk/096/pkg/skills/lumberjacking</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r831%20-%20trunk/096/pkg/skills/lumberjacking&In-Reply-To=%3C200511020938.jA29cGHO019445%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r831 - trunk/096/pkg/skills/lumberjacking">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 10:38:16 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000804.html">[Poldistro-svn] r830 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000806.html">[Poldistro-svn] r832 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#805">[ date ]</a>
+              <a href="thread.html#805">[ thread ]</a>
+              <a href="subject.html#805">[ subject ]</a>
+              <a href="author.html#805">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 10:38:14 +0100 (Wed, 02 Nov 2005)
+New Revision: 831
+
+Modified:
+   trunk/096/pkg/skills/lumberjacking/lumberjack.src
+Log:
+Attribute updates
+
+Modified: trunk/096/pkg/skills/lumberjacking/lumberjack.src
+===================================================================
+--- trunk/096/pkg/skills/lumberjacking/lumberjack.src	2005-11-02 09:36:59 UTC (rev 830)
++++ trunk/096/pkg/skills/lumberjacking/lumberjack.src	2005-11-02 09:38:14 UTC (rev 831)
+@@ -69,8 +69,8 @@
+     SendSysMessage(me,&quot;You stop chopping.&quot;);
+     return 1;
+   endif
+-  var points := CInt((GetEffectiveSkill(me, SKILLID_LUMBERJACKING) * 2) + 10);
+-  if(CheckSkill(me, SKILLID_LUMBERJACKING, difficulty, points))
++  var points := CInt((AP_GetSkill(me, &quot;Lumberjacking&quot;) * 2) + 10);
++  if(SkillCheck(me, &quot;Lumberjacking&quot;, difficulty) &gt; 0)
+     var wood_amount := HarvestResource( &quot;wood&quot;, tree.x, tree.y, 1, 10, me.realm );
+     if(wood_amount == 0)
+       SendSysMessage(me, &quot;There's not enough wood here to chop.&quot;);
+@@ -526,7 +526,7 @@
+       SendSysMessage(who, &quot;I don't know how to make that.&quot;);
+       return;
+     endif
+-    var myskill := CInt(GetEffectiveSkill(who, SKILLID_BOWCRAFT));
++    var myskill := CInt(AP_GetSkill(who, &quot;BowcraftFletching&quot;));
+     var modpts := 0;
+     if(myskill &gt;=  difficulty)
+       modpts := (myskill - difficulty);
+@@ -544,7 +544,7 @@
+ 
+ function setquality(who, bow)
+   var tname := TruncateArticle(bow.name);
+-  if(CInt(GetEffectiveSkill(who, SKILLID_BOWCRAFT)) &gt;= 99)
++  if(CInt(AP_GetSkill(who, &quot;BowcraftFletching&quot;)) &gt;= 99)
+     bow.name := &quot;an exceptional &quot; + tname + &quot; [crafted by &quot; + who.name + &quot;]&quot;;
+   else
+     bow.name := &quot;an exceptional &quot; + tname;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000804.html">[Poldistro-svn] r830 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000806.html">[Poldistro-svn] r832 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#805">[ date ]</a>
+              <a href="thread.html#805">[ thread ]</a>
+              <a href="subject.html#805">[ subject ]</a>
+              <a href="author.html#805">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

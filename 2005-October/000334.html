@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r356 - trunk/096/pkg/items/containers/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r356%20-%20trunk/096/pkg/items/containers/include&In-Reply-To=%3C200510012207.j91M7Vim000223%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000333.html">
+   <LINK REL="Next"  HREF="000335.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r356 - trunk/096/pkg/items/containers/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r356%20-%20trunk/096/pkg/items/containers/include&In-Reply-To=%3C200510012207.j91M7Vim000223%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r356 - trunk/096/pkg/items/containers/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Oct  2 00:07:31 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000333.html">[Poldistro-svn] r355 - trunk/096/pkg/items/containers/commands/admin
+</A></li>
+        <LI>Next message: <A HREF="000335.html">[Poldistro-svn] r357 - in trunk/096/pkg/items/containers: commands/admin include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#334">[ date ]</a>
+              <a href="thread.html#334">[ thread ]</a>
+              <a href="subject.html#334">[ subject ]</a>
+              <a href="author.html#334">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-02 00:07:30 +0200 (Sun, 02 Oct 2005)
+New Revision: 356
+
+Modified:
+   trunk/096/pkg/items/containers/include/storageAreas.inc
+Log:
+
+
+Modified: trunk/096/pkg/items/containers/include/storageAreas.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/storageAreas.inc	2005-10-01 22:03:25 UTC (rev 355)
++++ trunk/096/pkg/items/containers/include/storageAreas.inc	2005-10-01 22:07:30 UTC (rev 356)
+@@ -97,11 +97,12 @@
+ 	var root_container := FindRootItemInStorageArea(storage_area, container_name);
+ 	if ( !root_container )
+ 		//Old distro (pre 096) root container names.
+-		container_name := &quot;Bankbox of &quot;+container_name;
++		container_name := &quot;Bankbox of &quot;+container_id;
+ 		root_container := FindRootItemInStorageArea(storage_area, container_name);
+-		//Set the name to the new style
++		//Set the name to the new style (takes effect after a restart)
+ 		container_name[&quot;Bankbox of &quot;] := &quot;&quot;;
+-		container_name := &quot;[Root Container] &quot;+Hex(CInt(container_name));
++		container_name := CP_DEFAULT_PREFIX + Hex(CInt(container_name));
++		SetName(root_container, container_name);
+ 	endif
+ 	
+ 	return root_container;
+@@ -132,7 +133,6 @@
+ 		// The storage area does not exist - so create it.
+ 		CreateStorageArea(storage_area_name);
+ 		storage_area := FindStorageArea(storage_area_name);
+-		CP_RegisterStorageArea(storage_area_name);
+ 	endif
+ 	
+ 	var container_name := CP_DEFAULT_PREFIX + container_id;
+@@ -174,38 +174,28 @@
+ 	return DestroyRootItemInStorageArea(storage_area, container_name);
+ endfunction
+ 
+-
+-/*
+- * CP_RegisterStorageArea(storage_area_name)
++/* 
++ * CP_GetStorageAreaNames()
+  *
+  * Purpose
+- * Tracks the names of storage areas that have been created.
++ * Returns a list of storage area names
+  *
+  * Parameters
+- * storage_area_name:	Name of the storage area to add.
+  *
+  * Return value
+- * Returns 1
++ * Array
+  *
+  */
+-function CP_RegisterStorageArea(storage_area_name)
+-	if ( (!storage_area_name) || (storage_area_name == error) )
+-		return error{&quot;errortext&quot;:=&quot;Not a valid storage area name&quot;};
+-	endif
+-
+-	set_critical(1);
+-	var all_areas := GetGlobalProperty(&quot;StorageAreaNames&quot;);
+-	if ( !all_areas.Exists(storage_area_name) )
+-		CP_StorageDebugMsg(&quot;Registering storage area [&quot;+storage_area_name+&quot;]&quot;);
+-		all_areas.Insert(storage_area_name, 0);
+-		SetGlobalProperty(&quot;StorageAreaNames&quot;, all_areas);
+-	endif
+-	set_critical(0);
++function CP_GetStorageAreaNames()
++	var name_list := array;
++	foreach storage_area in (StorageAreas())
++		name_list.Append(_storage_area_iter);
++		sleepms(2);
++	endforeach
+ 	
+-	return 1;
++	return name_list;
+ endfunction
+ 
+-
+ /*
+  * CP_StorageDebugMsg(text)
+  *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000333.html">[Poldistro-svn] r355 - trunk/096/pkg/items/containers/commands/admin
+</A></li>
+	<LI>Next message: <A HREF="000335.html">[Poldistro-svn] r357 - in trunk/096/pkg/items/containers: commands/admin include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#334">[ date ]</a>
+              <a href="thread.html#334">[ thread ]</a>
+              <a href="subject.html#334">[ subject ]</a>
+              <a href="author.html#334">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

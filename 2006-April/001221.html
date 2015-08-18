@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1249 - trunk/uomul
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1249%20-%20trunk/uomul&In-Reply-To=%3C200604261400.k3QE0rmP013162%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001220.html">
+   <LINK REL="Next"  HREF="001222.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1249 - trunk/uomul</H1>
+    <B>panosl at berlios.de</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1249%20-%20trunk/uomul&In-Reply-To=%3C200604261400.k3QE0rmP013162%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1249 - trunk/uomul">panosl at berlios.de
+       </A><BR>
+    <I>Wed Apr 26 16:00:53 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001220.html">[Poldistro-svn] r1248 - trunk/uomul
+</A></li>
+        <LI>Next message: <A HREF="001222.html">[Poldistro-svn] r1250 - trunk/uomul
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1221">[ date ]</a>
+              <a href="thread.html#1221">[ thread ]</a>
+              <a href="subject.html#1221">[ subject ]</a>
+              <a href="author.html#1221">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2006-04-26 16:00:34 +0200 (Wed, 26 Apr 2006)
+New Revision: 1249
+
+Added:
+   trunk/uomul/__init__.py
+Modified:
+   trunk/uomul/index.py
+   trunk/uomul/skills.py
+   trunk/uomul/sound.py
+   trunk/uomul/statics.py
+Log:
+nothing serious.
+
+Added: trunk/uomul/__init__.py
+===================================================================
+
+Modified: trunk/uomul/index.py
+===================================================================
+--- trunk/uomul/index.py	2006-04-24 17:32:50 UTC (rev 1248)
++++ trunk/uomul/index.py	2006-04-26 14:00:34 UTC (rev 1249)
+@@ -1,3 +1,4 @@
++#
+ from struct import unpack
+ 
+ 
+
+
+Property changes on: trunk/uomul/index.py
+___________________________________________________________________
+Name: svn:keywords
+   + __init__.py
+
+Modified: trunk/uomul/skills.py
+===================================================================
+--- trunk/uomul/skills.py	2006-04-24 17:32:50 UTC (rev 1248)
++++ trunk/uomul/skills.py	2006-04-26 14:00:34 UTC (rev 1249)
+@@ -1,3 +1,5 @@
++# $Id$
++
+ from index import Index
+ from struct import unpack, pack
+ 
+@@ -3,4 +5,5 @@
+ 
+ def getData(file):
++	''''''
+ 	fsock = open(file, 'rb')
+ 	data = fsock.read()
+@@ -10,6 +13,7 @@
+ 
+ 
+ class Skills(Index):
++	'''TODO'''
+ 	def __init__(self, file='skills.mul', indexfile='Skills.idx'):
+ 		Index.__init__(self, indexfile)
+ 		self.data = getData(file)
+@@ -37,7 +41,8 @@
+ 			#TODO Define a custom class Exception SkillError
+ 			raise NameError('Skill ID is out of range.')
+ 		skillsidx = self.entries[id]
+-		unpacked = unpack('b'+str(skillsidx[1]-1)+'s',
++		unpacked = unpack('b%ds' % (skillsidx[1]-1),
++		#unpacked = unpack('b'+str(skillsidx[1]-1)+'s',
+ 			self.data[skillsidx[0]:skillsidx[0]+skillsidx[1]])
+ 		skill = {}
+ 		skill['active'] = unpacked[0]
+@@ -62,6 +67,7 @@
+ 		self.newdata = temp
+ 
+ 	def getSkills(self):
++		'''Get a list of all the skills'''
+ 		skills = [self.getSkill(skill) for skill in range(0, self.max)]
+ 		return skills
+ 
+@@ -79,10 +85,7 @@
+ 
+ 
+ class SkillGrp:
++	'''TODO'''
+ 	def __init__(self, file='SkillGrp.mul'):
+ 		self.data = getData(file)
+ 
+-
+-if __name__ == '__main__':
+-	s = Skills()
+-
+
+
+Property changes on: trunk/uomul/skills.py
+___________________________________________________________________
+Name: svn:keywords
+   + __init__.py
+
+
+Property changes on: trunk/uomul/sound.py
+___________________________________________________________________
+Name: svn:keywords
+   + __init__.py
+
+
+Property changes on: trunk/uomul/statics.py
+___________________________________________________________________
+Name: svn:keywords
+   + __init__.py
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001220.html">[Poldistro-svn] r1248 - trunk/uomul
+</A></li>
+	<LI>Next message: <A HREF="001222.html">[Poldistro-svn] r1250 - trunk/uomul
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1221">[ date ]</a>
+              <a href="thread.html#1221">[ thread ]</a>
+              <a href="subject.html#1221">[ subject ]</a>
+              <a href="author.html#1221">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

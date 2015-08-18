@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r847 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r847%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200511022039.jA2KdX5e027001%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000820.html">
+   <LINK REL="Next"  HREF="000822.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r847 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r847%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200511022039.jA2KdX5e027001%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r847 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 21:39:33 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000820.html">[Poldistro-svn] r846 - trunk/096/pkg/items/ministatues
+</A></li>
+        <LI>Next message: <A HREF="000822.html">[Poldistro-svn] r848 - in trunk/096/pkg/systems: attributes/include combat/old
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#821">[ date ]</a>
+              <a href="thread.html#821">[ thread ]</a>
+              <a href="subject.html#821">[ subject ]</a>
+              <a href="author.html#821">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 21:39:33 +0100 (Wed, 02 Nov 2005)
+New Revision: 847
+
+Modified:
+   trunk/096/pkg/systems/attributes/include/skills.inc
+   trunk/096/pkg/systems/attributes/include/stats.inc
+Log:
+Added ModifySkillMod() and ModifyStatMod()
+
+Takes current modifier and adjusts it.
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-11-02 20:25:08 UTC (rev 846)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-11-02 20:39:33 UTC (rev 847)
+@@ -107,6 +107,31 @@
+ endfunction
+ 
+ /*
++ * AP_ModifySkillMod(mobile, skill_name, points)
++ *
++ * Purpose
++ * Modifies the modifier value for the skill.
++ * Example: 	AP_SetStatMod(mobile, &quot;alchemy&quot;, -15.3)
++ *
++ * Parameters
++ * mobile:	Mobile reference to adjust the modifier points on.
++ * stat_name:	Name of the skill to adjust the modifier points on.
++ * points:	Number of points to adjust the modifier by.
++ *
++ * Return value
++ * Returns the previous value
++ *
++ */
++function AP_ModifySkillMod(mobile, stat_name, points)
++	var orig_mod := AP_GetStatMod(mobile, stat_name);
++	var new_mod := CDbl(points)+orig_mod;
++	SetAttributeTemporaryMod(mobile, stat_name, CInt(CDbl(new_mod) * 10.0));
++	
++	return orig_mod;
++endfunction
++
++
++/*
+  * AP_SetSkillScript(attribute_name)
+  *
+  * Purpose
+
+Modified: trunk/096/pkg/systems/attributes/include/stats.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/stats.inc	2005-11-02 20:25:08 UTC (rev 846)
++++ trunk/096/pkg/systems/attributes/include/stats.inc	2005-11-02 20:39:33 UTC (rev 847)
+@@ -107,6 +107,30 @@
+ endfunction
+ 
+ /*
++ * AP_ModifyStatMod(mobile, stat_name, points)
++ *
++ * Purpose
++ * Modifies the modifier value for the stat.
++ * Example: 	AP_SetStatMod(mobile, &quot;strength&quot;, -15.3)
++ *
++ * Parameters
++ * mobile:	Mobile reference to adjust the modifier points on.
++ * stat_name:	Name of the stat to adjust the modifier points on.
++ * points:	Number of points to adjust the modifier by.
++ *
++ * Return value
++ * Returns the previous value
++ *
++ */
++function AP_ModifyStatMod(mobile, stat_name, points)
++	var orig_mod := AP_GetStatMod(mobile, stat_name);
++	var new_mod := CDbl(points)+orig_mod;
++	SetAttributeTemporaryMod(mobile, stat_name, CInt(CDbl(new_mod) * 10.0));
++	
++	return orig_mod;
++endfunction
++
++/*
+  * AP_GetStatCap(stat_name)
+  *
+  * Purpose
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000820.html">[Poldistro-svn] r846 - trunk/096/pkg/items/ministatues
+</A></li>
+	<LI>Next message: <A HREF="000822.html">[Poldistro-svn] r848 - in trunk/096/pkg/systems: attributes/include combat/old
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#821">[ date ]</a>
+              <a href="thread.html#821">[ thread ]</a>
+              <a href="subject.html#821">[ subject ]</a>
+              <a href="author.html#821">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

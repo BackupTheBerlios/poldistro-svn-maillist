@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r840 - in trunk/096/pkg/items: treasuremap wands
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r840%20-%20in%20trunk/096/pkg/items%3A%20treasuremap%20wands&In-Reply-To=%3C200511021846.jA2IkZdx026817%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000813.html">
+   <LINK REL="Next"  HREF="000815.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r840 - in trunk/096/pkg/items: treasuremap wands</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r840%20-%20in%20trunk/096/pkg/items%3A%20treasuremap%20wands&In-Reply-To=%3C200511021846.jA2IkZdx026817%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r840 - in trunk/096/pkg/items: treasuremap wands">austin at berlios.de
+       </A><BR>
+    <I>Wed Nov  2 19:46:35 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000813.html">[Poldistro-svn] r839 - trunk/096/pkg/utils/gumps/include
+</A></li>
+        <LI>Next message: <A HREF="000815.html">[Poldistro-svn] r841 - in trunk/096/pkg/skills: herding lockpicking magery
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#814">[ date ]</a>
+              <a href="thread.html#814">[ thread ]</a>
+              <a href="subject.html#814">[ subject ]</a>
+              <a href="author.html#814">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-02 19:46:32 +0100 (Wed, 02 Nov 2005)
+New Revision: 840
+
+Modified:
+   trunk/096/pkg/items/treasuremap/decodeMap.src
+   trunk/096/pkg/items/wands/magicWands.src
+Log:
+Attribute updates
+
+Modified: trunk/096/pkg/items/treasuremap/decodeMap.src
+===================================================================
+--- trunk/096/pkg/items/treasuremap/decodeMap.src	2005-11-02 18:20:29 UTC (rev 839)
++++ trunk/096/pkg/items/treasuremap/decodeMap.src	2005-11-02 18:46:32 UTC (rev 840)
+@@ -24,7 +24,7 @@
+   if( maplevel &gt; maxlevel )
+     SendSysMessage( who, &quot;You cannot comprehend the map.&quot; );
+   else
+-    if(CheckSkill( who, SKILLID_CARTOGRAPHY, (maplevel*20), (maplevel*100)))
++    if( SkillCheck(who, CARTOGRAPHY, (maplevel*20)) &gt; 0 )
+       CreateTreasureMap( who, map, maplevel );
+     else
+       SendSysMessage( who, &quot;You understand the map, but fail to decode it.&quot; );
+
+Modified: trunk/096/pkg/items/wands/magicWands.src
+===================================================================
+--- trunk/096/pkg/items/wands/magicWands.src	2005-11-02 18:20:29 UTC (rev 839)
++++ trunk/096/pkg/items/wands/magicWands.src	2005-11-02 18:46:32 UTC (rev 840)
+@@ -276,7 +276,7 @@
+   if(cast_on.dead)
+     return 0;
+   endif
+-  if(CheckSkill(cast_on, SKILLID_MAGICRESISTANCE, magery, (magery * 2)))
++  if( SkillCheck(cast_on, RESISTING_SPELLS, magery) &gt; 0 )
+     SendSysMessage(cast_on, &quot;You feel yourself resisting magical energy!&quot;);
+     PlaySoundEffect(cast_on, SFX_SPELL_WEAKEN);
+     PlayObjectCenteredEffect( cast_on, FX_CURSE_EFFECT, 5,5);
+@@ -374,7 +374,7 @@
+     endif
+   endif
+   if(GetObjProperty(the_item, &quot;type&quot;) == &quot;cursed&quot;)
+-    if(CheckSkill(who, SKILLID_ITEMID, 65, 0) )
++    if(CheckSkill(who, ITEM_IDENTIFICATION, 65, 0) )
+       SendSysMessage(who, &quot;* This item is cursed! *&quot;);
+     endif
+   endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000813.html">[Poldistro-svn] r839 - trunk/096/pkg/utils/gumps/include
+</A></li>
+	<LI>Next message: <A HREF="000815.html">[Poldistro-svn] r841 - in trunk/096/pkg/skills: herding lockpicking magery
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#814">[ date ]</a>
+              <a href="thread.html#814">[ thread ]</a>
+              <a href="subject.html#814">[ subject ]</a>
+              <a href="author.html#814">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

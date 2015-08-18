@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1356 - in trunk/096/pkg/systems/worldSaver: . config include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1356%20-%20in%20trunk/096/pkg/systems/worldSaver%3A%20.%20config%20include&In-Reply-To=%3C200605122044.k4CKiiXm029586%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001324.html">
+   <LINK REL="Next"  HREF="001326.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1356 - in trunk/096/pkg/systems/worldSaver: . config include</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1356%20-%20in%20trunk/096/pkg/systems/worldSaver%3A%20.%20config%20include&In-Reply-To=%3C200605122044.k4CKiiXm029586%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1356 - in trunk/096/pkg/systems/worldSaver: . config include">austin at berlios.de
+       </A><BR>
+    <I>Fri May 12 22:44:44 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001324.html">[Poldistro-svn] r1355 - in trunk/096/pkg/systems/worldSaver: . include
+</A></li>
+        <LI>Next message: <A HREF="001326.html">[Poldistro-svn] r1357 - in trunk/096/pkg/systems/worldSaver/commands: . admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1325">[ date ]</a>
+              <a href="thread.html#1325">[ thread ]</a>
+              <a href="subject.html#1325">[ subject ]</a>
+              <a href="author.html#1325">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-12 22:44:43 +0200 (Fri, 12 May 2006)
+New Revision: 1356
+
+Modified:
+   trunk/096/pkg/systems/worldSaver/config/settings.cfg
+   trunk/096/pkg/systems/worldSaver/include/saver.inc
+   trunk/096/pkg/systems/worldSaver/worldSaver.src
+Log:
+
+
+Modified: trunk/096/pkg/systems/worldSaver/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/systems/worldSaver/config/settings.cfg	2006-05-12 20:22:41 UTC (rev 1355)
++++ trunk/096/pkg/systems/worldSaver/config/settings.cfg	2006-05-12 20:44:43 UTC (rev 1356)
+@@ -5,9 +5,6 @@
+ Elem Settings
+ {
+ 	// Time between saves in minutes, time of announcement before save in minutes
+-	SaveTime	65
++	SaveTime	60
+ 	
+-	// Number of minutes prior to a save to warn it will take place.
+-	// If set to 0, will not do any pre-announcement.
+-	SaveAnnounce	0
+ }
+
+Modified: trunk/096/pkg/systems/worldSaver/include/saver.inc
+===================================================================
+--- trunk/096/pkg/systems/worldSaver/include/saver.inc	2006-05-12 20:22:41 UTC (rev 1355)
++++ trunk/096/pkg/systems/worldSaver/include/saver.inc	2006-05-12 20:44:43 UTC (rev 1356)
+@@ -6,8 +6,9 @@
+ use os;
+ 
+ // SAVER EVENTS
+-const EVENT_SAVE_NOW	:= 0x1;
+-const EVENT_SHUT_DOWN	:= 0x2;
++const EVENT_SAVE_NOW		:= 0x1;
++const EVENT_START_SHUTDOWN	:= 0x2;
++const EVENT_CANCEL_SHUTDOWN	:= 0x4;
+ 
+ /*
+  * SVR_SendCommand(event_id, data)
+
+Modified: trunk/096/pkg/systems/worldSaver/worldSaver.src
+===================================================================
+--- trunk/096/pkg/systems/worldSaver/worldSaver.src	2006-05-12 20:22:41 UTC (rev 1355)
++++ trunk/096/pkg/systems/worldSaver/worldSaver.src	2006-05-12 20:44:43 UTC (rev 1356)
+@@ -15,19 +15,20 @@
+ 	SVR_ReportText(&quot;---=[ WORLD SAVER HAS STARTED UP ]=---&quot;, SAVER_REPORT_SYSLOG);
+ 	SetGlobalProperty(&quot;#WorldSaverPid&quot;, GetPid());
+ 
+-	var savetimes;
++	var savetimes:=struct{&quot;nextsave&quot;:=0, &quot;lasttick&quot;:=0};
+ 	UpdateTimes(savetimes);
+ 
+ 	while ( 1 )
+-		var wait_time := GetWaitTime(savetimes);
+-		Print(&quot;WaitTime=&quot;+wait_time);
+-		var event := Wait_For_Event(wait_time);
++		var event := Wait_For_Event(GetWaitTime(savetimes));
+ 		if ( event )
+-			savetimes.last := polcore().systime;
++			savetimes.lasttick := polcore().systime;
+ 			case ( event.type )
+ 				EVENT_SAVE_NOW:
+ 					DoTheSave();
+ 					break;
++				EVENT_START_SHUTDOWN:
++					DoShutDown(event.data);
++					break;
+ 			endcase
+ 		endif
+ 		
+@@ -35,7 +36,7 @@
+ 			DoTheSave();
+ 			UpdateTimes(savetimes);
+ 		endif
+-		
++
+ 		sleepms(2);
+ 	endwhile
+ 
+@@ -64,15 +65,15 @@
+ endfunction
+ 
+ function ShouldSave(byref savetimes)
+-	if ( savetimes.save &lt;= polcore().systime )
++	if ( savetimes.nextsave &lt;= polcore().systime )
+ 		return 1;
+ 	endif
+-	
++
+ 	return 0;
+ endfunction
+ 
+ function GetWaitTime(byref savetimes)
+-	return (savetimes.save - savetimes.last);
++	return (savetimes.nextsave - savetimes.lasttick);
+ endfunction
+ 
+ function UpdateTimes(byref savetimes)
+@@ -83,14 +84,25 @@
+ 		wait := 3600; // 1 hour if not set.
+ 		SVR_ReportText(&quot;Error - No SaveTime setting set in settings.cfg&quot;, SAVER_REPORT_SYSLOG);
+ 	endif
+-	var warn := CInt(cfg_settings.SaveAnnounce) * 60;
++	
++	savetimes.+lasttick := polcore().systime; 		// Time time there was a save or event.
++	savetimes.+nextsave := polcore().systime + wait;	// Time the next save will happen.
++	
++	return 1;
++endfunction
+ 
+-	savetimes := struct;
+-	savetimes.+last := polcore().systime; 		// Time time there was a save or event.
+-	savetimes.+save := polcore().systime + wait;	// Time the next save will happen.
+-	if ( warn )
+-		savetimes.+warn := savetimes.save-warn; // Time the next save warning will come up.
+-	endif
+-
++function DoShutDown(countdown:=0)
++	for( countdown; countdown &gt; 0; countdown:=countdown-1 )
++		var i := 2;
++		for (i:=2; i &gt; 0; i:=i-1)
++			SVR_ReportText(&quot;System Message: POL restarting in &quot;+countdown+&quot; minutes.&quot;, SAVER_REPORT_ALL);
++			sleep(30);
++		endfor
++	endfor
++	
++	SVR_ReportText(&quot;Shutting down now!&quot;, SAVER_REPORT_ALL);
++	sleep(3);
++	ShutDown();
++	
+ 	return 1;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001324.html">[Poldistro-svn] r1355 - in trunk/096/pkg/systems/worldSaver: . include
+</A></li>
+	<LI>Next message: <A HREF="001326.html">[Poldistro-svn] r1357 - in trunk/096/pkg/systems/worldSaver/commands: . admin
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1325">[ date ]</a>
+              <a href="thread.html#1325">[ thread ]</a>
+              <a href="subject.html#1325">[ subject ]</a>
+              <a href="author.html#1325">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,966 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r921 - in trunk/096/pkg: items/food/config items/food/include skills/magery skills/magery/spellScripts/circle1
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r921%20-%20in%20trunk/096/pkg%3A%20items/food/config%20items/food/include%20skills/magery%20skills/magery/spellScripts/circle1&In-Reply-To=%3C200511061046.jA6Akh9G022779%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000894.html">
+   <LINK REL="Next"  HREF="000896.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r921 - in trunk/096/pkg: items/food/config items/food/include skills/magery skills/magery/spellScripts/circle1</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r921%20-%20in%20trunk/096/pkg%3A%20items/food/config%20items/food/include%20skills/magery%20skills/magery/spellScripts/circle1&In-Reply-To=%3C200511061046.jA6Akh9G022779%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r921 - in trunk/096/pkg: items/food/config items/food/include skills/magery skills/magery/spellScripts/circle1">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov  6 11:46:43 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000894.html">[Poldistro-svn] r920 - in trunk/096/pkg: items/food items/food/config items/food/include skills/magery skills/magery/spellScripts/circle1
+</A></li>
+        <LI>Next message: <A HREF="000896.html">[Poldistro-svn] r922 - trunk/096/docs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#895">[ date ]</a>
+              <a href="thread.html#895">[ thread ]</a>
+              <a href="subject.html#895">[ subject ]</a>
+              <a href="author.html#895">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-06 11:46:41 +0100 (Sun, 06 Nov 2005)
+New Revision: 921
+
+Modified:
+   trunk/096/pkg/items/food/config/food.cfg
+   trunk/096/pkg/items/food/include/food.inc
+   trunk/096/pkg/skills/magery/spellScripts/circle1/createFood.src
+   trunk/096/pkg/skills/magery/spellStarter.src
+   trunk/096/pkg/skills/magery/spells.cfg
+Log:
+Updates to food.cfg (removed ore...?!)
+
+Updated food.inc to point to the right config path.
+
+Updated spells.cfg so every entry has a ManaCost, Difficulty and Delay entry.
+
+
+Modified: trunk/096/pkg/items/food/config/food.cfg
+===================================================================
+--- trunk/096/pkg/items/food/config/food.cfg	2005-11-06 10:14:09 UTC (rev 920)
++++ trunk/096/pkg/items/food/config/food.cfg	2005-11-06 10:46:41 UTC (rev 921)
+@@ -60,7 +60,6 @@
+ 	Food	0x171D
+ 	Food	0x100D
+ 	Food	0x100C
+-
+ }
+ 
+ Food meat
+@@ -88,19 +87,6 @@
+ 	Food	0x1EBD
+ }
+ 
+-Food metal
+-{
+-	Food	0x6308
+-	Food	0x6307
+-	Food	0x6306
+-	Food	0x6305
+-	Food	0x6304
+-	Food	0x6303
+-	Food	0x6302
+-	Food	0x6301
+-	Food	0x6300
+-}
+-
+ Food fish
+ {
+ 	Food	0xDD9
+
+Modified: trunk/096/pkg/items/food/include/food.inc
+===================================================================
+--- trunk/096/pkg/items/food/include/food.inc	2005-11-06 10:14:09 UTC (rev 920)
++++ trunk/096/pkg/items/food/include/food.inc	2005-11-06 10:46:41 UTC (rev 921)
+@@ -21,20 +21,29 @@
+  *
+  */
+ function RandomFoodObjType(category:=0)
+-	var cfg_file := ReadConfigFile(&quot;:food:config/food&quot;);
++	var cfg_file := ReadConfigFile(&quot;:food&amp;drink:config/food&quot;);
++	if ( cfg_file.errortext )
++		return error{&quot;errortext&quot;:=&quot;Unable to read food.cfg -&gt;&quot;+cfg_file.errortext};
++	endif
+ 	
+ 	var food_list := array{};
+ 	if ( category )
+ 		var cfg_elem := cfg_file[category];
+ 		food_list := GetConfigStringArray(cfg_elem, &quot;Food&quot;);
+ 	else
+-		food_list := array{};
+ 		foreach elem_name in ( GetConfigStringKeys(cfg_file) )
+ 			var cfg_elem := cfg_file[elem_name];
+-			food_list := food_list + GetConfigStringArray(cfg_elem, &quot;Food&quot;);
++			var temp_list := GetConfigStringArray(cfg_elem, &quot;Food&quot;);
++			if ( temp_list.Size() &gt; 0 )
++				food_list := food_list + temp_list;
++			endif
+ 			sleepms(2);
+ 		endforeach
+ 	endif
+ 	
+-	return food_list[RandomInt(food_list.size())+1];
++	if ( food_list.Size() &gt; 0 )
++		return CInt(food_list[RandomInt(food_list.Size())+1]);
++	else
++		return error{&quot;errortext&quot;:=&quot;No food items found in food.cfg&quot;};
++	endif
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/magery/spellScripts/circle1/createFood.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellScripts/circle1/createFood.src	2005-11-06 10:14:09 UTC (rev 920)
++++ trunk/096/pkg/skills/magery/spellScripts/circle1/createFood.src	2005-11-06 10:46:41 UTC (rev 921)
+@@ -18,9 +18,10 @@
+ 	var food_item := RandomFoodObjType();
+ 	
+ 	var food := CreateItemInBackPack(who, food_item, 1);
++	food.movable := 1;
+ 	
+ 	if ( food.errortext )
+-		SendSysMessage(who, &quot;Error creating food -&gt;&quot;+food.errortext);
++		SendSysMessage(who, &quot;Error creating food (&quot;+food_item+&quot;) -&gt;&quot;+food.errortext);
+ 	endif
+ 	
+ 	return 1;
+
+Modified: trunk/096/pkg/skills/magery/spellStarter.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellStarter.src	2005-11-06 10:14:09 UTC (rev 920)
++++ trunk/096/pkg/skills/magery/spellStarter.src	2005-11-06 10:46:41 UTC (rev 921)
+@@ -20,7 +20,10 @@
+ 	var targ	:= params[4]; // NPC target
+ 	params := 0;	// No longer needed
+ 	
+-	Attach(who);
++	if ( !Attach(who) )
++		SendSysMessage(who, &quot;You are already doing something.&quot;);
++		return 0;
++	endif
+ 	
+ 	var spell_elem := MS_GetSpellsCfgElem(spell_id);
+ 
+@@ -59,19 +62,18 @@
+ 		return 0;
+ 	elseif ( !CheckDelay(who, spell_elem) )
+ 		FailSpell(who);
+-		SendSysMessage(who, &quot;Your concentration has been broken.&quot;);
+ 		return 0;
+ 	else
+-		var attribute		:= spell_elem.Attribute;
++		var attribute := spell_elem.Attribute;
+ 		if ( !attribute )
+ 			attribute := MAGERY;
+ 		endif
+ 		
+-		var difficulty		:= spell_elem.Difficulty;
++		var difficulty := spell_elem.Difficulty;
+ 		if ( !difficulty )
+ 			difficulty := -1;
+ 		endif
+-		var skill_check 	:= SkillCheck(who, attribute, difficulty);
++		var skill_check := SkillCheck(who, attribute, difficulty);
+ 		if ( skill_check &gt; 0 )
+ 			var info := struct;
+ 			info.+script		:= spell_elem.script;
+@@ -81,11 +83,11 @@
+ 			info.+pid		:= GetPid();
+ 			info.+spellId		:= spell_id;
+ 
+-			var script := start_script(spell_elem.Script, {who, info});
++			var script := start_script(spell_elem.SpellScript, {who, info});
+ 			if ( script.errortext )
+-				SendSysMessage(who, &quot;Unable to start [&quot;+spell_elem.script+&quot;] -&gt; &quot;+script.errortext);
++				SendSysMessage(who, &quot;Unable to start [&quot;+spell_elem.SpellScript+&quot;] -&gt; &quot;+script.errortext);
+ 			endif
+-
++			
+ 			var ev;
+ 			while( script.pid &amp;&amp; !ev )
+ 				ev := wait_for_event(1);
+@@ -95,21 +97,29 @@
+ 		endif
+ 	endif
+ 
++	MS_SpellDebug(who, &quot;Spell starter completed..&quot;);
+ 	EraseObjProperty(who, &quot;#medding&quot;);
++	
++	return 1;
+ endprogram
+ 
+ function CheckDelay(who, spell_elem)
+ 	
+ 	SendSysMessage(who, &quot;You begin building the concentration needed to cast.&quot;);
+ 	
+-	var script := start_script(&quot;movementCheck&quot;, {who, GetPid()});
+-	
++	//var script := start_script(&quot;movementCheck&quot;, {who, GetPid()});
++	//
+ 	var delay := spell_elem.Delay;
+-	MS_SpellDebug(who, &quot;Cast delay -&gt;&quot;+delay);
++	//MS_SpellDebug(who, &quot;Cast delay -&gt;&quot;+delay);
+ 	sleepms(delay);
+-	
+-	script.kill();
+-	return ( Events_Waiting() &gt; 0 );
++	//
++	//script.kill();
++	if ( Events_Waiting() &gt; 0 )
++		SendSysMessage(who, &quot;Your concentration has been broken.&quot;);
++		return 0;
++	else
++		return 1;
++	endif
+ endfunction
+ 
+ function EquipmentCheck(who)
+@@ -145,7 +155,7 @@
+ 		if ( !amount )
+ 			amount := 1;
+ 		endif
+-		var objtype := GetObjTypeByName(CInt(_amount_iter));
++		var objtype := GetObjTypeByName(_amount_iter);
+ 		
+ 		if ( AmountInContainer(who.backpack, objtype) &lt; amount )
+ 			SendSysMessage(who, &quot;You do not have enough &quot;+GetObjTypeDesc(objtype, (amount&gt;1)));
+
+Modified: trunk/096/pkg/skills/magery/spells.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/spells.cfg	2005-11-06 10:14:09 UTC (rev 920)
++++ trunk/096/pkg/skills/magery/spells.cfg	2005-11-06 10:46:41 UTC (rev 921)
+@@ -5,6 +5,7 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle1/clumsy
+ 
++	Difficulty	1
+ 	ManaCost	0
+ 	Delay		0
+ 
+@@ -22,6 +23,7 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle1/createFood
+ 
++	Difficulty	1
+ 	ManaCost	0
+ 	Delay		0
+ 
+@@ -40,6 +42,7 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle1/feebleMind
+ 
++	Difficulty	1
+ 	ManaCost	0
+ 	Delay		0
+ 
+@@ -57,6 +60,7 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle1/heal
+ 
++	Difficulty	1
+ 	ManaCost	0
+ 	Delay		0
+ 
+@@ -74,6 +78,10 @@
+ 	Name		Magic Arrow
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle1/magicArrow
++	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
+ 
+ 	PowerWords	In Por Ylem
+ 	Circle		1
+@@ -88,6 +96,10 @@
+ 	Name		Night Sight
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle1/nightSight
++	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
+ 
+ 	PowerWords	In Lor
+ 	Circle		1
+@@ -103,6 +115,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle1/reactiveArmor
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Flam Sanct
+ 	Circle		1
+ 	
+@@ -118,6 +134,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle1/weaken
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Des Mani
+ 	Circle		1
+ 	
+@@ -132,6 +152,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle2/agility
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Ex Uus
+ 	Circle		2
+ 	
+@@ -146,6 +170,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle2/cunning
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Uus Wis
+ 	Circle		2
+ 	
+@@ -160,6 +188,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle2/cure
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	An Nox
+ 	Circle		2
+ 	
+@@ -174,6 +206,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle2/harm
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	An Mani
+ 	Circle		2
+ 	
+@@ -188,6 +224,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle2/magicTrap
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Jux
+ 	Circle		2
+ 	
+@@ -203,6 +243,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle2/magicUntrap
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	An Jux
+ 	Circle		2
+ 	
+@@ -218,6 +262,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle2/protection
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Uus Sanct
+ 	Circle		2
+ 	
+@@ -233,6 +281,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle2/strength
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Uus Mani
+ 	Circle		2
+ 	
+@@ -247,6 +299,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle3/bless
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Rel Sanct
+ 	Circle		3
+ 	
+@@ -261,6 +317,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle23/fireBall
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Vas Flam
+ 	Circle		3
+ 	
+@@ -275,6 +335,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle3/magicLock
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	An Por
+ 	Circle		3
+ 	
+@@ -290,6 +354,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle3/magicUnlock
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Nox
+ 	Circle		3
+ 	
+@@ -303,6 +371,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle3/telekinesis
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Ort Por Ylem
+ 	Circle		3
+ 	
+@@ -317,6 +389,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle3/teleport
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Rel Por
+ 	Circle		3
+ 	
+@@ -331,6 +407,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle3/unlock
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Ex Por
+ 	Circle		3
+ 	
+@@ -345,6 +425,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle3/wallofStone
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Sanct Ylem
+ 	Circle		3
+ 	
+@@ -359,6 +443,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle4/archCure
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Vas An Nox
+ 	Circle		4
+ 	
+@@ -374,6 +462,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle4/archProtection
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Vas Uus Sanct
+ 	Circle		4
+ 	
+@@ -390,6 +482,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle4/curse
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Des Sanct
+ 	Circle		4
+ 	
+@@ -405,6 +501,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle4/fireField
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Flam Grav
+ 	Circle		4
+ 	
+@@ -420,6 +520,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle4/greaterHeal
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Vas Mani
+ 	Circle		4
+ 	
+@@ -436,6 +540,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle4/lightning
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Por Ort Grav
+ 	Circle		4
+ 		
+@@ -451,6 +559,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle4/manaDrain
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Ort Rel
+ 	Circle		4
+ 	
+@@ -466,6 +578,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle4/recall
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Kal Ort Por
+ 	Circle		4
+ 	
+@@ -481,6 +597,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle5/bladeSpirit
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Jux Hur Ylem
+ 	Circle		5
+ 	
+@@ -496,6 +616,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle5/dispelField
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	An Grav
+ 	Circle		5
+ 	
+@@ -512,6 +636,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle5/incognito
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Kal In Ex
+ 	Circle		5
+ 	
+@@ -527,6 +655,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle5/spellReflection
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Jux Sanct
+ 	Circle		5
+ 	
+@@ -542,6 +674,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle5/mindBlast
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Por Corp Wis
+ 	Circle		5
+ 	
+@@ -558,6 +694,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle5/paralyze
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	An Ex Por
+ 	Circle		5
+ 	
+@@ -573,6 +713,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle5/poisonField
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Nox Grav
+ 	Circle		5
+ 	
+@@ -588,6 +732,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle5/summonCreature
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Kal Xen
+ 	Circle		5
+ 	
+@@ -603,6 +751,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle6/dispel
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	An Ort
+ 	Circle		6
+ 	
+@@ -618,6 +770,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle6/energyBolt
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Corp Por
+ 	Circle		6
+ 	
+@@ -632,6 +788,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle6/explosion
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Vas Ort Flam
+ 	Circle		6
+ 	
+@@ -647,6 +807,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle6/invisibility
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	An Lor Xen
+ 	Circle		6
+ 	
+@@ -661,6 +825,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle6/mark
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Kal Por Ylem
+ 	Circle		6
+ 	
+@@ -676,6 +844,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle6/massCurse
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Vas Des Sanct
+ 	Circle		6
+ 	
+@@ -692,6 +864,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle6/paralyzeField
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Ex Grav
+ 	Circle		6
+ 	
+@@ -707,6 +883,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle6/reveal
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Wis  Quas
+ 	Circle		6
+ 	
+@@ -721,6 +901,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle7/chainLightning
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Vas Ort Grav
+ 	Circle		7
+ 	
+@@ -737,6 +921,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle7/energyField
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Sanct Grav
+ 	Circle		7
+ 	
+@@ -753,6 +941,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle7/flameStrike
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Kal Vas Flam
+ 	Circle		7
+ 	
+@@ -767,6 +959,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle7/gate
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Vas Rel Por
+ 	Circle		7
+ 	
+@@ -782,6 +978,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle7/manaVampire
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Ort Sanct
+ 	Circle		7
+ 	
+@@ -798,6 +998,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle7/massDispel
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Vas An Ort
+ 	Circle		7
+ 	
+@@ -814,6 +1018,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle7/meteorSwarm
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Kal Des Flam Ylem
+ 	Circle		7
+ 	
+@@ -830,6 +1038,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle7/polymorph
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Vas Ylem Rel
+ 	Circle		7
+ 	
+@@ -845,6 +1057,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle8/earthquake
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	In Vas Por
+ 	Circle		8
+ 
+@@ -861,6 +1077,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle8/energyVortex
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	Vas Corp Por
+ 	Animation	0x11
+ 	Circle		8
+@@ -878,6 +1098,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle8/resurrection
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	PowerWords	An Corp
+ 	Circle		8
+ 	
+@@ -893,6 +1117,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle8/summonAirElemental
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Hur
+ 	Circle		8
+@@ -909,6 +1137,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle8/summonDeamon
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Corp
+ 	Circle		8
+@@ -926,6 +1158,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle8/summonEarthElemental
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Ylem
+ 	Circle		8
+@@ -942,6 +1178,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle8/summonFireElemental
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen Flam
+ 	Circle		8
+@@ -959,6 +1199,10 @@
+ 	Script		spellBook/castSpell
+ 	SpellScript	spellScripts/circle8/summonWaterElemental
+ 	
++	Difficulty	1
++	ManaCost	0
++	Delay		0
++	
+ 	Animation	0x11
+ 	PowerWords	Kal Vas Xen An Flam
+ 	Circle		8
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000894.html">[Poldistro-svn] r920 - in trunk/096/pkg: items/food items/food/config items/food/include skills/magery skills/magery/spellScripts/circle1
+</A></li>
+	<LI>Next message: <A HREF="000896.html">[Poldistro-svn] r922 - trunk/096/docs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#895">[ date ]</a>
+              <a href="thread.html#895">[ thread ]</a>
+              <a href="subject.html#895">[ subject ]</a>
+              <a href="author.html#895">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

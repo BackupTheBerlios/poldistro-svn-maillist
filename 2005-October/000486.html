@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r513 - trunk/096/pkg/commands/gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r513%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200510092249.j99MngdN010914%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000485.html">
+   <LINK REL="Next"  HREF="000487.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r513 - trunk/096/pkg/commands/gm</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r513%20-%20trunk/096/pkg/commands/gm&In-Reply-To=%3C200510092249.j99MngdN010914%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r513 - trunk/096/pkg/commands/gm">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 00:49:42 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000485.html">[Poldistro-svn] r512 - trunk/096/pkg/skills/tinkering
+</A></li>
+        <LI>Next message: <A HREF="000487.html">[Poldistro-svn] r514 - trunk/096/pkg/items/walkOn/teleport
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#486">[ date ]</a>
+              <a href="thread.html#486">[ thread ]</a>
+              <a href="subject.html#486">[ subject ]</a>
+              <a href="author.html#486">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 00:49:41 +0200 (Mon, 10 Oct 2005)
+New Revision: 513
+
+Removed:
+   trunk/096/pkg/commands/gm/maketele.src
+Log:
+
+
+Deleted: trunk/096/pkg/commands/gm/maketele.src
+===================================================================
+--- trunk/096/pkg/commands/gm/maketele.src	2005-10-09 22:45:17 UTC (rev 512)
++++ trunk/096/pkg/commands/gm/maketele.src	2005-10-09 22:49:41 UTC (rev 513)
+@@ -1,56 +0,0 @@
+-use os;
+-use uo;
+-
+-include &quot;include/client&quot;;
+-include &quot;include/objtype&quot;;
+-
+-program make_a_tele( seer )
+-
+-    SendSysMessage( seer, &quot;Select a rune to gate from.&quot; );
+-
+-    var rune := Target( seer, TGTOPT_NOCHECK_LOS );
+-
+-    if (!rune)
+-            SendSysMessage(seer, &quot;Targetting cancelled.&quot;);
+-            return;
+-    endif
+-
+-    if (rune.objtype != UOBJ_RUNE)
+-            SendSysMessage(seer, &quot;You can only use this on a rune!&quot;);
+-            return;
+-    endif
+-
+-	var tox := CInt(GetObjProperty( rune, &quot;x&quot; ));
+-	var toy := CInt(GetObjProperty( rune, &quot;y&quot; ));
+-	var toz := CInt(GetObjProperty( rune, &quot;z&quot; ));
+-
+-	set_critical( 1 );
+-	var gate1 := CreateItemAtLocation( seer.x, seer.y, seer.z, 0x6203, 1, seer.realm );
+-	gate1.facing := 29;
+-	var gate2 := CreateItemAtLocation( tox, toy, toz, 0x6203, 1, seer.realm );
+-	gate2.facing := 29;
+-	if (!gate1 || !gate2)
+-		DestroyItem(gate1);
+-		DestroyItem(gate2);
+-		return;
+-	endif
+-
+-	SetObjProperty( gate1, &quot;DestX&quot;, gate2.x );
+-	SetObjProperty( gate1, &quot;DestY&quot;, gate2.y );
+-	SetObjProperty( gate1, &quot;DestZ&quot;, gate2.z );
+-	SetObjProperty( gate2, &quot;DestX&quot;, gate1.x );
+-	SetObjProperty( gate2, &quot;DestY&quot;, gate1.y );
+-	SetObjProperty( gate2, &quot;DestZ&quot;, gate1.z );
+-
+-	Detach();
+-
+-	set_critical( 0 );
+-
+-	sleep(30);
+-   
+-	set_critical(1);
+-	gate1.graphic := 1;
+-	gate2.graphic := 1;
+-	set_critical(0);
+-
+-endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000485.html">[Poldistro-svn] r512 - trunk/096/pkg/skills/tinkering
+</A></li>
+	<LI>Next message: <A HREF="000487.html">[Poldistro-svn] r514 - trunk/096/pkg/items/walkOn/teleport
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#486">[ date ]</a>
+              <a href="thread.html#486">[ thread ]</a>
+              <a href="subject.html#486">[ subject ]</a>
+              <a href="author.html#486">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

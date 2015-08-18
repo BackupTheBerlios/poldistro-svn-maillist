@@ -1,0 +1,1813 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r903 - in trunk/096: pkg/utils pkg/utils/itemUtils pkg/utils/itemUtils/config pkg/utils/itemUtils/include scripts/include scripts/include/OLD
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r903%20-%20in%20trunk/096%3A%20pkg/utils%20pkg/utils/itemUtils%20pkg/utils/itemUtils/config%20pkg/utils/itemUtils/include%20scripts/include%20scripts/include/OLD&In-Reply-To=%3C200511050810.jA58AXOt032138%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000876.html">
+   <LINK REL="Next"  HREF="000878.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r903 - in trunk/096: pkg/utils pkg/utils/itemUtils pkg/utils/itemUtils/config pkg/utils/itemUtils/include scripts/include scripts/include/OLD</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r903%20-%20in%20trunk/096%3A%20pkg/utils%20pkg/utils/itemUtils%20pkg/utils/itemUtils/config%20pkg/utils/itemUtils/include%20scripts/include%20scripts/include/OLD&In-Reply-To=%3C200511050810.jA58AXOt032138%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r903 - in trunk/096: pkg/utils pkg/utils/itemUtils pkg/utils/itemUtils/config pkg/utils/itemUtils/include scripts/include scripts/include/OLD">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sat Nov  5 09:10:33 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000876.html">[Poldistro-svn] r902 - in trunk/096/pkg/packetHooks: PacketConfig/config RequestAttack StatHook WarAndPeace
+</A></li>
+        <LI>Next message: <A HREF="000878.html">[Poldistro-svn] r904 - in trunk/096: pkg/commands/seer pkg/commands/test pkg/items/doors pkg/items/runebook pkg/items/treasuremap pkg/mobiles/npcutils pkg/mobiles/oldAI pkg/skills/alchemy pkg/skills/begging pkg/skills/camping pkg/skills/carpentry pkg/skills/fishing pkg/skills/inscription pkg/skills/lockpicking pkg/skills/magery/OLD pkg/skills/mining pkg/skills/tailoring pkg/skills/tinkering pkg/systems/boat pkg/systems/combat/old pkg/systems/combat/useScripts pkg/systems/housing scripts/include/OLD scripts/items scripts/util
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#877">[ date ]</a>
+              <a href="thread.html#877">[ thread ]</a>
+              <a href="subject.html#877">[ subject ]</a>
+              <a href="author.html#877">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-05 09:10:21 +0100 (Sat, 05 Nov 2005)
+New Revision: 903
+
+Added:
+   trunk/096/pkg/utils/itemUtils/
+   trunk/096/pkg/utils/itemUtils/config/
+   trunk/096/pkg/utils/itemUtils/config/icp.cfg
+   trunk/096/pkg/utils/itemUtils/include/
+   trunk/096/pkg/utils/itemUtils/include/canAccess.inc
+   trunk/096/pkg/utils/itemUtils/include/dist.inc
+   trunk/096/pkg/utils/itemUtils/include/fields.inc
+   trunk/096/pkg/utils/itemUtils/include/itemdesc.inc
+   trunk/096/pkg/utils/itemUtils/include/myUtil.inc
+   trunk/096/pkg/utils/itemUtils/include/objtype.inc
+   trunk/096/pkg/utils/itemUtils/include/toolWear.inc
+   trunk/096/pkg/utils/itemUtils/include/utility.inc
+   trunk/096/pkg/utils/itemUtils/pkg.cfg
+Removed:
+   trunk/096/scripts/include/OLD/canAccess.inc
+   trunk/096/scripts/include/OLD/dist.inc
+   trunk/096/scripts/include/OLD/fields.inc
+   trunk/096/scripts/include/OLD/myUtil.inc
+   trunk/096/scripts/include/OLD/objtype.inc
+   trunk/096/scripts/include/OLD/toolWear.inc
+   trunk/096/scripts/include/OLD/utility.inc
+   trunk/096/scripts/include/itemdesc.inc
+Log:
+Created a Item Utilities package. More can be moved, but just starting it to see how well it can be utilizied.
+
+I'll fix all the shit it breaks moving the stuff tomorrow, to damn tired right now, and wanted to get it started.
+
+Added: trunk/096/pkg/utils/itemUtils/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/utils/itemUtils/config/icp.cfg	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/pkg/utils/itemUtils/config/icp.cfg	2005-11-05 08:10:21 UTC (rev 903)
+@@ -0,0 +1,18 @@
++# $Id$
++#
++#
++ICP Register
++{
++	Name		Item Utilities
++	Version		1.0
++	Description	Various includes for item handling and checks.
++
++	Creator		Distro Team
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	#Script	cmdlevel path
++
++	#TextCmd	cmdlevel path
++}
+
+
+Property changes on: trunk/096/pkg/utils/itemUtils/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/itemUtils/include/canAccess.inc
+===================================================================
+--- trunk/096/pkg/utils/itemUtils/include/canAccess.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/pkg/utils/itemUtils/include/canAccess.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -0,0 +1,27 @@
++/* $Id$
++ *
++ */
++function can_access(who, item, flags := 0)
++ 	var owner := Cint(GetObjProperty(item, &quot;Owner&quot;));
++ 	if( (owner) and (owner != who.serial) )
++		SendSysMessage(who, &quot;You cannot use that (1) &quot; + item.desc);
++		return 0;
++	elseif(GetObjProperty(item, &quot;Vendored&quot;))
++		SendSysMessage(who, &quot;You cannot use that (2) &quot; + item.desc);
++		return 0;
++	elseif(!Accessible(who, item))
++		SendSysMessage(who, &quot;You cannot use that (3) &quot; + item.desc);
++		return 0;
++	elseif((!flags[&quot;distance&quot;]) and ((Distance(who, item) &gt; 2)))
++		SendSysMessage(who, &quot;That item is too far away.&quot;);
++		return 0;
++	elseif((!flags[&quot;unmovable&quot;]) and (item.movable == 0))
++		SendSysMessage(who, &quot;You cannot use that while locked down.&quot;);
++		return 0;
++	elseif(!ReserveItem(item))
++		SendSysMessage(who, &quot;That item is already in use.&quot;);
++		return 0;
++	else
++		return 1;
++	endif
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/itemUtils/include/canAccess.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/itemUtils/include/dist.inc
+===================================================================
+--- trunk/096/pkg/utils/itemUtils/include/dist.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/pkg/utils/itemUtils/include/dist.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -0,0 +1,26 @@
++/* $Id$
++ *
++ */
++/*
++ *  dist( obj1, obj2 )
++ *      - returns the largest of the x-distance and y-distance
++ *        between two objects.
++ */
++
++use uo;
++
++function coordist( x1, y1, x2, y2 )
++	var xd := x1 - x2;
++	var yd := y1 - y2;
++	if (xd &lt; 0)
++		xd := -xd;
++	endif
++	if (yd &lt; 0)
++		yd := -yd;
++	endif
++	if (xd &gt; yd)
++		return xd;
++	else
++		return yd;
++	endif
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/itemUtils/include/dist.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/itemUtils/include/fields.inc
+===================================================================
+--- trunk/096/pkg/utils/itemUtils/include/fields.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/pkg/utils/itemUtils/include/fields.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -0,0 +1,72 @@
++/* $Id$
++ *
++ */
++function get_direction(who)
++ 	var ret;
++ 	if(who.facing in array(1, 3, 5, 7))
++ 		case (RandomInt(2))
++ 			0: ret := &quot;NS&quot;; break;
++ 			1: ret := &quot;EW&quot;; break;
++		endcase
++	else
++		case(who.facing)
++			2: ret := &quot;EW&quot;; break;
++			4: ret := &quot;NS&quot;; break;
++			6: ret := &quot;EW&quot;; break;
++			0: ret := &quot;NS&quot;; break;
++		endcase
++	endif
++	return ret;
++endfunction
++
++
++function CreateNorthSouthField(caster, fieldtype,x,y,z, length := 5)
++	var counter := 0;
++	var i;
++	var fires := { };
++	var tester := CreateItemAtLocation(x,y,z, 0xeed, 1, caster.realm);
++	for ( i := x - 2; i &lt;= x - 2 + length; i := i + 1)
++		counter := counter  + 1;
++		if(fieldtype == 0x80)
++			if((CheckLosAt(tester, i, y, z )) &amp;&amp; (len(ListMobilesNearLocation(i, y, z, 0, caster.realm)) == 0))
++				fires[counter] := CreateItemAtLocation( i, y, z, fieldtype, 1, caster.realm);
++				SetObjProperty(fires[counter], &quot;f&quot;,&quot;1&quot;);
++				SetObjProperty(fires[counter], &quot;creater&quot;, caster.serial);
++			endif
++		else
++			if(CheckLosAt(tester, i, y, z ))
++				fires[counter] := CreateItemAtLocation( i,y,z,fieldtype, 1, caster.realm );
++				SetObjProperty(fires[counter], &quot;creater&quot;, caster.serial);
++				SetObjProperty(fires[counter], &quot;f&quot;,&quot;1&quot;);
++			endif
++		endif
++	endfor
++	DestroyItem(tester);
++	return fires;
++endfunction
++
++
++function CreateEastWestField(caster, fieldtype,x,y,z, length)
++	var counter := 0;
++	var i;
++	var fires := { };
++	var tester := CreateItemAtLocation(x,y,z, 0xeed, 1, caster.realm);
++	for ( i := y - 2; i &lt;= y - 2 + length; i := i + 1)
++		counter := counter  + 1;
++		if(fieldtype == 0x80)
++			if((CheckLosAt(tester, x, i, z )) &amp;&amp; (len(ListMobilesNearLocation(x, i, z, 0, caster.realm)) == 0))
++				fires[counter] := CreateItemAtLocation( x,i,z,fieldtype, 1, caster.realm );
++				SetObjProperty(fires[counter], &quot;f&quot;,&quot;1&quot;);
++				SetObjProperty(fires[counter], &quot;creater&quot;, caster.serial);
++			endif
++		else
++			if(CheckLosAt(tester, x, i, z ))
++				fires[counter] := CreateItemAtLocation( x,i,z,fieldtype, 1, caster.realm );
++				SetObjProperty(fires[counter], &quot;f&quot;,&quot;1&quot;);
++				SetObjProperty(fires[counter], &quot;creater&quot;, caster.serial);
++			endif
++		endif
++	endfor
++	DestroyItem(tester);
++	return fires;
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/itemUtils/include/fields.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/itemUtils/include/itemdesc.inc
+===================================================================
+--- trunk/096/pkg/utils/itemUtils/include/itemdesc.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/pkg/utils/itemUtils/include/itemdesc.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -0,0 +1,184 @@
++/* $Id$
++ *
++ */
++use uo;
++use os;
++use cfgfile;
++use polsys;
++
++
++/*
++ * LoadItemDescCfgFile(package)
++ *
++ * Purpose
++ * Retrieves an itemdesc.cfg from a package or all of them.
++ *
++ * Parameters
++ * package:	Package name (e.g. &quot;alchemy&quot;)
++ *		Note:
++ *			&quot;*&quot; - Will retrieve all itemdesc.cfg files.
++ *			&quot;&quot; - Will retrieve pol/config/itemdesc.cfg.
++ *
++ * Return value
++ * Returns a config file on success
++ * Returns an error on failure.
++ *
++ */
++function GetItemDescCfgFile(package:=&quot;&quot;)
++	var file_name := &quot;:&quot;+package+&quot;:itemdesc&quot;;
++	var item_cfg := ReadConfigFile(file_name);
++	
++	if ( item_cfg.errortext )
++		return error{&quot;errortext&quot;:=&quot;Unable to open [&quot;+file_name+&quot;] -&gt;&quot;+item_cfg.errortext};
++	endif
++	
++	return item_cfg;
++endfunction
++
++
++/*
++ * GetItemDescInfo(obj_type)
++ *
++ * Purpose
++ * Retrieves the itemdesc.cfg elem for an object type.
++ *
++ * Parameters
++ * obj_type:	Object type to get the config elem for.
++ *
++ * Return value
++ * Returns a config elem on success.
++ * Returns an error on failure.
++ *
++ */
++function GetItemDescInfo(obj_type)
++	var item_cfg := GetItemDescCfgFile(&quot;*&quot;);
++	return item_cfg[obj_type];
++endfunction
++
++
++/*
++ * GetObjTypeGraphic(obj_type)
++ *
++ * Purpose
++ * Retrieves the proper graphic for an object type.
++ * For &lt; 0x3FFF it will see if it has a graphic entry
++ * If it does not, it will return the object type (same thing as the graphic).
++ * 
++ * For &gt; 0x3FFF it must contain a 'Graphic' entry to even start POL.
++ * 
++ * Parameters
++ * obj_type:	Object type to get the graphic for.
++ *
++ * Return value
++ * Returns an integer
++ *
++ */
++function GetObjTypeGraphic(obj_type)
++	obj_type := CInt(obj_type);
++	
++	var cfg_info := GetItemDescInfo(obj_type);
++	var graphic := CInt(cfg_info.Graphic);
++	if ( graphic )
++		return graphic;
++	else
++		return obj_type;
++	endif
++endfunction	
++
++
++/*
++ * GetObjTypeDesc(obj_type, plural)
++ *
++ * Purpose
++ * Retrieves the DESC entry from an itemdesc.cfg and parses it.
++ * e.g. bread loa%ves/f% could be &quot;bread loaf&quot; or &quot;bread loaves&quot;
++ * 
++ * Parameters
++ * objtype:	Object type (elem) to retrieve the description for.
++ * plural:	0 - Will parse the item description in singular form.
++ *		1 - Will parse the item in plural form.
++ *
++ * Return value
++ * Returns a string
++ *
++ */
++function GetObjTypeDesc(obj_type, plural:=0)
++	obj_type := CInt(obj_type);
++	
++	var cfg_info := GetItemDescInfo(obj_type);
++	if ( cfg_info.errortext )
++		return error{&quot;errortext&quot;:=&quot;Object type not defined in any itemdesc.cfg&quot;};
++	endif
++	
++	var name := &quot;&quot;;
++	if ( cfg_info.Desc )
++		name := cfg_info.Desc;
++	elseif ( cfg_info.Name )
++		name := cfg_info.Name;
++	else
++		return error{&quot;errortext&quot;:=&quot;Object type does not have a Name or Desc entry&quot;};
++	endif
++
++	if ( !name[&quot;%&quot;] ) // Plain desc line - easy enough to deal with.
++		if ( plural == 0 )
++			return name;
++		elseif ( name[Len(name)] in {&quot;s&quot;} )
++			return name;
++		elseif ( name[Len(name)] in {&quot;h&quot;,&quot;j&quot;,&quot;x&quot;,&quot;z&quot;} )
++			return name + &quot;es&quot;;
++		else
++			return name + &quot;s&quot;;
++		endif
++	endif
++
++	/* This section will deal with:
++	 	Bread Stick%s
++		Bread Loa%ves/f%
++		Lump%s% of Coal
++		Loa%ves/f% of Bread
++	*/
++	var first := Find(name, &quot;%&quot;, 1);
++	var slash := Find(name, &quot;/&quot;, first);
++	var second := Find(name, &quot;%&quot;, first + 1);
++	
++	if ( slash &amp;&amp; !second )
++		// Force-append a % if a '/' exists!
++		name := name + &quot;%&quot;;
++		second := Len(name);
++	elseif ( !slash )
++		slash := second;
++	endif
++
++	// wwwww%xx[/yy]%[zzzzz]
++	// 12345678     9 01234
++	// 12345678 901 2 34567
++
++	var s_plur := name[first+1, slash-(first+1)];
++	var s_sing := &quot;&quot;;
++	if ( slash != first )
++		s_sing := name[slash+1, second-(slash+1)];
++	endif
++
++	var s_first := name[1, first-1];
++	var s_middle := s_plur;
++	var s_last := &quot;&quot;;
++	if ( len(name) &gt; second )
++		s_last := name[second+1, len(name)-second];
++	endif
++
++	if ( plural == 0 )
++		s_middle := s_sing;
++	endif
++	
++	if ( !s_first )
++		s_first := &quot;&quot;;
++	endif
++	if ( !s_middle )
++		s_middle := &quot;&quot;;
++	endif
++	if ( !s_last )
++		s_last := &quot;&quot;;
++	endif
++	
++	return s_first + s_middle + s_last;
++endfunction
+
+
+Property changes on: trunk/096/pkg/utils/itemUtils/include/itemdesc.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/itemUtils/include/myUtil.inc
+===================================================================
+--- trunk/096/pkg/utils/itemUtils/include/myUtil.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/pkg/utils/itemUtils/include/myUtil.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -0,0 +1,92 @@
++/* $Id$
++ *
++ */
++use cfgfile;
++
++//returns all the items in container of objtype
++function EnumerateItemsInContainerOfObjtype(container, objtype)
++	var ret := { };
++        foreach item in EnumerateItemsInContainer(container)
++		if ( item.objtype == objtype )
++			ret.append(item);
++		endif
++	endforeach
++
++	return ret;
++endfunction
++
++
++//returns all the 'top-level' items in container
++function ListRootItemsInContainer(container)
++	var ret := { };
++        foreach item in EnumerateItemsInContainer(container)
++		if ( item.container == container )
++			ret.append(item);
++		endif
++	endforeach
++
++	return ret;
++endfunction
++
++
++//returns all the 'top-level' items in container of objtype
++function ListRootItemsInContainerOfObjtype(container, objtype)
++	var ret := { };
++        foreach item in EnumerateItemsInContainer(container)
++		if ( (item.container == container) &amp;&amp; (item.objtype == objtype) )
++			ret.append(item);
++		endif
++	endforeach
++
++	return ret;
++endfunction
++
++
++function InInventory(inventory, it)
++	foreach item in EnumerateItemsInContainer(inventory)
++		if (item == it)
++			return 1;
++		endif
++	endforeach
++
++	return 0;
++endfunction
++
++
++function IsContainer( it )
++	if (it.objtype == 0x7057)
++		return 0;//trashcans don't count as containers
++		         // random note- huh? trashcans are 0x7007...
++	endif
++
++	var waslocked := it.locked;
++	it.locked := 1;
++	if (it.locked)
++		it.locked := waslocked;
++		return 1;
++	else
++		return 0;
++	endif
++endfunction
++
++
++function IsDungeon( x, y )
++	if ( (x &gt;= 5120) &amp;&amp; (x &lt;= 6143) )
++		if ( (y &gt;= 0) &amp;&amp; (y &lt;= 2303) )
++			return 1;
++		endif
++	endif
++
++	return 0;
++endfunction
++
++
++function NoTeleportZone( x, y )
++	if ( (x &gt;= 5120) &amp;&amp; (x &lt;= 6143) )
++		if ( (y &gt;= 2080) &amp;&amp; (y &lt;= 2303) )
++			return 1;
++		endif
++	endif
++
++	return 0;
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/itemUtils/include/myUtil.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/itemUtils/include/objtype.inc
+===================================================================
+--- trunk/096/pkg/utils/itemUtils/include/objtype.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/pkg/utils/itemUtils/include/objtype.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -0,0 +1,220 @@
++/////////////////////////////////////////////////////////////////////////////
++//
++// include/objtype.inc - Object Type definitions
++//
++// TODO: consider moving these into include/client.inc
++//       or, moving CID_XX CONSTants in here
++//
++/////////////////////////////////////////////////////////////////////////////
++
++/////////////////////////////////////////////////////////////////////////////
++//
++// 0x0000 to 0x3FFF - &quot;Standard&quot; objects
++//
++/////////////////////////////////////////////////////////////////////////////
++
++CONST UOBJ_STONEWALL_NS := 0x005f;
++CONST UOBJ_STONEWALL_EW := 0x0060;
++CONST UOBJ_GUARDS       := 0xa340;
++CONST UOBJ_FISHSTEAK    := 0x097a;
++
++CONST UOBJ_BOX          := 0x09aa;
++
++CONST UOBJ_FISH_START   := 0x09cc;
++CONST UOBJ_FISH_END     := 0x09cf;
++
++CONST UOBJ_SFISH_START  := 0x0dd6;
++CONST UOBJ_SFISH_END    := 0x0dd9;
++
++CONST UOBJ_KINDLING     := 0x0de1;
++CONST UOBJ_CAMPFIRE     := 0x0de3;
++CONST UOBJ_EMBERS       := 0x0de9;
++CONST UOBJ_ASHES        := 0x0dea;
++
++CONST UOBJ_BANDAGE      := 0x0e21;
++CONST UOBJ_BLANK_SCROLL := 0x0e34;
++
++CONST UOBJ_BANKBOX      := 0x0e40;
++
++CONST UOBJ_DRUM         := 0x0e9c;
++CONST UOBJ_TAMB         := 0x0e9d;
++CONST UOBJ_HARP         := 0x0eb2;
++CONST UOBJ_LUTE         := 0x0eb3;
++
++CONST UOBJ_SPELLBOOK        := 0x0efa;
++
++CONST UOBJ_POISON_POTION    := 0x0f0a;
++CONST UOBJ_EMPTY_BOTTLE     := 0x0f0e;
++
++CONST UOBJ_GEM_START        := 0x0f0f;
++CONST UOBJ_GEM_END          := 0x0f30;
++
++CONST UOBJ_SHOVEL           := 0x0f39;
++
++CONST UOBJ_XBOW             := 0x0f4f;
++
++CONST UOBJ_BLUE_MOONGATE    := 0x0f6c;
++
++
++
++CONST UOBJ_CLAY             := 0xee19;
++CONST UOBJ_SAND             := 0xee18;
++
++
++
++
++CONST UOBJ_BLACK_PEARL      := 0x0f7a;
++CONST UOBJ_BLOOD_MOSS       := 0x0f7b;
++CONST UOBJ_BRIMSTONE        := 0x0f7f;
++CONST UOBJ_FERTILE_DIRT     := 0x0f81;
++CONST UOBJ_EXECUTIONERS_CAP := 0x0f83;
++CONST UOBJ_GARLIC           := 0x0f84;
++CONST UOBJ_GINSENG          := 0x0f85;
++CONST UOBJ_MANDRAKE_ROOT    := 0x0f86;
++CONST UOBJ_NIGHTSHADE       := 0x0f88;
++CONST UOBJ_OBSIDIAN         := 0x0f89;
++CONST UOBJ_PIG_IRON         := 0x0f8a;
++CONST UOBJ_SULFUROUS_ASH    := 0x0f8c; // CHECKME spelling
++CONST UOBJ_SPIDER_SILK      := 0x0f8d;
++CONST UOBJ_VOLCANIC_ASH     := 0x0f8f;
++
++CONST UOBJ_DEAD_WOOD    := 0x0f90;
++
++CONST UOBJ_CLOTH        := 0x0f95;
++CONST UOBJ_CLOTH_STARTS := 0x175d;
++CONST UOBJ_CLOTH_END    := 0x1768;
++CONST UOBJ_LOOM_START   := 0x105f;
++CONST UOBJ_LOOM_END     := 0x1066;
++CONST UOBJ_BOLT_START   := 0x0f95;
++CONST UOBJ_BOLT_END     := 0x0f9c;
++CONST UOBJ_THREAD_START := 0x0fa0;
++CONST UOBJ_THREAD_END   := 0x0fa1;
++CONST UOBJ_MUTLI_CLOTH  := 0x1766;
++CONST UOBJ_SEWING_KIT   := 0x0f9d;
++
++CONST UOBJ_ANVIL1       := 0x0faf;
++CONST UOBJ_ANVIL2       := 0x0fb0;
++CONST UOBJ_SMALL_FORGE  := 0xfb1;  // see also UOBJ_FORGE_START..UOBJ_FORGE_END
++CONST UOBJ_FORGE1       := 0x19a2;
++CONST UOBJ_FORGE2       := 0x19a6;
++CONST UOBJ_FORGE3       := 0x1982;
++CONST UOBJ_FORGE4       := 0x1996;
++CONST UOBJ_FORGE5       := 0x199a;
++CONST UOBJ_FORGE6       := 0x198e;
++CONST UOBJ_FORGE7       := 0x1992;
++CONST UOBJ_FORGE8       := 0x1986;
++CONST UOBJ_FORGE9       := 0x198a;
++
++CONST UOBJ_COPPER_KEY   := 0x100e;
++CONST UOBJ_GOLD_KEY     := 0x100f;
++CONST UOBJ_IRON_KEY     := 0x1010;
++CONST UOBJ_KEY_RING     := 0x1011;
++CONST UOBJ_MAGIC_KEY    := 0x1012;
++CONST UOBJ_RUSTY_IRON_KEY := 0x1013;
++
++CONST UOBJ_CLOCK   := 0x104c;
++CONST UOBJ_CLOCK_FRAME   := 0x104e;
++CONST UOBJ_CLOCK_PARTS   := 0x104f;
++CONST UOBJ_AXLE_AND_GEARS   := 0x1051;
++CONST UOBJ_GEARS   := 0x1053;
++CONST UOBJ_HINGE   := 0x1055;
++CONST UOBJ_SEXTANT   := 0x1057;
++CONST UOBJ_SEXTANT_PARTS   := 0x1059;
++CONST UOBJ_AXLE   := 0x105b;
++CONST UOBJ_SPRINGS   := 0x105d;
++
++CONST UOBJ_TDUMMYSWING_NS     := 0x1071;
++CONST UOBJ_TDUMMYFREEZE_NS    := 0x1070;
++CONST UOBJ_TDUMMYSWING_EW     := 0x1075;
++CONST UOBJ_TDUMMYFREEZE_EW    := 0x1074;
++
++CONST UOBJ_PDUMMYSWING_EW       := 0x1EC1;
++CONST UOBJ_PDUMMYFREEZE_EW      := 0x1EC0;
++CONST UOBJ_PDUMMYSWING_NS       := 0x1EC4;
++CONST UOBJ_PDUMMYFREEZE_NS      := 0x1EC3;
++
++CONST UOBJ_BLOOD        := 0x122d;
++
++CONST UOBJ_BOW          := 0x13b2;
++CONST UOBJ_HEAVY_XBOW   := 0x13fd;
++
++CONST UOBJ_MAP1         := 0x14eb;
++CONST UOBJ_MAP2         := 0x14ec;
++CONST UOBJ_ROLLED_MAP1  := 0x14ed;
++CONST UOBJ_ROLLED_MAP2  := 0x14ee;
++
++CONST UOBJ_HOUSE_DEED1  := 0x14ef;
++CONST UOBJ_SHIP_DEED1   := 0x14f1;
++CONST UOBJ_SHIP_DEED2   := 0x14f2;
++
++CONST UOBJ_CHEST        := 0x1940;
++
++CONST UOBJ_FORGE_START  := 0x197a;  // see also UOBJ_SMALL_FORGE
++CONST UOBJ_FORGE_END    := 0x19a9;
++
++CONST UOBJ_FEATHER      := 0x1bd1;
++CONST UOBJ_SHAFTS       := 0x1bd4;
++CONST UOBJ_LOGS         := 0x1bdd;
++
++CONST UOBJ_GLASS        := 0xee20;
++
++CONST UOBJ_ARM          := 0x1cec;
++CONST UOBJ_LEG          := 0x1ce2;
++CONST UOBJ_TRUNK        := 0x1cee;
++CONST UOBJ_HEART        := 0x1cef;
++CONST UOBJ_HEAD         := 0x1dae;
++
++CONST UOBJ_TINKER_TOOLS := 0x1ebc;
++
++
++CONST UOBJ_RUNE         := 0x1f14;
++
++CONST UOBJ_CORPSE       := 0x2006;
++
++CONST UOBJ_PARAFIELD_NS := 0x3967;
++CONST UOBJ_PARAFIELD_EW := 0x3979;
++CONST UOBJ_POISONFIELD_NS   := 0x3914;
++CONST UOBJ_POISONFIELD_EW   := 0x3920;
++CONST UOBJ_EFIELD_NS        := 0x3947;
++CONST UOBJ_EFIELD_EW        := 0x3956;
++
++CONST GID_PLANK_EXTENDED_FACING_WEST   := 0x3ed5;
++CONST GID_PLANK_RETRACTED_FACING_WEST  := 0x3eb1;
++CONST GID_PLANK_EXTENDED_FACING_EAST   := 0x3ed4;
++CONST GID_PLANK_RETRACTED_FACING_EAST  := 0x3eb2;
++CONST GID_PLANK_EXTENDED_FACING_SOUTH  := 0x3e84;
++CONST GID_PLANK_RETRACTED_FACING_SOUTH := 0x3e85;
++CONST GID_PLANK_EXTENDED_FACING_NORTH  := 0x3e89;
++CONST GID_PLANK_RETRACTED_FACING_NORTH := 0x3e8a;
++
++// ick! these are fine for humans, but not true for items..
++// these are more of a CID.
++CONST UOBJ_HUMAN_MALE   := 0x190;
++CONST UOBJ_HUMAN_FEMALE := 0x191;
++
++/////////////////////////////////////////////////////////////////////////////
++//
++// 0x4000 to 0x4FFF - Multis
++//
++/////////////////////////////////////////////////////////////////////////////
++
++/////////////////////////////////////////////////////////////////////////////
++//
++// 0x5000 to 0xEFFF - To Be Determined
++//
++/////////////////////////////////////////////////////////////////////////////
++
++
++/////////////////////////////////////////////////////////////////////////////
++//
++// 0xF000 to 0xFFFF - Reserved by system
++//
++/////////////////////////////////////////////////////////////////////////////
++
++        //
++        // Ship Components
++        //
++CONST EXTOBJ_TILLERMAN       := 0xf010;
++CONST EXTOBJ_PORT_PLANK      := 0xf011;
++CONST EXTOBJ_STARBOARD_PLANK := 0xf012;
++CONST EXTOBJ_HOLD            := 0xf013;
+
+
+Property changes on: trunk/096/pkg/utils/itemUtils/include/objtype.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/itemUtils/include/toolWear.inc
+===================================================================
+--- trunk/096/pkg/utils/itemUtils/include/toolWear.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/pkg/utils/itemUtils/include/toolWear.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -0,0 +1,71 @@
++include &quot;:attributes:attributes_ex&quot;;
++
++function CheckToolWear (who, tool, skillid)
++  var swings := GetObjProperty(tool,&quot;swings&quot;);
++  if(!swings)
++    var mods := GetObjProperty(tool, &quot;durability&quot;);
++    var bonus := 0;
++    case(mods)
++      &quot;durable&quot;:        bonus := 10;
++      &quot;substantial&quot;:    bonus := 20;
++      &quot;massive&quot;:        bonus := 30;
++      &quot;fortified&quot;:      bonus := 40;
++      &quot;indestructable&quot;: bonus := 50;
++    endcase
++    swings := Cint(50 * tool.quality) + bonus;
++    SetObjProperty(tool,&quot;swings&quot;, swings);
++  endif
++  if(swings &lt;= 0)
++    DestroyItem(tool);
++    SendSysMessage(who,&quot;Your tool broke.&quot;);
++  else
++    var skill := GetAttribute(who, AP_SkillIdToAttributeName(skillid));
++    if(skill &gt; 80)
++      skill := 80;
++    elseif(skill &lt; 20)
++      skill := 20;
++    endif
++    if((RandomInt(100)+1) &gt; skill)
++      if(tool.isa(POLCLASS_WEAPON))
++        if(tool.hp &gt; 1)
++          SetObjProperty(tool,&quot;swings&quot;, (swings - 1));
++          tool.hp := tool.hp - 1;
++        elseif((tool.hp &gt; tool.maxhp) or (tool.hp == 1))
++          SendSysMessage(who,&quot;Your tool broke.&quot;);
++          DestroyItem(tool);
++        endif
++      else
++        SetObjProperty(tool,&quot;swings&quot;, (swings - 1));
++      endif   
++    endif
++  endif
++endfunction 
++
++function SetToolDurability(who, tool, skillid)
++
++  var toolfile := ReadConfigFile(&quot;:*:itemdesc&quot;);
++  var toolscript := toolfile[tool.objtype].Script;
++
++  if(!toolscript.errortext)
++    if(!tool.isA(POLCLASS_CONTAINER) &amp;&amp; !tool.isA(POLCLASS_ARMOR))
++      var myskill := GetEffectiveSkill(who, skillid);
++      var swings := 0;
++      var mods := GetObjProperty(tool, &quot;durability&quot;);
++      var bonus := 0;
++      case(mods)
++        &quot;durable&quot;:        bonus := 10;
++        &quot;substantial&quot;:    bonus := 20;
++        &quot;massive&quot;:        bonus := 30;
++        &quot;fortified&quot;:      bonus := 40;
++        &quot;indestructable&quot;: bonus := 50;
++        default: bonus := 0;
++      endcase
++      swings := Cint(50 + myskill) + bonus;
++      SetObjProperty(tool, &quot;swings&quot;, swings);
++      if(!tool.quality or tool.quality == error)
++        tool.quality := 1.0;
++      endif
++    endif
++  endif
++
++endfunction 
+
+
+Property changes on: trunk/096/pkg/utils/itemUtils/include/toolWear.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/itemUtils/include/utility.inc
+===================================================================
+--- trunk/096/pkg/utils/itemUtils/include/utility.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/pkg/utils/itemUtils/include/utility.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -0,0 +1,53 @@
++/* $Id$
++ *
++ */
++use basic;
++
++include &quot;include/myUtil&quot;;
++
++
++function find_or_create_storage( areaname )
++	var area;
++	area := FindStorageArea( areaname );
++	if(!area)
++		area := CreateStorageArea( areaname );
++	endif
++	return area;
++endfunction
++
++
++function find_or_create_item(storage, name, objtype := 0x966a)
++	var item := FindRootItemInStorageArea(storage, name);
++	if(item)
++		return item;
++	endif
++	item := CreateRootItemInStorageArea( storage, name, objtype);
++	return item;
++endfunction
++
++
++function IsLocationAccessible(character, x, y, z)
++	var xd, yd, zd;
++	xd := character.x - x;
++	if(xd &lt; -1 || xd &gt; 1)
++		return 0;
++	endif
++	yd := character.y - y;
++	if(yd &lt; -1 || yd &gt; 1)
++		return 0;
++	endif
++	zd := character.z - z;
++	if(zd &lt; -10 || zd &gt; 10)
++		return 0;
++	endif
++	return CheckLosAt( character, x, y, z );
++endfunction
++
++
++function min(x, y)
++	if(x&lt;= y)
++		return x;
++	else
++		return y;
++	endif
++endfunction
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/utils/itemUtils/include/utility.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/utils/itemUtils/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/itemUtils/pkg.cfg	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/pkg/utils/itemUtils/pkg.cfg	2005-11-05 08:10:21 UTC (rev 903)
+@@ -0,0 +1,14 @@
++# $Id$
++#
++#
++Enabled		1
++Name		itemutils
++Version		1.0
++
++CoreRequired	92
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires none
++#conflicts	none
+
+
+Property changes on: trunk/096/pkg/utils/itemUtils/pkg.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Deleted: trunk/096/scripts/include/OLD/canAccess.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/canAccess.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/scripts/include/OLD/canAccess.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -1,25 +0,0 @@
+-
+-function can_access(who, item, flags := 0)
+-  var owner := Cint(GetObjProperty(item, &quot;Owner&quot;));
+-  if((owner) and (owner != who.serial))
+-    SendSysMessage(who, &quot;You cannot use that (1) &quot; + item.desc);
+-    return 0;
+-  elseif(GetObjProperty(item, &quot;Vendored&quot;))
+-    SendSysMessage(who, &quot;You cannot use that (2) &quot; + item.desc);
+-    return 0;
+-  elseif(!Accessible(who, item))
+-    SendSysMessage(who, &quot;You cannot use that (3) &quot; + item.desc);
+-    return 0;
+-  elseif((!flags[&quot;distance&quot;]) and ((Distance(who, item) &gt; 2)))
+-    SendSysMessage(who, &quot;That item is too far away.&quot;);
+-    return 0;
+-  elseif((!flags[&quot;unmovable&quot;]) and (item.movable == 0))
+-    SendSysMessage(who, &quot;You cannot use that while locked down.&quot;);
+-    return 0;
+-  elseif(!ReserveItem(item))
+-    SendSysMessage(who, &quot;That item is already in use.&quot;);
+-    return 0;
+-  else
+-    return 1;
+-  endif
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/include/OLD/dist.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/dist.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/scripts/include/OLD/dist.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -1,52 +0,0 @@
+-/*
+- *  dist( obj1, obj2 )
+- *      - returns the largest of the x-distance and y-distance 
+- *        between two objects.
+- */
+-
+-use uo;
+-
+-function dist( obj1, obj2 )
+-    return Distance( obj1, obj2 );
+-
+-            /* implements:
+-                while (obj1.container)
+-                    obj1 := obj1.container;
+-                endwhile
+-    
+-                while (obj2.container)
+-                    obj2 := obj2.container;
+-                endwhile
+-
+-                var xd := obj1.x - obj2.x;
+-                var yd := obj1.y - obj2.y;
+-                if (xd &lt; 0)
+-                    xd := -xd;
+-                endif
+-                if (yd &lt; 0)
+-                    yd := -yd;
+-                endif
+-                if (xd &gt; yd)
+-                    return xd;
+-                else
+-                    return yd;
+-                endif
+-            */
+-endfunction
+-
+-function coordist( x1, y1, x2, y2 )
+-
+-   var xd := x1 - x2;
+-   var yd := y1 - y2;
+-   if (xd &lt; 0)
+-      xd := -xd;
+-   endif
+-   if (yd &lt; 0)
+-      yd := -yd;
+-   endif
+-   if (xd &gt; yd)
+-      return xd;
+-   else
+-     return yd;
+-   endif
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/include/OLD/fields.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/fields.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/scripts/include/OLD/fields.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -1,67 +0,0 @@
+-function get_direction(who)
+-  var ret;
+-  if(who.facing in array(1, 3, 5, 7))
+-    case (RandomInt(2))
+-      0: ret := &quot;NS&quot;;
+-      1: ret := &quot;EW&quot;;
+-	endcase
+-  else
+-    case(who.facing)
+-      2: ret := &quot;EW&quot;;
+-      4: ret := &quot;NS&quot;;
+-      6: ret := &quot;EW&quot;;
+-      0: ret := &quot;NS&quot;;
+-    endcase
+-  endif
+-  return ret;
+-endfunction
+-
+-function CreateNorthSouthField(caster, fieldtype,x,y,z, length := 5)
+-  var counter := 0;
+-  var i;
+-  var fires := { };
+-  var tester := CreateItemAtLocation(x,y,z, 0xeed, 1, caster.realm);
+-  for ( i := x - 2; i &lt;= x - 2 + length; i := i + 1)
+-    counter := counter  + 1;
+-    if(fieldtype == 0x80)
+-      if((CheckLosAt(tester, i, y, z )) and (len(ListMobilesNearLocation(i, y, z, 0, caster.realm)) == 0))
+-        fires[counter] := CreateItemAtLocation( i, y, z, fieldtype, 1, caster.realm);
+-        SetObjProperty(fires[counter], &quot;f&quot;,&quot;1&quot;);
+-        SetObjProperty(fires[counter], &quot;creater&quot;, caster.serial);
+-      endif
+-    else
+-      if(CheckLosAt(tester, i, y, z ))
+-        fires[counter] := CreateItemAtLocation( i,y,z,fieldtype, 1, caster.realm );
+-        SetObjProperty(fires[counter], &quot;creater&quot;, caster.serial);
+-        SetObjProperty(fires[counter], &quot;f&quot;,&quot;1&quot;);
+-      endif
+-    endif
+-  endfor
+-  DestroyItem(tester);
+-  return fires;
+-endfunction
+-
+-function CreateEastWestField(caster, fieldtype,x,y,z, length)
+-  var counter := 0;
+-  var i;
+-  var fires := { };
+-  var tester := CreateItemAtLocation(x,y,z, 0xeed, 1, caster.realm);
+-  for ( i := y - 2; i &lt;= y - 2 + length; i := i + 1)
+-    counter := counter  + 1;
+-    if(fieldtype == 0x80)
+-      if((CheckLosAt(tester, x, i, z )) and (len(ListMobilesNearLocation(x, i, z, 0, caster.realm)) == 0))
+-        fires[counter] := CreateItemAtLocation( x,i,z,fieldtype, 1, caster.realm );
+-        SetObjProperty(fires[counter], &quot;f&quot;,&quot;1&quot;);
+-        SetObjProperty(fires[counter], &quot;creater&quot;, caster.serial);
+-      endif
+-    else
+-      if(CheckLosAt(tester, x, i, z ))
+-        fires[counter] := CreateItemAtLocation( x,i,z,fieldtype, 1, caster.realm );
+-        SetObjProperty(fires[counter], &quot;f&quot;,&quot;1&quot;);
+-        SetObjProperty(fires[counter], &quot;creater&quot;, caster.serial);
+-      endif
+-    endif
+-  endfor
+-  DestroyItem(tester);
+-  return fires;
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/include/OLD/myUtil.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/myUtil.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/scripts/include/OLD/myUtil.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -1,97 +0,0 @@
+-use cfgfile;
+-
+-//returns all the items in container of objtype
+-function EnumerateItemsInContainerOfObjtype(container, objtype)
+-
+-	var ret := { };
+-        foreach item in EnumerateItemsInContainer(container)
+-		if ( item.objtype == objtype )
+-			ret.append(item);
+-		endif
+-	endforeach
+-
+-	return ret;
+-
+-endfunction
+-
+-//returns all the 'top-level' items in container
+-function ListRootItemsInContainer(container)
+-
+-	var ret := { };
+-        foreach item in EnumerateItemsInContainer(container)
+-		if ( item.container == container )
+-			ret.append(item);
+-		endif
+-	endforeach
+-
+-	return ret;
+-
+-endfunction
+-
+-//returns all the 'top-level' items in container of objtype
+-function ListRootItemsInContainerOfObjtype(container, objtype)
+-
+-	var ret := { };
+-        foreach item in EnumerateItemsInContainer(container)
+-		if ( (item.container == container) &amp;&amp; (item.objtype == objtype) )
+-			ret.append(item);
+-		endif
+-	endforeach
+-
+-	return ret;
+-
+-endfunction
+-
+-function InInventory(inventory, it)
+-
+-	foreach item in EnumerateItemsInContainer(inventory)
+-		if (item == it)
+-			return 1;
+-		endif
+-	endforeach
+-
+-	return 0;
+-
+-endfunction
+-
+-function IsContainer( it )
+-
+-	if (it.objtype == 0x7057)
+-		return 0;//trashcans don't count as containers
+-		         // random note- huh? trashcans are 0x7007...
+-	endif
+-
+-	var waslocked := it.locked;
+-	it.locked := 1;
+-	if (it.locked)
+-		it.locked := waslocked;
+-		return 1;
+-	else
+-		return 0;
+-	endif
+-
+-endfunction
+-
+-function IsDungeon( x, y )
+-
+-	if ( (x &gt;= 5120) &amp;&amp; (x &lt;= 6143) )
+-		if ( (y &gt;= 0) &amp;&amp; (y &lt;= 2303) )
+-			return 1;
+-		endif
+-	endif
+-
+-	return 0;
+-
+-endfunction
+-
+-function NoTeleportZone( x, y )
+-
+-	if ( (x &gt;= 5120) &amp;&amp; (x &lt;= 6143) )
+-		if ( (y &gt;= 2080) &amp;&amp; (y &lt;= 2303) )
+-			return 1;
+-		endif
+-	endif
+-
+-	return 0;
+-
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/include/OLD/objtype.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/objtype.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/scripts/include/OLD/objtype.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -1,220 +0,0 @@
+-/////////////////////////////////////////////////////////////////////////////
+-//
+-// include/objtype.inc - Object Type definitions
+-//
+-// TODO: consider moving these into include/client.inc
+-//       or, moving CID_XX CONSTants in here
+-//
+-/////////////////////////////////////////////////////////////////////////////
+-
+-/////////////////////////////////////////////////////////////////////////////
+-//
+-// 0x0000 to 0x3FFF - &quot;Standard&quot; objects
+-//
+-/////////////////////////////////////////////////////////////////////////////
+-
+-CONST UOBJ_STONEWALL_NS := 0x005f;
+-CONST UOBJ_STONEWALL_EW := 0x0060;
+-CONST UOBJ_GUARDS       := 0xa340;
+-CONST UOBJ_FISHSTEAK    := 0x097a;
+-
+-CONST UOBJ_BOX          := 0x09aa;
+-
+-CONST UOBJ_FISH_START   := 0x09cc;
+-CONST UOBJ_FISH_END     := 0x09cf;
+-
+-CONST UOBJ_SFISH_START  := 0x0dd6;
+-CONST UOBJ_SFISH_END    := 0x0dd9;
+-
+-CONST UOBJ_KINDLING     := 0x0de1;
+-CONST UOBJ_CAMPFIRE     := 0x0de3;
+-CONST UOBJ_EMBERS       := 0x0de9;
+-CONST UOBJ_ASHES        := 0x0dea;
+-
+-CONST UOBJ_BANDAGE      := 0x0e21;
+-CONST UOBJ_BLANK_SCROLL := 0x0e34;
+-
+-CONST UOBJ_BANKBOX      := 0x0e40;
+-
+-CONST UOBJ_DRUM         := 0x0e9c;
+-CONST UOBJ_TAMB         := 0x0e9d;
+-CONST UOBJ_HARP         := 0x0eb2;
+-CONST UOBJ_LUTE         := 0x0eb3;
+-
+-CONST UOBJ_SPELLBOOK        := 0x0efa;
+-
+-CONST UOBJ_POISON_POTION    := 0x0f0a;
+-CONST UOBJ_EMPTY_BOTTLE     := 0x0f0e;
+-
+-CONST UOBJ_GEM_START        := 0x0f0f;
+-CONST UOBJ_GEM_END          := 0x0f30;
+-
+-CONST UOBJ_SHOVEL           := 0x0f39;
+-
+-CONST UOBJ_XBOW             := 0x0f4f;
+-
+-CONST UOBJ_BLUE_MOONGATE    := 0x0f6c;
+-
+-
+-
+-CONST UOBJ_CLAY             := 0xee19;
+-CONST UOBJ_SAND             := 0xee18;
+-
+-
+-
+-
+-CONST UOBJ_BLACK_PEARL      := 0x0f7a;
+-CONST UOBJ_BLOOD_MOSS       := 0x0f7b;
+-CONST UOBJ_BRIMSTONE        := 0x0f7f;
+-CONST UOBJ_FERTILE_DIRT     := 0x0f81;
+-CONST UOBJ_EXECUTIONERS_CAP := 0x0f83;
+-CONST UOBJ_GARLIC           := 0x0f84;
+-CONST UOBJ_GINSENG          := 0x0f85;
+-CONST UOBJ_MANDRAKE_ROOT    := 0x0f86;
+-CONST UOBJ_NIGHTSHADE       := 0x0f88;
+-CONST UOBJ_OBSIDIAN         := 0x0f89;
+-CONST UOBJ_PIG_IRON         := 0x0f8a;
+-CONST UOBJ_SULFUROUS_ASH    := 0x0f8c; // CHECKME spelling
+-CONST UOBJ_SPIDER_SILK      := 0x0f8d;
+-CONST UOBJ_VOLCANIC_ASH     := 0x0f8f;
+-
+-CONST UOBJ_DEAD_WOOD    := 0x0f90;
+-
+-CONST UOBJ_CLOTH        := 0x0f95;
+-CONST UOBJ_CLOTH_STARTS := 0x175d;
+-CONST UOBJ_CLOTH_END    := 0x1768;
+-CONST UOBJ_LOOM_START   := 0x105f;
+-CONST UOBJ_LOOM_END     := 0x1066;
+-CONST UOBJ_BOLT_START   := 0x0f95;
+-CONST UOBJ_BOLT_END     := 0x0f9c;
+-CONST UOBJ_THREAD_START := 0x0fa0;
+-CONST UOBJ_THREAD_END   := 0x0fa1;
+-CONST UOBJ_MUTLI_CLOTH  := 0x1766;
+-CONST UOBJ_SEWING_KIT   := 0x0f9d;
+-
+-CONST UOBJ_ANVIL1       := 0x0faf;
+-CONST UOBJ_ANVIL2       := 0x0fb0;
+-CONST UOBJ_SMALL_FORGE  := 0xfb1;  // see also UOBJ_FORGE_START..UOBJ_FORGE_END
+-CONST UOBJ_FORGE1       := 0x19a2;
+-CONST UOBJ_FORGE2       := 0x19a6;
+-CONST UOBJ_FORGE3       := 0x1982;
+-CONST UOBJ_FORGE4       := 0x1996;
+-CONST UOBJ_FORGE5       := 0x199a;
+-CONST UOBJ_FORGE6       := 0x198e;
+-CONST UOBJ_FORGE7       := 0x1992;
+-CONST UOBJ_FORGE8       := 0x1986;
+-CONST UOBJ_FORGE9       := 0x198a;
+-
+-CONST UOBJ_COPPER_KEY   := 0x100e;
+-CONST UOBJ_GOLD_KEY     := 0x100f;
+-CONST UOBJ_IRON_KEY     := 0x1010;
+-CONST UOBJ_KEY_RING     := 0x1011;
+-CONST UOBJ_MAGIC_KEY    := 0x1012;
+-CONST UOBJ_RUSTY_IRON_KEY := 0x1013;
+-
+-CONST UOBJ_CLOCK   := 0x104c;
+-CONST UOBJ_CLOCK_FRAME   := 0x104e;
+-CONST UOBJ_CLOCK_PARTS   := 0x104f;
+-CONST UOBJ_AXLE_AND_GEARS   := 0x1051;
+-CONST UOBJ_GEARS   := 0x1053;
+-CONST UOBJ_HINGE   := 0x1055;
+-CONST UOBJ_SEXTANT   := 0x1057;
+-CONST UOBJ_SEXTANT_PARTS   := 0x1059;
+-CONST UOBJ_AXLE   := 0x105b;
+-CONST UOBJ_SPRINGS   := 0x105d;
+-
+-CONST UOBJ_TDUMMYSWING_NS     := 0x1071;
+-CONST UOBJ_TDUMMYFREEZE_NS    := 0x1070;
+-CONST UOBJ_TDUMMYSWING_EW     := 0x1075;
+-CONST UOBJ_TDUMMYFREEZE_EW    := 0x1074;
+-
+-CONST UOBJ_PDUMMYSWING_EW       := 0x1EC1;
+-CONST UOBJ_PDUMMYFREEZE_EW      := 0x1EC0;
+-CONST UOBJ_PDUMMYSWING_NS       := 0x1EC4;
+-CONST UOBJ_PDUMMYFREEZE_NS      := 0x1EC3;
+-
+-CONST UOBJ_BLOOD        := 0x122d;
+-
+-CONST UOBJ_BOW          := 0x13b2;
+-CONST UOBJ_HEAVY_XBOW   := 0x13fd;
+-
+-CONST UOBJ_MAP1         := 0x14eb;
+-CONST UOBJ_MAP2         := 0x14ec;
+-CONST UOBJ_ROLLED_MAP1  := 0x14ed;
+-CONST UOBJ_ROLLED_MAP2  := 0x14ee;
+-
+-CONST UOBJ_HOUSE_DEED1  := 0x14ef;
+-CONST UOBJ_SHIP_DEED1   := 0x14f1;
+-CONST UOBJ_SHIP_DEED2   := 0x14f2;
+-
+-CONST UOBJ_CHEST        := 0x1940;
+-
+-CONST UOBJ_FORGE_START  := 0x197a;  // see also UOBJ_SMALL_FORGE
+-CONST UOBJ_FORGE_END    := 0x19a9;
+-
+-CONST UOBJ_FEATHER      := 0x1bd1;
+-CONST UOBJ_SHAFTS       := 0x1bd4;
+-CONST UOBJ_LOGS         := 0x1bdd;
+-
+-CONST UOBJ_GLASS        := 0xee20;
+-
+-CONST UOBJ_ARM          := 0x1cec;
+-CONST UOBJ_LEG          := 0x1ce2;
+-CONST UOBJ_TRUNK        := 0x1cee;
+-CONST UOBJ_HEART        := 0x1cef;
+-CONST UOBJ_HEAD         := 0x1dae;
+-
+-CONST UOBJ_TINKER_TOOLS := 0x1ebc;
+-
+-
+-CONST UOBJ_RUNE         := 0x1f14;
+-
+-CONST UOBJ_CORPSE       := 0x2006;
+-
+-CONST UOBJ_PARAFIELD_NS := 0x3967;
+-CONST UOBJ_PARAFIELD_EW := 0x3979;
+-CONST UOBJ_POISONFIELD_NS   := 0x3914;
+-CONST UOBJ_POISONFIELD_EW   := 0x3920;
+-CONST UOBJ_EFIELD_NS        := 0x3947;
+-CONST UOBJ_EFIELD_EW        := 0x3956;
+-
+-CONST GID_PLANK_EXTENDED_FACING_WEST   := 0x3ed5;
+-CONST GID_PLANK_RETRACTED_FACING_WEST  := 0x3eb1;
+-CONST GID_PLANK_EXTENDED_FACING_EAST   := 0x3ed4;
+-CONST GID_PLANK_RETRACTED_FACING_EAST  := 0x3eb2;
+-CONST GID_PLANK_EXTENDED_FACING_SOUTH  := 0x3e84;
+-CONST GID_PLANK_RETRACTED_FACING_SOUTH := 0x3e85;
+-CONST GID_PLANK_EXTENDED_FACING_NORTH  := 0x3e89;
+-CONST GID_PLANK_RETRACTED_FACING_NORTH := 0x3e8a;
+-
+-// ick! these are fine for humans, but not true for items..
+-// these are more of a CID.
+-CONST UOBJ_HUMAN_MALE   := 0x190;
+-CONST UOBJ_HUMAN_FEMALE := 0x191;
+-
+-/////////////////////////////////////////////////////////////////////////////
+-//
+-// 0x4000 to 0x4FFF - Multis
+-//
+-/////////////////////////////////////////////////////////////////////////////
+-
+-/////////////////////////////////////////////////////////////////////////////
+-//
+-// 0x5000 to 0xEFFF - To Be Determined
+-//
+-/////////////////////////////////////////////////////////////////////////////
+-
+-
+-/////////////////////////////////////////////////////////////////////////////
+-//
+-// 0xF000 to 0xFFFF - Reserved by system
+-//
+-/////////////////////////////////////////////////////////////////////////////
+-
+-        //
+-        // Ship Components
+-        //
+-CONST EXTOBJ_TILLERMAN       := 0xf010;
+-CONST EXTOBJ_PORT_PLANK      := 0xf011;
+-CONST EXTOBJ_STARBOARD_PLANK := 0xf012;
+-CONST EXTOBJ_HOLD            := 0xf013;
+
+Deleted: trunk/096/scripts/include/OLD/toolWear.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/toolWear.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/scripts/include/OLD/toolWear.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -1,71 +0,0 @@
+-include &quot;:attributes:attributes_ex&quot;;
+-
+-function CheckToolWear (who, tool, skillid)
+-  var swings := GetObjProperty(tool,&quot;swings&quot;);
+-  if(!swings)
+-    var mods := GetObjProperty(tool, &quot;durability&quot;);
+-    var bonus := 0;
+-    case(mods)
+-      &quot;durable&quot;:        bonus := 10;
+-      &quot;substantial&quot;:    bonus := 20;
+-      &quot;massive&quot;:        bonus := 30;
+-      &quot;fortified&quot;:      bonus := 40;
+-      &quot;indestructable&quot;: bonus := 50;
+-    endcase
+-    swings := Cint(50 * tool.quality) + bonus;
+-    SetObjProperty(tool,&quot;swings&quot;, swings);
+-  endif
+-  if(swings &lt;= 0)
+-    DestroyItem(tool);
+-    SendSysMessage(who,&quot;Your tool broke.&quot;);
+-  else
+-    var skill := GetAttribute(who, AP_SkillIdToAttributeName(skillid));
+-    if(skill &gt; 80)
+-      skill := 80;
+-    elseif(skill &lt; 20)
+-      skill := 20;
+-    endif
+-    if((RandomInt(100)+1) &gt; skill)
+-      if(tool.isa(POLCLASS_WEAPON))
+-        if(tool.hp &gt; 1)
+-          SetObjProperty(tool,&quot;swings&quot;, (swings - 1));
+-          tool.hp := tool.hp - 1;
+-        elseif((tool.hp &gt; tool.maxhp) or (tool.hp == 1))
+-          SendSysMessage(who,&quot;Your tool broke.&quot;);
+-          DestroyItem(tool);
+-        endif
+-      else
+-        SetObjProperty(tool,&quot;swings&quot;, (swings - 1));
+-      endif   
+-    endif
+-  endif
+-endfunction 
+-
+-function SetToolDurability(who, tool, skillid)
+-
+-  var toolfile := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-  var toolscript := toolfile[tool.objtype].Script;
+-
+-  if(!toolscript.errortext)
+-    if(!tool.isA(POLCLASS_CONTAINER) &amp;&amp; !tool.isA(POLCLASS_ARMOR))
+-      var myskill := GetEffectiveSkill(who, skillid);
+-      var swings := 0;
+-      var mods := GetObjProperty(tool, &quot;durability&quot;);
+-      var bonus := 0;
+-      case(mods)
+-        &quot;durable&quot;:        bonus := 10;
+-        &quot;substantial&quot;:    bonus := 20;
+-        &quot;massive&quot;:        bonus := 30;
+-        &quot;fortified&quot;:      bonus := 40;
+-        &quot;indestructable&quot;: bonus := 50;
+-        default: bonus := 0;
+-      endcase
+-      swings := Cint(50 + myskill) + bonus;
+-      SetObjProperty(tool, &quot;swings&quot;, swings);
+-      if(!tool.quality or tool.quality == error)
+-        tool.quality := 1.0;
+-      endif
+-    endif
+-  endif
+-
+-endfunction 
+
+Deleted: trunk/096/scripts/include/OLD/utility.inc
+===================================================================
+--- trunk/096/scripts/include/OLD/utility.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/scripts/include/OLD/utility.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -1,49 +0,0 @@
+-use basic;
+-
+-include &quot;include/myUtil&quot;;
+-
+-
+-function find_or_create_storage( areaname )
+-  var area;
+-  area := FindStorageArea( areaname );
+-  if(!area)
+-	area := CreateStorageArea( areaname );
+-    if(area)
+-    endif
+-  endif
+-  return area;
+-endfunction
+-
+-function find_or_create_item(storage, name, objtype := 0x966a)
+-  var item := FindRootItemInStorageArea(storage, name);
+-  if(item)
+-	return item;
+-  endif
+-  item := CreateRootItemInStorageArea( storage, name, objtype);
+-  return item;
+-endfunction
+-
+-function IsLocationAccessible(character, x, y, z)
+-  var xd, yd, zd;
+-  xd := character.x - x;
+-  if(xd &lt; -1 || xd &gt; 1)
+-    return 0;
+-  endif
+-  yd := character.y - y;
+-  if(yd &lt; -1 || yd &gt; 1)
+-    return 0;
+-  endif
+-  zd := character.z - z;
+-  if(zd &lt; -10 || zd &gt; 10)
+-    return 0;
+-  endif
+-  return CheckLosAt( character, x, y, z );
+-endfunction
+-
+-function min(x, y)
+-  if(x&lt;= y)
+-    return x;
+-  else
+-    return y;
+-  endif
+-endfunction
+\ No newline at end of file
+
+Deleted: trunk/096/scripts/include/itemdesc.inc
+===================================================================
+--- trunk/096/scripts/include/itemdesc.inc	2005-11-05 07:46:41 UTC (rev 902)
++++ trunk/096/scripts/include/itemdesc.inc	2005-11-05 08:10:21 UTC (rev 903)
+@@ -1,184 +0,0 @@
+-/* $Id$
+- *
+- */
+-use uo;
+-use os;
+-use cfgfile;
+-use polsys;
+-
+-
+-/*
+- * LoadItemDescCfgFile(package)
+- *
+- * Purpose
+- * Retrieves an itemdesc.cfg from a package or all of them.
+- *
+- * Parameters
+- * package:	Package name (e.g. &quot;alchemy&quot;)
+- *		Note:
+- *			&quot;*&quot; - Will retrieve all itemdesc.cfg files.
+- *			&quot;&quot; - Will retrieve pol/config/itemdesc.cfg.
+- *
+- * Return value
+- * Returns a config file on success
+- * Returns an error on failure.
+- *
+- */
+-function GetItemDescCfgFile(package:=&quot;&quot;)
+-	var file_name := &quot;:&quot;+package+&quot;:itemdesc&quot;;
+-	var item_cfg := ReadConfigFile(file_name);
+-	
+-	if ( item_cfg.errortext )
+-		return error{&quot;errortext&quot;:=&quot;Unable to open [&quot;+file_name+&quot;] -&gt;&quot;+item_cfg.errortext};
+-	endif
+-	
+-	return item_cfg;
+-endfunction
+-
+-
+-/*
+- * GetItemDescInfo(obj_type)
+- *
+- * Purpose
+- * Retrieves the itemdesc.cfg elem for an object type.
+- *
+- * Parameters
+- * obj_type:	Object type to get the config elem for.
+- *
+- * Return value
+- * Returns a config elem on success.
+- * Returns an error on failure.
+- *
+- */
+-function GetItemDescInfo(obj_type)
+-	var item_cfg := GetItemDescCfgFile(&quot;*&quot;);
+-	return item_cfg[obj_type];
+-endfunction
+-
+-
+-/*
+- * GetObjTypeGraphic(obj_type)
+- *
+- * Purpose
+- * Retrieves the proper graphic for an object type.
+- * For &lt; 0x3FFF it will see if it has a graphic entry
+- * If it does not, it will return the object type (same thing as the graphic).
+- * 
+- * For &gt; 0x3FFF it must contain a 'Graphic' entry to even start POL.
+- * 
+- * Parameters
+- * obj_type:	Object type to get the graphic for.
+- *
+- * Return value
+- * Returns an integer
+- *
+- */
+-function GetObjTypeGraphic(obj_type)
+-	obj_type := CInt(obj_type);
+-	
+-	var cfg_info := GetItemDescInfo(obj_type);
+-	var graphic := CInt(cfg_info.Graphic);
+-	if ( graphic )
+-		return graphic;
+-	else
+-		return obj_type;
+-	endif
+-endfunction	
+-
+-
+-/*
+- * GetObjTypeDesc(obj_type, plural)
+- *
+- * Purpose
+- * Retrieves the DESC entry from an itemdesc.cfg and parses it.
+- * e.g. bread loa%ves/f% could be &quot;bread loaf&quot; or &quot;bread loaves&quot;
+- * 
+- * Parameters
+- * objtype:	Object type (elem) to retrieve the description for.
+- * plural:	0 - Will parse the item description in singular form.
+- *		1 - Will parse the item in plural form.
+- *
+- * Return value
+- * Returns a string
+- *
+- */
+-function GetObjTypeDesc(obj_type, plural:=0)
+-	obj_type := CInt(obj_type);
+-	
+-	var cfg_info := GetItemDescInfo(obj_type);
+-	if ( cfg_info.errortext )
+-		return error{&quot;errortext&quot;:=&quot;Object type not defined in any itemdesc.cfg&quot;};
+-	endif
+-	
+-	var name := &quot;&quot;;
+-	if ( cfg_info.Desc )
+-		name := cfg_info.Desc;
+-	elseif ( cfg_info.Name )
+-		name := cfg_info.Name;
+-	else
+-		return error{&quot;errortext&quot;:=&quot;Object type does not have a Name or Desc entry&quot;};
+-	endif
+-
+-	if ( !name[&quot;%&quot;] ) // Plain desc line - easy enough to deal with.
+-		if ( plural == 0 )
+-			return name;
+-		elseif ( name[Len(name)] in {&quot;s&quot;} )
+-			return name;
+-		elseif ( name[Len(name)] in {&quot;h&quot;,&quot;j&quot;,&quot;x&quot;,&quot;z&quot;} )
+-			return name + &quot;es&quot;;
+-		else
+-			return name + &quot;s&quot;;
+-		endif
+-	endif
+-
+-	/* This section will deal with:
+-	 	Bread Stick%s
+-		Bread Loa%ves/f%
+-		Lump%s% of Coal
+-		Loa%ves/f% of Bread
+-	*/
+-	var first := Find(name, &quot;%&quot;, 1);
+-	var slash := Find(name, &quot;/&quot;, first);
+-	var second := Find(name, &quot;%&quot;, first + 1);
+-	
+-	if ( slash &amp;&amp; !second )
+-		// Force-append a % if a '/' exists!
+-		name := name + &quot;%&quot;;
+-		second := Len(name);
+-	elseif ( !slash )
+-		slash := second;
+-	endif
+-
+-	// wwwww%xx[/yy]%[zzzzz]
+-	// 12345678     9 01234
+-	// 12345678 901 2 34567
+-
+-	var s_plur := name[first+1, slash-(first+1)];
+-	var s_sing := &quot;&quot;;
+-	if ( slash != first )
+-		s_sing := name[slash+1, second-(slash+1)];
+-	endif
+-
+-	var s_first := name[1, first-1];
+-	var s_middle := s_plur;
+-	var s_last := &quot;&quot;;
+-	if ( len(name) &gt; second )
+-		s_last := name[second+1, len(name)-second];
+-	endif
+-
+-	if ( plural == 0 )
+-		s_middle := s_sing;
+-	endif
+-	
+-	if ( !s_first )
+-		s_first := &quot;&quot;;
+-	endif
+-	if ( !s_middle )
+-		s_middle := &quot;&quot;;
+-	endif
+-	if ( !s_last )
+-		s_last := &quot;&quot;;
+-	endif
+-	
+-	return s_first + s_middle + s_last;
+-endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000876.html">[Poldistro-svn] r902 - in trunk/096/pkg/packetHooks: PacketConfig/config RequestAttack StatHook WarAndPeace
+</A></li>
+	<LI>Next message: <A HREF="000878.html">[Poldistro-svn] r904 - in trunk/096: pkg/commands/seer pkg/commands/test pkg/items/doors pkg/items/runebook pkg/items/treasuremap pkg/mobiles/npcutils pkg/mobiles/oldAI pkg/skills/alchemy pkg/skills/begging pkg/skills/camping pkg/skills/carpentry pkg/skills/fishing pkg/skills/inscription pkg/skills/lockpicking pkg/skills/magery/OLD pkg/skills/mining pkg/skills/tailoring pkg/skills/tinkering pkg/systems/boat pkg/systems/combat/old pkg/systems/combat/useScripts pkg/systems/housing scripts/include/OLD scripts/items scripts/util
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#877">[ date ]</a>
+              <a href="thread.html#877">[ thread ]</a>
+              <a href="subject.html#877">[ subject ]</a>
+              <a href="author.html#877">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

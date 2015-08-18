@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r648 - trunk/096/pkg/other/motd
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r648%20-%20trunk/096/pkg/other/motd&In-Reply-To=%3C200510241708.j9OH8lJF005869%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000621.html">
+   <LINK REL="Next"  HREF="000623.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r648 - trunk/096/pkg/other/motd</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r648%20-%20trunk/096/pkg/other/motd&In-Reply-To=%3C200510241708.j9OH8lJF005869%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r648 - trunk/096/pkg/other/motd">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon Oct 24 19:08:47 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000621.html">[Poldistro-svn] r647 - trunk/096/pkg/commands/coun
+</A></li>
+        <LI>Next message: <A HREF="000623.html">[Poldistro-svn] r649 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#622">[ date ]</a>
+              <a href="thread.html#622">[ thread ]</a>
+              <a href="subject.html#622">[ subject ]</a>
+              <a href="author.html#622">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-24 19:08:43 +0200 (Mon, 24 Oct 2005)
+New Revision: 648
+
+Modified:
+   trunk/096/pkg/other/motd/motd.src
+Log:
+
+
+Modified: trunk/096/pkg/other/motd/motd.src
+===================================================================
+--- trunk/096/pkg/other/motd/motd.src	2005-10-24 17:06:44 UTC (rev 647)
++++ trunk/096/pkg/other/motd/motd.src	2005-10-24 17:08:43 UTC (rev 648)
+@@ -1,3 +1,7 @@
++/* $Id$
++ *
++ */
++
+ use uo;
+ use os;
+ use file;
+@@ -6,46 +10,50 @@
+ include &quot;:gumps:gumps&quot;;
+ include &quot;:gumps:gumps_ex&quot;;
+ 
+-const ONOFF_BTN	:= 0xE000;
++CONST ONOFF_BTN	:= 0xE000;
+ 
+-unload_scripts(&quot;&quot;);
++program MessageOfTheDay(mobile)
+ 
+-program MessageOfTheDay(mobile)
+ 	var data_file := DFOpenDataFile(&quot;:motd:settings&quot;, DF_CREATE);
+ 	var data_elem := DFFindElement(data_file, mobile.acctname, DF_CREATE);
+-	var off := CInt(data_elem.GetProp(&quot;noshow&quot;));
+-	
++	var off       := CInt(data_elem.GetProp(&quot;noshow&quot;));
++
+ 	var text_lines := ReadFile(&quot;motd.txt&quot;);
+ 	var text := &quot;&quot;;
+ 	foreach line in text_lines
+ 		text := text+line+&quot;\n&quot;;
+ 		sleepms(5);
+ 	endforeach
+-		
++
+ 	if ( !text )
+ 		text := &quot;There is no MOTD for today.&quot;;
+ 	endif
+-	
++
++	var BKGND_SILVERTRIM := GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;);
++	var BKGND_DARK_STONE := GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;);
++	var BKGND_GOLDTRIM   := GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;);
++
+ 	var gump := GFCreateGump();
+-	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 360, 480);
+-	
+-	GFResizePic(gump, 10, 12, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, 30);
+-	GFTextMid(gump, 10, 17, 340, 2100, &quot;Messages of the Day&quot;);
+-	
+-	GFResizePic(gump, 10, 45, GFCfgConst(&quot;Backgrounds&quot;, &quot;GOLDTRIM&quot;), 340, 390);
++	GFResizePic(gump, 0, 0, BKGND_SILVERTRIM, 360, 480);
++
++	GFResizePic(gump, 10, 12, BKGND_DARK_STONE, 340, 30);
++	GFTextLine(gump, 110, 17, 2100, &quot;Messages of the Day&quot;);
++
++	GFResizePic(gump, 10, 45, BKGND_GOLDTRIM, 340, 390);
+ 	GFHTMLArea(gump, 22, 53, 322, 375, text, 0, 1);
+-	
+-	GFResizePic(gump, 10, 438, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 340, 30);
++
++	GFResizePic(gump, 10, 438, BKGND_DARK_STONE, 340, 30);
+ 	GFCheckBox(gump, 20, 443, 0x768, 0x767, (off == 0), ONOFF_BTN);
+ 	GFTextLine(gump, 45, 443, 2100, &quot;Open on login&quot;);
+-	
++
+ 	data_elem.SetProp(&quot;FirstLine&quot;, text_lines[1]);
+-	
++
+ 	var input := GFSendGump(mobile, gump);
+-	
++
+ 	if ( input[ONOFF_BTN] )
+ 		data_elem.EraseProp(&quot;noshow&quot;);
+ 	else
+ 		data_elem.SetProp(&quot;noshow&quot;, 1);
+ 	endif
+-endprogram
++
++endprogram
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000621.html">[Poldistro-svn] r647 - trunk/096/pkg/commands/coun
+</A></li>
+	<LI>Next message: <A HREF="000623.html">[Poldistro-svn] r649 - trunk/096/pkg/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#622">[ date ]</a>
+              <a href="thread.html#622">[ thread ]</a>
+              <a href="subject.html#622">[ subject ]</a>
+              <a href="author.html#622">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

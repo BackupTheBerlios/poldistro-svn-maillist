@@ -1,0 +1,922 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r326 - in trunk/096/pkg: skills/blacksmithy systems/crafting/config systems/crafting/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r326%20-%20in%20trunk/096/pkg%3A%20skills/blacksmithy%20systems/crafting/config%20systems/crafting/include&In-Reply-To=%3C200509300659.j8U6xbs7007464%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000303.html">
+   <LINK REL="Next"  HREF="000305.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r326 - in trunk/096/pkg: skills/blacksmithy systems/crafting/config systems/crafting/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r326%20-%20in%20trunk/096/pkg%3A%20skills/blacksmithy%20systems/crafting/config%20systems/crafting/include&In-Reply-To=%3C200509300659.j8U6xbs7007464%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r326 - in trunk/096/pkg: skills/blacksmithy systems/crafting/config systems/crafting/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Fri Sep 30 08:59:37 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000303.html">[Poldistro-svn] r325 - in trunk/096/pkg/items/sysbook: book commands/gm include
+</A></li>
+        <LI>Next message: <A HREF="000305.html">[Poldistro-svn] r327 - trunk/096/pkg/items/sysbook/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#304">[ date ]</a>
+              <a href="thread.html#304">[ thread ]</a>
+              <a href="subject.html#304">[ subject ]</a>
+              <a href="author.html#304">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-09-30 08:59:24 +0200 (Fri, 30 Sep 2005)
+New Revision: 326
+
+Modified:
+   trunk/096/pkg/skills/blacksmithy/SmithMenu.cfg
+   trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src
+   trunk/096/pkg/systems/crafting/config/craftConfig.cfg
+   trunk/096/pkg/systems/crafting/include/craftGumps.inc
+   trunk/096/pkg/systems/crafting/include/crafting.inc
+Log:
+
+
+Modified: trunk/096/pkg/skills/blacksmithy/SmithMenu.cfg
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/SmithMenu.cfg	2005-09-30 03:13:08 UTC (rev 325)
++++ trunk/096/pkg/skills/blacksmithy/SmithMenu.cfg	2005-09-30 06:59:24 UTC (rev 326)
+@@ -24,8 +24,8 @@
+ Craftitem Index
+ {
+         Title   &lt;center&gt;Blacksmith Selection Menu&lt;/center&gt;
+-        Skill   blacksmithy
+-        SkillID blacksmithy
++        Skill   Blacksmithy
++        SkillID Blacksmithy
+ 	Group	Axes
+ 	Group	Blades
+ 	Group	Blunt
+
+Modified: trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src
+===================================================================
+--- trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src	2005-09-30 03:13:08 UTC (rev 325)
++++ trunk/096/pkg/skills/blacksmithy/makeBlacksmithItems.src	2005-09-30 06:59:24 UTC (rev 326)
+@@ -1,6 +1,5 @@
+ // //$Id$
+ 
+-use math;
+ use cfgfile;
+ use util;
+ 
+@@ -14,7 +13,6 @@
+ 
+ var item_config     := ReadConfigFile(&quot;:*:itemdesc&quot;);
+ var craft_config    := ReadConfigFile(&quot;:blacksmithy:blacksmithy&quot;);
+-var resource_config := ReadConfigFile(&quot;:crafting:config/resourceList&quot;);
+ 
+ program use_SmithTool(who, tool)
+ 
+@@ -35,7 +33,7 @@
+ 	EraseObjProperty(who, &quot;IsMeditating&quot;);
+ 	EraseObjProperty(who, &quot;HealTimer&quot;);
+ 
+-	var rinfo := sendCraftGump(who, &quot;blacksmithy&quot;);
++	var rinfo := sendCraftGump(who, &quot;Blacksmithy&quot;);
+ 
+ 	// OK was pressed, close it on out
+ 	if(rinfo == 0)
+@@ -62,74 +60,76 @@
+ 
+ function makeBlacksmithItems(who, what, amt, tool)
+ 
+-  if(!what)
+-    SendSysMessage(who, &quot;Cancelled&quot;);
+-    return;
+-  endif
+-  var anvil_near := 0;
+-  foreach item in ListItemsNearLocation(who.x, who.y, who.z, 3)
+-    if((item.objtype == 0x0faf) || (item.objtype == 0x0fb0))
+-      anvil_near := 1;
+-      break;
+-    endif
+-  endforeach
+-  if(anvil_near == 0)
+-    SendSysMessage(who, &quot;You must be near an anvil to smith items.&quot;);
+-    return;
+-  endif
++	if(!what)
++		SendSysMessage(who, &quot;Cancelled&quot;);
++		return 0;
++	endif
+ 
+-  // Metal is sent for the ResourceList entry type.
+-  var itemchk := MaterialSelection(who, craft_skill, lower(&quot;Metal&quot;));
+-  if(!itemchk)
+-    return;
+-  endif
+-  var use_on := itemchk[1];
+-  var ptmod := itemchk[3];
++	var anvil_near := 0;
++	foreach item in ListItemsNearLocation(who.x, who.y, who.z, 3)
++		if((item.objtype == 0x0faf) || (item.objtype == 0x0fb0))
++			anvil_near := 1;
++			break;
++		endif
++	endforeach
++	if(anvil_near == 0)
++		SendSysMessage(who, &quot;You must be near an anvil to smith items.&quot;);
++		return 0;
++	endif
+ 
+-  var num, theitem;
+-  var itemname := craft_config[what].name;
+-  var material := Cint(craft_config[what].material);
+-  var reqd := Cint(craft_config[what].skill);
+-  var diff := Cint(craft_config[what].difficulty);
+-  var pts  := Cint(craft_config[what].points);
+-  pts      := CInt(pts + ptmod);
+-  var counter := 0, x := who.x, y := who.y;
++	// Metal is sent for the ResourceList entry type.
++	var itemchk := MaterialSelection(who, craft_skill, lower(&quot;Metal&quot;));
++	if(!itemchk)
++		return 0;
++	endif
++	var use_on := itemchk[1];
++	var ptmod := itemchk[3];
+ 
+-  while(counter &lt; amt)
+-    if((who.x != x) || (who.y != y))
+-      SendSysMessage(who, &quot;You stop smithing.&quot;);
+-      break;
+-    endif
+-    if(!tool)
+-      break;
+-    endif
+-    sleep(2);
+-    if(GetAmount(use_on) &gt;= material)
+-      if(CraftCheckSkill(who, craft_skill, diff, pts))
+-        playCraftWork(who, SFX_ANVIL);
+-        sleep(2);
+-        theitem := CreateCraftItem(who, craft_skill, use_on, use_on.objtype, what, material, itemname, reqd);
+-        if(theitem or theitem != 0)
+-          CheckToolWear (who, tool, craft_skill);
+-        else
+-          SubtractAmount(use_on, (material / 2));
+-          SendSysMessage(who, &quot;You failed to create the item, and some of your materials are lost.&quot;);
+-          counter := counter + 1;
+-          continue;
+-        endif
+-      else
+-        num := CInt(randomint(material)/2) + 1;
+-        if(SubtractAmount(use_on, num))
+-          SendSysMessage(who, &quot;You lost some metal&quot;);
+-        endif
+-      endif
+-    else
+-      SendSysMessage(who, &quot;You don't have the resources required to make that item.&quot;);
+-      counter := 100;
+-      break;
+-    endif
+-    counter := counter + 1;
+-  endwhile
+-  return;
++	var num, theitem;
++	var itemname := craft_config[what].name;
++	var material := Cint(craft_config[what].material);
++	var reqd := Cint(craft_config[what].skill);
++	var diff := Cint(craft_config[what].difficulty);
++	var pts  := Cint(craft_config[what].points);
++	pts      := CInt(pts + ptmod);
++	var counter := 0, x := who.x, y := who.y;
+ 
++	while(counter &lt; amt)
++		if((who.x != x) || (who.y != y))
++			SendSysMessage(who, &quot;You stop smithing.&quot;);
++			break;
++		endif
++		if(!tool)
++			break;
++		endif
++
++		sleep(2);
++
++		if(GetAmount(use_on) &gt;= material)
++			if(CraftCheckSkill(who, craft_skill, diff, pts))
++				theitem := CreateCraftItem(who, craft_skill, use_on, use_on.objtype, what, material, itemname, reqd);
++				if( TypeOf(theitem) != &quot;ItemRef&quot; )
++					SubtractAmount(use_on, (material / 2));
++					SendSysMessage(who, &quot;You failed to create the item, and some of your materials are lost.&quot;);
++					counter := counter + 1;
++					continue;
++				else
++					CheckToolWear (who, tool, craft_skill);
++				endif
++			else
++				num := CInt(randomint(material)/2) + 1;
++				if(SubtractAmount(use_on, num))
++					SendSysMessage(who, &quot;You lost some metal&quot;);
++				endif
++			endif
++		else
++			SendSysMessage(who, &quot;You don't have the resources required to make that item.&quot;);
++			counter := 100;
++			break;
++		endif
++		counter := counter + 1;
++	endwhile
++
++	return 0;
++
+ endfunction
+
+Modified: trunk/096/pkg/systems/crafting/config/craftConfig.cfg
+===================================================================
+--- trunk/096/pkg/systems/crafting/config/craftConfig.cfg	2005-09-30 03:13:08 UTC (rev 325)
++++ trunk/096/pkg/systems/crafting/config/craftConfig.cfg	2005-09-30 06:59:24 UTC (rev 326)
+@@ -30,10 +30,12 @@
+ #
+ # Crafting alchemy	Exists for EACH skill in skill list above. Settings per skill
+ # {
+-#	Name		Name you want. Must match what is sent by skill to gump command.
++#	Name		The Attribute it uses from Attributes.cfg
+ #	Attribute	The Attribute it uses from Attributes.cfg
++#	CraftLoops	The amount of loops to play the anim/sound/delay
+ #	CraftDelay	The delay between each loop while crafting items
+ #	CraftAnim	The animation (0 if none) to play during each loop
++#	CraftSound	The sound to play in the loops
+ #	Repair		0/1 Off/On for giving the Repair button in gump
+ #	Smelt		0/1 Off/On for giving the Resmelt button in gump
+ #	MakersMark	0/1 Off/On for giving the Add Makers Mark button
+@@ -49,7 +51,15 @@
+ # The exceptional name string, is prepended before the crafter's name in the brackets &quot;[]&quot;.
+ #
+ ######################################################################################
+-
++#
++# It is always best to name the Skill entry and Crafting element the exact same as the
++# Attributes.cfg entry for the skill you wish it to be. This will make it easier to
++# keep track of.
++#
++# The Name entry in Crafting elements is used as the Display name for skills in Info
++# Gumps.
++#
++######################################################################################
+ Crafting Setup
+ {
+ 	MaxAmount	10
+@@ -62,11 +72,11 @@
+ Crafting Skills
+ {
+ 	Skill	alchemy
+-        Skill   blacksmithy
++        Skill   Blacksmithy
+         Skill   carpentry
+         Skill   cartography
+ 	Skill	cooking
+-	Skill	fletching
++	Skill	BowcraftFletching
+ 	Skill	inscription
+ 	Skill	tailoring
+ 	Skill	tinkering
+@@ -87,13 +97,14 @@
+ 	ExceptionalName	brewed by
+ }
+ 
+-Crafting blacksmithy
++Crafting Blacksmithy
+ {
+ 	Name		blacksmithy
+-	Attribute	blacksmithy
++	Attribute	Blacksmithy
+ 	CraftDelay	2
+ 	CraftLoops	0
+ 	CraftAnim	0
++	CraftSound	0x002b
+ 	Repair		1
+ 	Smelt		1
+ 	MakersMark	1
+@@ -146,17 +157,19 @@
+ 	ExceptionalName	cooked by
+ }
+ 
+-Crafting fletching
++Crafting BowcraftFletching
+ {
+-	Name		fletching
+-	Attribute	fletching
++	Name		bowcraft
++	Attribute	BowcraftFletching
+ 	CraftDelay	2
+ 	CraftLoops	0
+ 	CraftAnim	0
++	CraftSound	0x5a
+ 	Repair		1
+ 	Smelt		0
+ 	MakersMark	1
+ 	RetainColor	1
++	MenuFile	:bowcraft:FletchMenu
+ 	ExceptionalName	fletched by
+ }
+ 
+
+Modified: trunk/096/pkg/systems/crafting/include/craftGumps.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/craftGumps.inc	2005-09-30 03:13:08 UTC (rev 325)
++++ trunk/096/pkg/systems/crafting/include/craftGumps.inc	2005-09-30 06:59:24 UTC (rev 326)
+@@ -16,6 +16,13 @@
+ 	var menu_file    := menu_config[skill_name].MenuFile;
+ 	var skill_config := ReadConfigFile(menu_file);
+ 	craft_skill      := menu_config[skill_name].Attribute;
++	display_skill    := menu_config[skill_name].Name;
++	// Craft Cprop is a dictionary storing the information for each crafting skill
++	craft_settings := GetObjProperty(who, &quot;Craft&quot;);
++	if( TypeOf(craft_settings) != &quot;Dictionary&quot; )
++		craft_settings := cBaseCraftDict();
++		SetObjProperty(who, &quot;Craft&quot;, craft_settings);
++	endif
+ 
+ 	while( 1 )
+ 
+@@ -96,11 +103,11 @@
+ 		endif
+ 
+ 		// Sets the amount you had entered into an array to return to crafting
+-		atc := Cint(SplitWords(res[1998])[2]);
++		atc := CInt(GFExtractData(res, atc));
+ 		if(!atc || CInt(atc) &lt; 1)
+ 			atc := 1;
+-		elseif(atc &gt; CInt(menu_config[skill_name].MaxAmount))
+-			SendSysMessage(who, &quot;You can only make between 1 and &quot; + menu_config[skill_name].MaxAmount + &quot; at a time.&quot;);
++		elseif(atc &gt; CInt(menu_config[&quot;Setup&quot;].MaxAmount))
++			SendSysMessage(who, &quot;You can only make between 1 and &quot; + menu_config[&quot;Setup&quot;].MaxAmount + &quot; at a time.&quot;);
+ 			return 0;
+ 		endif
+ 		craft_settings[skill_name].amount := atc;
+@@ -124,13 +131,6 @@
+ 	var menu_file    := menu_config[skill_name].MenuFile;
+ 	var skill_config := ReadConfigFile(menu_file);
+ 
+-	// Craft Cprop is a dictionary storing the information for each crafting skill
+-	craft_settings := GetObjProperty(who, &quot;Craft&quot;);
+-	if( TypeOf(craft_settings) != &quot;Dictionary&quot; )
+-		craft_settings := cBaseCraftDict();
+-		SetObjProperty(who, &quot;Craft&quot;, craft_settings);
+-	endif
+-
+ 	// Now let's get the amount, based on the menu file) from the Cprop.
+ 	atc := craft_settings[skill_name].amount;
+ 	// If it == nothing, or is an error, set it to 1. Error should never occur, but, just in case.
+@@ -476,7 +476,7 @@
+ 	// Item Name
+ 	GFHTMLArea(gump, 330, 40, 150, 20, (&quot;&lt;basefont color=#ffffff&gt;&quot;+itemdesc));
+ 	// Skill name
+-	GFHTMLArea(gump, 170, 132, 150, 20, (&quot;&lt;basefont color=#ffffff&gt;&quot;+craft_skill + &quot; required&quot;));
++	GFHTMLArea(gump, 170, 132, 150, 20, (&quot;&lt;basefont color=#ffffff&gt;&quot;+display_skill + &quot; required&quot;));
+ 
+ 	if((skillreqb &gt; 0) &amp;&amp; (skillreqb != error))
+ 		// Skill 2 name
+@@ -500,7 +500,7 @@
+ 	var baseDict  := dictionary;
+ 	foreach skillentry in GetConfigStringArray(menu_config[&quot;Skills&quot;], &quot;Skill&quot;)
+ 		var temp := dictionary;
+-		temp.+skill  := menu_config[skillentry].Name;
++		temp.+skill  := menu_config[skillentry].Attribute;
+ 		temp.+amount := CInt(menu_config[&quot;Setup&quot;].DefaultAmount);
+ 		temp.+mark   := CInt(menu_config[skillentry].MakersMark);
+ 		temp.+retain := CInt(menu_config[skillentry].RetainColor);
+
+Modified: trunk/096/pkg/systems/crafting/include/crafting.inc
+===================================================================
+--- trunk/096/pkg/systems/crafting/include/crafting.inc	2005-09-30 03:13:08 UTC (rev 325)
++++ trunk/096/pkg/systems/crafting/include/crafting.inc	2005-09-30 06:59:24 UTC (rev 326)
+@@ -9,41 +9,6 @@
+ //  Purpose: Functions for creating crafting menus, info menus, item creation, resource selection,
+ //           skill gain, etc.
+ //
+-//  Notes:   Acknowledgement to Valkyrie and Austin for coding ideas, based off a combination of a
+-//           work-in-progress of her's, and mine both
+-//
+-//  Changes: Sept 5, 2005 -- TruncatePlural() replaced. New function by Austin.
+-//                        -- Did some comment changes, removed unused variables and functions.
+-//                        -- Removed requirement for an altered gumpUtil.inc. Can use standard
+-//                           Distro version now.
+-//           Sept 6, 2005 -- Info Gump changed in respect with Parts for Assembly items. For items
+-//                           that use less than 5 parts, each item is listed seperately now. If
+-//                           it contains 5 or more parts, it gives the old HTML method giving them
+-//                           in a sentence form, for more custom and ingenious assembly items requiring
+-//                           much more to craft (ewwwwww).
+-//                        -- Material and Material Name areas both now use a HTML gump area for
+-//                           showing their text for Assembly. Less code and less bandwidth.
+-//                        -- Matierial and Material name for standard, and dual material, items are
+-//                           now handled via the HTML gump method as parts. MUCH less code and bw
+-//                           are the end result for this change also.
+-//                        -- Added function playCraftWork(). This function is used to display a craft
+-//                           skill's action animation, sound, the loops to do it in, and the delay
+-//                           between loops. Sound is required, loops defaults to 0 if none sent, and
+-//                           delay defaults to 2 seconds if none sent, Action defaults to 0 (none) if
+-//                           none sent. All delays are in seconds.
+-//           Sept 7, 2005 -- Optimized a TON of if/else and if/elseif statements by converting them
+-//                           to case() statements where possible in the main menu's code and the info
+-//                           screen code.
+-//                        -- Altered most buttons out of the 1000 and 8000 range due to possible
+-//                           objtype conflicts. Info buttons now use 61500 through 62000. Repair,
+-//                           smelt, maker's mark, and retain color all converted also for this bug.
+-//           Sept 8, 2005 -- Changed TruncatePlural() to return a struct{errortext} if it could
+-//                           not find a &quot;name&quot; or &quot;desc&quot; entry for an itemdesc.cfg entry.
+-//                        -- Changed DrawNewPage to skip items with invalid Objtype names given
+-//                           in the Menu file, and with invalid objtype returned from TruncatePlural().
+-//           Sep 14, 2005 -- Redid code to set Last Item cprop checks.
+-//
+-//
+ //  To-Do:   1.) Break this down even more. Such as &quot;crafting_menu.inc&quot;, &quot;crafting_skill.inc&quot;,
+ //               &quot;crafting_util.inc&quot;, and so on.
+ //           2.) Centralize Crafting Package. Move the skills.cfg information BACK into the
+@@ -81,7 +46,10 @@
+ include &quot;:gumps:include/gumps&quot;;
+ include &quot;:gumps:include/gumps_ex&quot;;
+ 
++var resource_config := ReadConfigFile(&quot;:crafting:config/resourceList&quot;);
++
+ var craft_skill;
++var display_skill;
+ var craftL    := 0;
+ var rcolor    := 1;
+ var makermark := 1;
+@@ -162,224 +130,237 @@
+ // special resources for crafting here also.
+ function CreateCraftItem(who, craft_skill, use_on, use_onobjtype, objtype, amount, itemname, reqd)
+ 
+- var theitem := CreateItemInBackpack(who, objtype, 1);
+- var elem    := FindConfigElem(resource_config, use_onobjtype);
+- if(theitem)
+-   var nme := (resource_config[use_onobjtype].Name) + &quot; &quot; + itemname;
+-   if(find(nme, &quot;plain &quot;, 1))
+-     nme[find(nme, &quot;plain &quot;, 1),6] := &quot;&quot;;
+-   endif
+-   if((rcolor == 1) &amp;&amp; (craft_config[objtype].retain == 1))
+-     if(resource_config[use_onobjtype].Color)
+-       theitem.color := resource_config[use_onobjtype].Color;
+-     else
+-       theitem.color := use_on.color;
+-     endif
+-   endif
+-   SetObjProperty(theitem, &quot;material&quot;, use_onobjtype);
+-   if(!SubtractAmount(use_on, amount))
+-     SendSysMessage(who, &quot;You don't have enough materials in your backpack!&quot;);
+-     DestroyItem(theitem);
+-     return -1;
+-   endif
+-   var myskill := CDbl(AP_GetSkill(who, craft_skill));
+-   var aidskill := CDbl(AP_GetSkill(who, craft_config[objtype].skillID));
+-   // This snags the Qualities of the resource to use on item creation.
+-   // Format in the cfg for Quality is &lt;dmg mod&gt; &lt;ar mod&gt; &lt;hp mod&gt;.
+-   // 0 for a mod means there isn't one. Space delimited in the cfg,
+-   // this allows us to simply use SplitWords on it to make the array
+-   // of each of the settings.
+-   var temp := GetConfigString(elem, &quot;Quality&quot;);
+-   temp := SplitWords(temp);
+-   var power  := GetConfigString(elem, &quot;Power&quot;);
+-   if( (TypeOf(power) != &quot;String&quot;) )
+-     power := 0;
+-   endif
+-   var wpower := GetConfigString(elem, &quot;WPower&quot;);
+-   if( (TypeOf(wpower) != &quot;String&quot;) )
+-     wpower := 0;
+-   endif
+-   if((craft_config[objtype].Exceptional == 1) &amp;&amp; (ExceptionalCraft(myskill, reqd, aidskill)))
+-//     AwardPoints(who, craft_skill, 1);
+-     SetObjProperty(theitem, &quot;Exceptional&quot;, 1);
+-     if( TypeOf(craft_config[objtype].skillID) == &quot;String&quot; )
+-//       AwardPoints(who, Cint(craft_config[objtype].skillID), 1);
+-     endif
+-     if((craft_config[objtype].Mark == 1))
+-       if((makermark == 1) &amp;&amp; (myskill &gt;= 100))
+-         nme := &quot;an exceptional &quot; + nme + &quot; [Crafted by &quot; + who.name + &quot;]&quot;;
+-       else
+-         nme := &quot;an exceptional &quot; + nme;
+-       endif
+-     else
+-       nme := &quot;an exceptional &quot; + nme;
+-     endif
+-     if(theitem.isA(POLCLASS_WEAPON))
+-       theitem.dmg_mod := CInt(temp[1])+(RandomInt(4));
+-     elseif(theitem.isA(POLCLASS_ARMOR))
+-       theitem.ar_mod := CInt(temp[2])+(RandomInt(4));
+-     endif
+-     theitem.maxhp_mod := CInt(temp[3])+(RandomInt(11));
+-     theitem.hp := theitem.maxhp;
+-     SendSysMessage(who, &quot;You create an exceptional quality item.&quot;);
+-   else
+-     var rint := randomint(AP_GetSkill(who, craft_skill));
+-     if(reqd &gt;= 23)
+-       reqd := reqd - 20;
+-     else
+-       reqd := 3;
+-     endif
+-     if(rint &lt; reqd)
+-       SendSysMessage(who, &quot;You were barely able to make this item.  Its quality is below average.&quot;);
+-       if(theitem.isA(POLCLASS_WEAPON))
+-         theitem.dmg_mod := CInt(temp[1])-(RandomInt(2)+1);
+-       elseif(theitem.isA(POLCLASS_ARMOR))
+-         theitem.ar_mod := CInt(temp[2])-(RandomInt(2)+1);
+-       endif
+-       theitem.maxhp_mod := CInt(temp[3])-(RandomInt(10)+1);
+-       theitem.hp := theitem.maxhp;
+-     else
+-       SendSysMessage(who, &quot;You create the item and put it in your backpack.&quot;);
+-       if(theitem.isA(POLCLASS_WEAPON))
+-         theitem.dmg_mod := CInt(temp[1]);
+-       elseif(theitem.isA(POLCLASS_ARMOR))
+-         theitem.ar_mod := CInt(temp[2]);
+-       endif
+-       theitem.maxhp_mod := CInt(temp[3]);
+-       theitem.hp := theitem.maxhp;
+-     endif
+-     var word := &quot;&quot;;
+-     if((nme[1] == &quot;a&quot;) || (nme[1] == &quot;e&quot;) || (nme[1] == &quot;i&quot;) || (nme[1] == &quot;o&quot;) || (nme[1] == &quot;u&quot;))
+-       word := &quot;an &quot;;
+-     else
+-       word := &quot;a &quot;;
+-     endif
+-     nme := &quot;&quot; + word + nme;
+-     nme := nme - &quot;plain &quot;;
+-   endif
+-   SetName(theitem, nme);
+-   if(theitem.isA(POLCLASS_CONTAINER))
+-     SetObjProperty(theitem, &quot;trappable&quot;, 1);
+-   elseif(theitem.isA(POLCLASS_ITEM))
+-     SetToolDurability(who, theitem, craft_skill);
+-   endif
+-//   if((power) &amp;&amp; (theitem.isa(POLCLASS_ARMOR)))
+-//     SetObjProperty(theitem, &quot;power&quot;, power);
+-//     theitem.equipscript := &quot;equiparmor&quot;;
+-//     theitem.unequipscript := &quot;unequiparmor&quot;;
+-//   elseif((wpower == &quot;SILVER&quot;) &amp;&amp; theitem.isA(POLCLASS_WEAPON))
+-//     SetObjProperty(theitem, &quot;SilverHit&quot;, 1);
+-//   elseif(wpower &amp;&amp; theitem.isA(POLCLASS_WEAPON))
+-//     SetObjProperty(theitem, &quot;wpower&quot;, power);
+-//     theitem.equipscript := &quot;equipweapon&quot;;
+-//     theitem.unequipscript := &quot;unequipweapon&quot;;
+-//   endif
+- else
+-   SendSysMessage(who, &quot;You don't have enough room in your backpack!&quot;);
+-   return 0;
+- endif
++	var craft_sound  := menu_config[craft_skill].CraftSound;
++	var craft_loops  := menu_config[craft_skill].CraftLoops;
++	var craft_delay  := menu_config[craft_skill].CraftDelay;
++	var craft_action := menu_config[craft_skill].CraftAnim;
++	playCraftWork(who, craft_sound, craft_loops, craft_delay, craft_action);
+ 
+- return theitem;
++	var theitem := CreateItemInBackpack(who, objtype, 1);
++	var elem    := FindConfigElem(resource_config, use_onobjtype);
++	if(theitem)
++		var nme := (resource_config[use_onobjtype].Name) + &quot; &quot; + itemname;
++		if(find(nme, &quot;plain &quot;, 1))
++			nme[find(nme, &quot;plain &quot;, 1),6] := &quot;&quot;;
++		endif
++		if((rcolor == 1) &amp;&amp; (craft_config[objtype].retain == 1))
++			if(resource_config[use_onobjtype].Color)
++				theitem.color := resource_config[use_onobjtype].Color;
++			else
++				theitem.color := use_on.color;
++			endif
++		endif
++		SetObjProperty(theitem, &quot;material&quot;, use_onobjtype);
++		if(!SubtractAmount(use_on, amount))
++			SendSysMessage(who, &quot;You don't have enough materials in your backpack!&quot;);
++			DestroyItem(theitem);
++			return -1;
++		endif
++		var myskill := CDbl(AP_GetSkill(who, craft_skill));
++		var aidskill := CDbl(AP_GetSkill(who, craft_config[objtype].skillID));
++		// This snags the Qualities of the resource to use on item creation.
++		// Format in the cfg for Quality is &lt;dmg mod&gt; &lt;ar mod&gt; &lt;hp mod&gt;.
++		// 0 for a mod means there isn't one. Space delimited in the cfg,
++		// this allows us to simply use SplitWords on it to make the array
++		// of each of the settings.
++		var temp := GetConfigString(elem, &quot;Quality&quot;);
++		temp := SplitWords(temp);
++		var power  := GetConfigString(elem, &quot;Power&quot;);
++		if( (TypeOf(power) != &quot;String&quot;) )
++			power := 0;
++		endif
++		var wpower := GetConfigString(elem, &quot;WPower&quot;);
++		if( (TypeOf(wpower) != &quot;String&quot;) )
++			wpower := 0;
++		endif
++		if((craft_config[objtype].Exceptional == 1) &amp;&amp; (ExceptionalCraft(myskill, reqd, aidskill)))
++	//		AwardPoints(who, craft_skill, 1);
++			SetObjProperty(theitem, &quot;Exceptional&quot;, 1);
++	//		if( TypeOf(craft_config[objtype].skillID) == &quot;String&quot; )
++	//			AwardPoints(who, Cint(craft_config[objtype].skillID), 1);
++	//		endif
++			if((craft_config[objtype].Mark == 1))
++				if((makermark == 1) &amp;&amp; (myskill &gt;= 100))
++					nme := &quot;an exceptional &quot; + nme + &quot; [Crafted by &quot; + who.name + &quot;]&quot;;
++				else
++					nme := &quot;an exceptional &quot; + nme;
++				endif
++			else
++				nme := &quot;an exceptional &quot; + nme;
++			endif
++			if(theitem.isA(POLCLASS_WEAPON))
++				theitem.dmg_mod := CInt(temp[1])+(RandomInt(4));
++			elseif(theitem.isA(POLCLASS_ARMOR))
++				theitem.ar_mod := CInt(temp[2])+(RandomInt(4));
++			endif
++			theitem.maxhp_mod := CInt(temp[3])+(RandomInt(11));
++			theitem.hp := theitem.maxhp;
++			SendSysMessage(who, &quot;You create an exceptional quality item.&quot;);
++		else
++			var rint := randomint(AP_GetSkill(who, craft_skill));
++			if(reqd &gt;= 23)
++				reqd := reqd - 20;
++			else
++				reqd := 3;
++			endif
++			if(rint &lt; reqd)
++				SendSysMessage(who, &quot;You were barely able to make this item.  Its quality is below average.&quot;);
++				if(theitem.isA(POLCLASS_WEAPON))
++					theitem.dmg_mod := CInt(temp[1])-(RandomInt(2)+1);
++				elseif(theitem.isA(POLCLASS_ARMOR))
++					theitem.ar_mod := CInt(temp[2])-(RandomInt(2)+1);
++				endif
++				theitem.maxhp_mod := CInt(temp[3])-(RandomInt(10)+1);
++				theitem.hp := theitem.maxhp;
++			else
++				SendSysMessage(who, &quot;You create the item and put it in your backpack.&quot;);
++				if(theitem.isA(POLCLASS_WEAPON))
++					theitem.dmg_mod := CInt(temp[1]);
++				elseif(theitem.isA(POLCLASS_ARMOR))
++					theitem.ar_mod := CInt(temp[2]);
++				endif
++				theitem.maxhp_mod := CInt(temp[3]);
++				theitem.hp := theitem.maxhp;
++			endif
++			var word := &quot;&quot;;
++			if((nme[1] == &quot;a&quot;) || (nme[1] == &quot;e&quot;) || (nme[1] == &quot;i&quot;) || (nme[1] == &quot;o&quot;) || (nme[1] == &quot;u&quot;))
++				word := &quot;an &quot;;
++			else
++				word := &quot;a &quot;;
++			endif
++			nme := &quot;&quot; + word + nme;
++			nme := nme - &quot;plain &quot;;
++		endif
++		SetName(theitem, nme);
++		if(theitem.isA(POLCLASS_CONTAINER))
++			SetObjProperty(theitem, &quot;trappable&quot;, 1);
++		elseif(theitem.isA(POLCLASS_ITEM))
++			SetToolDurability(who, theitem, craft_skill);
++		endif
++		if((power) &amp;&amp; (theitem.isa(POLCLASS_ARMOR)))
++			SetObjProperty(theitem, &quot;power&quot;, power);
++	//		theitem.equipscript := &quot;equiparmor&quot;;
++	//		theitem.unequipscript := &quot;unequiparmor&quot;;
++		elseif((wpower == &quot;SILVER&quot;) &amp;&amp; theitem.isA(POLCLASS_WEAPON))
++			SetObjProperty(theitem, &quot;SilverHit&quot;, 1);
++		elseif(wpower &amp;&amp; theitem.isA(POLCLASS_WEAPON))
++			SetObjProperty(theitem, &quot;wpower&quot;, wpower);
++	//		theitem.equipscript := &quot;equipweapon&quot;;
++	//		theitem.unequipscript := &quot;unequipweapon&quot;;
++		endif
++	else
++		SendSysMessage(who, &quot;You don't have enough room in your backpack!&quot;);
++		return 0;
++	endif
+ 
++	return theitem;
++
+ endfunction
+ 
+ // This function is used to create items that are marked &quot;assemble&quot; in the
+ // crafting configs. Reads a prop from the cfg entry for a list of parts and
+ // their amounts then checks the player's backpack for the items and works it.
+-function CreateAssembly(who, tool, objtype, amt)
++function CraftAssembly(who, craft_skill, tool, objtype, amt)
+ 
+-  var skill := craft_config[objtype].skill, theitem;
+-  var mainSkill := CInt(AP_GetSkill(who, craft_skill));
+-  var modpts := 0;
+-  if(mainSkill &gt;= skill)
+-    modpts := (mainSkill - (skill - 10));
+-  endif
+-  var diff := Cint(craft_config[objtype].difficulty);
+-  var pts  := Cint(craft_config[objtype].points);
+-  pts := pts + modpts;
+-  var counter := 0, chk := 0;
+-  // Get a list of the parts from the cfg entry. Format from config is listed in cfg
+-  // header. Objtypes first, then amount for each objtype, in the same respective order.
+-  // To match them together, we divid the length of the array by 2 then use that.
+-  // Example : mod := len(array)/2;
+-  // Example2: objtype := array[x]; amt := array[x+mod];
+-  var partslist := SplitWords(craft_config[objtype].parts);
+-  if(!partslist or partslist.errortext)
+-    SendSysMessage(who, &quot;This item does not require parts to be made! Contact a GM.&quot;);
+-    return;
+-  endif
+-  var mod := len(partslist)/2;
+-  var partcounter, partarray, checker;
+-  var x := who.x, y := who.y;
++	var craft_sound  := menu_config[craft_skill].CraftSound;
++	var craft_loops  := menu_config[craft_skill].CraftLoops;
++	var craft_delay  := menu_config[craft_skill].CraftDelay;
++	var craft_action := menu_config[craft_skill].CraftAnim;
+ 
+-  while(counter &lt; amt)
+-    if((who.x != x) || (who.y != y))
+-      break;
+-    endif
+-    if(chk == 1)
+-      break;
+-    endif
+-    partarray := {};
+-    checker := 0;
+-    chk := 0;
+-    // We use the Enumerate in a variable like this so as to work with it
+-    // as an array. This way no need to enumerate every for/endfor cycle.
+-    var blist := EnumerateItemsInContainer(who.backpack);
+-    for i := 1 to mod
+-      partcounter := 0;
+-      foreach thing in blist
+-        // If thing.objtype is the same as the objtype in the part list array position....
+-        if(CInt(thing.objtype) == CInt(partslist[i]))
+-          // If the amount is less than the counter for this item type, append it to the
+-          // array for deletion later.
+-          if(partcounter &lt; CInt(partslist[i+mod]))
+-            if(ReserveItem(thing))
+-              partarray.append(thing);
+-              partcounter := partcounter + 1;
+-            endif
+-          endif
+-        endif
+-      endforeach
+-      // We add 2 to the checker var here once all required peices are added. We use
+-      // this later to divide by 2. If divided by 2, it equals the mod variable, we know
+-      // all the required peices are in their backpack. That works, because it is the same
+-      // method for the partslist array which is an amount entry for each objtype entry.
+-      // Sure, we could use 1, then divide the mod by 2 also for this to work. But I was
+-      // in one of my moods ;)
+-      if(partcounter == CInt(partslist[i+mod]))
+-        checker := checker + 2;
+-      endif
+-    endfor
+-    if((checker /2) != mod)
+-      SendSysMessage(who, &quot;You do not have the required materials to make that.&quot;);
+-      return;
+-    else
+-      sleep(2);
+-      if(CraftCheckSkill(who, mainSkill, diff, pts))
+-        PlaySoundEffect(who, 0x23e);
+-        sleep(2);
+-        foreach thing in partarray
+-          if(!DestroyItem(thing))
+-            SendSysMessage(who, &quot;You do not have the ready materials to make that.&quot;);
+-            return;
+-          endif
+-        endforeach
+-        theitem := CreateItemInBackpack(who, objtype, 1);
+-        if(!theitem)
+-          SendSysMessage(who, &quot;You don't have enough room in your backpack!&quot;);
+-          return 0;
+-        endif
+-        CheckToolWear (who, tool, mainSkill);
+-        theitem.movable := 1;
+-        SendSysMessage(who, &quot;You create the item and put it in your backpack.&quot;);
+-      endif
+-    endif
+-    if(theitem.isA(POLCLASS_CONTAINER))
+-      SetObjProperty(theitem, &quot;trappable&quot;, 1);
+-    endif
+-    counter := counter + 1;
+-  endwhile
++	var skill := craft_config[objtype].skill;
++	var theitem;
++	var mainSkill := CInt(AP_GetSkill(who, craft_skill));
++	var modpts := 0;
++	if(mainSkill &gt;= skill)
++		modpts := (mainSkill - (skill - 10));
++	endif
++	var diff := Cint(craft_config[objtype].difficulty);
++	var pts  := Cint(craft_config[objtype].points);
++	pts := pts + modpts;
++	var counter := 0;
++	var chk := 0;
+ 
++	// Get a list of the parts from the cfg entry. Format from config is listed in cfg
++	// header. Objtypes first, then amount for each objtype, in the same respective order.
++	// To match them together, we divid the length of the array by 2 then use that.
++	// Example : mod := len(array)/2;
++	// Example2: objtype := array[x]; amt := array[x+mod];
++	var parts_list := SplitWords(craft_config[objtype].parts);
++	if( TypeOf(parts_list) != &quot;Array&quot; || !parts_list )
++		SendSysMessage(who, &quot;This item does not require parts to be made! Contact a GM.&quot;);
++		return 0;
++	endif
++	var temp_list := dictionary;
++	for i := 1 to (parts_list.size()/2)
++		temp_list[CInt(parts_list[i])] := parts_list[i+(parts_list.size()/2)];
++	endfor
++	parts_list := temp_list;
++
++	var material_list := dictionary;
++	var x := who.x;
++	var y := who.y;
++
++	while(counter &lt; amt)
++		if((who.x != x) || (who.y != y))
++			break;
++		endif
++		if(chk == 1)
++			break;
++		endif
++
++		chk := 0;
++
++		foreach thing in EnumerateItemsInContainer(who.backpack)
++			// If thing.objtype is the same as the objtype in the part list array position....
++			var thing_objtype := CInt(thing.objtype);
++			if( thing_objtype in parts_list.keys() )
++				if( CInt(material_list[thing_objtype]) &lt; CInt(parts_list[thing_objtype]) )
++					if( ReserveItem(thing) )
++						material_list[thing_objtype] := CInt(material_list[thing_objtype]) + 1;
++					endif
++				endif
++			endif
++		endforeach
++
++		foreach part in ( parts_list.keys() )
++print(material_list[part]);
++print(parts_list[part]);
++			if( material_list[part] != parts_list[part] )
++				SendSysMessage(who, &quot;You do not have the required materials to make that.&quot;);
++				return 0;
++			endif
++		endforeach
++
++		sleep(1);
++		if(CraftCheckSkill(who, craft_skill, diff, pts))
++			playCraftWork(who, craft_sound, craft_loops, craft_delay, craft_action);
++			foreach material_objtype in (material_list.keys())
++				var amount := material_list[material_objtype];
++				if ( amount &gt; 0 )
++					if( !ConsumeSubstance(who.backpack, material_objtype, amount) )
++						SendSysMessage(who, &quot;Error - Unable to consume [&quot;+amount+&quot;] of material [&quot;+material_objtype+&quot;]&quot;);
++						return 0;
++					endif
++				endif
++				sleepms(2);
++			endforeach
++			theitem := CreateItemInBackpack(who, objtype, 1);
++			if(!theitem)
++				SendSysMessage(who, &quot;You don't have enough room in your backpack!&quot;);
++				return 0;
++			endif
++			CheckToolWear (who, tool, craft_skill);
++			theitem.movable := 1;
++			SendSysMessage(who, &quot;You create the item and put it in your backpack.&quot;);
++			if(theitem.isA(POLCLASS_CONTAINER))
++				SetObjProperty(theitem, &quot;trappable&quot;, 1);
++			endif
++		endif
++		counter := counter + 1;
++	endwhile
++
++	return 1;
++
+ endfunction
+ 
+ //
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000303.html">[Poldistro-svn] r325 - in trunk/096/pkg/items/sysbook: book commands/gm include
+</A></li>
+	<LI>Next message: <A HREF="000305.html">[Poldistro-svn] r327 - trunk/096/pkg/items/sysbook/www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#304">[ date ]</a>
+              <a href="thread.html#304">[ thread ]</a>
+              <a href="subject.html#304">[ subject ]</a>
+              <a href="author.html#304">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,2122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r672 - trunk/096/pkg/skills/fishing
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r672%20-%20trunk/096/pkg/skills/fishing&In-Reply-To=%3C200510270421.j9R4LW8i018691%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000646.html">
+   <LINK REL="Next"  HREF="000647.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r672 - trunk/096/pkg/skills/fishing</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r672%20-%20trunk/096/pkg/skills/fishing&In-Reply-To=%3C200510270421.j9R4LW8i018691%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r672 - trunk/096/pkg/skills/fishing">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Thu Oct 27 06:21:32 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000646.html">[Poldistro-svn] r671 - trunk/096/pkg/items/containers
+</A></li>
+        <LI>Next message: <A HREF="000647.html">[Poldistro-svn] r673 - trunk/096/pkg/skills/fishing/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#645">[ date ]</a>
+              <a href="thread.html#645">[ thread ]</a>
+              <a href="subject.html#645">[ subject ]</a>
+              <a href="author.html#645">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-27 06:21:21 +0200 (Thu, 27 Oct 2005)
+New Revision: 672
+
+Added:
+   trunk/096/pkg/skills/fishing/fishnets.src
+Modified:
+   trunk/096/pkg/skills/fishing/SOSBottle.src
+   trunk/096/pkg/skills/fishing/SOSMessage.src
+   trunk/096/pkg/skills/fishing/fishing.src
+   trunk/096/pkg/skills/fishing/fishingFunctions.inc
+   trunk/096/pkg/skills/fishing/itemdesc.cfg
+   trunk/096/pkg/skills/fishing/magicFish.src
+   trunk/096/pkg/skills/fishing/pkg.cfg
+   trunk/096/pkg/skills/fishing/sosarea.cfg
+Log:
+Main fishing update. Far from done. SOS Chests and such, imho need full rewrite.
+
+
+Modified: trunk/096/pkg/skills/fishing/SOSBottle.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/SOSBottle.src	2005-10-27 04:20:27 UTC (rev 671)
++++ trunk/096/pkg/skills/fishing/SOSBottle.src	2005-10-27 04:21:21 UTC (rev 672)
+@@ -1,49 +1,58 @@
+-// $Id$
++/* $Id$
++ *
++ */
+ 
+ use uo;
+ use cfgfile;
+ use os;
+ use util;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/objtype&quot;;
+-include &quot;include/startEqp&quot;;
+-include &quot;include/dist&quot;;
+ include &quot;include/canAccess&quot;;
+ 
+-program use_bottle( who, bottle )
+-  if(!can_access(who, bottle))
+-    return;
+-  endif
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  if(bottle.movable == 0)
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  if(!ReserveItem(bottle))
+-    return;
+-  endif
+-  var cfg := ReadConfigFile(&quot;sosarea&quot;);
+-  if (!cfg)
+-    Syslog(&quot;Could not read sosarea.cfg&quot;);
+-  endif
+-  var maxi := GetConfigMaxIntKey(cfg);
+-  var elem := cfg[RandomInt(maxi)+1];
+-  var X := CInt(elem.x)+RandomInt(CInt(elem.range)*2) - CInt(elem.range);
+-  var Y := CInt(elem.y)+RandomInt(CInt(elem.range)*2) - CInt(elem.range);
+-  UnloadConfigFile(&quot;sosarea&quot;);
+-  SetObjProperty(bottle, &quot;tileX&quot;, X);
+-  SetObjProperty(bottle, &quot;tileY&quot;, Y);
+-  var message := CreateItemInContainer(who.backpack, 0xa363);
+-  if(!message)
+-    DestroyItem(bottle);
+-    SendSysMessage(who, &quot;You cannot make out the writing on the message!&quot;);
+-    return;
+-  endif
+-  SetObjProperty(message, &quot;tileX&quot;, X);
+-  SetObjProperty(message, &quot;tileY&quot;, Y);
+-  SetObjProperty(message, &quot;msgnum&quot;, RandomInt(4));
+-  SendSysMessage(who, &quot;You have extracted a message from the bottle!&quot;);
+-  DestroyItem(bottle);
++program use_MessageBottle( who, bottle )
++
++	if( !can_access(who, bottle) )
++		return 0;
++	endif
++	if( !(bottle in EnumerateItemsInContainer(who.backpack)) )
++		SendSysMessage(who, &quot;That item is not in your backpack.&quot;);
++		return 0;
++	endif
++	if( bottle.movable == 0 )
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++	if( !ReserveItem(bottle) )
++		return 0;
++	endif
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	var cfg := ReadConfigFile(&quot;sosarea&quot;);
++	if (!cfg)
++		Syslog(&quot;Could not read sosarea.cfg&quot;);
++		SendSysMessage(who, &quot;Error with SOSArea Config file. Please contact an admin!&quot;);
++		return 0;
++	endif
++
++	var maxi := GetConfigMaxIntKey(cfg);
++	var elem := cfg[RandomInt(maxi)+1];
++	var X := CInt(elem.x)+RandomInt(CInt(elem.range)*2) - CInt(elem.range);
++	var Y := CInt(elem.y)+RandomInt(CInt(elem.range)*2) - CInt(elem.range);
++	UnloadConfigFile(&quot;sosarea&quot;);
++	SetObjProperty(bottle, &quot;tileX&quot;, X);
++	SetObjProperty(bottle, &quot;tileY&quot;, Y);
++	var message := CreateItemInContainer(who.backpack, 0xa363);
++	if( !message )
++		DestroyItem(bottle);
++		SendSysMessage(who, &quot;You cannot make out the writing on the message!&quot;);
++		return 0;
++	endif
++	SetObjProperty(message, &quot;tileX&quot;, X);
++	SetObjProperty(message, &quot;tileY&quot;, Y);
++	SetObjProperty(message, &quot;msgnum&quot;, RandomInt(4));
++	SendSysMessage(who, &quot;You have extracted a message from the bottle!&quot;);
++	DestroyItem(bottle);
++
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/fishing/SOSMessage.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/SOSMessage.src	2005-10-27 04:20:27 UTC (rev 671)
++++ trunk/096/pkg/skills/fishing/SOSMessage.src	2005-10-27 04:21:21 UTC (rev 672)
+@@ -1,52 +1,74 @@
++/* $Id$
++ *
++ */
++
+ use uo;
+-use cfgfile;
+ use os;
+-use util;
+ 
+ include &quot;include/coords&quot;;
+ include &quot;include/canAccess&quot;;
++include &quot;:gumps:include/gumps&quot;;
+ 
+-program use_message( who, message )
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  if(!can_access(who, message))
+-    return;
+-  endif
+-  if(message.movable == 0)
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  var tox := GetObjProperty(message, &quot;tileX&quot;);
+-  var toy := GetObjProperty(message, &quot;tileY&quot;);
+-  var msgindex := GetObjProperty(message, &quot;msgnum&quot;);
+-  if( tox.errortext || toy.errortext)
+-	syslog(&quot;bad message &quot;+tox+&quot; &quot;+toy);
+-	DestroyItem(message);
+-	SendSysMessage(who, &quot;The message is garbled beyond your ability to read!&quot;);
+-	return;
+-  endif
+-  var layout := array(  &quot;page 0&quot;,
+-    	                    &quot;resizepic 0 0 3500 300 200&quot;,
+-        	                &quot;button 110 140 1148 1149 1 0 1&quot;,
+-            	            &quot;text 20 30 0 0&quot;,
+-                	        &quot;text 20 50 0 1&quot;,
+-                    	    &quot;text 20 70 0 2&quot;);
+-  var data := array();
+-  var coords := ToSextant(tox, toy);
+-  case (msgindex)
+-	0: 	data[1] := &quot;Help, our ship is sinking!  We are&quot;;
+-		data[2] := &quot;at coordinates &quot; + coords + &quot;!  Please&quot;;
+-		data[3] := &quot;hurry, we are slipping away fast!&quot;;
+-	1: 	data[1] := &quot;We are under attack by a gigantic&quot;;
+-		data[2] := &quot;sea serpent!  We are at coordinates&quot;;
+-		data[3] :=  + coords + &quot;!  Please help us!&quot;;
+-	2: 	data[1] := &quot;A savage beast has holed our ship.&quot;;
+-		data[2] := &quot;We are at location &quot; + coords + &quot;!&quot;;
+-		data[3] := &quot;We will hang on as long as possible.&quot;;
+-	3: 	data[1] := &quot;We have encountered a terrible storm&quot;;
+-		data[2] := &quot;at coordinates &quot; + coords + &quot;!&quot;;
+-		data[3] := &quot;The ship may capsize soon, hurry!&quot;;
+-  endcase
+-  detach();
+-  SendDialogGump( who, layout, data );
+-endprogram
+\ No newline at end of file
++program use_SOSMessage( who, message )
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	if( !can_access(who, message) )
++		return 0;
++	endif
++	if( message.movable == 0 )
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++	if( !(message in EnumerateItemsInContainer(who.backpack)) )
++		SendSysMessage(who, &quot;That item is not in your backpack.&quot;);
++		return 0;
++	endif
++
++	detach();
++        var SOS_Gump := SOS_LoadGump(who, message);
++        GFSendGump(who, SOS_Gump);
++
++endprogram
++
++
++function SOS_LoadGump(who, message)
++
++	var tox := GetObjProperty(message, &quot;tileX&quot;);
++	var toy := GetObjProperty(message, &quot;tileY&quot;);
++	var msgindex := GetObjProperty(message, &quot;msgnum&quot;);
++
++	if( tox.errortext || toy.errortext)
++		syslog(&quot;bad message &quot;+tox+&quot; &quot;+toy);
++		DestroyItem(message);
++		SendSysMessage(who, &quot;The message is garbled beyond your ability to read!&quot;);
++		return 0;
++	endif
++	var coords := ToSextant(tox, toy);
++	var msgLineOne, msgLineTwo, msgLineThree;
++	case (msgindex)
++		0: 	msgLineOne   := &quot;Help, our ship is sinking!  We are&quot;;
++			msgLineTwo   := &quot;at coordinates &quot; + coords + &quot;!  Please&quot;;
++			msgLineThree := &quot;hurry, we are slipping away fast!&quot;;
++		1: 	msgLineOne   := &quot;We are under attack by a gigantic&quot;;
++			msgLineTwo   := &quot;sea serpent!  We are at coordinates&quot;;
++			msgLineThree :=  + coords + &quot;!  Please help us!&quot;;
++		2: 	msgLineOne   := &quot;A savage beast has holed our ship.&quot;;
++			msgLineTwo   := &quot;We are at location &quot; + coords + &quot;!&quot;;
++			msgLineThree := &quot;We will hang on as long as possible.&quot;;
++		3: 	msgLineOne   := &quot;We have encountered a terrible storm&quot;;
++			msgLineTwo   := &quot;at coordinates &quot; + coords + &quot;!&quot;;
++			msgLineThree := &quot;The ship may capsize soon, hurry!&quot;;
++	endcase
++
++        var gump := GFCreateGump();
++	GFResizePic(gump, 0, 0, 3500, 300, 200);
++        GFAddButton(gump, 110, 140, 1148, 1149, GF_CLOSE_BTN, 1);
++	GFTextLine(gump, 20, 30, 0, msgLineOne);
++	GFTextLine(gump, 20, 50, 0, msgLineTwo);
++	GFTextLine(gump, 20, 70, 0, msgLineThree);
++
++	return gump;
++
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/fishing/fishing.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishing.src	2005-10-27 04:20:27 UTC (rev 671)
++++ trunk/096/pkg/skills/fishing/fishing.src	2005-10-27 04:21:21 UTC (rev 672)
+@@ -1,293 +1,199 @@
+-// $Id$
++/* $Id$
++ *
++ */
+ 
+ use uo;
+-use cfgfile;
+ use os;
+-use util;
+ use math;
+ 
+-include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+-include &quot;include/dist&quot;;
+-include &quot;include/math&quot;;
++include &quot;fishingFunctions&quot;;
++include &quot;include/canAccess&quot;;
++include &quot;:attributes:include/attributeConstants&quot;;
++include &quot;:attributes:include/attributes&quot;;
++include &quot;:crafting:toolWear&quot;;
+ include &quot;include/objtype&quot;;
+ include &quot;include/startEqp&quot;;
+-include &quot;include/canAccess&quot;;
+-include &quot;include/toolWear&quot;;
+-include &quot;include/eventID&quot;;
+ 
+-program use_fishpole(who, fishingpole)
+-  if(!can_access(who, fishingpole))
+-    return;
+-  endif
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  EraseObjProperty(who, &quot;HealTimer&quot;);
+-  if(fishingpole.movable == 0)
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  if(!ReserveItem(fishingpole))
+-    return;
+-  endif
+-  if(! IsFishingPoleEquipped(who, fishingpole))
+-    SendSysMessage(who, &quot;You have to equip that to go fishing.&quot;);
+-    return;
+-  endif
+-  var targetsquare := TargetCoordinates(who);
+-  if(!targetsquare)
+-   return;
+-  endif
+-  var locinfo:= GetMapInfo( targetsquare.x, targetsquare.y, who.realm );
+-  if(IsValidTarget(who, targetsquare, locinfo))
+-    PerformAction(who, 0x9);
+-    var newsplash := CreateItemAtLocation(targetsquare.x, targetsquare.y, targetsquare.z,  0x352d, 1, who.realm);
+-    newsplash.movable := 0;
+-    PlaySoundEffect(who, 0x240);
+-    sleepms(400);
+-    set_critical(1);
+-    DestroyItem(newsplash);
+-    set_critical(0);
+-    newsplash := CreateItemAtLocation(targetsquare.x, targetsquare.y, targetsquare.z,  0x352e, 1, who.realm);
+-    newsplash.movable := 0;
+-    sleepms(400);
+-    set_critical(1);
+-    DestroyItem(newsplash);
+-    set_critical(0);
+-    newsplash := CreateItemAtLocation(targetsquare.x, targetsquare.y, targetsquare.z,  0x352f, 1, who.realm);
+-    newsplash.movable := 0;
+-    sleepms(400);
+-    set_critical(1);
+-    DestroyItem(newsplash);
+-    set_critical(0);
+-    newsplash := CreateItemAtLocation(targetsquare.x, targetsquare.y, targetsquare.z,  0x3530, 1, who.realm);
+-    newsplash.movable := 0;
+-    sleepms(400);
+-    set_critical(1);
+-    DestroyItem(newsplash);
+-    set_critical(0);
+-    sleepms(1500);
+-    if(!isSOS(who, targetsquare))
+-      var difficulty;
+-      if(targetsquare.objtype)
+-        difficulty := GetHarvestDifficulty(&quot;fish&quot;, targetsquare.x, targetsquare.y, targetsquare.objtype, who.realm);
+-      else
+-        difficulty := GetHarvestDifficulty(&quot;fish&quot;, targetsquare.x, targetsquare.y, locinfo.landtile, who.realm);
+-      endif
+-      if(difficulty == error)
+-        SendSysMessage(who, &quot;There doesn't seem to be any fish here.&quot;);
+-        return 0;
+-      endif
+-      var successrate := CheckSkill(who, SKILLID_FISHING, difficulty, 0);
+-      if(successrate &gt; 0)
+-        var fishreturned := HarvestResource(&quot;fish&quot;, targetsquare.x, targetsquare.y, 1, 1, who.realm);
+-        if(!fishreturned)
+-          SendSysMessage(who, &quot;Oops, you let that one get away!&quot;);
+-          return 0;
+-        endif
+-        var catchtype := GetTheCatch(who);
+-        if(CreateItemInContainer(who.backpack, catchtype, 1))
+-          CheckToolWear (who, fishingpole, SKILLID_FISHING);
+-          skillgain(who, difficulty * 10);
+-        endif
+-      else
+-        if(RandomInt(100)&lt; 1)
+-          CriticalFailure(who, targetsquare);
+-        else
+-          SendSysMessage(who, &quot;They don't seem to be biting today.&quot;);
+-        endif
+-      endif
+-    endif
+-  endif
+-  return 1;
++program use_FishingPole(who, fishingpole)
++
++	if( !can_access(who, fishingpole) )
++		return 0;
++	endif
++	if( fishingpole.movable == 0 )
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++	if( !ReserveItem(fishingpole) )
++		return 0;
++	endif
++	if( !IsFishingPoleEquipped(who, fishingpole) )
++		SendSysMessage(who, &quot;You have to equip that to go fishing.&quot;);
++		return 0;
++	endif
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	var targetsquare := TargetCoordinates(who);
++	if( !targetsquare )
++		return 0;
++	endif
++
++	var locinfo:= GetMapInfo( targetsquare.x, targetsquare.y, who.realm );
++	if(IsValidFishingSpot(who, targetsquare, locinfo))
++		var px := who.x, py := who.y;
++		PerformAction(who, 0x9);
++		var newsplash := CreateItemAtLocation(targetsquare.x, targetsquare.y, targetsquare.z,  0x352d, 1, who.realm);
++		newsplash.movable := 0;
++		PlaySoundEffect(who, 0x240);
++		sleepms(400);
++		set_critical(1);
++		DestroyItem(newsplash);
++		set_critical(0);
++		newsplash := CreateItemAtLocation(targetsquare.x, targetsquare.y, targetsquare.z,  0x352e, 1, who.realm);
++		newsplash.movable := 0;
++		sleepms(400);
++		set_critical(1);
++		DestroyItem(newsplash);
++		set_critical(0);
++		newsplash := CreateItemAtLocation(targetsquare.x, targetsquare.y, targetsquare.z,  0x352f, 1, who.realm);
++		newsplash.movable := 0;
++		sleepms(400);
++		set_critical(1);
++		DestroyItem(newsplash);
++		set_critical(0);
++		newsplash := CreateItemAtLocation(targetsquare.x, targetsquare.y, targetsquare.z,  0x3530, 1, who.realm);
++		newsplash.movable := 0;
++		sleepms(400);
++		set_critical(1);
++		DestroyItem(newsplash);
++		set_critical(0);
++		sleepms(1500);
++		if( (px != who.x) or (py != who.y) )
++			SendSysMessage(who,&quot;You move and therefore stop fishing&quot;);
++			return 0;
++		endif
++
++		if( !isSOS(who, targetsquare) )
++			var difficulty;
++			if( targetsquare.objtype )
++				difficulty := GetHarvestDifficulty(&quot;fish&quot;, targetsquare.x, targetsquare.y, targetsquare.objtype, who.realm);
++			else
++				difficulty := GetHarvestDifficulty(&quot;fish&quot;, targetsquare.x, targetsquare.y, locinfo.landtile, who.realm);
++			endif
++			if( difficulty == error )
++				SendSysMessage(who, &quot;There doesn't seem to be any fish here.&quot;);
++				return 0;
++			endif
++			if( SkillCheck(who, ATTRIBUTE_FISHING, difficulty) &gt; 0)
++				var fishreturned := HarvestResource(&quot;fish&quot;, targetsquare.x, targetsquare.y, 1, 1, who.realm);
++				if( !fishreturned )
++					SendSysMessage(who, &quot;Oops, you let that one get away!&quot;);
++					return 0;
++				endif
++				GetTheCatch(who, targetsquare, fishingpole);
++			else
++				if( RandomInt(100) == 0 )
++					CriticalFailure(who, targetsquare);
++				else
++					SendSysMessage(who, &quot;They don't seem to be biting today.&quot;);
++				endif
++			endif
++		endif
++	endif
++
++	return 1;
++
+ endprogram
+ 
+-function skillgain(who, points)
+-  var diff := points / 10;
+-  var skill := GetEffectiveSkill(who, SKILLID_FISHING);
+-  if(skill &gt; (diff - 20))
+-    if((skill - diff) &lt;= 5)
+-      points := points;
+-    elseif((skill - diff) &lt;= 10)
+-      points := (points * 3) / 4;
+-    elseif((skill - diff) &lt;= 15)
+-      points := points / 2;
+-    elseif((skill - diff) &lt;= 15)
+-      points := points / 4;
+-    else
+-      points := 0;
+-    endif
+-  endif
+-  AwardRawSkillPoints(who, SKILLID_FISHING, points);
+-endfunction
+ 
+-function IsInRange(who, x, y, z)
+-  z := z;
+-  var xd, yd;
+-  var retval := 1;
+-  xd := Abs(who.x - x);
+-  yd := Abs(who.y - y);
+-  if((xd &gt; 6)||(yd &gt; 6))
+-    retval := 0;
+-  endif
+-  return retval;
+-endfunction
++function GetTheCatch(who, targetsquare, fishingpole)
+ 
+-function IsWater(thistile, locinfo)
+-  if(thistile.objtype)
+-    if((thistile.objtype &gt;= 0x1797)&amp;&amp;(thistile.objtype &lt;= 0x179c))
+-      return 1;
+-    elseif((thistile.objtype &gt;= 0x346e)&amp;&amp;(thistile.objtype &lt;= 0x3485))
+-      return 1;
+-    elseif((thistile.objtype &gt;= 0x3490)&amp;&amp;(thistile.objtype &lt;= 0x34ab))
+-      return 1;
+-    elseif((thistile.objtype &gt;= 0x34b5)&amp;&amp;(thistile.objtype &lt;= 0x34d5))
+-      return 1;
+-    endif
+-  else
+-    if((locinfo.landtile &gt;= 0x00a8)&amp;&amp;(locinfo.landtile &lt;= 0x00ab))
+-      return 1;
+-    elseif((locinfo.landtile &gt;= 0x0136)&amp;&amp;(locinfo.landtile &lt;= 0x0137))
+-      return 1;
+-    elseif((locinfo.landtile &gt;= 0x3ff0)&amp;&amp;(locinfo.landtile &lt;= 0x3ff3))
+-      return 1;
+-    endif
+-  endif
+-  return 0;
+-endfunction
++	var fishtype;
++	var currentskill := AP_GetSkill(who, ATTRIBUTE_FISHING);
++	var thisone := RandomInt(100)+ 1;
++	if(thisone &lt;= 94)
++		fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
++		SendSysMessage(who, &quot;You catch a nice fish!&quot;);
++	elseif(thisone &lt;= 97)
++		if(RandomInt(currentskill) &gt;= 50)
++			var bootarray := array(0x170b, 0x1711, 0x170f, 0x170d);
++			fishtype := bootarray[RandomInt(4)+ 1];
++			SendSysMessage(who, &quot;You catch some soggy footwear!&quot;);
++		else
++			fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
++			SendSysMessage(who, &quot;You catch a nice fish!&quot;);
++		endif
++	elseif(thisone &lt;= 99)
++		if(RandomInt(currentskill) &gt;= 50)
++			fishtype := &quot;level&quot; +(RandomInt(2)+ 1)+ &quot;map&quot;;
++			SendSysMessage(who, &quot;You find an old tattered map!&quot;);
++		else
++			fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
++			SendSysMessage(who, &quot;You catch a nice fish!&quot;);
++		endif
++	else
++		if(currentskill &gt;= 95)
++			fishtype := &quot;sosbottle&quot;;
++			SendSysMessage(who, &quot;You find a message in a bottle!&quot;);
++		else
++			fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
++			SendSysMessage(who, &quot;You catch a nice fish!&quot;);
++		endif
++	endif
+ 
+-function IsValidTarget(who, targetsquare, locinfo)
+-  var retval := 1;
+-  if(!IsWater(targetsquare, locinfo))
+-    SendSysMessage(who, &quot;You can't fish there!&quot;);
+-    retval := 0;
+-  elseif(!IsInRange(who, targetsquare.x, targetsquare.y, targetsquare.z))
+-    SendSysMessage(who, &quot;That is too far away&quot;);
+-    retval := 0;
+-  elseif(!CheckLosAt(who, targetsquare.x, targetsquare.y, targetsquare.z))
+-    SendSysMessage(who, &quot;That location cannot be seen!&quot;);
+-    retval := 0;
+-  endif
+-  return retval;
+-endfunction
++	if(fishtype == &quot;sosbottle&quot;)
++		var serpent := CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++		if(farout(who))
++			if( !serpent.backpack )
++				EquipFromTemplate( serpent, &quot;backpack&quot; );
++			endif
++			CreateItemInContainer(serpent.backpack, fishtype, 1);
++		endif
++	elseif( Find(&quot;level&quot;, fishtype, 0) )
++		var serpent := CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++		if(farout(who))
++			if( !serpent.backpack )
++				EquipFromTemplate( serpent, &quot;backpack&quot; );
++			endif
++			CreateItemInContainer(serpent.backpack, fishtype, 1);
++		endif
++	else
++		if( CreateItemInContainer(who.backpack, fishtype, 1) )
++			CheckToolWear (who, fishingpole, ATTRIBUTE_FISHING);
++		endif
++        endif
+ 
+-function GetTheCatch(who)
+-  var fishtype;
+-  var currentskill := GetEffectiveSkill(who, SKILLID_FISHING);
+-  var thisone := RandomInt(100)+ 1;
+-  if(thisone &lt;= 94)
+-    fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
+-    SendSysMessage(who, &quot;You catch a nice fish!&quot;);
+-  elseif(thisone &lt;= 97)
+-    if(RandomInt(currentskill) &gt;= 50)
+-      var bootarray := array(0x170b, 0x1711, 0x170f, 0x170d);
+-      fishtype := bootarray[RandomInt(4)+ 1];
+-      SendSysMessage(who, &quot;You catch some soggy footwear!&quot;);
+-    else
+-      fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
+-      SendSysMessage(who, &quot;You catch a nice fish!&quot;);
+-    endif
+-  elseif(thisone &lt;= 99)
+-    if(RandomInt(currentskill) &gt;= 50)
+-      fishtype := &quot;level&quot; +(RandomInt(2)+ 1)+ &quot;map&quot;;
+-      SendSysMessage(who, &quot;You find an old tattered map!&quot;);
+-    else
+-      fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
+-      SendSysMessage(who, &quot;You catch a nice fish!&quot;);
+-    endif
+-  else
+-    if(GetEffectiveSkill(who, SKILLID_FISHING) &gt;= 95)
+-      fishtype := &quot;sosbottle&quot;;
+-      SendSysMessage(who, &quot;You find a message in a bottle!&quot;);
+-    else
+-      fishtype := RandomInt(UOBJ_FISH_END - UOBJ_FISH_START)+ UOBJ_FISH_START;
+-      SendSysMessage(who, &quot;You catch a nice fish!&quot;);
+-    endif
+-  endif
+-  return fishtype;
++
++	return 1;
++
+ endfunction
+ 
++
+ function CriticalFailure(who, targetsquare)
+-  var it := CreateNpcFromTemplate(&quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z, 0, who.realm);
+-  if(it)
+-    SendSysMessage(who, &quot;Oops, that's not a fish!&quot;);
+-    var ev := {};
+-    ev.+type := EVID_ENGAGED;
+-    ev.+source := who;
+-    SendEvent(it, ev);
+-  endif
++
++	var it := CreateNpcFromTemplate(&quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z, 0, who.realm);
++	if(it)
++		SendSysMessage(who, &quot;Oops, that's not a fish!&quot;);
++		var ev := {};
++		ev.+type := EVID_ENGAGED;
++		ev.+source := who;
++		SendEvent(it, ev);
++	endif
++
+ endfunction
+ 
++
+ function IsFishingPoleEquipped(who, fishingpole)
+-  if((!Accessible(who, fishingpole)) || (Distance(who, fishingpole)&gt; 1))
+-    return 0;
+-  endif
+-  foreach item in ListEquippedItems(who)
+-    if(fishingpole.serial == item.serial)
+-      return 1;
+-    endif
+-  endforeach
+-  return EquipItem(who, fishingpole);
+-endfunction
+ 
+-function GetSOSTreasure(who, targetsquare, sosmsg)
+-  targetsquare := targetsquare;
+-  if(CheckSkill(who, SKILLID_FISHING, 80, 200))
+-    var itemcfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
+-    var it, oldname;
+-    if(RandomInt(100)&lt; 75)
+-      var newitem;
+-      var artarray;
+-      case(RandomInt(3))
+-        0: newitem := RandomInt(0x0fcc - 0x0fc4)+ 0x0fc4;
+-        1: artarray := array(0xea4, 0xea8, 0xea7, 0xe9f, 0xea0, 0xea3, 0xea6);
+-           newitem := artarray[RandomInt(7) + 1];
+-        2: artarray := array(0x1397, 0x13a4, 0x13a5, 0x13a6, 0x13a7, 0x13a8, 0x13a9, 0x13ab, 0x13ac, 0x13ad, 0x13ae, 0x163a, 0x163b, 0x163c);
+-           newitem := artarray[RandomInt(14) + 1];
+-      endcase
+-      it := CreateItemInBackpack(who, newitem, 1);
+-      oldname := it.name;
+-      if((!oldname) || (oldname == &quot;&quot;))
+-        oldname := itemcfg[newitem].desc;
+-      endif
+-      it.name := oldname + &quot; [Recovered from a shipwreck]&quot;;
+-      it.movable := 1;
+-      SendSysMessage(who, &quot;You caught something interesting!&quot;);
+-    else
+-      SendSysMessage(who, &quot;You catch a sunken treasure!&quot;);
+-      var chest := CreateItemInBackpack(who, 0x9e40, 1);
+-      case(RandomInt(4) + 1)
+-        1: chest.graphic := 0xe40;
+-        2: chest.graphic := 0xe41;
+-        3: chest.graphic := 0xe7c;
+-        4: chest.graphic := 0x9ab;
+-      endcase
+-      chest.name := &quot;metal chest [Recovered from a shipwreck]&quot;;
+-      chest.movable := 1;
+-      MakeLoot(chest, RandomInt(2) + 5);
+-      DestroyItem(sosmsg);
+-    endif
+-  else
+-    SendSysMessage(who, &quot;Something big just slipped off your hook!&quot;);
+-  endif
+-  return 0;
+-endfunction
++	if((!Accessible(who, fishingpole)) || (Distance(who, fishingpole)&gt; 1))
++		return 0;
++	endif
+ 
+-function isSOS(who, targetsquare)
+-  var packitems;
+-  packitems := EnumerateItemsInContainer(who.backpack);
+-  var i, sosx, sosy;
+-  for(i := 1; i &lt;= len(packitems); i := i + 1)
+-    if((packitems[i].objtype == 0xa363))
+-      sosx := GetObjProperty(packitems[i], &quot;tileX&quot;);
+-      sosy := GetObjProperty(packitems[i], &quot;tileY&quot;);
+-      var xd, yd;
+-      xd := Abs(targetsquare.x - sosx);
+-      yd := Abs(targetsquare.y - sosy);
+-      if((xd &lt;= 6)&amp;&amp;(yd &lt;= 6))
+-        GetSOSTreasure(who, targetsquare, packitems[i]);
+-        return 1;
+-      endif
+-    endif
+-endfor
+-return 0;
++	if( fishingpole in ListEquippedItems(who) )
++		return 1;
++	else
++		return EquipItem(who, fishingpole);
++	endif
++
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/fishing/fishingFunctions.inc
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishingFunctions.inc	2005-10-27 04:20:27 UTC (rev 671)
++++ trunk/096/pkg/skills/fishing/fishingFunctions.inc	2005-10-27 04:21:21 UTC (rev 672)
+@@ -1,29 +1,232 @@
++/* $Id$
++ *
++ */
+ 
+ function is_fish(theobj)
+-  if((theobj &gt;= UOBJ_FISH_START) &amp;&amp; (theobj &lt;= UOBJ_FISH_END) )
+-    return 1;
+-  elseif ((theobj &gt;= UOBJ_SFISH_START) &amp;&amp; (theobj &lt;= UOBJ_SFISH_END))
+-    return 1;
+-  else
+-    return 0;
+-  endif
++
++	if((theobj &gt;= UOBJ_FISH_START) &amp;&amp; (theobj &lt;= UOBJ_FISH_END) )
++		return 1;
++	elseif ((theobj &gt;= UOBJ_SFISH_START) &amp;&amp; (theobj &lt;= UOBJ_SFISH_END))
++		return 1;
++	else
++		return 0;
++	endif
++
++	return 0;
++
+ endfunction
+ 
++
+ function CarveFish(who, blade, use_on)
+-  if((!Accessible(who, use_on)) or (!CheckLineOfSight(who, use_on)) or (dist(who, use_on) &gt; 2))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  if((!ReserveItem(use_on)) || (use_on.movable == 0))
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  var num_steaks := (4 * use_on.amount);
+-  PlaySoundEffect(who, SFX_57);
+-  if(DestroyItem(use_on))
+-    CreateItemInBackpack(who, UOBJ_FISHSTEAK, num_steaks);
+-    SendSysMessage(who, &quot;You carve the fish steaks and put them in your backpack.&quot;);
+-  endif
+-  sleep(1);
++
++	if( (!Accessible(who, use_on)) or (!CheckLineOfSight(who, use_on)) or (distance(who, use_on) &gt; 2) )
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++	if( (!ReserveItem(use_on)) || (use_on.movable == 0) )
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++
++	var num_steaks := (4 * use_on.amount);
++	PlaySoundEffect(who, SFX_57);
++	if( DestroyItem(use_on) )
++		CreateItemInBackpack(who, UOBJ_FISHSTEAK, num_steaks);
++		SendSysMessage(who, &quot;You carve the fish steaks and put them in your backpack.&quot;);
++		return 1;
++	endif
++	sleep(1);
++
++	return 0;
++
+ endfunction
+ 
++function IsInRange(who, x, y, z)
++
++	z := z;
++	var xd, yd;
++	var retval := 1;
++	xd := Abs(who.x - x);
++	yd := Abs(who.y - y);
++	if((xd &gt; 6)||(yd &gt; 6))
++		retval := 0;
++	endif
++
++	return retval;
++
++endfunction
++
++
++function IsWater(thistile, locinfo)
++
++	if(thistile.objtype)
++		if((thistile.objtype &gt;= 0x1797)&amp;&amp;(thistile.objtype &lt;= 0x179c))
++			return 1;
++		elseif((thistile.objtype &gt;= 0x346e)&amp;&amp;(thistile.objtype &lt;= 0x3485))
++			return 1;
++		elseif((thistile.objtype &gt;= 0x3490)&amp;&amp;(thistile.objtype &lt;= 0x34ab))
++			return 1;
++		elseif((thistile.objtype &gt;= 0x34b5)&amp;&amp;(thistile.objtype &lt;= 0x34d5))
++			return 1;
++		endif
++	else
++		if((locinfo.landtile &gt;= 0x00a8)&amp;&amp;(locinfo.landtile &lt;= 0x00ab))
++			return 1;
++		elseif((locinfo.landtile &gt;= 0x0136)&amp;&amp;(locinfo.landtile &lt;= 0x0137))
++			return 1;
++		elseif((locinfo.landtile &gt;= 0x3ff0)&amp;&amp;(locinfo.landtile &lt;= 0x3ff3))
++			return 1;
++		endif
++	endif
++
++	return 0;
++
++endfunction
++
++
++function IsValidFishingSpot(who, targetsquare, locinfo)
++
++	var retval := 1;
++	if(!IsWater(targetsquare, locinfo))
++		SendSysMessage(who, &quot;You can't fish there!&quot;);
++		retval := 0;
++	elseif(!IsInRange(who, targetsquare.x, targetsquare.y, targetsquare.z))
++		SendSysMessage(who, &quot;That is too far away&quot;);
++		retval := 0;
++	elseif(!CheckLosAt(who, targetsquare.x, targetsquare.y, targetsquare.z))
++		SendSysMessage(who, &quot;That location is not in your line of sight!&quot;);
++		retval := 0;
++	endif
++
++	return retval;
++
++endfunction
++
++
++function farout(who)
++
++	var x := who.x, y := who.y;
++	var chk := 0;
++
++	var theinfo := GetMapInfo( x, y );
++	if((theinfo.landtile &gt;= 0x00a8)&amp;&amp;(theinfo.landtile &lt;= 0x00ab))
++		chk := 1;
++	elseif((theinfo.landtile &gt;= 0x0136)&amp;&amp;(theinfo.landtile &lt;= 0x0137))
++		chk := 1;
++	elseif((theinfo.landtile &gt;= 0x3ff0)&amp;&amp;(theinfo.landtile &lt;= 0x3ff3))
++		chk := 1;
++	else
++		return 0;
++	endif
++
++	var distinfo := GetMapInfo( (x+15), (y+15) );
++	if((distinfo.landtile &gt;= 0x00a8)&amp;&amp;(distinfo.landtile &lt;= 0x00ab))
++		return 1;
++	elseif((distinfo.landtile &gt;= 0x0136)&amp;&amp;(distinfo.landtile &lt;= 0x0137))
++		return 1;
++	elseif((distinfo.landtile &gt;= 0x3ff0)&amp;&amp;(distinfo.landtile &lt;= 0x3ff3))
++		return 1;
++	endif
++
++	distinfo := GetMapInfo( (x-15), (y-15) );
++	if((distinfo.landtile &gt;= 0x00a8)&amp;&amp;(distinfo.landtile &lt;= 0x00ab))
++		return 1;
++	elseif((distinfo.landtile &gt;= 0x0136)&amp;&amp;(distinfo.landtile &lt;= 0x0137))
++		return 1;
++	elseif((distinfo.landtile &gt;= 0x3ff0)&amp;&amp;(distinfo.landtile &lt;= 0x3ff3))
++		return 1;
++	endif
++
++	distinfo := GetMapInfo( (x+15), (y-15) );
++	if((distinfo.landtile &gt;= 0x00a8)&amp;&amp;(distinfo.landtile &lt;= 0x00ab))
++		return 1;
++	elseif((distinfo.landtile &gt;= 0x0136)&amp;&amp;(distinfo.landtile &lt;= 0x0137))
++		return 1;
++	elseif((distinfo.landtile &gt;= 0x3ff0)&amp;&amp;(distinfo.landtile &lt;= 0x3ff3))
++		return 1;
++	endif
++
++	distinfo := GetMapInfo( (x-15), (y+15) );
++	if((distinfo.landtile &gt;= 0x00a8)&amp;&amp;(distinfo.landtile &lt;= 0x00ab))
++		return 1;
++	elseif((distinfo.landtile &gt;= 0x0136)&amp;&amp;(distinfo.landtile &lt;= 0x0137))
++		return 1;
++	elseif((distinfo.landtile &gt;= 0x3ff0)&amp;&amp;(distinfo.landtile &lt;= 0x3ff3))
++		return 1;
++	endif
++
++	return 0;
++
++endfunction
++
++
++function isSOS(who, targetsquare)
++
++	var packitems;
++	packitems := EnumerateItemsInContainer(who.backpack);
++	var i, sosx, sosy;
++
++	for(i := 1; i &lt;= len(packitems); i := i + 1)
++		if((packitems[i].objtype == 0xa363))
++			sosx := GetObjProperty(packitems[i], &quot;tileX&quot;);
++			sosy := GetObjProperty(packitems[i], &quot;tileY&quot;);
++			var xd, yd;
++			xd := Abs(targetsquare.x - sosx);
++			yd := Abs(targetsquare.y - sosy);
++			if((xd &lt;= 6)&amp;&amp;(yd &lt;= 6))
++				GetSOSTreasure(who, targetsquare, packitems[i]);
++				return 1;
++			endif
++		endif
++	endfor
++
++	return 0;
++
++endfunction
++
++
++function GetSOSTreasure(who, targetsquare, sosmsg)
++
++	targetsquare := targetsquare;
++	if( SkillCheck(who, ATTRIBUTE_FISHING, 80, 200) &gt; 0 )
++		var itemcfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
++		var it, oldname;
++		if( RandomInt(100) &lt; 75 )
++			var newitem;
++			var artarray;
++			case(RandomInt(3))
++				0:	newitem := RandomInt(0x0fcc - 0x0fc4)+ 0x0fc4;
++				1:	artarray := array(0xea4, 0xea8, 0xea7, 0xe9f, 0xea0, 0xea3, 0xea6);
++					newitem := artarray[RandomInt(7) + 1];
++				2:	artarray := array(0x1397, 0x13a4, 0x13a5, 0x13a6, 0x13a7, 0x13a8, 0x13a9, 0x13ab, 0x13ac, 0x13ad, 0x13ae, 0x163a, 0x163b, 0x163c);
++					newitem := artarray[RandomInt(14) + 1];
++			endcase
++			it := CreateItemInBackpack(who, newitem, 1);
++			oldname := it.name;
++			if( (!oldname) || (oldname == &quot;&quot;) )
++				oldname := itemcfg[newitem].desc;
++			endif
++			SetName(it, (oldname + &quot; [Recovered from a shipwreck]&quot;));
++			it.movable := 1;
++			SendSysMessage(who, &quot;You caught something interesting!&quot;);
++		else
++			SendSysMessage(who, &quot;You catch a sunken treasure!&quot;);
++			var chest := CreateItemInBackpack(who, 0x9e40, 1);
++			case(RandomInt(4) + 1)
++				1: chest.graphic := 0xe40;
++				2: chest.graphic := 0xe41;
++				3: chest.graphic := 0xe7c;
++				4: chest.graphic := 0x9ab;
++			endcase
++			SetName(chest, (&quot;metal chest [Recovered from a shipwreck]&quot;));
++			chest.movable := 1;
++			MakeLoot(chest, RandomInt(2) + 5);
++			DestroyItem(sosmsg);
++		endif
++	else
++		SendSysMessage(who, &quot;Something big just slipped off your hook!&quot;);
++	endif
++
++	return 0;
++
++endfunction
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/fishing/fishnets.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/fishnets.src	2005-10-27 04:20:27 UTC (rev 671)
++++ trunk/096/pkg/skills/fishing/fishnets.src	2005-10-27 04:21:21 UTC (rev 672)
+@@ -0,0 +1,109 @@
++/* $Id$
++ *
++ */
++
++use uo;
++use os;
++use math;
++
++include &quot;include/canAccess&quot;;
++include &quot;fishingFunctions&quot;;
++include &quot;:attributes:include/attributeConstants&quot;;
++include &quot;:attributes:include/attributes&quot;;
++include &quot;include/objtype&quot;;
++
++program use_FishNets(who, fishnet)
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	if( !can_access(who, fishnet) )
++		return 0;
++	endif
++	if( fishnet.movable == 0 )
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++	if( !ReserveItem(fishnet) )
++		return 0;
++	endif
++	if( !(fishnet in EnumerateItemsInContainer(who.backpack)) )
++		SendSysMessage(who, &quot;That item is not in your backpack.&quot;);
++		return 0;
++	endif
++
++	var targetsquare := TargetCoordinates(who);
++	if( !targetsquare )
++		return 0;
++	endif
++
++	var locinfo:= GetMapInfo( targetsquare.x, targetsquare.y );
++	if( IsValidFishingSpot(who, targetsquare, locinfo) )
++		PerformAction(who, 0x9);
++		var newsplash := CreateItemAtLocation(targetsquare.x, targetsquare.y, targetsquare.z,  0x352d, 1);
++		newsplash.movable := 0;
++		PlaySoundEffect(who, 0x240);
++		sleepms(400);
++		set_critical(1);
++		DestroyItem(newsplash);
++		set_critical(0);
++		sleepms(2);
++		var rand:= RandomInt(200);
++		if( rand == 0 )
++			SendSysMessage(who,&quot;Your dreams of a good catch have been answered!&quot;);
++			CreateItemInContainer(who.backpack, UOBJ_FISH_START, 5);
++		endif
++		if(farout(who))
++			var chance := RandomInt(6)+1;
++			case(chance)
++				1: CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++				2: CreateNpcFromTemplate( &quot;waterelemental&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++				3: CreateNpcFromTemplate( &quot;walrus&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++				4: CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++				5: CreateNpcFromTemplate( &quot;waterelemental&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++				6: CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++			endcase
++			var myskill := AP_GetSkill(who, ATTRIBUTE_FISHING);
++			if(myskill &lt;= 50)
++				CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++			elseif(myskill &lt;= 75)
++				CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++				CreateNpcFromTemplate( &quot;waterelemental&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++			elseif(myskill &lt;= 99)
++				CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++				CreateNpcFromTemplate( &quot;waterelemental&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++				CreateNpcFromTemplate( &quot;walrus&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++			elseif(myskill &gt;= 100)
++				CreateNpcFromTemplate( &quot;seaserpent&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++				CreateNpcFromTemplate( &quot;waterelemental&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++				CreateNpcFromTemplate( &quot;kraken&quot;, targetsquare.x, targetsquare.y, targetsquare.z );
++			endif
++			SendSysMessage(who, &quot;You appear to have caught something rather unpleasent!&quot;);
++		else
++			SendSysMessage(who, &quot;You can't seem to find anything out here.&quot;);
++		endif
++		DestroyItem(fishnet);
++	endif
++
++endprogram
++
++
++function lostbag(who)
++
++	var regloop, regcount,reg;
++	var fishing := GetEffectiveSkill(who);
++	var gold := fishing * (RandomInt(9)+1);
++	var bag := CreateItemInContainer(who.backpack,0x0E76, 1);
++	if(!bag)
++		bag := CreateItemAtLocation(0x0E76,who.x,who.y,who.z,1);
++	endif
++
++	for(regloop:=1;regloop&lt;=5;regloop:=regloop+1)
++		regcount := RandomInt( (fishing-1) );
++		reg := RandomInt( 0x0f78 - 0x0f91 ) + 0x0f78;
++		CreateItemInContainer(bag,reg,regcount);
++	endfor
++
++	return 1;
++
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/fishing/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/fishing/itemdesc.cfg	2005-10-27 04:20:27 UTC (rev 671)
++++ trunk/096/pkg/skills/fishing/itemdesc.cfg	2005-10-27 04:21:21 UTC (rev 672)
+@@ -1,398 +1,454 @@
+-# //$Id$
++# $Id$
++#
++#
+ 
+ Item 0xdbf
+ {
+-    Name            FishingPole
+-    Script          fishing
+-    VendorSellsFor  15
+-    VendorBuysFor   7
++	Name		FishingPole
++	Desc		fishing pole
++	Script	fishing
++	VendorSellsFor  15
++	VendorBuysFor   7
+ }
+ 
++Item 0xdc0
++{
++	Name		FishingPole2
++		Desc			fishing pole
++	Script		fishing
++	VendorSellsFor	15
++	VendorBuysFor	7
++}
++
+ Item 0x9cc
+ {
+-        Name fish1
+-        vendorsellsfor 8
+-        vendorbuysfor 4
++	Name 		fish1
++	Desc		fish
++	VendorSellsFor	8
++	VendorBuysFor	4
+ }
+ 
+ Item 0x9cd
+ {
+-        Name fish2
+-        vendorsellsfor 8
+-        vendorbuysfor 4
++	Name		fish2
++	Desc		fish
++	VendorSellsFor	8
++	VendorBuysFor	4
+ }
+ Item 0x9ce
+ {
+-        Name fish3
+-        vendorsellsfor 8
+-        vendorbuysfor 4
++	Name		fish3
++	Desc		fish
++	VendorSellsFor	8
++	VendorBuysFor	4
+ }
+ Item 0x9cf
+ {
+-        Name fish4
+-        vendorsellsfor 8
+-        vendorbuysfor 4
++	Name		fish4
++	Desc		fish
++	VendorSellsFor	8
++	VendorBuysFor	4
+ }
+ 
+ Item 0xdd6
+ {
+-        Name fish5
+-        vendorsellsfor 8
+-        vendorbuysfor 4
++	Name		fish5
++	Desc		fish
++	VendorSellsFor	8
++	VendorBuysFor	4
+ }
+ 
+ Item 0xdd7
+ {
+-        Name fish6
+-        vendorsellsfor 8
+-        vendorbuysfor 4
++	Name		fish6
++	Desc		fish
++	VendorSellsFor	8
++	VendorBuysFor	4
+ }
+ 
+ Item 0xdd8
+ {
+-        Name fish7
+-        vendorsellsfor 8
+-        vendorbuysfor 4
++	Name		fish7
++	Desc		fish
++	VendorSellsFor	8
++	VendorBuysFor	4
+ }
+ 
+ Item 0xdd9
+ {
+-        Name fish8
+-        vendorsellsfor 8
+-        vendorbuysfor 4
++	Name		fish8
++	Desc		fish
++	VendorSellsFor	8
++	VendorBuysFor	4
+ }
+ 
+ 
+-item 0xA360
++Item 0xA360
+ {
+-Name sosbottle
+-Desc SOS Bottle
+-script SOSBottle
+-graphic 0x099F
++	Name 		sosbottle
++	Desc		sos bottle
++	Script		:fishing:SOSBottle
++	Graphic		0x099F
+ }
+ 
+ 
+-item 0xA363
++Item 0xA363
+ {
+-Name sosmessage
+-Desc SOS Message
+-script SOSMessage
+-graphic 0x14ED
++	Name		sosmessage
++	Desc		sos message
++	Script		:fishing:SOSMessage
++	Graphic		0x14ED
+ }
+ 
+-item 0xA365
++Item 0xA365
+ {
+-Name sostile
+-Desc water
+-graphic 0x993
+-decay 180
++	Name		sostile
++	Desc		water
++	Graphic		0x993
++	decay		180
+ }
+ 
++Item 0xdca
++{
++	Name 		fishingnet
++	Desc		fishing net
++	VendorSellsFor	50
++	VendorBuysFor	25
++	Script		:fishing:fishnets
++}
+ 
+-//
+-// Magic fish
+-//
+-
+-item 0xA368
++Item 0xA368
+ {
+-  Name magicfish1
+-  Desc magic fish
+-  script magicFish
+-  graphic 0x0dd6
+-  VendorSellsFor 20
+-  VendorBuysFor 10
+-  Cprop spellnum i17
+-  Cprop spellsound i491
+-  Cprop spelleffect i14138
+-  Cprop miscprop1 i10			// adjusts the stat gain
+-  Cprop miscprop2 i60			// adjusts duration of effect
++	Name		magicfish1
++	Desc		magic fish
++	Script		magicFish
++	Graphic		0x0dd6
++	VendorSellsFor	20
++	VendorBuysFor	10
++	Cprop		spellnum	i17
++	Cprop		spellsound	i491
++	Cprop		spelleffect	i14138
++	Cprop		miscprop1	i10			# adjusts the stat gain
++	Cprop		miscprop2	i60			# adjusts duration of effect
+ }
+ 
+-item 0xA369
++Item 0xA369
+ {
+-  Name magicfish2
+-  Desc magic fish
+-  script magicFish
+-  graphic 0x0dd6
+-  Color 41
+-  VendorSellsFor 20
+-  VendorBuysFor 10
+-  Cprop spellnum i9
+-  Cprop spellsound i488
+-  Cprop spelleffect i14154
+-  Cprop miscprop1 i10
+-  Cprop miscprop2 i60
++	Name		magicfish2
++	Desc		magic fish
++	Script		magicFish
++	Graphic		0x0dd6
++	Color		41
++	VendorSellsFor	20
++	VendorBuysFor	10
++	Cprop		spellnum	i9
++	Cprop		spellsound	i488
++	Cprop		spelleffect	i14154
++	Cprop		miscprop1	i10
++	Cprop		miscprop2	i60
+ }
+ 
+-item 0xA36A
++Item 0xA36A
+ {
+-Name magicfish3
+-Desc magic fish
+-script magicFish
+-graphic 0x0dd6
+-Color 51
+-VendorSellsFor 20
+-VendorBuysFor 10
+-Cprop spellnum i10
+-Cprop spellsound i492
+-Cprop spelleffect i14170
+-Cprop miscprop1 i10
+-Cprop miscprop2 i60
++	Name		magicfish3
++	Desc		magic fish
++	Script		magicFish
++	Graphic		0x0dd6
++	Color		51
++	VendorSellsFor	20
++	VendorBuysFor	10
++	Cprop		spellnum	i10
++	Cprop		spellsound	i492
++	Cprop		spelleffect	i14170
++	Cprop		miscprop1	i10
++	Cprop		miscprop2	i60
+ }
+ 
+-item 0xA36B
++Item 0xA36B
+ {
+-Name magicfish4
+-Desc magic fish
+-script magicFish
+-graphic 0x0dd6
+-Color 61
+-VendorSellsFor 20
+-VendorBuysFor 10
+-Cprop spellnum i16
+-Cprop spellsound i495
+-Cprop spelleffect i14186
+-Cprop miscprop1 i10
+-Cprop miscprop2 i60
++	Name		magicfish4
++	Desc		magic fish
++	Script		magicFish
++	Graphic		0x0dd6
++	Color		61
++	VendorSellsFor	20
++	VendorBuysFor	10
++	Cprop		spellnum	i16
++	Cprop		spellsound	i495
++	Cprop		spelleffect	i14186
++	Cprop		miscprop1	i10
++	Cprop		miscprop2	i60
+ }
+ 
+-item 0xA36C
++Item 0xA36C
+ {
+-Name magicfish5
+-Desc magic fish
+-script magicFish
+-graphic 0x0dd6
+-Color 91
+-VendorSellsFor 20
+-VendorBuysFor 10
+-Cprop spellnum i11
+-Cprop spellsound i481
+-Cprop spelleffect i14201
+-Cprop miscprop1 i2
+-Cprop miscprop2 i0
++	Name		magicfish5
++	Desc		magic fish
++	Script		magicFish
++	Graphic		0x0dd6
++	Color		91
++	VendorSellsFor	20
++	VendorBuysFor	10
++	Cprop		spellnum	i11
++	Cprop		spellsound	i481
++	Cprop		spelleffect	i14201
++	Cprop		miscprop1	i2
++	Cprop		miscprop2	i0
+ }
+ 
+-item 0xA36D
++Item 0xA36D
+ {
+-Name magicfish6
+-Desc magic fish
+-script magicFish
+-graphic 0x0dd6
+-Color 9
+-VendorSellsFor 20
+-VendorBuysFor 10
+-Cprop spellnum i4
+-Cprop spellsound i499
+-Cprop spelleffect i14265
+-Cprop miscprop1 i10
+-Cprop miscprop2 i0
++	Name		magicfish6
++	Desc		magic fish
++	Script		magicFish
++	Graphic		0x0dd6
++	Color		9
++	VendorSellsFor	20
++	VendorBuysFor	10
++	Cprop		spellnum	i4
++	Cprop		spellsound	i499
++	Cprop		spelleffect	i14265
++	Cprop		miscprop1	i10
++	Cprop		miscprop2	i0
+ }
+ 
+-item 0xA36E
++Item 0xA36E
+ {
+-Name magicfish7
+-Desc magic fish
+-script magicFish
+-graphic 0x0dd6
+-Color 1001
+-VendorSellsFor 20
+-VendorBuysFor 10
+-Cprop spellnum i44
+-Cprop spellsound i516
+-Cprop spelleffect i14122
+-Cprop miscprop1 i0
+-Cprop miscprop2 i0
++	Name		magicfish7
++	Desc		magic fish
++	Script		magicFish
++	Graphic		0x0dd6
++	Color		1001
++	VendorSellsFor	20
++	VendorBuysFor	10
++	Cprop		spellnum	i44
++	Cprop		spellsound	i516
++	Cprop		spelleffect	i14122
++	Cprop		miscprop1	i0
++	Cprop		miscprop2	i0
+ }
+ 
+-item 0xA36F
++Item 0xA36F
+ {
+-Name magicfish8
+-Desc magic fish
+-script magicFish
+-graphic 0x0dd6
+-Color 21
+-VendorSellsFor 20
+-VendorBuysFor 10
+-Cprop spellnum i6
+-Cprop spellsound i484
+-Cprop spelleffect i14360
+-Cprop miscprop1 i0
+-Cprop miscprop2 i1800
++	Name		magicfish8
++	Desc		magic fish
++	Script		magicFish
++	Graphic		0x0dd6
++	Color		21
++	VendorSellsFor	20
++	VendorBuysFor	10
++	Cprop		spellnum	i6
++	Cprop		spellsound	i484
++	Cprop		spelleffect	i14360
++	Cprop		miscprop1	i0
++	Cprop		miscprop2	i1800
+ }
+ 
+-Item 0xEA4 // painting
++Item 0xEA4
+ {
+-   Name paiting1
+-   desc painting
+-   VendorSellsFor  600
+-   VendorBuysFor   225
++	Name 		paiting1
++	Desc 		painting
++	VendorSellsFor	600
++	VendorBuysFor	225
+ }
+ 
+-Item 0xEA8 // painting
++Item 0xEA8
+ {
+-   Name paiting2
+-   desc painting
+-   VendorSellsFor  600
+-   VendorBuysFor   225
++	Name		paiting2
++	Desc		painting
++	VendorSellsFor  600
++	VendorBuysFor   225
+ }
+ 
+-Item 0xEA7 // painting
++Item 0xEA7
+ {
+-   Name painting3
+-   desc painting
+-   VendorSellsFor  600
+-   VendorBuysFor   225
++	Name		painting3
++	Desc		painting
++	VendorSellsFor  600
++	VendorBuysFor   225
+ }
+ 
+-Item 0xE9F // painting
++Item 0xE9F
+ {
+-   Name painting4
+-   desc painting
+-   VendorSellsFor  300
+-   VendorBuysFor   75
++	Name		painting4
++	Desc		painting
++	VendorSellsFor  300
++	VendorBuysFor   75
+ }
+ 
+-Item 0xEA0 // painting
++Item 0xEA0
+ {
+-   Name painting5
+-   desc painting
+-   VendorSellsFor  300
+-   VendorBuysFor   75
++	Name		painting5
++	Desc		painting
++	VendorSellsFor  300
++	VendorBuysFor   75
+ }
+ 
+-Item 0xEA3 // painting
++Item 0xEA3
+ {
+-   Name painting6
+-   desc painting
+-   VendorSellsFor  600
+-   VendorBuysFor   225
++	Name		painting6
++	Desc		painting
++	VendorSellsFor  600
++	VendorBuysFor   225
+ }
+ 
+-Item 0xEA6 // painting
++Item 0xEA6
+ {
+-   Name painting7
+-   desc painting
+-   VendorSellsFor  600
+-   VendorBuysFor   225
++	Name		painting7
++	Desc		painting
++	VendorSellsFor  600
++	VendorBuysFor   225
+ }
+ 
+-Item 0xEE7 // painting
++Item 0xEE7
+ {
+-   Name painting8
+-   desc painting
+-   VendorSellsFor  300
+-   VendorBuysFor   75
++	Name		painting8
++	Desc		painting
++	VendorSellsFor  300
++	VendorBuysFor   75
+ }
+ 
+-Item 0xEC9 // painting
++Item 0xEC9
+ {
+-   Name painting9
+-   desc painting
+-   VendorSellsFor  300
+-   VendorBuysFor   75
++	Name		painting9
++	Desc		painting
++	VendorSellsFor  300
++	VendorBuysFor   75
+ }
+ 
+ Item 0x1397
+ {
+-    Name                pillow
+-    desc                pillow
+-    dyeable             1
++	Name		pillow
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x13a4
+ {
+-    Name                pillow1
+-    desc                pillow
+-    dyeable             1
++	Name		pillow1
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x13a5
+ {
+-    Name                pillow2
+-    desc                pillow
+-    dyeable             1
++	Name		pillow2
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x13a6
+ {
+-    Name                pillow3
+-    desc                pillow
+-    dyeable             1
++	Name		pillow3
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x13a7
+ {
+-    Name                pillow4
+-    desc                pillow
+-    dyeable             1
++	Name		pillow4
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x13a8
+ {
+-    Name                pillow5
+-    desc                pillow
+-    dyeable             1
++	Name		pillow5
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x13a9
+ {
+-    Name                pillow6
+-    desc                pillow
+-    dyeable             1
++	Name		pillow6
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+-Item 0x139aa
++Item 0x13aa
+ {
+-    Name                pillow7
+-    desc                pillow
+-    dyeable             1
++	Name		pillow7
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x13ab
+ {
+-    Name                pillow8
+-    desc                pillow
+-    dyeable             1
++	Name		pillow8
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x13ac
+ {
+-    Name                pillow9
+-    desc                pillow
+-    dyeable             1
++	Name		pillow9
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x13ad
+ {
+-    Name                pillow10
+-    desc                pillow
+-    dyeable             1
++	Name		pillow10
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x13ae
+ {
+-    Name                pillow11
+-    desc                pillow
+-    dyeable             1
++	Name		pillow11
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x163a
+ {
+-    Name                pillow12
+-    desc                pillow
+-    dyeable             1
++	Name		pillow12
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x163b
+ {
+-    Name                pillow13
+-    desc                pillow
+-    dyeable             1
++	Name		pillow13
++	Desc		pillow
++	Dyeable		1
+ }
+ 
+ Item 0x163c
+ {
+-    Name                pillow14
+-    desc                pillow
+-    dyeable             1
++	Name		pillow14
++	Desc		pillow
++	Dyeable		1
+ }
++
++Item 0x352d
++{
++	Name		splash
++	Desc		splash
++	Movable		0
++	SaveOnExit	0
++}
++
++Item 0x352e
++{
++	Name		splash2
++	Desc		splash
++	Movable		0
++	SaveOnExit	0
++}
++
++Item 0x352f
++{
++	Name		splash3
++	Desc		splash
++	Movable		0
++	SaveOnExit	0
++}
++
++Item 0x3530
++{
++	Name		splash4
++	Desc		splash
++	Movable		0
++	SaveOnExit	0
++}
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/fishing/magicFish.src
+===================================================================
+--- trunk/096/pkg/skills/fishing/magicFish.src	2005-10-27 04:20:27 UTC (rev 671)
++++ trunk/096/pkg/skills/fishing/magicFish.src	2005-10-27 04:21:21 UTC (rev 672)
+@@ -1,3 +1,7 @@
++/* $Id$
++ *
++ */
++
+ use uo;
+ use cfgfile;
+ use os;
+@@ -7,52 +11,66 @@
+ include &quot;include/canAccess&quot;;
+ include &quot;:poisonwatcher:poisons&quot;;
+ 
+-program use_magicfish(who, fish)
+-  EraseObjProperty(who, &quot;IsMeditating&quot;);
+-  if(!can_access(who, fish))
+-    return;
+-  endif
+-  if(fish.movable == 0)
+-    SendSysMessage(who, &quot;You cannot use that.&quot;);
+-    return;
+-  endif
+-  ReserveItem(fish);
+-  var spellnum := GetObjProperty( fish, &quot;spellnum&quot; );
+-  var spellsound := GetObjProperty( fish, &quot;spellsound&quot; );
+-  var spelleffect := GetObjProperty( fish, &quot;spelleffect&quot; );
+-  var miscprop1 := GetObjProperty( fish, &quot;miscprop1&quot; );
+-  var miscprop2 := GetObjProperty( fish, &quot;miscprop2&quot; );
+-  DestroyItem(fish);
+-  if(spellnum &gt; 0)
+-	PlaySoundEffect( who, spellsound );
+-	PlayObjectCenteredEffect( who, spelleffect, 10,10);
+-	case (spellnum)
+-      4: HealDamage( who, miscprop1);
+-      6: who.setlightlevel( miscprop1, miscprop2 );
+-      9: if (CanMod(who, &quot;dex&quot;))
+-		   DoTempMod(who, &quot;dex&quot;, miscprop1, miscprop2);
+-		 endif
+-     10: if (CanMod(who, &quot;int&quot;))
+-		   DoTempMod(who, &quot;int&quot;, miscprop1, miscprop2);
+-		 endif
+-     11:  if (ListPoisonsByType(who, &quot;defaultPoison&quot;).size() &gt; 0 )
+-             CurePoison(who, 120, &quot;defaultPoison&quot;,CInt(miscprop1));
+-          endif
+-     16: if (CanMod(who, &quot;str&quot;))
+-		   DoTempMod(who, &quot;str&quot;, miscprop1, miscprop2);
+-		 endif
+-     17: if (CanMod(who, &quot;str&quot;))
+-		   DoTempMod(who, &quot;str&quot;, miscprop1, miscprop2);
+-	     endif
+-		 if (CanMod(who, &quot;dex&quot;))
+-		   DoTempMod(who, &quot;dex&quot;, miscprop1, miscprop2);
+-		 endif
+-		 if (CanMod(who, &quot;int&quot;))
+-		   DoTempMod(who, &quot;int&quot;, miscprop1, miscprop2);
+-		 endif
+-     44: who.hidden := 1;
+-    endcase
+-  else
+-    SendSysMessage(who, &quot;Yech, that was a rotten fish!&quot;);
+-  endif
++program use_MagicFish(who, fish)
++
++	EraseObjProperty(who, &quot;IsMeditating&quot;);
++	EraseObjProperty(who, &quot;HealTimer&quot;);
++
++	if( !can_access(who, fish) )
++		return 0;
++	endif
++	if( fish.movable == 0 )
++		SendSysMessage(who, &quot;You cannot use that.&quot;);
++		return 0;
++	endif
++	if( !ReserveItem(fish) )
++		return 0;
++	endif
++	if( !(fish in EnumerateItemsInContainer(who.backpack)) )
++		SendSysMessage(who, &quot;That item is not in your backpack.&quot;);
++		return 0;
++	endif
++
++	var spellnum    := GetObjProperty( fish, &quot;spellnum&quot; );
++	var spellsound  := GetObjProperty( fish, &quot;spellsound&quot; );
++	var spelleffect := GetObjProperty( fish, &quot;spelleffect&quot; );
++	var miscprop1 := GetObjProperty( fish, &quot;miscprop1&quot; );
++	var miscprop2 := GetObjProperty( fish, &quot;miscprop2&quot; );
++	if( DestroyItem(fish) )
++		if(spellnum &gt; 0)
++			PlaySoundEffect( who, spellsound );
++			PlayObjectCenteredEffect( who, spelleffect, 10,10);
++			case (spellnum)
++				4: HealDamage( who, miscprop1);
++				6: who.setlightlevel( miscprop1, miscprop2 );
++				9: if (CanMod(who, &quot;dex&quot;))
++					DoTempMod(who, &quot;dex&quot;, miscprop1, miscprop2);
++				   endif
++				10: if (CanMod(who, &quot;int&quot;))
++					DoTempMod(who, &quot;int&quot;, miscprop1, miscprop2);
++				    endif
++				11:  if (ListPoisonsByType(who, &quot;defaultPoison&quot;).size() &gt; 0 )
++					CurePoison(who, 120, &quot;defaultPoison&quot;,CInt(miscprop1));
++				     endif
++				16: if (CanMod(who, &quot;str&quot;))
++					DoTempMod(who, &quot;str&quot;, miscprop1, miscprop2);
++				    endif
++				17: if (CanMod(who, &quot;str&quot;))
++					DoTempMod(who, &quot;str&quot;, miscprop1, miscprop2);
++				    endif
++				    if (CanMod(who, &quot;dex&quot;))
++					DoTempMod(who, &quot;dex&quot;, miscprop1, miscprop2);
++				    endif
++				    if (CanMod(who, &quot;int&quot;))
++					DoTempMod(who, &quot;int&quot;, miscprop1, miscprop2);
++				    endif
++				44: who.hidden := 1;
++			endcase
++		else
++			SendSysMessage(who, &quot;Yech, that was a rotten fish!&quot;);
++		endif
++	endif
++
++	return 1;
++
+ endprogram
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/fishing/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/fishing/pkg.cfg	2005-10-27 04:20:27 UTC (rev 671)
++++ trunk/096/pkg/skills/fishing/pkg.cfg	2005-10-27 04:21:21 UTC (rev 672)
+@@ -2,4 +2,4 @@
+ Name            fishing
+ Maintainer      Distro Team
+ Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+-Version         1.0
+\ No newline at end of file
++Version         1.1
+\ No newline at end of file
+
+Modified: trunk/096/pkg/skills/fishing/sosarea.cfg
+===================================================================
+--- trunk/096/pkg/skills/fishing/sosarea.cfg	2005-10-27 04:20:27 UTC (rev 671)
++++ trunk/096/pkg/skills/fishing/sosarea.cfg	2005-10-27 04:21:21 UTC (rev 672)
+@@ -1,60 +1,73 @@
++# $Id$
++#
++#
++
+ sosarea 1
+ {
+-x       2634
+-y       3201
+-range   20
++	x       2634
++	y       3201
++	range   20
+ }
++
+ sosarea 2
+ {
+-x       3894
+-y       2322
+-range   25
++	x       3894
++	y       2322
++	range   25
+ }
++
+ sosarea 3
+ {
+-x       2972
+-y       2360
+-range   25
++	x       2972
++	y       2360
++	range   25
+ }
++
+ sosarea 4
+ {
+-x       2507
+-y       2460
+-range   25
++	x       2507
++	y       2460
++	range   25
+ }
++
+ sosarea 5
+ {
+-x       2311
+-y       2065
+-range   25
++	x       2311
++	y       2065
++	range   25
+ }
++
+ sosarea 6
+ {
+-x       2521
+-y       1834
+-range   25
++	x       2521
++	y       1834
++	range   25
+ }
++
+ sosarea 7
+ {
+-x       2521
+-y       1411
+-range   25
++	x       2521
++	y       1411
++	range   25
+ }
++
+ sosarea 8
+ {
+-x       2979
+-y       1277
+-range   25
++	x       2979
++	y       1277
++	range   25
+ }
++
+ sosarea 9
+ {
+-x       3839
+-y       907
+-range   25
++	x       3839
++	y       907
++	range   25
+ }
++
+ sosarea 10
+ {
+-x       3712
+-y       339
+-range   25
+-}
++	x       3712
++	y       339
++	range   25
++}
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000646.html">[Poldistro-svn] r671 - trunk/096/pkg/items/containers
+</A></li>
+	<LI>Next message: <A HREF="000647.html">[Poldistro-svn] r673 - trunk/096/pkg/skills/fishing/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#645">[ date ]</a>
+              <a href="thread.html#645">[ thread ]</a>
+              <a href="subject.html#645">[ subject ]</a>
+              <a href="author.html#645">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,345 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r984 - in trunk/096: pkg/items pkg/items/acid pkg/items/acid/acid pkg/items/acid/config pkg/items/acid/include scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r984%20-%20in%20trunk/096%3A%20pkg/items%20pkg/items/acid%20pkg/items/acid/acid%20pkg/items/acid/config%20pkg/items/acid/include%20scripts/include&In-Reply-To=%3C200511140902.jAE92b0E019026%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000956.html">
+   <LINK REL="Next"  HREF="000958.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r984 - in trunk/096: pkg/items pkg/items/acid pkg/items/acid/acid pkg/items/acid/config pkg/items/acid/include scripts/include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r984%20-%20in%20trunk/096%3A%20pkg/items%20pkg/items/acid%20pkg/items/acid/acid%20pkg/items/acid/config%20pkg/items/acid/include%20scripts/include&In-Reply-To=%3C200511140902.jAE92b0E019026%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r984 - in trunk/096: pkg/items pkg/items/acid pkg/items/acid/acid pkg/items/acid/config pkg/items/acid/include scripts/include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Mon Nov 14 10:02:37 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000956.html">[Poldistro-svn] r983 - in trunk/096: config pkg/utils pkg/utils/inns pkg/utils/inns/config pkg/utils/inns/include scripts/include/OLD scripts/misc
+</A></li>
+        <LI>Next message: <A HREF="000958.html">[Poldistro-svn] r985 - trunk/096/pkg/items/walkOn/teleport
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#957">[ date ]</a>
+              <a href="thread.html#957">[ thread ]</a>
+              <a href="subject.html#957">[ subject ]</a>
+              <a href="author.html#957">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-11-14 10:02:34 +0100 (Mon, 14 Nov 2005)
+New Revision: 984
+
+Added:
+   trunk/096/pkg/items/acid/
+   trunk/096/pkg/items/acid/acid/
+   trunk/096/pkg/items/acid/acid/control.src
+   trunk/096/pkg/items/acid/acid/onCreate.src
+   trunk/096/pkg/items/acid/config/
+   trunk/096/pkg/items/acid/config/icp.cfg
+   trunk/096/pkg/items/acid/config/settings.cfg
+   trunk/096/pkg/items/acid/include/
+   trunk/096/pkg/items/acid/include/acid.inc
+   trunk/096/pkg/items/acid/itemdesc.cfg
+   trunk/096/pkg/items/acid/pkg.cfg
+Modified:
+   trunk/096/scripts/include/packets.inc
+Log:
+
+
+Added: trunk/096/pkg/items/acid/acid/control.src
+===================================================================
+--- trunk/096/pkg/items/acid/acid/control.src	2005-11-14 06:49:18 UTC (rev 983)
++++ trunk/096/pkg/items/acid/acid/control.src	2005-11-14 09:02:34 UTC (rev 984)
+@@ -0,0 +1,10 @@
++/* $Id$
++ *
++ */
++use uo;
++use os;
++
++program ControlScript(acid)
++	sleep(5);
++	DestroyItem(acid);
++endprogram
+
+
+Property changes on: trunk/096/pkg/items/acid/acid/control.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/items/acid/acid/onCreate.src
+===================================================================
+--- trunk/096/pkg/items/acid/acid/onCreate.src	2005-11-14 06:49:18 UTC (rev 983)
++++ trunk/096/pkg/items/acid/acid/onCreate.src	2005-11-14 09:02:34 UTC (rev 984)
+@@ -0,0 +1,18 @@
++/* $Id$
++ *
++ */
++use uo;
++use util;
++use cfgfile;
++
++program OnCreate(acid)
++	var acid_cfg := ReadConfigFile(&quot;:acid:config/settings&quot;);
++	var graphic_elem := acid_cfg[&quot;Graphics&quot;];
++	var graphics := GetConfigStringArray(graphic_elem, &quot;Graphic&quot;);
++
++	if ( graphics.size() &gt; 0 )
++		acid.graphic := CInt(graphics[RandomInt(graphics.size())+1]);
++	endif
++
++	return 1;
++endprogram
+
+
+Property changes on: trunk/096/pkg/items/acid/acid/onCreate.src
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/items/acid/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/items/acid/config/icp.cfg	2005-11-14 06:49:18 UTC (rev 983)
++++ trunk/096/pkg/items/acid/config/icp.cfg	2005-11-14 09:02:34 UTC (rev 984)
+@@ -0,0 +1,17 @@
++ICP Register
++{
++	Name		Acid
++	Version		1.0
++
++	Description	Manages creation and removal of acid pools in the game.
++
++	Creator		MuadDib
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++	//Script	cmdlevel path
++
++	//TextCmd	cmdlevel path
++}
+
+
+Property changes on: trunk/096/pkg/items/acid/config/icp.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/items/acid/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/items/acid/config/settings.cfg	2005-11-14 06:49:18 UTC (rev 983)
++++ trunk/096/pkg/items/acid/config/settings.cfg	2005-11-14 09:02:34 UTC (rev 984)
+@@ -0,0 +1,11 @@
++#
++# $Id$
++#
++Acid Graphics
++{
++	Graphic	4650
++	Graphic	4651
++	Graphic	4652
++	Graphic	4653
++	Graphic	4654
++}
+
+
+Property changes on: trunk/096/pkg/items/acid/config/settings.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/items/acid/include/acid.inc
+===================================================================
+--- trunk/096/pkg/items/acid/include/acid.inc	2005-11-14 06:49:18 UTC (rev 983)
++++ trunk/096/pkg/items/acid/include/acid.inc	2005-11-14 09:02:34 UTC (rev 984)
+@@ -0,0 +1,42 @@
++/* $Id$
++ *
++ */
++use uo;
++use cfgfile;
++use util;
++
++include &quot;:brainAI:npcUtil&quot;;
++include &quot;include/packets&quot;;
++
++/*
++ * MakeBleed(object, blood_color)
++ *
++ * Purpose
++ * Creates a blood tile where the object is and sets the blood to the appropriate color.
++ *
++ * Parameters
++ * object:	The object to create the blood for.
++ * blood_color:	Optional parameter. Will force the blood to be this color.
++ *
++ * Return value
++ * Returns an item reference to the tile created.
++ *
++ */
++function SpitAcid(spitter, spit_on)
++	if( !CheckLineOfSight(spitter, spit_on) )
++		return 0;
++	endif
++	var npc_info := NPC_GetNPCConfig(spitter.npctemplate);
++	var acid_damage := 0;
++	if( !npc_info.AcidDamage )
++		// NPC doesn't Spit Acid
++		return 0;
++	else
++		acid_damage := RandomDiceRoll(npc_info.AcidDamage);
++	endif
++
++	PlayMovingEffectXYZHued(spitter, spit_on, 0x36d4, 5, 1, 1, 0x47, 0);
++	var acid_pool := CreateItemAtLocation(spit_on.x, spit_on.y, GetMapInfo(spit_on.x, spit_on.y).z, &quot;acid&quot;,  1, spit_on.realm);
++	ApplyRawDamage(spit_on, acid_damage);
++	return acid_pool;
++endfunction
+
+
+Property changes on: trunk/096/pkg/items/acid/include/acid.inc
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/items/acid/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/acid/itemdesc.cfg	2005-11-14 06:49:18 UTC (rev 983)
++++ trunk/096/pkg/items/acid/itemdesc.cfg	2005-11-14 09:02:34 UTC (rev 984)
+@@ -0,0 +1,13 @@
++Item 0xA370
++{
++	Name		acid
++	Desc		acid%%
++	Graphic		0x122A
++	Color		72
++
++	Movable		0
++	SaveOnExit	0
++
++	ControlScript	acid/control
++	CreateScript	acid/onCreate
++}
+\ No newline at end of file
+
+
+Property changes on: trunk/096/pkg/items/acid/itemdesc.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Added: trunk/096/pkg/items/acid/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/acid/pkg.cfg	2005-11-14 06:49:18 UTC (rev 983)
++++ trunk/096/pkg/items/acid/pkg.cfg	2005-11-14 09:02:34 UTC (rev 984)
+@@ -0,0 +1,18 @@
++# $Id$
++#
++#
++
++Enabled		1
++Name		acid
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		MuadDib
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">muaddib at lostsoulsshard.org</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires none
++#conflicts	none
+
+
+Property changes on: trunk/096/pkg/items/acid/pkg.cfg
+___________________________________________________________________
+Name: svn:keywords
+   + Id
+
+Modified: trunk/096/scripts/include/packets.inc
+===================================================================
+--- trunk/096/scripts/include/packets.inc	2005-11-14 06:49:18 UTC (rev 983)
++++ trunk/096/scripts/include/packets.inc	2005-11-14 09:02:34 UTC (rev 984)
+@@ -30,17 +30,40 @@
+  *
+  * Return value
+  * No return value
+- * 
++ *
+  * TODO:
+  * Make sure the feature bits are right
+  *
+  */
+ function SendFeatures(who, features)
+ 	var packet;
+-    
++
+ 	packet := CreatePacket(PACKET_FEATURES, 0x03);
+ 	packet.SetInt16(1, features);
+ 	packet.SendPacket(who);
+ 
+ 	return 1;
+ endfunction
++
++
++function PlayMovingEffectXYZHued(source, dest, effect, speed, loop:=0, explode:=0, color:=0, translucent:=0)
++	var packet := CreatePacket(0xC0, 36);
++	packet.SetInt8(1, 0x00);
++	packet.SetInt32(2, source.serial);
++	packet.SetInt32(6, dest.serial);
++	packet.SetInt16(10, effect);
++	packet.SetInt16(12, source.x);
++	packet.SetInt16(14, source.y);
++	packet.SetInt8(16, source.z);
++	packet.SetInt16(17, dest.x);
++	packet.SetInt16(19, dest.y);
++	packet.SetInt8(21, dest.z);
++	packet.SetInt8(22, speed);
++	packet.SetInt8(23, loop);
++	packet.SetInt16(24, 0);
++	packet.SetInt8(26, 0);
++	packet.SetInt8(27, explode);
++	packet.SetInt32(28, color);
++	packet.SetInt32(32, translucent);
++	packet.SendAreaPacket(source.x, source.y, 16, source.realm);
++endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000956.html">[Poldistro-svn] r983 - in trunk/096: config pkg/utils pkg/utils/inns pkg/utils/inns/config pkg/utils/inns/include scripts/include/OLD scripts/misc
+</A></li>
+	<LI>Next message: <A HREF="000958.html">[Poldistro-svn] r985 - trunk/096/pkg/items/walkOn/teleport
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#957">[ date ]</a>
+              <a href="thread.html#957">[ thread ]</a>
+              <a href="subject.html#957">[ subject ]</a>
+              <a href="author.html#957">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

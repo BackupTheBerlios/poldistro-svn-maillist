@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r694 - in trunk/096/pkg/utils/control: commands/coun include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r694%20-%20in%20trunk/096/pkg/utils/control%3A%20commands/coun%20include&In-Reply-To=%3C200510290656.j9T6uDLe015689%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000667.html">
+   <LINK REL="Next"  HREF="000669.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r694 - in trunk/096/pkg/utils/control: commands/coun include</H1>
+    <B>Scott E. Royalty at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r694%20-%20in%20trunk/096/pkg/utils/control%3A%20commands/coun%20include&In-Reply-To=%3C200510290656.j9T6uDLe015689%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r694 - in trunk/096/pkg/utils/control: commands/coun include">muaddiblsd at berlios.de
+       </A><BR>
+    <I>Sat Oct 29 08:56:13 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000667.html">[Poldistro-svn] r693 - in trunk/096: config pkg/commands/player scripts scripts/console scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000669.html">[Poldistro-svn] r695 - in trunk/096/pkg: commands/gm items/containers/include items/mounts/mount items/repaircontract items/repaircontract/config items/walkOn/resurrect mobiles/brainAI/complete/exampleNPC utils/control/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#668">[ date ]</a>
+              <a href="thread.html#668">[ thread ]</a>
+              <a href="subject.html#668">[ subject ]</a>
+              <a href="author.html#668">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: muaddiblsd
+Date: 2005-10-29 08:56:09 +0200 (Sat, 29 Oct 2005)
+New Revision: 694
+
+Modified:
+   trunk/096/pkg/utils/control/commands/coun/control.src
+   trunk/096/pkg/utils/control/include/icp-commands.inc
+   trunk/096/pkg/utils/control/include/icp-pkgpanel.inc
+   trunk/096/pkg/utils/control/include/icp-scripts.inc
+Log:
+Fixing unused variable reports with eCompile.
+
+Modified: trunk/096/pkg/utils/control/commands/coun/control.src
+===================================================================
+--- trunk/096/pkg/utils/control/commands/coun/control.src	2005-10-29 06:45:26 UTC (rev 693)
++++ trunk/096/pkg/utils/control/commands/coun/control.src	2005-10-29 06:56:09 UTC (rev 694)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ use os;
+ 
+
+Modified: trunk/096/pkg/utils/control/include/icp-commands.inc
+===================================================================
+--- trunk/096/pkg/utils/control/include/icp-commands.inc	2005-10-29 06:45:26 UTC (rev 693)
++++ trunk/096/pkg/utils/control/include/icp-commands.inc	2005-10-29 06:56:09 UTC (rev 694)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ function ICP_CommandsGump(pkg_name)
+ 	var pkg_elem := DFFindElement(pkg_info, pkg_name);
+ 	var cmd_list := pkg_elem.GetProp(&quot;TextCommands&quot;);
+@@ -4,10 +7,10 @@
+ 	if ( !cmd_list )
+ 		cmd_list := array{};
+ 	endif
+-	
++
+ 	var gump := GFCreateGump();
+ 	ICP_GumpHeader(gump, COMMANDS_BTN);
+-	
++
+ 	var y_pos := 80;
+ 	var counter := 0;
+ 	var btn_num := 0;
+@@ -23,19 +26,21 @@
+ 	else
+ 		GFTextMid(gump, 0, 250, 500, 2100, &quot;There are no text commands listed for this package.&quot;);
+ 	endif
+-	
++
+ 	return gump;
+ endfunction
+ 
+ function ICP_AddCmdLine(byref gump, script, btn_num, byref y_pos, byref counter, byref page_num)
+ 	var temp := ICP_ParseScript(script);
+-	var cmd_level := temp.cmdlevel;
++//	cmd_level commented out to fix unused variable.
++//	Left in place, in case needed at a later date.
++//	var cmd_level := temp.cmdlevel;
+ 	var path := temp.script_path;
+ 	var cmd_name := ICP_CommandName(path);
+ 
+ 	GFAddButton(gump, 25, y_pos+3, 2117, 2118, GF_CLOSE_BTN, btn_num);
+ 	GFTextLine(gump, 45, y_pos, 2100, path+&quot;  (.&quot;+cmd_name+&quot;)&quot;);
+-			
++
+ 	//Check if we need to set it up to make a new page
+ 	if ( counter &gt;= 16 )
+ 		//Down arrow
+@@ -55,14 +60,14 @@
+ 		while ( path[&quot;:&quot;] )
+ 			var slash_pos := Find(path, &quot;:&quot;, 1);
+ 			path := path[slash_pos+1, Len(path)];
+-		
++
+ 			sleepms(2);
+ 		endwhile
+ 	else
+ 		while ( path[&quot;/&quot;] )
+ 			var slash_pos := Find(path, &quot;/&quot;, 1);
+ 			path := path[slash_pos+1, Len(path)];
+-		
++
+ 			sleepms(2);
+ 		endwhile
+ 	endif
+@@ -73,7 +78,7 @@
+ 	var script_list := pkg_elem.GetProp(&quot;TextCommands&quot;);
+ 	var script_line := script_list[input];
+ 	var temp := ICP_ParseScript(script_line);
+-	
++
+ 	if ( CInt(temp.cmdlevel) &gt; who.cmdlevel )
+ 		GumpPrompt(who, &quot;Command level is not high enough to use command.&quot;);
+ 		return 0;
+@@ -84,7 +89,7 @@
+ 		else
+ 			GumpPrompt(who, &quot;Started [P] &quot;+temp.script_path);
+ 		endif
+-		
++
+ 		return script;
+ 	endif
+ endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/utils/control/include/icp-pkgpanel.inc
+===================================================================
+--- trunk/096/pkg/utils/control/include/icp-pkgpanel.inc	2005-10-29 06:45:26 UTC (rev 693)
++++ trunk/096/pkg/utils/control/include/icp-pkgpanel.inc	2005-10-29 06:56:09 UTC (rev 694)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ function ICP_PackagePanels(who, pkg_name)
+ 	var info_elem := DFFindElement(pkg_info, pkg_name);
+ 	if ( !info_elem )
+@@ -20,7 +23,7 @@
+ 
+ 		input := GFSendGump(who, gump);
+ 		input := input[0];
+-		
++
+ 		if ( !input )
+ 			break;
+ 		elseif ( input == BACK_BTN )
+@@ -36,6 +39,8 @@
+ endfunction
+ 
+ function ICP_PkgPanelInput(who, pkg_name, cur_menu, info_elem, input)
++	// Used to fix unused var report in ecompile: pkg_name;
++	pkg_name := pkg_name;
+ 	if ( cur_menu == SCRIPTS_BTN )
+ 		ICP_StartScript(who, input, info_elem);
+ 		return 1;
+@@ -52,6 +57,7 @@
+ endfunction
+ 
+ function ICP_GetPkgGump(who, pkg_name, btn_number)
++	// Used to fix unused var report in ecompile: who;
+ 	var gump := 0;
+ 	if ( btn_number == GENERAL_BTN )
+ 		gump := ICP_RetrieveGump(pkg_name, &quot;general&quot;);
+
+Modified: trunk/096/pkg/utils/control/include/icp-scripts.inc
+===================================================================
+--- trunk/096/pkg/utils/control/include/icp-scripts.inc	2005-10-29 06:45:26 UTC (rev 693)
++++ trunk/096/pkg/utils/control/include/icp-scripts.inc	2005-10-29 06:56:09 UTC (rev 694)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ function ICP_ScriptsGump(pkg_name)
+ 	var pkg_elem := DFFindElement(pkg_info, pkg_name);
+ 	var script_list := pkg_elem.GetProp(&quot;Scripts&quot;);
+@@ -4,10 +7,10 @@
+ 	if ( !script_list )
+ 		script_list := array{};
+ 	endif
+-	
++
+ 	var gump := GFCreateGump();
+ 	ICP_GumpHeader(gump, SCRIPTS_BTN);
+-	
++
+ 	var y_pos := 80;
+ 	var counter := 0;
+ 	var btn_num := 0;
+@@ -23,18 +26,20 @@
+ 	else
+ 		GFTextMid(gump, 0, 250, 500, 2100, &quot;There are no scripts listed for this package.&quot;);
+ 	endif
+-	
++
+ 	return gump;
+ endfunction
+ 
+ function ICP_AddScriptLine(byref gump, script, btn_num, byref y_pos, byref counter, byref page_num)
+ 	var temp := ICP_ParseScript(script);
+-	var cmd_level := temp.cmdlevel;
++//	cmd_level commented out to fix unused variable.
++//	Left in place, in case needed at a later date.
++//	var cmd_level := temp.cmdlevel;
+ 	var path := temp.script_path;
+ 
+ 	GFTextLine(gump, 45, y_pos, 2100, path);
+ 	GFAddButton(gump, 25, y_pos+3, 2117, 2118, GF_CLOSE_BTN, btn_num);
+-		
++
+ 	//Check if we need to set it up to make a new page
+ 	if ( counter &gt;= 16 )
+ 		//Down arrow
+@@ -53,7 +58,7 @@
+ 	var script_list := pkg_elem.GetProp(&quot;Scripts&quot;);
+ 	var script_line := script_list[input];
+ 	var temp := ICP_ParseScript(script_line);
+-	
++
+ 	if ( CInt(temp.cmdlevel) &gt; who.cmdlevel )
+ 		GumpPrompt(who, &quot;Command level is not high enough to start script.&quot;);
+ 		return 0;
+@@ -64,7 +69,7 @@
+ 		else
+ 			GumpPrompt(who, &quot;Started [P] &quot;+temp.script_path);
+ 		endif
+-		
++
+ 		return script;
+ 	endif
+ endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000667.html">[Poldistro-svn] r693 - in trunk/096: config pkg/commands/player scripts scripts/console scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000669.html">[Poldistro-svn] r695 - in trunk/096/pkg: commands/gm items/containers/include items/mounts/mount items/repaircontract items/repaircontract/config items/walkOn/resurrect mobiles/brainAI/complete/exampleNPC utils/control/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#668">[ date ]</a>
+              <a href="thread.html#668">[ thread ]</a>
+              <a href="subject.html#668">[ subject ]</a>
+              <a href="author.html#668">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

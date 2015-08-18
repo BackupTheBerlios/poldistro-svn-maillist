@@ -1,0 +1,292 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r172 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r172%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509201627.j8KGRNeA025134%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000153.html">
+   <LINK REL="Next"  HREF="000155.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r172 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r172%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509201627.j8KGRNeA025134%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r172 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Tue Sep 20 18:27:23 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000153.html">[Poldistro-svn] r171 - trunk/096/pkg/systems/attributes
+</A></li>
+        <LI>Next message: <A HREF="000155.html">[Poldistro-svn] r173 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#154">[ date ]</a>
+              <a href="thread.html#154">[ thread ]</a>
+              <a href="subject.html#154">[ subject ]</a>
+              <a href="author.html#154">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-20 18:27:23 +0200 (Tue, 20 Sep 2005)
+New Revision: 172
+
+Added:
+   trunk/096/pkg/systems/attributes/include/folko-attributes.inc
+   trunk/096/pkg/systems/attributes/include/stats.inc
+   trunk/096/pkg/systems/attributes/include/vitals.inc
+Removed:
+   trunk/096/pkg/systems/attributes/include/attributes.inc
+Log:
+
+
+Deleted: trunk/096/pkg/systems/attributes/include/attributes.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-20 16:20:42 UTC (rev 171)
++++ trunk/096/pkg/systems/attributes/include/attributes.inc	2005-09-20 16:27:23 UTC (rev 172)
+@@ -1,204 +0,0 @@
+-/* $Id: attributes.inc,v 1.5 2004/05/02 12:20:56 melanius Exp $
+- *
+- * Purpose
+- * Provide various functions and constants for the attribute system.
+- *
+- */
+-use uo;
+-
+-enum ATTRIBUTE_CUSTOM
+-	ATTRIBUTE_HITS_REGENERATION         := &quot;HitsRegeneration&quot;,
+-	ATTRIBUTE_MANA_REGENERATION         := &quot;ManaRegeneration&quot;,
+-	ATTRIBUTE_STAMINA_REGENERATION      := &quot;StaminaRegeneration&quot;
+-endenum
+-
+-enum ATTRIBUTE_STATS
+-	ATTRIBUTE_STRENGTH                  := &quot;Strength&quot;,
+-	ATTRIBUTE_DEXTERITY                 := &quot;Dexterity&quot;,
+-	ATTRIBUTE_INTELLIGENCE              := &quot;Intelligence&quot;
+-endenum
+-
+-enum ATTRIBUTE_SKILLS
+-	ATTRIBUTE_ALCHEMY                   := &quot;Alchemy&quot;,
+-	ATTRIBUTE_ANATOMY                   := &quot;Anatomy&quot;,
+-	ATTRIBUTE_ANIMAL_LORE               := &quot;AnimalLore&quot;,
+-	ATTRIBUTE_ITEM_IDENTIFICATION       := &quot;ItemIdentification&quot;,
+-	ATTRIBUTE_ARMS_LORE                 := &quot;ArmsLore&quot;,
+-	ATTRIBUTE_PARRYING                  := &quot;Parrying&quot;,
+-	ATTRIBUTE_BEGGING                   := &quot;Begging&quot;,
+-	ATTRIBUTE_BLACKSMITHY               := &quot;Blacksmithy&quot;,
+-	ATTRIBUTE_BOWCRAFT_FLETCHING        := &quot;BowcraftFletching&quot;,
+-    ATTRIBUTE_PEACEMAKING               := &quot;Peacemaking&quot;,
+-    ATTRIBUTE_CAMPING                   := &quot;Camping&quot;,
+-    ATTRIBUTE_CARPENTRY                 := &quot;Carpentry&quot;,
+-    ATTRIBUTE_CARTOGRAPHY               := &quot;Cartography&quot;,
+-    ATTRIBUTE_COOKING                   := &quot;Cooking&quot;,
+-    ATTRIBUTE_DETECTING_HIDDEN          := &quot;DetectingHidden&quot;,
+-    ATTRIBUTE_DISCORDANCE               := &quot;Discordance&quot;,
+-    ATTRIBUTE_EVALUATING_INTELLIGENCE   := &quot;EvaluatingIntelligence&quot;,
+-    ATTRIBUTE_HEALING                   := &quot;Healing&quot;,
+-    ATTRIBUTE_FISHING                   := &quot;Fishing&quot;,
+-    ATTRIBUTE_FORENSIC_EVALUATION       := &quot;ForensicEvaluation&quot;,
+-    ATTRIBUTE_HERDING                   := &quot;Herding&quot;,
+-    ATTRIBUTE_HIDING                    := &quot;Hiding&quot;,
+-    ATTRIBUTE_PROVOCATION               := &quot;Provocation&quot;,
+-    ATTRIBUTE_INSCRIPTION               := &quot;Inscription&quot;,
+-    ATTRIBUTE_LOCKPICKING               := &quot;Lockpicking&quot;,
+-    ATTRIBUTE_MAGERY                    := &quot;Magery&quot;,
+-    ATTRIBUTE_RESISTING_SPELLS          := &quot;ResistingSpells&quot;,
+-    ATTRIBUTE_TACTICS                   := &quot;Tactics&quot;,
+-    ATTRIBUTE_SNOOPING                  := &quot;Snooping&quot;,
+-    ATTRIBUTE_MUSICIANSHIP              := &quot;Musicianship&quot;,
+-    ATTRIBUTE_POISONING                 := &quot;Poisoning&quot;,
+-    ATTRIBUTE_ARCHERY                   := &quot;Archery&quot;,
+-    ATTRIBUTE_SPIRIT_SPEAK              := &quot;SpiritSpeak&quot;,
+-    ATTRIBUTE_STEALING                  := &quot;Stealing&quot;,
+-    ATTRIBUTE_TAILORING                 := &quot;Tailoring&quot;,
+-    ATTRIBUTE_ANIMAL_TAMING             := &quot;AnimalTaming&quot;,
+-    ATTRIBUTE_TASTE_IDENTIFICATION      := &quot;TasteIdentification&quot;,
+-    ATTRIBUTE_TINKERING                 := &quot;Tinkering&quot;,
+-    ATTRIBUTE_TRACKING                  := &quot;Tracking&quot;,
+-    ATTRIBUTE_VETERINARY                := &quot;Veterinary&quot;,
+-    ATTRIBUTE_SWORDSMANSHIP             := &quot;Swordsmanship&quot;,
+-    ATTRIBUTE_MACE_FIGHTING             := &quot;MaceFighting&quot;,
+-    ATTRIBUTE_FENCING                   := &quot;Fencing&quot;,
+-    ATTRIBUTE_WRESTLING                 := &quot;Wrestling&quot;,
+-    ATTRIBUTE_LUMBERJACKING             := &quot;Lumberjacking&quot;,
+-    ATTRIBUTE_MINING                    := &quot;Mining&quot;,
+-    ATTRIBUTE_MEDITATION                := &quot;Meditation&quot;,
+-    ATTRIBUTE_STEALTH                   := &quot;Stealth&quot;,
+-    ATTRIBUTE_REMOVE_TRAP               := &quot;RemoveTrap&quot;,
+-    ATTRIBUTE_NECROMANCY                := &quot;Necromancy&quot;,
+-    ATTRIBUTE_BATTLE_FOCUS              := &quot;BattleFocus&quot;,
+-    ATTRIBUTE_CHIVALRY                  := &quot;Chivalry&quot;
+-endenum
+-
+-
+-/*
+- * GetCustomAttributes()
+- *
+- * Author: Melanius [x90]
+- * Last-Edit: Folko
+- *
+- * Purpose
+- * Returns an array with all the custom attribute names.
+- *
+- * Parameters
+- * No parameters
+- *
+- * Return value
+- * Array containing the names of all custom attributes.
+- *
+- */
+-function GetCustomAttributes()
+-	return(
+-		{
+-			ATTRIBUTE_HITS_REGENERATION,
+-			ATTRIBUTE_MANA_REGENERATION,
+-			ATTRIBUTE_STAMINA_REGENERATION
+-		}
+-	);
+-endfunction
+-
+-
+-/*
+- * GetStatAttributes()
+- *
+- * Author: Melanius [x90]
+- * Last-Edit: Folko
+- *
+- * Purpose
+- * Returns an array with the names of all stat attributes.
+- *
+- * Parameters
+- * No parameters
+- *
+- * Return value
+- * Array containing the names of all stat attribuets.
+- *
+- */
+-function GetStatAttributes()
+-	return(
+-		{
+-			ATTRIBUTE_STRENGTH,
+-			ATTRIBUTE_DEXTERITY,
+-			ATTRIBUTE_INTELLIGENCE
+-		}
+-	);
+-endfunction
+-
+-
+-/*
+- * GetSkillAttributes()
+- *
+- * Author: Melanius [x90]
+- * Last-Edit: Folko
+- *
+- * Purpose
+- * Returns an array with the names of all skill attributes.
+- *
+- * Parameters
+- * No parameters
+- *
+- * Return value
+- * Array containing the names of all attributes.
+- *
+- */
+-function GetSkillAttributes()
+-	return(
+-		{
+-			ATTRIBUTE_ALCHEMY,
+-			ATTRIBUTE_ANATOMY,
+-			ATTRIBUTE_ANIMAL_LORE,
+-            ATTRIBUTE_ITEM_IDENTIFICATION,
+-            ATTRIBUTE_ARMS_LORE,
+-            ATTRIBUTE_PARRYING,
+-            ATTRIBUTE_BEGGING,
+-            ATTRIBUTE_BLACKSMITHY,
+-            ATTRIBUTE_BOWCRAFT_FLETCHING,
+-            ATTRIBUTE_PEACEMAKING,
+-            ATTRIBUTE_CAMPING,
+-            ATTRIBUTE_CARPENTRY,
+-            ATTRIBUTE_CARTOGRAPHY,
+-            ATTRIBUTE_COOKING,
+-            ATTRIBUTE_DETECTING_HIDDEN,
+-            ATTRIBUTE_DISCORDANCE,
+-            ATTRIBUTE_EVALUATING_INTELLIGENCE,
+-            ATTRIBUTE_HEALING,
+-            ATTRIBUTE_FISHING,
+-            ATTRIBUTE_FORENSIC_EVALUATION,
+-            ATTRIBUTE_HERDING,
+-            ATTRIBUTE_HIDING,
+-            ATTRIBUTE_PROVOCATION,
+-            ATTRIBUTE_INSCRIPTION,
+-            ATTRIBUTE_LOCKPICKING,
+-            ATTRIBUTE_MAGERY,
+-            ATTRIBUTE_RESISTING_SPELLS,
+-            ATTRIBUTE_TACTICS,
+-            ATTRIBUTE_SNOOPING,
+-            ATTRIBUTE_MUSICIANSHIP,
+-            ATTRIBUTE_POISONING,
+-            ATTRIBUTE_ARCHERY,
+-            ATTRIBUTE_SPIRIT_SPEAK,
+-            ATTRIBUTE_STEALING,
+-            ATTRIBUTE_TAILORING,
+-            ATTRIBUTE_ANIMAL_TAMING,
+-            ATTRIBUTE_TASTE_IDENTIFICATION,
+-            ATTRIBUTE_TINKERING,
+-            ATTRIBUTE_TRACKING,
+-            ATTRIBUTE_VETERINARY,
+-            ATTRIBUTE_SWORDSMANSHIP,
+-            ATTRIBUTE_MACE_FIGHTING,
+-            ATTRIBUTE_FENCING,
+-            ATTRIBUTE_WRESTLING,
+-            ATTRIBUTE_LUMBERJACKING,
+-            ATTRIBUTE_MINING,
+-            ATTRIBUTE_MEDITATION,
+-            ATTRIBUTE_STEALTH,
+-            ATTRIBUTE_REMOVE_TRAP,
+-			ATTRIBUTE_NECROMANCY,
+-			ATTRIBUTE_BATTLE_FOCUS,
+-			ATTRIBUTE_CHIVALRY
+-		}
+-	);
+-endfunction
+
+Copied: trunk/096/pkg/systems/attributes/include/folko-attributes.inc (from rev 168, trunk/096/pkg/systems/attributes/include/attributes.inc)
+
+Added: trunk/096/pkg/systems/attributes/include/stats.inc
+===================================================================
+
+Added: trunk/096/pkg/systems/attributes/include/vitals.inc
+===================================================================
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000153.html">[Poldistro-svn] r171 - trunk/096/pkg/systems/attributes
+</A></li>
+	<LI>Next message: <A HREF="000155.html">[Poldistro-svn] r173 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#154">[ date ]</a>
+              <a href="thread.html#154">[ thread ]</a>
+              <a href="subject.html#154">[ subject ]</a>
+              <a href="author.html#154">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

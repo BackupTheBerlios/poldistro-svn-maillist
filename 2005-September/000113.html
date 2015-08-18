@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r131 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include/braincore
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r131%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20complete/testnpc%20include/braincore&In-Reply-To=%3C200509150351.j8F3pKmR004784%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000112.html">
+   <LINK REL="Next"  HREF="000114.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r131 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include/braincore</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r131%20-%20in%20trunk/096/pkg/mobiles/ai_brain%3A%20.%20complete/testnpc%20include/braincore&In-Reply-To=%3C200509150351.j8F3pKmR004784%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r131 - in trunk/096/pkg/mobiles/ai_brain: . complete/testnpc include/braincore">austin at berlios.de
+       </A><BR>
+    <I>Thu Sep 15 05:51:20 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000112.html">[Poldistro-svn] r130 - trunk/096/pkg/utils/servperf/www
+</A></li>
+        <LI>Next message: <A HREF="000114.html">[Poldistro-svn] r132 - trunk/096/pkg/mobiles/ai_brain/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#113">[ date ]</a>
+              <a href="thread.html#113">[ thread ]</a>
+              <a href="subject.html#113">[ subject ]</a>
+              <a href="author.html#113">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-15 05:51:17 +0200 (Thu, 15 Sep 2005)
+New Revision: 131
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+   trunk/096/pkg/mobiles/ai_brain/include/braincore/sleep.inc
+   trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src	2005-09-15 02:01:32 UTC (rev 130)
++++ trunk/096/pkg/mobiles/ai_brain/complete/testnpc/lookAround.src	2005-09-15 03:51:17 UTC (rev 131)
+@@ -9,7 +9,6 @@
+ program BrainNerve(params)
+ 	var npc		:= params[1];
+ 	//var nerve_name	:= params[2];
+-	//var event	:= params[3];
+ 	var settings	:= params[4];
+ 	var scripts	:= params[5];
+ 	params := 0; // Not needed anymore.
+@@ -25,7 +24,7 @@
+ 		endif
+ 		
+ 		AI_ClearThoughts(npc, CLR_NERVE);
+-		Sleep(1);
++		Sleep(5);
+ 	endwhile
+ endprogram
+ 
+@@ -33,6 +32,7 @@
+ 	var attack_list := array;
+ 	foreach mobile in ListMobilesInLineOfSight(npc, CInt(settings[&quot;AreaSize&quot;]))
+ 		if ( NPC_ShouldWatch(npc, mobile, settings, scripts) )
++			PrintTextAbove(mobile, &quot;Its possible I will attack &quot;+mobile.name);
+ 			attack_list.Append(mobile);
+ 		endif
+ 		sleepms(2);
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-15 02:01:32 UTC (rev 130)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/eventProcessor.inc	2005-09-15 03:51:17 UTC (rev 131)
+@@ -287,15 +287,15 @@
+ 				endif
+ 			endif
+ 			break;
+-	   endcase
++	endcase
+ 
+-	   // If the event has a .process member, reply to it by sending
+-	   // an event with .type being the NPCEVENT_DONE constant
+-	   // and telling it what event it sent that has finished
+-	   // being processed.
+-	   if ( event.process )
+-		(event.process).SendEvent(struct{&quot;type&quot;:=NPCEVENT_DONE, &quot;evsource&quot;:=event.type});
+-	   endif
+-
+-	   set_priority(old_priority);
++	// If the event has a .process member, reply to it by sending
++	// an event with .type being the NPCEVENT_DONE constant
++	// and telling it what event it sent that has finished
++	// being processed.
++	//if ( event.process )
++	//	(event.process).SendEvent(struct{&quot;type&quot;:=NPCEVENT_DONE, &quot;evsource&quot;:=event.type});
++	//endif
++	
++	set_priority(old_priority);
+ endfunction
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/braincore/sleep.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/braincore/sleep.inc	2005-09-15 02:01:32 UTC (rev 130)
++++ trunk/096/pkg/mobiles/ai_brain/include/braincore/sleep.inc	2005-09-15 03:51:17 UTC (rev 131)
+@@ -41,6 +41,7 @@
+  *
+  * Purpose
+  * Brings the npc out of sleep mode.
++ * Also used to reset idle_ticks.
+  *
+  * Parameters
+  *
+@@ -49,10 +50,12 @@
+  *
+  */
+ function LeaveSleepMode()
+-	StopNerve(npc, &quot;Sleep&quot;);
++	if ( sleep_mode )
++		StopNerve(npc, &quot;Sleep&quot;);
+ 	
+-	if ( g_scripts.Exists(&quot;LookAround&quot;) )
+-		StartNerve(npc, &quot;LookAround&quot;, g_scripts[&quot;LookAround&quot;].script, array{g_settings, g_scripts}, g_scripts[&quot;LookAround&quot;].flags);
++		if ( g_scripts.Exists(&quot;LookAround&quot;) )
++			StartNerve(npc, &quot;LookAround&quot;, g_scripts[&quot;LookAround&quot;].script, array{g_settings, g_scripts}, g_scripts[&quot;LookAround&quot;].flags);
++		endif
+ 	endif
+ 	
+ 	idle_ticks := 0;
+@@ -78,7 +81,7 @@
+ 	elseif ( Events_Waiting() )
+ 		//Events are waiting to process.
+ 		return 0;
+-	elseif ( idle_ticks &lt; g_settings[&quot;idle_ticks&quot;] )
++	elseif ( idle_ticks &lt; g_settings[&quot;IdleTicks&quot;] )
+ 		//Not enough idle ticks have gone by yet.
+ 		return 0;
+ 	endif
+
+Modified: trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-15 02:01:32 UTC (rev 130)
++++ trunk/096/pkg/mobiles/ai_brain/npcdesc.cfg	2005-09-15 03:51:17 UTC (rev 131)
+@@ -27,7 +27,7 @@
+ 	AISetting	HearGhosts	i1
+ 	
+ 	AIScript	Combat		:ai_brain:complete/testNPC/combat
+-	AIScript	Cycle		:ai_brain:complete/testNPC/cycle
++	//AIScript	Cycle		:ai_brain:complete/testNPC/cycle
+ 	AIScript	DblClick	:ai_brain:complete/testNPC/doubleClick
+ 	AIScript	Disengaged	:ai_brain:complete/testNPC/disengaged
+ 	AIScript	EnterArea	:ai_brain:complete/testNPC/enteredArea
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000112.html">[Poldistro-svn] r130 - trunk/096/pkg/utils/servperf/www
+</A></li>
+	<LI>Next message: <A HREF="000114.html">[Poldistro-svn] r132 - trunk/096/pkg/mobiles/ai_brain/commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#113">[ date ]</a>
+              <a href="thread.html#113">[ thread ]</a>
+              <a href="subject.html#113">[ subject ]</a>
+              <a href="author.html#113">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

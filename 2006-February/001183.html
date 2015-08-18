@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1212 - in trunk/096/pkg/mobiles/brainAI/commands: gm test
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1212%20-%20in%20trunk/096/pkg/mobiles/brainAI/commands%3A%20gm%20test&In-Reply-To=%3C200602142014.k1EKE9gE029685%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001182.html">
+   <LINK REL="Next"  HREF="001184.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1212 - in trunk/096/pkg/mobiles/brainAI/commands: gm test</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1212%20-%20in%20trunk/096/pkg/mobiles/brainAI/commands%3A%20gm%20test&In-Reply-To=%3C200602142014.k1EKE9gE029685%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1212 - in trunk/096/pkg/mobiles/brainAI/commands: gm test">austin at berlios.de
+       </A><BR>
+    <I>Tue Feb 14 21:14:09 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001182.html">[Poldistro-svn] r1211 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+        <LI>Next message: <A HREF="001184.html">[Poldistro-svn] r1213 - in trunk/096/pkg/mobiles/brainAI: . commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1183">[ date ]</a>
+              <a href="thread.html#1183">[ thread ]</a>
+              <a href="subject.html#1183">[ subject ]</a>
+              <a href="author.html#1183">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-02-14 21:14:07 +0100 (Tue, 14 Feb 2006)
+New Revision: 1212
+
+Removed:
+   trunk/096/pkg/mobiles/brainAI/commands/test/unloadNPCDescs.src
+Modified:
+   trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src
+Log:
+Removed UnloadNPCDescs command, merged into createnpc gump.
+
+Modified: trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src	2006-02-14 19:44:25 UTC (rev 1211)
++++ trunk/096/pkg/mobiles/brainAI/commands/gm/createnpc.src	2006-02-14 20:14:07 UTC (rev 1212)
+@@ -7,11 +7,14 @@
+ include &quot;:gumps:gumps&quot;;
+ include &quot;:gumps:gumps_ex&quot;;
+ 
+-const UNCACHE_BTN	:= 0xF000000;
++const UNCACHE_BTN	:= 0xFFFE;
++const UNLOADCFG_BTN	:= 0xFFFF;
+ const DEFAULT_CATEGORY	:= &quot;None&quot;;
+ 
+ var g_datafile := DFOpenDataFile(&quot;:brainAI:createnpc&quot;, DF_CREATE);
+ 
++unload_scripts(&quot;&quot;);
++
+ program command_CreateNPC(who, template)
+ 	if ( !template )
+ 		template := SelectTemplateFromGump(who);
+@@ -46,7 +49,29 @@
+ 		endforeach
+ 		
+ 		SendSysMessage(who, &quot;All createnpc data uncached.&quot;);
++		
+ 		return 0;
++	elseif ( input[UNLOADCFG_BTN] )
++		SendSysMessage(who, &quot;Begining to unload npcdesc.cfg files...&quot;);
++	
++		UnloadConfigFile(&quot;:*:npcdesc&quot;);
++		SendSysMessage(who, &quot;Unloading :*:npcdesc&quot;);
++		UnloadConfigFile(&quot;::npcdesc&quot;);
++		SendSysMessage(who, &quot;Unloading ::npcdesc&quot;);
++	
++		foreach package in (Packages())
++			if ( package.npcdesc )
++				UnloadConfigFile(&quot;:&quot;+(package.name)+&quot;:npcdesc&quot;);
++				SendSysMessage(who, &quot;Unloading :&quot;+(package.name)+&quot;:npcdesc&quot;);
++			endif	
++			sleepms(2);
++		endforeach
++	
++		SendSysMessage(who, &quot;ReloadConfiguration() -&gt; &quot;+ReloadConfiguration());
++		
++		SendSysMessage(who, &quot;All npcdesc.cfg files unloaded.&quot;);
++		
++		return 0;
+ 	endif
+ 		
+ 	var category_names := GetCategoryNames();
+@@ -116,9 +141,12 @@
+ 	GFTextMid(gump, 10, 20, 280, 2100, &quot;NPC Categories&quot;);
+ 	
+ 	/////
+-	GFAddButton(gump, 158, 440, 4002, 4003, GF_CLOSE_BTN, UNCACHE_BTN);
+-	GFTextLine(gump, 193, 440, 2100, &quot;Uncache data&quot;);
++	GFAddButton(gump, 18, 440, 4002, 4003, GF_CLOSE_BTN, UNLOADCFG_BTN);
++	GFTextLine(gump, 47, 440, 2100, &quot;Unload NPCDESC&quot;);
+ 	/////
++	GFAddButton(gump, 170, 440, 4002, 4003, GF_CLOSE_BTN, UNCACHE_BTN);
++	GFTextLine(gump, 200, 440, 2100, &quot;Uncache gump&quot;);
++	/////
+ 	
+ 	GFPage(gump, page_num);
+ 	foreach category_name in (GetCategoryNames())
+
+Deleted: trunk/096/pkg/mobiles/brainAI/commands/test/unloadNPCDescs.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/commands/test/unloadNPCDescs.src	2006-02-14 19:44:25 UTC (rev 1211)
++++ trunk/096/pkg/mobiles/brainAI/commands/test/unloadNPCDescs.src	2006-02-14 20:14:07 UTC (rev 1212)
+@@ -1,25 +0,0 @@
+-use uo;
+-use os;
+-use polsys;
+-use cfgfile;
+-
+-program cmd_unloadNPCDescs(who)
+-	SendSysMessage(who, &quot;Begining to unload npcdesc.cfg files...&quot;);
+-	
+-	UnloadConfigFile(&quot;:*:npcdesc&quot;);
+-	SendSysMessage(who, &quot;Unloading :*:npcdesc&quot;);
+-	UnloadConfigFile(&quot;::npcdesc&quot;);
+-	SendSysMessage(who, &quot;Unloading ::npcdesc&quot;);
+-	
+-	foreach package in (Packages())
+-		if ( package.npcdesc )
+-			UnloadConfigFile(&quot;:&quot;+(package.name)+&quot;:npcdesc&quot;);
+-			SendSysMessage(who, &quot;Unloading :&quot;+(package.name)+&quot;:npcdesc&quot;);
+-		endif	
+-		sleepms(2);
+-	endforeach
+-	
+-	SendSysMessage(who, &quot;ReloadConfiguration() -&gt; &quot;+ReloadConfiguration());
+-	
+-	SendSysMessage(who, &quot;All npcdesc.cfg files unloaded.&quot;);
+-endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001182.html">[Poldistro-svn] r1211 - trunk/096/pkg/mobiles/brainAI
+</A></li>
+	<LI>Next message: <A HREF="001184.html">[Poldistro-svn] r1213 - in trunk/096/pkg/mobiles/brainAI: . commands/gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1183">[ date ]</a>
+              <a href="thread.html#1183">[ thread ]</a>
+              <a href="subject.html#1183">[ subject ]</a>
+              <a href="author.html#1183">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

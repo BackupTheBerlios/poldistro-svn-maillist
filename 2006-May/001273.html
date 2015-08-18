@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1301 - trunk/096/pkg/systems/accounts/www
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1301%20-%20trunk/096/pkg/systems/accounts/www&In-Reply-To=%3C200605110539.k4B5dcIi030966%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001272.html">
+   <LINK REL="Next"  HREF="001274.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1301 - trunk/096/pkg/systems/accounts/www</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1301%20-%20trunk/096/pkg/systems/accounts/www&In-Reply-To=%3C200605110539.k4B5dcIi030966%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1301 - trunk/096/pkg/systems/accounts/www">austin at berlios.de
+       </A><BR>
+    <I>Thu May 11 07:39:38 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001272.html">[Poldistro-svn] r1300 - in trunk/096/pkg/systems/accounts: . auxsvc config www
+</A></li>
+        <LI>Next message: <A HREF="001274.html">[Poldistro-svn] r1302 - in trunk/096/pkg/systems/accounts: auxsvc config www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1273">[ date ]</a>
+              <a href="thread.html#1273">[ thread ]</a>
+              <a href="subject.html#1273">[ subject ]</a>
+              <a href="author.html#1273">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-11 07:39:35 +0200 (Thu, 11 May 2006)
+New Revision: 1301
+
+Modified:
+   trunk/096/pkg/systems/accounts/www/newAccount.src
+Log:
+
+
+Modified: trunk/096/pkg/systems/accounts/www/newAccount.src
+===================================================================
+--- trunk/096/pkg/systems/accounts/www/newAccount.src	2006-05-11 05:24:03 UTC (rev 1300)
++++ trunk/096/pkg/systems/accounts/www/newAccount.src	2006-05-11 05:39:35 UTC (rev 1301)
+@@ -0,0 +1,49 @@
++/* $Id$
++ *
++ */
++use uo;
++use os;
++use http;
++
++include &quot;:accounts:accounts&quot;;
++include &quot;:accounts:settings&quot;;
++
++/* NOTES:
++ *
++ * Expects a URL string with info for the following
++ * username=username (string)
++ * password=password (string)
++ * cmdlevel=default command level (integer)
++ * expansion=expansion (string)
++ * email=email ( string)
++ * adminpw=creation password (string) - if set in settings.cfg
++ *
++ * Example:
++ * ?username=Bob&amp;password=Beer&amp;cmdlevel=3&amp;expansion=AOS&amp;email=<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Bob at beer.org</A>&amp;adminpw=DistroR0x
++ *
++ */
++program HTTPScript()
++	var username := QueryParam(&quot;username&quot;);
++	var password := QueryParam(&quot;password&quot;);
++	var cmd_lvl := QueryParam(&quot;cmdlevel&quot;);
++	var expansion := QueryParam(&quot;expansion&quot;);
++	var email := QueryParam(&quot;email&quot;);
++	var admin_pw := QueryParam(&quot;adminpw&quot;);
++
++	var settings := ACCT_GetSettingsCfgElem(&quot;Settings&quot;);
++	if ( settings.AuxWebPassword )
++		if ( settings.AuxWebPassword != admin_pw )
++			 WriteHTMLRaw(&quot;Error: Invalid administration password.&quot;);
++			 return 0;
++		endif
++	endif
++
++	var result := CreateNewAccount(username, password, cmd_lvl, expansion, email);
++	if ( result.errortext )
++		WriteHTMLRaw(&quot;Error: &quot;+result.errortext);
++	else
++		WriteHTMLRaw(&quot;Success: The acount was created successfully.&quot;);
++	endif
++
++	return 1;
++endprogram
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001272.html">[Poldistro-svn] r1300 - in trunk/096/pkg/systems/accounts: . auxsvc config www
+</A></li>
+	<LI>Next message: <A HREF="001274.html">[Poldistro-svn] r1302 - in trunk/096/pkg/systems/accounts: auxsvc config www
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1273">[ date ]</a>
+              <a href="thread.html#1273">[ thread ]</a>
+              <a href="subject.html#1273">[ subject ]</a>
+              <a href="author.html#1273">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

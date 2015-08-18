@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1298 - in trunk/096/pkg/mobiles/brainAI: include/braincore scripts/enterArea
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1298%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20include/braincore%20scripts/enterArea&In-Reply-To=%3C200605110229.k4B2TkQN027714%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001269.html">
+   <LINK REL="Next"  HREF="001271.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1298 - in trunk/096/pkg/mobiles/brainAI: include/braincore scripts/enterArea</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1298%20-%20in%20trunk/096/pkg/mobiles/brainAI%3A%20include/braincore%20scripts/enterArea&In-Reply-To=%3C200605110229.k4B2TkQN027714%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1298 - in trunk/096/pkg/mobiles/brainAI: include/braincore scripts/enterArea">austin at berlios.de
+       </A><BR>
+    <I>Thu May 11 04:29:46 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001269.html">[Poldistro-svn] r1297 - in trunk/096/pkg/mobiles/brainAI: include/braincore scripts/enterArea
+</A></li>
+        <LI>Next message: <A HREF="001271.html">[Poldistro-svn] r1299 - in trunk/096/pkg/systems/accounts: . commands/admin config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1270">[ date ]</a>
+              <a href="thread.html#1270">[ thread ]</a>
+              <a href="subject.html#1270">[ subject ]</a>
+              <a href="author.html#1270">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-11 04:29:43 +0200 (Thu, 11 May 2006)
+New Revision: 1298
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/include/braincore/setup.inc
+   trunk/096/pkg/mobiles/brainAI/scripts/enterArea/generic.src
+Log:
+Helps if I remove my debug printtextabove() dealies too 
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/braincore/setup.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/braincore/setup.inc	2006-05-11 02:27:45 UTC (rev 1297)
++++ trunk/096/pkg/mobiles/brainAI/include/braincore/setup.inc	2006-05-11 02:29:43 UTC (rev 1298)
+@@ -152,15 +152,13 @@
+ function InitializeEnterArea()
+ 	// Kludge to know what is in the NPC's area when it is created.
+ 	if ( g_scripts.Exists(&quot;EnterArea&quot;) )
+-		var k := CInt(g_settings[&quot;AreaSize&quot;]);
+ 		var event := struct;
+ 		event.+type := SYSEVENT_ENTEREDAREA;
+ 		event.+source;
+-		foreach mobile in ( ListMobilesNearLocationEX(npc.x, npc.y, npc.z, k, LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN+LISTEX_FLAG_GHOST+LISTEX_FLAG_CONCEALED) )
++		foreach mobile in ( ListMobilesNearLocationEX(npc.x, npc.y, npc.z, CInt(g_settings[&quot;AreaSize&quot;]), LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN+LISTEX_FLAG_GHOST+LISTEX_FLAG_CONCEALED) )
+ 			if ( mobile == npc )
+ 				continue;
+ 			else
+-				PrintTextAbove(npc, &quot;Found &quot;+mobile.name);
+ 				event.source := mobile;
+ 				SendEvent(npc, event);
+ 			endif
+
+Modified: trunk/096/pkg/mobiles/brainAI/scripts/enterArea/generic.src
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/scripts/enterArea/generic.src	2006-05-11 02:27:45 UTC (rev 1297)
++++ trunk/096/pkg/mobiles/brainAI/scripts/enterArea/generic.src	2006-05-11 02:29:43 UTC (rev 1298)
+@@ -41,8 +41,6 @@
+ 				if ( !GetNerveProcess(npc, &quot;LookAround&quot;) )
+ 					AI_WakeUp(npc);
+ 				endif
+-			else
+-				PrintTextAbove(npc, &quot;No wakeup nerve.&quot;);
+ 			endif
+ 			
+ 			return 1;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001269.html">[Poldistro-svn] r1297 - in trunk/096/pkg/mobiles/brainAI: include/braincore scripts/enterArea
+</A></li>
+	<LI>Next message: <A HREF="001271.html">[Poldistro-svn] r1299 - in trunk/096/pkg/systems/accounts: . commands/admin config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1270">[ date ]</a>
+              <a href="thread.html#1270">[ thread ]</a>
+              <a href="subject.html#1270">[ subject ]</a>
+              <a href="author.html#1270">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

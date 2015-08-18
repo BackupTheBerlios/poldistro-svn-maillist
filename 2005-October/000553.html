@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r583 - in trunk/096/pkg/systems/poisonwatcher: . poisonscripts/paralysis
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r583%20-%20in%20trunk/096/pkg/systems/poisonwatcher%3A%20.%20poisonscripts/paralysis&In-Reply-To=%3C200510120641.j9C6fwTm027448%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000552.html">
+   <LINK REL="Next"  HREF="000554.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r583 - in trunk/096/pkg/systems/poisonwatcher: . poisonscripts/paralysis</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r583%20-%20in%20trunk/096/pkg/systems/poisonwatcher%3A%20.%20poisonscripts/paralysis&In-Reply-To=%3C200510120641.j9C6fwTm027448%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r583 - in trunk/096/pkg/systems/poisonwatcher: . poisonscripts/paralysis">austin at berlios.de
+       </A><BR>
+    <I>Wed Oct 12 08:41:58 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000552.html">[Poldistro-svn] r582 - in trunk/096/pkg/systems/poisonwatcher: . poisonscripts poisonscripts/paralysis
+</A></li>
+        <LI>Next message: <A HREF="000554.html">[Poldistro-svn] r584 - in trunk/096/pkg/systems/poisonwatcher: . config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#553">[ date ]</a>
+              <a href="thread.html#553">[ thread ]</a>
+              <a href="subject.html#553">[ subject ]</a>
+              <a href="author.html#553">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-12 08:41:50 +0200 (Wed, 12 Oct 2005)
+New Revision: 583
+
+Added:
+   trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/endParalysis.src
+Modified:
+   trunk/096/pkg/systems/poisonwatcher/poisons.cfg
+   trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/paralysis.src
+   trunk/096/pkg/systems/poisonwatcher/poisonwatcher.src
+Log:
+Poison watcher set to use (who.connected)
+Added paralysis poison.
+Edited poisons.cfg to note that MaxDuration is a required setting.
+
+
+Modified: trunk/096/pkg/systems/poisonwatcher/poisons.cfg
+===================================================================
+--- trunk/096/pkg/systems/poisonwatcher/poisons.cfg	2005-10-12 06:17:52 UTC (rev 582)
++++ trunk/096/pkg/systems/poisonwatcher/poisons.cfg	2005-10-12 06:41:50 UTC (rev 583)
+@@ -33,8 +33,7 @@
+ #                   of their duration to the higher level poison.
+ #	AllorNothingCure: 1 means a cure either works or it doesn't; 0 means a cure
+ #                   reduces the poison's duration at least a little regardless.
+-#	MaxDuration: The maximum duration that a poison can reach. If not set there is
+-#                   no limit.
++#	MaxDuration: The maximum duration that a poison can reach. Required setting.
+ #
+ #	Type &quot;P&quot; for poison, &quot;C&quot; for curse &quot;B&quot; for blessing &quot;V&quot; for virus.
+ #	-There is no default. Type is used for getting an array of specific poison types.
+@@ -50,14 +49,14 @@
+ 	
+ PoisonType defaultPoison
+ {
+-	Name				DefaultPoison
+-	Script				PoisonScripts/defaultPoison
++	Name			DefaultPoison
++	Script			PoisonScripts/defaultPoison
+ 	IndicatePoison		1
+-	CureMessage			You have been cured of poison.
+-	Type				defaultPoison
+-	Cumulative			0
++	CureMessage		You have been cured of poison.
++	Type			defaultPoison
++	Cumulative		0
+ 	AllorNothingCure	1
+-	MaxDuration			120
++	MaxDuration		120	// 2 minutes
+ }
+ 
+ //--=[ Paralysis Poisons ]=------------------------
+@@ -66,11 +65,13 @@
+ {
+ 	Name			Paralysis
+ 	Script			poisonscripts/paralysis/paralysis
++	CureScript		poisonscripts/paralysis/endParalysis
+ 	IndicatePoison		0
+ 	CureMessage		You are able to move again.
+ 	Type			C
+ 	NoCure			1
+ 	Cumulative		1
++	MaxDuration		600	// 10 minutes
+ }
+ 
+ 	
+\ No newline at end of file
+
+Added: trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/endParalysis.src
+===================================================================
+--- trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/endParalysis.src	2005-10-12 06:17:52 UTC (rev 582)
++++ trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/endParalysis.src	2005-10-12 06:41:50 UTC (rev 583)
+@@ -0,0 +1,12 @@
++use uo;
++use os;
++
++include &quot;include/attributes&quot;;
++include &quot;:poisonwatcher:poisons&quot;;
++
++program poisonScript(params)
++	var who := params[1];
++	
++	who.paralyzed := 0;
++endprogram
++
+
+Modified: trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/paralysis.src
+===================================================================
+--- trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/paralysis.src	2005-10-12 06:17:52 UTC (rev 582)
++++ trunk/096/pkg/systems/poisonwatcher/poisonscripts/paralysis/paralysis.src	2005-10-12 06:41:50 UTC (rev 583)
+@@ -8,6 +8,7 @@
+ 	var who := params[1];
+ 	
+ 	PlaySoundEffect(who, 0x205);
++	SendSysMessage(who, &quot;You are unable to move.&quot;);
+ 	while ( who )
+ 		who.paralyzed := 1;
+ 		sleepms(250);
+
+Modified: trunk/096/pkg/systems/poisonwatcher/poisonwatcher.src
+===================================================================
+--- trunk/096/pkg/systems/poisonwatcher/poisonwatcher.src	2005-10-12 06:17:52 UTC (rev 582)
++++ trunk/096/pkg/systems/poisonwatcher/poisonwatcher.src	2005-10-12 06:41:50 UTC (rev 583)
+@@ -161,7 +161,7 @@
+ 	endif
+ 
+ 	var cumulative := CfgInfo(event.name).Cumulative;
+-	if( !poisons.exists(event.name) )
++	if( !poisons.Exists(event.name) )
+ 		var script := CfgInfo(event.name).Script;
+ 		script := start_script(script, {who, event.attacker, event.level});
+ 
+@@ -176,11 +176,11 @@
+ 		poisons[event.name].+level := event.level;
+ 		
+ 		var maxdur := CInt(CfgInfo(event.name).MaxDuration);
+-		if (maxdur &lt; poisons[event.name].duration)
++		if ( maxdur &lt; poisons[event.name].duration )
+ 			poisons[event.name].duration := maxdur;
+ 		endif
+ 
+-		if( CfgInfo(event.name).IndicatePoison)
++		if( CfgInfo(event.name).IndicatePoison )
+ 			num_poisons := num_poisons+1;
+ 		endif
+ 	else
+@@ -252,7 +252,7 @@
+ 
+ 	var cure_amount := event.amount;
+ 	var level := event.level;
+-	if( poisons.exists(event.name) )
++	if( poisons.Exists(event.name) )
+ 		if( cure_amount == -1 )
+ 			check_virulence:=0;
+ 			cure_amount := poisons[event.name].duration + 1;
+@@ -320,7 +320,7 @@
+ function ShouldRun( who, byref poison_keys )
+ 	if ( Events_Waiting() &gt;= 1 )
+ 		return 1;
+-	elseif( (who.npctemplate) || (GetObjProperty(who, &quot;#Online&quot;)) )
++	elseif( who.connected )
+ 		if( poison_keys.size() &gt; 0 )
+ 			return 1;
+ 		endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000552.html">[Poldistro-svn] r582 - in trunk/096/pkg/systems/poisonwatcher: . poisonscripts poisonscripts/paralysis
+</A></li>
+	<LI>Next message: <A HREF="000554.html">[Poldistro-svn] r584 - in trunk/096/pkg/systems/poisonwatcher: . config include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#553">[ date ]</a>
+              <a href="thread.html#553">[ thread ]</a>
+              <a href="subject.html#553">[ subject ]</a>
+              <a href="author.html#553">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r345 - trunk/096/pkg/items/containers/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r345%20-%20trunk/096/pkg/items/containers/include&In-Reply-To=%3C200510011312.j91DC8n7001297%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000322.html">
+   <LINK REL="Next"  HREF="000324.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r345 - trunk/096/pkg/items/containers/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r345%20-%20trunk/096/pkg/items/containers/include&In-Reply-To=%3C200510011312.j91DC8n7001297%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r345 - trunk/096/pkg/items/containers/include">austin at berlios.de
+       </A><BR>
+    <I>Sat Oct  1 15:12:08 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000322.html">[Poldistro-svn] r344 - trunk/096/pkg/items/containers/include
+</A></li>
+        <LI>Next message: <A HREF="000324.html">[Poldistro-svn] r346 - trunk/096/pkg/items/containers/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#323">[ date ]</a>
+              <a href="thread.html#323">[ thread ]</a>
+              <a href="subject.html#323">[ subject ]</a>
+              <a href="author.html#323">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-01 15:12:08 +0200 (Sat, 01 Oct 2005)
+New Revision: 345
+
+Modified:
+   trunk/096/pkg/items/containers/include/storageAreas.inc
+Log:
+
+
+Modified: trunk/096/pkg/items/containers/include/storageAreas.inc
+===================================================================
+--- trunk/096/pkg/items/containers/include/storageAreas.inc	2005-10-01 12:42:46 UTC (rev 344)
++++ trunk/096/pkg/items/containers/include/storageAreas.inc	2005-10-01 13:12:08 UTC (rev 345)
+@@ -51,11 +51,12 @@
+  * Purpose
+  *
+  * Parameters
+- * mobile:	Owner of the container that will be opened (uses .serial of it)
++ * mobile:		Owner of the container that will be retrieved (uses .serial of it)
+  * storage_area_name:	Name of the storage area to retrieve the container from.
++ * create:		Controls if the container will be created if it does not already exist.
+  *
+  * Return Value
+- * A storage area container reference
++ * A container object
+  *
+  */
+ function CP_GetStorageContainerForMobile(mobile, storage_area_name:=0, create:=CP_NOCREATE)
+@@ -63,9 +64,7 @@
+ 		storage_area_name := CP_DEFAULT_AREA;
+ 	endif
+ 	
+-	CP_RegisterStorageArea(storage_area_name);
+-
+-	var root_container := CP_GetStorageContainer(Hex(mobile.serial), storage_area_name);
++	var root_container := CP_GetStorageAreaContainer(Hex(mobile.serial), storage_area_name);
+ 	if ( !root_container &amp;&amp; create )
+ 		root_container := CP_CreateStorageAreaContainer(Hex(mobile.serial), storage_area_name);
+ 	endif
+@@ -77,10 +76,14 @@
+  * CP_GetStorageAreaContainer(container_name, storage_area_name)
+  *
+  * Purpose
++ * Retrieves a root container that matches the id sent.
+  *
+  * Parameters
++ * container_id:	Name of the root container to retrieve.
++ * storage_area_name:	Name of the storage area to retrieve the container from.
+  *
+  * Return value
++ * A container object
+  *
+  */
+ function CP_GetStorageAreaContainer(container_id, storage_area_name:=0)
+@@ -107,10 +110,14 @@
+  * CP_CreateStorageAreaContainer(container_id, storage_area_name)
+  *
+  * Purpose
++ * Creates a root container in a storage area.
+  *
+  * Parameters
++ * container_id:	Name of the container to create.
++ * storage_area_name:	Name of the storage area to create the container in.
+  *
+  * Return value
++ * A container object
+  *
+  */
+ function CP_CreateStorageAreaContainer(container_id, storage_area_name:=0)
+@@ -123,6 +130,7 @@
+ 		// The storage area does not exist - so create it.
+ 		CreateStorageArea(storage_area_name);
+ 		storage_area := FindStorageArea(storage_area_name);
++		CP_RegisterStorageArea(storage_area_name);
+ 	endif
+ 	
+ 	var container_name := CP_DEFAULT_PREFIX + container_id;
+@@ -139,10 +147,15 @@
+  * CP_RemoveStorageAreaContainer(container_id, storage_area_name)
+  *
+  * Purpose
++ * Removes a root container from a storage area.
++ * Also deletes all of its contents.
+  *
+  * Parameters
++ * container_id:	Name of the container to remove.
++ * storage_area_name:	Name of the storage area to remove the container from.
+  *
+  * Return value
++ * Returns the result of the deletion.
+  *
+  */
+ function CP_RemoveStorageAreaContainer(container_id, storage_area_name:=0)
+@@ -162,10 +175,13 @@
+  * CP_RegisterStorageArea(storage_area_name)
+  *
+  * Purpose
++ * Tracks the names of storage areas that have been created.
+  *
+  * Parameters
++ * storage_area_name:	Name of the storage area to add.
+  *
+  * Return value
++ * Returns 1
+  *
+  */
+ function CP_RegisterStorageArea(storage_area_name)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000322.html">[Poldistro-svn] r344 - trunk/096/pkg/items/containers/include
+</A></li>
+	<LI>Next message: <A HREF="000324.html">[Poldistro-svn] r346 - trunk/096/pkg/items/containers/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#323">[ date ]</a>
+              <a href="thread.html#323">[ thread ]</a>
+              <a href="subject.html#323">[ subject ]</a>
+              <a href="author.html#323">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

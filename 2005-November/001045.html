@@ -1,0 +1,350 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1074 - in trunk/096/pkg/commands: config gm
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1074%20-%20in%20trunk/096/pkg/commands%3A%20config%20gm&In-Reply-To=%3C200511271546.jARFk0GX031485%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001044.html">
+   <LINK REL="Next"  HREF="001046.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1074 - in trunk/096/pkg/commands: config gm</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1074%20-%20in%20trunk/096/pkg/commands%3A%20config%20gm&In-Reply-To=%3C200511271546.jARFk0GX031485%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1074 - in trunk/096/pkg/commands: config gm">austin at berlios.de
+       </A><BR>
+    <I>Sun Nov 27 16:46:00 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001044.html">[Poldistro-svn] r1073 - in trunk/096/pkg/commands: config gm
+</A></li>
+        <LI>Next message: <A HREF="001046.html">[Poldistro-svn] r1075 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1045">[ date ]</a>
+              <a href="thread.html#1045">[ thread ]</a>
+              <a href="subject.html#1045">[ subject ]</a>
+              <a href="author.html#1045">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-27 16:45:59 +0100 (Sun, 27 Nov 2005)
+New Revision: 1074
+
+Modified:
+   trunk/096/pkg/commands/config/info.cfg
+   trunk/096/pkg/commands/gm/info.src
+Log:
+Added support for custom members
+
+Modified: trunk/096/pkg/commands/config/info.cfg
+===================================================================
+--- trunk/096/pkg/commands/config/info.cfg	2005-11-27 13:26:30 UTC (rev 1073)
++++ trunk/096/pkg/commands/config/info.cfg	2005-11-27 15:45:59 UTC (rev 1074)
+@@ -27,10 +27,6 @@
+ #	// Display specific attribute
+ #	Entry	Attribute	AttributeName
+ #	Entry	Attribute	Swordsmanship
+-#
+-#	// Custom parameter (must edit BuildCustomEntry() and write a function to support this param type)
+-#	Entry	Custom	EntryName (data)
+-#	Entry	Custom	Reportables
+ # }
+ #
+ ####################################
+@@ -44,6 +40,7 @@
+ 	Index	Script
+ 	Index	Reputation
+ 	Index	Properties
++	Index	NPC Properties
+ 	Index	Stats &amp; Vitals
+ 	Index	Skills
+ 	Index	Privileges
+@@ -75,12 +72,14 @@
+ Elem	Index-Location
+ {
+ 	Group	Location
++	Group	Multi
+ }
+ 
+ Elem	Index-Client
+ {
+ 	Group	Client
+ 	Group	Account
++	Group	GottenItem
+ }
+ 
+ Elem	Index-Combat
+@@ -98,6 +97,7 @@
+ Elem	Index-Reputation
+ {
+ 	Group	Reputation
++	Group	Reportables
+ }
+ 
+ Elem	Index-Properties
+@@ -109,6 +109,11 @@
+ 	Group	Movement
+ }
+ 
++Elem	Index-NPC Properties
++{
++	Group	NPCProperties
++}
++
+ Elem	Index-Stats &amp; Vitals
+ {
+ 	Group	Vitals
+@@ -152,7 +157,14 @@
+ 	Entry	member	Y	y	0	CoordEdit
+ 	Entry	member	Z	z	0	CoordEdit
+ 	Entry	member	Realm	realm	0	CoordEdit
++	Entry	member	Facing	facing	0	PropEdit
+ }
++Group	Multi
++{
++	AutoBox	1
++	Entry	member	Multi_Name	multi.desc
++	Entry	member	Multi_Serial	multi.serial	Hex
++}	
+ 
+ Group	Client
+ {
+@@ -177,6 +189,13 @@
+ 	Entry	member	Account_Banned	acct.banned
+ }
+ 
++Group	GottenItem
++{
++	AutoBox	1
++	Entry	custom	Gotten_Item_Name
++	Entry	custom	Gotten_Item_Serial	0	hex
++}	
++
+ Group	Combat
+ {
+ 	AutoBox	1
+@@ -220,17 +239,34 @@
+ 	AutoBox	1
+ 	Entry	member	Criminal	criminal	0	CrimEdit
+ 	Entry	member	Murderer	murderer	0	MurdererEdit
+-	Entry	blank
+-	Entry	custom	Reportables	0
+ }
+ 
++Group	Reportables
++{
++	Entry	Reportables
++}
++
+ Group	Properties
+ {
+ 	AutoBox	1
++	Entry	member	Serial_Number	serial		Hex
++	Entry	member	Poisoned	poisoned
++	Entry	member	Squelched	squelched
+ 	Entry	member	Dead		dead
+-	Entry	member	NPC_Template	npctemplate
++	Entry	member	Height		height
++	Entry	member	Weight		weight
+ }
+ 
++Group	NPCProperties
++{
++	AutoBox	1
++	Entry	member	NPC_Template		npctemplate
++	Entry	member	Speech_Color		speechcolor		0	PropEdit
++	Entry	member	Speech_Font		speechfont		0	PropEdit
++	Entry	member	Use_Adjustments		useadjustments		0	PropEdit
++	Entry	member	Run_Speed		runspeed		0	PropEdit
++}
++
+ Group	Colors
+ {
+ 	AutoBox	1
+@@ -258,6 +294,7 @@
+ 	AutoBox	1
+ 	Entry	member	Hidden		hidden		0	PropEdit
+ 	Entry	member	Concealed	concealed	0	PropEdit
++	Entry	member	Stealth_Steps	stealthsteps	0	PropEdit
+ }
+ 
+ Group	Vitals
+
+Modified: trunk/096/pkg/commands/gm/info.src
+===================================================================
+--- trunk/096/pkg/commands/gm/info.src	2005-11-27 13:26:30 UTC (rev 1073)
++++ trunk/096/pkg/commands/gm/info.src	2005-11-27 15:45:59 UTC (rev 1074)
+@@ -95,7 +95,7 @@
+ 	foreach entry in ( entries )
+ 		entry := SplitWords(entry, &quot; &quot;);
+ 		case ( Lower(entry[1]) )
+-			&quot;member&quot;:
++			&quot;member&quot;: &quot;custom&quot;:
+ 				DisplayMember(targ, gump, entry, y_pos);
+ 				break;
+ 			&quot;vitals&quot;:
+@@ -115,10 +115,14 @@
+ 				DisplayStorageAreas(targ, gump, y_pos);
+ 				break;
+ 			&quot;blank&quot;:
+-				y_pos := y_pos+20;
++				var buffer := CInt(entry[2]);
++				if ( !buffer )
++					buffer := 20;
++				endif
++				y_pos := y_pos+buffer;
+ 				break;
+-			&quot;custom&quot;:
+-				BuildCustomEntry(targ, gump, entry, y_pos);
++			&quot;reportables&quot;:
++				DisplayReportables(targ, gump, y_pos);
+ 				break;
+ 			default:
+ 				GFTextLine(gump, 175, y_pos, 32, entry);
+@@ -132,18 +136,6 @@
+ 	return 1;
+ endfunction
+ 
+-function BuildCustomEntry(targ, byref gump, byref entry, byref y_pos)
+-	case ( Lower(entry[2]) )
+-		&quot;Weapon_Speed&quot;:
+-		&quot;Damage_Dice&quot;:
+-		&quot;Average_Damage&quot;:
+-		default:
+-		break;
+-	endcase
+-
+-	return 1;
+-endfunction
+-
+ function DisplayMember(targ, byref gump, byref entry, byref y_pos)
+ 	if ( entry[5] )
+ 		GFAddButton(gump, 150, (y_pos+3), 2117, 2118, GF_CLOSE_BTN);
+@@ -151,7 +143,16 @@
+ 
+ 	GFTextLine(gump, 175, y_pos, 2100, ParseEntryName(entry[2]));
+ 
+-	var value := ParseMembers(targ, entry[3]);
++	var value := &quot;&quot;;
++	if ( Lower(entry[1]) == &quot;member&quot; )
++		value := ParseMembers(targ, entry[3]);
++	else
++		value := GetCustom(targ, entry[2]);
++	endif
++	if ( value == error )
++		value := &quot;None&quot;;
++	endif
++	
+ 	case ( Lower(entry[4]) )
+ 		&quot;hex&quot;:
+ 			value := Hex(value);
+@@ -275,6 +276,31 @@
+ 	return 1;
+ endfunction
+ 
++function DisplayReportables(targ, byref gump, byref y_pos)
++	GFResizePic(gump, 145, y_pos, GFCfgConst(&quot;BackGrounds&quot;, &quot;GoldTrim&quot;), 340, 200);
++	var lines := &quot;&lt;CENTER&gt;&lt;U&gt;Reportables&lt;/U&gt;&lt;/CENTER&gt;&lt;BR&gt;&quot;;
++	foreach line in ( targ.reportables )
++		lines := &quot;&lt;B&gt;o&lt;/B&gt;&quot;+lines+line+&quot;&lt;BR&gt;&quot;;
++		sleepms(2);
++	endforeach
++	GFHTMLArea(gump, 155, y_pos+7, 325, 186, lines, 0, 1);
++	
++	y_pos := y_pos+340;	
++	return 1;
++endfunction
++
++function DisplayWeaponInfo(targ, byref gump, byref entry, byref y_pos)
++	var weapon := targ.weapon;
++	
++	case ( Lower(entry[1]) )
++		&quot;weaponspeed&quot;: 
++		&quot;damagedice&quot;: 
++		&quot;averagedamage&quot;:
++	endcase
++	y_pos := y_pos+20;
++	return 1;
++endfunction
++
+ function ParseEntryName(entry_name)
+ 	while ( entry_name[&quot;_&quot;] )
+ 		entry_name[&quot;_&quot;] := &quot; &quot;;
+@@ -288,11 +314,10 @@
+ 	var result := targ;
+ 	foreach member in ( members )
+ 		var temp := result.Get_Member(member);
+-		if ( temp != error )
++		if ( temp == error )
++			return error;
++		else
+ 			result := temp;
+-		else
+-			result := &quot;None&quot;;
+-			break;
+ 		endif
+ 
+ 		sleepms(2);
+@@ -301,11 +326,24 @@
+ 	return result;
+ endfunction
+ 
++function GetCustom(targ, property)
++	case ( Lower(property) )
++		&quot;weapon_speed&quot;: 
++			return CS_GetWeaponInfo(targ.weapon, &quot;Speed&quot;);
++		&quot;damage_dice&quot;:
++			return CS_GetWeaponInfo(targ.weapon, &quot;Damage&quot;);
++		&quot;average_damage&quot;:
++			return CS_GetAverageDamage(targ.weapon);
++		&quot;gotten_item_name&quot;:
++			return targ.GetGottenItem().desc;
++		&quot;gotten_item_serial&quot;:
++			return targ.GetGottenItem().serial;
++	endcase
++	
++	return &quot;Unknown custom type!&quot;;
++endfunction
++
+ function ParseScriptName(path)
+-	if ( !path )
+-		return &quot;None&quot;;
+-	endif
+-
+ 	while ( path[&quot;/&quot;] )
+ 		// Breaks it down to just the file name.
+ 		var pos := Find(path, &quot;/&quot;, 1);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001044.html">[Poldistro-svn] r1073 - in trunk/096/pkg/commands: config gm
+</A></li>
+	<LI>Next message: <A HREF="001046.html">[Poldistro-svn] r1075 - in trunk/096/pkg/commands: config gm
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1045">[ date ]</a>
+              <a href="thread.html#1045">[ thread ]</a>
+              <a href="subject.html#1045">[ subject ]</a>
+              <a href="author.html#1045">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

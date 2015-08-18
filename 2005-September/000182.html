@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r200 - trunk/096/pkg/systems/attributes/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r200%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509202255.j8KMt1t2013801%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000181.html">
+   <LINK REL="Next"  HREF="000183.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r200 - trunk/096/pkg/systems/attributes/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r200%20-%20trunk/096/pkg/systems/attributes/include&In-Reply-To=%3C200509202255.j8KMt1t2013801%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r200 - trunk/096/pkg/systems/attributes/include">austin at berlios.de
+       </A><BR>
+    <I>Wed Sep 21 00:55:01 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000181.html">[Poldistro-svn] r199 - in trunk/096/pkg/systems/attributes: commands/test include
+</A></li>
+        <LI>Next message: <A HREF="000183.html">[Poldistro-svn] r201 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#182">[ date ]</a>
+              <a href="thread.html#182">[ thread ]</a>
+              <a href="subject.html#182">[ subject ]</a>
+              <a href="author.html#182">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-21 00:54:59 +0200 (Wed, 21 Sep 2005)
+New Revision: 200
+
+Modified:
+   trunk/096/pkg/systems/attributes/include/skills.inc
+Log:
+
+
+Modified: trunk/096/pkg/systems/attributes/include/skills.inc
+===================================================================
+--- trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-20 22:47:24 UTC (rev 199)
++++ trunk/096/pkg/systems/attributes/include/skills.inc	2005-09-20 22:54:59 UTC (rev 200)
+@@ -0,0 +1,105 @@
++/*===============================================================
++* Current Version
++* SKILLS.INC - v1.0
++* Updated 9/20/2005 2:20PM
++*
++* -- Revision v1.0 --
++* Austin:
++*  Created include file
++===============================================================*/
++
++use uo;
++
++/*
++ * AF_GetSkill(mobile, skill_name)
++ *
++ * Purpose
++ * Retrieves the base value of the skill plus its mod value.
++ *
++ * Parameters
++ * mobile:	Mobile reference to retrieve the points from.
++ * skill_name:	Name of the skill to retrieve the points for.
++ *
++ * Return value
++ * Returns an integer.
++ *
++ */
++function AF_GetSkill(who, skill_name)
++	return AF_GetTrueSkill(who, skill_name)+AF_GetSkillMod(who, skill_name);
++endfunction
++
++/*
++ * AF_GetTrueSkill(mobile, skill_name)
++ *
++ * Purpose
++ * Retrieves the base value of the skill and turns it into a usable number.
++ *
++ * Parameters
++ * mobile:	Mobile reference to retrieve the points from.
++ * skill_name:	Name of the skill to retrieve the points for.
++ *
++ * Return value
++ * Returns a double.
++ *
++ */
++function AF_GetTrueSkill(who, skill_name)
++	return CDbl(GetAttributeBaseValue(who, skill_name)) / 10.0;
++endfunction
++
++/*
++ * AF_GetSkillMod(mobile, skill_name)
++ *
++ * Purpose
++ * Retrieves the base value of the skill mod and turns it into a usable number.
++ *
++ * Parameters
++ * mobile:	Mobile reference to retrieve the points from.
++ * skill_name:	Name of the skill to retrieve the modifier points for.
++ *
++ * Return value
++ * Returns a double.
++ *
++ */
++function AF_GetSkillMod(who, skill_name)
++	return CDbl(GetAttributeTemporaryMod(who, skill_name)) / 10.0;
++endfunction
++
++/*
++ * AF_SetTrueSkill(mobile, skill_name, points)
++ *
++ * Purpose
++ * Sets the value of the skill.
++ * Example: AF_SetTrueSkill(mobile, &quot;strength&quot;, 44.5)
++ *
++ * Parameters
++ * mobile:	Mobile reference to set the points on.
++ * skill_name:	Name of the skill to set the points on.
++ * points:	Number of points to set the skill at.
++ *
++ * Return value
++ * Returns a double.
++ *
++ */
++function AF_SetTrueSkill(mobile, skill_name, points)
++	SetAttributeBaseValue(mobile, skill_name, CInt(CDbl(points) * 10.0));
++endfunction
++
++/*
++ * AF_SetSkillMod(mobile, skill_name, points)
++ *
++ * Purpose
++ * Sets the modifier value for the skill.
++ * Example: AF_SetSkillMod(mobile, &quot;strength&quot;, -15.3)
++ *
++ * Parameters
++ * mobile:	Mobile reference to set the modifier points on.
++ * skill_name:	Name of the skill to set the modifier points on.
++ * points:	Number of points to set the modifier skill at.
++ *
++ * Return value
++ * Returns a double.
++ *
++ */
++function AF_SetSkillMod(mobile, skill_name, points)
++	SetAttributeTemporaryMod(mobile, skill_name, CInt(CDbl(points) * 10.0));
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000181.html">[Poldistro-svn] r199 - in trunk/096/pkg/systems/attributes: commands/test include
+</A></li>
+	<LI>Next message: <A HREF="000183.html">[Poldistro-svn] r201 - trunk/096/pkg/systems/attributes/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#182">[ date ]</a>
+              <a href="thread.html#182">[ thread ]</a>
+              <a href="subject.html#182">[ subject ]</a>
+              <a href="author.html#182">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

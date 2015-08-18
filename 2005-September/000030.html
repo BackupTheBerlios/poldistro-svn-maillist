@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r48 - trunk/096/pkg/mobiles/ai_brain/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r48%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509040114.j841EB5C027347%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000029.html">
+   <LINK REL="Next"  HREF="000031.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r48 - trunk/096/pkg/mobiles/ai_brain/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r48%20-%20trunk/096/pkg/mobiles/ai_brain/include&In-Reply-To=%3C200509040114.j841EB5C027347%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r48 - trunk/096/pkg/mobiles/ai_brain/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep  4 03:14:11 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000029.html">[Poldistro-svn] r47 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+        <LI>Next message: <A HREF="000031.html">[Poldistro-svn] r49 - trunk/096/pkg/mobiles/ai_brain
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#30">[ date ]</a>
+              <a href="thread.html#30">[ thread ]</a>
+              <a href="subject.html#30">[ subject ]</a>
+              <a href="author.html#30">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-04 03:14:10 +0200 (Sun, 04 Sep 2005)
+New Revision: 48
+
+Modified:
+   trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc
+   trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc
+Log:
+
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc	2005-09-03 18:52:13 UTC (rev 47)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcNerves.inc	2005-09-04 01:14:10 UTC (rev 48)
+@@ -11,7 +11,7 @@
+ use uo;
+ use os;
+ 
+-include &quot;:ai_brain:include/npc_error&quot;;
++include &quot;:ai_brain:include/npcError&quot;;
+ 
+ /////////////////////////////////////////////////////////////////
+ // * Function List *
+
+Modified: trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc
+===================================================================
+--- trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc	2005-09-03 18:52:13 UTC (rev 47)
++++ trunk/096/pkg/mobiles/ai_brain/include/npcSettings.inc	2005-09-04 01:14:10 UTC (rev 48)
+@@ -12,7 +12,7 @@
+ use os;
+ use cfgfile;
+ 
+-include &quot;:ai_brain:include/npc_util&quot;;
++include &quot;:ai_brain:include/npcUtil&quot;;
+ 
+ /*
+  * NPC_LoadCfgDefaults(template_name)
+@@ -21,39 +21,63 @@
+  * Loads settings for a template from npcdesc.cfg
+  *
+  * Parameters
+- * template:	Name of the npc template to load settings for.
++ * source:	Name of the npc template to load settings for.
++ *		Can also be an npc reference - if custom settings should be loaded off it.
+  *
+  * Return value
+  * Returns a dictionary
+  *
+  */
+-function NPC_LoadCfgDefaults(template)
+-	if ( !template.package )
++function NPC_LoadTemplateSettings(source)
++	var template:=source;
++	if ( source.IsA(POLCLASS_NPC) )
++		template := NPC_ParseTemplateName(source.npctemplate);
++	elseif ( !template.package )
+ 		template := NPC_ParseTemplateName(template);
+ 	endif
+-	
++
++	//
++	// * Load config defaults first
++	//
+ 	var npc_cfg := ReadConfigFile(template.package+&quot;npcdesc&quot;);
+ 	var npc_elem := npc_cfg[template];
++
++	var setting_list := GetConfigStringDictionary(npc_elem, &quot;AISetting&quot;);
+ 	
+ 	var settings := dictionary;
+-	/*
+-	 * NPC Settings - Step 1 - npcdesc.cfg defaults.
+-	 * Reads in the AISetting lines from the npcdesc.cfg elem.
+-	 * Values are stored in packed form.
+-	 */
+-	foreach setting in GetConfigStringArray(npc_elem, &quot;AISetting&quot;)
+-		setting := SplitWords(setting);
+-		var key := setting[1];
+-		var value := setting[2];
+-
+-		settings[key] := UnPack(value);
+-
++	foreach setting_name in (setting_list.keys())
++		settings[setting_name] := UnPack(setting_list[setting_name]);
+ 		sleepms(2);
+ 	endforeach
+ 
++	//
++	// * If the source is an npc, check it for custom settings.
++	//
++	if ( source.IsA(POLCLASS_NPC) )
++		var cstm_scripts := GetObjProperty(source, &quot;AISettings&quot;);
++		foreach key in (cstm_scripts.keys())
++			settings[key] := cstm_scripts[key];
++			sleepms(2);
++		endforeach
++	endif
++	
+ 	return settings;
+ endfunction
+ 
++/*
++ * NPC_LoadScriptSettings(source)
++ *
++ * Purpose
++ * Loads brain AI script settings for an NPC. Gives .script and .flag values for them.
++ *
++ * Parameters
++ * source:	Name of the npc template to load settings for.
++ *		Can also be an npc reference - if custom settings should be loaded off it.
++ *
++ * Return value
++ * Returns a dictionary
++ *
++ */
+ function NPC_LoadScriptSettings(source)
+ 	var template:=source;
+ 	if ( source.IsA(POLCLASS_NPC) )
+@@ -61,29 +85,44 @@
+ 	elseif ( !template.package )
+ 		template := NPC_ParseTemplateName(template);
+ 	endif
+-	
++
++	//
++	// * Load config defaults first
++	//
+ 	var npc_cfg := ReadConfigFile(template.package+&quot;npcdesc&quot;);
+ 	var npc_elem := npc_cfg[template];
+-	
+-	var script_list := GetConfigStringArray(npc_elem, &quot;AIScript&quot;);
+-	var flag_list := GetConfigStringArray(npc_elem, &quot;AIScriptFlag&quot;);
+-	
++
++	var script_list := GetConfigStringDictionary(npc_elem, &quot;AIScript&quot;);
++	var flag_list := GetConfigStringDictionary(npc_elem, &quot;AIScriptFlag&quot;);
++
+ 	var script_settings := dictionary;
+-	foreach script_line in (script_list)
+-		script_line := SplitWords(script_line);
+-		var key := script_line[1];
+-		var value := script_line[2];
+-		var flags := 		
+-		
++	foreach script_type in (script_list.keys())
+ 		var temp := struct;
+-		
+-		script_settings[key] := struct{&quot;
+-		
++		temp.+script := script_list[script_type];
++		temp.+flags := UnPack(flag_list[script_type]);
++
++		script_settings[script_type] := temp;
++		sleepms(2);
++	endforeach
++
++	//
++	// * If the source is an npc, check it for custom script settings.
++	//   Assumes each key in the dictionary property has a .script and .flags pair already.
++	//
++	if ( source.IsA(POLCLASS_NPC) )
++		var cstm_scripts := GetObjProperty(source, &quot;AIScripts&quot;);
++		foreach key in (cstm_scripts.keys())
++			script_settings[key] := cstm_scripts[key];
++			sleepms(2);
++		endforeach
++	endif
++	
++	return script_settings;
+ endfunction
+ 
+ /*
+  * NPC_LoadCustomSettings(npc_ref, settings:=0)
+- * 
++ *
+  * Purpose
+  * Loads custom settings that are set on a specific npc.
+  *
+@@ -92,16 +131,16 @@
+  * settings:	Optional parameter
+  *		Dictionary read in from LoadNPCCfgDefaults()
+  *		Existing keys will be overwritten with any custom settings.
+- * 
++ *
+  * Return value
+  * Returns a dictionary
+- *		
++ *
+  */
+ function NPC_LoadCustomSettings(npc_ref, settings:=0)
+ 	if ( Lower(TypeOf(settings)) != &quot;dictionary&quot; )
+ 		settings := dictionary;
+ 	endif
+-	
++
+ 	var cstm_settings := GetObjProperty(npc_ref, &quot;AI_Settings&quot;);
+ 	foreach key in (cstm_settings.keys())
+ 		var value := cstm_settings[key];
+@@ -110,10 +149,10 @@
+ 		else
+ 			settings[key] := value;
+ 		endif
+-		
++
+ 		sleepms(2);
+ 	endforeach
+-	
++
+ 	return settings;
+ endfunction
+ 
+@@ -123,7 +162,7 @@
+  * Purpose
+  * Checks the settings dictionary to make sure required values are set.
+  * If a dictionary is passed, it will check it for required parameters.
+- * If they are not present, they will be set. 
++ * If they are not present, they will be set.
+  * Nothing will be overwritten in this function.
+  *
+  * Parameters
+@@ -131,14 +170,14 @@
+  *		Dictionary read in from NPC_GetDefaultSettings()
+  *
+  * Return value
+- * Returns a dictionary 
++ * Returns a dictionary
+  *
+  */
+ function NPC_GetDefaultSettings(settings:=0)
+ 	if ( Lower(TypeOf(settings)) != &quot;dictionary&quot; )
+ 		settings := dictionary;
+ 	endif
+-	
++
+ 	if ( CInt(settings.exists(&quot;cycle_wait&quot;)) &lt;= 0 )
+ 		settings[&quot;cycle_wait&quot;] := 10;
+ 	endif
+@@ -148,6 +187,6 @@
+ 	if ( CInt(settings.exists(&quot;idle_ticks&quot;)) &lt;= 0 )
+ 		settings[&quot;idle_ticks&quot;] := 5;
+ 	endif
+-		
++
+ 	return settings;
+ endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000029.html">[Poldistro-svn] r47 - trunk/096/pkg/mobiles/ai_brain/include
+</A></li>
+	<LI>Next message: <A HREF="000031.html">[Poldistro-svn] r49 - trunk/096/pkg/mobiles/ai_brain
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#30">[ date ]</a>
+              <a href="thread.html#30">[ thread ]</a>
+              <a href="subject.html#30">[ subject ]</a>
+              <a href="author.html#30">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

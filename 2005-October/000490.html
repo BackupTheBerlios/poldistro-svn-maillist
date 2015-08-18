@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r517 - trunk/096/pkg/items/walkOn/commands/seer
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-October/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r517%20-%20trunk/096/pkg/items/walkOn/commands/seer&In-Reply-To=%3C200510101309.j9AD9WpM008167%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000489.html">
+   <LINK REL="Next"  HREF="000491.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r517 - trunk/096/pkg/items/walkOn/commands/seer</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r517%20-%20trunk/096/pkg/items/walkOn/commands/seer&In-Reply-To=%3C200510101309.j9AD9WpM008167%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r517 - trunk/096/pkg/items/walkOn/commands/seer">austin at berlios.de
+       </A><BR>
+    <I>Mon Oct 10 15:09:32 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000489.html">[Poldistro-svn] r516 - trunk/096/pkg/items/walkOn/commands/seer
+</A></li>
+        <LI>Next message: <A HREF="000491.html">[Poldistro-svn] r518 - trunk/096/pkg/items/walkOn/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#490">[ date ]</a>
+              <a href="thread.html#490">[ thread ]</a>
+              <a href="subject.html#490">[ subject ]</a>
+              <a href="author.html#490">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-10-10 15:09:32 +0200 (Mon, 10 Oct 2005)
+New Revision: 517
+
+Modified:
+   trunk/096/pkg/items/walkOn/commands/seer/makeTele.src
+Log:
+
+
+Modified: trunk/096/pkg/items/walkOn/commands/seer/makeTele.src
+===================================================================
+--- trunk/096/pkg/items/walkOn/commands/seer/makeTele.src	2005-10-10 00:56:39 UTC (rev 516)
++++ trunk/096/pkg/items/walkOn/commands/seer/makeTele.src	2005-10-10 13:09:32 UTC (rev 517)
+@@ -24,19 +24,19 @@
+ 
+ program command_MakeTele(who)
+ 	var gump := GFCreateGump();
+-	
++
+ 	GFResizePic(gump, 0, 0, GFCfgConst(&quot;Defaults&quot;, &quot;BackGround&quot;), 450, 460);
+ 	GFResizePic(gump, 10, 10, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 430, 40);
+ 	GFTextMid(gump, 10, 20, 430, 2100, &quot;Teleport Create Menu&quot;);
+-	
++
+ 	GFResizePic(gump, 10, 55, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 430, 90);
+ 	GFTextLine(gump, 20, 60, 2100, &quot;Tele one will be placed where you are standing.&quot;);
+ 	GFTextLine(gump, 20, 80, 2100, &quot;Tele two will be placed where tele one leads to.&quot;);
+ 	GFTextLine(gump, 20, 100, 2100, &quot;If there is no tele two, then its a one way teleporter.&quot;);
+ 	GFTextLine(gump, 20, 120, 2100, &quot;Make sure you have 'SeeInvisItems' on to see the tiles.&quot;);
+-	
++
+ 	GFResizePic(gump, 10, 150, GFCfgConst(&quot;Defaults&quot;, &quot;ForeGround&quot;), 430, 300);
+-	
++
+ 	GFTextLine(gump, 20, 160, 2100, &quot;Teleporter 1 Settings&quot;);
+ 	GFTextLine(gump, 20, 193, 2100, &quot;Realm&quot;);
+ 	GFResizePic(gump, 120, 190, 2620, 100, 30);
+@@ -53,7 +53,7 @@
+ 
+ 	GFAddButton(gump, 344, 270, 2076, 2075, GF_CLOSE_BTN, OKAY_BTN);
+ 	GFAddButton(gump, 340, 330, 2121, 2120, GF_CLOSE_BTN, CANCEL_BTN);
+-	
++
+ 	GFTextLine(gump, 20, 310, 2100, &quot;Teleporter 2 Settings&quot;);
+ 	GFTextLine(gump, 20, 343, 2100, &quot;Realm&quot;);
+ 	GFResizePic(gump, 120, 340, 2620, 100, 30);
+@@ -67,29 +67,46 @@
+ 	GFTextLine(gump, 20, 412, 2100, &quot;Z Coordinate&quot;);
+ 	GFResizePic(gump, 120, 409, 2620, 100, 30);
+ 	GFTextEntry(gump, 130, 414, 80, 25, 2100, who.z, B_ZCOORD_TXT);
+-	
++
+ 	var input := GFSendGump(who, gump);
+ 	if ( input[OKAY_BTN] )
+ 		var dest_a, dest_b;
+-		// Initialize both at the same time. Computers work right to left.
+-		dest_a := dest_b := struct{&quot;realm&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;}; 
+-				
++		dest_a := struct{&quot;realm&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;};
++		dest_b := struct{&quot;realm&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;};
++
+ 		dest_a.realm := GFExtractData(input, A_REALM_TXT);
+ 		dest_a.x := CInt(GFExtractData(input, A_XCOORD_TXT));
+-		dest_a.y := CInt(GFExtractData(input, A_XCOORD_TXT));
+-		dest_a.z := CInt(GFExtractData(input, A_XCOORD_TXT));
+-		
++		dest_a.y := CInt(GFExtractData(input, A_YCOORD_TXT));
++		dest_a.z := CInt(GFExtractData(input, A_ZCOORD_TXT));
++
+ 		if ( !CreateTeleTile(who, who.realm, who.x, who.y, who.z, dest_a) )
+ 			return 0;
+ 		endif
++		
++		dest_b.realm := GFExtractData(input, B_REALM_TXT);
++		dest_b.x := CInt(GFExtractData(input, B_XCOORD_TXT));
++		dest_b.y := CInt(GFExtractData(input, B_YCOORD_TXT));
++		dest_b.z := CInt(GFExtractData(input, B_ZCOORD_TXT));
++		
++		if ( dest_b.realm &amp;&amp; dest_b.x &amp;&amp; dest_b.y )
++			if ( !CreateTeleTile(who, dest_a.realm, dest_a.x, dest_a.y, dest_a.z, dest_b) )
++				return 0;
++			else
++				SendSysMessage(who, &quot;Two way teleporter setup completed.&quot;);
++			endif
++		else
++			SendSysMessage(who, &quot;One way teleporter created.&quot;);
++		endif		
+ 	endif
++	
++	return 1;
+ endprogram
+ 
+ function CreateTeleTile(who, make_realm, make_x, make_y, make_z, byref dest)
+ 	var realm_info := Realms();
+ 	realm_info := realm_info[dest.realm];
+ 	if ( !realm_info )
+-		SendSysMessage(who, &quot;Error - Teleporter set to have an invalid realm name '&quot;+dest.realm+&quot;'&quot;); 
++		SendSysMessage(who, &quot;Error - Teleporter set to have an invalid realm name '&quot;+dest.realm+&quot;'&quot;);
+ 		return 0;
+ 	elseif ( dest.x &lt;= 0 )
+ 		SendSysMessage(who, &quot;Error - Teleporter set to have an invalid X coordinate. ' &lt;= 0 '&quot;);
+@@ -106,15 +123,15 @@
+ 	elseif ( !dest.z )
+ 		dest.z := GetWorldHeight(dest.x, dest.y);
+ 	endif
+-	
++
+ 	var tile := CreateItemAtLocation(make_x, make_y, make_z, &quot;telepad&quot;, 1, make_realm);
+ 	if ( tile.errortext )
+ 		SendSysMessage(who, &quot;Error - Unable to create 'telepad' -&gt;&quot;+tile.errortext);
+ 		return 0;
+ 	endif
+-	
++
+ 	SetObjProperty(tile, &quot;Destination&quot;, dest);
+ 	PlayStationaryEffect(make_x, make_y, make_z, 3546, 200, 0, 0, make_realm);
+-	
++
+ 	return 1;
+ endfunction
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000489.html">[Poldistro-svn] r516 - trunk/096/pkg/items/walkOn/commands/seer
+</A></li>
+	<LI>Next message: <A HREF="000491.html">[Poldistro-svn] r518 - trunk/096/pkg/items/walkOn/commands/seer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#490">[ date ]</a>
+              <a href="thread.html#490">[ thread ]</a>
+              <a href="subject.html#490">[ subject ]</a>
+              <a href="author.html#490">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

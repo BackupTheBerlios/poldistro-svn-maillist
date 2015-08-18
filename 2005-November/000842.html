@@ -1,0 +1,634 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r869 - in trunk/096/pkg/skills/magery: . OLD commands config include spellScripts
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r869%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20OLD%20commands%20config%20include%20spellScripts&In-Reply-To=%3C200511030603.jA363JRY030062%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000853.html">
+   <LINK REL="Next"  HREF="000843.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r869 - in trunk/096/pkg/skills/magery: . OLD commands config include spellScripts</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r869%20-%20in%20trunk/096/pkg/skills/magery%3A%20.%20OLD%20commands%20config%20include%20spellScripts&In-Reply-To=%3C200511030603.jA363JRY030062%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r869 - in trunk/096/pkg/skills/magery: . OLD commands config include spellScripts">austin at berlios.de
+       </A><BR>
+    <I>Thu Nov  3 07:03:19 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000853.html">[Poldistro-svn] r868 - in trunk/096/pkg/skills/magery: . OLD OLD/config
+</A></li>
+        <LI>Next message: <A HREF="000843.html">[Poldistro-svn] r870 - in trunk/096: config pkg/mobiles/brainAI pkg/mobiles/brainAI/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#842">[ date ]</a>
+              <a href="thread.html#842">[ thread ]</a>
+              <a href="subject.html#842">[ subject ]</a>
+              <a href="author.html#842">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-03 07:02:07 +0100 (Thu, 03 Nov 2005)
+New Revision: 869
+
+Added:
+   trunk/096/pkg/skills/magery/commands/
+   trunk/096/pkg/skills/magery/commands/player/
+   trunk/096/pkg/skills/magery/commands/seer/
+   trunk/096/pkg/skills/magery/config/
+   trunk/096/pkg/skills/magery/config/icp.cfg
+   trunk/096/pkg/skills/magery/config/settings.cfg
+   trunk/096/pkg/skills/magery/config/spells.cfg
+   trunk/096/pkg/skills/magery/hooks/
+   trunk/096/pkg/skills/magery/include/
+   trunk/096/pkg/skills/magery/include/settings.inc
+   trunk/096/pkg/skills/magery/include/spells.inc
+   trunk/096/pkg/skills/magery/itemdesc.cfg
+   trunk/096/pkg/skills/magery/movementCheck.src
+   trunk/096/pkg/skills/magery/pkg.cfg
+   trunk/096/pkg/skills/magery/spellScripts/
+   trunk/096/pkg/skills/magery/spellScripts/circle1/
+   trunk/096/pkg/skills/magery/spellScripts/circle2/
+   trunk/096/pkg/skills/magery/spellScripts/circle3/
+   trunk/096/pkg/skills/magery/spellScripts/circle4/
+   trunk/096/pkg/skills/magery/spellScripts/circle5/
+   trunk/096/pkg/skills/magery/spellScripts/circle6/
+   trunk/096/pkg/skills/magery/spellScripts/circle7/
+   trunk/096/pkg/skills/magery/spellScripts/circle8/
+   trunk/096/pkg/skills/magery/spellStarter.src
+Removed:
+   trunk/096/pkg/skills/magery/OLD/pkg.cfg
+Log:
+Okay this is mostly a carry over from what I did on TSSE.
+Itll get a lot of changes of course.. but the concepts will remain as the spellstarter system is extremely flexible.
+
+
+
+Deleted: trunk/096/pkg/skills/magery/OLD/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/OLD/pkg.cfg	2005-11-03 05:44:14 UTC (rev 868)
++++ trunk/096/pkg/skills/magery/OLD/pkg.cfg	2005-11-03 06:02:07 UTC (rev 869)
+@@ -1,8 +0,0 @@
+-# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
+-#
+-#
+-Enabled         1
+-Name		magery
+-maintainer      Distro Team
+-email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+-Version         1.0
+
+Added: trunk/096/pkg/skills/magery/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/config/icp.cfg	2005-11-03 05:44:14 UTC (rev 868)
++++ trunk/096/pkg/skills/magery/config/icp.cfg	2005-11-03 06:02:07 UTC (rev 869)
+@@ -0,0 +1,13 @@
++ICP Register
++{
++	Name		Magery
++	Version		1.0
++
++	Description	Handles mage related scripts.
++
++	Creator		Austin
++	C_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++
++	Maintainer	Distro Team
++	M_Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/magery/config/settings.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/config/settings.cfg	2005-11-03 05:44:14 UTC (rev 868)
++++ trunk/096/pkg/skills/magery/config/settings.cfg	2005-11-03 06:02:07 UTC (rev 869)
+@@ -0,0 +1,8 @@
++Elem Settings
++{
++	// Maximum distance a spell can be cast
++	MaxRange	16
++	
++	// Does MuadDib wear little girl undies?
++	MuadDibUndies	1
++}
+\ No newline at end of file
+
+Added: trunk/096/pkg/skills/magery/config/spells.cfg
+===================================================================
+
+Added: trunk/096/pkg/skills/magery/include/settings.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/include/settings.inc	2005-11-03 05:44:14 UTC (rev 868)
++++ trunk/096/pkg/skills/magery/include/settings.inc	2005-11-03 06:02:07 UTC (rev 869)
+@@ -0,0 +1,56 @@
++//$Id: settings.inc 264 2005-09-27 21:55:42Z austin $
++
++use uo;
++use os;
++use cfgfile;
++
++/*
++ * MS_GetSettingsCfgFile(engine_name)
++ *
++ * Purpose
++ * Reads in :lumberjacking:config/settings.cfg
++ *
++ * Parameters
++ *
++ * Return value
++ * A config file reference.
++ *
++ */
++function MS_GetSettingsCfgFile()
++	var cfg := ReadConfigFile(&quot;:magery:config/settings&quot;);
++
++	if ( cfg.errortext )
++		SysLog(&quot;Error::MS_GetSettingsCfgFile() - Unable to open [:magery:config/settings.cfg] -&gt;&quot;+cfg.errortext);
++	endif
++
++	return cfg;
++endfunction
++
++/*
++ * MS_GetSettingsCfgElem(elem_name, cfg_file)
++ *
++ * Purpose
++ * Retrieves an elem from a config file. 
++ *
++ * Parameters
++ * elem_name:	A string matching the elem name to be retrieved.
++ * cfg_file:	Optional parameter - reference to a config already read in by MS_GetSettingsCfgFile()
++ *
++ * Return value
++ * A config file elem reference.
++ *
++ */
++function MS_GetSettingsCfgElem(elem_name, byref cfg_file:=0)
++	if ( !cfg_file )
++		cfg_file := MS_GetSettingsCfgFile();
++	endif
++	
++	var elem := cfg_file[elem_name];
++
++	if ( elem.errortext )
++		SysLog(&quot;Error::MS_GetSettingsCfgElem() - Unable to find elem [&quot;+elem_name+&quot;] -&gt;&quot;+elem.errortext);
++	endif
++
++	return elem;
++endfunction
++
+
+Added: trunk/096/pkg/skills/magery/include/spells.inc
+===================================================================
+--- trunk/096/pkg/skills/magery/include/spells.inc	2005-11-03 05:44:14 UTC (rev 868)
++++ trunk/096/pkg/skills/magery/include/spells.inc	2005-11-03 06:02:07 UTC (rev 869)
+@@ -0,0 +1,119 @@
++use uo;
++use os;
++use util;
++use cfgfile;
++
++include &quot;:attributes:attributes&quot;;
++include &quot;include/client&quot;;
++
++const MAX_RANGE	:= 16;
++
++function SpellDebug(who, text)
++	if ( who.cmdlevel )
++		SendSysMessage(who, text, SSM_INFO_DEBUG);
++	endif
++endfunction
++
++function UseMana(who, amount)
++	if ( GetManaPoints(who) &gt;= amount )
++		SetManaPoints(who, GetManaPoints(who)-amount);
++		return 1;
++	else
++		return 0;
++	endif
++endfunction
++
++function Reflection(who, targ, spell_strength, info)
++	// Lower targ's defense
++	// Apply some of spell_strength to target if reflected.
++	// Lower spell_strength by how much was not reflected.
++	// Start the spell again and point it at who from targ.
++	
++endfunction
++
++function SpellTarget(byref who, byref npctarget:=0, prompt := &quot;Select a target.&quot;, ops:=TGTOPT_CHECK_LOS+TGTOPT_NEUTRAL)
++	var x := who.x;
++	var y := who.y;
++	who.hidden := 0;
++	
++	if ( npctarget )
++		return npctarget;
++	elseif ( who.npctemplate )
++		return;
++	endif
++	
++	SendSysMessage(who, prompt);
++	
++	var targ := Target(who, ops);
++	if ( Distance(who, targ) &gt; MAX_RANGE )
++		SendSysMessage(who, &quot;That is too far away.&quot;);
++		return 0;
++	elseif ( who.x == x &amp;&amp; who.y == y )
++		return targ;
++	else
++		SendSysMessage(who, &quot;You break your concentration.&quot;);
++		return 0;
++	endif
++endfunction
++
++function SpellTargetCoordinates(byref who, byref npctarget:=0, prompt := &quot;Select a target.&quot;, range := MAX_RANGE)
++	var x := who.x;
++	var y := who.y;
++	who.hidden := 0;
++	
++	if ( npctarget )
++		return npctarget;
++	elseif ( who.npctemplate )
++		return;
++	endif
++	
++	SendSysMessage(who, prompt);
++	var targ := TargetCoordinates(who);
++	if ( !targ )
++		SendSysMessage(who, &quot;Cancelled.&quot;);
++		return 0;
++	elseif ( CoordDistance(who.x, who.y, targ.x, targ.y) &gt; range )
++		SendSysMessage(who, &quot;That is too far away.&quot;);
++		return 0;
++	elseif ( who.x == x &amp;&amp; who.y == y )
++		return targ;
++	else
++		SendSysMessage(who, &quot;You lose concentration.&quot;);
++		return 0;
++	endif
++endfunction
++
++function GetSpellPoints(mage, targ, points)
++	var mage_skill := GetSkill(mage, &quot;Magery&quot;);
++	var defense := GetSkill(targ, &quot;Magic_Resistance&quot;);
++
++	// Failed MR check results in only half your resistance being used!
++	if ( SkillCheck(targ, &quot;Magic_Resistance&quot;, -1) &lt; 0 )
++		defense := CInt(defense / 2);
++	endif
++
++	// Old formulas
++	// CInt(points * (mage_skill - defense) / 100);
++	// CInt(points * ((mage_skill * 1.3) - defense) / ( mage_skill * 1.3 ))
++	var effect_level := CInt(points * (mage_skill-defense) / mage_skill );
++	return effect_level;
++endfunction
++
++function GetSpellWords(spell_name)
++	var cfg := ReadConfigFile(&quot;:magic:configs/spell_info&quot;);
++	if ( cfg.errortext )
++		return &quot;Error - GetSpellWords(). Unable to open :magic:configs/spell_info.cfg -&gt;&quot;+cfg.errortext;
++	endif
++	
++	cfg := cfg[spell_name];
++	if ( cfg.errortext )
++		return &quot;Error - GetSpellWords(). Unable to find elem [&quot;+spell_name+&quot;] -&gt;&quot;+cfg.errortext;
++	endif
++	
++	return cfg.SpellWords;
++endfunction
++
++function ReleaseScript(pid)
++	var process := GetProcess(pid);
++	process.SendEvent(&quot;done&quot;);
++endfunction
+
+Added: trunk/096/pkg/skills/magery/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/itemdesc.cfg	2005-11-03 05:44:14 UTC (rev 868)
++++ trunk/096/pkg/skills/magery/itemdesc.cfg	2005-11-03 06:02:07 UTC (rev 869)
+@@ -0,0 +1,25 @@
++Spellbook 0xEFA
++{
++	Name			Spellbook
++	Desc			spellbook
++	
++	Gump			0xFFFF
++	MinX			40
++	MaxX			60
++	MinY			20
++	MaxY			80
++	
++	SpellType		Magic
++	
++	Newbie			1
++	BlocksCastingIfInHand	0
++	RequiresAttention	0
++	
++	VendorSellsFor		22
++	VendorBuysFor		11
++	
++	Weight			1
++	
++	CanRemoveScript		:containers:container/noRemove
++}
++
+
+Added: trunk/096/pkg/skills/magery/movementCheck.src
+===================================================================
+--- trunk/096/pkg/skills/magery/movementCheck.src	2005-11-03 05:44:14 UTC (rev 868)
++++ trunk/096/pkg/skills/magery/movementCheck.src	2005-11-03 06:02:07 UTC (rev 869)
+@@ -0,0 +1,17 @@
++use uo;
++use os;
++
++program MovementChecker(params)
++	var who := params[1];
++	var spell_starter := GetProcess(params[2]);
++	var my_x := params[3];
++	var my_y := params[4];
++	
++	while ( spell_starter.pid )
++		if ( who.x != my_x || who.y != my_y )
++			spell_starter.SendEvent(&quot;moved&quot;);
++			return;
++		endif
++		sleepms(50);
++	endwhile
++endprogram
+
+Added: trunk/096/pkg/skills/magery/pkg.cfg
+===================================================================
+--- trunk/096/pkg/skills/magery/pkg.cfg	2005-11-03 05:44:14 UTC (rev 868)
++++ trunk/096/pkg/skills/magery/pkg.cfg	2005-11-03 06:02:07 UTC (rev 869)
+@@ -0,0 +1,17 @@
++# $Id: pkg.cfg 684 2005-10-27 18:48:28Z muaddiblsd $
++#
++#
++Enabled		1
++Name		magery
++
++Version		1.0
++
++CoreRequired	96
++
++Creator		Austin Heilman
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">AustinHeilman at gmail.com</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++#Requires none
++#conflicts	none
+
+Added: trunk/096/pkg/skills/magery/spellStarter.src
+===================================================================
+--- trunk/096/pkg/skills/magery/spellStarter.src	2005-11-03 05:44:14 UTC (rev 868)
++++ trunk/096/pkg/skills/magery/spellStarter.src	2005-11-03 06:02:07 UTC (rev 869)
+@@ -0,0 +1,214 @@
++use uo;
++use os;
++use cfgfile;
++
++include &quot;:attributes:attributes&quot;;
++include &quot;include/client&quot;;
++include &quot;:magery:spells&quot;;
++include &quot;include/string&quot;;
++
++set_script_option(SCRIPTOPT_CAN_ACCESS_OFFLINE_MOBILES, 1);
++
++program SpellStarter(params)
++	var who := params[1];
++	var words_of_power := params[2];
++	var parent_pid := params[3];
++	
++	Attach(who);
++	
++	//Remove trailing space
++	words_of_power := RemoveSpaces(words_of_power, CLR_LEADING_SPACES+CLR_DOUBLE_SPACES+CLR_TRAILING_SPACES);
++	
++	var spell_info := ReadConfigFile(&quot;configs/spell_info&quot;);
++	spell_info := spell_info[words_of_power];
++
++	// If spell is set to 'TestOnly 1', then it requires GM-cmdlevel or #TestSpell CProp
++	// before it can be used.
++	var can_cast := 1;
++	if ( spell_info.TestOnly &amp;&amp; (!who.cmdlevel) )
++		// They need #TestSpell to cast it
++		if ( GetObjProperty(who, &quot;#TestSpell&quot;) == error )
++			can_cast := 0;
++		endif
++	elseif ( spell_info.NPCOnly &amp;&amp; !who.npctemplate )
++		PrintTextAbove(who, &quot;Unable to cast - NPC only spell.&quot;);
++		return 0;
++	endif
++
++	var attribute		:= spell_info.Attribute;
++	var delay		:= spell_info.BaseDelay;
++	var difficulty		:= spell_info.Difficulty;
++	var mana		:= spell_info.ManaCost;
++	if ( !attribute )
++		attribute := &quot;Magery&quot;;
++	endif
++
++	if ( GetObjProperty(who, &quot;#medding&quot;) )
++		SendSysMessage(who, &quot;You can not cast right now.&quot;);
++		return;
++	else
++		SetObjProperty(who, &quot;#medding&quot;, 1);
++	endif
++
++	if ( !spell_info || !can_cast )
++		SendSysMessage(who, &quot;Your words seem to have no meaning.&quot;);
++		if ( who.npctemplate )
++			PrintTextAbove(who, &quot;Your words seem to have no meaning.&quot;);
++		endif
++		FailSpell(who);
++	elseif ( who.squelched &amp;&amp; !who.npctemplate )
++		SendSysMessage(who, &quot;Something prevents you from casting.&quot;);
++		FailSpell(who);
++	elseif ( !UseMana(who, mana) )
++		SendSysMessage(who, &quot;You are too tired to cast.&quot;);
++		FailSpell(who);
++	elseif ( !CheckRegs(who, spell_info) )
++		FailSpell(who);
++	elseif ( !EquipmentCheck(who) )
++		FailSpell(who);
++	elseif ( !CheckDelay(who, attribute, difficulty, delay) )
++		FailSpell(who);
++		SendSysMessage(who, &quot;You break your concentration.&quot;);
++	else
++		var skill_check := SkillCheck(who, attribute, difficulty);
++		if ( skill_check &gt; 0 )
++			var info := struct;
++			info.+script := spell_info.script;
++			info.+attribute := attribute;
++			info.+skill_check := skill_check;
++			info.+spell_words := words_of_power;
++			info.+target := params[4];
++			info.+pid := GetPid();
++
++			var script := start_script(spell_info.script, {who, info});
++			if ( script.errortext )
++				PrintTextAbove(who, &quot;Unable to start [&quot;+spell_info.script+&quot;] -&gt; &quot;+script.errortext);
++				SendSysMessage(who, script.errortext);
++			endif
++
++			var ev;
++			while( script.pid &amp;&amp; !ev )
++				ev := wait_for_event(1);
++			endwhile
++		else
++			SendSysMessage(who, &quot;You are unable to build the concentration needed to cast.&quot;);
++		endif
++	endif
++
++	EraseObjProperty(who, &quot;#medding&quot;);
++	ReleaseScript(parent_pid);
++endprogram
++
++function CheckDelay(who, attribute, difficulty, base_delay)
++	
++	SendSysMessage(who, &quot;You begin building the concentration needed to cast.&quot;);
++	var equip_delay := GetEquipmentDelay(who);
++		
++	var my_x := who.x;
++	var my_y := who.y;
++	
++	var skill := AP_GetSkill(who, attribute);
++	var delay := CInt(CDbl(base_delay) * (CDbl(difficulty) / CDbl(skill)));
++	delay := delay+equip_delay;
++	
++	if ( delay &lt; 50 )
++		delay := 50;
++	endif
++	
++	var script;
++	if ( !who.npctemplate )
++		script := start_script(&quot;movementcheck&quot;, {who, GetPid(), my_x, my_y});
++	endif
++	
++	SpellDebug(who, &quot;Cast delay -&gt;&quot;+delay);
++	sleepms(delay);
++	
++	script.kill();
++	
++	if ( who.npctemplate )
++		return 1;
++	elseif ( Events_Waiting() &gt; 0 )
++		return 0;
++	elseif ( who.x != my_x || who.y != my_y )
++		return 0;
++	else
++		return 1;
++	endif
++endfunction
++
++function GetEquipmentDelay(who)
++	/*
++	var weight := 0;
++	var ar := 0;
++	foreach item in EnumeratePhysicalItems(who)
++		weight := weight+item.weight;
++		ar := ar+item.ar;
++	endforeach
++	
++	return {weight, ar};
++	*/
++	
++	var cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
++	var delay := 0;
++	foreach item in EnumeratePhysicalItems(who)
++		delay := delay+CInt(cfg[item.objtype].CastDelay);
++		sleepms(2);
++	endforeach
++	
++	return delay;
++endfunction
++
++function EquipmentCheck(who)
++	var item_cfg := ReadConfigFile(&quot;:*:itemdesc&quot;);
++	foreach item in ListEquippedItems(who)
++		if ( item_cfg[item.objtype].BlocksCastingIfInHand ) // God thats long!
++			return 0;
++		endif
++		sleepms(2);
++	endforeach
++	return 1;
++endfunction
++
++function CheckRegs(who, byref spell_info)
++	if ( who.npctemplate )
++		return 1;
++	endif
++	
++	var reg_list := dictionary;
++
++	foreach line in GetConfigStringArray(spell_info, &quot;Reagent&quot;)
++		line := SplitWords(line);
++		var objtype := GetObjTypeByName(line[1]);
++		var amount := CInt(line[2]);
++
++		if ( reg_list[objtype] )
++			reg_list[objtype] := reg_list[objtype] + amount;
++		else
++			reg_list[objtype] := amount;
++		endif
++
++		if ( AmountInPack(who, objtype) &lt; reg_list[objtype] )
++			SendSysMessage(who, &quot;You do not have enough &quot; + GetName(objtype, 1));
++			return 0;
++		endif
++		sleepms(1);
++	endforeach
++
++	foreach key in (reg_list.keys())
++		ConsumeSubstance(who.backpack, key, reg_list[key]);
++		sleepms(1);
++	endforeach
++
++	return 1;
++endfunction
++
++function FailSpell(who)
++/*
++Simple function for handling effects when a caster
++fails the casting.
++*/
++	EraseObjProperty(who, &quot;#medding&quot;);
++	PlayObjectCenteredEffect(who, FX_SPELL_FAIL, 5, 50);
++	PlaySoundEffect(who, SFX_SPELL_FAIL);
++
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000853.html">[Poldistro-svn] r868 - in trunk/096/pkg/skills/magery: . OLD OLD/config
+</A></li>
+	<LI>Next message: <A HREF="000843.html">[Poldistro-svn] r870 - in trunk/096: config pkg/mobiles/brainAI pkg/mobiles/brainAI/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#842">[ date ]</a>
+              <a href="thread.html#842">[ thread ]</a>
+              <a href="subject.html#842">[ subject ]</a>
+              <a href="author.html#842">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

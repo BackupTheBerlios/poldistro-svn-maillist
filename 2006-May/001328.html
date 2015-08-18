@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1359 - in trunk/096/pkg/systems/worldSaver: . commands/admin
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1359%20-%20in%20trunk/096/pkg/systems/worldSaver%3A%20.%20commands/admin&In-Reply-To=%3C200605122103.k4CL3Tut030801%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001327.html">
+   <LINK REL="Next"  HREF="001329.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1359 - in trunk/096/pkg/systems/worldSaver: . commands/admin</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1359%20-%20in%20trunk/096/pkg/systems/worldSaver%3A%20.%20commands/admin&In-Reply-To=%3C200605122103.k4CL3Tut030801%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1359 - in trunk/096/pkg/systems/worldSaver: . commands/admin">austin at berlios.de
+       </A><BR>
+    <I>Fri May 12 23:03:29 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001327.html">[Poldistro-svn] r1358 - trunk/096/pkg/systems/worldSaver
+</A></li>
+        <LI>Next message: <A HREF="001329.html">[Poldistro-svn] r1360 - trunk/096/pkg
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1328">[ date ]</a>
+              <a href="thread.html#1328">[ thread ]</a>
+              <a href="subject.html#1328">[ subject ]</a>
+              <a href="author.html#1328">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-05-12 23:03:28 +0200 (Fri, 12 May 2006)
+New Revision: 1359
+
+Modified:
+   trunk/096/pkg/systems/worldSaver/commands/admin/shutdown.src
+   trunk/096/pkg/systems/worldSaver/worldSaver.src
+Log:
+Has .shutdown support.
+No shutdown abort yet. Cant think of a clean way to do it.
+
+
+Modified: trunk/096/pkg/systems/worldSaver/commands/admin/shutdown.src
+===================================================================
+--- trunk/096/pkg/systems/worldSaver/commands/admin/shutdown.src	2006-05-12 20:56:25 UTC (rev 1358)
++++ trunk/096/pkg/systems/worldSaver/commands/admin/shutdown.src	2006-05-12 21:03:28 UTC (rev 1359)
+@@ -5,10 +5,20 @@
+ use uo;
+ 
+ include &quot;:worldsaver:saver&quot;;
++include &quot;:gumps:requestgump&quot;;
+ 
+-program textcmd_shutDown(who)
++program textcmd_shutDown(who, time)
++	
++	if ( !time )
++		time := RequestGump(who, &quot;Number of minutes for shutdown timer.&quot;, &quot;&quot;, 5, CANCEL_BTN_ON);
++		if ( !time )
++			SendSysMessage(who, &quot;Cancelled.&quot;);
++			return 0;
++		endif
++	endif
++	
+ 	SendSysMessage(who, &quot;Sending shutdown command to world saver.&quot;);
+-	SVR_SendCommand(EVENT_START_SHUTDOWN);
++	SVR_SendCommand(EVENT_START_SHUTDOWN, CInt(time));
+ 	
+ 	return 1;
+ endprogram
+
+Modified: trunk/096/pkg/systems/worldSaver/worldSaver.src
+===================================================================
+--- trunk/096/pkg/systems/worldSaver/worldSaver.src	2006-05-12 20:56:25 UTC (rev 1358)
++++ trunk/096/pkg/systems/worldSaver/worldSaver.src	2006-05-12 21:03:28 UTC (rev 1359)
+@@ -94,6 +94,8 @@
+ endfunction
+ 
+ function DoShutDown(countdown:=0)
++	countdown := CInt(countdown);
++	
+ 	for( countdown; countdown &gt; 0; countdown:=countdown-1 )
+ 		var i := 2;
+ 		for (i:=2; i &gt; 0; i:=i-1)
+@@ -104,6 +106,7 @@
+ 	
+ 	SVR_ReportText(&quot;Shutting down now!&quot;, SAVER_REPORT_ALL);
+ 	sleep(3);
++	
+ 	ShutDown();
+ 	
+ 	return 1;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001327.html">[Poldistro-svn] r1358 - trunk/096/pkg/systems/worldSaver
+</A></li>
+	<LI>Next message: <A HREF="001329.html">[Poldistro-svn] r1360 - trunk/096/pkg
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1328">[ date ]</a>
+              <a href="thread.html#1328">[ thread ]</a>
+              <a href="subject.html#1328">[ subject ]</a>
+              <a href="author.html#1328">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

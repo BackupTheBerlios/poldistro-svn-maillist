@@ -1,0 +1,573 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r259 - in trunk/096/pkg: commands config config/config items/bulletinboard items/bulletinboard/config systems/attributes systems/bank systems/storage utils/control utils/datafile utils/gumps utils/saver utils/scheduler utils/scheduler/include utils/utilsdate
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r259%20-%20in%20trunk/096/pkg%3A%20commands%20config%20config/config%20items/bulletinboard%20items/bulletinboard/config%20systems/attributes%20systems/bank%20systems/storage%20utils/control%20utils/datafile%20utils/gumps%20utils/saver%20utils/scheduler%20utils/scheduler/include%20utils/utilsdate&In-Reply-To=%3C200509260825.j8Q8Pml6019246%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000235.html">
+   <LINK REL="Next"  HREF="000237.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r259 - in trunk/096/pkg: commands config config/config items/bulletinboard items/bulletinboard/config systems/attributes systems/bank systems/storage utils/control utils/datafile utils/gumps utils/saver utils/scheduler utils/scheduler/include utils/utilsdate</H1>
+    <B>Panos Laganakos at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r259%20-%20in%20trunk/096/pkg%3A%20commands%20config%20config/config%20items/bulletinboard%20items/bulletinboard/config%20systems/attributes%20systems/bank%20systems/storage%20utils/control%20utils/datafile%20utils/gumps%20utils/saver%20utils/scheduler%20utils/scheduler/include%20utils/utilsdate&In-Reply-To=%3C200509260825.j8Q8Pml6019246%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r259 - in trunk/096/pkg: commands config config/config items/bulletinboard items/bulletinboard/config systems/attributes systems/bank systems/storage utils/control utils/datafile utils/gumps utils/saver utils/scheduler utils/scheduler/include utils/utilsdate">panosl at berlios.de
+       </A><BR>
+    <I>Mon Sep 26 10:25:48 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000235.html">[Poldistro-svn] r258 - trunk/096/scripts/include
+</A></li>
+        <LI>Next message: <A HREF="000237.html">[Poldistro-svn] r260 - trunk/096/pkg/systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#236">[ date ]</a>
+              <a href="thread.html#236">[ thread ]</a>
+              <a href="subject.html#236">[ subject ]</a>
+              <a href="author.html#236">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: panosl
+Date: 2005-09-26 10:25:45 +0200 (Mon, 26 Sep 2005)
+New Revision: 259
+
+Modified:
+   trunk/096/pkg/commands/pkg.cfg
+   trunk/096/pkg/config/config/icp.cfg
+   trunk/096/pkg/config/pkg.cfg
+   trunk/096/pkg/items/bulletinboard/config/itemdesc.cfg
+   trunk/096/pkg/items/bulletinboard/destroyboard.src
+   trunk/096/pkg/items/bulletinboard/itemdesc.cfg
+   trunk/096/pkg/items/bulletinboard/pkg.cfg
+   trunk/096/pkg/systems/attributes/attributes.cfg
+   trunk/096/pkg/systems/attributes/pkg.cfg
+   trunk/096/pkg/systems/attributes/skills.cfg
+   trunk/096/pkg/systems/attributes/uoclient.cfg
+   trunk/096/pkg/systems/bank/pkg.cfg
+   trunk/096/pkg/systems/storage/pkg.cfg
+   trunk/096/pkg/utils/control/checkpackages.src
+   trunk/096/pkg/utils/control/pkg.cfg
+   trunk/096/pkg/utils/control/start.src
+   trunk/096/pkg/utils/datafile/pkg.cfg
+   trunk/096/pkg/utils/gumps/pkg.cfg
+   trunk/096/pkg/utils/saver/pkg.cfg
+   trunk/096/pkg/utils/scheduler/include/scheduler.inc
+   trunk/096/pkg/utils/scheduler/pkg.cfg
+   trunk/096/pkg/utils/utilsdate/pkg.cfg
+Log:
+
+
+Modified: trunk/096/pkg/commands/pkg.cfg
+===================================================================
+--- trunk/096/pkg/commands/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/commands/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,6 +1,8 @@
+-Enabled 1
+-Name commands
+-Maintainer Distro Team
+-Email <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+-Version 1.0
+-CoreRequired 96
+\ No newline at end of file
++Enabled		1
++Name		commands
++Version		1.0
++
++CoreRequired	96
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+
+Modified: trunk/096/pkg/config/config/icp.cfg
+===================================================================
+--- trunk/096/pkg/config/config/icp.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/config/config/icp.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -8,6 +8,6 @@
+         Creator         Hesinde-Team
+         C_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
+ 
+-        Maintainer      Hesinde-Team
+-        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
++        Maintainer      Distro Team
++        M_Email         <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ }
+
+Modified: trunk/096/pkg/config/pkg.cfg
+===================================================================
+--- trunk/096/pkg/config/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/config/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,7 +1,12 @@
+-# $Id: pkg.cfg,v 1.2 2004/05/02 11:02:23 folko Exp $
++# $Id$
+ Enabled         1
+ Name            config
+-Maintainer      Hesinde-Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
++Version         1.0
++
+ CoreRequired    96
+-Version         1.0
++
++Creator		Hesinde-Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+\ No newline at end of file
+
+Modified: trunk/096/pkg/items/bulletinboard/config/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/bulletinboard/config/itemdesc.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/items/bulletinboard/config/itemdesc.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,3 +1,4 @@
++# $Id$
+ Item 0x1E5E
+ {
+ 	Name		BulletinBoard
+@@ -5,6 +6,7 @@
+ 	Script		bulletinboard
+ 	DestroyScript	destroyboard
+ }
++
+ Item 0x1E5F
+ {
+ 	Name		BulletinBoard2
+
+Modified: trunk/096/pkg/items/bulletinboard/destroyboard.src
+===================================================================
+--- trunk/096/pkg/items/bulletinboard/destroyboard.src	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/items/bulletinboard/destroyboard.src	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ 
+ include &quot;:datafile:datafile&quot;;
+@@ -2,2 +5,3 @@
+ 
++
+ program DestroyBoard(board)
+
+Modified: trunk/096/pkg/items/bulletinboard/itemdesc.cfg
+===================================================================
+--- trunk/096/pkg/items/bulletinboard/itemdesc.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/items/bulletinboard/itemdesc.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -5,6 +5,7 @@
+ 	Script		bulletinboard
+ 	DestroyScript	destroyboard
+ }
++
+ Item 0x1E5F
+ {
+ 	Name		BulletinBoard2
+
+Modified: trunk/096/pkg/items/bulletinboard/pkg.cfg
+===================================================================
+--- trunk/096/pkg/items/bulletinboard/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/items/bulletinboard/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,6 +1,11 @@
+ Enabled         1
+ Name            bulletinboard
++Version         1.0
++
++CoreRequired    92
++
+ Creator         Austin Heilman
+ Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
+-Version         1.0
+-CoreRequired    92
+\ No newline at end of file
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/attributes/attributes.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/attributes.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/systems/attributes/attributes.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,4 +1,4 @@
+-# $Id: attributes.cfg,v 1.1 2004/03/16 14:05:46 folko Exp $
++# $Id$
+ #
+ # Purpose:
+ # Defines Attribute names and aliases
+@@ -23,12 +23,10 @@
+ # The function is called when UO.EM RecalVitals is called.
+ #
+ 
+-///////////////////////////////////////
+-//
+-// ** BASIC STATS **
+-//
+-///////////////////////////////////////
+ 
++#
++# ** BASIC STATS **
++#
+ Attribute Strength
+ {
+ 	AttributeType	Stat
+@@ -44,12 +42,10 @@
+ 	AttributeType	Stat
+ }
+ 
+-///////////////////////////////////////
+-//
+-// ** SKILLS **
+-//
+-///////////////////////////////////////
+ 
++#
++# ** SKILLS **
++#
+ Attribute Alchemy
+ {
+ 	AttributeType	Skill
+
+Modified: trunk/096/pkg/systems/attributes/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/systems/attributes/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,13 +1,13 @@
+ Enabled		1
+ Name		attributes
+-
+ Version		1.0
+ 
+ CoreRequired	96
+ 
+ Creator		Austin Heilman
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
++
+ Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Conflicts none
+\ No newline at end of file
+
+Modified: trunk/096/pkg/systems/attributes/skills.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/skills.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/systems/attributes/skills.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,38 +1,37 @@
+- /////////////////////////////////////////////////////////////////////////////
+-//
+-//  SKILLS.CFG:     Skill Definitions
+-//
+-//  USED BY:	System
+-//
+-//  TODO:	   tune delays, define stat advancement data for all skills
+-//
+-//  The following can be defined for a Skill:
+-//
+-//      Name	Skill name [will be used to read/write data files]
+-//      SkillId     0-[max skill]
+-//      Script      Script to run when skill is clicked in skills window
+-//      Delay       Number of seconds skills cannot be used after this one
+-//      Unhides     Using this skill unhides user if hidden (default: 1)
+-//      StrAdv      Strength advancement definition
+-//      IntAdv      Intelligence advancement definition
+-//      DexAdv      Dexterity advancement definition
+-//
+-//  Format of StrAdv, IntAdv, DexAdv:
+-//      StrAdv [chance] [points]
+-//      StrAdv 10 1d4
+-//      StrAdv 50 1
+-//      StrAdv 2.5 1d3+2
+-//
+-//      chance is a floating point percentage, from 0.0 to 100.0
+-//
+-/////////////////////////////////////////////////////////////////////////////
+-//
+-// *** NOTICE ***
+-//
+-// As of POL 094, this file is only used to start up a skill Script when a
+-// client uses one.
+-//
+-/////////////////////////////////////////////////////////////////////////////
++# $Id$
++#
++#  SKILLS.CFG:     Skill Definitions
++#
++#  USED BY:	System
++#
++#  TODO:	   tune delays, define stat advancement data for all skills
++#
++#  The following can be defined for a Skill:
++#
++#      Name	Skill name [will be used to read/write data files]
++#      SkillId     0-[max skill]
++#      Script      Script to run when skill is clicked in skills window
++#      Delay       Number of seconds skills cannot be used after this one
++#      Unhides     Using this skill unhides user if hidden (default: 1)
++#      StrAdv      Strength advancement definition
++#      IntAdv      Intelligence advancement definition
++#      DexAdv      Dexterity advancement definition
++#
++#  Format of StrAdv, IntAdv, DexAdv:
++#      StrAdv [chance] [points]
++#      StrAdv 10 1d4
++#      StrAdv 50 1
++#      StrAdv 2.5 1d3+2
++#
++#      chance is a floating point percentage, from 0.0 to 100.0
++#
++#
++# *** NOTICE ***
++#
++# As of POL 094, this file is only used to start up a skill Script when a
++# client uses one.
++#
++#
+ 
+ Skill 0
+ {
+
+Modified: trunk/096/pkg/systems/attributes/uoclient.cfg
+===================================================================
+--- trunk/096/pkg/systems/attributes/uoclient.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/systems/attributes/uoclient.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,4 +1,4 @@
+-# $$
++# $Id$
+ #
+ # Purpose:
+ # Maps vital and attribute names onto UO Client idioms for character status.
+
+Modified: trunk/096/pkg/systems/bank/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/bank/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/systems/bank/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,6 +1,6 @@
+ Enabled		1
+ Name		bank
+-Maintainer	Distro Team
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">pol-distro-support at sourceforge.net</A>
+ Version		1.0
+ 
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+
+Modified: trunk/096/pkg/systems/storage/pkg.cfg
+===================================================================
+--- trunk/096/pkg/systems/storage/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/systems/storage/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,6 +1,5 @@
+ Enabled		1
+ Name		storage
+-
+ Version		1.2
+ 
+ CoreRequired	95
+@@ -8,7 +7,7 @@
+ Creator		Austin Heilman
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
+ 
+-Maintainer	POL Distro Team
++Maintainer	Distro Team
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Conflicts none
+\ No newline at end of file
+
+Modified: trunk/096/pkg/utils/control/checkpackages.src
+===================================================================
+--- trunk/096/pkg/utils/control/checkpackages.src	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/utils/control/checkpackages.src	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use uo;
+ use os;
+ use cfgfile;
+@@ -10,6 +13,7 @@
+ set_priority(255);
+ set_script_option(SCRIPTOPT_NO_RUNAWAY, 1);
+ 
++
+ program CheckPackages()
+ 	var pkg_info := DFOpenDataFile(&quot;:control:packages&quot;, DF_CREATE);
+ 	var pkg_gumps := DFOpenDataFile(&quot;:control:gumps&quot;, DF_CREATE);
+@@ -68,6 +72,7 @@
+ 	Print(&quot;[CONTROL] Finished setting up packages.&quot;);
+ endprogram
+ 
++
+ /*
+  * GetCfgValue(byref cfg_elem, value)
+  *
+
+Modified: trunk/096/pkg/utils/control/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/control/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/utils/control/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,6 +1,6 @@
++# $Id$
+ Enabled		1
+ Name		control
+-
+ Version		2.4
+ 
+ CoreRequired	95
+
+Modified: trunk/096/pkg/utils/control/start.src
+===================================================================
+--- trunk/096/pkg/utils/control/start.src	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/utils/control/start.src	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,3 +1,6 @@
++/* $Id$
++ *
++ */
+ use os;
+ 
+ var script := start_script(&quot;checkpackages&quot;);
+
+Modified: trunk/096/pkg/utils/datafile/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/datafile/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/utils/datafile/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,6 +1,5 @@
+ Enabled		1
+ Name		datafile
+-
+ Version		2.0
+ 
+ CoreRequired	92
+
+Modified: trunk/096/pkg/utils/gumps/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/gumps/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/utils/gumps/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -7,8 +7,8 @@
+ Creator		Melanius and Austin
+ Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
+ 
+-Maintainer	Austin Heilman
+-Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">Austin at tsse.net</A>
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ 
+ #Requires none
+ #Conflicts none
+
+Modified: trunk/096/pkg/utils/saver/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/saver/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/utils/saver/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,7 +1,8 @@
+-# $Id: pkg.cfg,v 1.2 2004/05/02 11:02:23 folko Exp $
++# $Id$
+ Enabled         1
+ Name            saver
+-Maintainer      Hesinde-Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
++
++Maintainer      Distro Team
++Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
+ CoreRequired    96
+ Version         1.0
+
+Modified: trunk/096/pkg/utils/scheduler/include/scheduler.inc
+===================================================================
+--- trunk/096/pkg/utils/scheduler/include/scheduler.inc	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/utils/scheduler/include/scheduler.inc	2005-09-26 08:25:45 UTC (rev 259)
+@@ -44,8 +44,6 @@
+ /*
+  * Wait(what)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Waits for a signal.
+  *
+@@ -67,8 +65,6 @@
+ /*
+  * Send(what)
+  *
+- * Author: Folko
+- *
+  * Purpose
+  * Send a signal to the scheduler.
+  *
+
+Modified: trunk/096/pkg/utils/scheduler/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/scheduler/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/utils/scheduler/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,7 +1,12 @@
+ # $Id$
+-Enabled         1
+-Name            scheduler
+-Maintainer      Hesinde-Team
+-Email           <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
+-CoreRequired    96
+-Version         1.0
++Enabled		1
++Name		scheduler
++Version		1.0
++
++Creator		Hesinde-Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">hesinde at elitecoder.net</A>
++
++Maintainer	Distro Team
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">distro at polserver.com</A>
++
++CoreRequired	96
+
+Modified: trunk/096/pkg/utils/utilsdate/pkg.cfg
+===================================================================
+--- trunk/096/pkg/utils/utilsdate/pkg.cfg	2005-09-26 03:04:22 UTC (rev 258)
++++ trunk/096/pkg/utils/utilsdate/pkg.cfg	2005-09-26 08:25:45 UTC (rev 259)
+@@ -1,8 +1,9 @@
+-Enabled 1
+-Name utilsdate
+-Version 1.0
++# $Id$
++Enabled		1
++Name		utilsdate
++Version		1.0
+ 
+-CoreRequired 95
++Maintainer	bluecavenet
++Email		<A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">mintus at bluecave.net</A>
+ 
+-Maintainer bluecavenet
+-Email  <A HREF="https://lists.berlios.de/mailman/listinfo/poldistro-svn">mintus at bluecave.net</A>
++CoreRequired	95
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000235.html">[Poldistro-svn] r258 - trunk/096/scripts/include
+</A></li>
+	<LI>Next message: <A HREF="000237.html">[Poldistro-svn] r260 - trunk/096/pkg/systems/attributes
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#236">[ date ]</a>
+              <a href="thread.html#236">[ thread ]</a>
+              <a href="subject.html#236">[ subject ]</a>
+              <a href="author.html#236">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

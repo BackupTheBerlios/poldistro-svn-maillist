@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r801 - trunk/096/scripts/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-November/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r801%20-%20trunk/096/scripts/include&In-Reply-To=%3C200511012001.jA1K18RK000735%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000774.html">
+   <LINK REL="Next"  HREF="000776.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r801 - trunk/096/scripts/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r801%20-%20trunk/096/scripts/include&In-Reply-To=%3C200511012001.jA1K18RK000735%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r801 - trunk/096/scripts/include">austin at berlios.de
+       </A><BR>
+    <I>Tue Nov  1 21:01:08 CET 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000774.html">[Poldistro-svn] r800 - trunk/096/pkg/items/wands
+</A></li>
+        <LI>Next message: <A HREF="000776.html">[Poldistro-svn] r802 - trunk/096/pkg/mobiles/brainAI/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#775">[ date ]</a>
+              <a href="thread.html#775">[ thread ]</a>
+              <a href="subject.html#775">[ subject ]</a>
+              <a href="author.html#775">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-11-01 21:01:03 +0100 (Tue, 01 Nov 2005)
+New Revision: 801
+
+Modified:
+   trunk/096/scripts/include/firewall.inc
+   trunk/096/scripts/include/noto.inc
+Log:
+Changed GetStr() to AP_GetStat()
+
+Modified: trunk/096/scripts/include/firewall.inc
+===================================================================
+--- trunk/096/scripts/include/firewall.inc	2005-11-01 19:59:21 UTC (rev 800)
++++ trunk/096/scripts/include/firewall.inc	2005-11-01 20:01:03 UTC (rev 801)
+@@ -3,7 +3,6 @@
+ use uo;
+ 
+ include &quot;include/client&quot;;
+-include &quot;include/attributes&quot;;
+ include &quot;include/fields&quot;;
+ 
+ const SOUND_EFFECT_FIREFIELD:= 0x1de;
+@@ -12,6 +11,7 @@
+ const SOUND_EFFECT_POISON := 0x247;
+ const EFFECT_RED_SPARKLE := 0x374a;
+ 
++/*
+ function DoFireField( caster )
+ var thetarget;
+ var x;
+@@ -62,4 +62,5 @@
+ foreach fire in fires
+     DestroyItem( fire );
+ endforeach
+-endfunction
+\ No newline at end of file
++endfunction
++*/
+\ No newline at end of file
+
+Modified: trunk/096/scripts/include/noto.inc
+===================================================================
+--- trunk/096/scripts/include/noto.inc	2005-11-01 19:59:21 UTC (rev 800)
++++ trunk/096/scripts/include/noto.inc	2005-11-01 20:01:03 UTC (rev 801)
+@@ -2,7 +2,7 @@
+ use util;
+ use math;
+ 
+-include &quot;include/attributes&quot;;
++include &quot;:attributes:attributes&quot;;
+ 
+ var nototitles :=
+ {
+@@ -31,7 +31,7 @@
+   if(defender.isA(POLCLASS_MOBILE))
+     dkarma := dkarma / 100.0;
+     dkchk := dkarma * 10;
+-  elseif(!GetStrength(defender))
++  elseif(!AP_GetStat(defender, &quot;Strength&quot;))
+     dkarma := dkarma * 10;
+     dkchk := dkarma * 10;
+     dkchk := 0 - dkchk;
+@@ -39,7 +39,7 @@
+   if(defender.isA(POLCLASS_MOBILE))
+     dfame := dfame / 100.0;
+     dfchk := dfame * 10;
+-  elseif(!GetStrength(defender))
++  elseif(!AP_GetStat(defender, &quot;Strength&quot;))
+     dfchk := dfame * 100;
+     dfame := dfame * 10;
+   endif
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000774.html">[Poldistro-svn] r800 - trunk/096/pkg/items/wands
+</A></li>
+	<LI>Next message: <A HREF="000776.html">[Poldistro-svn] r802 - trunk/096/pkg/mobiles/brainAI/include
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#775">[ date ]</a>
+              <a href="thread.html#775">[ thread ]</a>
+              <a href="subject.html#775">[ subject ]</a>
+              <a href="author.html#775">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

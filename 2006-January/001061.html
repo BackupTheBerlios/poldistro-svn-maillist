@@ -1,0 +1,446 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r1090 - in trunk/096/pkg/multis/boat: config include multi
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2006-January/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1090%20-%20in%20trunk/096/pkg/multis/boat%3A%20config%20include%20multi&In-Reply-To=%3C200601051223.k05CNhnp000055%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001060.html">
+   <LINK REL="Next"  HREF="001062.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r1090 - in trunk/096/pkg/multis/boat: config include multi</H1>
+    <B>austin at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r1090%20-%20in%20trunk/096/pkg/multis/boat%3A%20config%20include%20multi&In-Reply-To=%3C200601051223.k05CNhnp000055%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r1090 - in trunk/096/pkg/multis/boat: config include multi">austin at berlios.de
+       </A><BR>
+    <I>Thu Jan  5 13:23:43 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001060.html">[Poldistro-svn] r1089 - trunk/096/scripts/misc
+</A></li>
+        <LI>Next message: <A HREF="001062.html">[Poldistro-svn] r1091 - trunk/096/pkg/multis/boat/plank
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1061">[ date ]</a>
+              <a href="thread.html#1061">[ thread ]</a>
+              <a href="subject.html#1061">[ subject ]</a>
+              <a href="author.html#1061">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2006-01-05 13:23:42 +0100 (Thu, 05 Jan 2006)
+New Revision: 1090
+
+Added:
+   trunk/096/pkg/multis/boat/config/planks.cfg
+   trunk/096/pkg/multis/boat/include/cmdParser.inc
+Removed:
+   trunk/096/pkg/multis/boat/config/panks.cfg
+Modified:
+   trunk/096/pkg/multis/boat/config/commands.cfg
+   trunk/096/pkg/multis/boat/multi/listener.src
+Log:
+
+
+Modified: trunk/096/pkg/multis/boat/config/commands.cfg
+===================================================================
+--- trunk/096/pkg/multis/boat/config/commands.cfg	2006-01-05 11:44:29 UTC (rev 1089)
++++ trunk/096/pkg/multis/boat/config/commands.cfg	2006-01-05 12:23:42 UTC (rev 1090)
+@@ -20,15 +20,15 @@
+ 
+ command heirarchy
+ {
+-	CMD	stop
++	CMD	Stop
+ 	CMD	forward right
+ 	CMD	forward left
+ 	CMD	forward
+ 	CMD	back right
+ 	CMD	back left
+ 	CMD	back
+-	CMD	turn right
+-	CMD	turn left
++	CMD	Turn right
++	CMD	Turn left
+ 	CMD	left
+ 	CMD	right
+ 	CMD	come about
+@@ -42,70 +42,70 @@
+ //-=[ Stop ]=-----------------------
+ command stop
+ {
+-	stop		1
++	Stop		1
+ }
+ 
+ //-=[ Forward Commands ]=-----------
+ command	forward
+ {
+-	move		1
+-	direction	0
++	Move		1
++	Direction	0
+ }
+ command forward right
+ {
+-	move		1
+-	direction	1
++	Move		1
++	Direction	1
+ }
+ command forward left
+ {
+-	move		1
+-	direction	7
++	Move		1
++	Direction	7
+ }
+ 
+ //-=[ Back Commands ]=-------------
+ command back
+ {
+-	move		1
+-	direction	4
++	Move		1
++	Direction	4
+ }
+ command back right
+ {
+-	move		1
+-	direction	3
++	Move		1
++	Direction	3
+ }
+ command back left
+ {
+-	move		1
+-	direction	5
++	Move		1
++	Direction	5
+ }
+ 
+ //-=[ Turn Commands ]=-------------
+ 
+ command turn right
+ {
+-	turn		1
++	Turn		1
+ }
+ command turn left
+ {
+-	turn		3
++	Turn		3
+ }
+ 
+ command come about
+ {
+-	turn		2
++	Turn		2
+ }
+ 
+ //-=[ Movement Commands]=----------
+ 
+ command left
+ {
+-	move		1
+-	direction	6
++	Move		1
++	Direction	6
+ }
+ command right
+ {
+-	move		1
+-	direction	2
++	Move		1
++	Direction	2
+ }
+ 
+ //-=[ Anchor Commands]=------------
+
+Deleted: trunk/096/pkg/multis/boat/config/panks.cfg
+===================================================================
+--- trunk/096/pkg/multis/boat/config/panks.cfg	2006-01-05 11:44:29 UTC (rev 1089)
++++ trunk/096/pkg/multis/boat/config/panks.cfg	2006-01-05 12:23:42 UTC (rev 1090)
+@@ -1,48 +0,0 @@
+-# $Id$
+-# 
+-# Used to manage planks.
+-# Tells it what graphics change to what and is used to determine if a plank is extended or not.
+-
+-Plank 0x3ED5
+-{
+-	Extended	1
+-	ChangeTo	0x3EB1
+-}
+-Plank 0x3EB1
+-{
+-	Extended	0
+-	ChangeTo	0x3ED5
+-}
+-
+-Plank 0x3ED4
+-{
+-	Extended	1
+-	ChangeTo	0x3EB2
+-}
+-Plank 0x3EB2
+-{
+-	Extended	0
+-	ChangeTo	0x3ED4
+-}
+-
+-Plank 0x3E84
+-{
+-	Extended	1
+-	ChangeTo	0x3E85
+-}
+-Plank 0x3E85
+-{
+-	Extended	0
+-	ChangeTo	0x3E84
+-}
+-
+-Plank 0x3E89
+-{
+-	Extended	1
+-	ChangeTo	0x3E8A
+-}
+-Plank 0x3E8A
+-{
+-	Extended	0
+-	ChangeTo	0x3E89
+-}
+
+Copied: trunk/096/pkg/multis/boat/config/planks.cfg (from rev 1088, trunk/096/pkg/multis/boat/config/panks.cfg)
+
+Added: trunk/096/pkg/multis/boat/include/cmdParser.inc
+===================================================================
+--- trunk/096/pkg/multis/boat/include/cmdParser.inc	2006-01-05 11:44:29 UTC (rev 1089)
++++ trunk/096/pkg/multis/boat/include/cmdParser.inc	2006-01-05 12:23:42 UTC (rev 1090)
+@@ -0,0 +1,58 @@
++/*
++ * $Id$
++ *
++ */
++
++use os;
++use cfgfile;
++
++/*
++ * ParseCommands(text, last_cmd)
++ * 
++ * Purpose:
++ * Takes in spoken text and finds boat commands inside of it.
++ * Returns valid commands in the order they were issued.
++ *
++ * Parameters:
++ * text:	Text to parse for commands.
++ *
++ * Return Value:
++ * Returns an array of strings.
++ *
++ */
++function ParseCommands(byref text)
++	var cmd_cfg := ReadConfigFile(&quot;:boat:config/commands&quot;);
++	var cmd_elem := GetConfigStringArray(cmd_cfg[&quot;heirarchy&quot;], &quot;CMD&quot;);
++	
++	text := Lower(text);
++		
++	var match := 0, pos := 0;
++	foreach cmd in ( cmd_elem )
++		pos := pos + 1;
++		cmd := Lower(cmd);
++		while ( text[cmd] )
++			text[cmd] := &quot;[[&quot;+CStr(pos)+&quot;]] &quot;;
++			match := 1;
++			sleepms(2);
++		endwhile
++		sleepms(2);
++	endforeach
++	if ( match == 0 )
++		return 0;
++	endif
++
++	var cmd_list := array{};
++	text := SplitWords(text);
++	foreach cmd in ( text )
++		if ( cmd[&quot;[[&quot;] &amp;&amp; cmd[&quot;]]&quot;] )
++			cmd[&quot;[[&quot;] := &quot;&quot;;
++			cmd[&quot;]]&quot;] := &quot;&quot;;
++			cmd := cmd_list[CInt(cmd)];
++			cmd_list.Append(cmd);
++		endif
++		sleepms(2);
++	endforeach
++	text := &quot;&quot;;
++
++	return cmd_list;
++endfunction
+\ No newline at end of file
+
+Modified: trunk/096/pkg/multis/boat/multi/listener.src
+===================================================================
+--- trunk/096/pkg/multis/boat/multi/listener.src	2006-01-05 11:44:29 UTC (rev 1089)
++++ trunk/096/pkg/multis/boat/multi/listener.src	2006-01-05 12:23:42 UTC (rev 1090)
+@@ -0,0 +1,128 @@
++/*
++ * $Id$
++ *
++ */
++
++use uo;
++use os;
++use boat;
++use cfgfile;
++
++include &quot;include/sysEvent&quot;;
++include &quot;:boat:cmdParser&quot;;
++
++program BoatController(boat)
++	Initialize(boat);
++	
++	var repeat_cmd;
++	var last_sound;
++	
++	while ( boat )
++		var ev;
++		
++		if ( repeat_cmd != -1 &amp;&amp; !Events_Waiting() )
++			while ( !ev )
++				if ( last_sound &lt; polcore().systime-120 )
++					PlaySoundEffect(boat, 0x14);
++					last_sound := polcore().systime;
++				endif
++				// If there are no commands, and no incoming speech 
++				// then make the event wait really long so boats take up very
++				// little cpu time when they are not in use.
++				// This is where they enter a sleep-mode.
++				ev := Wait_For_Event(120);
++			endwhile
++		endif
++		if ( !ev )
++			ev := Wait_For_Event(0);
++		endif
++				
++		var delay := (boat.tillerman).GetSpeed();
++		sleepms(delay);		
++				
++		if ( ev.text )
++			if ( (boat.tillerman).IsOnBoat(boat, ev.source) )
++				if ( (boat.tillerman).CanCommand(ev.source) )
++					var cmd_list := ParseCommands(ev.text);
++					foreach command in ( cmd_list )
++						repeat_cmd := DoCommand(boat, command);
++						sleepms(2);
++					endforeach
++				endif
++			endif
++		elseif ( repeat_cmd != -1 )
++			var boat_x := boat.x;
++			var boat_y := boat.y;
++			ClosePlanks(boat);
++			MoveBoatRelative(boat, repeat_cmd);
++			if ( boat.x == boat_x &amp;&amp; boat_y == boat.y )
++				repeat_cmd := -1;
++			endif
++		endif
++	endwhile
++endprogram
++
++function Initialize(boat)
++	while ( !(boat.tillerman).GetOwner() )
++		sleep(2);
++	endwhile
++	
++	SetObjProperty(boat.tillerman, &quot;#PID&quot;, GetPid());
++	
++	//ToDo:
++	//Consider checking the size of the boat then set this accordingly.
++	RegisterForSpeechEvents(boat, 15);
++	
++	return 1;
++endfunction
++
++function DoCommand(byref boat, byref cmd)
++	var cmd_cfg := ReadConfigFile(&quot;:boat:config/commands&quot;);
++	var cmd_elem := GetConfigStringArray(cmd_cfg[cmd], &quot;CMD&quot;);
++	
++	if ( cmd_elem.Anchor == 2 )
++		if ( !(boat.tillerman).IsAnchored() )
++			(boat.tillerman).SetAnchorStatus(1);
++			PrintTextAbove(boat.tillerman, &quot;The anchor has been lowered.&quot;);
++		else
++			PrintTextAbove(boat.tillerman, &quot;The anchor has already been lowered.&quot;);
++		endif
++		return -1;
++	elseif ( cmd_elem.Anchor == 1 )
++		if ( (boat.tillerman).IsAnchored() )
++			(boat.tillerman).SetAnchorStatus(0);
++			PrintTextAbove(boat.tillerman, &quot;The anchor has been raised.&quot;);
++		else
++			PrintTextAbove(boat.tillerman, &quot;The anchor is already raised.&quot;);
++		endif
++		return -1;
++	endif
++	
++	if ( !(boat.tillerman).IsAnchored() )
++		if ( cmd_elem.Turn )
++			ClosePlanks(boat);
++			TurnBoat(boat, cmd_elem.Turn);
++			return -1;
++		elseif ( cmd_elem.Stop )
++			return -1;
++		elseif ( cmd_elem.Move )
++			MoveBoatRelative(boat, cmd_elem.Direction);
++			return cmd_elem.Direction; // Keep following this command
++		endif
++	endif
++	
++	return -1;
++endfunction
++
++function ClosePlanks(byref boat)
++	var plank_a := boat.starboardplank;
++	var plank_b := boat.portplank;
++	
++	if ( plank_a.Extended() )
++		plank_a.Retract(0);
++	endif
++	
++	if ( plank_b.Extended() )
++		plank_b.Retract(0);
++	endif
++endfunction
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001060.html">[Poldistro-svn] r1089 - trunk/096/scripts/misc
+</A></li>
+	<LI>Next message: <A HREF="001062.html">[Poldistro-svn] r1091 - trunk/096/pkg/multis/boat/plank
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1061">[ date ]</a>
+              <a href="thread.html#1061">[ thread ]</a>
+              <a href="subject.html#1061">[ subject ]</a>
+              <a href="author.html#1061">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>

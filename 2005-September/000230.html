@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Poldistro-svn] r253 - trunk/096/pkg/mobiles/brainAI/include
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/poldistro-svn/2005-September/index.html" >
+   <LINK REL="made" HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r253%20-%20trunk/096/pkg/mobiles/brainAI/include&In-Reply-To=%3C200509252122.j8PLMpKT003127%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000229.html">
+   <LINK REL="Next"  HREF="000231.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Poldistro-svn] r253 - trunk/096/pkg/mobiles/brainAI/include</H1>
+    <B>Austin Heilman at BerliOS</B> 
+    <A HREF="mailto:poldistro-svn%40lists.berlios.de?Subject=Re%3A%20%5BPoldistro-svn%5D%20r253%20-%20trunk/096/pkg/mobiles/brainAI/include&In-Reply-To=%3C200509252122.j8PLMpKT003127%40sheep.berlios.de%3E"
+       TITLE="[Poldistro-svn] r253 - trunk/096/pkg/mobiles/brainAI/include">austin at berlios.de
+       </A><BR>
+    <I>Sun Sep 25 23:22:51 CEST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000229.html">[Poldistro-svn] r252 - trunk/096/pkg/mobiles/brainAI/config
+</A></li>
+        <LI>Next message: <A HREF="000231.html">[Poldistro-svn] r254 - trunk/096/pkg/mobiles/brainAI/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#230">[ date ]</a>
+              <a href="thread.html#230">[ thread ]</a>
+              <a href="subject.html#230">[ subject ]</a>
+              <a href="author.html#230">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: austin
+Date: 2005-09-25 23:22:50 +0200 (Sun, 25 Sep 2005)
+New Revision: 253
+
+Modified:
+   trunk/096/pkg/mobiles/brainAI/include/npcInit.inc
+Log:
+Support for random equipment setups.
+
+Modified: trunk/096/pkg/mobiles/brainAI/include/npcInit.inc
+===================================================================
+--- trunk/096/pkg/mobiles/brainAI/include/npcInit.inc	2005-09-25 16:46:07 UTC (rev 252)
++++ trunk/096/pkg/mobiles/brainAI/include/npcInit.inc	2005-09-25 21:22:50 UTC (rev 253)
+@@ -15,8 +15,32 @@
+ include &quot;:brainAI:include/npcUtil&quot;;
+ include &quot;:brainAI:include/npcError&quot;;
+ 
++
++/////////////////////////////////////////////////////////////////
++// * Function List *
++//
++// NPC_SetupAmmo(mobile)
++// NPC_SetupBackPack(mobile)
++// NPC_SetupEquipment(mobile, elem_name:=0)
++// NPC_SetupName(mobile, name_elem:=0)
++// 
++/////////////////////////////////////////////////////////////////
++// * Internal/Private Function List *
++// 
++/////////////////////////////////////////////////////////////////
++// * Global Variables *
++//
++// Constants for NPC_SetupRandomEquipment()
++CONST EQUIP_NOGENDER	:= 0x0;	// Items suited for both genders
++CONST EQUIP_MALE	:= 0x1; // Use male-only items (do any exist?)
++CONST EQUIP_FEMALE	:= 0x2; // Use female-only items
++const EQUIP_BOTHGENDER	:= 0x3; // Cross-dresser
++// 
++/////////////////////////////////////////////////////////////////
++
++
+ /*
+- * NPC_GiveBackPack(mobile)
++ * NPC_SetupBackPack(mobile)
+  *
+  * Purpose
+  * Creates a backpack and places it on an npc. If it can't equip it, it removes it.
+@@ -28,7 +52,7 @@
+  * Returns an item reference on success or if there already is one.
+  *
+  */
+-function NPC_GiveBackPack(mobile)
++function NPC_SetupBackPack(mobile)
+ 	if ( !mobile.backpack )
+ 		var backpack := CreateItemAtLocation(mobile.x, mobile.y, mobile.z, &quot;BackPack&quot;, 1);
+ 		var result := EquipItem(mobile, backpack);
+@@ -61,7 +85,6 @@
+ 	
+ 	if ( npc_elem.MissileWeapon )
+ 		var weapon := CreateItemAtLocation(mobile.x, mobile.y, mobile.z, npc_elem.MissileWeapon, 1, mobile.realm);
+-		weapon.newbie := 1;
+ 		if ( !EquipItem(mobile, weapon) )
+ 			DestroyItem(weapon);
+ 		endif
+@@ -73,8 +96,8 @@
+ 			if ( !ammo )
+ 				return ammo; // Will return an error with .errortext
+ 			endif
+-			
+ 			ammo.newbie := 1;
++						
+ 			return 1;
+ 		endif
+ 	else
+@@ -95,7 +118,7 @@
+  * Parameters
+  * mobile:	The mobile to place equipment onto
+  * elem_name:	Name of the equipment template to use.
+- *		If no name is set, it will use the EquipTemplate line in the npc's template.
++ *		If no name is set, it will use the 'EquipTemplate' line in the npc's template.
+  *
+  * Return value
+  * Returns 1 or error
+@@ -110,7 +133,7 @@
+ 	endif
+ 	
+ 	if ( !elem_name )
+-		return NPC_GiveBackPack(mobile);
++		return NPC_SetupBackPack(mobile);
+ 	elseif ( !equip_cfg[elem_name] )
+ 		var errmsg := error{&quot;errortext&quot;:=&quot;Error::NPC_SetupEquipment() - There is no elem [&quot;+elem_name+&quot;] in '::equip.cfg'&quot;};
+ 		PrintTextAbove(mobile, errmsg);
+@@ -121,8 +144,74 @@
+ 	
+ 	return 0;
+ endfunction
++
++/* 
++ * NPC_SetupRandomEquipment(mobile, elem_name)
++ *
++ * Purpose
++ * Equips an NPC randomy-yet-still-fashionably. 
++ *
++ * Parameters
++ * mobile:	The mobile to place equipment onto
++ * elem_name:	Name of the equipment template to use.
++ *		If no name is set, it will use the 'EquipTemplate' line in the npc's template.
++ * flags:	Flags to control which lines to use in equipGroups.cfg
++ *		EQUIP_NOGENDER		- 'Item' lines that work for both genders (this list is used with all flags).
++ *		EQUIP_MALE		- 'Male' lines for male-only equipment.
++ *		EQUIP_FEMALE		- 'Female' lines for female-only equipment.
++ *		EQUIP_BOTHGENDER	- Uses all entries to allow for cross dressing npcs.
++ *
++ * Return value
++ * Returns 1 or error
++ *
++ */
++function NPC_SetupRandomEquipment(mobile, elem_name:=0, flags:=EQUIP_NOGENDER)
++	var index_cfg := ReadConfigFile(&quot;:brainAI:config/equipIndex&quot;);
++	var group_cfg := ReadConfigFile(&quot;:brainAI:config/equipGroups&quot;);
++	if ( index_cfg.errortext )
++		return error{&quot;errortext&quot;:=&quot;Error - Could not open equipIndex.cfg -&gt; &quot;+index_cfg.errortext};
++	elseif ( group_cfg.errortext )
++		return error{&quot;errortext&quot;:=&quot;Error - Could not open equipGroups.cfg -&gt; &quot;+group_cfg.errortext};
++	elseif ( !elem_name )
++		var npc_elem := NPC_GetNPCConfig(mobile);
++		elem_name := npc_elem.EquipTemplate;
++	endif
++	var index_elem := index_cfg[elem_Name];
++	if ( !index_elem )
++		return error{&quot;errortext&quot;:=&quot;Error - equipIndex.cfg elem [&quot;+index_elem+&quot;] does not exist.&quot;};
++	endif
+ 	
++	foreach entry in ( GetConfigStringDictionary(index_elem, &quot;Equip&quot;) )
++		if ( RandomInt(100)+1 &lt;= entry )
++			var group_elem := index_cfg[_entry_iter];
++			if ( !group_elem )
++				PrintTextAbove(mobile, &quot;Error - equipGroups.cfg elem [&quot;+group_elem+&quot;] does not exist.&quot;);
++				continue;
++			endif
++			
++			var item_list := GetConfigStringArray(group_elem, &quot;Item&quot;);
++			if ( flags &amp; EQUIP_MALE )
++				item_list := GetConfigStringArray(group_elem, &quot;Male&quot;);
++			endif
++			if ( flags &amp; EQUIP_FEMALE )
++				item_list := GetConfigStringArray(group_elem, &quot;Female&quot;);
++			endif
++			
++			var item := item_list[RandomDiceRoll(item_list.Size())+1];
++			item := CreateItemAtLocation(mobile.x, mobile.y, mobile.z, item, 1);
++			if ( item.errortext )
++				PrintTextAbove(mobile, &quot;Unable to create [&quot;+item+&quot;] -&gt;&quot;+item.errortext);
++			elseif ( !EquipItem(mobile, item) )
++				PrintTextAbove(mobile, &quot;Unable to equip - &quot;+item.desc+&quot; - destroying.&quot;);
++				DestroyItem(item);
++			endif
++		endif
++		sleepms(2);
++	endforeach
+ 	
++	return 1;
++endfunction
++
+ /*
+  * NPC_SetupName(mobile, name_elem)
+  * 
+@@ -138,7 +227,6 @@
+  * Returns 1 or error
+  *
+  */
+- 
+ function NPC_SetupName(mobile, name_elem:=0)
+ 	if ( !mobile.name[&quot;&lt;random&gt;&quot;] )
+ 		return 1;
+@@ -155,13 +243,13 @@
+ 		var temp := error;
+ 		temp.+errortext := &quot;There is no elem [&quot;+name_elem+&quot;] in NAMES.CFG&quot;;
+ 		
+-		NPC_ErrorSysLog(moble, &quot;Error::NPC_SetupName() - &quot;+temp.errortext);
++		NPC_ErrorSysLog(mobile, &quot;Error::NPC_SetupName() - &quot;+temp.errortext);
+ 		PrintTextAbove(mobile, temp.errortext);
+ 		return temp;
+ 	endif
+ 	
+ 	var name_list := GetConfigStringArray(npc_names[name_elem], &quot;Name&quot;);
+-	if ( name_list.size() &lt; 1 )
++	if ( name_list.Size() &lt; 1 )
+ 		var temp := error{&quot;errortext&quot;:=&quot;No names were found in the [&quot;+name_elem+&quot;] elem for names.cfg&quot;};
+ 	
+ 		SysLog(&quot;Error::NPC_SetupName() - &quot;+temp.errortext);
+@@ -172,7 +260,7 @@
+ 	
+ 	var my_name := mobile.name;
+ 	while ( my_name[&quot;&lt;random&gt;&quot;] )
+-		var replacement := name_list[RandomInt(name_list.size())+1];
++		var replacement := name_list[RandomInt(name_list.Size())+1];
+ 		my_name[&quot;&lt;random&gt;&quot;] := replacement;
+ 		sleepms(2);
+ 	endwhile
+@@ -181,4 +269,3 @@
+ 	
+ 	return 1;
+ endfunction
+-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000229.html">[Poldistro-svn] r252 - trunk/096/pkg/mobiles/brainAI/config
+</A></li>
+	<LI>Next message: <A HREF="000231.html">[Poldistro-svn] r254 - trunk/096/pkg/mobiles/brainAI/config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#230">[ date ]</a>
+              <a href="thread.html#230">[ thread ]</a>
+              <a href="subject.html#230">[ subject ]</a>
+              <a href="author.html#230">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/poldistro-svn">More information about the Poldistro-svn
+mailing list</a><br>
+</body></html>
